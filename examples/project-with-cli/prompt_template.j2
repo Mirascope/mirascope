@@ -1,0 +1,29 @@
+{%- if comments -%}
+"""{{ comments }}"""
+{%- endif -%}
+{%- if imports %}
+{% for import in imports %}
+import {{ import }}
+{% endfor %}
+{%- endif -%}
+{% if from_imports %}
+{% for module, name in from_imports -%}
+from {{ module }} import {{ name }}
+{% endfor %}
+{% endif %}
+{% if variables %}
+{% for var_name, var_value in variables.items() -%}
+{{ var_name }} = {{ var_value }}
+{% endfor %}
+{% endif %}
+{%- for class in classes -%}
+{%- if loop.first -%}
+{%- endif -%}
+
+class {{ class.name }}({{ class.bases | join(', ') }}):
+{%- if class.docstring %}
+{{ class.docstring | indent(4, True) }}
+{%- endif %}
+
+{{ class.body | indent(4, True) }}
+{% endfor %}
