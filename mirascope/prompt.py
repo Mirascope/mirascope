@@ -5,8 +5,13 @@ from pydantic import BaseModel
 import pickle
 
 
-class Prompt(BaseModel):
+class MirascopePromptTemplate(BaseModel):
     """A Pydantic model for prompts."""
+
+    @classmethod
+    def template(cls):
+        """Returns the docstring template."""
+        return cls.__doc__
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
@@ -14,7 +19,7 @@ class Prompt(BaseModel):
             pickle.dump(self, f)
 
     @classmethod
-    def load(cls, filepath: str) -> Prompt:
+    def load(cls, filepath: str) -> MirascopePromptTemplate:
         """Loads the prompt from the given filepath."""
         with open(filepath, "rb") as f:
             return pickle.load(f)
