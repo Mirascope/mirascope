@@ -21,7 +21,6 @@ class FooPrompt(MirascopePrompt):
 
 def test_template():
     """Test that `MirascopePrompt` initializes properly."""
-    print(FooPrompt.template())
     assert (
         FooPrompt.template() == "This is a test prompt about {foobar}. "
         "This should be on the same line in the template."
