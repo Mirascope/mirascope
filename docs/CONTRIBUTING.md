@@ -2,28 +2,27 @@
 
 ## Setting Up Development Environment
 
-First, [install pyenv](https://github.com/pyenv/pyenv#installation) so you can run the code under all of the supported environments. Also make sure to [install pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv#installation) so you can create python environments with the correct versions.
+We use [poetry](https://python-poetry.org/) as our package and dependency manager.
 
-To install a specific version of python, you can run e.g. `pyenv install 3.10.9`. You can then create a virtual environment to run and test code locally during development by running the following code from the base directory:
+To create a virtual environment for development, run the following in your shell:
 
 ```sh
-pyenv virtualenv {python_version} env-name
-pyenv activate env-name
 pip install poetry
-poetry install
+poetry shell
+poetry install --with dev
 ```
+
+Simply use `exit` to deactivate the environment. The next time you call `poetry shell` the environment will already be setup and ready to go.
 
 If you'd prefer, you can also use conda to manage your python versions and environments. For installing conda, see their [installation guide](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
 The following code is an example of how to set up such an environment:
 
 ```sh
-conda create -n env-name pip poetry python={python_version}
+conda create -n env-name pip poetry python=3.9.13
 conda activate env-name
-poetry install
+poetry install --with dev
 ```
-
-Make sure to replace `{python_version}` in the above snippets with the version you want the environment to use (e.g. 3.10.9) and name the environment accordingly (e.g. env-name-3.10).
 
 ## Development Workflow
 
