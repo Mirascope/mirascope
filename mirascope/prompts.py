@@ -6,6 +6,7 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
+from typing import Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -24,17 +25,16 @@ class MirascopePrompt(BaseModel):
         include any number of newline characters, simply include one extra.
 
         Raises:
-            ValueError: If the docstring is empty.
+            ValueError: If the class docstring is empty.
         """
         if cls.__doc__ is None:
             raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
 
-        template = dedent(cls.__doc__).strip("\n")
-        template = re.sub(
-            "(\n+)", lambda x: x.group(0)[:-1] if len(x.group(0)) > 1 else " ", template
+        return re.sub(
+            "(\n+)",
+            lambda x: x.group(0)[:-1] if len(x.group(0)) > 1 else " ",
+            dedent(cls.__doc__).strip("\n"),
         )
-
-        return template
 
     def __str__(self) -> str:
         """Returns the docstring prompt template formatted with all template variables."""
@@ -54,3 +54,59 @@ class MirascopePrompt(BaseModel):
         """Loads the prompt from the given filepath."""
         with open(filepath, "rb") as f:
             return pickle.load(f)
+
+
+T = TypeVar("T", bound=MirascopePrompt)
+
+
+def messages(cls: Type[T]) -> Type[T]:
+    """A decorator for adding a `messages` class attribute to a `MirascopePrompt`.
+
+    Adding this decorator to a `MirascopePrompt` adds a `messages` class attribute
+    that parses the docstring as a list of messages. Each message is a tuple containing
+    the role and the content. The docstring should have the following format:
+
+    <role>:
+    <content>
+
+    For example, you might want to first include a system prompt followed by a user prompt,
+    which you can structure as follows:
+
+    SYSTEM:
+    This would be the system message content.
+
+    USER:
+    This would be the user message content.
+
+    Raises:
+        ValueError: If the docstring is empty.
+    """
+
+    def messages_fn(self) -> list[tuple[str, str]]:
+        """Returns the docstring as a list of messages."""
+        if self.__doc__ is None:
+            raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
+
+        messages = []
+        for match in re.finditer(
+            r"(SYSTEM|USER|ASSISTANT):\n((.|\n)+?)(?=(SYSTEM|USER|ASSISTANT):|\Z)",
+            self.__doc__,
+        ):
+            role = match.group(1)
+            content = re.sub(
+                "(\n+)",
+                lambda x: x.group(0)[:-1] if len(x.group(0)) > 1 else " ",
+                dedent(match.group(2)).strip("\n"),
+            )
+            content_vars = [
+                var for _, var, _, _ in Formatter().parse(content) if var is not None
+            ]
+            content = content.format(
+                **{var: getattr(self, var) for var in content_vars}
+            )
+            messages.append((role.lower(), content))
+
+        return messages
+
+    setattr(cls, "messages", messages_fn)
+    return cls
