@@ -66,17 +66,17 @@ def messages(cls: Type[T]) -> Type[T]:
     that parses the docstring as a list of messages. Each message is a tuple containing
     the role and the content. The docstring should have the following format:
 
-    <role>:
-    <content>
+        <role>:
+        <content>
 
     For example, you might want to first include a system prompt followed by a user prompt,
     which you can structure as follows:
 
-    SYSTEM:
-    This would be the system message content.
+        SYSTEM:
+        This would be the system message content.
 
-    USER:
-    This would be the user message content.
+        USER:
+        This would be the user message content.
 
     Raises:
         ValueError: If the docstring is empty.
