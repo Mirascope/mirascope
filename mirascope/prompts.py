@@ -37,7 +37,7 @@ class MirascopePrompt(BaseModel):
         )
 
     def __str__(self) -> str:
-        """Returns the docstring prompt template formatted with all template variables."""
+        """Returns the docstring prompt template formatted with template variables."""
         template = self.template()
         template_vars = [
             var for _, var, _, _ in Formatter().parse(template) if var is not None
@@ -69,8 +69,8 @@ def messages(cls: Type[T]) -> Type[T]:
         <role>:
         <content>
 
-    For example, you might want to first include a system prompt followed by a user prompt,
-    which you can structure as follows:
+    For example, you might want to first include a system prompt followed by a user
+    prompt, which you can structure as follows:
 
         SYSTEM:
         This would be the system message content.
@@ -87,26 +87,13 @@ def messages(cls: Type[T]) -> Type[T]:
         if self.__doc__ is None:
             raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
 
-        messages = []
-        for match in re.finditer(
-            r"(SYSTEM|USER|ASSISTANT):\n((.|\n)+?)(?=(SYSTEM|USER|ASSISTANT):|\Z)",
-            self.__doc__,
-        ):
-            role = match.group(1)
-            content = re.sub(
-                "(\n+)",
-                lambda x: x.group(0)[:-1] if len(x.group(0)) > 1 else " ",
-                dedent(match.group(2)).strip("\n"),
+        return [
+            (match.group(1).lower(), match.group(2))  # (role, content)
+            for match in re.finditer(
+                r"(SYSTEM|USER|ASSISTANT): ((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT):|\Z)",
+                str(self),
             )
-            content_vars = [
-                var for _, var, _, _ in Formatter().parse(content) if var is not None
-            ]
-            content = content.format(
-                **{var: getattr(self, var) for var in content_vars}
-            )
-            messages.append((role.lower(), content))
-
-        return messages
+        ]
 
     setattr(cls, "messages", messages_fn)
     return cls

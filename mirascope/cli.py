@@ -2,8 +2,8 @@ import argparse
 import ast
 
 from jinja2 import Environment, FileSystemLoader
-from utils import PythonFileAnalyzer
 
+from .utils import PythonFileAnalyzer
 
 base_directory = "../examples/project-with-cli"
 version_directory = "../examples/project-with-cli/versions"

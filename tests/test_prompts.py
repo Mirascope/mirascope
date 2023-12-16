@@ -1,4 +1,6 @@
 """Tests for the `prompts` module."""
+from unittest.mock import MagicMock, patch
+
 from mirascope.prompts import MirascopePrompt, messages
 
 
@@ -26,6 +28,13 @@ def test_template():
         "This should be on the same line in the template."
         "\n    This should be indented on a new line in the template."
     )
+
+
+@patch.object(MirascopePrompt, "__str__", return_value="str")
+def test_str_uses_template(mock_str: MagicMock):
+    """Tests that the `__str__` method uses the `template` method."""
+    str(FooPrompt(foo="foo", bar="bar"))
+    mock_str.assert_called_once()
 
 
 def test_str():
