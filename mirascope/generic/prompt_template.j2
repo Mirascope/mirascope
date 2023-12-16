@@ -12,11 +12,11 @@ from {{ module }} import {{ name }}
 {% endfor %}
 {% endif %}
 {% if variables %}
-{% for var_name, var_value in variables.items() -%}
-{{ var_name }} = {{ var_value }}
+{%- for var_name, var_value in variables.items() -%}
+{{ var_name }} = "{{ var_value }}"
 {% endfor %}
 {% endif %}
-{%- for class in classes -%}
+{% for class in classes -%}
 {%- if loop.first -%}
 {%- endif -%}
 

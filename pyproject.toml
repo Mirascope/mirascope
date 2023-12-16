@@ -11,6 +11,9 @@ readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
 repository = "https://github.com/ControlAI/mirascope"
 
+[tool.poetry.scripts]
+mirascope = 'mirascope. cli:main'
+
 [tool.poetry.dependencies]
 python = ">=3.9, <3.12"
 pydantic = "^2.0.2"
@@ -23,6 +26,7 @@ mkdocstrings-python = "^1.1.2"
 mypy = "^1.6.1"
 pytest = "^7.4.0"
 ruff = "^0.1.5"
+
 
 [tool.ruff]
 exclude = [
