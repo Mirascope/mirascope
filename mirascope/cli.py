@@ -5,14 +5,19 @@ import glob
 from typing import Optional
 from pathlib import Path
 from importlib.resources import files
+from configparser import ConfigParser
 from jinja2 import Environment, FileSystemLoader, Template
 from .utils import PythonFileAnalyzer
 
-base_directory = "../examples/project-with-cli"
-version_directory = "../examples/project-with-cli/versions"
 version_prefix = "MIRASCOPE_CURRENT_VERSION"
-version_file_name = "version.txt"
 ignore_variables = {"prev_revision_id", "revision_id"}
+
+
+def get_user_mirascope_settings():
+    """Returns the user's mirascope settings."""
+    config = ConfigParser()
+    config.read("mirascope.ini")
+    return config["mirascope"]
 
 
 def get_current_head(version_file_path: str):
@@ -72,21 +77,22 @@ def check_file_changed(file1_path: str, file2_path: str) -> bool:
 def find_file_path(directory, prefix):
     """Finds and opens the file with the given prefix in the given directory."""
     pattern = os.path.join(directory, prefix + "*.py")
-    files = glob.glob(pattern)
+    prompt_files = glob.glob(pattern)
 
-    if not files:
+    if not prompt_files:
         return None  # No files found
 
     # Return first file found
-    return files[0]
+    return prompt_files[0]
 
 
 def write_to_template(file: str, command: str, variables: Optional[dict] = None):
     """Writes the given file to the template."""
+    mirascope_directory = get_user_mirascope_settings()["mirascope_location"]
     if variables is None:
         variables = {}
     template_loader = FileSystemLoader(
-        searchpath=base_directory
+        searchpath=mirascope_directory
     )  # Set your template directory_name
     template_env = Environment(loader=template_loader)
     template = template_env.get_template("prompt_template.j2")
@@ -110,11 +116,14 @@ def write_to_template(file: str, command: str, variables: Optional[dict] = None)
     return template.render(**data)
 
 
-def check_status(directory):
-    prompt_directory = os.path.join(version_directory, directory)
+def check_status(mirascope_settings: dict, directory: str):
+    version_directory_path = mirascope_settings["versions_location"]
+    prompt_directory_path = mirascope_settings["prompts_location"]
+    version_file_name = mirascope_settings["version_file_name"]
+    prompt_directory = os.path.join(version_directory_path, directory)
     current_head = get_current_head(f"{prompt_directory}/{version_file_name}")
     current_version_prompt_path = find_file_path(prompt_directory, current_head)
-    used_prompt_path = f"{base_directory}/{directory}.py"
+    used_prompt_path = f"{prompt_directory_path}/{directory}.py"
     has_file_changed = check_file_changed(current_version_prompt_path, used_prompt_path)
     if has_file_changed:
         return used_prompt_path
@@ -123,15 +132,20 @@ def check_status(directory):
 
 def add(args):
     """Adds the given item to the current version."""
-    print(f"Adding {version_directory}/{args.item}")
+    version_directory_path = get_user_mirascope_settings()["versions_location"]
+    prompt_directory_path = get_user_mirascope_settings()["prompts_location"]
+    version_file_name = get_user_mirascope_settings()["version_file_name"]
+    print(f"Adding {version_directory_path}/{args.item}")
     # TODO: Support directory name and also file path
     directory_name: str = args.item.replace(".py", "")
-    class_directory = f"{version_directory}/{directory_name}"
+    class_directory = f"{version_directory_path}/{directory_name}"
     version_file_path = f"{class_directory}/{version_file_name}"
     if not os.path.exists(class_directory):
         os.makedirs(class_directory)
     current_head = get_current_head(version_file_path)
-    with open(f"{base_directory}/{args.item}", "r+", encoding="utf-8") as file:
+    # Open user's prompt file
+    with open(f"{prompt_directory_path}/{args.item}", "r+", encoding="utf-8") as file:
+        # Increment revision id
         if current_head is None:
             # first revision
             revision_id = "0001"
@@ -139,6 +153,7 @@ def add(args):
             # default branch with incrementation
             last_rev_id = int(current_head)
             revision_id = f"{last_rev_id+1:04}"
+        # Create revision file
         with open(
             f"{class_directory}/{revision_id}_{args.item}", "w+", encoding="utf-8"
         ) as file2:
@@ -146,10 +161,11 @@ def add(args):
                 "prev_revision_id": current_head,
                 "revision_id": revision_id,
             }
-            file2.write(write_to_template(file.read(), "add"), custom_variables)
+            file2.write(write_to_template(file.read(), "add", custom_variables))
         try:
             modified_lines = []
             key_found = False
+            # Read version number
             with open(version_file_path, "r", encoding="utf-8") as file:
                 for line in file:
                     # Check if the current line contains the key
@@ -175,18 +191,20 @@ def add(args):
 
 def status(args):
     """Checks the status of the current version."""
+    mirascope_settings = get_user_mirascope_settings()
+    version_directory_path = mirascope_settings["versions_location"]
     if args.item:
         directory_name: str = args.item.replace(".py", "")
-        used_prompt_path = check_status(directory_name)
+        used_prompt_path = check_status(mirascope_settings, directory_name)
         if used_prompt_path:
             print(f"Prompt {used_prompt_path} has changed.")
         else:
             print("No changes detected.")
     else:
         directores_changed: list[str] = []
-        for _, directories, _ in os.walk(version_directory):
+        for _, directories, _ in os.walk(version_directory_path):
             for directory in directories:
-                used_prompt_path = check_status(directory)
+                used_prompt_path = check_status(mirascope_settings, directory)
                 if used_prompt_path:
                     directores_changed.append(used_prompt_path)
         if len(directores_changed) > 0:
@@ -200,11 +218,15 @@ def status(args):
 def use(args):
     directory_name = args.directory
     version = args.version
-    class_directory = f"{version_directory}/{directory_name}"
+    version_directory_path = get_user_mirascope_settings()["versions_location"]
+    prompt_directory_path = get_user_mirascope_settings()["prompts_location"]
+    class_directory = f"{version_directory_path}/{directory_name}"
     version_file_path = find_file_path(class_directory, version)
     with open(version_file_path, "r", encoding="utf-8") as file:
         content = file.read()
-    with open(f"{base_directory}/{directory_name}.py", "w+", encoding="utf-8") as file2:
+    with open(
+        f"{prompt_directory_path}/{directory_name}.py", "w+", encoding="utf-8"
+    ) as file2:
         file2.write(write_to_template(content, "use"))
         print(f"Using {version_file_path}")
 
@@ -216,6 +238,7 @@ def init(args):
     os.makedirs(f"{directory_name}/versions", exist_ok=True)
 
     variables = {
+        "mirascope_location": "mirascope",
         "versions_location": "versions",
         "prompts_location": "prompts",
         "version_file_name": "version.txt",

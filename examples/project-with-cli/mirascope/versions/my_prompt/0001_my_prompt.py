@@ -3,7 +3,6 @@ from mirascope.prompt import MirascopePromptTemplate
 
 
 prev_revision_id = "None"
-
 revision_id = "0001"
 
 
