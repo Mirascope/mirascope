@@ -8,8 +8,10 @@ from importlib.resources import files
 from configparser import ConfigParser
 from jinja2 import Environment, FileSystemLoader, Template
 from .utils import PythonFileAnalyzer
+from pydantic import BaseModel
 
-version_prefix = "MIRASCOPE_CURRENT_VERSION"
+current_revision = "CURRENT_REVISION"
+latest_revision = "LATEST_REVISION"
 ignore_variables = {"prev_revision_id", "revision_id"}
 
 
@@ -20,16 +22,19 @@ def get_user_mirascope_settings():
     return config["mirascope"]
 
 
-def get_current_head(version_file_path: str):
+def get_versions(version_file_path: str) -> dict:
     """Returns the current head of the given template."""
     try:
+        versions = {}
         with open(version_file_path, "a+", encoding="utf-8") as file:
             file.seek(0)
             for line in file:
                 # Check if the current line contains the key
-                if line.startswith(version_prefix + "="):
-                    return line.split("=")[1].strip()
-            return None
+                if line.startswith(current_revision + "="):
+                    versions["head"] = line.split("=")[1].strip()
+                elif line.startswith(latest_revision + "="):
+                    versions["latest"] = line.split("=")[1].strip()
+            return versions
     except FileNotFoundError as e:
         raise FileNotFoundError(f"The file {version_file_path} was not found.") from e
 
@@ -116,14 +121,52 @@ def write_to_template(file: str, command: str, variables: Optional[dict] = None)
     return template.render(**data)
 
 
+def update_version_text_file(version_file_path: str, updates: dict):
+    try:
+        modified_lines = []
+        edits_made = {
+            key: False for key in updates
+        }  # Track which updates have been made
+
+        # Read the file and apply updates
+        with open(version_file_path, "r", encoding="utf-8") as file:
+            for line in file:
+                # Check if the current line contains any of the keys
+                for key, value in updates.items():
+                    if line.startswith(key + "="):
+                        modified_lines.append(f"{key}={value}\n")
+                        edits_made[key] = True
+                        break
+                else:  # This else belongs to the for loop
+                    modified_lines.append(line)
+
+            # Add any keys that were not found in the file
+            for key, value in updates.items():
+                if not edits_made[key]:
+                    modified_lines.append(f"{key}={value}\n")
+
+        # Write the modified content back to the file
+        with open(version_file_path, "w", encoding="utf-8") as file:
+            file.writelines(modified_lines)
+    except FileNotFoundError:
+        print(f"The file {version_file_path} was not found.")
+    except IOError as e:
+        print(f"An I/O error occurred: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 def check_status(mirascope_settings: dict, directory: str):
     version_directory_path = mirascope_settings["versions_location"]
     prompt_directory_path = mirascope_settings["prompts_location"]
     version_file_name = mirascope_settings["version_file_name"]
     prompt_directory = os.path.join(version_directory_path, directory)
-    current_head = get_current_head(f"{prompt_directory}/{version_file_name}")
-    current_version_prompt_path = find_file_path(prompt_directory, current_head)
     used_prompt_path = f"{prompt_directory_path}/{directory}.py"
+    versions = get_versions(f"{prompt_directory}/{version_file_name}")
+    current_head = versions["head"] if "head" in versions else None
+    if current_head is None:
+        return used_prompt_path
+    current_version_prompt_path = find_file_path(prompt_directory, current_head)
     has_file_changed = check_file_changed(current_version_prompt_path, used_prompt_path)
     if has_file_changed:
         return used_prompt_path
@@ -132,69 +175,58 @@ def check_status(mirascope_settings: dict, directory: str):
 
 def add(args):
     """Adds the given item to the current version."""
-    version_directory_path = get_user_mirascope_settings()["versions_location"]
-    prompt_directory_path = get_user_mirascope_settings()["prompts_location"]
-    version_file_name = get_user_mirascope_settings()["version_file_name"]
-    print(f"Adding {version_directory_path}/{args.item}")
-    # TODO: Support directory name and also file path
-    directory_name: str = args.item.replace(".py", "")
+    mirascope_settings = get_user_mirascope_settings()
+    version_directory_path = mirascope_settings["versions_location"]
+    prompt_directory_path = mirascope_settings["prompts_location"]
+    version_file_name = mirascope_settings["version_file_name"]
+    directory_name: str = args.file
+    # Check status before continuing
+    used_prompt_path = check_status(mirascope_settings, directory_name)
+    if not used_prompt_path:
+        print("No changes detected.")
+        return
     class_directory = f"{version_directory_path}/{directory_name}"
     version_file_path = f"{class_directory}/{version_file_name}"
     if not os.path.exists(class_directory):
         os.makedirs(class_directory)
-    current_head = get_current_head(version_file_path)
+    versions = get_versions(version_file_path)
     # Open user's prompt file
-    with open(f"{prompt_directory_path}/{args.item}", "r+", encoding="utf-8") as file:
+    with open(
+        f"{prompt_directory_path}/{directory_name}.py", "r+", encoding="utf-8"
+    ) as file:
         # Increment revision id
-        if current_head is None:
+        if "latest" not in versions:
             # first revision
             revision_id = "0001"
         else:
             # default branch with incrementation
-            last_rev_id = int(current_head)
-            revision_id = f"{last_rev_id+1:04}"
+            latest_revision_id = versions["latest"]
+            revision_id = f"{int(latest_revision_id)+1:04}"
         # Create revision file
         with open(
-            f"{class_directory}/{revision_id}_{args.item}", "w+", encoding="utf-8"
+            f"{class_directory}/{revision_id}_{directory_name}.py",
+            "w+",
+            encoding="utf-8",
         ) as file2:
             custom_variables = {
-                "prev_revision_id": current_head,
+                "prev_revision_id": versions["head"] if "head" in versions else None,
                 "revision_id": revision_id,
             }
             file2.write(write_to_template(file.read(), "add", custom_variables))
-        try:
-            modified_lines = []
-            key_found = False
-            # Read version number
-            with open(version_file_path, "r", encoding="utf-8") as file:
-                for line in file:
-                    # Check if the current line contains the key
-                    if line.startswith(version_prefix + "="):
-                        modified_lines.append(f"{version_prefix}={revision_id}\n")
-                        key_found = True
-                    else:
-                        modified_lines.append(line)
-
-                # If the key was not found, add it to the end
-                if not key_found:
-                    modified_lines.append(f"{version_prefix}={revision_id}\n")
-
-            # Write the modified content back to the version file
-            with open(version_file_path, "w", encoding="utf-8") as file:
-                file.writelines(modified_lines)
-
-        except FileNotFoundError:
-            print(f"The file {version_file_path} was not found.")
-        except IOError as e:
-            print(f"An I/O error occurred: {e}")
+            keys_to_update = {
+                current_revision: revision_id,
+                latest_revision: revision_id,
+            }
+            update_version_text_file(version_file_path, keys_to_update)
+    print(f"Adding {version_directory_path}/{revision_id}_{directory_name}.py")
 
 
 def status(args):
     """Checks the status of the current version."""
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings["versions_location"]
-    if args.item:
-        directory_name: str = args.item.replace(".py", "")
+    directory_name: str = args.file
+    if directory_name:
         used_prompt_path = check_status(mirascope_settings, directory_name)
         if used_prompt_path:
             print(f"Prompt {used_prompt_path} has changed.")
@@ -218,17 +250,29 @@ def status(args):
 def use(args):
     directory_name = args.directory
     version = args.version
-    version_directory_path = get_user_mirascope_settings()["versions_location"]
-    prompt_directory_path = get_user_mirascope_settings()["prompts_location"]
+    mirascope_settings = get_user_mirascope_settings()
+    used_prompt_path = check_status(mirascope_settings, directory_name)
+    if used_prompt_path:
+        print("Changes detected, please add or delete changes first.")
+        print(f"\tmirascope add {directory_name}".expandtabs(4))
+        return
+    version_directory_path = mirascope_settings["versions_location"]
+    prompt_directory_path = mirascope_settings["prompts_location"]
+    version_file_name = mirascope_settings["version_file_name"]
     class_directory = f"{version_directory_path}/{directory_name}"
-    version_file_path = find_file_path(class_directory, version)
-    with open(version_file_path, "r", encoding="utf-8") as file:
+    revision_file_path = find_file_path(class_directory, version)
+    version_file_path = f"{class_directory}/{version_file_name}"
+    with open(revision_file_path, "r", encoding="utf-8") as file:
         content = file.read()
     with open(
         f"{prompt_directory_path}/{directory_name}.py", "w+", encoding="utf-8"
     ) as file2:
         file2.write(write_to_template(content, "use"))
-        print(f"Using {version_file_path}")
+    keys_to_update = {
+        current_revision: version,
+    }
+    update_version_text_file(version_file_path, keys_to_update)
+    print(f"Using {revision_file_path}")
 
 
 def init(args):
@@ -269,13 +313,13 @@ def main():
 
     # Adding 'add' command
     parser_add = subparsers.add_parser("add", help="Add an item")
-    parser_add.add_argument("item", help="Item to add")
+    parser_add.add_argument("file", help="File to add, without extension (.py)")
     parser_add.set_defaults(func=add)
 
     # Adding 'status' command
     parser_status = subparsers.add_parser("status", help="Check status of prompts")
     parser_status.add_argument(
-        "item", nargs="?", default=None, help="Prompt to check status on"
+        "file", nargs="?", default=None, help="Prompt to check status on"
     )
     parser_status.set_defaults(func=status)
 
