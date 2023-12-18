@@ -12,3 +12,7 @@ chain = prompt | model
 
 chain = prompt | model.bind(stop=["\n"]) | StrOutputParser()
 print(chain.invoke(JokePrompt(foo="bears").__dict__))
+
+from openai import OpenAI
+
+client = OpenAI()

@@ -1,0 +1,3 @@
+# prompts
+
+::: mirascope.prompts.MirascopePrompt

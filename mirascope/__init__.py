@@ -1,3 +1,4 @@
 """Mirascope package."""
 
-from .prompt import MirascopePromptTemplate
+from . import prompts
+from .prompts import MirascopePrompt

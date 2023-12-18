@@ -1,14 +1,16 @@
 import argparse
 import ast
-import os
 import glob
-from typing import Optional
-from pathlib import Path
-from importlib.resources import files
+import os
 from configparser import ConfigParser
+from importlib.resources import files
+from pathlib import Path
+from typing import Optional
+
 from jinja2 import Environment, FileSystemLoader, Template
-from .utils import PythonFileAnalyzer
 from pydantic import BaseModel
+
+from .utils import PythonFileAnalyzer
 
 current_revision = "CURRENT_REVISION"
 latest_revision = "LATEST_REVISION"
@@ -152,8 +154,6 @@ def update_version_text_file(version_file_path: str, updates: dict):
         print(f"The file {version_file_path} was not found.")
     except IOError as e:
         print(f"An I/O error occurred: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
 
 
 def check_status(mirascope_settings: dict, directory: str):

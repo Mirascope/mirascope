@@ -9,7 +9,7 @@ authors = [
 ]
 readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
-repository = "https://github.com/ControlAI/mirascope"
+repository = "https://github.com/Mirascope/mirascope"
 
 [tool.poetry.scripts]
 mirascope = 'mirascope. cli:main'
@@ -17,15 +17,18 @@ mirascope = 'mirascope. cli:main'
 [tool.poetry.dependencies]
 python = ">=3.9, <3.12"
 pydantic = "^2.0.2"
+Jinja2 = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
+mypy = "^1.6.1"
+pytest = "^7.4.0"
+ruff = "^0.1.5"
+
+[tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.3"
 mkdocs-material = "^9.1.18"
 mkdocstrings = "^0.22.0"
 mkdocstrings-python = "^1.1.2"
-mypy = "^1.6.1"
-pytest = "^7.4.0"
-ruff = "^0.1.5"
 
 
 [tool.ruff]

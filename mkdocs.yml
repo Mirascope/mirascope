@@ -1,0 +1,85 @@
+copyright: Copyright &copy; 2023 SOTAI Labs Inc.
+site_name: Mirascope
+site_url: https://mirascope.github.io/mirascope
+repo_name: mirascope
+repo_url: https://github.com/Mirascope/mirascope/
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.code.annotation
+    - content.code.copy
+    - content.code.link
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: indigo
+      accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/Mirascope
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/WilliamBakst
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/wbakst/
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            docstring_style: google
+
+nav:
+  - Get Started:
+      - Welcome to Mirascope: "README.md"
+      - Why use Mirascope: "WHY.md"
+      - Contributing: "CONTRIBUTING.md"
+      - How to help: "HELP.md"
+  - Concepts:
+      - placeholder: "concepts/placeholder.md"
+  - Examples:
+      - placeholder: "examples/placeholder.md"
+  - API Reference:
+      - prompts: "api/prompts.md"
