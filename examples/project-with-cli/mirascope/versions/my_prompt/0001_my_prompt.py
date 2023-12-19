@@ -1,7 +1,6 @@
 """Basic Prompt + LLM Example."""
 from mirascope.prompts import MirascopePrompt
 
-
 prev_revision_id = "None"
 revision_id = "0001"
 
