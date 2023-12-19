@@ -2,7 +2,8 @@
 import ast
 
 
-class PythonFileAnalyzer(ast.NodeVisitor):
+class _MirascopePromptAnalyzer(ast.NodeVisitor):
+    """Utility class for analyzing a Mirascope prompt file."""
     def __init__(self):
         self.imports = []
         self.from_imports = []
@@ -11,23 +12,26 @@ class PythonFileAnalyzer(ast.NodeVisitor):
         self.comments = []
 
     def visit_Import(self, node):
+        """Extracts imports from the given node."""
         for alias in node.names:
             self.imports.append(alias.name)
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
+        """Extracts from imports from the given node."""
         for alias in node.names:
             self.from_imports.append((node.module, alias.name))
         self.generic_visit(node)
 
     def visit_Assign(self, node):
-        # Assuming single target assignment for simplicity
+        """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
             self.variables[target.id] = ast.unparse(node.value)
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
+        """Extracts classes from the given node."""
         class_info = {
             "name": node.name,
             "bases": [ast.unparse(b) for b in node.bases],
@@ -47,12 +51,12 @@ class PythonFileAnalyzer(ast.NodeVisitor):
         self.classes.append(class_info)
 
     def visit_Module(self, node):
+        """Extracts comments from the given node."""
         self.comments = ast.get_docstring(node)
         self.generic_visit(node)
 
-    def check_class_changed(self, other: "PythonFileAnalyzer") -> bool:
+    def check_class_changed(self, other: "MirascopePromptAnalyzer") -> bool:
         """Compares the classes of this file with the classes of another file."""
-        differences = {}
         self_classes = {c["name"]: c for c in self.classes}
         other_classes = {c["name"]: c for c in other.classes}
 

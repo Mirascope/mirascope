@@ -15,3 +15,12 @@ class _Metaclass(EnumMeta):
 
 class _Enum(str, Enum, metaclass=_Metaclass):
     """Base Enum Class."""
+
+
+class Command(_Enum):
+    """CLI commands to be executed."""
+
+    ADD = "add"
+    USE = "use"
+    STATUS = "status"
+    INIT = "init"
