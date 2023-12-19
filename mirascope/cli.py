@@ -25,7 +25,7 @@ def _get_user_mirascope_settings() -> MirascopeSettings:
     return MirascopeSettings(**config["mirascope"])
 
 
-def _get_versions(version_file_path: str) -> VersionTextFile:
+def _get_versions(version_file_path: str) -> Optional[VersionTextFile]:
     """Returns the versions of the given prompt."""
     try:
         versions = VersionTextFile()
@@ -38,8 +38,8 @@ def _get_versions(version_file_path: str) -> VersionTextFile:
                 elif line.startswith(LATEST_REVISION_KEY + "="):
                     versions.latest_revision = line.split("=")[1].strip()
             return versions
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"The file {version_file_path} was not found.") from e
+    except FileNotFoundError:
+        return None
 
 
 def _check_file_changed(file1_path: str, file2_path: str) -> bool:
@@ -168,6 +168,8 @@ def _check_status(mirascope_settings: MirascopeSettings, directory: str) -> Opti
     used_prompt_path = f"{prompt_directory_path}/{directory}.py"
     # Get the currently used prompt version
     versions = _get_versions(f"{prompt_directory}/{version_file_name}")
+    if versions is None:
+        return used_prompt_path
     current_head = versions.current_revision
     if current_head is None:
         return used_prompt_path
@@ -206,8 +208,8 @@ def _add(args):
     if not used_prompt_path:
         print("No changes detected.")
         return
-    class_directory = f"{version_directory_path}/{directory_name}"
-    version_file_path = f"{class_directory}/{version_file_name}"
+    class_directory = os.path.join(version_directory_path, directory_name)
+    version_file_path = os.path.join(class_directory, version_file_name)
     if not os.path.exists(class_directory):
         os.makedirs(class_directory)
     versions = _get_versions(version_file_path)
