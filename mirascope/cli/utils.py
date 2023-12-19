@@ -21,10 +21,10 @@ class VersionTextFile(BaseModel):
     latest_revision: Optional[str] = Field(default=None)
 
 
-def get_user_mirascope_settings() -> MirascopeSettings:
+def get_user_mirascope_settings(ini_file_path: Optional[str] = "mirascope.ini") -> MirascopeSettings:
     """Returns the user's mirascope settings."""
     config = ConfigParser()
-    config.read("mirascope.ini")
+    config.read(ini_file_path)
     return MirascopeSettings(**config["mirascope"])
 
 
