@@ -1,16 +1,20 @@
 """Classes for responses when interacting with a Chat API."""
+from typing import Optional
+
 from openai import Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from pydantic import BaseModel
 
 
-class MirascopeChatCompletion:
+class MirascopeChatCompletion(BaseModel):
     """Convenience wrapper around chat completions."""
 
-    def __init__(self, response: ChatCompletion):
-        """Initializes an instance of `MirascopeChatCompletion`."""
-        self.response = response
-        self.content = response.choices[0].message.content
-        # We probably also want to store some level of metadata.
+    response: ChatCompletion
+
+    @property
+    def content(self) -> Optional[str]:
+        """Returns the content of the chat completion response."""
+        return self.response.choices[0].message.content
 
     def __repr__(self):
         """Returns a representation of `MirascopeChatCompletion`."""
@@ -21,12 +25,10 @@ class MirascopeChatCompletion:
         return self.content
 
 
-class MirascopeChatCompletionStream:
+class MirascopeChatCompletionStream(BaseModel):
     """Convenience wrapper around chat completion streaming."""
 
-    def __init__(self, response: Stream[ChatCompletionChunk]):
-        """Initializes and instance of `MirascopeChatCompletionStream`."""
-        raise NotImplementedError()
+    response: Stream[ChatCompletionChunk]
 
     def __iter__(self):
         """Returns an iterator for the chunks."""
