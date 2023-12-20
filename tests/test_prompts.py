@@ -30,11 +30,11 @@ def test_template():
     )
 
 
-@patch.object(MirascopePrompt, "__str__", return_value="str")
-def test_str_uses_template(mock_str: MagicMock):
+@patch.object(MirascopePrompt, "template", return_value="{foo}{bar}")
+def test_str_uses_template(mock_template: MagicMock):
     """Tests that the `__str__` method uses the `template` method."""
     str(FooPrompt(foo="foo", bar="bar"))
-    mock_str.assert_called_once()
+    mock_template.assert_called_once()
 
 
 def test_str():
