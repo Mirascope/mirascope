@@ -1,3 +1,3 @@
-# Why use Mirascope?
+# Why use mirascope?
 
 WIP

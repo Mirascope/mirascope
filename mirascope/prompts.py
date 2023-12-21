@@ -78,6 +78,9 @@ def messages(cls: Type[T]) -> Type[T]:
         USER:
         This would be the user message content.
 
+    Returns:
+        A list of tuples `(role, content)` parsed from the docstring.
+
     Raises:
         ValueError: If the docstring is empty.
     """
@@ -88,12 +91,12 @@ def messages(cls: Type[T]) -> Type[T]:
             raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
 
         return [
-            (match.group(1).lower(), match.group(2))  # (role, content)
+            (match.group(1).lower(), match.group(2))
             for match in re.finditer(
                 r"(SYSTEM|USER|ASSISTANT): ((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT):|\Z)",
                 str(self),
             )
         ]
 
-    setattr(cls, "messages", messages_fn)
+    setattr(cls, "messages", property(messages_fn))
     return cls

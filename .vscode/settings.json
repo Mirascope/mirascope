@@ -4,6 +4,15 @@
   "editor.formatOnSaveMode": "file",
   "editor.rulers": [88],
   "files.insertFinalNewline": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
   "[json]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -11,15 +20,6 @@
   "[yml]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[python]": {
-    "testing.unittestEnabled": false,
-    "testing.pytestEnabled": true,
-    "editor.tabSize": 4,
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": true
-    },
-    "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "[markdown]": {
     "editor.formatOnSave": false

@@ -1,4 +1,4 @@
-"""Enum Classes for Mirascope."""
+"""Enum Classes for mirascope."""
 from enum import Enum, EnumMeta
 from typing import Any
 
