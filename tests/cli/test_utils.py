@@ -7,6 +7,7 @@ from jinja2 import Environment
 from pydantic import ValidationError
 
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
+from mirascope.cli.pydantic_models import MirascopeSettings
 from mirascope.cli.utils import (
     check_prompt_changed,
     find_prompt_path,
@@ -23,38 +24,25 @@ def _get_mirascope_ini() -> str:
     return mirascope_ini_path.read_text(encoding="utf-8")
 
 
-@pytest.fixture(name="temp_mirascope_settings_path")
-def copy_mirascope_settings_to_test(tmp_path: Path) -> str:
-    """Copy the actual INI file to the temporary directory"""
-    mirascope_ini = _get_mirascope_ini()
-    test_ini_path = tmp_path / "settings.ini"
-    test_ini_path.write_text(mirascope_ini)
-    return str(test_ini_path)
-
-
-def test_valid_mirascope_settings(temp_mirascope_settings_path: str):
+def test_valid_mirascope_settings(tmp_path: Path):
     """Tests that the ini file properly maps to pydantic model"""
+    mirascope_ini = _get_mirascope_ini()
+    ini_path = tmp_path / "settings.ini"
+    ini_path.write_text(mirascope_ini)
+    settings = get_user_mirascope_settings(str(ini_path))
+    assert isinstance(settings, MirascopeSettings)
 
-    settings = get_user_mirascope_settings(temp_mirascope_settings_path)
-    assert settings.mirascope_location == "{{ mirascope_location }}"
 
-
-@pytest.fixture(name="temp_invalid_mirascope_settings_path")
-def copy_invalid_mirascope_settings_to_test(tmp_path) -> str:
-    """Copy the actual INI file to the temporary directory and add an invalid setting"""
+def test_invalid_mirascope_settings(tmp_path: Path):
+    """Tests that an invalid ini file raises pydantic ValidationError"""
     mirascope_ini = _get_mirascope_ini()
     additional_settings = "invalid_setting = 1"
     invalid_mirascope_ini = mirascope_ini + "\n" + additional_settings
-    test_ini_path = tmp_path / "settings.ini"
-    test_ini_path.write_text(invalid_mirascope_ini)
-    return test_ini_path
-
-
-def test_invalid_mirascope_settings(temp_invalid_mirascope_settings_path: str):
+    ini_path = tmp_path / "settings.ini"
+    ini_path.write_text(invalid_mirascope_ini)
     """Tests that an invalid ini file raises pydantic ValidationError"""
-
     with pytest.raises(ValidationError):
-        get_user_mirascope_settings(temp_invalid_mirascope_settings_path)
+        get_user_mirascope_settings(str(ini_path))
 
 
 def _write_version_text_file(tmp_path: Path):
@@ -113,67 +101,67 @@ def test_find_prompt_path(tmp_path: Path):
         (
             dedent(
                 """
-    import bar
-     """
+                import bar
+                """
             ),
             dedent(
                 """
-    import foo
-     """
+                import foo
+                """
             ),
         ),
         # from_imports
         (
             dedent(
                 """
-    from bar import foo
-     """
+                from bar import foo
+                """
             ),
             dedent(
                 """
-    from foo import bar
-     """
+                from foo import bar
+                """
             ),
         ),
         # variables
         (
             dedent(
                 """
-    foo = 'bar'
-     """
+                foo = 'bar'
+                """
             ),
             dedent(
                 """
-    baz = 'qux'
-     """
+                baz = 'qux'
+                """
             ),
         ),
         # classes
         (
             dedent(
                 """
-    class Bar(Foo):
-        foo = 'bar'
-     """
+                class Bar(Foo):
+                    foo = 'bar'
+                """
             ),
             dedent(
                 """
-    class Bar(Foo):
-        foo = 'baz'
-     """
+                class Bar(Foo):
+                    foo = 'baz'
+                """
             ),
         ),
         # comments
         (
             dedent(
                 '''
-    """This is a comment"""
-    '''
+                """This is a comment"""
+                '''
             ),
             dedent(
                 '''
-    """This is a different comment"""
-    '''
+                """This is a different comment"""
+                '''
             ),
         ),
     ],
@@ -181,7 +169,7 @@ def test_find_prompt_path(tmp_path: Path):
 def test_check_prompt_changed_import(
     tmp_path: Path, first_content: str, second_content: str
 ):
-    """Tests that the prompt path is properly found given only a prefix"""
+    """Tests that the prompt is properly detected as changed given different content"""
     directory_name = "my_prompt"
     first_version_path = _write_python_prompt_file(
         tmp_path, f"0001_{directory_name}", first_content
@@ -189,7 +177,7 @@ def test_check_prompt_changed_import(
     second_version_path = _write_python_prompt_file(
         tmp_path, f"0002_{directory_name}", second_content
     )
-    assert check_prompt_changed(first_version_path, second_version_path) is True
+    assert check_prompt_changed(first_version_path, second_version_path)
 
 
 @pytest.mark.parametrize(

@@ -22,15 +22,12 @@ from .utils import (
 )
 
 
+# TODO: Add something like Typer to make commands easier to implement
 def add(args) -> None:
     """Adds the given prompt to the specified version directory.
 
     The contents of the prompt in the user's prompts directory are copied to the version directory
     with the next revision number, and the version file is updated with the new revision.
-
-    Typical Usage Example:
-
-
 
     Args:
         args: The directory name passed to the add command.
@@ -99,12 +96,6 @@ def status(args) -> None:
     If a prompt is specified, the status of that prompt is checked. Otherwise, the status of all
     promps are checked. If a prompt has changed, the path to the prompt is printed.
 
-    Typical Usage Example:
-
-        mirascope status <directory_name>
-        or
-        mirascope status
-
     Args:
         args: The directory name (optional) passed to the status command.
 
@@ -142,10 +133,6 @@ def use(args) -> None:
 
     The contents of the prompt in the versions directory are copied to the user's prompts directory,
     based on the version specified by the user. The version file is updated with the new revision.
-
-    Typical Usage Example:
-
-            mirascope use <directory_name> <version>
 
     Args:
         args: The directory_name and version passed to the use command.
@@ -203,10 +190,6 @@ def init(args) -> None:
     |   |   |   |-- version.txt
     |   |   |   |-- <revision_id>_<directory_name>.py
     |-- prompts/
-
-    Typical Usage Example:
-
-        mirascope init mirascope
 
     Args:
         args: The mirascope directory name passed to the init command.
