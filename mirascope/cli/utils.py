@@ -4,7 +4,7 @@ import glob
 import os
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -16,7 +16,7 @@ ignore_variables = {"prev_revision_id", "revision_id"}
 
 
 def get_user_mirascope_settings(
-    ini_file_path: Optional[str] = "mirascope.ini",
+    ini_file_path: str = "mirascope.ini",
 ) -> MirascopeSettings:
     """Returns the user's mirascope settings."""
     config = ConfigParser()
@@ -91,7 +91,7 @@ def find_prompt_path(directory, prefix):
 
 def write_prompt_to_template(
     file: str,
-    command: Union[MirascopeCommand.ADD, MirascopeCommand.USE],
+    command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
     variables: Optional[dict] = None,
 ):
     """Writes the given prompt to the template."""
