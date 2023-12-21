@@ -6,22 +6,17 @@ from configparser import ConfigParser
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel, Field
 
-from ..enums import Command
+from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .pydantic_models import MirascopeSettings
+from .pydantic_models import MirascopeSettings, VersionTextFile
 
 ignore_variables = {"prev_revision_id", "revision_id"}
 
-class VersionTextFile(BaseModel):
-    """Model for the version text file."""
 
-    current_revision: Optional[str] = Field(default=None)
-    latest_revision: Optional[str] = Field(default=None)
-
-
-def get_user_mirascope_settings(ini_file_path: Optional[str] = "mirascope.ini") -> MirascopeSettings:
+def get_user_mirascope_settings(
+    ini_file_path: Optional[str] = "mirascope.ini",
+) -> MirascopeSettings:
     """Returns the user's mirascope settings."""
     config = ConfigParser()
     config.read(ini_file_path)
@@ -30,9 +25,9 @@ def get_user_mirascope_settings(ini_file_path: Optional[str] = "mirascope.ini") 
 
 def get_prompt_versions(version_file_path: str) -> Optional[VersionTextFile]:
     """Returns the versions of the given prompt."""
+    versions = VersionTextFile()
     try:
-        versions = VersionTextFile()
-        with open(version_file_path, "a+", encoding="utf-8") as file:
+        with open(version_file_path, "r", encoding="utf-8") as file:
             file.seek(0)
             for line in file:
                 # Check if the current line contains the key
@@ -42,7 +37,7 @@ def get_prompt_versions(version_file_path: str) -> Optional[VersionTextFile]:
                     versions.latest_revision = line.split("=")[1].strip()
             return versions
     except FileNotFoundError:
-        return None
+        return versions
 
 
 def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
@@ -67,18 +62,14 @@ def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
     tree2 = ast.parse(content)
     analyzer2.visit(tree2)
     # Compare the contents of the two files
-
     differences = {
-        "comments": bool(set(analyzer1.comments) ^ set(analyzer2.comments)),
+        "comments": analyzer1.comments != analyzer2.comments,
         "imports_diff": bool(set(analyzer1.imports) ^ set(analyzer2.imports)),
         "from_imports_diff": bool(
             set(analyzer1.from_imports) ^ set(analyzer2.from_imports)
         ),
-        "variables_diff": bool(
-            set(analyzer1.variables.keys())
-            ^ set(analyzer2.variables.keys())
-            ^ ignore_variables
-        ),
+        "variables_diff": set(analyzer1.variables.keys()) - ignore_variables
+        ^ set(analyzer2.variables.keys()) - ignore_variables,
         "classes_diff": analyzer1.check_class_changed(analyzer2),
         # Add other comparisons as needed
     }
@@ -97,26 +88,29 @@ def find_prompt_path(directory, prefix):
     return prompt_files[0]
 
 
-def write_prompt_to_template(file: str, command: Command, variables: Optional[dict] = None):
+def write_prompt_to_template(
+    file: str, command: MirascopeCommand, variables: Optional[dict] = None
+):
     """Writes the given prompt to the template."""
     mirascope_directory = get_user_mirascope_settings().mirascope_location
     if variables is None:
         variables = {}
-    template_loader = FileSystemLoader(
-        searchpath=mirascope_directory
-    )  # Set your template directory_name
+    template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
     template = template_env.get_template("prompt_template.j2")
     analyzer = MirascopePromptAnalyzer()
     tree = ast.parse(file)
     analyzer.visit(tree)
-    if command == Command.ADD:
+    if command == MirascopeCommand.ADD:
         new_variables = variables | analyzer.variables
-    elif command == Command.USE:
+    elif command == MirascopeCommand.USE:
         variables = dict.fromkeys(ignore_variables, None)
-        new_variables = analyzer.variables - variables.keys()
+        new_variables = {
+            k: analyzer.variables[k] for k in analyzer.variables if k not in variables
+        }
     else:
         new_variables = analyzer.variables
+
     data = {
         "comments": analyzer.comments,
         "variables": new_variables,
@@ -162,13 +156,16 @@ def update_version_text_file(version_file_path: str, updates: dict):
         print(f"An I/O error occurred: {e}")
 
 
-def check_status(mirascope_settings: MirascopeSettings, directory: str) -> Optional[str]:
+def check_status(
+    mirascope_settings: MirascopeSettings, directory: str
+) -> Optional[str]:
     """Checks the status of the given directory."""
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
     prompt_directory = os.path.join(version_directory_path, directory)
     used_prompt_path = f"{prompt_directory_path}/{directory}.py"
+
     # Get the currently used prompt version
     versions = get_prompt_versions(f"{prompt_directory}/{version_file_name}")
     if versions is None:
@@ -177,21 +174,26 @@ def check_status(mirascope_settings: MirascopeSettings, directory: str) -> Optio
     if current_head is None:
         return used_prompt_path
     current_version_prompt_path = find_prompt_path(prompt_directory, current_head)
+
     # Check if users prompt matches the current prompt version
-    has_file_changed = check_prompt_changed(current_version_prompt_path, used_prompt_path)
+    has_file_changed = check_prompt_changed(
+        current_version_prompt_path, used_prompt_path
+    )
     if has_file_changed:
         return used_prompt_path
     return None
 
+
 class MirascopePromptAnalyzer(ast.NodeVisitor):
     """Utility class for analyzing a Mirascope prompt file."""
+
     def __init__(self):
         """Initializes the MirascopePromptAnalyzer."""
         self.imports = []
         self.from_imports = []
         self.variables = {}
         self.classes = []
-        self.comments = []
+        self.comments = ""
 
     def visit_Import(self, node):
         """Extracts imports from the given node."""
@@ -234,7 +236,8 @@ class MirascopePromptAnalyzer(ast.NodeVisitor):
 
     def visit_Module(self, node):
         """Extracts comments from the given node."""
-        self.comments = ast.get_docstring(node)
+        comments = ast.get_docstring(node)
+        self.comments = "" if comments is None else comments
         self.generic_visit(node)
 
     def check_class_changed(self, other: "MirascopePromptAnalyzer") -> bool:

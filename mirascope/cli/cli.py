@@ -1,4 +1,27 @@
-"""The Mirascope CLI prompt management tool."""
+"""The Mirascope CLI prompt management tool.
+
+Typical usage example:
+
+    Initialize the environment:
+        $ mirascope init mirascope
+
+    Create a prompt in the prompts directory:
+        prompts/my_prompt.py
+    
+    Add the prompt to create a version:
+        $ mirascope add my_prompt
+
+    Iterate on the prompt in the prompts directory:
+
+    Check the status of the prompt:
+        $ mirascope status my_prompt
+
+    Add the prompt to create a new version:
+        $ mirascope add my_prompt
+
+    Switch between prompts:
+        $ mirascope use my_prompt 0001
+"""
 import argparse
 
 from .commands import add, init, status, use
@@ -25,7 +48,7 @@ def main():
 
     # Adding 'use' command
     parser_use = subparsers.add_parser("use", help="Use a prompt")
-    parser_use.add_argument("prompt_directory", help="Prompt directory to use")
+    parser_use.add_argument("directory_name", help="Prompt directory to use")
     parser_use.add_argument("version", help="Version of prompt to use")
     parser_use.set_defaults(func=use)
 

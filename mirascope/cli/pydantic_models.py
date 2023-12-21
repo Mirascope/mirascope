@@ -1,5 +1,7 @@
 """Contains the pydantic models for the mirascope cli."""
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MirascopeSettings(BaseModel):
@@ -9,3 +11,12 @@ class MirascopeSettings(BaseModel):
     versions_location: str
     prompts_location: str
     version_file_name: str
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class VersionTextFile(BaseModel):
+    """Model for the version text file."""
+
+    current_revision: Optional[str] = Field(default=None)
+    latest_revision: Optional[str] = Field(default=None)

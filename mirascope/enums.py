@@ -17,7 +17,7 @@ class _Enum(str, Enum, metaclass=_Metaclass):
     """Base Enum Class."""
 
 
-class Command(_Enum):
+class MirascopeCommand(_Enum):
     """CLI commands to be executed."""
 
     ADD = "add"
