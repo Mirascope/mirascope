@@ -11,6 +11,9 @@ readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
 repository = "https://github.com/mirascope/mirascope"
 
+[tool.poetry.scripts]
+mirascope = 'mirascope.cli.cli:main'
+
 [tool.poetry.dependencies]
 python = ">=3.9, <3.12"
 pydantic = "^2.0.2"
