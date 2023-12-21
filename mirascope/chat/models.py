@@ -28,14 +28,20 @@ class MirascopeChatOpenAI:
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
+
+        Raises:
+            Re-raises any exceptions thrown by the openai chat completions create call.
         """
-        return MirascopeChatCompletion(
-            completion=self.client.chat.completions.create(
-                model=self.model,
-                messages=get_messages(prompt),
-                **kwargs,
+        try:
+            return MirascopeChatCompletion(
+                completion=self.client.chat.completions.create(
+                    model=self.model,
+                    messages=get_messages(prompt),
+                    **kwargs,
+                )
             )
-        )
+        except:
+            raise
 
     def stream(
         self,
@@ -52,12 +58,18 @@ class MirascopeChatOpenAI:
 
         Yields:
             A `MirascopeChatCompletionChunk` for each chunk of the response.
+
+        Raises:
+            Re-raises any exceptions thrown by the openai chat completions create call.
         """
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            messages=get_messages(prompt),
-            stream=True,
-            **kwargs,
-        )
-        for chunk in stream:
-            yield MirascopeChatCompletionChunk(chunk=chunk)
+        try:
+            stream = self.client.chat.completions.create(
+                model=self.model,
+                messages=get_messages(prompt),
+                stream=True,
+                **kwargs,
+            )
+            for chunk in stream:
+                yield MirascopeChatCompletionChunk(chunk=chunk)
+        except:
+            raise
