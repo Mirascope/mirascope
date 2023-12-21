@@ -26,11 +26,11 @@ poetry install --with dev
 
 ## Development Workflow
 
-1.  Search through existing [GitHub Issues](https://github.com/Mirascope/mirascope/issues) to see if what you want to work on has already been added.
+1.  Search through existing [GitHub Issues](https://github.com/mirascope/mirascope/issues) to see if what you want to work on has already been added.
 
     - If not, please create a new issue. This will help to reduce duplicated work.
 
-2.  For first-time contributors, visit [https://github.com/Mirascope/mirascope](https://github.com/Mirascope/mirascope) and "Fork" the repository (see the button in the top right corner).
+2.  For first-time contributors, visit [https://github.com/mirascope/mirascope](https://github.com/mirascope/mirascope) and "Fork" the repository (see the button in the top right corner).
 
     - You'll need to set up [SSH authentication](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 
@@ -38,7 +38,7 @@ poetry install --with dev
 
     ```shell
     git clone https://github.com/<your-username>/mirascope.git
-    git remote add upstream https://github.com/Mirascope/mirascope.git
+    git remote add upstream https://github.com/mirascope/mirascope.git
     ```
 
 3.  Development.

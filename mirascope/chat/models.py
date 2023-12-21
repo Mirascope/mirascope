@@ -1,28 +1,19 @@
 """Classes for interactings with LLMs through Chat APIs."""
-from typing import Generator
+from typing import Generator, Optional
 
 from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 
 from ..prompts import MirascopePrompt
 from .types import MirascopeChatCompletion, MirascopeChatCompletionChunk
-
-
-def _get_messages(
-    prompt: MirascopePrompt,
-) -> list[ChatCompletionMessageParam]:
-    """Returns a list of messages parsed from the prompt."""
-    if hasattr(prompt, "messages"):
-        return [message.__dict__ for message in prompt.messages]
-    return [{"role": "user", "content": str(prompt)}]
+from .utils import get_messages
 
 
 class MirascopeChatOpenAI:
     """A convenience wrapper for the OpenAI Chat client."""
 
-    def __init__(self, model: str = "gpt-3.5-turbo"):
+    def __init__(self, model: str = "gpt-3.5-turbo", api_key: Optional[str] = None):
         """Initializes an instance of `MirascopeChatOpenAI."""
-        self.client = OpenAI()
+        self.client = OpenAI(api_key=api_key)
         self.model = model
 
     def __call__(
@@ -41,7 +32,7 @@ class MirascopeChatOpenAI:
         return MirascopeChatCompletion(
             completion=self.client.chat.completions.create(
                 model=self.model,
-                messages=_get_messages(prompt),
+                messages=get_messages(prompt),
                 **kwargs,
             )
         )
@@ -64,7 +55,8 @@ class MirascopeChatOpenAI:
         """
         stream = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": str(prompt)}],
+            messages=get_messages(prompt),
+            stream=True,
             **kwargs,
         )
         for chunk in stream:

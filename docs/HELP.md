@@ -1,8 +1,8 @@
-# How to help Mirascope
+# How to help mirascope
 
-## Star Mirascope on GitHub
+## Star mirascope on GitHub
 
-⭐️ You can "star" Mirascope on [GitHub](https://github.com/Mirascope/mirascope) ⭐️
+⭐️ You can "star" mirascope on [GitHub](https://github.com/mirascope/mirascope) ⭐️
 
 ## Connect with the author
 
@@ -12,18 +12,18 @@
 
 - Follow me on [Twitter/X](https://twitter.com/WilliamBakst)
 
-  - Tell me how you use Mirascope
+  - Tell me how you use mirascope
   - Hear about new announcements or releases
 
 - Connect with me on [LinkedIn](https://www.linkedin.com/in/wbakst/)
 
   - Give me any feedback about packages or suggestions
 
-## Post about Mirascope
+## Post about mirascope
 
 - Twitter, Reddit, Hackernews, LinkedIn, and others.
 
-- We love to hear about how Mirascope has helped you and in which project/company you are using it.
+- We love to hear about how mirascope has helped you and in which project/company you are using it.
 
 ## Help Others
 

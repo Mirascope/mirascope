@@ -9,7 +9,7 @@ authors = [
 ]
 readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
-repository = "https://github.com/Mirascope/mirascope"
+repository = "https://github.com/mirascope/mirascope"
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.12"

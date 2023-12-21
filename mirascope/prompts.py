@@ -8,7 +8,7 @@ from string import Formatter
 from textwrap import dedent
 from typing import Type, TypeVar
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 
 class MirascopePrompt(BaseModel):
@@ -56,19 +56,6 @@ class MirascopePrompt(BaseModel):
             return pickle.load(f)
 
 
-class MirascopeMessage(BaseModel):
-    """A Pydantic model for messages."""
-
-    role: str
-    content: str
-
-    @field_validator("role")
-    def validate_role(cls, role) -> str:
-        """Validates that the role is one of 'system', 'user', or 'assistant'."""
-        assert role in ["system", "user", "assistant", "tool"]
-        return role
-
-
 T = TypeVar("T", bound=MirascopePrompt)
 
 
@@ -91,22 +78,25 @@ def messages(cls: Type[T]) -> Type[T]:
         USER:
         This would be the user message content.
 
+    Returns:
+        A list of tuples `(role, content)` parsed from the docstring.
+
     Raises:
         ValueError: If the docstring is empty.
     """
 
-    def messages_fn(self) -> list[MirascopeMessage]:
+    def messages_fn(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
         if self.__doc__ is None:
             raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
 
         return [
-            MirascopeMessage(role=match.group(1).lower(), content=match.group(2))
+            (match.group(1).lower(), match.group(2))
             for match in re.finditer(
                 r"(SYSTEM|USER|ASSISTANT): ((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT):|\Z)",
                 str(self),
             )
         ]
 
-    setattr(cls, "messages", messages_fn)
+    setattr(cls, "messages", property(messages_fn))
     return cls

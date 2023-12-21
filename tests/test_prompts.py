@@ -1,10 +1,10 @@
 """Tests for the `prompts` module."""
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from mirascope.prompts import MirascopePrompt, messages
 
 
-class FooPrompt(MirascopePrompt):
+class FooBarPrompt(MirascopePrompt):
     """
     This is a test prompt about {foobar}.
     This should be on the same line in the template.
@@ -19,39 +19,6 @@ class FooPrompt(MirascopePrompt):
     def foobar(self) -> str:
         """Returns `foo` and `bar` concatenated."""
         return self.foo + self.bar
-
-
-def test_template():
-    """Test that `MirascopePrompt` initializes properly."""
-    assert (
-        FooPrompt.template() == "This is a test prompt about {foobar}. "
-        "This should be on the same line in the template."
-        "\n    This should be indented on a new line in the template."
-    )
-
-
-@patch.object(MirascopePrompt, "template", return_value="{foo}{bar}")
-def test_str_uses_template(mock_template: MagicMock):
-    """Tests that the `__str__` method uses the `template` method."""
-    str(FooPrompt(foo="foo", bar="bar"))
-    mock_template.assert_called_once()
-
-
-def test_str():
-    """Test that the `__str__` method properly formats the template."""
-    assert (
-        str(FooPrompt(foo="foo", bar="bar")) == "This is a test prompt about foobar. "
-        "This should be on the same line in the template."
-        "\n    This should be indented on a new line in the template."
-    )
-
-
-def test_save_and_load(tmpdir):
-    """Test that `MirascopePrompt` can be saved and loaded."""
-    prompt = FooPrompt(foo="foo", bar="bar")
-    filepath = f"{tmpdir}/test_prompt.pkl"
-    prompt.save(filepath)
-    assert FooPrompt.load(filepath) == prompt
 
 
 @messages
@@ -79,18 +46,35 @@ class MessagesPrompt(MirascopePrompt):
         return self.foo + self.bar
 
 
-def test_messages():
+def test_template():
+    """Test that `MirascopePrompt` initializes properly."""
+    assert (
+        FooBarPrompt.template() == "This is a test prompt about {foobar}. "
+        "This should be on the same line in the template."
+        "\n    This should be indented on a new line in the template."
+    )
+
+
+@patch.object(MirascopePrompt, "template", return_value="{foo}{bar}")
+def test_str_uses_template(mock_template, fixture_foobar_prompt):
+    """Tests that the `__str__` method uses the `template` method."""
+    str(fixture_foobar_prompt)
+    mock_template.assert_called_once()
+
+
+def test_str(fixture_foobar_prompt, fixture_expected_foobar_prompt_str):
+    """Test that the `__str__` method properly formats the template."""
+    assert str(fixture_foobar_prompt) == fixture_expected_foobar_prompt_str
+
+
+def test_save_and_load(fixture_foobar_prompt, tmpdir):
+    """Test that `MirascopePrompt` can be saved and loaded."""
+    filepath = f"{tmpdir}/test_prompt.pkl"
+    fixture_foobar_prompt.save(filepath)
+    assert FooBarPrompt.load(filepath) == fixture_foobar_prompt
+
+
+def test_messages(fixture_messages_prompt, fixture_expected_messages_prompt_messages):
     """Tests that the messages decorator adds a function `messages` attribute."""
-    prompt = MessagesPrompt(foo="foo", bar="bar")
-    assert isinstance(prompt, MirascopePrompt)
-    assert MessagesPrompt(foo="foo", bar="bar").messages() == [
-        {
-            "role": "system",
-            "content": "This is the system message about foo.\n    This is also the system message.",
-        },
-        {"role": "user", "content": "This is the user message about bar."},
-        {
-            "role": "assistant",
-            "content": "This is an assistant message about foobar. This is also part of the assistant message.",
-        },
-    ]
+    assert hasattr(fixture_messages_prompt, "messages")
+    assert fixture_messages_prompt.messages == fixture_expected_messages_prompt_messages
