@@ -1,4 +1,4 @@
-"""Contains the pydantic models for the mirascope cli."""
+"""Contains the schema for files created by the mirascope cli."""
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field

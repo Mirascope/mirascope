@@ -4,13 +4,13 @@ import glob
 import os
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .pydantic_models import MirascopeSettings, VersionTextFile
+from .schemas import MirascopeSettings, VersionTextFile
 
 ignore_variables = {"prev_revision_id", "revision_id"}
 
@@ -90,7 +90,9 @@ def find_prompt_path(directory, prefix):
 
 
 def write_prompt_to_template(
-    file: str, command: MirascopeCommand, variables: Optional[dict] = None
+    file: str,
+    command: Union[MirascopeCommand.ADD, MirascopeCommand.USE],
+    variables: Optional[dict] = None,
 ):
     """Writes the given prompt to the template."""
     mirascope_directory = get_user_mirascope_settings().mirascope_location
@@ -104,13 +106,11 @@ def write_prompt_to_template(
     analyzer.visit(tree)
     if command == MirascopeCommand.ADD:
         new_variables = variables | analyzer.variables
-    elif command == MirascopeCommand.USE:
+    else:  # command == MirascopeCommand.USE
         variables = dict.fromkeys(ignore_variables, None)
         new_variables = {
             k: analyzer.variables[k] for k in analyzer.variables if k not in variables
         }
-    else:
-        new_variables = analyzer.variables
 
     data = {
         "comments": analyzer.comments,

@@ -11,7 +11,7 @@ from jinja2 import Template
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .pydantic_models import MirascopeSettings
+from .schemas import MirascopeSettings
 from .utils import (
     check_status,
     find_prompt_path,
@@ -30,7 +30,8 @@ def add(args) -> None:
     with the next revision number, and the version file is updated with the new revision.
 
     Args:
-        args: The directory name passed to the add command.
+        args: The command line arguments for the `add` command, containing:
+            - `prompt`: The name of the prompt to add.
 
     Raises:
         FileNotFoundError: If the file is not found in the specified prompts directory.
@@ -39,7 +40,7 @@ def add(args) -> None:
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
-    directory_name: str = args.file
+    directory_name: str = args.prompt
 
     # Check status before continuing
     used_prompt_path = check_status(mirascope_settings, directory_name)
@@ -97,14 +98,15 @@ def status(args) -> None:
     promps are checked. If a prompt has changed, the path to the prompt is printed.
 
     Args:
-        args: The directory name (optional) passed to the status command.
+        args: The command line arguments for the `status` command, containing:
+            - `directory_name`: (Optional) The name of the directory to check status on.
 
     Raises:
         FileNotFoundError: If the file is not found in the specified prompts directory.
     """
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings.versions_location
-    directory_name: str = args.file
+    directory_name: str = args.directory_name
 
     # If a prompt is specified, check the status of that prompt
     if directory_name:
@@ -135,7 +137,9 @@ def use(args) -> None:
     based on the version specified by the user. The version file is updated with the new revision.
 
     Args:
-        args: The directory_name and version passed to the use command.
+        args: The command line arguments for the `use` command, containing:
+            - `directory_name`: The name of the directory to use.
+            - `version`: The version of the prompt to use.
 
     Raises:
         FileNotFoundError: If the file is not found in the versions directory.
@@ -192,10 +196,11 @@ def init(args) -> None:
     |-- prompts/
 
     Args:
-        args: The mirascope directory name passed to the init command.
+        args: The command line arguments for the `init` command, containing:
+            - `directory_name`: The name of the directory to create.
     """
     destination_dir = Path.cwd()
-    directory_name = args.directory
+    directory_name = args.directory_name
     versions_directory = os.path.join(directory_name, "versions")
     os.makedirs(versions_directory, exist_ok=True)
     print(f"Creating {versions_directory}")
@@ -211,7 +216,7 @@ def init(args) -> None:
     # Get templates from the mirascope.cli.generic package
     generic_file_path = files("mirascope.cli.generic")
     ini_path = generic_file_path.joinpath("mirascope.ini.j2")
-    with open(ini_path, "r", encoding="utf-8") as file:
+    with open(str(ini_path), "r", encoding="utf-8") as file:
         template = Template(file.read())
         rendered_content = template.render(ini_settings.model_dump())
         destination_file_path = destination_dir / "mirascope.ini"
@@ -221,7 +226,7 @@ def init(args) -> None:
 
     # Create the 'prompt_template.j2' file in the mirascope directory specified by user
     prompt_template_path = generic_file_path.joinpath("prompt_template.j2")
-    with open(prompt_template_path, "r", encoding="utf-8") as file:
+    with open(str(prompt_template_path), "r", encoding="utf-8") as file:
         content = file.read()
     template_path = os.path.join(directory_name, "prompt_template.j2")
     with open(template_path, "w", encoding="utf-8") as file:

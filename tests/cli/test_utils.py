@@ -7,7 +7,7 @@ from jinja2 import Environment
 from pydantic import ValidationError
 
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from mirascope.cli.pydantic_models import MirascopeSettings
+from mirascope.cli.schemas import MirascopeSettings
 from mirascope.cli.utils import (
     check_prompt_changed,
     find_prompt_path,
