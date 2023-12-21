@@ -84,13 +84,13 @@ def test_messages():
     prompt = MessagesPrompt(foo="foo", bar="bar")
     assert isinstance(prompt, MirascopePrompt)
     assert MessagesPrompt(foo="foo", bar="bar").messages() == [
-        (
-            "system",
-            "This is the system message about foo.\n    This is also the system message.",
-        ),
-        ("user", "This is the user message about bar."),
-        (
-            "assistant",
-            "This is an assistant message about foobar. This is also part of the assistant message.",
-        ),
+        {
+            "role": "system",
+            "content": "This is the system message about foo.\n    This is also the system message.",
+        },
+        {"role": "user", "content": "This is the user message about bar."},
+        {
+            "role": "assistant",
+            "content": "This is an assistant message about foobar. This is also part of the assistant message.",
+        },
     ]
