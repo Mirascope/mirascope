@@ -67,9 +67,9 @@ def test_mirascope_chat_openai_stream(
 
     model = "gpt-3.5-turbo-16k"
     chat = MirascopeChatOpenAI(model, api_key="test")
-    completion = chat.stream(prompt, temperature=0.3)
+    stream = chat.stream(prompt, temperature=0.3)
 
-    for chunk in completion:
+    for chunk in stream:
         assert isinstance(chunk, MirascopeChatCompletionChunk)
         assert chunk.chunk == fixture_chat_completion_chunk
         for i, choice in enumerate(chunk.choices):
