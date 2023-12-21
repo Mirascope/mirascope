@@ -1,8 +1,10 @@
 """Classes for interactings with LLMs through Chat APIs."""
+from typing import Generator
+
 from openai import OpenAI
 
 from ..prompts import MirascopePrompt
-from .responses import MirascopeChatCompletion, MirascopeChatCompletionStream
+from .types import MirascopeChatCompletion, MirascopeChatCompletionChunk
 
 
 class MirascopeChatOpenAI:
@@ -16,7 +18,6 @@ class MirascopeChatOpenAI:
     def __call__(
         self,
         prompt: MirascopePrompt,
-        # tools=list[MirascopeChatOpenAITool],
         **kwargs,
     ) -> MirascopeChatCompletion:
         """Makes a call to the model using `prompt`."""
@@ -25,8 +26,7 @@ class MirascopeChatOpenAI:
     def stream(
         self,
         prompt: MirascopePrompt,
-        # tools=list[MirascopeChatOpenAITool],
         **kwargs,
-    ) -> MirascopeChatCompletionStream:
+    ) -> Generator[MirascopeChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`."""
         raise NotImplementedError()
