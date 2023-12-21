@@ -2,7 +2,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from openai import APIError
 
 from mirascope.chat.models import MirascopeChatOpenAI
 from mirascope.chat.types import MirascopeChatCompletion, MirascopeChatCompletionChunk
