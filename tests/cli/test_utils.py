@@ -29,7 +29,7 @@ def copy_mirascope_settings_to_test(tmp_path: Path) -> str:
     mirascope_ini = _get_mirascope_ini()
     test_ini_path = tmp_path / "settings.ini"
     test_ini_path.write_text(mirascope_ini)
-    return test_ini_path
+    return str(test_ini_path)
 
 
 def test_valid_mirascope_settings(temp_mirascope_settings_path: str):

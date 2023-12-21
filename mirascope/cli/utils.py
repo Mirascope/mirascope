@@ -24,7 +24,7 @@ def get_user_mirascope_settings(
     return MirascopeSettings(**config["mirascope"])
 
 
-def get_prompt_versions(version_file_path: str) -> Optional[VersionTextFile]:
+def get_prompt_versions(version_file_path: str) -> VersionTextFile:
     """Returns the versions of the given prompt."""
     versions = VersionTextFile()
     try:
@@ -122,14 +122,14 @@ def write_prompt_to_template(
     return template.render(**data)
 
 
-def update_version_text_file(version_file_path: str, updates: dict):
+def update_version_text_file(version_file: str, updates: dict):
     """Updates the version text file."""
     try:
         modified_lines = []
         edits_made = {
             key: False for key in updates
         }  # Track which keys already exist in the file
-        version_file_path: Path = Path(version_file_path)
+        version_file_path: Path = Path(version_file)
         if not version_file_path.is_file():
             version_file_path.touch()
         # Read the file and apply updates
@@ -154,7 +154,7 @@ def update_version_text_file(version_file_path: str, updates: dict):
         with open(version_file_path, "w", encoding="utf-8") as file:
             file.writelines(modified_lines)
     except FileNotFoundError:
-        print(f"The file {str(version_file_path)} was not found.")
+        print(f"The file {version_file} was not found.")
     except IOError as e:
         print(f"An I/O error occurred: {e}")
 
