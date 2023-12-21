@@ -8,7 +8,7 @@ from string import Formatter
 from textwrap import dedent
 from typing import Type, TypeVar
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, field_validator
 
 
 class MirascopePrompt(BaseModel):
