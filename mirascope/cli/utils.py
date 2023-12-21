@@ -3,6 +3,7 @@ import ast
 import glob
 import os
 from configparser import ConfigParser
+from pathlib import Path
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
@@ -128,7 +129,9 @@ def update_version_text_file(version_file_path: str, updates: dict):
         edits_made = {
             key: False for key in updates
         }  # Track which keys already exist in the file
-
+        version_file_path: Path = Path(version_file_path)
+        if not version_file_path.is_file():
+            version_file_path.touch()
         # Read the file and apply updates
         with open(version_file_path, "r", encoding="utf-8") as file:
             for line in file:
@@ -151,7 +154,7 @@ def update_version_text_file(version_file_path: str, updates: dict):
         with open(version_file_path, "w", encoding="utf-8") as file:
             file.writelines(modified_lines)
     except FileNotFoundError:
-        print(f"The file {version_file_path} was not found.")
+        print(f"The file {str(version_file_path)} was not found.")
     except IOError as e:
         print(f"An I/O error occurred: {e}")
 
