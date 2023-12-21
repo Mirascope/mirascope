@@ -40,7 +40,6 @@ def test_invalid_mirascope_settings(tmp_path: Path):
     invalid_mirascope_ini = mirascope_ini + "\n" + additional_settings
     ini_path = tmp_path / "settings.ini"
     ini_path.write_text(invalid_mirascope_ini)
-    """Tests that an invalid ini file raises pydantic ValidationError"""
     with pytest.raises(ValidationError):
         get_user_mirascope_settings(str(ini_path))
 
