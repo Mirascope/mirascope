@@ -27,12 +27,13 @@ def test_mirascope_chat_openai(
     chat = MirascopeChatOpenAI(model, api_key="test")
     assert chat.model == model
 
-    completion = chat(prompt, temperature=0.3)
+    completion = chat.create(prompt, temperature=0.3)
     assert isinstance(completion, MirascopeChatCompletion)
 
     mock_create.assert_called_once_with(
         model=model,
         messages=get_messages(prompt),
+        stream=False,
         temperature=0.3,
     )
 
@@ -46,7 +47,7 @@ def test_mirascope_chat_openai_error(mock_create, fixture_foobar_prompt):
     """Tests that `MirascopeChatOpenAI` handles openai errors thrown during __call__."""
     chat = MirascopeChatOpenAI("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
-        chat(fixture_foobar_prompt)
+        chat.create(fixture_foobar_prompt)
 
 
 @patch(
@@ -77,8 +78,8 @@ def test_mirascope_chat_openai_stream(
     mock_create.assert_called_once_with(
         model=model,
         messages=get_messages(prompt),
-        temperature=0.3,
         stream=True,
+        temperature=0.3,
     )
 
 
