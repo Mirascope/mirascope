@@ -16,18 +16,18 @@ class MirascopeChatOpenAI:
         self.client = OpenAI(api_key=api_key)
         self.model = model
 
-    def __call__(
-        self,
-        prompt: MirascopePrompt,
-        **kwargs,
-    ) -> MirascopeChatCompletion:
+    def create(self, prompt: MirascopePrompt, **kwargs) -> MirascopeChatCompletion:
         """Makes a call to the model using `prompt`.
 
         Args:
             prompt: The `MirascopePrompt` to use for the call.
+            stream: Whether or not to stream the response.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
+
+        Returns:
+            A `MirascopeChatCompletion` instance.
 
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
@@ -37,6 +37,7 @@ class MirascopeChatOpenAI:
                 completion=self.client.chat.completions.create(
                     model=self.model,
                     messages=get_messages(prompt),
+                    stream=False,
                     **kwargs,
                 )
             )
@@ -44,9 +45,7 @@ class MirascopeChatOpenAI:
             raise
 
     def stream(
-        self,
-        prompt: MirascopePrompt,
-        **kwargs,
+        self, prompt: MirascopePrompt, **kwargs
     ) -> Generator[MirascopeChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
@@ -62,14 +61,11 @@ class MirascopeChatOpenAI:
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
-        try:
-            stream = self.client.chat.completions.create(
-                model=self.model,
-                messages=get_messages(prompt),
-                stream=True,
-                **kwargs,
-            )
-            for chunk in stream:
-                yield MirascopeChatCompletionChunk(chunk=chunk)
-        except:
-            raise
+        completion_stream = self.client.chat.completions.create(
+            model=self.model,
+            messages=get_messages(prompt),
+            stream=True,
+            **kwargs,
+        )
+        for chunk in completion_stream:
+            yield MirascopeChatCompletionChunk(chunk=chunk)
