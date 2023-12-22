@@ -1,8 +1,8 @@
 """Basic Prompt + LLM Example."""
-from mirascope.prompts import MirascopePrompt
+from mirascope.prompts import Prompt
 
 
-class MyPrompt(MirascopePrompt):
+class MyPrompt(Prompt):
     """This is a prompt 0002. It has a {noun} and a {verb}."""
 
     noun: str
