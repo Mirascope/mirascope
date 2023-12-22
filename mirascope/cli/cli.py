@@ -54,8 +54,12 @@ def main():
 
     # Adding 'init' command
     parser_init = subparsers.add_parser("init", help="Initialize mirascope project")
-    parser_init.add_argument("--mirascope_location", help="Main mirascope directory")
-    parser_init.add_argument("--prompts_location", help="Location of prompts directory")
+    parser_init.add_argument(
+        "--mirascope_location", default="mirascope", help="Main mirascope directory"
+    )
+    parser_init.add_argument(
+        "--prompts_location", default="prompts", help="Location of prompts directory"
+    )
     parser_init.set_defaults(func=init)
 
     args = parser.parse_args()

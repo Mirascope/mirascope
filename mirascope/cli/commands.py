@@ -201,8 +201,8 @@ def init(args) -> None:
             - `--prompts_location`: The user's prompts directory.
     """
     destination_dir = Path.cwd()
-    mirascope_location = args.mirascope_location or "mirascope"
-    prompts_location = args.prompts_location or "prompts"
+    mirascope_location = args.mirascope_location
+    prompts_location = args.prompts_location
     versions_directory = os.path.join(mirascope_location, "versions")
     os.makedirs(versions_directory, exist_ok=True)
     print(f"Creating {destination_dir}/{versions_directory}")
