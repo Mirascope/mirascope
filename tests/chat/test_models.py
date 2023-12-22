@@ -4,7 +4,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from mirascope.chat.models import MirascopeChatOpenAI
-from mirascope.chat.types import MirascopeChatCompletion, MirascopeChatCompletionChunk
+from mirascope.chat.types import (
+    MirascopeChatCompletionChunkOpenAI,
+    MirascopeChatCompletionOpenAI,
+)
 from mirascope.chat.utils import get_messages
 
 
@@ -28,7 +31,7 @@ def test_mirascope_chat_openai(
     assert chat.model == model
 
     completion = chat.create(prompt, temperature=0.3)
-    assert isinstance(completion, MirascopeChatCompletion)
+    assert isinstance(completion, MirascopeChatCompletionOpenAI)
 
     mock_create.assert_called_once_with(
         model=model,
@@ -70,7 +73,7 @@ def test_mirascope_chat_openai_stream(
     stream = chat.stream(prompt, temperature=0.3)
 
     for chunk in stream:
-        assert isinstance(chunk, MirascopeChatCompletionChunk)
+        assert isinstance(chunk, MirascopeChatCompletionChunkOpenAI)
         assert chunk.chunk == fixture_chat_completion_chunk
         for i, choice in enumerate(chunk.choices):
             assert choice == fixture_chat_completion_chunk.choices[i]

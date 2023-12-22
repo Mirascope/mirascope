@@ -1,10 +1,13 @@
 """Tests for mirascope chat types."""
-from mirascope.chat.types import MirascopeChatCompletion, MirascopeChatCompletionChunk
+from mirascope.chat.types import (
+    MirascopeChatCompletionChunkOpenAI,
+    MirascopeChatCompletionOpenAI,
+)
 
 
 def test_mirascope_chat_completion(fixture_chat_completion):
-    """Tests that `MirascopeChatCompletion` can be initialized properly."""
-    mirascope_chat_completion = MirascopeChatCompletion(
+    """Tests that `MirascopeChatCompletionOpenAI` can be initialized properly."""
+    mirascope_chat_completion = MirascopeChatCompletionOpenAI(
         completion=fixture_chat_completion
     )
     choices = fixture_chat_completion.choices
@@ -16,8 +19,8 @@ def test_mirascope_chat_completion(fixture_chat_completion):
 
 
 def test_mirascope_chat_completion_chunk(fixture_chat_completion_chunk):
-    """Tests that `MirascopeChatCompletionStream` can be initialized properly."""
-    mirascope_chat_completion_chunk = MirascopeChatCompletionChunk(
+    """Tests that `MirascopeChatCompletionChunkOpenAI` can be initialized properly."""
+    mirascope_chat_completion_chunk = MirascopeChatCompletionChunkOpenAI(
         chunk=fixture_chat_completion_chunk
     )
     choices = fixture_chat_completion_chunk.choices

@@ -4,7 +4,7 @@ from typing import Generator, Optional
 from openai import OpenAI
 
 from ..prompts import MirascopePrompt
-from .types import MirascopeChatCompletion, MirascopeChatCompletionChunk
+from .types import MirascopeChatCompletionChunkOpenAI, MirascopeChatCompletionOpenAI
 from .utils import get_messages
 
 
@@ -16,7 +16,9 @@ class MirascopeChatOpenAI:
         self.client = OpenAI(api_key=api_key)
         self.model = model
 
-    def create(self, prompt: MirascopePrompt, **kwargs) -> MirascopeChatCompletion:
+    def create(
+        self, prompt: MirascopePrompt, **kwargs
+    ) -> MirascopeChatCompletionOpenAI:
         """Makes a call to the model using `prompt`.
 
         Args:
@@ -27,13 +29,13 @@ class MirascopeChatOpenAI:
                 https://platform.openai.com/docs/api-reference/chat/create
 
         Returns:
-            A `MirascopeChatCompletion` instance.
+            A `MirascopeChatCompletionOpenAI` instance.
 
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
         try:
-            return MirascopeChatCompletion(
+            return MirascopeChatCompletionOpenAI(
                 completion=self.client.chat.completions.create(
                     model=self.model,
                     messages=get_messages(prompt),
@@ -46,7 +48,7 @@ class MirascopeChatOpenAI:
 
     def stream(
         self, prompt: MirascopePrompt, **kwargs
-    ) -> Generator[MirascopeChatCompletionChunk, None, None]:
+    ) -> Generator[MirascopeChatCompletionChunkOpenAI, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
         Args:
@@ -56,7 +58,7 @@ class MirascopeChatOpenAI:
                 https://platform.openai.com/docs/api-reference/chat/create
 
         Yields:
-            A `MirascopeChatCompletionChunk` for each chunk of the response.
+            A `MirascopeChatCompletionChunkOpenAI` for each chunk of the response.
 
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
@@ -68,4 +70,4 @@ class MirascopeChatOpenAI:
             **kwargs,
         )
         for chunk in completion_stream:
-            yield MirascopeChatCompletionChunk(chunk=chunk)
+            yield MirascopeChatCompletionChunkOpenAI(chunk=chunk)
