@@ -9,7 +9,7 @@ from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from pydantic import BaseModel
 
 
-class MirascopeChatCompletionOpenAI(BaseModel):
+class OpenAIChatCompletion(BaseModel):
     """Convenience wrapper around chat completions."""
 
     completion: ChatCompletion
@@ -39,7 +39,7 @@ class MirascopeChatCompletionOpenAI(BaseModel):
         return self.content
 
 
-class MirascopeChatCompletionChunkOpenAI(BaseModel):
+class OpenAIChatCompletionChunk(BaseModel):
     """Convenience wrapper around chat completion streaming chunks."""
 
     chunk: ChatCompletionChunk

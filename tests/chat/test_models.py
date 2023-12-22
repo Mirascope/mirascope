@@ -3,11 +3,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mirascope.chat.models import MirascopeChatOpenAI
-from mirascope.chat.types import (
-    MirascopeChatCompletionChunkOpenAI,
-    MirascopeChatCompletionOpenAI,
-)
+from mirascope.chat.models import OpenAIChat
+from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from mirascope.chat.utils import get_messages
 
 
@@ -22,16 +19,16 @@ def test_mirascope_chat_openai(
     prompt,
     request,
 ):
-    """Tests that `MirascopeChatOpenAI` returns the expected response when called."""
+    """Tests that `OpenAIChat` returns the expected response when called."""
     prompt = request.getfixturevalue(prompt)
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = MirascopeChatOpenAI(model, api_key="test")
+    chat = OpenAIChat(model, api_key="test")
     assert chat.model == model
 
     completion = chat.create(prompt, temperature=0.3)
-    assert isinstance(completion, MirascopeChatCompletionOpenAI)
+    assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
         model=model,
@@ -47,8 +44,8 @@ def test_mirascope_chat_openai(
     side_effect=Exception("base exception"),
 )
 def test_mirascope_chat_openai_error(mock_create, fixture_foobar_prompt):
-    """Tests that `MirascopeChatOpenAI` handles openai errors thrown during __call__."""
-    chat = MirascopeChatOpenAI("gpt-3.5-turbo", api_key="test")
+    """Tests that `OpenAIChat` handles openai errors thrown during __call__."""
+    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
         chat.create(fixture_foobar_prompt)
 
@@ -64,16 +61,16 @@ def test_mirascope_chat_openai_stream(
     prompt,
     request,
 ):
-    """Tests that `MirascopeChatOpenAI` returns the expected response when streaming."""
+    """Tests that `OpenAIChat` returns the expected response when streaming."""
     prompt = request.getfixturevalue(prompt)
     mock_create.return_value = [fixture_chat_completion_chunk] * 3
 
     model = "gpt-3.5-turbo-16k"
-    chat = MirascopeChatOpenAI(model, api_key="test")
+    chat = OpenAIChat(model, api_key="test")
     stream = chat.stream(prompt, temperature=0.3)
 
     for chunk in stream:
-        assert isinstance(chunk, MirascopeChatCompletionChunkOpenAI)
+        assert isinstance(chunk, OpenAIChatCompletionChunk)
         assert chunk.chunk == fixture_chat_completion_chunk
         for i, choice in enumerate(chunk.choices):
             assert choice == fixture_chat_completion_chunk.choices[i]
@@ -92,8 +89,8 @@ def test_mirascope_chat_openai_stream(
     side_effect=Exception("base exception"),
 )
 def test_mirascope_chat_openai_stream_error(mock_create, fixture_foobar_prompt):
-    """Tests that `MirascopeChatOpenAI` handles openai errors thrown during stream."""
-    chat = MirascopeChatOpenAI("gpt-3.5-turbo", api_key="test")
+    """Tests that `OpenAIChat` handles openai errors thrown during stream."""
+    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
         stream = chat.stream(fixture_foobar_prompt)
         for chunk in stream:

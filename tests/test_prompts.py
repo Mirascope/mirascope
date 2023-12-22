@@ -1,10 +1,10 @@
 """Tests for the `prompts` module."""
 from unittest.mock import patch
 
-from mirascope.prompts import MirascopePrompt, messages
+from mirascope.prompts import Prompt, messages
 
 
-class FooBarPrompt(MirascopePrompt):
+class FooBarPrompt(Prompt):
     """
     This is a test prompt about {foobar}.
     This should be on the same line in the template.
@@ -22,7 +22,7 @@ class FooBarPrompt(MirascopePrompt):
 
 
 @messages
-class MessagesPrompt(MirascopePrompt):
+class MessagesPrompt(Prompt):
     """
     SYSTEM:
     This is the system message about {foo}.
@@ -47,7 +47,7 @@ class MessagesPrompt(MirascopePrompt):
 
 
 def test_template():
-    """Test that `MirascopePrompt` initializes properly."""
+    """Test that `Prompt` initializes properly."""
     assert (
         FooBarPrompt.template() == "This is a test prompt about {foobar}. "
         "This should be on the same line in the template."
@@ -55,7 +55,7 @@ def test_template():
     )
 
 
-@patch.object(MirascopePrompt, "template", return_value="{foo}{bar}")
+@patch.object(Prompt, "template", return_value="{foo}{bar}")
 def test_str_uses_template(mock_template, fixture_foobar_prompt):
     """Tests that the `__str__` method uses the `template` method."""
     str(fixture_foobar_prompt)
@@ -68,7 +68,7 @@ def test_str(fixture_foobar_prompt, fixture_expected_foobar_prompt_str):
 
 
 def test_save_and_load(fixture_foobar_prompt, tmpdir):
-    """Test that `MirascopePrompt` can be saved and loaded."""
+    """Test that `Prompt` can be saved and loaded."""
     filepath = f"{tmpdir}/test_prompt.pkl"
     fixture_foobar_prompt.save(filepath)
     assert FooBarPrompt.load(filepath) == fixture_foobar_prompt

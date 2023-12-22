@@ -49,7 +49,7 @@ def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
             content = file.read()
     except FileNotFoundError as e:
         raise FileNotFoundError(f"The file {file1_path} was not found.") from e
-    analyzer1 = MirascopePromptAnalyzer()
+    analyzer1 = PromptAnalyzer()
     tree1 = ast.parse(content)
     analyzer1.visit(tree1)
 
@@ -59,7 +59,7 @@ def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
             content = file.read()
     except FileNotFoundError as e:
         raise FileNotFoundError(f"The file {file2_path} was not found.") from e
-    analyzer2 = MirascopePromptAnalyzer()
+    analyzer2 = PromptAnalyzer()
     tree2 = ast.parse(content)
     analyzer2.visit(tree2)
     # Compare the contents of the two files
@@ -101,7 +101,7 @@ def write_prompt_to_template(
     template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
     template = template_env.get_template("prompt_template.j2")
-    analyzer = MirascopePromptAnalyzer()
+    analyzer = PromptAnalyzer()
     tree = ast.parse(file)
     analyzer.visit(tree)
     if command == MirascopeCommand.ADD:
@@ -187,11 +187,11 @@ def check_status(
     return None
 
 
-class MirascopePromptAnalyzer(ast.NodeVisitor):
+class PromptAnalyzer(ast.NodeVisitor):
     """Utility class for analyzing a Mirascope prompt file."""
 
     def __init__(self):
-        """Initializes the MirascopePromptAnalyzer."""
+        """Initializes the PromptAnalyzer."""
         self.imports = []
         self.from_imports = []
         self.variables = {}
@@ -243,7 +243,7 @@ class MirascopePromptAnalyzer(ast.NodeVisitor):
         self.comments = "" if comments is None else comments
         self.generic_visit(node)
 
-    def check_class_changed(self, other: "MirascopePromptAnalyzer") -> bool:
+    def check_class_changed(self, other: "PromptAnalyzer") -> bool:
         """Compares the classes of this file with the classes of another file."""
         self_classes = {c["name"]: c for c in self.classes}
         other_classes = {c["name"]: c for c in other.classes}

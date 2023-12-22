@@ -11,7 +11,7 @@ from typing import Type, TypeVar
 from pydantic import BaseModel
 
 
-class MirascopePrompt(BaseModel):
+class Prompt(BaseModel):
     """A Pydantic model for prompts."""
 
     @classmethod
@@ -19,16 +19,16 @@ class MirascopePrompt(BaseModel):
         """Custom parsing functionality for docstring prompt.
 
         This function is the first step in formatting the prompt template docstring.
-        For the default `MirascopePrompt`, this function dedents the docstring and
-        replaces all repeated sequences of newlines with one fewer newline character.
-        This enables writing blocks of text instead of really long single lines. To
-        include any number of newline characters, simply include one extra.
+        For the default `Prompt`, this function dedents the docstring and replaces all
+        repeated sequences of newlines with one fewer newline character. This enables
+        writing blocks of text instead of really long single lines. To include any
+        number of newline characters, simply include one extra.
 
         Raises:
             ValueError: If the class docstring is empty.
         """
         if cls.__doc__ is None:
-            raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
+            raise ValueError("`Prompt` must have a prompt template docstring.")
 
         return re.sub(
             "(\n+)",
@@ -50,19 +50,19 @@ class MirascopePrompt(BaseModel):
             pickle.dump(self, f)
 
     @classmethod
-    def load(cls, filepath: str) -> MirascopePrompt:
+    def load(cls, filepath: str) -> Prompt:
         """Loads the prompt from the given filepath."""
         with open(filepath, "rb") as f:
             return pickle.load(f)
 
 
-T = TypeVar("T", bound=MirascopePrompt)
+T = TypeVar("T", bound=Prompt)
 
 
 def messages(cls: Type[T]) -> Type[T]:
-    """A decorator for adding a `messages` class attribute to a `MirascopePrompt`.
+    """A decorator for adding a `messages` class attribute to a `Prompt`.
 
-    Adding this decorator to a `MirascopePrompt` adds a `messages` class attribute
+    Adding this decorator to a `Prompt` adds a `messages` class attribute
     that parses the docstring as a list of messages. Each message is a tuple containing
     the role and the content. The docstring should have the following format:
 
@@ -88,7 +88,7 @@ def messages(cls: Type[T]) -> Type[T]:
     def messages_fn(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
         if self.__doc__ is None:
-            raise ValueError("`MirascopePrompt` must have a prompt template docstring.")
+            raise ValueError("`Prompt` must have a prompt template docstring.")
 
         return [
             (match.group(1).lower(), match.group(2))
