@@ -197,19 +197,23 @@ def init(args) -> None:
 
     Args:
         args: The command line arguments for the `init` command, containing:
-            - `directory_name`: The name of the directory to create.
+            - `--mirascope_location`: The root mirascope directory to create.
+            - `--prompts_location`: The user's prompts directory.
     """
     destination_dir = Path.cwd()
-    directory_name = args.directory_name
-    versions_directory = os.path.join(directory_name, "versions")
+    mirascope_location = args.mirascope_location or "mirascope"
+    prompts_location = args.prompts_location or "prompts"
+    versions_directory = os.path.join(mirascope_location, "versions")
     os.makedirs(versions_directory, exist_ok=True)
-    print(f"Creating {versions_directory}")
+    print(f"Creating {destination_dir}/{versions_directory}")
+    os.makedirs(prompts_location, exist_ok=True)
+    print(f"Creating {destination_dir}/{prompts_location}")
 
     # Create the 'mirascope.ini' file in the current directory with some default values
     ini_settings = MirascopeSettings(
-        mirascope_location="mirascope",
+        mirascope_location=mirascope_location,
         versions_location="versions",
-        prompts_location="prompts",
+        prompts_location=prompts_location,
         version_file_name="version.txt",
     )
 
@@ -228,9 +232,9 @@ def init(args) -> None:
     prompt_template_path = generic_file_path.joinpath("prompt_template.j2")
     with open(str(prompt_template_path), "r", encoding="utf-8") as file:
         content = file.read()
-    template_path = os.path.join(directory_name, "prompt_template.j2")
+    template_path = os.path.join(mirascope_location, "prompt_template.j2")
     with open(template_path, "w", encoding="utf-8") as file:
         file.write(content)
-        print(f"Creating {template_path}")
+        print(f"Creating {destination_dir}/{template_path}")
 
     print("Initialization complete.")
