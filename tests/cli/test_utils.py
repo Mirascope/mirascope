@@ -1,5 +1,6 @@
 from pathlib import Path
 from textwrap import dedent
+from typing import Literal
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -191,7 +192,7 @@ def test_check_prompt_changed_import(
 def test_write_prompt_to_template(
     mock_get_template: Mock,
     mock_settings: Mock,
-    command: MirascopeCommand,
+    command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
     expected_variables: dict,
 ):
     """Tests that a prompt is properly created from the template"""

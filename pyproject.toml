@@ -4,8 +4,8 @@ version = "0.1.0"
 description = "Prompt management directly integrated into your workflow."
 license = "MIT"
 authors = [
-    "William Bakst <will@sotai.ai>",
-    "Brendan Kao <brendan.kao@sotai.ai>",
+    "William Bakst <william@mirascope.io>",
+    "Brendan Kao <brendan@mirascope.io>",
 ]
 readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
@@ -16,9 +16,9 @@ mirascope = 'mirascope.cli.cli:main'
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.12"
-pydantic = ">=2.0.2, <3.0"
-Jinja2 = ">=3.1.2, <4.0"
-openai = ">=1.6.0, <2.0"
+pydantic = "^2.0.2"
+Jinja2 = "^3.1.2"
+openai = "^1.6.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
