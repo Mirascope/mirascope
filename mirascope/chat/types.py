@@ -50,6 +50,11 @@ class OpenAIChatCompletionChunk(BaseModel):
         return self.chunk.choices
 
     @property
+    def choice(self) -> ChunkChoice:
+        """Returns the 0th choice."""
+        return self.chunk.choices[0]
+
+    @property
     def delta(self) -> ChoiceDelta:
         """Returns the delta for the 0th choice."""
         return self.choices[0].delta
