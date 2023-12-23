@@ -1,17 +1,16 @@
 """A script for recommending movies."""
 import os
 
-from dotenv import load_dotenv
 from prompts import MovieRecommendationPrompt
 
 from mirascope import OpenAIChat
 
-load_dotenv()
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
 def recommend_movies(genre: str):
     """Run the movie recommendation script."""
-    model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
+    model = OpenAIChat()
     return str(model.create(MovieRecommendationPrompt(genre=genre)))
 
 
