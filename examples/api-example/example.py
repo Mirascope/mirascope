@@ -1,4 +1,4 @@
-"""A FastAPI app integrated with a multi-chain prompt for recommending books on {topic} 
+"""A FastAPI app integrated with a multi-chain prompt for recommending books on a {topic} 
 and then asking which one is the best for beginners.
 """
 import os
