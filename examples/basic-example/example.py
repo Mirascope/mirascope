@@ -1,10 +1,10 @@
-"""A basic prompt for recommending books on {topic}"""
+"""A basic prompt for recommending books on a {topic}"""
 import os
 
-from mirascope import MirascopeChatOpenAI, MirascopePrompt
+from mirascope import OpenAIChat, Prompt
 
 
-class BookRecommendationPrompt(MirascopePrompt):
+class BookRecommendationPrompt(Prompt):
     """
     Can you recommend some books on {topic}?
     """
@@ -13,5 +13,6 @@ class BookRecommendationPrompt(MirascopePrompt):
 
 
 prompt = BookRecommendationPrompt(topic="how to bake a cake")
-model = MirascopeChatOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
 res = model.create(prompt)
+print(str(res))

@@ -1,10 +1,12 @@
-"""A multi-chain prompt for recommending books on {topic} and then asking which one is the best for beginners."""
+"""A multi-chain prompt for recommending books on a {topic} and then asking which one 
+is the best for beginners.
+"""
 import os
 
-from mirascope import MirascopeChatOpenAI, MirascopePrompt
+from mirascope import OpenAIChat, Prompt
 
 
-class BookRecommendationPrompt(MirascopePrompt):
+class BookRecommendationPrompt(Prompt):
     """
     Can you recommend some books on {topic} in a list format?
     """
@@ -12,7 +14,7 @@ class BookRecommendationPrompt(MirascopePrompt):
     topic: str
 
 
-class BestForBeginnersPrompt(MirascopePrompt):
+class BestForBeginnersPrompt(Prompt):
     """
     Given this list {book_list}, which one is the best for beginners?
     """
@@ -22,7 +24,7 @@ class BestForBeginnersPrompt(MirascopePrompt):
 
 def generate_best_book_for_beginners(topic: str) -> str:
     """Generates the best book for beginners on the given topic."""
-    model = MirascopeChatOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
     book_recommendation_prompt = BookRecommendationPrompt(topic=topic)
     book_list = model.create(book_recommendation_prompt)
 

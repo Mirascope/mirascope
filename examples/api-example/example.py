@@ -5,12 +5,12 @@ import os
 
 from fastapi import FastAPI
 
-from mirascope import MirascopeChatOpenAI, MirascopePrompt
+from mirascope import OpenAIChat, Prompt
 
 app = FastAPI()
 
 
-class BookRecommendationPrompt(MirascopePrompt):
+class BookRecommendationPrompt(Prompt):
     """
     Can you recommend some books on {topic} in a list format?
     """
@@ -18,7 +18,7 @@ class BookRecommendationPrompt(MirascopePrompt):
     topic: str
 
 
-class BestForBeginnersPrompt(MirascopePrompt):
+class BestForBeginnersPrompt(Prompt):
     """
     Given this list {book_list}, which one is the best for beginners?
     """
@@ -29,7 +29,7 @@ class BestForBeginnersPrompt(MirascopePrompt):
 @app.post("/")
 def root(book_recommendation: BookRecommendationPrompt):
     """Generates the best book for beginners on the given topic."""
-    model = MirascopeChatOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
     book_list = model.create(book_recommendation)
 
     best_for_beginners_prompt = BestForBeginnersPrompt(book_list=str(book_list))

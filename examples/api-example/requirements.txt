@@ -1,3 +1,4 @@
 mirascope==0.1.0
+openai==1.6.0
 fastapi==0.105.0
 uvicorn[standard]==0.25.0
