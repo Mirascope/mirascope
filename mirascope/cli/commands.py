@@ -26,8 +26,9 @@ from .utils import (
 def add(args) -> None:
     """Adds the given prompt to the specified version directory.
 
-    The contents of the prompt in the user's prompts directory are copied to the version directory
-    with the next revision number, and the version file is updated with the new revision.
+    The contents of the prompt in the user's prompts directory are copied to the version
+    directory with the next revision number, and the version file is updated with the
+    new revision.
 
     Args:
         args: The command line arguments for the `add` command, containing:
@@ -88,14 +89,18 @@ def add(args) -> None:
             }
             update_version_text_file(version_file_path, keys_to_update)
 
-    print(f"Adding {version_directory_path}/{revision_id}_{directory_name}.py")
+    print(
+        "Adding "
+        f"{version_directory_path}/{directory_name}/{revision_id}_{directory_name}.py"
+    )
 
 
 def status(args) -> None:
     """Checks the status of the current prompt or prompts.
 
-    If a prompt is specified, the status of that prompt is checked. Otherwise, the status of all
-    promps are checked. If a prompt has changed, the path to the prompt is printed.
+    If a prompt is specified, the status of that prompt is checked. Otherwise, the
+    status of all promps are checked. If a prompt has changed, the path to the prompt
+    is printed.
 
     Args:
         args: The command line arguments for the `status` command, containing:
@@ -133,8 +138,9 @@ def status(args) -> None:
 def use(args) -> None:
     """Uses the version and prompt specified by the user.
 
-    The contents of the prompt in the versions directory are copied to the user's prompts directory,
-    based on the version specified by the user. The version file is updated with the new revision.
+    The contents of the prompt in the versions directory are copied to the user's
+    prompts directory, based on the version specified by the user. The version file is
+    updated with the new revision.
 
     Args:
         args: The command line arguments for the `use` command, containing:
