@@ -31,6 +31,9 @@ mkdocs-material = "^9.1.18"
 mkdocstrings = "^0.22.0"
 mkdocstrings-python = "^1.1.2"
 
+[tool.poetry.group.examples.dependencies]
+fastapi = "^0.105.0"
+
 [tool.ruff]
 exclude = [
     ".bzr",
