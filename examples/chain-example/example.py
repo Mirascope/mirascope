@@ -33,4 +33,4 @@ def generate_best_book_for_beginners(topic: str) -> str:
     return str(best_for_beginners)
 
 
-generate_best_book_for_beginners("how to bake a cake")
+print(generate_best_book_for_beginners("how to bake a cake"))
