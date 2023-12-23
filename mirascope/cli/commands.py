@@ -208,7 +208,10 @@ def init(args) -> None:
     print(f"Creating {destination_dir}/{versions_directory}")
     os.makedirs(prompts_location, exist_ok=True)
     print(f"Creating {destination_dir}/{prompts_location}")
-
+    prompts_init_file: Path = Path(f"{destination_dir}/{prompts_location}/__init__.py")
+    if not prompts_init_file.is_file():
+        prompts_init_file.touch()
+        print(f"Creating {prompts_init_file}")
     # Create the 'mirascope.ini' file in the current directory with some default values
     ini_settings = MirascopeSettings(
         mirascope_location=mirascope_location,
