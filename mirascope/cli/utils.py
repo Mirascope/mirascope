@@ -41,8 +41,10 @@ def get_prompt_versions(version_file_path: str) -> VersionTextFile:
         return versions
 
 
-def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
+def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -> bool:
     """Checks if the given prompts have changed."""
+    if file1_path is None or file2_path is None:
+        raise FileNotFoundError("Prompt or version file is missing.")
     # Parse the first file
     try:
         with open(file1_path, "r", encoding="utf-8") as file:
@@ -69,6 +71,7 @@ def check_prompt_changed(file1_path: str, file2_path: str) -> bool:
         "from_imports_diff": bool(
             set(analyzer1.from_imports) ^ set(analyzer2.from_imports)
         ),
+        "decorators_diff": bool(set(analyzer1.decorators) ^ set(analyzer2.decorators)),
         "variables_diff": set(analyzer1.variables.keys()) - ignore_variables
         ^ set(analyzer2.variables.keys()) - ignore_variables,
         "classes_diff": analyzer1.check_class_changed(analyzer2),
@@ -196,6 +199,7 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.from_imports = []
         self.variables = {}
         self.classes = []
+        self.decorators = []
         self.comments = ""
 
     def visit_Import(self, node):
@@ -223,6 +227,7 @@ class PromptAnalyzer(ast.NodeVisitor):
             "name": node.name,
             "bases": [ast.unparse(b) for b in node.bases],
             "body": "",
+            "decorators": [ast.unparse(d) for d in node.decorator_list],
             "docstring": None,
         }
 
@@ -236,6 +241,12 @@ class PromptAnalyzer(ast.NodeVisitor):
         class_info["body"] = "\n".join(ast.unparse(n) for n in body_nodes)
 
         self.classes.append(class_info)
+
+    def visit_FunctionDef(self, node):
+        """Extracts decorators from function definitions."""
+        for decorator in node.decorator_list:
+            self.decorators.append(ast.unparse(decorator))
+        self.generic_visit(node)
 
     def visit_Module(self, node):
         """Extracts comments from the given node."""
