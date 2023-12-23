@@ -1,4 +1,4 @@
-"""A multi-chain prompt for recommending books on a {topic} and then asking which one 
+"""A multi-chain prompt for recommending books on a topic and then asking which one 
 is the best for beginners.
 """
 import os

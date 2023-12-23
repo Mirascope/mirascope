@@ -1,4 +1,4 @@
-"""A basic prompt for recommending books on a {topic}"""
+"""A basic prompt for recommending books on a topic"""
 import os
 
 from mirascope import OpenAIChat, Prompt
