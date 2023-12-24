@@ -2,11 +2,11 @@
   "files.autoSave": "onFocusChange",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
-  "editor.rulers": [88],
   "files.insertFinalNewline": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "[python]": {
+    "editor.rulers": [88],
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
