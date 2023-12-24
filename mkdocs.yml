@@ -12,8 +12,9 @@ theme:
     - content.code.copy
     - content.code.link
     - navigation.footer
-    - navigation.sections
+    - navigation.indexes
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - search.highlight
     - search.suggest
@@ -61,6 +62,8 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 plugins:
   - search
@@ -68,18 +71,34 @@ plugins:
       handlers:
         python:
           options:
-            show_root_heading: true
+            show_root_heading: false
             docstring_style: google
 
 nav:
   - Get Started:
-      - Welcome to mirascope: "README.md"
-      - Why use mirascope: "WHY.md"
+      - "README.md"
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:
-      - placeholder: "concepts/placeholder.md"
-  - Examples:
-      - placeholder: "examples/placeholder.md"
+      - Pydantic Prompts: "concepts/pydantic_prompts.md"
+      - LLM Convenience Wrappers: "concepts/llm_convenience_wrappers.md"
+      - Mirascope CLI: "concepts/mirascope_cli.md"
+  - Cookbook:
+      - A simple creation: "cookbook/simple_call.md"
+      - Chaining: "cookbook/chaining.md"
+      - Movie Bot: "cookbook/movie_bot.md"
   - API Reference:
+      - chat:
+          - "api/chat/index.md"
+          - models: "api/chat/models.md"
+          - types: "api/chat/types.md"
+          - utils: "api/chat/utils.md"
+      - cli:
+          - "api/cli/index.md"
+          - cli: "api/cli/cli.md"
+          - commands: "api/cli/commands.md"
+          - constants: "api/cli/constants.md"
+          - generic: "api/cli/generic.md"
+          - schemas: "api/cli/schemas.md"
+          - utils: "api/cli/utils.md"
       - prompts: "api/prompts.md"
