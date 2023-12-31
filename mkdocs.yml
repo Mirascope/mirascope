@@ -1,6 +1,6 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
-site_name: mirascope
-site_url: https://mirascope.github.io/mirascope
+site_name: Mirascope
+site_url: https://docs.mirascope.io/
 repo_name: mirascope
 repo_url: https://github.com/mirascope/mirascope/
 theme:
@@ -38,6 +38,8 @@ theme:
     code: Roboto Mono
 
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/mirascope
@@ -66,6 +68,9 @@ markdown_extensions:
       custom_checkbox: true
 
 plugins:
+  - mike:
+      alias_type: symlink
+      canonical_version: latest
   - search
   - mkdocstrings:
       handlers:
@@ -101,4 +106,5 @@ nav:
           - generic: "api/cli/generic.md"
           - schemas: "api/cli/schemas.md"
           - utils: "api/cli/utils.md"
+      - enums: "api/enums.md"
       - prompts: "api/prompts.md"
