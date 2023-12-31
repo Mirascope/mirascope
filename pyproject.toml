@@ -19,6 +19,7 @@ python = ">=3.9, <3.12"
 pydantic = "^2.0.2"
 Jinja2 = "^3.1.2"
 openai = "^1.6.0"
+mike = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
