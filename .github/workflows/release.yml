@@ -25,21 +25,8 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: "true"
 
-      - name: Install dependencies
-        run: poetry install --with docs
-
-      - name: Add release version to GitHub environment
-        run: |
-          echo "RELEASE_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
-          echo "RELEASE_VERSION_SHORT=$(poetry version | awk '{print $2}' | cut -d . -f 1-2)" >> $GITHUB_ENV
-
-      - name: Set git credentials
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Deploy docs
-        run: poetry run mike deploy --push --update-aliases ${{ github.env.RELEASE_VERSION_SHORT }} latest -t ${{ github.env.RELEASE_VERSION }}
+      - name: Get release version
+        run: echo "RELEASE_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
 
       - name: Build And Publish Python Package
         run: poetry publish --build
