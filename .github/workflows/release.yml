@@ -1,0 +1,47 @@
+name: release
+run-name: ${{ github.actor }} is uploading a new release to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.1
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: "true"
+
+      - name: Install dependencies
+        run: poetry install --with docs
+
+      - name: Add release version to GitHub environment
+        run: |
+          echo "RELEASE_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+          echo "RELEASE_VERSION_SHORT=$(poetry version | awk '{print $2}' | cut -d . -f 1-2)" >> $GITHUB_ENV
+
+      - name: Set git credentials
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Deploy docs
+        run: poetry run mike deploy --push --update-aliases ${{ github.env.RELEASE_VERSION_SHORT }} latest -t ${{ github.env.RELEASE_VERSION }}
+
+      - name: Build And Publish Python Package
+        run: poetry publish --build
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
