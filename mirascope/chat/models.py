@@ -21,7 +21,6 @@ class OpenAIChat:
 
         Args:
             prompt: The `Prompt` to use for the call.
-            stream: Whether or not to stream the response.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create

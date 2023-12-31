@@ -62,8 +62,8 @@ Certainly! Here are some highly recommended books on coding: ...
 ## Dive Deeper
 
 -   Check out the concepts section to dive deeper into the library and the core features that make it powerful, such as [pydantic prompts](concepts/pydantic_prompts.md) and the [Mirascope CLI](concepts/mirascope_cli.md).
--   You can follow along with more detailed [examples](cookbook) to get a better understanding of how to utilize the library to effectively model your data. You can also take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo.
--   The [API Reference](api) contains full details on all classes, methods, functions, etc.
+-   You can follow along with more detailed [examples](cookbook/simple_call.md) to get a better understanding of how to utilize the library to effectively model your data. You can also take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo.
+-   The [API Reference](api/prompts.md) contains full details on all classes, methods, functions, etc.
 
 ## Contributing
 
