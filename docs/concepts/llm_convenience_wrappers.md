@@ -18,14 +18,14 @@ You can initialize an [`OpenAIChat`](../api/chat/models.md#mirascope.chat.models
 ```python
 from mirascope import OpenAIChat, Prompt
 
-class RecipePrompt:
-		"""
-		Recommend recipes that use {ingredient} as an ingredient
-		"""
+class RecipePrompt(Prompt):
+	"""
+	Recommend recipes that use {ingredient} as an ingredient
+	"""
 
-		ingredient: str
+	ingredient: str
 
-chat = OpenAIChat()
+chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
 res = chat.create(RecipePrompt(ingredient="apples"))
 str(res)  # returns the string content of the completion
 ```
@@ -35,34 +35,37 @@ str(res)  # returns the string content of the completion
 Adding a chain of calls is as simple as writing a function:
 
 ```python
-class ChefPrompt:
-		"""
-		Name the best chef in the world at cooking {food_type} food
-		"""
+class ChefPrompt(Prompt):
+    """
+    Name the best chef in the world at cooking {food_type} food
+    """
 
-		food_type: str
+    food_type: str
 
-class RecipePrompt:
-		"""
-		Recommend a recipe that uses {ingredient} as an ingredient
-		that chef {chef} would serve in their restuarant
-		"""
 
-		ingredient: str
-		chef: str
+class RecipePrompt(Prompt):
+    """
+    Recommend a recipe that uses {ingredient} as an ingredient
+    that chef {chef} would serve in their restuarant
+    """
+
+    ingredient: str
+    chef: str
+
 
 def recipe_by_chef_using(ingredient: str, food_type: str) -> str:
-		"""Returns a recipe using `ingredient`.
+    """Returns a recipe using `ingredient`.
 
-		The recipe will be generated based on what dish using `ingredient`
-		the best chef in the world at cooking `food_type` might serve in
-		their restaurant
-		"""
-		chat = OpenAIChat()
-		chef_prompt = ChefPrompt(food_type=food_type)
-		chef = str(chat.create(chef_prompt))
-		recipe_prompt = RecipePrompt(ingredient=ingredient, chef=chef)
-		return str(chat.create(recipe_prompt)
+    The recipe will be generated based on what dish using `ingredient`
+    the best chef in the world at cooking `food_type` might serve in
+    their restaurant
+    """
+    chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
+    chef_prompt = ChefPrompt(food_type=food_type)
+    chef = str(chat.create(chef_prompt))
+    recipe_prompt = RecipePrompt(ingredient=ingredient, chef=chef)
+    return str(chat.create(recipe_prompt))
+
 
 recipe = recipe_by_chef_using("apples", "japanese")
 ```
@@ -83,6 +86,8 @@ for chunk in stream:
 The [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion) class is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai`. In fact, you can access everything from the original chunk as desired. The primary purpose of the class is to provide convenience.
 
 ```python
+from mirascope.chat.types import OpenAIChatCompletion
+
 completion = OpenAIChatCompletion(...)
 
 completion.completion  # ChatCompletion(...)
@@ -98,6 +103,8 @@ completion.content     # original.choices[0].message.content
 Similarly the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
 
 ```python
+from mirascope.chat.types import OpenAIChatCompletionChunk
+
 chunk = OpenAIChatCompletionChunk(...)
 
 chunk.chunk    # ChatCompletionChunk(...)

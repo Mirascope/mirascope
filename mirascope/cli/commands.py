@@ -191,6 +191,7 @@ def init(args) -> None:
     Creates the project structure and files needed for mirascope to work.
 
     Initial project structure:
+    ```
     |
     |-- mirascope.ini
     |-- mirascope
@@ -200,6 +201,7 @@ def init(args) -> None:
     |   |   |   |-- version.txt
     |   |   |   |-- <revision_id>_<directory_name>.py
     |-- prompts/
+    ```
 
     Args:
         args: The command line arguments for the `init` command, containing:

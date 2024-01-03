@@ -36,7 +36,6 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
-
 extra:
   version:
     provider: mike
@@ -66,6 +65,8 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.tasklist:
       custom_checkbox: true
+  - toc:
+      permalink: true
 
 plugins:
   - mike:

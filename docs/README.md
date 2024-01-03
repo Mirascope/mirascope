@@ -48,7 +48,7 @@ class BookRecommendationPrompt(Prompt):
 prompt = BookRecommendationPrompt(topic="coding")
 print(str(prompt))
 
-model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
+model = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
 res = model.create(prompt)
 print(str(res))
 ```

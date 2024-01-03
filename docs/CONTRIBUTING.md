@@ -36,8 +36,8 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     - Make sure you are in sync with the main repo:
 
     ```shell
-    git checkout dev
-    git pull upstream dev
+    git checkout main
+    git pull upstream main
     ```
 
     - Create a `git` feature branch with a meaningful name where you will add your contributions.

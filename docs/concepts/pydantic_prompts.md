@@ -33,7 +33,7 @@ class BookRecommendationPrompt(Prompt):
     topic: str
 
 prompt = BookRecommendationPrompt(topic="coding")
-str(prompt)
+str(prompt)	
 ```
 
 ```
@@ -77,14 +77,16 @@ class BookRecommendationPrompt(Prompt):
     topics: list[str]
 	genres: list[str]
 
-	@property
-	def topics_x_genres(self) -> str:
-		"""Returns `topics` as a comma separated list."""
-		return "\n".join([
-				f"Topic: {topic}, Genre: {genre}"
-				for topic in topics
-				for genre in genre
-		])
+    @property
+    def topics_x_genres(self) -> str:
+        """Returns `topics` as a comma separated list."""
+        return "\n\t".expandtabs(4).join(
+            [
+                f"Topic: {topic}, Genre: {genre}"
+                for topic in self.topics
+                for genre in self.genres
+            ]
+        )
 
 prompt = BookRecommendationPrompt(
 	topics=["coding", "music"], genres=["fiction", "fantasy"]
@@ -104,10 +106,15 @@ Can you recommend some books on the following topic and genre pairs?
 
 By default, the `Prompt` class treats the prompt template as a single user message. If you want to specify a list of messages instead, we provide a decorator to make this easy:
 
+!!! note 
+	
+	`@messages` decorator adds `messages` property to the class
+
 ```python
+from mirascope import Prompt
 from mirascope.prompts import messages
 
-@messages  # decorator adds `messages` property to the class
+@messages
 class BookRecommendationPrompt(Prompt):
 	"""
 	SYSTEM:
@@ -120,7 +127,7 @@ class BookRecommendationPrompt(Prompt):
 	topic: str
 
 prompt = BookRecommendationPrompt(topic="coding")
-prompt.messages
+print(prompt.messages)
 ```
 
 ```

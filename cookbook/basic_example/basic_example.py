@@ -3,6 +3,8 @@ import os
 
 from mirascope import OpenAIChat, Prompt
 
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
 
 class BookRecommendationPrompt(Prompt):
     """
@@ -13,6 +15,6 @@ class BookRecommendationPrompt(Prompt):
 
 
 prompt = BookRecommendationPrompt(topic="how to bake a cake")
-model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
+model = OpenAIChat()
 res = model.create(prompt)
 print(str(res))
