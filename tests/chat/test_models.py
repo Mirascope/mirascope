@@ -5,7 +5,7 @@ import pytest
 
 from mirascope.chat.models import OpenAIChat
 from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from mirascope.chat.utils import get_messages
+from mirascope.chat.utils import get_openai_chat_messages
 
 
 @patch(
@@ -32,7 +32,7 @@ def test_mirascope_chat_openai(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_messages(prompt),
+        messages=get_openai_chat_messages(prompt),
         stream=False,
         temperature=0.3,
     )
@@ -77,7 +77,7 @@ def test_mirascope_chat_openai_stream(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_messages(prompt),
+        messages=get_openai_chat_messages(prompt),
         stream=True,
         temperature=0.3,
     )
