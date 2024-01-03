@@ -14,11 +14,6 @@ from pydantic import BaseModel
 class Prompt(BaseModel):
     """A Pydantic model for prompts."""
 
-    @property
-    def messages(self) -> list[tuple[str, str]]:
-        """Returns the docstring as a list of messages."""
-        return [("user", str(self))]
-
     @classmethod
     def template(cls) -> str:
         """Custom parsing functionality for docstring prompt.
@@ -48,6 +43,11 @@ class Prompt(BaseModel):
             var for _, var, _, _ in Formatter().parse(template) if var is not None
         ]
         return template.format(**{var: getattr(self, var) for var in template_vars})
+
+    @property
+    def messages(self) -> list[tuple[str, str]]:
+        """Returns the docstring as a list of messages."""
+        return [("user", str(self))]
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
