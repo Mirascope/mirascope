@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.1.0"
+version = "0.1.1"
 description = "Prompt management directly integrated into your workflow."
 license = "MIT"
 authors = [
