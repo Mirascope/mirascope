@@ -5,6 +5,8 @@ import os
 
 from mirascope import OpenAIChat, Prompt
 
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
 
 class BookRecommendationPrompt(Prompt):
     """
@@ -24,7 +26,7 @@ class BestForBeginnersPrompt(Prompt):
 
 def generate_best_book_for_beginners(topic: str) -> str:
     """Generates the best book for beginners on the given topic."""
-    model = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
+    model = OpenAIChat()
     book_recommendation_prompt = BookRecommendationPrompt(topic=topic)
     book_list = model.create(book_recommendation_prompt)
 

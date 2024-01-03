@@ -99,10 +99,10 @@ from mirascope.prompts import Prompt, messages
 @messages
 class BookRecommendationPrompt(Prompt):
     """
-		SYSTEM:
-		You are an expert in your field giving advice
+	SYSTEM:
+	You are an expert in your field giving advice
 
-		USER:
+	USER:
     Can you recommend some books on {topic} in a list format?
     """
 

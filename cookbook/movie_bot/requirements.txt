@@ -1,2 +1,1 @@
-mirascope
-openai
+mirascope==0.1.0
