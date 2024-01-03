@@ -33,7 +33,7 @@ class BookRecommendationPrompt(Prompt):
     topic: str
 
 prompt = BookRecommendationPrompt(topic="coding")
-str(prompt)	
+str(prompt)
 ```
 
 ```
@@ -111,8 +111,7 @@ By default, the `Prompt` class treats the prompt template as a single user messa
 	`@messages` decorator adds `messages` property to the class
 
 ```python
-from mirascope import Prompt
-from mirascope.prompts import messages
+from mirascope import messages, Prompt
 
 @messages
 class BookRecommendationPrompt(Prompt):

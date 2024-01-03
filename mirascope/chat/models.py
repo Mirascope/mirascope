@@ -5,7 +5,7 @@ from openai import OpenAI
 
 from ..prompts import Prompt
 from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from .utils import get_messages
+from .utils import get_openai_chat_messages
 
 
 class OpenAIChat:
@@ -35,7 +35,7 @@ class OpenAIChat:
             return OpenAIChatCompletion(
                 completion=self.client.chat.completions.create(
                     model=self.model,
-                    messages=get_messages(prompt),
+                    messages=get_openai_chat_messages(prompt),
                     stream=False,
                     **kwargs,
                 )
@@ -62,7 +62,7 @@ class OpenAIChat:
         """
         completion_stream = self.client.chat.completions.create(
             model=self.model,
-            messages=get_messages(prompt),
+            messages=get_openai_chat_messages(prompt),
             stream=True,
             **kwargs,
         )
