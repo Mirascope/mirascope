@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mirascope"
 version = "0.1.1"
-description = "Prompt management directly integrated into your workflow."
+description = "The most pythonic LLM application building experience"
 license = "MIT"
 authors = [
     "William Bakst <william@mirascope.io>",

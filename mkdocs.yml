@@ -1,11 +1,12 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
-site_name: Delightful prompt management and LLM interactions - Mirascope
+site_name: Mirascope
 site_url: https://docs.mirascope.io/
 site_description: Mirascope is an open-source library for the most pythonic LLM application building experience.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 theme:
   name: material
+  custom_dir: overrides
   icon:
     repo: fontawesome/brands/github
   features:
