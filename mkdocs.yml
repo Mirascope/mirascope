@@ -6,7 +6,7 @@ repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 theme:
   name: material
-  custom_dir: overrides
+  custom_dir: docs/overrides
   icon:
     repo: fontawesome/brands/github
   features:
@@ -50,7 +50,7 @@ extra:
       link: https://www.linkedin.com/in/wbakst/
   analytics:
     provider: google
-    property: G-8BPJ7JG4KV
+    property: G-DJHT1QG9GK
 
 markdown_extensions:
   - pymdownx.highlight:
