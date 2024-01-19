@@ -1,13 +1,13 @@
 """Classes for interactings with LLMs through Chat APIs."""
-from typing import Generator, Optional, Type, Union
+from inspect import isclass
+from typing import Callable, Generator, Optional, Type, Union
 
 from openai import OpenAI
-from openai.types.chat import ChatCompletionToolParam
 
 from ..prompts import Prompt
 from .tools import OpenAITool
 from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from .utils import get_openai_chat_messages
+from .utils import convert_function_to_openai_tool, get_openai_chat_messages
 
 
 class OpenAIChat:
@@ -21,16 +21,16 @@ class OpenAIChat:
     def create(
         self,
         prompt: Prompt,
-        tools: Optional[list[Type[OpenAITool]]] = None,
+        tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
         """Makes a call to the model using `prompt`.
 
         Args:
             prompt: The `Prompt` to use for the call.
-            tools: A list of `OpenAITool` instances or `ChatCompletionToolParam`
-                schemas that the creation call can decide to use. If `tools` is
-                provided, `tool_choice` will be set to `auto`.
+            tools: A list of `OpenAITool` types or `Callable` functions that the
+                creation call can decide to use. If `tools` is provided, `tool_choice`
+                will be set to `auto`.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -42,7 +42,11 @@ class OpenAIChat:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
         if tools:
-            kwargs["tools"] = [tool.tool_schema() for tool in tools]
+            openai_tools = [
+                tool if isclass(tool) else convert_function_to_openai_tool(tool)
+                for tool in tools
+            ]
+            kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
             kwargs["tool_choice"] = "auto"
 
         try:
@@ -53,7 +57,7 @@ class OpenAIChat:
                     stream=False,
                     **kwargs,
                 ),
-                tool_types=tools,
+                tool_types=openai_tools if tools else None,
             )
         except:
             raise

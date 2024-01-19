@@ -15,10 +15,11 @@ repository = "https://github.com/Mirascope/mirascope"
 mirascope = 'mirascope.cli.cli:main'
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4.0"
 pydantic = "^2.0.2"
 Jinja2 = "^3.1.3"
 openai = "^1.6.0"
+docstring-parser = "^0.15"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
