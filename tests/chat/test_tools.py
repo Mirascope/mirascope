@@ -24,7 +24,7 @@ class EmptyTool(OpenAITool):
             {
                 "type": "function",
                 "function": {
-                    "name": "my_tool",
+                    "name": "MyTool",
                     "description": "A test tool.",
                     "parameters": {
                         "type": "object",
@@ -45,7 +45,7 @@ class EmptyTool(OpenAITool):
             {
                 "type": "function",
                 "function": {
-                    "name": "empty_tool",
+                    "name": "EmptyTool",
                     "description": "A test tool with no parameters.",
                 },
             },

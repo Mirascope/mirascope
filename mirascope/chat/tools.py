@@ -1,8 +1,10 @@
 """Classes for using tools with Chat APIs."""
-import re
+from __future__ import annotations
+
+import json
 from typing import cast
 
-from openai.types.chat import ChatCompletionToolParam
+from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
 from pydantic import BaseModel
 
 
@@ -24,7 +26,7 @@ class OpenAITool(BaseModel):
             raise ValueError("Tool must have a dosctring description.")
 
         fn = {
-            "name": re.sub(r"(?<!^)(?=[A-Z])", "_", model_schema["title"]).lower(),
+            "name": model_schema["title"],
             "description": model_schema["description"],
         }
         if model_schema["properties"]:
@@ -42,3 +44,8 @@ class OpenAITool(BaseModel):
             }
 
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
+
+    @classmethod
+    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
+        """Returns an instance of the tool constructed from a tool call response."""
+        return cls(**json.loads(tool_call.function.arguments))
