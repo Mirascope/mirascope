@@ -1,5 +1,6 @@
-"""A multi-chain prompt for recommending books on a topic and then asking which one 
-is the best for beginners.
+"""A multi-chain prompt example.
+
+First, recommend books on a topic. Then, ask which one is the best for beginners.
 """
 import os
 
