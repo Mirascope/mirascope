@@ -4,6 +4,13 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import ChatCompletionChunk, ChoiceDelta
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
+from openai.types.chat.chat_completion_message_tool_call import (
+    ChatCompletionMessageToolCall,
+    Function,
+)
+from pydantic import Field
+
+from mirascope.chat.tools import OpenAITool
 
 from .test_prompts import FooBarPrompt, MessagesPrompt
 
@@ -84,6 +91,37 @@ def fixture_chat_completion():
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_tools():
+    """Returns a chat completion with tool calls."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    role="assistant",
+                    tool_calls=[
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                arguments='{\n  "param": "param",\n  "optional": 0}',
+                                name="MyTool",
+                            ),
+                            type="function",
+                        )
+                    ],
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="test_model",
+        object="chat.completion",
+    )
+
+
+@pytest.fixture()
 def fixture_chat_completion_chunk():
     """Returns a chat completion chunk."""
     return ChatCompletionChunk(
@@ -106,3 +144,32 @@ def fixture_chat_completion_chunk():
         model="test_model",
         object="chat.completion.chunk",
     )
+
+
+@pytest.fixture()
+def fixture_my_tool():
+    """Returns a `MyTool` class."""
+
+    class MyTool(OpenAITool):
+        """A test tool."""
+
+        param: str = Field(..., description="A test parameter.")
+        optional: int = 0
+
+    return MyTool
+
+
+@pytest.fixture()
+def fixture_my_tool_instance(fixture_my_tool):
+    """Returns an instance of `MyTool`."""
+    return fixture_my_tool(param="param", optional=0)
+
+
+@pytest.fixture()
+def fixture_empty_tool():
+    """Returns an `EmptyTool` class."""
+
+    class EmptyTool(OpenAITool):
+        """A test tool with no parameters."""
+
+    return EmptyTool
