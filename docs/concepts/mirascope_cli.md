@@ -136,7 +136,7 @@ Here you specify which prompt and also which version you want to use. This will 
 
 This will let you quickly swap prompts with no code change, the exception being when prompts have different properties.
 
-### Future updates
+## Future updates
 
 There is a lot more to be added to the Mirascope CLI. Here is a list in no order of things we are thinking about adding next: 
 
