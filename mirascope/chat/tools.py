@@ -1,13 +1,20 @@
 """Classes for using tools with Chat APIs."""
-import re
-from typing import cast
+from __future__ import annotations
 
-from openai.types.chat import ChatCompletionToolParam
+import json
+from typing import Callable, Optional, Type, TypeVar, cast
+
+from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
 from pydantic import BaseModel
 
 
 class OpenAITool(BaseModel):
     """A base class for more easily using tools with the OpenAI Chat client."""
+
+    @property
+    def fn(self) -> Optional[Callable]:
+        """Returns the function that the tool describes."""
+        return None
 
     @classmethod
     def tool_schema(cls) -> ChatCompletionToolParam:
@@ -24,7 +31,7 @@ class OpenAITool(BaseModel):
             raise ValueError("Tool must have a dosctring description.")
 
         fn = {
-            "name": re.sub(r"(?<!^)(?=[A-Z])", "_", model_schema["title"]).lower(),
+            "name": model_schema["title"],
             "description": model_schema["description"],
         }
         if model_schema["properties"]:
@@ -42,3 +49,38 @@ class OpenAITool(BaseModel):
             }
 
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
+
+    @classmethod
+    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
+        """Returns an instance of the tool constructed from a tool call response."""
+        return cls(**json.loads(tool_call.function.arguments))
+
+
+T = TypeVar("T", bound=OpenAITool)
+
+
+def openai_tool_fn(fn: Callable) -> Callable:
+    """A decorator for adding a function to a tool class.
+
+    Adding this decorator will add an `fn` property to the tool class that returns the
+    function that the tool describes. This is convenient for calling the function given
+    an instance of the tool.
+
+    Args:
+        fn: The function to add to the tool class.
+
+    Returns:
+        The decorated tool class.
+    """
+
+    def decorator(cls: Type[T]) -> Type[T]:
+        """A decorator for adding a function to a tool class."""
+
+        def fn_property(self) -> Callable:
+            """Returns the function that the tool describes."""
+            return fn
+
+        setattr(cls, "fn", property(fn_property))
+        return cls
+
+    return decorator

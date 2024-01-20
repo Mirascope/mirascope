@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.1.3"
+version = "0.2.0"
 description = "The most pythonic LLM application building experience"
 license = "MIT"
 authors = [
@@ -9,16 +9,17 @@ authors = [
 ]
 readme = "docs/README.md"
 packages = [{ include = "mirascope" }]
-repository = "https://github.com/mirascope/mirascope"
+repository = "https://github.com/Mirascope/mirascope"
 
 [tool.poetry.scripts]
 mirascope = 'mirascope.cli.cli:main'
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4.0"
 pydantic = "^2.0.2"
 Jinja2 = "^3.1.3"
 openai = "^1.6.0"
+docstring-parser = "^0.15"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"

@@ -13,7 +13,7 @@ from mirascope.chat.utils import get_openai_chat_messages
     new_callable=MagicMock,
 )
 @pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
-def test_mirascope_chat_openai(
+def test_openai_chat(
     mock_create,
     fixture_chat_completion,
     prompt,
@@ -41,9 +41,41 @@ def test_mirascope_chat_openai(
 @patch(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
+)
+@pytest.mark.parametrize(
+    "prompt,tools",
+    [
+        ("fixture_foobar_prompt", ["fixture_my_tool"]),
+        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+    ],
+)
+def test_openai_chat_tools(
+    mock_create, fixture_chat_completion_with_tools, prompt, tools, request
+):
+    """Tests that `OpenAIChat` returns the expected response when called with tools."""
+    prompt = request.getfixturevalue(prompt)
+    tools = [request.getfixturevalue(tool) for tool in tools]
+    mock_create.return_value = fixture_chat_completion_with_tools
+
+    chat = OpenAIChat(api_key="test")
+    completion = chat.create(prompt, tools=tools)
+    assert isinstance(completion, OpenAIChatCompletion)
+
+    mock_create.assert_called_once_with(
+        model="gpt-3.5-turbo",
+        messages=get_openai_chat_messages(prompt),
+        stream=False,
+        tools=[tool.tool_schema() for tool in tools],
+        tool_choice="auto",
+    )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
     side_effect=Exception("base exception"),
 )
-def test_mirascope_chat_openai_error(mock_create, fixture_foobar_prompt):
+def test_openai_chat_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles openai errors thrown during __call__."""
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
@@ -55,7 +87,7 @@ def test_mirascope_chat_openai_error(mock_create, fixture_foobar_prompt):
     new_callable=MagicMock,
 )
 @pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
-def test_mirascope_chat_openai_stream(
+def test_openai_chat_stream(
     mock_create,
     fixture_chat_completion_chunk,
     prompt,
@@ -88,7 +120,7 @@ def test_mirascope_chat_openai_stream(
     new_callable=MagicMock,
     side_effect=Exception("base exception"),
 )
-def test_mirascope_chat_openai_stream_error(mock_create, fixture_foobar_prompt):
+def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles openai errors thrown during stream."""
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):

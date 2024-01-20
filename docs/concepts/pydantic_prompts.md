@@ -133,7 +133,7 @@ print(prompt.messages)
 [("system", "You are the world's greatest librarian"), ("user", "Can you recommend some books on coding?")]
 ```
 
-### Future updates
+## Future updates
 
 There is a lot more to be added to Mirascope prompts. Here is a list in no order of things we are thinking about adding next: 
 

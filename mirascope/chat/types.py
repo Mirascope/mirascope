@@ -1,18 +1,25 @@
 """Classes for responses when interacting with a Chat API."""
-from typing import Optional
+from typing import Optional, Type
 
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionMessageToolCall,
+)
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from pydantic import BaseModel
 
+from .tools import OpenAITool
+
 
 class OpenAIChatCompletion(BaseModel):
     """Convenience wrapper around chat completions."""
 
     completion: ChatCompletion
+    tool_types: Optional[list[Type[OpenAITool]]] = None
 
     @property
     def choices(self) -> list[Choice]:
@@ -33,6 +40,26 @@ class OpenAIChatCompletion(BaseModel):
     def content(self) -> Optional[str]:
         """Returns the content of the chat completion for the 0th choice."""
         return self.completion.choices[0].message.content
+
+    @property
+    def tool_calls(self) -> Optional[list[ChatCompletionMessageToolCall]]:
+        """Returns the tool calls for the 0th choice message."""
+        return self.message.tool_calls
+
+    @property
+    def tools(self) -> Optional[list[OpenAITool]]:
+        """Returns the tools for the 0th choice message."""
+        if not self.tool_types or not self.tool_calls:
+            return None
+
+        extracted_tools = []
+        for tool_call in self.tool_calls:
+            for tool_type in self.tool_types:
+                if tool_call.function.name == tool_type.__name__:
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                    break
+
+        return extracted_tools
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""

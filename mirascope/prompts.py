@@ -65,10 +65,10 @@ T = TypeVar("T", bound=Prompt)
 
 
 def messages(cls: Type[T]) -> Type[T]:
-    """A decorator for adding a `messages` class attribute to a `Prompt`.
+    """A decorator for updating the `messages` class attribute of a `Prompt`.
 
-    Adding this decorator to a `Prompt` adds a `messages` class attribute
-    that parses the docstring as a list of messages. Each message is a tuple containing
+    Adding this decorator to a `Prompt` updates the `messages` class attribute
+    to parse the docstring as a list of messages. Each message is a tuple containing
     the role and the content. The docstring should have the following format:
 
         <role>:
@@ -83,8 +83,10 @@ def messages(cls: Type[T]) -> Type[T]:
         USER:
         This would be the user message content.
 
+    This decorator currently supports the SYSTEM, USER, and ASSISTANT roles.
+
     Returns:
-        A list of tuples `(role, content)` parsed from the docstring.
+        The decorated class.
 
     Raises:
         ValueError: If the docstring is empty.
