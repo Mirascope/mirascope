@@ -9,7 +9,7 @@ from pydantic import create_model
 from pydantic.fields import FieldInfo
 
 from ..prompts import Prompt
-from .tools import OpenAITool
+from .tools import OpenAITool, openai_tool_fn
 
 
 def get_openai_chat_messages(
@@ -76,7 +76,7 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
 
     return create_model(
         "".join(word.title() for word in fn.__name__.split("_")),
-        __base__=OpenAITool,
+        __base__=openai_tool_fn(fn)(OpenAITool),
         __doc__=doc,
         **cast(dict[str, Any], field_definitions),
     )
