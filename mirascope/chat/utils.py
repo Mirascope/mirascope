@@ -71,7 +71,7 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
 
         field_definitions[parameter.name] = (
             parameter.annotation,
-            FieldInfo(**field_info),
+            FieldInfo(**field_info),  # type: ignore
         )
 
     return create_model(

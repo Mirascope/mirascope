@@ -51,14 +51,14 @@ def test_openai_tool_tool_schema(tool, expected_schema, request):
     assert tool.tool_schema() == expected_schema
 
 
+class NoDescriptionTool(OpenAITool):
+    param: str = Field(..., description="A test parameter.")
+    optional: int = 0
+
+
 def test_openai_tool_no_description():
     """Tests that a tool without a description raises a ValueError."""
     with pytest.raises(ValueError):
-
-        class NoDescriptionTool(OpenAITool):
-            param: str = Field(..., description="A test parameter.")
-            optional: int = 0
-
         NoDescriptionTool.tool_schema()
 
 
