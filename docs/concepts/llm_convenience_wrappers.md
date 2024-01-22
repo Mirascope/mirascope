@@ -131,6 +131,7 @@ You can also define your own `OpenAITool` class. This is necessary when the func
 
 ```python
 from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from pydantic import Field
 
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
