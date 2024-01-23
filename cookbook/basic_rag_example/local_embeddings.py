@@ -18,13 +18,11 @@ soccer_info = [
 
 client = openai.OpenAI()
 embeddings_model = "text-embedding-ada-002"
-df = pd.DataFrame(columns=["texts", "embeddings"])
-for text in soccer_info:
-    res = (
-        client.embeddings.create(model=embeddings_model, input=[text]).data[0].embedding
-    )
-    new_row = pd.DataFrame({"texts": [text], "embeddings": [res]})
-    df = pd.concat([df, new_row], ignore_index=True)
+embeddings = [
+    client.embeddings.create(model=embeddings_model, input=[text]).data[0].embedding
+    for text in soccer_info
+]
+df = pd.DataFrame({"texts": soccer_info, "embeddings": embeddings})
 
 
 class SoccerPrompt(Prompt):
@@ -39,22 +37,25 @@ class SoccerPrompt(Prompt):
     question: str
 
 
-model = OpenAIChat()
+chat = OpenAIChat()
 
 
 def ask_soccer(query):
+    """Answers a question about soccer from retrieved context."""
     query_embedding = (
         client.embeddings.create(model=embeddings_model, input=[query])
         .data[0]
         .embedding
     )
+    # Embedded texts are all the same length, so dot is equivalent to cosine
     df["similarities"] = df.embeddings.apply(lambda x: np.dot(x, query_embedding))
     most_similar = df.sort_values("similarities", ascending=False).iloc[0]["texts"]
 
     prompt = SoccerPrompt(context=most_similar, question=query)
-    res = model.create(prompt)
-    print(str(res))
+    completion = chat.create(prompt)
+    print(completion)
 
 
-for country in ["English", "Spanish", "German", "Italian"]:
+countries = ["English", "Spanish", "German", "Italian"]
+for country in countries:
     ask_soccer(f"Who won the {country} top flight?")

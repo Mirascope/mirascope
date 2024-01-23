@@ -1,1 +1,4 @@
 mirascope>=0.1.0,<1.0.0
+numpy>=1
+pandas>=1.2.3
+openai>=1.8.0
