@@ -90,11 +90,41 @@ def recipe_by_chef_using(ingredient: str, food_type: str) -> str:
 recipe = recipe_by_chef_using("apples", "japanese")
 ```
 
+### Streaming
+
+You can use the [`stream`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
+
+```python
+chat = OpenAIChat()
+stream = chat.stream(prompt)
+for chunk in stream:
+	print(str(chunk), end="")
+```
+
+### OpenAIChatCompletionChunk
+
+The `stream` method returns an [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) instance, which is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
+
+```python
+from mirascope.chat.types import OpenAIChatCompletionChunk
+
+chunk = OpenAIChatCompletionChunk(...)
+
+chunk.chunk    # ChatCompletionChunk(...)
+str(chunk)     # original.choices[0].delta.content
+chunk.choices  # original.choices
+chunk.choice   # original.choices[0]
+chunk.delta    # original.choices[0].delta
+chunk.content  # original.choices[0].delta.content
+```
+
 ### Tools
 
 Tools are extremely useful when you want the model to intelligently choose to output the arguments to call one or more functions. With mirascope it is extremely easy to use tools. Any function properly documented with a docstring will be automatically converted into a tool. This means that you can use any such function as a tool with no additional work:
 
 ```python
+from typing import Literal
+
 from mirascope import OpenAIChat, Prompt
 
 class CurrentWeatherPrompt(Prompt):
@@ -130,10 +160,19 @@ This works by automatically converting the given function into an [`OpenAITool`]
 You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
 
 ```python
+from typing import Literal
+
 from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from pydantic import Field
 
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
+
+def get_current_weather(
+    location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+) -> str:
+    """Get the current weather in a given location."""
+    return f"{location} is 65 degrees {unit}."
 
 @openai_tool_fn(get_current_weather)
 class GetCurrentWeather(OpenAITool):
@@ -155,34 +194,31 @@ for tool in completion.tools or []:
 
 Notice that using the [`openai_tool_fn`](../api/chat/tools.md#mirascope.chat.tools.openai_tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
 
-However, attaching the function is not necessary. In fact, often there are times where the intention of using a tool is not to call a function but to extract information from text. In these cases there is no need to attach the function at all. Simply define the `OpenAITool` class without the attached function and access the extracted information through the arguments of the `completion.tools` instances.
-
-### Streaming
-
-You can use the [`stream`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
+However, attaching the function is not necessary. In fact, often there are times where the intention of using a tool is not to call a function but to extract information from text. In these cases there is no need to attach the function at all. Simply define the `OpenAITool` class without the attached function and access the extracted information through the arguments of the `completion.tools` instances:
 
 ```python
-chat = OpenAIChat()
-stream = chat.stream(prompt)
-for chunk in stream:
-		print(str(chunk), end="")
-```
+from typing import Literal
 
-### OpenAIChatCompletionChunk
+from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from pydantic import Field
 
-The `stream` method returns an [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) instance, which is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in Los Angeles?"""
 
-```python
-from mirascope.chat.types import OpenAIChatCompletionChunk
+class GetCurrentWeather(OpenAITool):
+    """Get the current weather in a given location."""
 
-chunk = OpenAIChatCompletionChunk(...)
+    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
-chunk.chunk    # ChatCompletionChunk(...)
-str(chunk)     # original.choices[0].delta.content
-chunk.choices  # original.choices
-chunk.choice   # original.choices[0]
-chunk.delta    # original.choices[0].delta
-chunk.content  # original.choices[0].delta.content
+chat = OpenAIChat(model="gpt-3.5-turbo-1106")
+completion = chat.create(
+    CurrentWeatherPrompt(),
+    tools=[GetCurrentWeather],  # pass in the tool class
+)
+
+for tool in completion.tools or []:
+    print(tool)                      # this is a `GetCurrentWeather` instance
 ```
 
 ## Future updates

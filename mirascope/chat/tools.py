@@ -28,7 +28,7 @@ class OpenAITool(BaseModel):
         """
         model_schema = cls.model_json_schema()
         if "description" not in model_schema:
-            raise ValueError("Tool must have a dosctring description.")
+            raise ValueError("Tool must have a docstring description.")
 
         fn = {
             "name": model_schema["title"],
@@ -75,12 +75,7 @@ def openai_tool_fn(fn: Callable) -> Callable:
 
     def decorator(cls: Type[T]) -> Type[T]:
         """A decorator for adding a function to a tool class."""
-
-        def fn_property(self) -> Callable:
-            """Returns the function that the tool describes."""
-            return fn
-
-        setattr(cls, "fn", property(fn_property))
+        setattr(cls, "fn", property(lambda self: fn))
         return cls
 
     return decorator
