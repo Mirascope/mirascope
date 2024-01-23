@@ -2,7 +2,6 @@
 import os
 
 import numpy as np
-import openai
 import pandas as pd
 
 from mirascope import OpenAIChat, Prompt
@@ -16,10 +15,12 @@ soccer_info = [
     "For the first time since Diego Maradona's days, Napoli lifted the Serie A trophy.",
 ]
 
-client = openai.OpenAI()
+chat = OpenAIChat()
 embeddings_model = "text-embedding-ada-002"
 embeddings = [
-    client.embeddings.create(model=embeddings_model, input=[text]).data[0].embedding
+    chat.client.embeddings.create(model=embeddings_model, input=[text])
+    .data[0]
+    .embedding
     for text in soccer_info
 ]
 df = pd.DataFrame({"texts": soccer_info, "embeddings": embeddings})
@@ -37,13 +38,10 @@ class SoccerPrompt(Prompt):
     question: str
 
 
-chat = OpenAIChat()
-
-
 def ask_soccer(query):
     """Answers a question about soccer from retrieved context."""
     query_embedding = (
-        client.embeddings.create(model=embeddings_model, input=[query])
+        chat.client.embeddings.create(model=embeddings_model, input=[query])
         .data[0]
         .embedding
     )
