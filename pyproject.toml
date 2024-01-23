@@ -80,7 +80,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["examples", "venv"]
+exclude = ["examples", "venv", "cookbook"]
 
 [build-system]
 requires = ["poetry-core"]
