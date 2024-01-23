@@ -42,7 +42,7 @@ class OpenAIChat:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
         if tools:
-            openai_tools = [
+            openai_tools: list[type[OpenAITool]] = [
                 tool if isclass(tool) else convert_function_to_openai_tool(tool)
                 for tool in tools
             ]

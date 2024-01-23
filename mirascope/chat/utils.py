@@ -65,13 +65,13 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
         if not docstring_param.description:
             raise ValueError("All parameters must have a description.")
 
-        field_info = {"description": docstring.params[i].description}
-        if parameter.default != Parameter.empty:
-            field_info["default"] = parameter.default
-
         field_definitions[parameter.name] = (
             parameter.annotation,
-            FieldInfo(**field_info),  # type: ignore
+            FieldInfo(
+                description=docstring.params[i].description, default=parameter.default
+            )
+            if parameter.default != Parameter.empty
+            else FieldInfo(description=docstring.params[i].description),
         )
 
     return create_model(
