@@ -98,10 +98,12 @@ nav:
       - A simple creation: "cookbook/simple_call.md"
       - Chaining: "cookbook/chaining.md"
       - Movie Bot: "cookbook/movie_bot.md"
+      - Tools: "cookbook/tools.md"
   - API Reference:
       - chat:
           - "api/chat/index.md"
           - models: "api/chat/models.md"
+          - tools: "api/chat/tools.md
           - types: "api/chat/types.md"
           - utils: "api/chat/utils.md"
       - cli:
