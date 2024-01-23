@@ -103,7 +103,7 @@ nav:
       - chat:
           - "api/chat/index.md"
           - models: "api/chat/models.md"
-          - tools: "api/chat/tools.md
+          - tools: "api/chat/tools.md"
           - types: "api/chat/types.md"
           - utils: "api/chat/utils.md"
       - cli:
