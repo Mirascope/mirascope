@@ -4,7 +4,7 @@ import os
 
 from mirascope import AsyncOpenAIChat, Prompt
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
 class BookRecommendationPrompt(Prompt):
