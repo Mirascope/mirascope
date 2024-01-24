@@ -68,6 +68,29 @@ def test_openai_chat_string_prompt(mock_create, fixture_chat_completion):
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
+def test_openai_chat_messages_prompt(mock_create, fixture_chat_completion):
+    """Tests that `OpenAIChat` works with a messages prompt."""
+    mock_create.return_value = fixture_chat_completion
+
+    model = "gpt-3.5-turbo-16k"
+    chat = OpenAIChat(model, api_key="test")
+    assert chat.model == model
+
+    messages = [{"role": "user", "content": "content"}]
+    completion = chat.create(messages=messages)
+    assert isinstance(completion, OpenAIChatCompletion)
+
+    mock_create.assert_called_once_with(
+        model=model,
+        messages=messages,
+        stream=False,
+    )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
 @pytest.mark.parametrize(
     "prompt,tools",
     [

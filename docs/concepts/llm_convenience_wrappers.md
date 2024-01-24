@@ -154,7 +154,7 @@ assert book_info.model_dump() == {
 
 #### Retries
 
-Often you will want to retry your query in the event of a `ValidationError` when the model fails to properly populate the schema you've provided. Just set the number of retries and `extract` will automatically retry up to that many times (by default `retries` is `0`):
+Often you will want to retry your query in the event of a `ValidationError` when `extract` fails to convert the model response into the Pydantic model you've provided. Set the number of retries and `extract` will automatically retry up to that many times (by default `retries` is `0`):
 
 ```python
 book_info = chat.extract(

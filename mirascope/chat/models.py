@@ -30,14 +30,16 @@ class OpenAIChat:
 
     def create(
         self,
-        prompt: Union[Prompt, str],
+        prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
         """Makes a call to the model using `prompt`.
 
         Args:
-            prompt: The `Prompt` to use for the call.
+            prompt: The prompt to use for the call. This can either be a `Prompt`
+                instance, a raw string, or `None`. If `prompt` is `None`, then the call
+                will attempt to use the `messages` keyword argument.
             tools: A list of `OpenAITool` types or `Callable` functions that the
                 creation call can decide to use. If `tools` is provided, `tool_choice`
                 will be set to `auto`.
@@ -49,7 +51,7 @@ class OpenAIChat:
             A `OpenAIChatCompletion` instance.
 
         Raises:
-            Re-raises any exceptions thrown by the openai chat completions create call.
+            ValueError: if neither `prompt` nor `messages` are provided.
         """
         if tools:
             openai_tools: list[type[OpenAITool]] = [
@@ -60,7 +62,11 @@ class OpenAIChat:
             if "tool_choice" not in kwargs:
                 kwargs["tool_choice"] = "auto"
 
-        if isinstance(prompt, Prompt):
+        if not prompt:
+            if "messages" not in kwargs:
+                raise ValueError("Either `prompt` or `messages` must be provided.")
+            messages = kwargs.pop("messages")
+        elif isinstance(prompt, Prompt):
             messages = get_openai_chat_messages(prompt)
         else:
             messages = [{"role": "user", "content": prompt}]
