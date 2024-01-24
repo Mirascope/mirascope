@@ -30,7 +30,7 @@ class OpenAIChat:
 
     def create(
         self,
-        prompt: Prompt,
+        prompt: Union[Prompt, str],
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
@@ -60,10 +60,15 @@ class OpenAIChat:
             if "tool_choice" not in kwargs:
                 kwargs["tool_choice"] = "auto"
 
+        if isinstance(prompt, Prompt):
+            messages = get_openai_chat_messages(prompt)
+        else:
+            messages = [{"role": "user", "content": prompt}]
+
         return OpenAIChatCompletion(
             completion=self.client.chat.completions.create(
                 model=self.model,
-                messages=get_openai_chat_messages(prompt),
+                messages=messages,
                 stream=False,
                 **kwargs,
             ),
@@ -100,7 +105,7 @@ class OpenAIChat:
             yield OpenAIChatCompletionChunk(chunk=chunk)
 
     def extract(
-        self, prompt: Prompt, schema: Type[BaseModelT], retries: int = 0
+        self, prompt: Union[Prompt, str], schema: Type[BaseModelT], retries: int = 0
     ) -> BaseModelT:
         """Extracts the given schema from the response of a chat `create` call.
 
