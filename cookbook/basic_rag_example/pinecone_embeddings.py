@@ -16,6 +16,8 @@ from mirascope import OpenAIChat, Prompt
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 chat = OpenAIChat()
 embeddings_model = "text-embedding-ada-002"
+TEXT_COLUMN = "Text"
+EMBEDDINGS_COLUMN = "embeddings"
 
 
 def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
@@ -49,15 +51,16 @@ def load_data(url: str) -> pd.DataFrame:
     split_articles = []
     encoder = tiktoken.encoding_for_model("gpt-3.5-turbo")
     for i, row in df.iterrows():
-        text = row["Text"]
+        text = row[TEXT_COLUMN]
         tokens = encoder.encode(text)
-        if len(tokens) > 1000:
-            split_articles += split_text(text, tokens, 1000)
+        max_tokens = 1000
+        if len(tokens) > max_tokens:
+            split_articles += split_text(text, tokens, max_tokens)
             df.drop(i, inplace=True)
 
     # Long texts which were dropped from the dataframe are now readded.
     df = pd.concat(
-        [df, pd.DataFrame(split_articles, columns=["Text"])], ignore_index=True
+        [df, pd.DataFrame(split_articles, columns=[TEXT_COLUMN])], ignore_index=True
     )
 
     return df
@@ -68,12 +71,12 @@ def embed_data(df: pd.DataFrame, batch_size: int) -> pd.DataFrame:
     embeddings = []
     for start in range(0, len(df), batch_size):
         end = start + batch_size
-        batch = df["Text"][start:end].tolist()
+        batch = df[TEXT_COLUMN][start:end].tolist()
         embeddings_response = chat.client.embeddings.create(
             model=embeddings_model, input=batch
         )
         embeddings += [datum.embedding for datum in embeddings_response.data]
-    df["embeddings"] = embeddings
+    df[EMBEDDINGS_COLUMN] = embeddings
 
     return df
 
@@ -110,7 +113,7 @@ for start in range(0, len(df), batch_size):
     batch = df[start:end]
     vectors = []
     for i, row in batch.iterrows():
-        embeddings = row["embeddings"]
+        embeddings = row[EMBEDDINGS_COLUMN]
         # Embeddings need to be parsed if they've been read from a csv
         if isinstance(embeddings[0], str):
             embeddings = ast.literal_eval(embeddings)
@@ -150,7 +153,7 @@ def summarize_news(query: str, num_articles: int) -> str:
     relevant_article_indices = [
         int(article["id"]) for article in query_response["matches"]
     ]
-    relevant_articles = df.loc[relevant_article_indices]["Text"].tolist()
+    relevant_articles = df.loc[relevant_article_indices][TEXT_COLUMN].tolist()
     prompt = NewsPrompt(
         num_articles=num_articles, topic=query, articles=relevant_articles
     )
