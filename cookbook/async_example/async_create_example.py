@@ -21,7 +21,7 @@ model = AsyncOpenAIChat()
 
 
 async def create_book_recommendation():
-    """Asynchronously streams the response for a call to the model using `prompt`."""
+    """Asynchronously creates the response for a call to the model using `prompt`."""
     return await model.create(prompt)
 
 
