@@ -13,6 +13,8 @@ Mirascope provides convenience wrappers around the OpenAI client to make writing
 
 ## OpenAIChat
 
+### Create
+
 You can initialize an [`OpenAIChat`](../api/chat/models.md#mirascope.chat.models.OpenAIChat) instance and call [`create`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.create) to generate an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion):
 
 ```python
@@ -26,11 +28,21 @@ class RecipePrompt(Prompt):
 	ingredient: str
 
 chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
-res = chat.create(RecipePrompt(ingredient="apples"))
-str(res)  # returns the string content of the completion
+completion = chat.create(RecipePrompt(ingredient="apples"))
+print(completion)  # prints the string content of the completion
 ```
 
-### Completion
+You can also pass a `str` in directly as your prompt if you'd prefer to use your own prompt tooling:
+
+```python
+from mirascope import OpenAIChat
+
+chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
+completion = chat.create("Recommend recipes that use apples.")
+print(completion)
+```
+
+#### Completion
 
 The `create` method returns an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion) class instance, which is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai`. In fact, you can access everything from the original chunk as desired. The primary purpose of the class is to provide convenience.
 
@@ -101,7 +113,7 @@ for chunk in stream:
 	print(str(chunk), end="")
 ```
 
-### OpenAIChatCompletionChunk
+#### OpenAIChatCompletionChunk
 
 The `stream` method returns an [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) instance, which is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
 
@@ -116,6 +128,40 @@ chunk.choices  # original.choices
 chunk.choice   # original.choices[0]
 chunk.delta    # original.choices[0].delta
 chunk.content  # original.choices[0].delta.content
+```
+
+### Extraction
+
+Often you want to extract structured information into a format like JSON. The [`extract`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.extract) method makes this extremely easy by extracting the information into a Pydantic `BaseModel` schema that you define:
+
+```python
+from mirascope import OpenAIChat
+from pydantic import BaseModel
+
+class BookInfo(BaseModel):
+    """Information about a book."""
+
+    title: str
+    author: str
+
+book_info = chat.extract("The Name of the Wind is by Patrick Rothfuss.", BookInfo)
+assert isinstance(book_info, BookInfo)
+assert book_info.model_dump() == {
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+}
+```
+
+#### Retries
+
+Often you will want to retry your query in the event of a `ValidationError` when the model fails to properly populate the schema you've provided. Just set the number of retries and `extract` will automatically retry up to that many times (by default `retries` is `0`):
+
+```python
+book_info = chat.extract(
+    "The Name of the Wind is by Patrick Rothfuss.",
+    BookInfo,
+    retries=5,  # this will result in 6 total creation attempts if it never succeeds
+)
 ```
 
 ### Tools
