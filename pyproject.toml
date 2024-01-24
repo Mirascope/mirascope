@@ -37,6 +37,7 @@ mkdocstrings-python = "^1.1.2"
 fastapi = "^0.105.0"
 numpy = "^1.26.3"
 pandas = "^2.2.0"
+pandas-stubs = "^2.1.4.231227"
 
 [tool.ruff]
 exclude = [
