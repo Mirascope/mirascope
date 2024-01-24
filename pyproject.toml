@@ -33,8 +33,10 @@ mkdocs-material = "^9.1.18"
 mkdocstrings = "^0.22.0"
 mkdocstrings-python = "^1.1.2"
 
-[tool.poetry.group.examples.dependencies]
+[tool.poetry.group.cookbook.dependencies]
 fastapi = "^0.105.0"
+numpy = "^1.26.3"
+pandas = "^2.2.0"
 
 [tool.ruff]
 exclude = [
@@ -80,7 +82,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["examples", "venv", "cookbook"]
+exclude = ["venv"]
 
 [build-system]
 requires = ["poetry-core"]
