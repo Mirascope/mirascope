@@ -61,7 +61,7 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
         if parameter.annotation == Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
 
-        param_description = None
+        docstring_description = None
         if i < len(docstring.params):
             docstring_param = docstring.params[i]
             if docstring_param.arg_name != parameter.name:
@@ -72,13 +72,13 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
                 )
             if not docstring_param.description:
                 raise ValueError("All parameters must have a description.")
-            param_description = docstring_param.description
+            docstring_description = docstring_param.description
 
         field_info_kwargs = {"annotation": hints[parameter.name]}
         if parameter.default != Parameter.empty:
             field_info_kwargs["default"] = parameter.default
-        if param_description:
-            field_info_kwargs["description"] = param_description
+        if docstring_description:  # we check falsy here because this comes from docstr
+            field_info_kwargs["description"] = docstring_description
 
         param_name = parameter.name
         if "model_" in param_name:

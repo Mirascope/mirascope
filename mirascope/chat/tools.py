@@ -67,10 +67,7 @@ class OpenAITool(BaseModel):
         Raises:
             ValidationError: if the tool call doesn't match the tool schema.
         """
-        try:
-            return cls(**json.loads(tool_call.function.arguments))
-        except ValidationError:
-            raise
+        return cls(**json.loads(tool_call.function.arguments))
 
 
 T = TypeVar("T", bound=OpenAITool)

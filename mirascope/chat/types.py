@@ -60,10 +60,7 @@ class OpenAIChatCompletion(BaseModel):
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.function.name == tool_type.__name__:
-                    try:
-                        tool = tool_type.from_tool_call(tool_call)
-                    except ValidationError:
-                        raise
+                    tool = tool_type.from_tool_call(tool_call)
                     extracted_tools.append(tool)
                     break
 
@@ -76,13 +73,10 @@ class OpenAIChatCompletion(BaseModel):
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        try:
-            if self.tools and len(self.tools) > 0:
-                return self.tools[0]
-            else:
-                return None
-        except ValidationError:
-            raise
+        if self.tools and len(self.tools) > 0:
+            return self.tools[0]
+        else:
+            return None
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""

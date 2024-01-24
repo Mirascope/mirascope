@@ -17,7 +17,7 @@ from .utils import (
 
 logger = logging.getLogger("mirascope")
 
-Schema = TypeVar("Schema", bound=BaseModel)
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
 class OpenAIChat:
@@ -60,18 +60,15 @@ class OpenAIChat:
             if "tool_choice" not in kwargs:
                 kwargs["tool_choice"] = "auto"
 
-        try:
-            return OpenAIChatCompletion(
-                completion=self.client.chat.completions.create(
-                    model=self.model,
-                    messages=get_openai_chat_messages(prompt),
-                    stream=False,
-                    **kwargs,
-                ),
-                tool_types=openai_tools if tools else None,
-            )
-        except:
-            raise
+        return OpenAIChatCompletion(
+            completion=self.client.chat.completions.create(
+                model=self.model,
+                messages=get_openai_chat_messages(prompt),
+                stream=False,
+                **kwargs,
+            ),
+            tool_types=openai_tools if tools else None,
+        )
 
     def stream(
         self,
@@ -102,7 +99,9 @@ class OpenAIChat:
         for chunk in completion_stream:
             yield OpenAIChatCompletionChunk(chunk=chunk)
 
-    def extract(self, prompt: Prompt, schema: Type[Schema], retries: int = 0) -> Schema:
+    def extract(
+        self, prompt: Prompt, schema: Type[BaseModelT], retries: int = 0
+    ) -> BaseModelT:
         """Extracts the given schema from the response of a chat `create` call.
 
         Args:
@@ -117,17 +116,14 @@ class OpenAIChat:
             ValidationError: if the schema cannot be instantiated from the completion.
         """
         tool = convert_base_model_to_openai_tool(schema)
-        try:
-            completion = self.create(
-                prompt,
-                tools=[tool],
-                tool_choice={
-                    "type": "function",
-                    "function": {"name": tool.__name__},
-                },
-            )
-        except:
-            raise
+        completion = self.create(
+            prompt,
+            tools=[tool],
+            tool_choice={
+                "type": "function",
+                "function": {"name": tool.__name__},
+            },
+        )
 
         try:
             return schema(**completion.tool.model_dump())  # type: ignore
@@ -138,4 +134,4 @@ class OpenAIChat:
                 # chat history properly.
                 return self.extract(prompt, schema, retries - 1)
             else:
-                raise
+                raise  # re-raise if we have no retries left
