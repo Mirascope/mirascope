@@ -10,7 +10,7 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from .tools import OpenAITool
 
@@ -73,8 +73,9 @@ class OpenAIChatCompletion(BaseModel):
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        if self.tools and len(self.tools) > 0:
-            return self.tools[0]
+        tools = self.tools
+        if tools and len(tools) > 0:
+            return tools[0]
         else:
             return None
 

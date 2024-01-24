@@ -5,7 +5,7 @@ import json
 from typing import Callable, Optional, Type, TypeVar, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict
 
 
 class OpenAITool(BaseModel):

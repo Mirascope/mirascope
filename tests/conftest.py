@@ -126,6 +126,37 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
+    """Returns a chat completion with tool calls that don't match the tool's schema."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    role="assistant",
+                    tool_calls=[
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                arguments=('{\n  "param": 0,\n  "optional": 0}'),
+                                name="MyTool",
+                            ),
+                            type="function",
+                        )
+                    ],
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="test_model",
+        object="chat.completion",
+    )
+
+
+@pytest.fixture()
 def fixture_chat_completion_chunk() -> ChatCompletionChunk:
     """Returns a chat completion chunk."""
     return ChatCompletionChunk(
@@ -158,7 +189,7 @@ class MyTool(OpenAITool):
 
 
 @pytest.fixture()
-def fixture_my_tool() -> Type[OpenAITool]:
+def fixture_my_tool() -> Type[MyTool]:
     """Returns a `MyTool` class."""
     return MyTool
 

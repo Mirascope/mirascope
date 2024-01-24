@@ -84,6 +84,7 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
         if "model_" in param_name:
             param_name = "aliased_" + param_name
             field_info_kwargs["alias"] = parameter.name
+            field_info_kwargs["validation_alias"] = parameter.name
             field_info_kwargs["serialization_alias"] = parameter.name
 
         field_definitions[param_name] = (

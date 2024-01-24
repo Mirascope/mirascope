@@ -77,6 +77,19 @@ def test_openai_tool_from_tool_call(fixture_my_tool):
     assert tool.optional == 0
 
 
+def test_openai_tool_from_tool_call_validation_error(fixture_my_tool):
+    """Tests that `OpenAITool.from_tool_call` raises a ValidationError for bad tool."""
+    tool_call = ChatCompletionMessageToolCall(
+        id="id",
+        function=Function(
+            arguments='{\n  "param": 0,\n  "optional": 0}', name="MyTool"
+        ),
+        type="function",
+    )
+    with pytest.raises(Exception):
+        fixture_my_tool.from_tool_call(tool_call)
+
+
 def test_openai_tool_fn_decorator(fixture_my_tool):
     """Tests that the `fn` property returns the function that the tool describes."""
 

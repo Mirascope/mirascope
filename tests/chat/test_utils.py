@@ -1,9 +1,10 @@
 """Test for mirascope chat utility functions."""
 import pytest
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from mirascope.chat.tools import OpenAITool
 from mirascope.chat.utils import (
+    convert_base_model_to_openai_tool,
     convert_function_to_openai_tool,
     get_openai_chat_messages,
 )
@@ -73,17 +74,84 @@ class ShortDocstringTool(OpenAITool):
     param: str
 
 
+def reserved_name_tool(model_config: str) -> None:
+    """A tool with a parameter named `model_config`, which is reserved."""
+
+
+class ReservedNameTool(OpenAITool):
+    """A tool with a parameter named `model_config`, which is reserved."""
+
+    aliased_model_config: str = Field(
+        ...,
+        alias="model_config",
+        serialization_alias="model_config",
+    )
+
+
 @pytest.mark.parametrize(
     "fn,expected_tool",
     [
         (simple_tool, SimpleTool),
         (longer_description_tool, LongerDescriptionTool),
         (short_docstring_tool, ShortDocstringTool),
+        (reserved_name_tool, ReservedNameTool),
     ],
 )
 def test_convert_function_to_openai_tool(fn, expected_tool):
     """Tests that `convert_function_to_openai_tool` returns the expected tool."""
-    assert (
-        convert_function_to_openai_tool(fn).model_json_schema()
-        == expected_tool.model_json_schema()
-    )
+    tool = convert_function_to_openai_tool(fn)
+    assert tool.model_json_schema() == expected_tool.model_json_schema()
+
+
+class AllDescriptions(BaseModel):
+    """A model with all field descriptions."""
+
+    param: str = Field(..., description="A test parameter.")
+    optional: int = Field(0, description="An optional test parameter.")
+
+
+class AllDescriptionsTool(OpenAITool):
+    """A model with all field descriptions."""
+
+    param: str = Field(..., description="A test parameter.")
+    optional: int = Field(0, description="An optional test parameter.")
+
+
+class SomeDescriptions(BaseModel):
+    """A model with some field descriptions."""
+
+    param: str
+    optional: int = Field(0, description="An optional test parameter.")
+
+
+class SomeDescriptionsTool(OpenAITool):
+    """A model with some field descriptions."""
+
+    param: str
+    optional: int = Field(0, description="An optional test parameter.")
+
+
+class NoDescriptions(BaseModel):
+    """A model with no field descriptions."""
+
+    param: str
+
+
+class NoDescriptionsTool(OpenAITool):
+    """A model with no field descriptions."""
+
+    param: str
+
+
+@pytest.mark.parametrize(
+    "schema,expected_tool",
+    [
+        (AllDescriptions, AllDescriptionsTool),
+        (SomeDescriptions, SomeDescriptionsTool),
+        (NoDescriptions, NoDescriptionsTool),
+    ],
+)
+def test_convert_base_model_to_openai_tool(schema, expected_tool):
+    """Tests that `convert_base_model_to_openai_tool` returns the expected tool."""
+    tool = convert_base_model_to_openai_tool(schema)
+    assert tool.model_json_schema() == expected_tool.model_json_schema()
