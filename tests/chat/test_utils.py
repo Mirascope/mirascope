@@ -63,9 +63,23 @@ class LongerDescriptionTool(OpenAITool):
     """
 
 
+def short_docstring_tool(param: str) -> None:
+    """A short docstring function."""
+
+
+class ShortDocstringTool(OpenAITool):
+    """A short docstring function."""
+
+    param: str
+
+
 @pytest.mark.parametrize(
     "fn,expected_tool",
-    [(simple_tool, SimpleTool), (longer_description_tool, LongerDescriptionTool)],
+    [
+        (simple_tool, SimpleTool),
+        (longer_description_tool, LongerDescriptionTool),
+        (short_docstring_tool, ShortDocstringTool),
+    ],
 )
 def test_convert_function_to_openai_tool(fn, expected_tool):
     """Tests that `convert_function_to_openai_tool` returns the expected tool."""

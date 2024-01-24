@@ -10,7 +10,7 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from .tools import OpenAITool
 
@@ -48,7 +48,11 @@ class OpenAIChatCompletion(BaseModel):
 
     @property
     def tools(self) -> Optional[list[OpenAITool]]:
-        """Returns the tools for the 0th choice message."""
+        """Returns the tools for the 0th choice message.
+
+        Raises:
+            ValidationError: if a tool call doesn't match the tool's schema.
+        """
         if not self.tool_types or not self.tool_calls:
             return None
 
@@ -56,10 +60,29 @@ class OpenAIChatCompletion(BaseModel):
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.function.name == tool_type.__name__:
-                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                    try:
+                        tool = tool_type.from_tool_call(tool_call)
+                    except ValidationError:
+                        raise
+                    extracted_tools.append(tool)
                     break
 
         return extracted_tools
+
+    @property
+    def tool(self) -> Optional[OpenAITool]:
+        """Returns the 0th tool for the 0th choice message.
+
+        Raises:
+            ValidationError: if the tool call doesn't match the tool's schema.
+        """
+        try:
+            if self.tools and len(self.tools) > 0:
+                return self.tools[0]
+            else:
+                return None
+        except ValidationError:
+            raise
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""

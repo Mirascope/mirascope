@@ -1,13 +1,23 @@
 """Classes for interactings with LLMs through Chat APIs."""
+import logging
 from inspect import isclass
-from typing import Callable, Generator, Optional, Type, Union
+from typing import Callable, Generator, Optional, Type, TypeVar, Union
 
 from openai import OpenAI
+from pydantic import BaseModel, ValidationError
 
 from ..prompts import Prompt
 from .tools import OpenAITool
 from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from .utils import convert_function_to_openai_tool, get_openai_chat_messages
+from .utils import (
+    convert_base_model_to_openai_tool,
+    convert_function_to_openai_tool,
+    get_openai_chat_messages,
+)
+
+logger = logging.getLogger("mirascope")
+
+Schema = TypeVar("Schema", bound=BaseModel)
 
 
 class OpenAIChat:
@@ -47,7 +57,8 @@ class OpenAIChat:
                 for tool in tools
             ]
             kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
-            kwargs["tool_choice"] = "auto"
+            if "tool_choice" not in kwargs:
+                kwargs["tool_choice"] = "auto"
 
         try:
             return OpenAIChatCompletion(
@@ -90,3 +101,41 @@ class OpenAIChat:
 
         for chunk in completion_stream:
             yield OpenAIChatCompletionChunk(chunk=chunk)
+
+    def extract(self, prompt: Prompt, schema: Type[Schema], retries: int = 0) -> Schema:
+        """Extracts the given schema from the response of a chat `create` call.
+
+        Args:
+            prompt: The `Prompt` from which the schema will be extracted.
+            schema: The `BaseModel` schema to extract from the completion.
+            retries: The maximum number of times to retry the query on validation error.
+
+        Returns:
+            The `Schema` instance extracted from the completion.
+
+        Raises:
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        tool = convert_base_model_to_openai_tool(schema)
+        try:
+            completion = self.create(
+                prompt,
+                tools=[tool],
+                tool_choice={
+                    "type": "function",
+                    "function": {"name": tool.__name__},
+                },
+            )
+        except:
+            raise
+
+        try:
+            return schema(**completion.tool.model_dump())  # type: ignore
+        except ValidationError as e:
+            if retries > 0:
+                logging.info(f"Retrying due to exception: {e}")
+                # TODO: update this to include failure history once prompts can handle
+                # chat history properly.
+                return self.extract(prompt, schema, retries - 1)
+            else:
+                raise
