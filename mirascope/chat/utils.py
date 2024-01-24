@@ -1,7 +1,7 @@
 """Utility functions for mirascope chat."""
 
 from inspect import Parameter, signature
-from typing import Any, Callable, Type, TypeVar, cast, get_type_hints
+from typing import Any, Callable, Type, cast, get_type_hints
 
 from docstring_parser import parse
 from openai.types.chat import ChatCompletionMessageParam
