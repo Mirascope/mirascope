@@ -169,6 +169,43 @@ async def test_async_openai_chat_stream_messages_kwarg(
 @patch(
     "openai.resources.chat.completions.AsyncCompletions.create",
     new_callable=AsyncMock,
+)
+@pytest.mark.parametrize(
+    "prompt,tools",
+    [
+        ("fixture_foobar_prompt", ["fixture_my_tool"]),
+        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+    ],
+)
+async def test_async_openai_chat_stream_tools(
+    mock_create, fixture_chat_completion_chunk_with_tools, prompt, tools, request
+):
+    """Tests that `OpenAIChat` returns the expected response when called with tools."""
+    prompt = request.getfixturevalue(prompt)
+    tools = [request.getfixturevalue(tool) for tool in tools]
+    chunks = [fixture_chat_completion_chunk_with_tools] * 3
+    mock_create.__aiter__.return_value = chunks
+
+    chat = AsyncOpenAIChat(api_key="test")
+    stream = chat.stream(prompt, tools=tools)
+
+    i = 0
+    async for chunk in stream:
+        assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
+        i += 1
+
+    mock_create.assert_called_once_with(
+        model="gpt-3.5-turbo",
+        messages=get_openai_messages_from_prompt(prompt),
+        stream=True,
+        tools=[tool.tool_schema() for tool in tools],
+        tool_choice="auto",
+    )
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
     side_effect=Exception("base exception"),
 )
 async def test_async_openai_chat_stream_error(mock_create, fixture_foobar_prompt):

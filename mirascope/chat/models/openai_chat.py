@@ -39,7 +39,7 @@ class OpenAIChat:
                 will attempt to use the `messages` keyword argument.
             tools: A list of `OpenAITool` types or `Callable` functions that the
                 creation call can decide to use. If `tools` is provided, `tool_choice`
-                will be set to `auto`.
+                will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -75,7 +75,7 @@ class OpenAIChat:
             prompt: The `Prompt` to use for the call.
             tools: A list of `OpenAITool` types or `Callable` functions that the
                 creation call can decide to use. If `tools` is provided, `tool_choice`
-                will be set to `auto`.
+                will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create

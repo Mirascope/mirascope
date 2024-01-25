@@ -59,3 +59,17 @@ def test_openai_chat_completion_chunk(fixture_chat_completion_chunk):
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == choices[0].delta.content
     assert str(openai_chat_completion_chunk) == openai_chat_completion_chunk.content
+
+
+def test_openai_chat_completion_chunk_with_tools(
+    fixture_chat_completion_chunk_with_tools, fixture_my_tool
+):
+    """Tests that `OpenAIChatCompletionChunk` can be initialized properly with tools."""
+    openai_chat_completion_chunk = OpenAIChatCompletionChunk(
+        chunk=fixture_chat_completion_chunk_with_tools, tool_types=[fixture_my_tool]
+    )
+    choices = fixture_chat_completion_chunk_with_tools.choices
+    assert openai_chat_completion_chunk.choices == choices
+    assert openai_chat_completion_chunk.delta == choices[0].delta
+    assert openai_chat_completion_chunk.content == choices[0].delta.content
+    assert openai_chat_completion_chunk.tool_calls == choices[0].delta.tool_calls
