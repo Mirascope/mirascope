@@ -38,7 +38,7 @@ class SoccerPrompt(Prompt):
     question: str
 
 
-def ask_soccer(query):
+def ask_soccer(query: str) -> str:
     """Answers a question about soccer from retrieved context."""
     query_embedding = (
         chat.client.embeddings.create(model=embeddings_model, input=[query])
@@ -50,10 +50,10 @@ def ask_soccer(query):
     most_similar = df.sort_values("similarities", ascending=False).iloc[0]["texts"]
 
     prompt = SoccerPrompt(context=most_similar, question=query)
-    completion = chat.create(prompt)
-    print(completion)
+
+    return str(chat.create(prompt))
 
 
 countries = ["English", "Spanish", "German", "Italian"]
 for country in countries:
-    ask_soccer(f"Who won the {country} top flight?")
+    print(ask_soccer(f"Who won the {country} top flight?"))
