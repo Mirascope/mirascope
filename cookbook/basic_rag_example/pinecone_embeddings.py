@@ -48,8 +48,6 @@ def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
     for i in range(num_splits):
         start = i * len(words) // num_splits
         end = (i + 1) * len(words) // num_splits
-        if start == end:
-            print(len(words), num_splits, start, end)
         split_texts.append(" ".join(words[start:end]))
 
     return split_texts
