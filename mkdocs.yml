@@ -98,6 +98,7 @@ nav:
       - A simple creation: "cookbook/simple_call.md"
       - Chaining: "cookbook/chaining.md"
       - Movie Bot: "cookbook/movie_bot.md"
+      - Extract book information: "cookbook/extract_book_information.md"
       - Tools: "cookbook/tools.md"
       - FastAPI Integration: "cookbook/fastapi.md"
   - API Reference:
