@@ -25,11 +25,23 @@ def get_openai_messages_from_prompt(
         return [cast(ChatCompletionMessageParam, {"role": "user", "content": prompt})]
 
 
+def convert_tools_list_to_openai_tools(
+    tools: Optional[list[Union[Callable, Type[OpenAITool]]]],
+) -> Optional[list[Type[OpenAITool]]]:
+    """Converts a list of `Callable` or `OpenAITool` instances to an `OpenAITool` list."""
+    if not tools:
+        return None
+    return [
+        tool if isclass(tool) else convert_function_to_openai_tool(tool)
+        for tool in tools
+    ]
+
+
 def patch_openai_kwargs(
     kwargs: dict[str, Any],
     prompt: Optional[Union[Prompt, str]],
-    tools: Optional[list[Union[Callable, Type[OpenAITool]]]],
-) -> Optional[list[Type[OpenAITool]]]:
+    tools: Optional[list[Type[OpenAITool]]],
+):
     """Sets up the kwargs for an OpenAI API call."""
     if prompt is None:
         if "messages" not in kwargs:
@@ -38,17 +50,9 @@ def patch_openai_kwargs(
         kwargs["messages"] = get_openai_messages_from_prompt(prompt)
 
     if tools:
-        openai_tools: list[type[OpenAITool]] = [
-            tool if isclass(tool) else convert_function_to_openai_tool(tool)
-            for tool in tools
-        ]
-        kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
+        kwargs["tools"] = [tool.tool_schema() for tool in tools]
         if "tool_choice" not in kwargs:
             kwargs["tool_choice"] = "auto"
-
-        return openai_tools
-
-    return None
 
 
 def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:

@@ -10,6 +10,7 @@ from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from ..utils import (
     convert_base_model_to_openai_tool,
+    convert_tools_list_to_openai_tools,
     patch_openai_kwargs,
 )
 
@@ -52,7 +53,8 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        openai_tools = patch_openai_kwargs(kwargs, prompt, tools)
+        openai_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, prompt, openai_tools)
 
         return OpenAIChatCompletion(
             completion=await self.client.chat.completions.create(
@@ -88,7 +90,8 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        openai_tools = patch_openai_kwargs(kwargs, prompt, tools)
+        openai_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, prompt, openai_tools)
 
         completion_stream = await self.client.chat.completions.create(
             model=self.model,
