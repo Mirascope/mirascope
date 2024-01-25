@@ -25,7 +25,7 @@ def get_openai_messages_from_prompt(
         return [cast(ChatCompletionMessageParam, {"role": "user", "content": prompt})]
 
 
-def setup_openai_kwargs(
+def patch_openai_kwargs(
     kwargs: dict[str, Any],
     prompt: Optional[Union[Prompt, str]],
     tools: Optional[list[Union[Callable, Type[OpenAITool]]]],

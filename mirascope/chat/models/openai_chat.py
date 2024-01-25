@@ -10,7 +10,7 @@ from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from ..utils import (
     convert_base_model_to_openai_tool,
-    setup_openai_kwargs,
+    patch_openai_kwargs,
 )
 
 logger = logging.getLogger("mirascope")
@@ -52,7 +52,7 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        openai_tools = setup_openai_kwargs(kwargs, prompt, tools)
+        openai_tools = patch_openai_kwargs(kwargs, prompt, tools)
 
         return OpenAIChatCompletion(
             completion=self.client.chat.completions.create(
@@ -88,7 +88,7 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        openai_tools = setup_openai_kwargs(kwargs, prompt, tools)
+        openai_tools = patch_openai_kwargs(kwargs, prompt, tools)
 
         completion_stream = self.client.chat.completions.create(
             model=self.model,
