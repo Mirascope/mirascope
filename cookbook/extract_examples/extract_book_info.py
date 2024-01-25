@@ -1,10 +1,16 @@
-"""A script for figuring out extract."""
+"""An example script for extracting the title of a book and author given some string."""
+import os
+
 from pydantic import BaseModel
 
 from mirascope import OpenAIChat
 
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
 
 class BookInfo(BaseModel):
+    """A model for book info."""
+
     title: str
     author: str
 

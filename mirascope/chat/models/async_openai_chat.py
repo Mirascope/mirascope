@@ -1,13 +1,22 @@
-"""Class for interactings with AsyncOpenAI through Chat APIs."""
+"""Class for interacting with AsyncOpenAI through Chat APIs."""
+import logging
 from inspect import isclass
-from typing import AsyncGenerator, Callable, Optional, Type, Union
+from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
 
 from openai import AsyncOpenAI
+from pydantic import BaseModel, ValidationError
 
 from ...prompts import Prompt
 from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from ..utils import convert_function_to_openai_tool, get_openai_chat_messages
+from ..utils import (
+    convert_base_model_to_openai_tool,
+    convert_function_to_openai_tool,
+    get_openai_messages_from_prompt,
+)
+
+logger = logging.getLogger("mirascope")
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
 class AsyncOpenAIChat:
@@ -20,14 +29,16 @@ class AsyncOpenAIChat:
 
     async def create(
         self,
-        prompt: Prompt,
+        prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
-        """Asynchronously makes a call to the model using `prompt`.
+        """Asynchronously Makes a call to the model using `prompt`.
 
         Args:
-            prompt: The `Prompt` to use for the call.
+            prompt: The prompt to use for the call. This can either be a `Prompt`
+                instance, a raw string, or `None`. If `prompt` is `None`, then the call
+                will attempt to use the `messages` keyword argument.
             tools: A list of `OpenAITool` types or `Callable` functions that the
                 creation call can decide to use. If `tools` is provided, `tool_choice`
                 will be set to `auto`.
@@ -39,7 +50,7 @@ class AsyncOpenAIChat:
             A `OpenAIChatCompletion` instance.
 
         Raises:
-            Re-raises any exceptions thrown by the openai chat completions create call.
+            ValueError: if neither `prompt` nor `messages` are provided.
         """
         if tools:
             openai_tools: list[type[OpenAITool]] = [
@@ -47,23 +58,29 @@ class AsyncOpenAIChat:
                 for tool in tools
             ]
             kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
-            kwargs["tool_choice"] = "auto"
-        try:
-            return OpenAIChatCompletion(
-                completion=await self.client.chat.completions.create(
-                    model=self.model,
-                    messages=get_openai_chat_messages(prompt),
-                    stream=False,
-                    **kwargs,
-                ),
-                tool_types=openai_tools if tools else None,
-            )
-        except:
-            raise
+            if "tool_choice" not in kwargs:
+                kwargs["tool_choice"] = "auto"
+
+        if not prompt:
+            if "messages" not in kwargs:
+                raise ValueError("Either `prompt` or `messages` must be provided.")
+            messages = kwargs.pop("messages")
+        else:
+            messages = get_openai_messages_from_prompt(prompt)
+
+        return OpenAIChatCompletion(
+            completion=await self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                stream=False,
+                **kwargs,
+            ),
+            tool_types=openai_tools if tools else None,
+        )
 
     async def stream(
         self,
-        prompt: Prompt,
+        prompt: Optional[Union[Prompt, str]] = None,
         **kwargs,
     ) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
         """Asynchronously streams the response for a call to the model using `prompt`.
@@ -81,11 +98,63 @@ class AsyncOpenAIChat:
             Re-raises any exceptions thrown by the openai chat completions
             when iterating through the generator.
         """
+        if not prompt:
+            if "messages" not in kwargs:
+                raise ValueError("Either `prompt` or `messages` must be provided.")
+            messages = kwargs.pop("messages")
+        else:
+            messages = get_openai_messages_from_prompt(prompt)
+
         completion_stream = await self.client.chat.completions.create(
             model=self.model,
-            messages=get_openai_chat_messages(prompt),
+            messages=messages,
             stream=True,
             **kwargs,
         )
+
         async for chunk in completion_stream:
             yield OpenAIChatCompletionChunk(chunk=chunk)
+
+    async def extract(
+        self,
+        schema: Type[BaseModelT],
+        prompt: Optional[Union[Prompt, str]] = None,
+        retries: int = 0,
+        **kwargs,
+    ) -> BaseModelT:
+        """Asynchronously extracts the given schema from the response of a chat `create` call.
+
+        Args:
+            schema: The `BaseModel` schema to extract from the completion.
+            prompt: The prompt from which the schema will be extracted.
+            retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword arguments to pass to the API call. You can
+                find available keyword arguments here:
+                https://platform.openai.com/docs/api-reference/chat/create
+
+        Returns:
+            The `Schema` instance extracted from the completion.
+
+        Raises:
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        tool = convert_base_model_to_openai_tool(schema)
+        completion = await self.create(
+            prompt,
+            tools=[tool],
+            tool_choice={
+                "type": "function",
+                "function": {"name": tool.__name__},
+            },
+            **kwargs,
+        )
+
+        try:
+            return schema(**completion.tool.model_dump())  # type: ignore
+        except ValidationError as e:
+            if retries > 0:
+                logging.info(f"Retrying due to exception: {e}")
+                # TODO: update this to include failure history once prompts can handle
+                # chat history properly.
+                return await self.extract(schema, prompt, retries - 1)
+            raise  # re-raise if we have no retries left

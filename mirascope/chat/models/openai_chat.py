@@ -157,5 +157,4 @@ class OpenAIChat:
                 # TODO: update this to include failure history once prompts can handle
                 # chat history properly.
                 return self.extract(schema, prompt, retries - 1)
-            else:
-                raise  # re-raise if we have no retries left
+            raise  # re-raise if we have no retries left
