@@ -14,17 +14,23 @@ from pinecone import Pinecone, ServerlessSpec
 from mirascope import OpenAIChat, Prompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-chat = OpenAIChat()
-embeddings_model = "text-embedding-ada-002"
+
+MODEL = "gpt-3.5-turbo"
+EMBEDDINGS_MODEL = "text-embedding-ada-002"
 TEXT_COLUMN = "Text"
 EMBEDDINGS_COLUMN = "embeddings"
 
+chat = OpenAIChat(model=MODEL)
+filename = "news_article_dataset.csv"
+
 
 def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
-    """Roughly splits a text into chunks of max_tokens size.
+    """Roughly splits a text into chunks according to max_tokens.
 
-    Note that tokens and characters do not have an exact correspondence, so in
-    certain edge cases a chunk may be slightly larger than max_tokens.
+    Text is split into equal word counts, with number of splits determined by how many
+    times `max_tokens` goes into the total number of tokens (including partially). Note
+    that tokens and characters do not have an exact correspondence, so in certain edge
+    cases a chunk may be slightly larger than max_tokens.
 
     Args:
         text: The text to split.
@@ -36,11 +42,13 @@ def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
     """
     words = text.split()
     num_splits = len(tokens) // max_tokens + 1
-    words_per_split = len(words) // num_splits
-    split_texts = [
-        " ".join(words[i : i + words_per_split])
-        for i in range(0, len(words), words_per_split + 1)
-    ]
+    split_texts = []
+    for i in range(num_splits):
+        start = i * len(words) // num_splits
+        end = (i + 1) * len(words) // num_splits
+        if start == end:
+            print(len(words), num_splits, start, end)
+        split_texts.append(" ".join(words[start:end]))
 
     return split_texts
 
@@ -49,7 +57,7 @@ def load_data(url: str) -> pd.DataFrame:
     """Loads data from a url, and splits larger texts into smaller chunks."""
     df = pd.read_csv(url)
     split_articles = []
-    encoder = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoder = tiktoken.encoding_for_model(MODEL)
     for i, row in df.iterrows():
         text = row[TEXT_COLUMN]
         tokens = encoder.encode(text)
@@ -73,7 +81,7 @@ def embed_data(df: pd.DataFrame, batch_size: int) -> pd.DataFrame:
         end = start + batch_size
         batch = df[TEXT_COLUMN][start:end].tolist()
         embeddings_response = chat.client.embeddings.create(
-            model=embeddings_model, input=batch
+            model=EMBEDDINGS_MODEL, input=batch
         )
         embeddings += [datum.embedding for datum in embeddings_response.data]
     df[EMBEDDINGS_COLUMN] = embeddings
@@ -81,12 +89,11 @@ def embed_data(df: pd.DataFrame, batch_size: int) -> pd.DataFrame:
     return df
 
 
-filename = "news_article_dataset.csv"
 # Make reruns efficient by preprocessing data before saving to csv
 if not os.path.exists(filename):
     url = "https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv"
     df = load_data(url)
-    df = embed_data(df, 8)  # ada 02 supports ~8000 tokens, our max_tokens is 1000
+    # df = embed_data(df, 8)  # ada 02 supports ~8000 tokens, our max_tokens is 1000
     df.to_csv(filename)
 else:
     df = pd.read_csv(filename)
@@ -143,7 +150,7 @@ class NewsPrompt(Prompt):
 def summarize_news(query: str, num_articles: int) -> str:
     """Summarizes 2004 news about retrieved context relevant to query."""
     query_embedding = (
-        chat.client.embeddings.create(model=embeddings_model, input=[query])
+        chat.client.embeddings.create(model=EMBEDDINGS_MODEL, input=[query])
         .data[0]
         .embedding
     )
