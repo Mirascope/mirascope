@@ -21,7 +21,9 @@ TEXT_COLUMN = "Text"
 EMBEDDINGS_COLUMN = "embeddings"
 
 chat = OpenAIChat(model=MODEL)
+
 filename = "news_article_dataset.csv"
+url = "https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv"
 
 
 def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
@@ -91,7 +93,6 @@ def embed_data(df: pd.DataFrame, batch_size: int) -> pd.DataFrame:
 
 # Make reruns efficient by preprocessing data before saving to csv
 if not os.path.exists(filename):
-    url = "https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv"
     df = load_data(url)
     # df = embed_data(df, 8)  # ada 02 supports ~8000 tokens, our max_tokens is 1000
     df.to_csv(filename)
