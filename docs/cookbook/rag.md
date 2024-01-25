@@ -15,7 +15,7 @@ soccer_info = [
     "Manchester City won the league, continuing their domestic dominance.",
     "In La Liga, FC Barcelona emerged victorious with a sturdy defense.",
     "Dortmund slipped up in the last matchday to hand Bayern the Bundesliga title.",
-    "For the first time since Diego Maradona's days, Napoli lifted the Serie A trophy.",
+    "For the first time since Maradona's days, Napoli lifted the Serie A trophy.",
 ]
 ```
 
@@ -48,10 +48,12 @@ Here is the `Prompt` we will be using to ask our model:
 ```python
 class SoccerPrompt(Prompt):
     """
-    Here is some context about what happened in soccer in the 2022-23 season: {context}
+    Here is some context about what happened in soccer in the 2022-23 season:
+    {context}
 
 
-    Based on this information, answer the following question: {question}
+    Based on this information, answer the following question:
+    {question}
     """
 
     context: str
