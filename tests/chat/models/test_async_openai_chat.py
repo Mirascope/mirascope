@@ -1,43 +1,37 @@
-"""Tests for mirascope chat API model classes."""
-from unittest.mock import MagicMock, patch
+"""Tests for mirascope async openai chat API model classes."""
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from mirascope.chat.models import OpenAIChat
+from mirascope.chat.models import AsyncOpenAIChat
 from mirascope.chat.tools import OpenAITool
 from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from mirascope.chat.utils import get_openai_messages_from_prompt
 from mirascope.prompts import Prompt
 
+pytestmark = pytest.mark.asyncio
+
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
 )
-@pytest.mark.parametrize(
-    "prompt",
-    [
-        "fixture_foobar_prompt",
-        "fixture_messages_prompt",
-        "fixture_string_prompt",
-    ],
-)
-def test_openai_chat(
+@pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+async def test_async_openai_chat(
     mock_create,
     fixture_chat_completion,
     prompt,
     request,
 ):
-    """Tests that `OpenAIChat` returns the expected response when called."""
+    """Tests that `AsyncOpenAIChat` returns the expected response when called."""
     prompt = request.getfixturevalue(prompt)
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model, api_key="test")
     assert chat.model == model
-
-    completion = chat.create(prompt, temperature=0.3)
+    completion = await chat.create(prompt, temperature=0.3)
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
@@ -49,19 +43,19 @@ def test_openai_chat(
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
 )
-def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
-    """Tests that `OpenAIChat` works with a messages prompt."""
+async def test_async_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
+    """Tests that `AsyncOpenAIChat` works with a messages prompt."""
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model, api_key="test")
     assert chat.model == model
 
     messages = [{"role": "user", "content": "content"}]
-    completion = chat.create(messages=messages)
+    completion = await chat.create(messages=messages)
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
@@ -72,8 +66,8 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
 )
 @pytest.mark.parametrize(
     "prompt,tools",
@@ -82,16 +76,16 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
         ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
     ],
 )
-def test_openai_chat_tools(
+async def test_async_openai_chat_tools(
     mock_create, fixture_chat_completion_with_tools, prompt, tools, request
 ):
-    """Tests that `OpenAIChat` returns the expected response when called with tools."""
+    """Tests that `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
     mock_create.return_value = fixture_chat_completion_with_tools
 
-    chat = OpenAIChat(api_key="test")
-    completion = chat.create(prompt, tools=tools)
+    chat = AsyncOpenAIChat(api_key="test")
+    completion = await chat.create(prompt, tools=tools)
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
@@ -104,44 +98,36 @@ def test_openai_chat_tools(
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
     side_effect=Exception("base exception"),
 )
-def test_openai_chat_error(mock_create, fixture_foobar_prompt):
-    """Tests that `OpenAIChat` handles openai errors thrown during __call__."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+async def test_async_openai_chat_error(mock_create, fixture_foobar_prompt):
+    """Tests that `AsyncOpenAIChat` handles OpenAI errors thrown during create."""
+    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
-        chat.create(fixture_foobar_prompt)
+        await chat.create(fixture_foobar_prompt)
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
 )
-@pytest.mark.parametrize(
-    "prompt",
-    [
-        "fixture_foobar_prompt",
-        "fixture_messages_prompt",
-        "fixture_string_prompt",
-    ],
-)
-def test_openai_chat_stream(
+@pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+async def test_async_openai_chat_stream(
     mock_create,
     fixture_chat_completion_chunk,
     prompt,
     request,
 ):
-    """Tests that `OpenAIChat` returns the expected response when streaming."""
+    """Tests that `AsyncOpenAIChat` returns the expected response when streaming."""
     prompt = request.getfixturevalue(prompt)
-    mock_create.return_value = [fixture_chat_completion_chunk] * 3
+    mock_create.__aiter__.return_value = [fixture_chat_completion_chunk] * 3
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
-    stream = chat.stream(prompt, temperature=0.3)
-
-    for chunk in stream:
+    chat = AsyncOpenAIChat(model, api_key="test")
+    astream = chat.stream(prompt, temperature=0.3)
+    async for chunk in astream:
         assert isinstance(chunk, OpenAIChatCompletionChunk)
         assert chunk.chunk == fixture_chat_completion_chunk
         for i, choice in enumerate(chunk.choices):
@@ -156,19 +142,21 @@ def test_openai_chat_stream(
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
 )
-def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_chunk):
-    """Tests that `OpenAIChat.stream` works with a messages kwarg."""
-    mock_create.return_value = [fixture_chat_completion_chunk] * 3
+async def test_async_openai_chat_stream_messages_kwarg(
+    mock_create, fixture_chat_completion_chunk
+):
+    """Tests that `AsyncOpenAIChat.stream` works with a messages kwarg."""
+    mock_create.__aiter__.return_value = [fixture_chat_completion_chunk] * 3
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model, api_key="test")
     messages = [{"role": "user", "content": "content"}]
     stream = chat.stream(messages=messages)
 
-    for chunk in stream:
+    async for chunk in stream:
         pass  # we need to call the generator to check the mock create calls
 
     mock_create.assert_called_once_with(
@@ -179,16 +167,16 @@ def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_
 
 
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
     side_effect=Exception("base exception"),
 )
-def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
-    """Tests that `OpenAIChat` handles openai errors thrown during stream."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+async def test_async_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
+    """Tests that `AsyyncOpenAIChat` handles OpenAI errors thrown during stream."""
+    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
-        stream = chat.stream(fixture_foobar_prompt)
-        for chunk in stream:
+        astream = chat.stream(fixture_foobar_prompt)
+        async for chunk in astream:
             pass
 
 
@@ -206,10 +194,13 @@ class MySchemaTool(OpenAITool):
     optional: int = 0
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@patch(
+    "mirascope.chat.models.AsyncOpenAIChat.create",
+    new_callable=AsyncMock,
+)
 @pytest.mark.parametrize("prompt", [Prompt(), "This is a test prompt."])
 @pytest.mark.parametrize("retries", [1, 3, 5])
-def test_openai_chat_extract(
+async def test_async_openai_chat_extract(
     mock_create,
     prompt,
     retries,
@@ -217,14 +208,14 @@ def test_openai_chat_extract(
     fixture_my_tool_instance,
     fixture_chat_completion_with_tools,
 ):
-    """Tests that `OpenAIChat` can be extracted from a `Chat`."""
+    """Tests that `AsyncOpenAIChat` can be extracted from a `Chat`."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     prompt = Prompt()
-    model = chat.extract(MySchema, prompt, retries=retries)
+    model = await chat.extract(MySchema, prompt, retries=retries)
 
     mock_create.assert_called_once()
 
@@ -239,36 +230,42 @@ def test_openai_chat_extract(
     assert model.model_dump() == fixture_my_tool_instance.model_dump()
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
-def test_openai_chat_extract_messages_prompt(
+@patch(
+    "mirascope.chat.models.AsyncOpenAIChat.create",
+    new_callable=AsyncMock,
+)
+async def test_async_openai_chat_extract_messages_prompt(
     mock_create, fixture_my_tool, fixture_chat_completion_with_tools
 ):
-    """Tests that `OpenAIChat.extract` works with a messages prompt."""
+    """Tests that `AsyncOpenAIChat.extract` works with a messages prompt."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     messages = [{"role": "user", "content": "content"}]
-    model = chat.extract(MySchema, messages=messages)
+    model = await chat.extract(MySchema, messages=messages)
 
     mock_create.assert_called_once()
     assert isinstance(model, MySchema)
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@patch(
+    "mirascope.chat.models.AsyncOpenAIChat.create",
+    new_callable=AsyncMock,
+)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
-def test_openai_chat_extract_with_validation_error(
+async def test_async_openai_chat_extract_with_validation_error(
     mock_create, retries, fixture_my_tool, fixture_chat_completion_with_bad_tools
 ):
-    """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails."""
+    """Tests that `AsyncOpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_bad_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     prompt = Prompt()
     with pytest.raises(ValidationError):
-        chat.extract(MySchema, prompt, retries=retries)
+        await chat.extract(MySchema, prompt, retries=retries)
 
     assert mock_create.call_count == retries + 1
