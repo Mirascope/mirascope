@@ -1,6 +1,5 @@
 """Class for interacting with AsyncOpenAI through Chat APIs."""
 import logging
-from inspect import isclass
 from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
 
 from openai import AsyncOpenAI
