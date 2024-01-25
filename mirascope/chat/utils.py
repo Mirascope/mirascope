@@ -1,7 +1,7 @@
 """Utility functions for mirascope chat."""
 
-from inspect import Parameter, signature
-from typing import Any, Callable, Type, Union, cast, get_type_hints
+from inspect import Parameter, isclass, signature
+from typing import Any, Callable, Optional, Type, Union, cast, get_type_hints
 
 from docstring_parser import parse
 from openai.types.chat import ChatCompletionMessageParam
@@ -12,24 +12,43 @@ from ..prompts import Prompt
 from .tools import OpenAITool, openai_tool_fn
 
 
-def _get_openai_chat_messages(
-    prompt: Prompt,
-) -> list[ChatCompletionMessageParam]:
-    """Returns a list of messages parsed from the prompt."""
-    return [
-        cast(ChatCompletionMessageParam, {"role": role, "content": content})
-        for role, content in prompt.messages
-    ]
-
-
 def get_openai_messages_from_prompt(
     prompt: Union[Prompt, str],
 ) -> list[ChatCompletionMessageParam]:
     """Returns a list of messages parsed from the prompt."""
     if isinstance(prompt, Prompt):
-        return _get_openai_chat_messages(prompt)
+        return [
+            cast(ChatCompletionMessageParam, {"role": role, "content": content})
+            for role, content in prompt.messages
+        ]
     else:
         return [cast(ChatCompletionMessageParam, {"role": "user", "content": prompt})]
+
+
+def setup_openai_kwargs(
+    kwargs: dict[str, Any],
+    prompt: Optional[Union[Prompt, str]],
+    tools: Optional[list[Union[Callable, Type[OpenAITool]]]],
+) -> Optional[list[Type[OpenAITool]]]:
+    """Sets up the kwargs for an OpenAI API call."""
+    if prompt is None:
+        if "messages" not in kwargs:
+            raise ValueError("Either `prompt` or `messages` must be provided.")
+    else:
+        kwargs["messages"] = get_openai_messages_from_prompt(prompt)
+
+    if tools:
+        openai_tools: list[type[OpenAITool]] = [
+            tool if isclass(tool) else convert_function_to_openai_tool(tool)
+            for tool in tools
+        ]
+        kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
+        if "tool_choice" not in kwargs:
+            kwargs["tool_choice"] = "auto"
+
+        return openai_tools
+
+    return None
 
 
 def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
@@ -89,12 +108,6 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
             field_info.default = parameter.default
         if docstring_description:  # we check falsy here because this comes from docstr
             field_info.description = docstring_description
-
-        # field_info_kwargs = {"annotation": hints[parameter.name]}
-        # if parameter.default != Parameter.empty:
-        #     field_info_kwargs["default"] = parameter.default
-        # if docstring_description:  # we check falsy here because this comes from docstr
-        #     field_info_kwargs["description"] = docstring_description
 
         param_name = parameter.name
         if param_name.startswith("model_"):  # model_ is a BaseModel reserved namespace

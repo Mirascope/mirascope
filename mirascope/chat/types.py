@@ -8,7 +8,7 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
-from openai.types.chat.chat_completion_chunk import ChoiceDelta
+from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaToolCall
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from pydantic import BaseModel
 
@@ -88,6 +88,7 @@ class OpenAIChatCompletionChunk(BaseModel):
     """Convenience wrapper around chat completion streaming chunks."""
 
     chunk: ChatCompletionChunk
+    tool_types: Optional[list[Type[OpenAITool]]] = None
 
     @property
     def choices(self) -> list[ChunkChoice]:
@@ -108,6 +109,11 @@ class OpenAIChatCompletionChunk(BaseModel):
     def content(self) -> Optional[str]:
         """Returns the content for the 0th choice delta."""
         return self.delta.content
+
+    @property
+    def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:
+        """Returns the tool calls for the 0th choice message."""
+        return self.delta.tool_calls
 
     def __str__(self) -> str:
         """Returns the chunk content for the 0th choice."""

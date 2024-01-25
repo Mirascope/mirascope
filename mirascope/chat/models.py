@@ -1,6 +1,5 @@
 """Classes for interactings with LLMs through Chat APIs."""
 import logging
-from inspect import isclass
 from typing import Callable, Generator, Optional, Type, TypeVar, Union
 
 from openai import OpenAI
@@ -11,8 +10,7 @@ from .tools import OpenAITool
 from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from .utils import (
     convert_base_model_to_openai_tool,
-    convert_function_to_openai_tool,
-    get_openai_messages_from_prompt,
+    setup_openai_kwargs,
 )
 
 logger = logging.getLogger("mirascope")
@@ -53,26 +51,11 @@ class OpenAIChat:
         Raises:
             ValueError: if neither `prompt` nor `messages` are provided.
         """
-        if tools:
-            openai_tools: list[type[OpenAITool]] = [
-                tool if isclass(tool) else convert_function_to_openai_tool(tool)
-                for tool in tools
-            ]
-            kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
-            if "tool_choice" not in kwargs:
-                kwargs["tool_choice"] = "auto"
-
-        if not prompt:
-            if "messages" not in kwargs:
-                raise ValueError("Either `prompt` or `messages` must be provided.")
-            messages = kwargs.pop("messages")
-        else:
-            messages = get_openai_messages_from_prompt(prompt)
+        openai_tools = setup_openai_kwargs(kwargs, prompt, tools)
 
         return OpenAIChatCompletion(
             completion=self.client.chat.completions.create(
                 model=self.model,
-                messages=messages,
                 stream=False,
                 **kwargs,
             ),
@@ -82,12 +65,16 @@ class OpenAIChat:
     def stream(
         self,
         prompt: Optional[Union[Prompt, str]] = None,
+        tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
         Args:
             prompt: The `Prompt` to use for the call.
+            tools: A list of `OpenAITool` types or `Callable` functions that the
+                creation call can decide to use. If `tools` is provided, `tool_choice`
+                will be set to `auto`.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -98,22 +85,19 @@ class OpenAIChat:
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
-        if not prompt:
-            if "messages" not in kwargs:
-                raise ValueError("Either `prompt` or `messages` must be provided.")
-            messages = kwargs.pop("messages")
-        else:
-            messages = get_openai_messages_from_prompt(prompt)
+        openai_tools = setup_openai_kwargs(kwargs, prompt, tools)
 
         completion_stream = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
             stream=True,
             **kwargs,
         )
 
         for chunk in completion_stream:
-            yield OpenAIChatCompletionChunk(chunk=chunk)
+            yield OpenAIChatCompletionChunk(
+                chunk=chunk,
+                tool_types=openai_tools if tools else None,
+            )
 
     def extract(
         self,
