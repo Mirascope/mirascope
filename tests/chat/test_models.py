@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, ValidationError
 from mirascope.chat.models import OpenAIChat
 from mirascope.chat.tools import OpenAITool
 from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from mirascope.chat.utils import get_openai_chat_messages
+from mirascope.chat.utils import get_openai_messages_from_prompt
 from mirascope.prompts import Prompt
 
 
@@ -15,7 +15,14 @@ from mirascope.prompts import Prompt
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-@pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "fixture_foobar_prompt",
+        "fixture_messages_prompt",
+        "fixture_string_prompt",
+    ],
+)
 def test_openai_chat(
     mock_create,
     fixture_chat_completion,
@@ -35,7 +42,7 @@ def test_openai_chat(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_chat_messages(prompt),
+        messages=get_openai_messages_from_prompt(prompt),
         stream=False,
         temperature=0.3,
     )
@@ -45,30 +52,7 @@ def test_openai_chat(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-def test_openai_chat_string_prompt(mock_create, fixture_chat_completion):
-    """Tests that `OpenAIChat` works with a string prompt."""
-    mock_create.return_value = fixture_chat_completion
-
-    model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
-    assert chat.model == model
-
-    prompt = "This is a test prompt."
-    completion = chat.create(prompt)
-    assert isinstance(completion, OpenAIChatCompletion)
-
-    mock_create.assert_called_once_with(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        stream=False,
-    )
-
-
-@patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
-)
-def test_openai_chat_messages_prompt(mock_create, fixture_chat_completion):
+def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
     """Tests that `OpenAIChat` works with a messages prompt."""
     mock_create.return_value = fixture_chat_completion
 
@@ -112,7 +96,7 @@ def test_openai_chat_tools(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_chat_messages(prompt),
+        messages=get_openai_messages_from_prompt(prompt),
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
@@ -135,7 +119,14 @@ def test_openai_chat_error(mock_create, fixture_foobar_prompt):
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-@pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "fixture_foobar_prompt",
+        "fixture_messages_prompt",
+        "fixture_string_prompt",
+    ],
+)
 def test_openai_chat_stream(
     mock_create,
     fixture_chat_completion_chunk,
@@ -158,9 +149,32 @@ def test_openai_chat_stream(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_chat_messages(prompt),
+        messages=get_openai_messages_from_prompt(prompt),
         stream=True,
         temperature=0.3,
+    )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_chunk):
+    """Tests that `OpenAIChat.stream` works with a messages kwarg."""
+    mock_create.return_value = [fixture_chat_completion_chunk] * 3
+
+    model = "gpt-3.5-turbo-16k"
+    chat = OpenAIChat(model, api_key="test")
+    messages = [{"role": "user", "content": "content"}]
+    stream = chat.stream(messages=messages)
+
+    for chunk in stream:
+        pass  # we need to call the generator to check the mock create calls
+
+    mock_create.assert_called_once_with(
+        model=model,
+        messages=messages,
+        stream=True,
     )
 
 
@@ -193,9 +207,11 @@ class MySchemaTool(OpenAITool):
 
 
 @patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@pytest.mark.parametrize("prompt", [Prompt(), "This is a test prompt."])
 @pytest.mark.parametrize("retries", [1, 3, 5])
 def test_openai_chat_extract(
     mock_create,
+    prompt,
     retries,
     fixture_my_tool,
     fixture_my_tool_instance,
@@ -208,7 +224,7 @@ def test_openai_chat_extract(
     )
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     prompt = Prompt()
-    model = chat.extract(prompt, MySchema, retries=retries)
+    model = chat.extract(MySchema, prompt, retries=retries)
 
     mock_create.assert_called_once()
 
@@ -224,6 +240,23 @@ def test_openai_chat_extract(
 
 
 @patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+def test_openai_chat_extract_messages_prompt(
+    mock_create, fixture_my_tool, fixture_chat_completion_with_tools
+):
+    """Tests that `OpenAIChat.extract` works with a messages prompt."""
+    tools = [fixture_my_tool]
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_tools, tool_types=tools
+    )
+    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    messages = [{"role": "user", "content": "content"}]
+    model = chat.extract(MySchema, messages=messages)
+
+    mock_create.assert_called_once()
+    assert isinstance(model, MySchema)
+
+
+@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
 def test_openai_chat_extract_with_validation_error(
     mock_create, retries, fixture_my_tool, fixture_chat_completion_with_bad_tools
@@ -236,6 +269,6 @@ def test_openai_chat_extract_with_validation_error(
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     prompt = Prompt()
     with pytest.raises(ValidationError):
-        chat.extract(prompt, MySchema, retries=retries)
+        chat.extract(MySchema, prompt, retries=retries)
 
     assert mock_create.call_count == retries + 1

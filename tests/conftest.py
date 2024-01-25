@@ -66,6 +66,20 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
 
 
 @pytest.fixture()
+def fixture_string_prompt() -> str:
+    """Returns a string prompt."""
+    return "This is a test prompt."
+
+
+@pytest.fixture()
+def fixture_expected_string_prompt_messages(
+    fixture_string_prompt,
+) -> list[tuple[str, str]]:
+    """Returns the expected messages parsed from `fixture_string_prompt`."""
+    return [("user", fixture_string_prompt)]
+
+
+@pytest.fixture()
 def fixture_chat_completion() -> ChatCompletion:
     """Returns a chat completion."""
     return ChatCompletion(

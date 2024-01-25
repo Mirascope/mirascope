@@ -12,7 +12,7 @@ from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from .utils import (
     convert_base_model_to_openai_tool,
     convert_function_to_openai_tool,
-    get_openai_chat_messages,
+    get_openai_messages_from_prompt,
 )
 
 logger = logging.getLogger("mirascope")
@@ -66,10 +66,8 @@ class OpenAIChat:
             if "messages" not in kwargs:
                 raise ValueError("Either `prompt` or `messages` must be provided.")
             messages = kwargs.pop("messages")
-        elif isinstance(prompt, Prompt):
-            messages = get_openai_chat_messages(prompt)
         else:
-            messages = [{"role": "user", "content": prompt}]
+            messages = get_openai_messages_from_prompt(prompt)
 
         return OpenAIChatCompletion(
             completion=self.client.chat.completions.create(
@@ -83,7 +81,7 @@ class OpenAIChat:
 
     def stream(
         self,
-        prompt: Prompt,
+        prompt: Optional[Union[Prompt, str]] = None,
         **kwargs,
     ) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -100,9 +98,16 @@ class OpenAIChat:
         Raises:
             Re-raises any exceptions thrown by the openai chat completions create call.
         """
+        if not prompt:
+            if "messages" not in kwargs:
+                raise ValueError("Either `prompt` or `messages` must be provided.")
+            messages = kwargs.pop("messages")
+        else:
+            messages = get_openai_messages_from_prompt(prompt)
+
         completion_stream = self.client.chat.completions.create(
             model=self.model,
-            messages=get_openai_chat_messages(prompt),
+            messages=messages,
             stream=True,
             **kwargs,
         )
@@ -111,14 +116,21 @@ class OpenAIChat:
             yield OpenAIChatCompletionChunk(chunk=chunk)
 
     def extract(
-        self, prompt: Union[Prompt, str], schema: Type[BaseModelT], retries: int = 0
+        self,
+        schema: Type[BaseModelT],
+        prompt: Optional[Union[Prompt, str]] = None,
+        retries: int = 0,
+        **kwargs,
     ) -> BaseModelT:
         """Extracts the given schema from the response of a chat `create` call.
 
         Args:
-            prompt: The `Prompt` from which the schema will be extracted.
             schema: The `BaseModel` schema to extract from the completion.
+            prompt: The prompt from which the schema will be extracted.
             retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword arguments to pass to the API call. You can
+                find available keyword arguments here:
+                https://platform.openai.com/docs/api-reference/chat/create
 
         Returns:
             The `Schema` instance extracted from the completion.
@@ -134,6 +146,7 @@ class OpenAIChat:
                 "type": "function",
                 "function": {"name": tool.__name__},
             },
+            **kwargs,
         )
 
         try:
@@ -143,6 +156,6 @@ class OpenAIChat:
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: update this to include failure history once prompts can handle
                 # chat history properly.
-                return self.extract(prompt, schema, retries - 1)
+                return self.extract(schema, prompt, retries - 1)
             else:
                 raise  # re-raise if we have no retries left

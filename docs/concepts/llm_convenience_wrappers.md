@@ -144,7 +144,7 @@ class BookInfo(BaseModel):
     title: str
     author: str
 
-book_info = chat.extract("The Name of the Wind is by Patrick Rothfuss.", BookInfo)
+book_info = chat.extract(BookInfo, "The Name of the Wind is by Patrick Rothfuss.")
 assert isinstance(book_info, BookInfo)
 assert book_info.model_dump() == {
     "title": "The Name of the Wind",
@@ -158,8 +158,8 @@ Often you will want to retry your query in the event of a `ValidationError` when
 
 ```python
 book_info = chat.extract(
-    "The Name of the Wind is by Patrick Rothfuss.",
     BookInfo,
+    "The Name of the Wind is by Patrick Rothfuss.",
     retries=5,  # this will result in 6 total creation attempts if it never succeeds
 )
 ```

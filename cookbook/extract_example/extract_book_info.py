@@ -11,8 +11,8 @@ class BookInfo(BaseModel):
 
 chat = OpenAIChat(model="gpt-3.5-turbo-1106")
 book_info = chat.extract(
-    "The Name of the Wind is by Patrick Rothfuss.",
     BookInfo,
+    "The Name of the Wind is by Patrick Rothfuss.",
     retries=5,
 )
 print(book_info)

@@ -1,7 +1,7 @@
 """Utility functions for mirascope chat."""
 
 from inspect import Parameter, signature
-from typing import Any, Callable, Type, cast, get_type_hints
+from typing import Any, Callable, Optional, Type, Union, cast, get_type_hints
 
 from docstring_parser import parse
 from openai.types.chat import ChatCompletionMessageParam
@@ -12,7 +12,7 @@ from ..prompts import Prompt
 from .tools import OpenAITool, openai_tool_fn
 
 
-def get_openai_chat_messages(
+def _get_openai_chat_messages(
     prompt: Prompt,
 ) -> list[ChatCompletionMessageParam]:
     """Returns a list of messages parsed from the prompt."""
@@ -20,6 +20,16 @@ def get_openai_chat_messages(
         cast(ChatCompletionMessageParam, {"role": role, "content": content})
         for role, content in prompt.messages
     ]
+
+
+def get_openai_messages_from_prompt(
+    prompt: Union[Prompt, str],
+) -> list[ChatCompletionMessageParam]:
+    """Returns a list of messages parsed from the prompt."""
+    if isinstance(prompt, Prompt):
+        return _get_openai_chat_messages(prompt)
+    else:
+        return [cast(ChatCompletionMessageParam, {"role": "user", "content": prompt})]
 
 
 def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
