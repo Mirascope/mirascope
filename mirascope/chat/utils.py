@@ -84,22 +84,28 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
                 raise ValueError("All parameters must have a description.")
             docstring_description = docstring_param.description
 
-        field_info_kwargs = {"annotation": hints[parameter.name]}
+        field_info = FieldInfo(annotation=hints[parameter.name])
         if parameter.default != Parameter.empty:
-            field_info_kwargs["default"] = parameter.default
+            field_info.default = parameter.default
         if docstring_description:  # we check falsy here because this comes from docstr
-            field_info_kwargs["description"] = docstring_description
+            field_info.description = docstring_description
+
+        # field_info_kwargs = {"annotation": hints[parameter.name]}
+        # if parameter.default != Parameter.empty:
+        #     field_info_kwargs["default"] = parameter.default
+        # if docstring_description:  # we check falsy here because this comes from docstr
+        #     field_info_kwargs["description"] = docstring_description
 
         param_name = parameter.name
-        if "model_" in param_name:
+        if param_name.startswith("model_"):  # model_ is a BaseModel reserved namespace
             param_name = "aliased_" + param_name
-            field_info_kwargs["alias"] = parameter.name
-            field_info_kwargs["validation_alias"] = parameter.name
-            field_info_kwargs["serialization_alias"] = parameter.name
+            field_info.alias = parameter.name
+            field_info.validation_alias = parameter.name
+            field_info.serialization_alias = parameter.name
 
         field_definitions[param_name] = (
             hints[parameter.name],
-            FieldInfo(**field_info_kwargs),
+            field_info,
         )
 
     return create_model(
@@ -122,7 +128,7 @@ def convert_base_model_to_openai_tool(schema: Type[BaseModel]) -> Type[OpenAIToo
         for field_name, field_info in schema.model_fields.items()
     }
     return create_model(
-        schema.__name__ + "Tool",
+        f"{schema.__name__}Tool",
         __base__=OpenAITool,
         __doc__=schema.__doc__ if schema.__doc__ else internal_doc,
         **cast(dict[str, Any], field_definitions),
