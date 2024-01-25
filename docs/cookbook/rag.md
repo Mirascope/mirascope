@@ -118,6 +118,7 @@ def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
     words = text.split()
     num_splits = len(tokens) // max_tokens + 1
     split_texts = []
+
     for i in range(num_splits):
         start = i * len(words) // num_splits
         end = (i + 1) * len(words) // num_splits
@@ -140,6 +141,7 @@ for i, row in df.iterrows():
     text = row[TEXT_COLUMN]
     tokens = encoder.encode(text)
     max_tokens = 1000
+    
     if len(tokens) > max_tokens:
         split_articles += split_text(text, tokens, max_tokens)
         df.drop(i, inplace=True)
