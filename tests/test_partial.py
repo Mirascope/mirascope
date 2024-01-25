@@ -44,8 +44,6 @@ class PartialDeeperModel(BaseModel):
 
 def test_deeper_partial():
     """Tests that `Partial` works to make all fields optional in a deeper model."""
-    print(Partial[DeeperModel].model_json_schema())
-    print(PartialDeeperModel.model_json_schema())
     assert (
         Partial[DeeperModel].model_json_schema()
         == PartialDeeperModel.model_json_schema()

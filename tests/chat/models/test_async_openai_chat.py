@@ -180,7 +180,7 @@ async def test_async_openai_chat_stream_messages_kwarg(
 async def test_async_openai_chat_stream_tools(
     mock_create, fixture_chat_completion_chunk_with_tools, prompt, tools, request
 ):
-    """Tests that `OpenAIChat` returns the expected response when called with tools."""
+    """Tests `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
