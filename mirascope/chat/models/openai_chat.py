@@ -1,6 +1,5 @@
 """Class for interacting with OpenAI through Chat APIs."""
 import logging
-from inspect import isclass
 from typing import Callable, Generator, Optional, Type, TypeVar, Union
 
 from openai import OpenAI
@@ -11,8 +10,8 @@ from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from ..utils import (
     convert_base_model_to_openai_tool,
-    convert_function_to_openai_tool,
-    get_openai_messages_from_prompt,
+    convert_tools_list_to_openai_tools,
+    patch_openai_kwargs,
 )
 
 logger = logging.getLogger("mirascope")
@@ -41,7 +40,7 @@ class OpenAIChat:
                 will attempt to use the `messages` keyword argument.
             tools: A list of `OpenAITool` types or `Callable` functions that the
                 creation call can decide to use. If `tools` is provided, `tool_choice`
-                will be set to `auto`.
+                will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -54,26 +53,12 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        if tools:
-            openai_tools: list[type[OpenAITool]] = [
-                tool if isclass(tool) else convert_function_to_openai_tool(tool)
-                for tool in tools
-            ]
-            kwargs["tools"] = [tool.tool_schema() for tool in openai_tools]
-            if "tool_choice" not in kwargs:
-                kwargs["tool_choice"] = "auto"
-
-        if not prompt:
-            if "messages" not in kwargs:
-                raise ValueError("Either `prompt` or `messages` must be provided.")
-            messages = kwargs.pop("messages")
-        else:
-            messages = get_openai_messages_from_prompt(prompt)
+        openai_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, prompt, openai_tools)
 
         return OpenAIChatCompletion(
             completion=self.client.chat.completions.create(
                 model=self.model,
-                messages=messages,
                 stream=False,
                 **kwargs,
             ),
@@ -83,12 +68,16 @@ class OpenAIChat:
     def stream(
         self,
         prompt: Optional[Union[Prompt, str]] = None,
+        tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
         Args:
             prompt: The `Prompt` to use for the call.
+            tools: A list of `OpenAITool` types or `Callable` functions that the
+                creation call can decide to use. If `tools` is provided, `tool_choice`
+                will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -101,22 +90,20 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        if not prompt:
-            if "messages" not in kwargs:
-                raise ValueError("Either `prompt` or `messages` must be provided.")
-            messages = kwargs.pop("messages")
-        else:
-            messages = get_openai_messages_from_prompt(prompt)
+        openai_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, prompt, openai_tools)
 
         completion_stream = self.client.chat.completions.create(
             model=self.model,
-            messages=messages,
             stream=True,
             **kwargs,
         )
 
         for chunk in completion_stream:
-            yield OpenAIChatCompletionChunk(chunk=chunk)
+            yield OpenAIChatCompletionChunk(
+                chunk=chunk,
+                tool_types=openai_tools if tools else None,
+            )
 
     def extract(
         self,
