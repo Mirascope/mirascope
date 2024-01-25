@@ -36,12 +36,12 @@ mkdocstrings-python = "^1.1.2"
 
 [tool.poetry.group.cookbook.dependencies]
 fastapi = "^0.109.0"
-uvicorn = {extras = ["standard"], version = "^0.27.0"}
 numpy = "^1.26.3"
 pandas = "^2.2.0"
 pandas-stubs = "^2.1.4.231227"
 tiktoken = "^0.5.2"
 pinecone-client = "^3.0.1"
+uvicorn = {extras = ["standard"], version = "^0.27.0"}
 
 [tool.ruff]
 exclude = [
