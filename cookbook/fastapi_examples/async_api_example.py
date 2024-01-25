@@ -1,5 +1,7 @@
-"""An asynchronous FastAPI app integrated with a multi-chain prompt for recommending books on a topic 
-and then asking which one is the best for beginners.
+"""An asynchronous FastAPI app integrated with a multi-chain prompt.
+
+The root API endpoint first recommends some books on a topic and then narrows the list 
+down with the most beginner friendly.
 
 How to Run:
 

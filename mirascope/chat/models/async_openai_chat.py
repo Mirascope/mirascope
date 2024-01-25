@@ -33,7 +33,7 @@ class AsyncOpenAIChat:
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
-        """Asynchronously Makes a call to the model using `prompt`.
+        """Asynchronously makes a call to the model using `prompt`.
 
         Args:
             prompt: The prompt to use for the call. This can either be a `Prompt`
@@ -51,6 +51,8 @@ class AsyncOpenAIChat:
 
         Raises:
             ValueError: if neither `prompt` nor `messages` are provided.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         if tools:
             openai_tools: list[type[OpenAITool]] = [
@@ -95,9 +97,11 @@ class AsyncOpenAIChat:
             A `OpenAIChatCompletionChunk` for each chunk of the response.
 
         Raises:
-            Re-raises any exceptions thrown by the openai chat completions
-            when iterating through the generator.
+            ValueError: if neither `prompt` nor `messages` are provided.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        # TODO: move this to utils
         if not prompt:
             if "messages" not in kwargs:
                 raise ValueError("Either `prompt` or `messages` must be provided.")
@@ -122,7 +126,7 @@ class AsyncOpenAIChat:
         retries: int = 0,
         **kwargs,
     ) -> BaseModelT:
-        """Asynchronously extracts the given schema from the response of a chat `create` call.
+        """Extracts the given schema from the response of a chat `create` call async.
 
         Args:
             schema: The `BaseModel` schema to extract from the completion.
@@ -137,6 +141,8 @@ class AsyncOpenAIChat:
 
         Raises:
             ValidationError: if the schema cannot be instantiated from the completion.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         tool = convert_base_model_to_openai_tool(schema)
         completion = await self.create(

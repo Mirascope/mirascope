@@ -51,6 +51,8 @@ class OpenAIChat:
 
         Raises:
             ValueError: if neither `prompt` nor `messages` are provided.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         if tools:
             openai_tools: list[type[OpenAITool]] = [
@@ -95,8 +97,9 @@ class OpenAIChat:
             A `OpenAIChatCompletionChunk` for each chunk of the response.
 
         Raises:
-            Re-raises any exceptions thrown by the openai chat completions
-            when iterating through the generator.
+            ValueError: if neither `prompt` nor `messages` are provided.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         if not prompt:
             if "messages" not in kwargs:
@@ -137,6 +140,8 @@ class OpenAIChat:
 
         Raises:
             ValidationError: if the schema cannot be instantiated from the completion.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         tool = convert_base_model_to_openai_tool(schema)
         completion = self.create(

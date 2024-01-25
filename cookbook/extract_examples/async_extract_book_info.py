@@ -1,5 +1,4 @@
-"""An example script for extracting the title of a book and author given some string 
-asynchronously.
+"""An async script for extracting the title of a book and author given some string.
 """
 import asyncio
 import os

@@ -109,7 +109,7 @@ def test_openai_chat_tools(
     side_effect=Exception("base exception"),
 )
 def test_openai_chat_error(mock_create, fixture_foobar_prompt):
-    """Tests that `OpenAIChat` handles OpenAI errors thrown during __call__."""
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
         chat.create(fixture_foobar_prompt)
