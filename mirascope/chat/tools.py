@@ -5,11 +5,13 @@ import json
 from typing import Callable, Optional, Type, TypeVar, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class OpenAITool(BaseModel):
     """A base class for more easily using tools with the OpenAI Chat client."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def fn(self) -> Optional[Callable]:
@@ -45,14 +47,26 @@ class OpenAITool(BaseModel):
                     }
                     for prop, prop_schema in model_schema["properties"].items()
                 },
-                "required": model_schema["required"],
+                "required": model_schema["required"]
+                if "required" in model_schema
+                else [],
             }
 
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
 
     @classmethod
     def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
-        """Returns an instance of the tool constructed from a tool call response."""
+        """Extracts an instance of the tool constructed from a tool call response.
+
+        Args:
+            tool_call: The `ChatCompmletionMessageToolCall` to extract the tool from.
+
+        Returns:
+            An instance of the tool constructed from the tool call.
+
+        Raises:
+            ValidationError: if the tool call doesn't match the tool schema.
+        """
         return cls(**json.loads(tool_call.function.arguments))
 
 
