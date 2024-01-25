@@ -99,6 +99,7 @@ nav:
       - Chaining: "cookbook/chaining.md"
       - Movie Bot: "cookbook/movie_bot.md"
       - Tools: "cookbook/tools.md"
+      - FastAPI Integration: "cookbook/fastapi.md"
   - API Reference:
       - chat:
           - "api/chat/index.md"

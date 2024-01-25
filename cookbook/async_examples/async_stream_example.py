@@ -22,8 +22,8 @@ model = AsyncOpenAIChat()
 
 async def stream_book_recommendation():
     """Asynchronously streams the response for a call to the model using `prompt`."""
-    stream = model.stream(prompt)
-    async for chunk in stream:
+    astream = model.stream(prompt)
+    async for chunk in astream:
         print(chunk, end="")
 
 
