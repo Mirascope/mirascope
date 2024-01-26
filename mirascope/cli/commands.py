@@ -4,6 +4,7 @@ This module contains the commands for the Mirascope CLI. The commands are add, s
 use, and init. See the documentation for each command for more information.
 """
 import os
+import subprocess
 from importlib.resources import files
 from pathlib import Path
 
@@ -50,6 +51,11 @@ def add(args) -> None:
         return
     class_directory = os.path.join(version_directory_path, directory_name)
 
+    # Check if prompt file exists
+    if not os.path.exists(f"{prompt_directory_path}/{directory_name}.py"):
+        raise FileNotFoundError(
+            f"Prompt {directory_name}.py not found in {prompt_directory_path}"
+        )
     # Create version directory if it doesn't exist
     if not os.path.exists(class_directory):
         os.makedirs(class_directory)
@@ -69,8 +75,11 @@ def add(args) -> None:
             latest_revision_id = versions.latest_revision
             revision_id = f"{int(latest_revision_id)+1:04}"
         # Create revision file
+        revision_file = os.path.join(
+            class_directory, f"{revision_id}_{directory_name}.py"
+        )
         with open(
-            f"{class_directory}/{revision_id}_{directory_name}.py",
+            revision_file,
             "w+",
             encoding="utf-8",
         ) as file2:
@@ -88,7 +97,19 @@ def add(args) -> None:
                 LATEST_REVISION_KEY: revision_id,
             }
             update_version_text_file(version_file_path, keys_to_update)
-
+    if revision_file:
+        if mirascope_settings.format_command:
+            format_command: list[str] = mirascope_settings.format_command.split()
+            format_command.append(revision_file)
+            subprocess.run(
+                format_command,
+                check=True,
+                capture_output=True,
+            )
+        else:
+            subprocess.run(
+                ["ruff", "format", revision_file], check=True, capture_output=True
+            )
     print(
         "Adding "
         f"{version_directory_path}/{directory_name}/{revision_id}_{directory_name}.py"

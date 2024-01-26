@@ -232,9 +232,9 @@ class PromptAnalyzer(ast.NodeVisitor):
         }
 
         # Extract docstring if present
-        docstring = ast.get_docstring(node)
+        docstring = ast.get_docstring(node, False)
         if docstring:
-            class_info["docstring"] = '"""' + docstring + '"""'
+            class_info["docstring"] = docstring
 
         # Handle the rest of the class body
         body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
@@ -250,7 +250,7 @@ class PromptAnalyzer(ast.NodeVisitor):
 
     def visit_Module(self, node):
         """Extracts comments from the given node."""
-        comments = ast.get_docstring(node)
+        comments = ast.get_docstring(node, False)
         self.comments = "" if comments is None else comments
         self.generic_visit(node)
 

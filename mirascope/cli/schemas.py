@@ -11,6 +11,7 @@ class MirascopeSettings(BaseModel):
     versions_location: str
     prompts_location: str
     version_file_name: str
+    format_command: Optional[str] = None
 
     model_config = ConfigDict(extra="forbid")
 
