@@ -19,7 +19,7 @@ def get_user_mirascope_settings(
     ini_file_path: str = "mirascope.ini",
 ) -> MirascopeSettings:
     """Returns the user's mirascope settings."""
-    config = ConfigParser()
+    config = ConfigParser(allow_no_value=True)
     config.read(ini_file_path)
     return MirascopeSettings(**config["mirascope"])
 

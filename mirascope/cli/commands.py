@@ -106,10 +106,6 @@ def add(args) -> None:
                 check=True,
                 capture_output=True,
             )
-        else:
-            subprocess.run(
-                ["ruff", "format", revision_file], check=True, capture_output=True
-            )
     print(
         "Adding "
         f"{version_directory_path}/{directory_name}/{revision_id}_{directory_name}.py"
