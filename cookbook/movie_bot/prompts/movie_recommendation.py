@@ -1,6 +1,7 @@
 """A prompt for recommending movies of a particular genre."""
 from mirascope.prompts import Prompt, messages
 
+
 @messages
 class MovieRecommendationPrompt(Prompt):
     """

@@ -248,6 +248,15 @@ def use(
     prompt_file_path = os.path.join(prompt_directory_path, f"{prompt_file_name}.py")
     with open(prompt_file_path, "w+", encoding="utf-8") as file2:
         file2.write(write_prompt_to_template(content, MirascopeCommand.USE))
+    if prompt_file_path:
+        if mirascope_settings.format_command:
+            format_command: list[str] = mirascope_settings.format_command.split()
+            format_command.append(prompt_file_path)
+            subprocess.run(
+                format_command,
+                check=True,
+                capture_output=True,
+            )
 
     # Update version file with new current revision
     keys_to_update = {
