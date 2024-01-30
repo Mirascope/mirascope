@@ -1,29 +1,29 @@
 import abc
+
 import inspect
+
 import os
 
-import pandas as pd
+import pandas
+
 from config import PINECONE_INDEX, TEXT_COLUMN
+
 from dotenv import load_dotenv
+
 from pinecone import Pinecone
+
 from pydantic import ConfigDict
+
 from utils import query_dataframe, query_pinecone
 
-from mirascope import OpenAIChat, Prompt, messages
+from mirascope import OpenAIChat, Prompt
 
-load_dotenv()
+prev_revision_id = "None"
+revision_id = "0001"
 
 
-@messages
 class NewsRagPrompt(Prompt, abc.ABC):
     """
-    SYSTEM: You are an expert at 1) determining the relevancy of articles to a topic and
-    2) summarizing articles concisely and eloquently. When given a topic and a list of
-    texts that supposedly go along with it, you determine for each article if it is
-    truly relevant to the topic, and only if so, do you summarize it. You format your
-    responses as only a list, where each item is a summary of an article or an
-    explanation as to why it is not relevant.
-
     USER: Here are {num_statements} article snippets about this topic: {topic}
 
     {context}
@@ -34,7 +34,6 @@ class NewsRagPrompt(Prompt, abc.ABC):
     num_statements: int
     topic: str
     df: pd.DataFrame
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
@@ -50,7 +49,6 @@ class LocalNewsRagPrompt(NewsRagPrompt):
     @property
     def context(self) -> str:
         """Finds most similar articles in dataframe using embeddings."""
-
         statements = query_dataframe(
             df=self.df,
             query=self.topic,
@@ -58,15 +56,13 @@ class LocalNewsRagPrompt(NewsRagPrompt):
             chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
         )
         return "\n".join(
-            [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
+            [f"{i + 1}. {statement}" for (i, statement) in enumerate(statements)]
         )
 
 
 class PineconeNewsRagPrompt(NewsRagPrompt):
     __doc__ = inspect.getdoc(NewsRagPrompt)
-
     _index: Pinecone.Index
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __init__(self, **data):
@@ -85,5 +81,5 @@ class PineconeNewsRagPrompt(NewsRagPrompt):
         )
         statements = self.df.iloc[indices][TEXT_COLUMN].to_list()
         return "\n".join(
-            [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
+            [f"{i + 1}. {statement}" for (i, statement) in enumerate(statements)]
         )
