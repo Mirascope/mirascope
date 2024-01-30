@@ -1,20 +1,42 @@
-"""Commands for Mirascope CLI.
+"""The Mirascope CLI prompt management tool.
 
-This module contains the commands for the Mirascope CLI. The commands are add, status, 
-use, and init. See the documentation for each command for more information.
+Typical usage example:
+
+    Initialize the environment:
+        $ mirascope init mirascope
+
+    Create a prompt in the prompts directory:
+        prompts/my_prompt.py
+    
+    Add the prompt to create a version:
+        $ mirascope add my_prompt
+
+    Iterate on the prompt in the prompts directory:
+
+    Check the status of the prompt:
+        $ mirascope status my_prompt
+
+    Add the prompt to create a new version:
+        $ mirascope add my_prompt
+
+    Switch between prompts:
+        $ mirascope use my_prompt 0001
 """
 import os
 import subprocess
 from importlib.resources import files
 from pathlib import Path
+from typing import Optional
 
 from jinja2 import Template
+from typer import Argument, Option, Typer
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
 from .schemas import MirascopeSettings
 from .utils import (
     check_status,
+    find_file_names,
     find_prompt_path,
     get_prompt_versions,
     get_user_mirascope_settings,
@@ -22,9 +44,32 @@ from .utils import (
     write_prompt_to_template,
 )
 
+app = Typer()
 
-# TODO: Add something like Typer to make commands easier to implement
-def add(args) -> None:
+
+def _prompts_directory_files() -> list[str]:
+    """Returns a list of files in the user's prompts directory."""
+    mirascope_settings = get_user_mirascope_settings()
+    prompt_file_names = find_file_names(mirascope_settings.prompts_location)
+    return [f"{name[:-3]}" for name in prompt_file_names]  # remove .py extension
+
+
+def _parse_prompt_file_name(prompt_file_name: str) -> str:
+    """Returns the directory name without the .py extension."""
+    if prompt_file_name.endswith(".py"):
+        return prompt_file_name[:-3]
+    return prompt_file_name
+
+
+@app.command(help="Add a prompt")
+def add(
+    prompt_file_name: str = Argument(
+        help="Prompt file to add",
+        autocompletion=_prompts_directory_files,
+        parser=_parse_prompt_file_name,
+        default="",
+    ),
+):
     """Adds the given prompt to the specified version directory.
 
     The contents of the prompt in the user's prompts directory are copied to the version
@@ -32,8 +77,7 @@ def add(args) -> None:
     new revision.
 
     Args:
-        args: The command line arguments for the `add` command, containing:
-            - `prompt`: The name of the prompt to add.
+        prompt_file_name: The name of the prompt file to add.
 
     Raises:
         FileNotFoundError: If the file is not found in the specified prompts directory.
@@ -42,19 +86,18 @@ def add(args) -> None:
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
-    directory_name: str = args.prompt
 
     # Check status before continuing
-    used_prompt_path = check_status(mirascope_settings, directory_name)
+    used_prompt_path = check_status(mirascope_settings, prompt_file_name)
     if not used_prompt_path:
         print("No changes detected.")
         return
-    class_directory = os.path.join(version_directory_path, directory_name)
+    class_directory = os.path.join(version_directory_path, prompt_file_name)
 
     # Check if prompt file exists
-    if not os.path.exists(f"{prompt_directory_path}/{directory_name}.py"):
+    if not os.path.exists(f"{prompt_directory_path}/{prompt_file_name}.py"):
         raise FileNotFoundError(
-            f"Prompt {directory_name}.py not found in {prompt_directory_path}"
+            f"Prompt {prompt_file_name}.py not found in {prompt_directory_path}"
         )
     # Create version directory if it doesn't exist
     if not os.path.exists(class_directory):
@@ -64,7 +107,7 @@ def add(args) -> None:
 
     # Open user's prompt file
     with open(
-        f"{prompt_directory_path}/{directory_name}.py", "r+", encoding="utf-8"
+        f"{prompt_directory_path}/{prompt_file_name}.py", "r+", encoding="utf-8"
     ) as file:
         # Increment revision id
         if versions.latest_revision is None:
@@ -76,7 +119,7 @@ def add(args) -> None:
             revision_id = f"{int(latest_revision_id)+1:04}"
         # Create revision file
         revision_file = os.path.join(
-            class_directory, f"{revision_id}_{directory_name}.py"
+            class_directory, f"{revision_id}_{prompt_file_name}.py"
         )
         with open(
             revision_file,
@@ -108,11 +151,18 @@ def add(args) -> None:
             )
     print(
         "Adding "
-        f"{version_directory_path}/{directory_name}/{revision_id}_{directory_name}.py"
+        f"{version_directory_path}/{prompt_file_name}/{revision_id}_{prompt_file_name}.py"
     )
 
 
-def status(args) -> None:
+@app.command(help="Check status of prompt(s)")
+def status(
+    prompt_file_name: Optional[str] = Argument(
+        help="Prompt to check status on",
+        autocompletion=_prompts_directory_files,
+        parser=_parse_prompt_file_name,
+    ),
+) -> None:
     """Checks the status of the current prompt or prompts.
 
     If a prompt is specified, the status of that prompt is checked. Otherwise, the
@@ -120,19 +170,17 @@ def status(args) -> None:
     is printed.
 
     Args:
-        args: The command line arguments for the `status` command, containing:
-            - `directory_name`: (Optional) The name of the directory to check status on.
+        prompt_file_name: (Optional) The name of the prompt file to check status on.
 
     Raises:
         FileNotFoundError: If the file is not found in the specified prompts directory.
     """
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings.versions_location
-    directory_name: str = args.directory_name
 
     # If a prompt is specified, check the status of that prompt
-    if directory_name:
-        used_prompt_path = check_status(mirascope_settings, directory_name)
+    if prompt_file_name:
+        used_prompt_path = check_status(mirascope_settings, prompt_file_name)
         if used_prompt_path:
             print(f"Prompt {used_prompt_path} has changed.")
         else:
@@ -152,7 +200,17 @@ def status(args) -> None:
             print("No changes detected.")
 
 
-def use(args) -> None:
+@app.command(help="Use a prompt")
+def use(
+    prompt_file_name: str = Argument(
+        help="Prompt file to use",
+        autocompletion=_prompts_directory_files,
+        parser=_parse_prompt_file_name,
+    ),
+    version: str = Argument(
+        help="Version of prompt to use",
+    ),
+) -> None:
     """Uses the version and prompt specified by the user.
 
     The contents of the prompt in the versions directory are copied to the user's
@@ -160,37 +218,35 @@ def use(args) -> None:
     updated with the new revision.
 
     Args:
-        args: The command line arguments for the `use` command, containing:
-            - `directory_name`: The name of the directory to use.
-            - `version`: The version of the prompt to use.
+        prompt_file_name: The name of the prompt file to use.
+        version: The version of the prompt file to use.
 
     Raises:
         FileNotFoundError: If the file is not found in the versions directory.
     """
-    directory_name = args.directory_name
-    version = args.version
     mirascope_settings = get_user_mirascope_settings()
-    used_prompt_path = check_status(mirascope_settings, directory_name)
-
+    used_prompt_path = check_status(mirascope_settings, prompt_file_name)
     # Check status before continuing
     if used_prompt_path:
         print("Changes detected, please add or delete changes first.")
-        print(f"\tmirascope add {directory_name}".expandtabs(4))
+        print(f"\tmirascope add {prompt_file_name}".expandtabs(4))
         return
-
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
-    class_directory = os.path.join(version_directory_path, directory_name)
+    class_directory = os.path.join(version_directory_path, prompt_file_name)
     revision_file_path = find_prompt_path(class_directory, version)
     version_file_path = os.path.join(class_directory, version_file_name)
-
+    if revision_file_path is None:
+        raise FileNotFoundError(
+            f"Prompt version {version} not found in {class_directory}"
+        )
     # Open versioned prompt file
     with open(revision_file_path, "r", encoding="utf-8") as file:
         content = file.read()
     # Write to user's prompt file
-    prompt_file_name = os.path.join(prompt_directory_path, f"{directory_name}.py")
-    with open(prompt_file_name, "w+", encoding="utf-8") as file2:
+    prompt_file_path = os.path.join(prompt_directory_path, f"{prompt_file_name}.py")
+    with open(prompt_file_path, "w+", encoding="utf-8") as file2:
         file2.write(write_prompt_to_template(content, MirascopeCommand.USE))
 
     # Update version file with new current revision
@@ -202,7 +258,15 @@ def use(args) -> None:
     print(f"Using {revision_file_path}")
 
 
-def init(args) -> None:
+@app.command(help="Initialize mirascope project")
+def init(
+    mirascope_location: Optional[str] = Option(
+        help="Main mirascope directory", default="mirascope"
+    ),
+    prompts_location: Optional[str] = Option(
+        help="Location of prompts directory", default="prompts"
+    ),
+) -> None:
     """Initializes the mirascope project.
 
     Creates the project structure and files needed for mirascope to work.
@@ -221,13 +285,10 @@ def init(args) -> None:
     ```
 
     Args:
-        args: The command line arguments for the `init` command, containing:
-            - `--mirascope_location`: The root mirascope directory to create.
-            - `--prompts_location`: The user's prompts directory.
+        mirascope_location: The root mirascope directory to create.
+        prompts_location: The user's prompts directory.
     """
     destination_dir = Path.cwd()
-    mirascope_location = args.mirascope_location
-    prompts_location = args.prompts_location
     versions_directory = os.path.join(mirascope_location, "versions")
     os.makedirs(versions_directory, exist_ok=True)
     print(f"Creating {destination_dir}/{versions_directory}")

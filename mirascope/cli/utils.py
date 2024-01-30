@@ -20,8 +20,20 @@ def get_user_mirascope_settings(
 ) -> MirascopeSettings:
     """Returns the user's mirascope settings."""
     config = ConfigParser(allow_no_value=True)
-    config.read(ini_file_path)
-    return MirascopeSettings(**config["mirascope"])
+    try:
+        read_ok = config.read(ini_file_path)
+        if not read_ok:
+            raise FileNotFoundError(
+                "The mirascope.ini file was not found. Please run "
+                "`mirascope init` to create one or run the mirascope CLI from the "
+                "same directory as the mirascope.ini file."
+            )
+        mirascope_config = config["mirascope"]
+        return MirascopeSettings(**mirascope_config)
+    except KeyError as e:
+        raise KeyError(
+            "The mirascope.ini file is missing the [mirascope] section."
+        ) from e
 
 
 def get_prompt_versions(version_file_path: str) -> VersionTextFile:
@@ -80,7 +92,13 @@ def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -
     return any(differences.values())
 
 
-def find_prompt_path(directory, prefix):
+def find_file_names(directory: str, prefix: str = "") -> list[str]:
+    """Finds all files in a directory."""
+    pattern = f"[!_]{prefix}*.py"  # ignores private files
+    return glob.glob(pattern, root_dir=directory)  # Returns all files found
+
+
+def find_prompt_path(directory: str, prefix: str) -> Optional[str]:
     """Finds and opens the prompt with the given directory."""
     pattern = os.path.join(directory, prefix + "*.py")
     prompt_files = glob.glob(pattern)
