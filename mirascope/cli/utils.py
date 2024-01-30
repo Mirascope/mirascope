@@ -4,7 +4,7 @@ import glob
 import os
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -98,7 +98,7 @@ def find_file_names(directory: str, prefix: str = "") -> list[str]:
     return glob.glob(pattern, root_dir=directory)  # Returns all files found
 
 
-def find_prompt_path(directory: str, prefix: str) -> Optional[str]:
+def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
     """Finds and opens the prompt with the given directory."""
     pattern = os.path.join(directory, prefix + "*.py")
     prompt_files = glob.glob(pattern)
