@@ -1,6 +1,4 @@
 """A prompt for recommending movies of a particular genre."""
-
-
 from mirascope.prompts import Prompt, messages
 
 prev_revision_id = "0002"
@@ -9,7 +7,8 @@ revision_id = "0003"
 
 @messages
 class MovieRecommendationPrompt(Prompt):
-    """SYSTEM:
+    """
+    SYSTEM:
     You are the world's most knowledgeable movie buff. You know everything there is to
     know about movies. You have likely seen every movie ever made. Your incredible
     talent is your ability to recommend movies to people using only the genre of the
@@ -19,6 +18,7 @@ class MovieRecommendationPrompt(Prompt):
     interest.
 
     USER:
-    Please recommend 3 movies in the {genre} cetegory."""
+    Please recommend 3 movies in the {genre} cetegory.
+    """
 
     genre: str
