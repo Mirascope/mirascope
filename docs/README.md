@@ -24,23 +24,38 @@
 
 ## Why use Mirascope?
 
-**Mirascope** is a library purpose-built for prompt engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
+**Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
 
-* Easy: 
+* **Intuitive**: Editor support that you expect (e.g. **autocompletion**, **inline errors**)
+* **Peace of Mind**: Pydantic together with our Prompt CLI **eliminate prompt-related bugs**.
+* **Durable**: Seamlessly customize and extend functionality. **Never maintain a fork**.
+* **Integration**: Easily integrate with **JSON Schema** and other tools such as **FastAPI**
+* **Convenience**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
 
-**Mirascope** has a number of utility classes and functions such as `Prompt` and `messages` to enable more elegant prompt engineering (according to our opinionated point of view)
+## 🚨 Warning: Strong Opinion
 
-The primary goal of **Mirascope** is to improve **deverloper experience** through **autocomplete**, **inline errors**, and **validation** by providing better support for type checking and validation tools such as **mypy** and **Pydantic**. This in turn helps to ensure code is **maintainable** and **bug-free**. 
+Prompt Engineering is just engineering. Beyond simple toy examples (that aren't useful), prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built to make building these more complex prompts as easy as possible.
 
-**Mirascope** also tries to improve **convenience** and **simplicity** when building LLM apps through lightweight convenience wrappers built around the OpenAI Python SDK. You can use the <a href="https://docs.together.ai/docs/openai-api-compatibility" target="_blank">Together AI API</a> to use these convenience wrappers with different models, such as <a href="https://mistral.ai/" target="_blank">Mistral AI</a>.
+Furthermore, the best developer experience requires the following, which we strive to uphold:
 
-## 🚨 Warning
+* *Simplicity through idiomatic syntax* -> ***Faster and more reliable releases***
+* *Semi-opinionated methods* -> ***Reduced complexity that speeds up development***
+* *Reliability through validation* -> ***More robust applications with fewer bugs***
+* *High-quality up-to-date documentation* -> ***Trust and reliability***
+
+
+Speeds up development
+Results in fewer bugs and iterations
+Helps to guarantee robust applications
+Enables faster and more reliable releases
+Reduces complexity and risk through maximal composability and customizability
+
 
 Once you go mirascope, you'll never go back...ascope
 
 ## Requirements
 
-As **Mirascope** is built on top of **Pydantic**, which is the only strict requirement and will be included automatically during installation.
+**Pydantic** is the only strict requirement, which will be included automatically during installation.
 
 The Prompt CLI and LLM Convenience Wrappers have additional requirements, which you can opt-in to include if you're using those features.
 
@@ -64,7 +79,7 @@ $ pip install mirascope[all]     #  All Extras
 
 ## How to use
 
-TBD
+WIP
 
 ## Dive Deeper
 
