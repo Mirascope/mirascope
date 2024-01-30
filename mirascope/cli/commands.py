@@ -55,7 +55,7 @@ def _prompts_directory_files() -> list[str]:
 
 
 def _parse_prompt_file_name(prompt_file_name: str) -> str:
-    """Returns the directory name without the .py extension."""
+    """Returns the file name without the .py extension."""
     if prompt_file_name.endswith(".py"):
         return prompt_file_name[:-3]
     return prompt_file_name
