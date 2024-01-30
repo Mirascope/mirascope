@@ -10,7 +10,7 @@ import os
 
 import pandas as pd
 from config import FILENAME, URL
-from prompts.news_rag_prompt import LocalNewsRagPrompt, PineconeNewsRagPrompt
+from rag_prompts.news_rag_prompt import LocalNewsRagPrompt, PineconeNewsRagPrompt
 from setup_pinecone import setup_pinecone
 from utils import embed_df_with_openai, load_data
 

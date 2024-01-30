@@ -17,14 +17,18 @@ load_dotenv()
 @messages
 class NewsRagPrompt(Prompt, abc.ABC):
     """
-    SYSTEM: You are an expert at 1) determining the relevancy of articles to a topic and
-    2) summarizing articles concisely and eloquently. When given a topic and a list of
-    texts that supposedly go along with it, you determine for each article if it is
-    truly relevant to the topic, and only if so, do you summarize it. You format your
-    responses as only a list, where each item is a summary of an article or an
-    explanation as to why it is not relevant.
+    SYSTEM:
+    You are an expert at:
+    1) determining the relevancy of articles to a topic, and
+    2) summarizing articles concisely and eloquently.
 
-    USER: Here are {num_statements} article snippets about this topic: {topic}
+    When given a topic and a list of possibly relevant texts, you determine for each
+    text if it is truly relevant to the topic, and only if so, do you summarize it. You
+    format your responses as only a list, where each item is a summary of an article or
+    an explanation as to why it is not relevant.
+
+    USER:
+    Here are {num_statements} article snippets about this topic: {topic}
 
     {context}
 
