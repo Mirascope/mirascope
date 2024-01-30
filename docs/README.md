@@ -96,10 +96,10 @@ Any and all help is greatly appreciated! Check out our page on [how you can help
 
 ## Roadmap (What's on our mind)
 
-- [ ] Better DX for Mirascope CLI (e.g. autocomplete)
+- [X] Better DX for Mirascope CLI (e.g. autocomplete)
+- [X] Functions as OpenAI tools
 - [ ] Evaluation and testing for prompts
 - [ ] Prompt logging
-- [X] Functions as OpenAI tools
 - [ ] Agents
 - [ ] RAG
 
