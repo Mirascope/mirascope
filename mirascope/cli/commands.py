@@ -260,10 +260,10 @@ def use(
 
 @app.command(help="Initialize mirascope project")
 def init(
-    mirascope_location: Optional[str] = Option(
+    mirascope_location: str = Option(
         help="Main mirascope directory", default="mirascope"
     ),
-    prompts_location: Optional[str] = Option(
+    prompts_location: str = Option(
         help="Location of prompts directory", default="prompts"
     ),
 ) -> None:
