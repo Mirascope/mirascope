@@ -42,6 +42,7 @@ pandas-stubs = "^2.1.4.231227"
 tiktoken = "^0.5.2"
 pinecone-client = "^3.0.1"
 uvicorn = {extras = ["standard"], version = "^0.27.0"}
+python-dotenv = "^1.0.1"
 
 [tool.ruff]
 exclude = [
