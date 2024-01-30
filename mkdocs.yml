@@ -87,7 +87,7 @@ plugins:
 
 nav:
   - Get Started:
-      - "README.md"
+      - Mirascope: "README.md"
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:

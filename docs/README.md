@@ -1,27 +1,47 @@
-# Getting started with Mirascope
 
-This library intends to give developers a better way to build with LLMs that integrates seamlessly into your workflow, starting with better prompt management and core LLM interaction calls. We’re building the de facto pythonic prompt templating and LLM-interaction library.
+<p align="center">
+    <a href="https://www.mirascope.io"><img src="https://uploads-ssl.webflow.com/65a6fd6a1c3b2704d6217d3d/65b5674e9ceef563dc57eb11_Medium%20length%20hero%20headline%20goes%20here.svg" width="400" alt="Mirascope"/></a>
+</p>
+
+<p align="center">
+    <em>Prompt Engineering focused on developer experience</em>
+</p>
+
+<p align="center">
+    <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
+    <a href="https://docs.mirascope.io/" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
+    <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
+    <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
+</p>
 
 ---
 
-[![GitHub stars](https://img.shields.io/github/stars/Mirascope/mirascope.svg)](https://github.com/Mirascope/mirascope/stargazers)
-[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://docs.mirascope.io/)
-[![](https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Mirascope/mirascope/actions/workflows/tests.yml)
-[![GitHub issues](https://img.shields.io/github/issues/Mirascope/mirascope.svg)](https://github.com/Mirascope/mirascope/issues)
-[![Github discussions](https://img.shields.io/github/discussions/Mirascope/mirascope)](https:github.com/Mirascope/mirascope/discussions)
-[![GitHub license](https://img.shields.io/github/license/Mirascope/mirascope.svg)](https://github.com/Mirascope/mirascope/blob/main/LICENSE)
-[![PyPI version](https://img.shields.io/pypi/v/mirascope.svg)](https://pypi.python.org/pypi/mirascope)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/mirascope.svg)](https://pypi.python.org/pypi/mirascope)
+**Documentation**: <a href="https://docs.mirascope.io" target="_blank">https://docs.mirascope.io</a>
+
+**Source Code**: <a href="https://github.com/Mirascope/mirascope" target="_blank">https://github.com/Mirascope/mirascope</a>
 
 ---
 
 ## Why use Mirascope?
 
-- **Easy**: Designed for ease of use, Mirascope features an intuitive interface and a minimal learning curve
-- **Intuitive**: Get editor support for prompts, eliminating the need to dig through documentation
-- **Durable**: Mirascope offers versatile and adaptable functionality, allowing seamless integration with custom solutions
-- **Integration**: Leveraging Pydantic, Mirascope offers easy integration with JSON Schema and other tools
-- **Maintainability**: Reduce prompt-related bugs and organize prompts with provided utilities
+**Mirascope** is a library purpose-built for prompt engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>
+
+**Mirascope** has a number of utility classes and functions such as `Prompt` and `messages` to enable more elegant prompt engineering (according to our opinionated point of view)
+
+The primary goal of **Mirascope** is to improve **deverloper experience** through **autocomplete**, **inline errors**, and **validation** by providing better support for type checking and validation tools such as **mypy** and **Pydantic**. This in turn helps to ensure code is **maintainable** and **bug-free**. 
+
+**Mirascope** also tries to improve **convenience** and **simplicity** when building LLM apps through lightweight convenience wrappers built around the OpenAI Python SDK. You can use the <a href="https://docs.together.ai/docs/openai-api-compatibility" target="_blank">Together AI API</a> to use these convenience wrappers with different models, such as <a href="https://mistral.ai/" target="_blank">Mistral AI</a>.
+
+## 🚨 Warning
+
+<!-- This library is going to blow your socks off, so make sure you're sitting down for what you're about to see... -->
+Once you go mirascope, you never go backascope...
+
+## Requirements
+
+As **Mirascope** is built on top of **Pydantic**, which is the only strict requirement and will be included automatically during installation.
+
+The Prompt CLI and LLM Convenience Wrappers have additional requirements, which you can opt-in to include if you're using those features.
 
 ## Installation
 
@@ -31,38 +51,24 @@ Install Mirascope and start building with LLMs in minutes.
 $ pip install mirascope
 ```
 
-This will install the `mirascope` package and CLI.
+This will install the `mirascope` package.
 
-## A Simple Mirascope Example
+To include extra dependencies, run:
 
-```python
-from mirascope import OpenAIChat, Prompt
-
-class BookRecommendationPrompt(Prompt):
-    """
-    Can you recommend some books on {topic}?
-    """
-
-    topic: str
-
-prompt = BookRecommendationPrompt(topic="coding")
-print(str(prompt))
-
-model = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
-res = model.create(prompt)
-print(str(res))
+```sh
+$ pip install mirascope[cli]     #  Prompt CLI
+$ pip install mirascope[openai]  #  LLM Convenience Wrappers
+$ pip install mirascope[all]     #  All Extras
 ```
 
-```
-Can you recommend some books on coding?
+## How to use
 
-Certainly! Here are some highly recommended books on coding: ...
-```
+TBD
 
 ## Dive Deeper
 
--   Check out the concepts section to dive deeper into the library and the core features that make it powerful, such as [pydantic prompts](concepts/pydantic_prompts.md) and the [Mirascope CLI](concepts/mirascope_cli.md).
--   You can follow along with more detailed [examples](cookbook/simple_call.md) to get a better understanding of how to utilize the library to effectively model your data. You can also take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo.
+-   Check out the [concepts section](concepts/pydantic_prompts.md) to dive deeper into the library and the core features that make it powerful.
+-   You can take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo that demonstrate how to use the library effectively.
 -   The [API Reference](api/prompts.md) contains full details on all classes, methods, functions, etc.
 
 ## Contributing
@@ -75,14 +81,12 @@ Any and all help is greatly appreciated! Check out our page on [how you can help
 
 ## Roadmap (What's on our mind)
 
+- [ ] Better DX for Mirascope CLI (e.g. autocomplete)
+- [ ] Evaluation and testing for prompts
+- [ ] Prompt logging
+- [X] Functions as OpenAI tools
 - [ ] Agents
 - [ ] RAG
-- [ ] Functions as OpenAI tools
-- [ ] Testing for prompts
-- [ ] Add more LLMs
-- [ ] Prompt Response tracking
-- [ ] Database support for versioning
-- [ ] Better DX for Mirascope CLI (e.g. autocomplete)
 
 ## Versioning
 
