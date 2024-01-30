@@ -31,6 +31,7 @@
 * **Durable**: Seamlessly customize and extend functionality. **Never maintain a fork**.
 * **Integration**: Easily integrate with **JSON Schema** and other tools such as **FastAPI**
 * **Convenience**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
+* **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
 
 ## 🚨 Warning: Strong Opinion
 
@@ -43,13 +44,11 @@ Furthermore, the best developer experience requires the following, which we stri
 * *Reliability through validation* -> ***More robust applications with fewer bugs***
 * *High-quality up-to-date documentation* -> ***Trust and reliability***
 
-
 Speeds up development
 Results in fewer bugs and iterations
 Helps to guarantee robust applications
 Enables faster and more reliable releases
 Reduces complexity and risk through maximal composability and customizability
-
 
 Once you go mirascope, you'll never go back...ascope
 
