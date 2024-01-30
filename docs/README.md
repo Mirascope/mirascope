@@ -24,7 +24,9 @@
 
 ## Why use Mirascope?
 
-**Mirascope** is a library purpose-built for prompt engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>
+**Mirascope** is a library purpose-built for prompt engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
+
+* Easy: 
 
 **Mirascope** has a number of utility classes and functions such as `Prompt` and `messages` to enable more elegant prompt engineering (according to our opinionated point of view)
 
@@ -34,8 +36,7 @@ The primary goal of **Mirascope** is to improve **deverloper experience** throug
 
 ## 🚨 Warning
 
-<!-- This library is going to blow your socks off, so make sure you're sitting down for what you're about to see... -->
-Once you go mirascope, you never go backascope...
+Once you go mirascope, you'll never go back...ascope
 
 ## Requirements
 
