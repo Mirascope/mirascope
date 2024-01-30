@@ -19,7 +19,15 @@ from mirascope import OpenAIChat
 def embed_with_openai(
     text: Union[str, list[str]], chat: OpenAIChat
 ) -> list[list[float]]:
-    """Embeds a string using OpenAI's text-embedding-ada-002 model."""
+    """Embeds a string using OpenAI's embedding model.
+
+    Args:
+        text: A `str` or list of `str` to embed.
+        chat: The `OpenAIChat` instance used for embedding.
+
+    Returns:
+        The embeddings of the text.
+    """
     if isinstance(text, str):
         text = [text]
     embeddings_response = chat.client.embeddings.create(
@@ -32,7 +40,7 @@ def embed_df_with_openai(
     df: pd.DataFrame,
     chat: OpenAIChat,
 ) -> pd.DataFrame:
-    """Embeds a Pandas Series of texts in bathces using minimal OpenAI calls.
+    """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
     Note that this functions assumes all texts are less than 8192 tokens long.
 
@@ -72,6 +80,9 @@ def query_dataframe(
     chat: OpenAIChat,
 ) -> list[str]:
     """Searches a dataframe with embeddings for the most similar texts to a query.
+
+    Since all embeddings vectors are the same length, the dot product is equivalent
+    to cosine similarity and suffices.
 
     Args:
         df: The dataframe to query.
@@ -118,7 +129,7 @@ def query_pinecone(
 
 
 def load_data(url: str) -> pd.DataFrame:
-    """Loads data from a url, and splits larger texts into smaller chunks."""
+    """Loads data from a url after splitting larger texts into smaller chunks."""
     df = pd.read_csv(url)
     split_articles = []
     encoder = tiktoken.encoding_for_model(MODEL)

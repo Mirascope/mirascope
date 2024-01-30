@@ -1,8 +1,10 @@
-"""A script using RAG and Pinecone to summarize relevant articles from a large database.
+"""A script using RAG to summarize relevant articles from a large database in 2 ways.
 
-First we load in a dataset of news articles from 2004 and embed them. Then we use
-Pinecone to efficiently find the articles with most relevance to a query, then use said
-articles in a prompt to get the summary.
+News articles from 2004 are embedded so they may be queried (in two ways) according to a
+topic of choice. In the first way we manually calculate similarity between query and
+embeddings. In the second, we set up Pinecone and efficiently use its search to find the
+most relevant articles. In both cases, we use the Mirascope library to handle the logic
+so as to streamline prompt creation.
 """
 import os
 
@@ -22,6 +24,9 @@ if not os.path.exists(FILENAME):
     df = load_data(url=URL)
     df = embed_df_with_openai(df=df, chat=chat)
     df.to_pickle(FILENAME)
+
+    # Comment this line out if you don't have your data saved locally but somehow have
+    # it already on Pinecone since it takes time and server credits.
     setup_pinecone(df=df)
 else:
     df = pd.read_pickle(FILENAME)
@@ -71,6 +76,9 @@ topics = [
     "celebrity or politician scandals",
 ]
 for topic in topics:
+    # Run Locally
     # print(summarize_news_local_embeddings(topic, 3)
+
+    # Run with Pinecone
     print(summarize_news_pinecone_embeddings(topic, 3))
     print("\n")
