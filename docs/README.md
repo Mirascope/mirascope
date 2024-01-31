@@ -35,6 +35,7 @@
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
     <a href="https://docs.mirascope.io/" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
+    <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
     <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
 </p>
 
@@ -46,9 +47,12 @@
 
 ---
 
-**Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
+**Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic 2.0</a>:
+
+- Prompts can live as self-contained classes in their own directory:
 
 ```python
+# prompts/book_recommendation.py
 from mirascope import Prompt, messages
 
 
@@ -69,7 +73,13 @@ class BookRecommendationPrompt(Prompt):
     def titles_in_quotes(self) -> str:
         """Returns a comma separated list of book titles each in quotes."""
         return ", ".join([f'"{title}"' for title in self.book_titles])
+```
 
+- You can then import and use the prompt anywhere without worrying about anything other than initialization arguments:
+
+```python
+# script.py
+from prompts import BookRecommendationPrompt
 
 prompt = BookRecommendationPrompt(
     book_titles=["The Name of the Wind", "The Lord of the Rings"]
@@ -118,7 +128,7 @@ $ pip install mirascope[all]     #  All Extras
 
 ## 🚨 Warning: Strong Opinion 🚨
 
-Prompt Engineering is just engineering. Beyond basic illustrative examples, prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built for building these more complex prompts as easily as possible.
+Prompt Engineering is engineering. Beyond basic illustrative examples, prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built for building these more complex prompts as easily as possible.
 
 ## Examples
 
@@ -144,7 +154,7 @@ print(prompt)
 ```
 
 <details>
-<summary>Example of autocomplete and inline errors:</summary>
+<summary>Example of <strong>autocomplete</strong> and <strong>inline errors</strong>:</summary>
 <ul>
     <li>Autocomplete:</li>
     <img width="822" alt="Screenshot 2024-01-30 at 7 10 11 PM" src="https://github.com/Mirascope/mirascope/assets/99370834/812a97c1-7f0d-472c-842d-305d7f5da085">
@@ -268,6 +278,10 @@ print(prompt)
 
 Since the `Prompt`'s `str` method uses template, the above will work as expected.
 </details>
+
+ADD FASTAPI EXAMPLE HERE
+
+ADD EXAMPLE USING RAW OPENAI, MENTION CONVENIENCE WRAPPERS
 
 ## Dive Deeper
 
