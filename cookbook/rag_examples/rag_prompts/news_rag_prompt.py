@@ -4,14 +4,19 @@ import os
 
 import pandas as pd
 from config import PINECONE_INDEX, TEXT_COLUMN
-from dotenv import load_dotenv
 from pinecone import Pinecone
 from pydantic import ConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from utils import query_dataframe, query_pinecone
 
 from mirascope import OpenAIChat, Prompt, messages
 
-load_dotenv()
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+
+    OPENAI_API_KEY: str
+    PINECONE_API_KEY: str
 
 
 @messages
