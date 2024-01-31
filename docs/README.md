@@ -130,6 +130,11 @@ print(prompt)
 #> Hello! It's nice to meet you. My name is William Bakst. How are you today?
 ```
 
+??? note "Example of autocomplete and inline errors:"
+
+    - Autocomplete:
+    - Inline Errors:
+
 You can access the docstring prompt template through the `GreetingsPrompt.template()` class method, which will automatically take care of removing any additional special characters such as newlines. This enables writing longer prompts that still adhere to the style of your codebase:
 
 ```python
@@ -218,27 +223,32 @@ print(prompt.messages)
 
 The base `Prompt` class without the decorator will still have the `messages` attribute, but it will return a single user message in the list.
 
-<details>
-<summary>Remember: this is python</summary>
-There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
+??? note "Remember: this is python"
 
-```python
-from mirascope import Prompt
+    There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
 
-TEMPLATE = """
-This is now my prompt template for {topic}
-"""
+    ```python
+    from mirascope import Prompt
 
-class NormalDocstringPrompt(Prompt):
-    """This is now just a normal docstring."""
+    TEMPLATE = """
+    This is now my prompt template for {topic}
+    """
 
-    topic: str
+    class NormalDocstringPrompt(Prompt):
+        """This is now just a normal docstring."""
 
-    def template(self) -> str:
-        """Returns this prompt's template."""
-        return TEMPLATE
-```
-</details>
+        topic: str
+
+        def template(self) -> str:
+            """Returns this prompt's template."""
+            return TEMPLATE
+
+    prompt = NormalDocstringPrompt(topic="prompts")
+    print(prompt)
+    #> This is now my prompt template for prompt
+    ```
+
+    Since the `Prompt`'s `str` method uses template, the above will work as expected.
 
 ## Dive Deeper
 
