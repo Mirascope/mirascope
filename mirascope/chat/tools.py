@@ -58,7 +58,7 @@ class OpenAITool(BaseModel):
         """Extracts an instance of the tool constructed from a tool call response.
 
         Args:
-            tool_call: The `ChatCompmletionMessageToolCall` to extract the tool from.
+            tool_call: The `ChatCompletionMessageToolCall` to extract the tool from.
 
         Returns:
             An instance of the tool constructed from the tool call.
