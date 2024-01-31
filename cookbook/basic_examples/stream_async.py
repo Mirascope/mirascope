@@ -15,16 +15,13 @@ class BookRecommendationPrompt(Prompt):
     topic: str
 
 
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
-
-model = AsyncOpenAIChat()
-
-
-async def stream_book_recommendation():
+async def stream_book_recommendation(prompt: BookRecommendationPrompt):
     """Asynchronously streams the response for a call to the model using `prompt`."""
+    model = AsyncOpenAIChat()
     astream = model.stream(prompt)
     async for chunk in astream:
         print(chunk, end="")
 
 
-asyncio.run(stream_book_recommendation())
+prompt = BookRecommendationPrompt(topic="how to bake a cake")
+asyncio.run(stream_book_recommendation(prompt))

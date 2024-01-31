@@ -4,8 +4,20 @@
 </p>
 
 <p align="center">
-    <em>Prompt Engineering focused on developer experience</em>
+    <strong><em>Prompt Engineering focused on:</em></strong>
 </p>
+
+<div style="margin: 0 auto; width: fit-content;">
+    <div>
+        <span><em>Simplicity through idiomatic syntax</em> → <strong><em>Faster and more reliable releases</em></strong></span>
+        <br>
+        <span><em>Semi-opinionated methods</em> → <strong><em>Reduced complexity that speeds up development</em></strong></span>
+        <br>
+        <span><em>Reliability through validation</em> → <strong><em>More robust applications with fewer bugs</em></strong></span>
+        <br>
+        <span><em>High-quality up-to-date documentation</em> → <strong><em>Trust and reliability</em></strong></span>
+    </div>
+</div>
 
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
@@ -13,7 +25,6 @@
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
     <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
 </p>
-
 ---
 
 **Documentation**: <a href="https://docs.mirascope.io" target="_blank">https://docs.mirascope.io</a>
@@ -22,9 +33,44 @@
 
 ---
 
-## Why use Mirascope?
-
 **Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
+
+```python
+from mirascope import Prompt, messages
+
+
+@messages
+class BookRecommendationPrompt(Prompt):
+    """
+    SYSTEM:
+    You are the world's greatest librarian.
+
+    USER:
+    I've recently read the following books: {titles_in_quotes}.
+    What should I read next?
+    """
+
+    book_titles: list[str]
+
+    @property
+    def titles_in_quotes(self) -> str:
+        """Returns a comma separated list of book titles each in quotes."""
+        return ", ".join([f'"{title}"' for title in self.book_titles])
+
+
+prompt = BookRecommendationPrompt(
+    book_titles=["The Name of the Wind", "The Lord of the Rings"]
+)
+
+print(str(prompt))
+#> SYSTEM: You are the world's greatest librarian.
+#> USER: I've recently read the following books: "The Name of the Wind", "The Lord of the Rings". What should I read next?
+
+print(prompt.messages)
+#> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently read the following books: "The Name of the Wind", "The Lord of the Rings". What should I read next?')]
+```
+
+## Why use Mirascope?
 
 * **Intuitive**: Editor support that you expect (e.g. **autocompletion**, **inline errors**)
 * **Peace of Mind**: Pydantic together with our Prompt CLI **eliminate prompt-related bugs**.
@@ -32,25 +78,6 @@
 * **Integration**: Easily integrate with **JSON Schema** and other tools such as **FastAPI**
 * **Convenience**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
 * **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
-
-## 🚨 Warning: Strong Opinion
-
-Prompt Engineering is just engineering. Beyond simple toy examples (that aren't useful), prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built to make building these more complex prompts as easy as possible.
-
-Furthermore, the best developer experience requires the following, which we strive to uphold:
-
-* *Simplicity through idiomatic syntax* -> ***Faster and more reliable releases***
-* *Semi-opinionated methods* -> ***Reduced complexity that speeds up development***
-* *Reliability through validation* -> ***More robust applications with fewer bugs***
-* *High-quality up-to-date documentation* -> ***Trust and reliability***
-
-Speeds up development
-Results in fewer bugs and iterations
-Helps to guarantee robust applications
-Enables faster and more reliable releases
-Reduces complexity and risk through maximal composability and customizability
-
-Once you go mirascope, you'll never go back...ascope
 
 ## Requirements
 
@@ -66,7 +93,7 @@ Install Mirascope and start building with LLMs in minutes.
 $ pip install mirascope
 ```
 
-This will install the `mirascope` package.
+This will install the `mirascope` package along with `pydantic`.
 
 To include extra dependencies, run:
 
@@ -76,15 +103,150 @@ $ pip install mirascope[openai]  #  LLM Convenience Wrappers
 $ pip install mirascope[all]     #  All Extras
 ```
 
-## How to use
+## 🚨 Warning: Strong Opinion 🚨
 
-WIP
+Prompt Engineering is just engineering. Beyond basic illustrative examples, prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built for building these more complex prompts as easily as possible.
+
+## Examples
+
+The `Prompt` class is an extension of [`BaseModel`](https://docs.pydantic.dev/latest/api/base_model/) with some additional built-in convenience tooling for writing and formatting your prompts:
+
+```python
+from mirascope import Prompt
+
+class GreetingsPrompt(Prompt):
+    """
+    Hello! It's nice to meet you. My name is {name}. How are you today?
+    """
+
+    name: str
+
+prompt = GreetingsPrompt(name="William Bakst")
+
+print(GreetingsPrompt.template())
+#> Hello! It's nice to meet you. My name is {name}. How are you today?
+
+print(prompt)
+#> Hello! It's nice to meet you. My name is William Bakst. How are you today?
+```
+
+You can access the docstring prompt template through the `GreetingsPrompt.template()` class method, which will automatically take care of removing any additional special characters such as newlines. This enables writing longer prompts that still adhere to the style of your codebase:
+
+```python
+class GreetingsPrompt(Prompt):
+    """
+    Salutations! It is a lovely day. Wouldn't you agree? I find that lovely days
+    such as these brighten up my mood quite a bit. I'm rambling...
+
+    My name is {name}. It's great to meet you.
+    """
+
+prompt = GreetingsPrompt(name="William Bakst")
+print(prompt)
+#> Salutations, good being! It is a lovely day. Wouldn't you agree? I find that lovely days such as these brighten up my mood quite a bit. I'm rambling...
+#> My name is William Bakst. It's great to meet you.
+```
+
+The `str` method is written such that it only formats properties that are templated. This enables writing more complex properties that rely on one or more provided properties:
+
+```python
+class GreetingsPrompt(Prompt):
+    """
+    Hi! My name is {formatted_name}. {name_specific_remark}
+
+    What's your name? Is your name also {name_specific_question}?
+    """
+
+    name: str
+
+    @property
+    def formatted_name(self) -> str:
+        """Returns `name` with pizzazz."""
+        return f"⭐{self.name}⭐"
+
+    @property
+    def name_specific_question(self) -> str:
+        """Returns a question based on `name`."""
+        if self.name == self.name[::-1]:
+            return "a palindrome"
+        else:
+            return "not a palindrome"
+
+    @property
+    def name_specific_greeting(self) -> str:
+        """Returns a remark based on `name`."""
+        return f"Can you believe my name is {self.name_specific_question}"
+
+prompt = GreetingsPrompt(name="Bob")
+print(prompt)
+#> Hi! My name is ⭐Bob⭐. Can you believe my name is a palindrome?
+#> What's your name? Is your name also a palindrome?
+```
+
+Notice that writing properties in this way ensures prompt-specific logic is tied directly to the prompt. It happens under the hood from the perspective of the person using `GreetingsPrompt` class. Constructing the prompt only requires `name`.
+
+For writing promps with multiple messages with different roles, you can use the `messages` decorator to extend the functionality of the `messages` property:
+
+```python
+from mirascope import Prompt, messages
+
+@messages
+class GreetingsPrompt(Prompt):
+    """
+    SYSTEM:
+    You can only speak in haikus.
+
+    USER:
+    Hello! It's nice to meet you. My name is {name}. How are you today?
+    """
+
+    name: str
+
+prompt = GreetingsPrompt(name="William Bakst")
+
+print(GreetingsPrompt.template())
+#> SYSTEM: You can only speak in haikus.
+#> USER: Hello! It's nice to meet you. My name is {name}. How are you today?
+
+print(prompt)
+#> SYSTEM: You can only speak in haikus.
+#> USER: Hello! It's nice to meet you. My name is William Bakst. How are you today?
+
+print(prompt.messages)
+#> [('system', 'You can only speak in haikus.'), ('user', "Hello! It's nice to meet you. My name is William Bakst. How are you today?")]
+```
+
+The base `Prompt` class without the decorator will still have the `messages` attribute, but it will return a single user message in the list.
+
+<details>
+<summary>Remember: this is python</summary>
+There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
+
+```python
+from mirascope import Prompt
+
+TEMPLATE = """
+This is now my prompt template for {topic}
+"""
+
+class NormalDocstringPrompt(Prompt):
+    """This is now just a normal docstring."""
+
+    topic: str
+
+    def template(self) -> str:
+        """Returns this prompt's template."""
+        return TEMPLATE
+```
+</details>
 
 ## Dive Deeper
 
--   Check out the [concepts section](concepts/pydantic_prompts.md) to dive deeper into the library and the core features that make it powerful.
--   You can take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo that demonstrate how to use the library effectively.
--   The [API Reference](api/prompts.md) contains full details on all classes, methods, functions, etc.
+- Check out all of the possibilities of what you can do with [Pydantic Prompts](concepts/pydantic_prompts.md).
+- Take a look at our [Mirascope CLI](concepts/mirascope_cli.md) for a semi-opinionated prompt mangement system.
+- For convenience, we provide some wrappers around the OpenAI Python SDK for common tasks such as creation, streaming, tools, and extraction. We've found that the concepts covered in [LLM Convenience Wrappers](concepts/llm_convenience_wrappers.md) make building LLM-powered apps delightful.
+- The [API Reference](api/prompts.md) contains full details on all classes, methods, functions, etc.
+- You can take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo that demonstrate how to use the library effectively.
 
 ## Contributing
 
@@ -98,10 +260,13 @@ Any and all help is greatly appreciated! Check out our page on [how you can help
 
 - [X] Better DX for Mirascope CLI (e.g. autocomplete)
 - [X] Functions as OpenAI tools
-- [ ] Evaluation and testing for prompts
-- [ ] Prompt logging
-- [ ] Agents
+- [ ] Better chat history
+- [ ] Testing for prompts
+- [ ] Logging prompts and their responses
+- [ ] Evaluating prompt quality
 - [ ] RAG
+- [ ] Agents
+
 
 ## Versioning
 
