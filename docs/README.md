@@ -1,4 +1,3 @@
-
 <p align="center">
     <a href="https://www.mirascope.io"><img src="https://uploads-ssl.webflow.com/65a6fd6a1c3b2704d6217d3d/65b5674e9ceef563dc57eb11_Medium%20length%20hero%20headline%20goes%20here.svg" width="400" alt="Mirascope"/></a>
 </p>
@@ -7,16 +6,29 @@
     <strong><em>Prompt Engineering focused on:</em></strong>
 </p>
 
-<div style="margin: 0 auto; width: fit-content;">
-    <div>
-        <span><em>Simplicity through idiomatic syntax</em> → <strong><em>Faster and more reliable releases</em></strong></span>
-        <br>
-        <span><em>Semi-opinionated methods</em> → <strong><em>Reduced complexity that speeds up development</em></strong></span>
-        <br>
-        <span><em>Reliability through validation</em> → <strong><em>More robust applications with fewer bugs</em></strong></span>
-        <br>
-        <span><em>High-quality up-to-date documentation</em> → <strong><em>Trust and reliability</em></strong></span>
-    </div>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" width="420"><em>Simplicity through idiomatic syntax</em></td>
+            <td align="center">→</td>
+            <td align="center" width="420"><strong><em>Faster and more reliable release</em></strong></td>
+        </tr>
+        <tr>
+            <td align="center" width="420"><em>Semi-opinionated methods</em></td>
+            <td align="center">→</td>
+            <td align="center" width="420"><strong><em>Reduced complexity that speeds up development</em></strong></td>
+        </tr>
+        <tr>
+            <td align="center" width="420"><em>Reliability through validation</em></td>
+            <td align="center">→</td>
+            <td align="center" width="420"><strong><em>More robust applications with fewer bugs</em></strong></td>
+        </tr>
+        <tr>
+            <td align="center" width="420"><em>High-quality up-to-date documentation</em></td>
+            <td align="center">→</td>
+            <td align="center" width="420"><strong><em>Trust and reliability</em></strong></td>
+        </tr>
+    </table>
 </div>
 
 <p align="center">
@@ -25,6 +37,7 @@
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
     <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
 </p>
+
 ---
 
 **Documentation**: <a href="https://docs.mirascope.io" target="_blank">https://docs.mirascope.io</a>
@@ -130,10 +143,15 @@ print(prompt)
 #> Hello! It's nice to meet you. My name is William Bakst. How are you today?
 ```
 
-??? note "Example of autocomplete and inline errors:"
-
-    - Autocomplete:
-    - Inline Errors:
+<details>
+<summary>Example of autocomplete and inline errors:</summary>
+<ul>
+    <li>Autocomplete:</li>
+    <img width="822" alt="Screenshot 2024-01-30 at 7 10 11 PM" src="https://github.com/Mirascope/mirascope/assets/99370834/812a97c1-7f0d-472c-842d-305d7f5da085">
+    <li>Inline Errors:</li>
+    <img width="571" alt="Screenshot 2024-01-30 at 7 08 54 PM" src="https://github.com/Mirascope/mirascope/assets/99370834/e09466a0-0941-46ec-abdb-e55cf84f1f25">
+</ul>
+</details>
 
 You can access the docstring prompt template through the `GreetingsPrompt.template()` class method, which will automatically take care of removing any additional special characters such as newlines. This enables writing longer prompts that still adhere to the style of your codebase:
 
@@ -223,32 +241,33 @@ print(prompt.messages)
 
 The base `Prompt` class without the decorator will still have the `messages` attribute, but it will return a single user message in the list.
 
-??? note "Remember: this is python"
+<details>
+<summary>Remember: this is python</summary>
+There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
 
-    There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
+```python
+from mirascope import Prompt
 
-    ```python
-    from mirascope import Prompt
+TEMPLATE = """
+This is now my prompt template for {topic}
+"""
 
-    TEMPLATE = """
-    This is now my prompt template for {topic}
-    """
+class NormalDocstringPrompt(Prompt):
+    """This is now just a normal docstring."""
 
-    class NormalDocstringPrompt(Prompt):
-        """This is now just a normal docstring."""
+    topic: str
 
-        topic: str
+    def template(self) -> str:
+        """Returns this prompt's template."""
+        return TEMPLATE
 
-        def template(self) -> str:
-            """Returns this prompt's template."""
-            return TEMPLATE
+prompt = NormalDocstringPrompt(topic="prompts")
+print(prompt)
+#> This is now my prompt template for prompt
+```
 
-    prompt = NormalDocstringPrompt(topic="prompts")
-    print(prompt)
-    #> This is now my prompt template for prompt
-    ```
-
-    Since the `Prompt`'s `str` method uses template, the above will work as expected.
+Since the `Prompt`'s `str` method uses template, the above will work as expected.
+</details>
 
 ## Dive Deeper
 
