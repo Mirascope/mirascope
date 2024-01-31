@@ -1,19 +1,11 @@
 import abc
-
 import inspect
-
 import os
 
-import pandas
-
+import pandas as pd
 from config import PINECONE_INDEX, TEXT_COLUMN
-
-from dotenv import load_dotenv
-
 from pinecone import Pinecone
-
 from pydantic import ConfigDict
-
 from utils import query_dataframe, query_pinecone
 
 from mirascope import OpenAIChat, Prompt, messages
