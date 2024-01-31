@@ -9,7 +9,7 @@ so as to streamline prompt creation.
 import os
 
 import pandas as pd
-from config import FILENAME, URL
+from config import FILENAME, MAX_TOKENS, URL
 from rag_prompts.news_rag_prompt import LocalNewsRagPrompt, PineconeNewsRagPrompt
 from setup_pinecone import setup_pinecone
 from utils import embed_df_with_openai, load_data
@@ -21,7 +21,7 @@ chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Make reruns efficient by preprocessing data before saving to csv
 if not os.path.exists(FILENAME):
-    df = load_data(url=URL)
+    df = load_data(url=URL, max_tokens=MAX_TOKENS)
     df = embed_df_with_openai(df=df, chat=chat)
     df.to_pickle(FILENAME)
 

@@ -128,15 +128,21 @@ def query_pinecone(
     return [int(article["id"]) for article in query_response["matches"]]
 
 
-def load_data(url: str) -> pd.DataFrame:
-    """Loads data from a url after splitting larger texts into smaller chunks."""
+def load_data(url: str, max_tokens: int) -> pd.DataFrame:
+    """Loads data from a url after splitting larger texts into smaller chunks.
+
+    Args:
+        url: the url to load the data from.
+        max_tokens: the maximum number of tokens per chunk.
+
+    Returns:
+        The dataframe with the data from the url."""
     df = pd.read_csv(url)
     split_articles = []
     encoder = tiktoken.encoding_for_model(MODEL)
     for i, row in df.iterrows():
         text = row[TEXT_COLUMN]
         tokens = encoder.encode(text)
-        max_tokens = 1000
         if len(tokens) > max_tokens:
             split_articles += split_text(text, tokens, max_tokens)
             df.drop(i, inplace=True)
