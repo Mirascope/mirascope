@@ -53,17 +53,13 @@
 
 ```python
 # prompts/book_recommendation.py
-from mirascope import Prompt, messages
+from mirascope import Prompt
 
 
-@messages
 class BookRecommendationPrompt(Prompt):
     """
-    SYSTEM:
-    You are the world's greatest librarian.
-
-    USER:
     I've recently read the following books: {titles_in_quotes}.
+    
     What should I read next?
     """
 
@@ -75,7 +71,7 @@ class BookRecommendationPrompt(Prompt):
         return ", ".join([f'"{title}"' for title in self.book_titles])
 ```
 
-- You can then import and use the prompt anywhere without worrying about anything other than initialization arguments:
+- Use the prompt anywhere without worrying about internals such as formatting:
 
 ```python
 # script.py
@@ -86,11 +82,11 @@ prompt = BookRecommendationPrompt(
 )
 
 print(str(prompt))
-#> SYSTEM: You are the world's greatest librarian.
-#> USER: I've recently read the following books: "The Name of the Wind", "The Lord of the Rings". What should I read next?
+#> I've recently read the following books: "The Name of the Wind", "The Lord of the Rings".
+#  What should I read next?
 
 print(prompt.messages)
-#> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently read the following books: "The Name of the Wind", "The Lord of the Rings". What should I read next?')]
+#> [('user', 'I\'ve recently read the following books: "The Name of the Wind", "The Lord of the Rings".\nWhat should I read next?')]
 ```
 
 ## Why use Mirascope?
@@ -206,7 +202,7 @@ class GreetingsPrompt(Prompt):
             return "not a palindrome"
 
     @property
-    def name_specific_greeting(self) -> str:
+    def name_specific_remark(self) -> str:
         """Returns a remark based on `name`."""
         return f"Can you believe my name is {self.name_specific_question}"
 
@@ -253,7 +249,7 @@ The base `Prompt` class without the decorator will still have the `messages` att
 
 <details>
 <summary>Remember: this is python</summary>
-There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:
+<p>There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:</p>
 
 ```python
 from mirascope import Prompt
@@ -276,12 +272,83 @@ print(prompt)
 #> This is now my prompt template for prompt
 ```
 
-Since the `Prompt`'s `str` method uses template, the above will work as expected.
+<p>Since the `Prompt`'s `str` method uses template, the above will work as expected.</p>
 </details>
 
-ADD FASTAPI EXAMPLE HERE
+Because the `Prompt` class is built on top of `BaseModel`, prompts easily integrate with tools like [FastAPI](https://fastapi.tiangolo.com):
 
-ADD EXAMPLE USING RAW OPENAI, MENTION CONVENIENCE WRAPPERS
+<details>
+<summary>FastAPI Example</summary>
+
+```python
+from fastapi import FastAPI
+from mirascope import OpenAIChat
+
+from prompts import GreetingsPrompt
+
+app = FastAPI()
+
+
+@app.post("/greetings")
+def root(prompt: GreetingsPrompt) -> str:
+    """Returns an AI generated greeting."""
+    model = OpenAIChat(api_key=os.environ["OPENAI_API_KEY"])
+    return str(model.create(prompt))
+```
+
+</details>
+
+You can also use the `Prompt` class with whichever LLM you want to use:
+
+<details>
+<summary>Mistral Example</summary>
+
+```python
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+
+from prompts import GreetingsPrompt
+
+client = MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
+
+prompt = GreetingsPrompt(name="William Bakst")
+messages = [
+    ChatMessage(role=role, content=content)
+    for role, content in prompt.messages
+]
+
+# No streaming
+chat_response = client.chat(
+    model="mistral-tiny",
+    messages=messages,
+)
+```
+
+</details>
+
+<details>
+<summary>OpenAI Example</summary>
+
+```python
+from openai import OpenAI
+
+from prompts import GreetingsPrompt
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+prompt = GreetingsPrompt(name="William Bakst")
+messages = [
+    {"role": role, "content": content}
+    for role, content in prompt.messages
+]
+
+completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=messages,
+)
+```
+
+</details>
 
 ## Dive Deeper
 

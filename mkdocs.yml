@@ -111,7 +111,6 @@ nav:
           - utils: "api/chat/utils.md"
       - cli:
           - "api/cli/index.md"
-          - cli: "api/cli/cli.md"
           - commands: "api/cli/commands.md"
           - constants: "api/cli/constants.md"
           - generic: "api/cli/generic.md"
