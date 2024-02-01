@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 class OpenAITool(BaseModel):
     """A base class for more easily using tools with the OpenAI Chat client."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     @property
     def fn(self) -> Optional[Callable]:
