@@ -84,7 +84,7 @@ class OpenAIChatCompletion(BaseModel):
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""
-        return self.content
+        return self.content if self.content is not None else ""
 
 
 class OpenAIChatCompletionChunk(BaseModel):

@@ -12,7 +12,53 @@ from pydantic import BaseModel
 
 
 class Prompt(BaseModel):
-    """A Pydantic model for prompts."""
+    '''A Pydantic model for prompts.
+
+    Example:
+
+    ```python
+    from mirascope import Prompt, messages
+
+
+    @messages
+    class BookRecommendationPrompt(Prompt):
+        """
+        SYSTEM:
+        You are the world's greatest librarian.
+
+        USER:
+        I've recently read the following books: {titles_in_quotes}.
+        What should I read next?
+        """
+
+        book_titles: list[str]
+
+        @property
+        def titles_in_quotes(self) -> str:
+            """Returns a comma separated list of book titles each in quotes."""
+            return ", ".join([f'"{title}"' for title in self.book_titles])
+
+
+    prompt = BookRecommendationPrompt(
+        book_titles=["The Name of the Wind", "The Lord of the Rings"]
+    )
+
+    print(BookRecommendationPrompt.template())
+    #> SYSTEM: You are the world's greatest librarian.
+    #> USER: I've recently read the following books: {titles_in_quotes}. What should I
+    #  read next?
+
+    print(str(prompt))
+    #> SYSTEM: You are the world's greatest librarian.
+    #> USER: I've recently read the following books: "The Name of the Wind", "The Lord
+    #  of the Rings". What should I read next?
+
+    prompt.messages
+    #> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently
+    #   read the following books: "The Name of the Wind", "The Lord of the Rings". What
+    #   should I read next?')]
+    ```
+    '''
 
     @classmethod
     def template(cls) -> str:
