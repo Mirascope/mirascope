@@ -17,7 +17,7 @@ from pinecone.core.client.exceptions import PineconeApiException
 load_dotenv()
 
 
-def setup_pinecone(df: pd.DataFrame) -> None:
+def setup_pinecone(df: pd.DataFrame, max_retries: int = 3) -> None:
     """Sets up a Pincone Index and upserts embeddings from dataframe if needed.
 
     Creates a Pinecone Index and upserts vectors from Dataframe if Index doesn't
@@ -27,6 +27,7 @@ def setup_pinecone(df: pd.DataFrame) -> None:
 
     Args:
         df: The dataframe which contains embeddings to upsert.
+        max_retries: The maximum number of times to retry upserting vectors to Pinecone.
     """
     pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
     existing_indexes = pc.list_indexes().names()
@@ -49,14 +50,16 @@ def setup_pinecone(df: pd.DataFrame) -> None:
                 {"id": str(i), "values": row[EMBEDDINGS_COLUMN]}
                 for i, row in batch.iterrows()
             ]
-            try:
-                index.upsert(vectors)
-            except PineconeApiException as e:
-                print(f"Failed to upsert batch starting at index {start}: {e}")
-                raise UpsertError(f"Failed to upsert vectors to Pinecone Index: {e}")
-
-
-class UpsertError(Exception):
-    """Exception raised when an upsert operation fails."""
-
-    pass
+            attempt = 0
+            while attempt < max_retries:
+                try:
+                    index.upsert(vectors)
+                    break
+                except PineconeApiException as e:
+                    attempt += 1
+                    if attempt >= max_retries:
+                        print(
+                            f"Upsert failed after {max_retries} attempts, starting "
+                            f"at index {start}"
+                        )
+                        raise e

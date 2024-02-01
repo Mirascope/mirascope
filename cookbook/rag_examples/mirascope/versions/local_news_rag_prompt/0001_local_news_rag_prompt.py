@@ -1,18 +1,29 @@
 """Prompt for local RAG."""
-import inspect
 import os
 
-from rag_prompts.news_rag_prompt import NewsRagPrompt
+import pandas as pd
+from pydantic import ConfigDict
 from utils import query_dataframe
 
-from mirascope import OpenAIChat
+from mirascope import OpenAIChat, Prompt
 
 prev_revision_id = "None"
 revision_id = "0001"
 
 
-class LocalNewsRagPrompt(NewsRagPrompt):
-    __doc__ = inspect.getdoc(NewsRagPrompt)
+class LocalNewsRagPrompt(Prompt):
+    """
+    Here are {num_statements} article snippets about this topic: {topic}
+
+    {context}
+
+    Pick only the snippets which are truly relevant to the topic, and summarize them.
+    """
+
+    num_statements: int
+    topic: str
+    df: pd.DataFrame
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def context(self) -> str:

@@ -7,6 +7,9 @@ from utils import query_dataframe
 
 from mirascope import OpenAIChat, Prompt, messages
 
+prev_revision_id = "0001"
+revision_id = "0002"
+
 
 @messages
 class LocalNewsRagPrompt(Prompt):
@@ -31,13 +34,11 @@ class LocalNewsRagPrompt(Prompt):
     num_statements: int
     topic: str
     df: pd.DataFrame
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def context(self) -> str:
         """Finds most similar articles in dataframe using embeddings."""
-
         statements = query_dataframe(
             df=self.df,
             query=self.topic,
@@ -45,5 +46,5 @@ class LocalNewsRagPrompt(Prompt):
             chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
         )
         return "\n".join(
-            [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
+            [f"{i + 1}. {statement}" for (i, statement) in enumerate(statements)]
         )
