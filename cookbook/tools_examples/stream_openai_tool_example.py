@@ -4,7 +4,13 @@ from typing import Callable, Literal, Type, Union
 
 from pydantic import Field
 
-from mirascope import OpenAIChat, OpenAITool, PartialToolParser, Prompt, openai_tool_fn
+from mirascope import (
+    OpenAIChat,
+    OpenAITool,
+    PartialOpenAIToolParser,
+    Prompt,
+    openai_tool_fn,
+)
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -36,6 +42,6 @@ stream_completion = chat.stream(
     CurrentWeatherPrompt(),
     tools=tools,  # pass in the function itself for automatic conversion
 )
-parser = PartialToolParser(tools=tools)
+parser = PartialOpenAIToolParser(tools=tools)
 for partial_tool in parser.from_stream(stream_completion):
     print("data: ", partial_tool.__dict__, "\n\n")
