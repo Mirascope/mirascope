@@ -1,20 +1,29 @@
-"""Script to upload a dataset to Pinecone"""
+"""Script to upload a dataset to Pinecone.
+
+Note that for the sake of user experience, we assume that if the Pinecone Index exists,
+it already contains all the embeddings from the dataframe. To work around this, we would
+need to check the numbers of vectors in the Index, which entails the user having to copy
+and paste the Pinecone host URL after the Index is created, which is a headache. In the
+case of failed upsertions, manually delete the Pinecone Index and try again.
+"""
 import os
 
 import pandas as pd
-from config import EMBEDDINGS_COLUMN, PINECONE_INDEX, PINECONE_NAMESPACE
+from config import EMBEDDINGS_COLUMN, PINECONE_INDEX
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
+from pinecone.core.client.exceptions import PineconeApiException
 
 load_dotenv()
 
 
 def setup_pinecone(df: pd.DataFrame) -> None:
-    """Sets up a Pincone Index and upserts embeddings from dataframe.
+    """Sets up a Pincone Index and upserts embeddings from dataframe if needed.
 
-    Each upserted embedding has ID set as index from original dataframe to help keep
-    track of the affiliated text later on. Vectors are upserted in batches of 300
-    (determined by trial and error) so as not to overload Pinecone.
+    Creates a Pinecone Index and upserts vectors from Dataframe if Index doesn't
+    currently exist. Each upserted embedding has ID set as index from original dataframe
+    to help keep track of the affiliated text later on. Vectors are upserted in batches
+    of 300 (determined by trial and error) so as not to overload Pinecone.
 
     Args:
         df: The dataframe which contains embeddings to upsert.
@@ -31,13 +40,23 @@ def setup_pinecone(df: pd.DataFrame) -> None:
                 region="us-west-2",
             ),
         )
-    index = pc.Index(PINECONE_INDEX)
+        index = pc.Index(PINECONE_INDEX)
+        batch_size = 300
+        for start in range(0, len(df), batch_size):
+            end = min(start + batch_size, len(df))
+            batch = df[start:end]
+            vectors = [
+                {"id": str(i), "values": row[EMBEDDINGS_COLUMN]}
+                for i, row in batch.iterrows()
+            ]
+            try:
+                index.upsert(vectors)
+            except PineconeApiException as e:
+                print(f"Failed to upsert batch starting at index {start}: {e}")
+                raise UpsertError(f"Failed to upsert vectors to Pinecone Index: {e}")
 
-    batch_size = 300
-    for start in range(0, len(df), batch_size):
-        end = min(start + batch_size, len(df))
-        batch = df[start:end]
-        vectors = []
-        for i, row in batch.iterrows():
-            vectors.append({"id": str(i), "values": row[EMBEDDINGS_COLUMN]})
-        index.upsert(vectors=vectors, namespace=PINECONE_NAMESPACE)
+
+class UpsertError(Exception):
+    """Exception raised when an upsert operation fails."""
+
+    pass
