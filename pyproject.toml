@@ -99,6 +99,10 @@ ignore_missing_imports = true
 module = "pinecone"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "pinecone.core.client.exceptions"
+ignore_missing_imports = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
