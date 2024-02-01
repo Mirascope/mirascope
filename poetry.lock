@@ -2040,4 +2040,4 @@ openai = ["docstring-parser", "openai"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "f877fb222518865d8edad1c2a2255e9b3e502ba7ad92961e2c29bf56a3d4ea8b"
+content-hash = "0294c1324fab3bea617f5fec3c0a55e49df262394d5d4622b87ce55123d76296"
