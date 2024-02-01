@@ -27,8 +27,11 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                                 "description": "A test parameter.",
                             },
                             "optional": {"type": "integer"},
+                            "tool_call": {
+                                "$ref": "#/$defs/ChatCompletionMessageToolCall"
+                            },
                         },
-                        "required": ["param"],
+                        "required": ["tool_call", "param"],
                     },
                 },
             },
@@ -40,6 +43,15 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                 "function": {
                     "name": "EmptyTool",
                     "description": "A test tool with no parameters.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "tool_call": {
+                                "$ref": "#/$defs/ChatCompletionMessageToolCall"
+                            }
+                        },
+                        "required": ["tool_call"],
+                    },
                 },
             },
         ),
@@ -97,6 +109,16 @@ def test_openai_tool_fn_decorator(fixture_my_tool):
         """A test tool function."""
 
     assert (
-        openai_tool_fn(my_tool)(fixture_my_tool)(param="param", optional=0).fn
+        openai_tool_fn(my_tool)(fixture_my_tool)(
+            param="param",
+            optional=0,
+            tool_call=ChatCompletionMessageToolCall(
+                id="id",
+                function=Function(
+                    arguments='{\n  "param": "param",\n  "optional": 0}', name="MyTool"
+                ),
+                type="function",
+            ),
+        ).fn
         == my_tool
     )

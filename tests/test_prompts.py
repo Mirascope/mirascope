@@ -32,6 +32,9 @@ class MessagesPrompt(Prompt):
     USER:
     This is the user message about {bar}.
 
+    TOOL:
+    This is the output of calling a tool.
+
     ASSISTANT:
     This is an assistant message about {foobar}.
     This is also part of the assistant message.

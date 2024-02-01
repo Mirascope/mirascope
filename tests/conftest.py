@@ -62,6 +62,7 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
             "This is also the system message.",
         ),
         ("user", "This is the user message about bar."),
+        ("tool", "This is the output of calling a tool."),
         (
             "assistant",
             "This is an assistant message about foobar. "
@@ -263,7 +264,18 @@ def fixture_my_tool() -> Type[MyTool]:
 @pytest.fixture()
 def fixture_my_tool_instance(fixture_my_tool) -> MyTool:
     """Returns an instance of `MyTool`."""
-    return fixture_my_tool(param="param", optional=0)
+    return fixture_my_tool(
+        param="param",
+        optional=0,
+        tool_call=ChatCompletionMessageToolCall(
+            id="id",
+            function=Function(
+                arguments=('{\n  "param": "param",\n  "optional": 0}'),
+                name="MyTool",
+            ),
+            type="function",
+        ),
+    )
 
 
 @pytest.fixture()

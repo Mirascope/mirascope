@@ -30,8 +30,15 @@ def test_openai_chat_completion_with_tools(
     assert openai_chat_completion.choice == choices[0]
     assert openai_chat_completion.message == choices[0].message
     assert openai_chat_completion.tool_calls == choices[0].message.tool_calls
-    assert openai_chat_completion.tools == [fixture_my_tool_instance]
-    assert openai_chat_completion.tool == fixture_my_tool_instance
+    fixture_tool_model_dump = fixture_my_tool_instance.model_dump()
+    completion_tool_model_dumps = [
+        tool.model_dump() for tool in openai_chat_completion.tools or []
+    ]
+    assert completion_tool_model_dumps == [fixture_tool_model_dump]
+    assert completion_tool_model_dumps[0] == fixture_tool_model_dump
+    assert (
+        openai_chat_completion.tools[0].tool_call == fixture_my_tool_instance.tool_call
+    )
 
 
 def test_openai_chat_completion_with_bad_tools(

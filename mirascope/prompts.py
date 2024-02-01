@@ -146,7 +146,8 @@ def messages(cls: Type[T]) -> Type[T]:
         return [
             (match.group(1).lower(), match.group(2))
             for match in re.finditer(
-                r"(SYSTEM|USER|ASSISTANT): ((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT):|\Z)",
+                r"(SYSTEM|USER|ASSISTANT|TOOL): "
+                r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
                 str(self),
             )
         ]
