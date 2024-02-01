@@ -1,0 +1,48 @@
+{%- if comments -%}
+"""{{ comments }}"""
+{%- endif -%}
+{%- if imports %}
+{%- for import in imports %}
+import {{ import }}
+{% endfor %}
+{%- endif -%}
+{%- if from_imports %}
+{%- set from_import_groups = {} %}
+{%- for module, name in from_imports %}
+    {%- if module not in from_import_groups %}
+        {%- set _ = from_import_groups.update({module: [name]}) %}
+    {%- else %}
+        {%- set _ = from_import_groups[module].append(name) %}
+    {%- endif %}
+{%- endfor -%}
+
+{%- for module, names in from_import_groups.items() %}
+from {{ module }} import {{ names | join(', ') }}
+{% endfor -%}
+{%- endif -%}
+{% if variables %}
+{%- for var_name, var_value in variables.items() -%}
+{{ var_name }} = "{{ var_value }}"
+{% endfor %}
+{% endif -%}
+{% for class in classes -%}
+{%- for decorator in class.decorators %}
+@{{ decorator }}
+{%- endfor %}
+class {{ class.name }}({{ class.bases | join(', ') }}):
+{%- if class.docstring %}
+    """{{ class.docstring }}"""
+{% endif %}
+
+{%- for line in class.body.split('\n') %}
+{%- if line.startswith('def ') or line.startswith('@') %}
+        {%- if previous_line_was_function %}
+    
+        {%- endif %}
+        {%- set previous_line_was_function = true %}
+    {%- else %}
+        {%- set previous_line_was_function = false %}
+    {%- endif %}
+    {{ line }}
+{%- endfor %}
+{% endfor %}
