@@ -4,4 +4,4 @@ pandas>=1.2.3
 tiktoken
 pinecone-client
 python-dotenv
-pydantic_settings
+pydantic-settings
