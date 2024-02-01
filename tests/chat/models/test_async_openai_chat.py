@@ -267,7 +267,6 @@ async def test_async_openai_chat_extract(
     schema_instance = MySchema(
         param=fixture_my_tool_instance.param,
         optional=fixture_my_tool_instance.optional,
-        tool_call=fixture_my_tool_instance.tool_call,
     )
     assert model.model_dump() == schema_instance.model_dump()
 

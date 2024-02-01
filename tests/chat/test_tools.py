@@ -10,7 +10,7 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
 
 
 @pytest.mark.parametrize(
-    "tool,expected_schema",
+    "tool,expected_schema,expected_tool_call",
     [
         (
             "fixture_my_tool",
@@ -32,6 +32,14 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                     },
                 },
             },
+            ChatCompletionMessageToolCall(
+                id="id",
+                function=Function(
+                    arguments=('{\n  "param": "param",\n  "optional": 0}'),
+                    name="MyTool",
+                ),
+                type="function",
+            ),
         ),
         (
             "fixture_empty_tool",
@@ -42,10 +50,18 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                     "description": "A test tool with no parameters.",
                 },
             },
+            ChatCompletionMessageToolCall(
+                id="id",
+                function=Function(
+                    arguments=('{\n  "param": "param",\n  "optional": 0}'),
+                    name="MyTool",
+                ),
+                type="function",
+            ),
         ),
     ],
 )
-def test_openai_tool_tool_schema(tool, expected_schema, request):
+def test_openai_tool_tool_schema(tool, expected_schema, expected_tool_call, request):
     """Tests that `OpenAITool.tool_schema` returns the expected schema."""
     tool = request.getfixturevalue(tool)
     assert tool.tool_schema() == expected_schema
@@ -97,6 +113,16 @@ def test_openai_tool_fn_decorator(fixture_my_tool):
         """A test tool function."""
 
     assert (
-        openai_tool_fn(my_tool)(fixture_my_tool)(param="param", optional=0).fn
+        openai_tool_fn(my_tool)(fixture_my_tool)(
+            param="param",
+            optional=0,
+            tool_call=ChatCompletionMessageToolCall(
+                id="id",
+                function=Function(
+                    arguments='{\n  "param": "param",\n  "optional": 0}', name="MyTool"
+                ),
+                type="function",
+            ),
+        ).fn
         == my_tool
     )

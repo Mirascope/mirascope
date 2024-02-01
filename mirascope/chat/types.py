@@ -60,9 +60,7 @@ class OpenAIChatCompletion(BaseModel):
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.function.name == tool_type.__name__:
-                    tool = tool_type.from_tool_call(tool_call)
-                    tool.tool_call = tool_call
-                    extracted_tools.append(tool)
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 
         return extracted_tools
@@ -80,9 +78,7 @@ class OpenAIChatCompletion(BaseModel):
         tool_call = self.tool_calls[0]
         for tool_type in self.tool_types:
             if self.tool_calls[0].function.name == tool_type.__name__:
-                tool = tool_type.from_tool_call(tool_call)
-                tool.tool_call = tool_call
-                return tool
+                return tool_type.from_tool_call(tool_call)
 
         return None
 
