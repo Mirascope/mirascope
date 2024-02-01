@@ -62,6 +62,7 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
             "This is also the system message.",
         ),
         ("user", "This is the user message about bar."),
+        ("tool", "This is the output of calling a tool."),
         (
             "assistant",
             "This is an assistant message about foobar. "
