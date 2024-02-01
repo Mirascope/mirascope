@@ -37,8 +37,7 @@ def test_openai_chat_completion_with_tools(
     assert completion_tool_model_dumps == [fixture_tool_model_dump]
     assert completion_tool_model_dumps[0] == fixture_tool_model_dump
     assert (
-        openai_chat_completion.tools[0]._tool_call
-        == fixture_my_tool_instance._tool_call
+        openai_chat_completion.tools[0].tool_call == fixture_my_tool_instance.tool_call
     )
 
 

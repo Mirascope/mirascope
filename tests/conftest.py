@@ -264,19 +264,18 @@ def fixture_my_tool() -> Type[MyTool]:
 @pytest.fixture()
 def fixture_my_tool_instance(fixture_my_tool) -> MyTool:
     """Returns an instance of `MyTool`."""
-    tool = fixture_my_tool(
+    return fixture_my_tool(
         param="param",
         optional=0,
-    )
-    tool._tool_call = ChatCompletionMessageToolCall(
-        id="id",
-        function=Function(
-            arguments=('{\n  "param": "param",\n  "optional": 0}'),
-            name="MyTool",
+        tool_call=ChatCompletionMessageToolCall(
+            id="id",
+            function=Function(
+                arguments=('{\n  "param": "param",\n  "optional": 0}'),
+                name="MyTool",
+            ),
+            type="function",
         ),
-        type="function",
     )
-    return tool
 
 
 @pytest.fixture()
