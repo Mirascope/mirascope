@@ -5,11 +5,10 @@ import os
 from config import PINECONE_INDEX, TEXT_COLUMN
 from pinecone import Pinecone
 from pydantic import ConfigDict
+from rag_prompts.news_rag_prompt import NewsRagPrompt
 from utils import query_pinecone
 
 from mirascope import OpenAIChat
-
-from .news_rag_prompt import NewsRagPrompt
 
 prev_revision_id = "None"
 revision_id = "0001"

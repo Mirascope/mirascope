@@ -2,11 +2,10 @@
 import inspect
 import os
 
+from rag_prompts.news_rag_prompt import NewsRagPrompt
 from utils import query_dataframe
 
 from mirascope import OpenAIChat
-
-from .news_rag_prompt import NewsRagPrompt
 
 prev_revision_id = "None"
 revision_id = "0001"

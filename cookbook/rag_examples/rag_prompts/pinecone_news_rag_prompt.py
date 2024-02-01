@@ -8,8 +8,7 @@ from pydantic import ConfigDict
 from utils import query_pinecone
 
 from mirascope import OpenAIChat
-
-from .news_rag_prompt import NewsRagPrompt
+from rag_prompts.news_rag_prompt import NewsRagPrompt
 
 
 class PineconeNewsRagPrompt(NewsRagPrompt):
