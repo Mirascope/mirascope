@@ -34,6 +34,7 @@ class LocalNewsRagPrompt(Prompt):
     num_statements: int
     topic: str
     df: pd.DataFrame
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property

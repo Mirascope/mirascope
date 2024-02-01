@@ -37,6 +37,7 @@ class PineconeNewsRagPrompt(Prompt):
     topic: str
     df: pd.DataFrame
     _index: Pinecone.Index
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __init__(self, **data):
