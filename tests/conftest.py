@@ -62,7 +62,6 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
             "This is also the system message.",
         ),
         ("user", "This is the user message about bar."),
-        ("tool", "This is the output of calling a tool."),
         (
             "assistant",
             "This is an assistant message about foobar. "
@@ -270,7 +269,7 @@ def fixture_my_tool_instance(fixture_my_tool) -> MyTool:
         tool_call=ChatCompletionMessageToolCall(
             id="id",
             function=Function(
-                arguments='{\n  "param": "param",\n  "optional": 0}',
+                arguments=('{\n  "param": 0,\n  "optional": 0}'),
                 name="MyTool",
             ),
             type="function",

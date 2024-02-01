@@ -1,6 +1,8 @@
 """Classes for using tools with Chat APIs."""
 from __future__ import annotations
 
+import json
+from json import JSONDecodeError
 from typing import Callable, Optional, Type, TypeVar, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
@@ -10,7 +12,9 @@ from pydantic import BaseModel, ConfigDict
 class OpenAITool(BaseModel):
     """A base class for more easily using tools with the OpenAI Chat client."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
+    tool_call: ChatCompletionMessageToolCall
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def fn(self) -> Optional[Callable]:
@@ -66,7 +70,13 @@ class OpenAITool(BaseModel):
         Raises:
             ValidationError: if the tool call doesn't match the tool schema.
         """
-        return cls.model_validate_json(tool_call.function.arguments)
+        try:
+            model_json = json.loads(tool_call.function.arguments)
+        except JSONDecodeError as e:
+            raise ValueError("Tool call did not have valid json.") from e
+
+        model_json["tool_call"] = tool_call.model_dump()
+        return cls.model_validate_json(json.dumps(model_json))
 
 
 T = TypeVar("T", bound=OpenAITool)
