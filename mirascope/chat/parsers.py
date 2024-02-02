@@ -25,12 +25,16 @@ class OpenAIToolStreamParser(BaseModel):
         """Parses a stream of `OpenAIChatCompletionChunk`s into `OpenAITools`."""
         openai_tools = convert_tools_list_to_openai_tools(self.tools)
         tool_type: Optional[Type[OpenAITool]] = None
+
         for chunk in stream:
-            if not chunk.tool_calls:  # is true for first and final chunk
+            # Chunks start and end with None so we skip
+            if not chunk.tool_calls:
                 continue
-            tool_call_chunk = chunk.tool_calls[
-                0
-            ]  # update if multiple tool calls are supported
+            # We are making what we think is a reasonable assumption here that
+            # tool_calls is never longer than 1. If it is, this will be updated.
+            tool_call_chunk = chunk.tool_calls[0]
+
+            # Instantiate new tool call when index changes and reset tool type
             if len(self.tool_calls) <= tool_call_chunk.index:
                 self.tool_calls.append(
                     ChatCompletionMessageToolCall(
@@ -39,24 +43,28 @@ class OpenAIToolStreamParser(BaseModel):
                         function=Function(name="", arguments=""),
                     )
                 )
-                # reset tool type for following chunks
                 tool_type = None
+
             tool_call = self.tool_calls[tool_call_chunk.index]
+
+            # Build tool call from tool call chunks
             if tool_call_chunk.id:
-                tool_call.id += tool_call_chunk.id
+                tool_call.id = tool_call_chunk.id
+
+            # Build tool call function from tool call chunks and set tool based on name
             if (
                 tool_call_chunk.function
                 and tool_call_chunk.function.name
                 and openai_tools
             ):
-                # set tool type for the next iterations
                 tool_call.function.name += tool_call_chunk.function.name
                 for tool_class in openai_tools:
                     if tool_class.__name__ == tool_call.function.name:
                         tool_type = tool_class
+
+            # Build tool call function arguments from tool call chunks and return
+            # the OpenAITool if arguments are validated
             if tool_call_chunk.function and tool_call_chunk.function.arguments:
-                # construct json
-                # return completed tool
                 try:
                     tool_call.function.arguments += tool_call_chunk.function.arguments
                     parsed_json = json.loads(tool_call.function.arguments)
