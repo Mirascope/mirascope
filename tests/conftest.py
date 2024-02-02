@@ -1,5 +1,5 @@
 """Fixtures for repeated use in testing."""
-from typing import Type
+from typing import Optional, Type
 
 import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
@@ -202,10 +202,13 @@ def fixture_chat_completion_chunk() -> ChatCompletionChunk:
 
 @pytest.fixture()
 def fixture_chat_completion_chunks_with_tools(
-    request: pytest.FixtureRequest,
+    request: Optional[pytest.FixtureRequest] = None,
 ) -> list[ChatCompletionChunk]:
     """Returns a list of chat completion chunks with tool calls."""
-    name = request.param
+    if request:
+        name = request.param
+    else:
+        name = None
     return [
         ChatCompletionChunk(
             id="test_id",
