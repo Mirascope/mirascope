@@ -1,14 +1,14 @@
 """Prompt for local RAG."""
-import os
-
 import numpy as np
 import pandas as pd
-from config import EMBEDDINGS_COLUMN, TEXT_COLUMN
+from config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
 from openai import OpenAI
 from pydantic import ConfigDict
 from utils import embed_with_openai
 
 from mirascope import Prompt, messages
+
+settings = Settings()
 
 
 @messages
@@ -42,7 +42,7 @@ class LocalNewsRagPrompt(Prompt):
         """Finds most similar articles in dataframe using embeddings."""
 
         query_embedding = embed_with_openai(
-            self.topic, OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            self.topic, OpenAI(api_key=settings.openai_api_key)
         )[0]
         self.df["similarities"] = self.df[EMBEDDINGS_COLUMN].apply(
             lambda x: np.dot(x, query_embedding)

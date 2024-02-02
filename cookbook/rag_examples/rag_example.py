@@ -10,7 +10,7 @@ import os
 from argparse import ArgumentParser
 
 import pandas as pd
-from config import FILENAME, MAX_TOKENS, URL
+from config import FILENAME, MAX_TOKENS, URL, Settings
 from local_news_rag_prompt import LocalNewsRagPrompt
 from pinecone_news_rag_prompt import PineconeNewsRagPrompt
 from setup_pinecone import setup_pinecone
@@ -18,9 +18,11 @@ from utils import embed_df_with_openai, load_data
 
 from mirascope import OpenAIChat
 
+settings = Settings()
+
 
 def main(use_pinecone=False):
-    chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
+    chat = OpenAIChat(api_key=settings.openai_api_key)
 
     if not os.path.exists(FILENAME):
         df = load_data(url=URL, max_tokens=MAX_TOKENS)

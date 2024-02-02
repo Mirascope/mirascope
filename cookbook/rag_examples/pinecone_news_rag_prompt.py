@@ -1,14 +1,14 @@
 """Prompt for Pinecone RAG."""
-import os
-
 import pandas as pd
-from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN
+from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
 from openai import OpenAI
 from pinecone import Pinecone
 from pydantic import ConfigDict
 from utils import embed_with_openai
 
 from mirascope import Prompt, messages
+
+settings = Settings()
 
 
 @messages
@@ -41,14 +41,14 @@ class PineconeNewsRagPrompt(Prompt):
 
     def __init__(self, **data):
         super().__init__(**data)
-        pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+        pc = Pinecone(api_key=settings.pinecone_api_key)
         self._index = pc.Index(PINECONE_INDEX)
 
     @property
     def context(self) -> str:
         """Finds most similar articles in pinecone using embeddings."""
         query_embedding = embed_with_openai(
-            self.topic, OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            self.topic, OpenAI(api_key=settings.openai_api_key)
         )[0]
         query_response = self._index.query(
             namespace=PINECONE_NAMESPACE,
