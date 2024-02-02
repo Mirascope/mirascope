@@ -149,7 +149,7 @@ class OpenAIChat:
 
         try:
             return schema(**completion.tool.model_dump())  # type: ignore
-        except ValidationError as e:
+        except (AttributeError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: update this to include failure history once prompts can handle
