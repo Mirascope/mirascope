@@ -112,7 +112,14 @@ class OpenAIChatCompletionChunk(BaseModel):
 
     @property
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:
-        """Returns the tool calls for the 0th choice message."""
+        """Returns the partial tool calls for the 0th choice message.
+
+        The size of `list[ChoiceDeltaToolCall]` most likely never exceeds 1. The first
+        `list[ChoiceDeltaToolCall]` will contain the name of the tool and index.
+        Subsequent `list[ChoiceDeltaToolCall]`s will contain the arguments which will
+        be strings that need to be concatenated with future `list[ChoiceDeltaToolCall]`s
+        to form a complete JSON tool calls.
+        """
         return self.delta.tool_calls
 
     def __str__(self) -> str:

@@ -7,7 +7,7 @@ from pydantic import Field
 from mirascope import (
     OpenAIChat,
     OpenAITool,
-    PartialOpenAIToolParser,
+    OpenAIToolStreamParser,
     Prompt,
     openai_tool_fn,
 )
@@ -42,6 +42,6 @@ stream_completion = chat.stream(
     CurrentWeatherPrompt(),
     tools=tools,  # pass in the function itself for automatic conversion
 )
-parser = PartialOpenAIToolParser(tools=tools)
+parser = OpenAIToolStreamParser(tools=tools)
 for partial_tool in parser.from_stream(stream_completion):
     print("data: ", partial_tool.__dict__, "\n\n")
