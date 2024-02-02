@@ -136,7 +136,8 @@ def load_data(url: str, max_tokens: int) -> pd.DataFrame:
         max_tokens: the maximum number of tokens per chunk.
 
     Returns:
-        The dataframe with the data from the url."""
+        The dataframe with the data from the url.
+    """
     df = pd.read_csv(url)
     split_articles = []
     encoder = tiktoken.encoding_for_model(MODEL)
