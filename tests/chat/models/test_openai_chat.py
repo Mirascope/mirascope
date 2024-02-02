@@ -252,7 +252,7 @@ def test_openai_chat_extract(
     fixture_my_tool_instance,
     fixture_chat_completion_with_tools,
 ):
-    """Tests that `OpenAIChat` can be extracted from a `Chat`."""
+    """Tests that `MySchema` can be extracted using `OpenAIChat`."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
@@ -271,7 +271,10 @@ def test_openai_chat_extract(
     assert tools_arg[0].model_json_schema() == MySchemaTool.model_json_schema()
     assert tool_choice_arg == {"type": "function", "function": {"name": "MySchemaTool"}}
     assert isinstance(model, MySchema)
-    assert model.model_dump() == fixture_my_tool_instance.model_dump()
+    schema_instance = MySchema(
+        param=fixture_my_tool_instance.param, optional=fixture_my_tool_instance.optional
+    )
+    assert model.model_dump() == schema_instance.model_dump()
 
 
 @patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)

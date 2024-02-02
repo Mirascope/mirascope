@@ -21,9 +21,15 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 class AsyncOpenAIChat:
     """A convenience wrapper for the AsyncOpenAI Chat client."""
 
-    def __init__(self, model: str = "gpt-3.5-turbo", api_key: Optional[str] = None):
+    def __init__(
+        self,
+        model: str = "gpt-3.5-turbo",
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        **kwargs,
+    ):
         """Initializes an instance of `AsyncOpenAIChat."""
-        self.client = AsyncOpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key, base_url=base_url, **kwargs)
         self.model = model
 
     async def create(

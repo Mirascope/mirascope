@@ -1,0 +1,3 @@
+# .gitignore
+.env
+news_article_dataset.pkl
