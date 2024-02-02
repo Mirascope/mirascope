@@ -1,11 +1,14 @@
 """Prompt for local RAG."""
-import os
-
+import numpy as np
 import pandas as pd
+from config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
+from openai import OpenAI
 from pydantic import ConfigDict
-from utils import query_dataframe
+from utils import embed_with_openai
 
-from mirascope import OpenAIChat, Prompt, messages
+from mirascope import Prompt, messages
+
+settings = Settings()
 
 
 @messages
@@ -38,12 +41,16 @@ class LocalNewsRagPrompt(Prompt):
     def context(self) -> str:
         """Finds most similar articles in dataframe using embeddings."""
 
-        statements = query_dataframe(
-            df=self.df,
-            query=self.topic,
-            num_results=self.num_statements,
-            chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
+        query_embedding = embed_with_openai(
+            self.topic, OpenAI(api_key=settings.openai_api_key)
+        )[0]
+        self.df["similarities"] = self.df[EMBEDDINGS_COLUMN].apply(
+            lambda x: np.dot(x, query_embedding)
         )
+        most_similar = self.df.sort_values("similarities", ascending=False).iloc[
+            : self.num_statements
+        ][TEXT_COLUMN]
+        statements = most_similar.to_list()
         return "\n".join(
             [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
         )
