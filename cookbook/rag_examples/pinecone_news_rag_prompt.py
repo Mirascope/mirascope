@@ -2,12 +2,13 @@
 import os
 
 import pandas as pd
-from config import PINECONE_INDEX, TEXT_COLUMN
+from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN
+from openai import OpenAI
 from pinecone import Pinecone
 from pydantic import ConfigDict
-from utils import query_pinecone
+from utils import embed_with_openai
 
-from mirascope import OpenAIChat, Prompt, messages
+from mirascope import Prompt, messages
 
 
 @messages
@@ -46,12 +47,15 @@ class PineconeNewsRagPrompt(Prompt):
     @property
     def context(self) -> str:
         """Finds most similar articles in pinecone using embeddings."""
-        indices = query_pinecone(
-            index=self._index,
-            query=self.topic,
-            chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
-            num_results=self.num_statements,
+        query_embedding = embed_with_openai(
+            self.topic, OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        )[0]
+        query_response = self._index.query(
+            namespace=PINECONE_NAMESPACE,
+            vector=query_embedding,
+            top_k=self.num_statements,
         )
+        indices = [int(article["id"]) for article in query_response["matches"]]
         statements = self.df.iloc[indices][TEXT_COLUMN].to_list()
         return "\n".join(
             [f"{i+1}. {statement}" for i, statement in enumerate(statements)]

@@ -1,44 +1,36 @@
 """Utility functions for the RAG examples."""
 from typing import Union
 
-import numpy as np
 import pandas as pd
 import tiktoken
 from config import (
     EMBEDDINGS_COLUMN,
     EMBEDDINGS_MODEL,
     MODEL,
-    PINECONE_NAMESPACE,
     TEXT_COLUMN,
 )
-from pinecone import Pinecone
-
-from mirascope import OpenAIChat
+from openai import OpenAI
 
 
-def embed_with_openai(
-    text: Union[str, list[str]], chat: OpenAIChat
-) -> list[list[float]]:
+def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[float]]:
     """Embeds a string using OpenAI's embedding model.
 
     Args:
         text: A `str` or list of `str` to embed.
-        chat: The `OpenAIChat` instance used for embedding.
+        client: The `OpenAI` instance used for embedding.
 
     Returns:
         The embeddings of the text.
     """
     if isinstance(text, str):
         text = [text]
-    embeddings_response = chat.client.embeddings.create(
-        model=EMBEDDINGS_MODEL, input=text
-    )
+    embeddings_response = client.embeddings.create(model=EMBEDDINGS_MODEL, input=text)
     return [datum.embedding for datum in embeddings_response.data]
 
 
 def embed_df_with_openai(
     df: pd.DataFrame,
-    chat: OpenAIChat,
+    client: OpenAI,
 ) -> pd.DataFrame:
     """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
@@ -46,7 +38,7 @@ def embed_df_with_openai(
 
     Args:
         texts: The texts to embed.
-        chat: The `OpenAIChat` instance used for embedding.
+        client: The `OpenAI` instance used for embedding.
 
     Returns:
         The dataframe with the embeddings column added.
@@ -59,7 +51,7 @@ def embed_df_with_openai(
     batch_token_count = 0
     for i, text in enumerate(df[TEXT_COLUMN]):
         if batch_token_count + len(encoder.encode(text)) > max_tokens:
-            embeddings += embed_with_openai(batch, chat)
+            embeddings += embed_with_openai(batch, client)
             batch = [text]
             batch_token_count = len(encoder.encode(text))
         else:
@@ -67,65 +59,10 @@ def embed_df_with_openai(
             batch_token_count += len(encoder.encode(text))
 
     if batch:
-        embeddings += embed_with_openai(batch, chat)
+        embeddings += embed_with_openai(batch, client)
 
     df[EMBEDDINGS_COLUMN] = embeddings
     return df
-
-
-def query_dataframe(
-    df: pd.DataFrame,
-    query: str,
-    num_results: int,
-    chat: OpenAIChat,
-) -> list[str]:
-    """Searches a dataframe with embeddings for the most similar texts to a query.
-
-    Since all embeddings vectors are the same length, the dot product is equivalent
-    to cosine similarity and suffices.
-
-    Args:
-        df: The dataframe to query.
-        query: The query to compare against for similarity.
-        results: The number of results to return.
-        chat: The `OpenAIChat` instance used for embedding.
-
-    Returns:
-        The most similar texts to the query.
-    """
-    query_embedding = embed_with_openai(query, chat)[0]
-    df["similarities"] = df[EMBEDDINGS_COLUMN].apply(
-        lambda x: np.dot(x, query_embedding)
-    )
-    most_similar = df.sort_values("similarities", ascending=False).iloc[:num_results][
-        TEXT_COLUMN
-    ]
-
-    return most_similar.to_list()
-
-
-def query_pinecone(
-    index: Pinecone.Index,
-    query: str,
-    chat: OpenAIChat,
-    num_results: int,
-) -> list[int]:
-    """Searches a Pinecone index for the most similar texts to a query.
-
-    Args:
-        index: The Pinecone index to query.
-        query: The query to compare against for similarity.
-        results: The number of results to return.
-        chat: The `OpenAIChat` instance used for embedding.
-
-    Returns:
-        The most similar texts to the query.
-    """
-    query_embedding = embed_with_openai(query, chat)[0]
-    query_response = index.query(
-        namespace=PINECONE_NAMESPACE, vector=query_embedding, top_k=num_results
-    )
-    return [int(article["id"]) for article in query_response["matches"]]
 
 
 def load_data(url: str, max_tokens: int) -> pd.DataFrame:
