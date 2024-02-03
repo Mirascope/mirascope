@@ -95,13 +95,8 @@ nav:
       - LLM Convenience Wrappers: "concepts/llm_convenience_wrappers.md"
       - Mirascope CLI: "concepts/mirascope_cli.md"
   - Cookbook:
-      - A simple creation: "cookbook/simple_call.md"
-      - Chaining: "cookbook/chaining.md"
-      - Movie Bot: "cookbook/movie_bot.md"
-      - Extract book information: "cookbook/extract_book_information.md"
+      - Basic Examples: "cookbook/basic_examples.md"
       - RAG: "cookbook/rag.md"
-      - Tools: "cookbook/tools.md"
-      - FastAPI Integration: "cookbook/fastapi.md"
   - API Reference:
       - chat:
           - "api/chat/index.md"
