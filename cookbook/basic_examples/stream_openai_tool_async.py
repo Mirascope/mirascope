@@ -13,7 +13,7 @@ from mirascope import (
     openai_tool_fn,
 )
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
 class CurrentWeatherPrompt(Prompt):

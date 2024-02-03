@@ -9,10 +9,10 @@ from pydantic import BaseModel
 from ..tools import OpenAITool
 from ..types import OpenAIChatCompletionChunk
 from .utils import (
-    handle_new_arguments,
-    handle_new_function,
-    handle_new_id,
-    handle_new_index,
+    append_tool_call_arguments,
+    append_tool_call_function_name,
+    created_new_tool_call,
+    find_tool_class,
 )
 
 
@@ -36,13 +36,21 @@ class OpenAIToolStreamParser(BaseModel):
             # tool_calls is never longer than 1. If it is, this will be updated.
             tool_call_chunk = chunk.tool_calls[0]
 
-            handle_new_index(self, tool_call_chunk)
+            if created_new_tool_call(self.tool_calls, tool_call_chunk):
+                self._current_tool_type = None
 
-            handle_new_id(self, tool_call_chunk)
+            tool_call = self.tool_calls[tool_call_chunk.index]
+            if tool_call_chunk.id:
+                tool_call.id = tool_call_chunk.id
 
-            handle_new_function(self, tool_call_chunk)
+            if append_tool_call_function_name(self.tool_calls, tool_call_chunk):
+                tool_class = find_tool_class(
+                    self.tool_calls, tool_call_chunk, self.tools
+                )
+                if tool_class:
+                    self._current_tool_type = tool_class
 
-            handle_new_arguments(self, tool_call_chunk)
+            append_tool_call_arguments(self.tool_calls, tool_call_chunk)
 
             try:
                 if self._current_tool_type:

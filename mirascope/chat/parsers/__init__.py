@@ -1,3 +1,3 @@
 """A module for interacting with Tool Parsers."""
-from .openai_parsers import OpenAIToolStreamParser
-from .openai_parsers_async import AsyncOpenAIToolStreamParser
+from .openai_parser import OpenAIToolStreamParser
+from .openai_parser_async import AsyncOpenAIToolStreamParser
