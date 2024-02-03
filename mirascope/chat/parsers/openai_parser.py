@@ -21,13 +21,12 @@ class OpenAIToolStreamParser(BaseModel):
 
     tool_calls: list[ChatCompletionMessageToolCall] = []
     tools: list[Union[Callable, Type[OpenAITool]]] = []
-    _current_tool_type: Optional[Type[OpenAITool]] = None
 
     def from_stream(
         self, stream: Generator[OpenAIChatCompletionChunk, None, None]
     ) -> Generator[OpenAITool, None, None]:
         """Parses a stream of `OpenAIChatCompletionChunk`s into `OpenAITools`."""
-
+        current_tool_type: Optional[Type[OpenAITool]] = None
         for chunk in stream:
             # Chunks start and end with None so we skip
             if not chunk.tool_calls:
@@ -37,7 +36,7 @@ class OpenAIToolStreamParser(BaseModel):
             tool_call_chunk = chunk.tool_calls[0]
 
             if created_new_tool_call(self.tool_calls, tool_call_chunk):
-                self._current_tool_type = None
+                current_tool_type = None
 
             tool_call = self.tool_calls[tool_call_chunk.index]
             if tool_call_chunk.id:
@@ -48,13 +47,13 @@ class OpenAIToolStreamParser(BaseModel):
                     self.tool_calls, tool_call_chunk, self.tools
                 )
                 if tool_class:
-                    self._current_tool_type = tool_class
+                    current_tool_type = tool_class
 
             append_tool_call_arguments(self.tool_calls, tool_call_chunk)
 
             try:
-                if self._current_tool_type:
+                if current_tool_type:
                     tool_call = self.tool_calls[tool_call_chunk.index]
-                    yield self._current_tool_type.from_tool_call(tool_call)
+                    yield current_tool_type.from_tool_call(tool_call)
             except ValueError:
                 continue
