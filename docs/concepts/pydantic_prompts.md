@@ -59,6 +59,11 @@ class LongerPrompt(Prompt):
 !!! note
 
 	If you want custom docstring formatting or none at all, simply override the `template` method.
+### Editor Support
+* Lint errors
+![prompt-linting](https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c)
+* Autocomplete
+![prompt-autocomplete](https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054)
 
 ### Template Variables
 
