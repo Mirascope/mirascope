@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.2.0"
+version = "0.2.1"
 description = "The most pythonic LLM application building experience"
 license = "MIT"
 authors = [
@@ -27,6 +27,7 @@ docstring-parser = { version = "^0.15", optional = true }
 [tool.poetry.extras]
 cli = ["typer", "Jinja2"]
 openai = ["openai", "docstring-parser"]
+all = ["typer", "Jinja2", "openai", "docstring-parser"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -48,7 +49,7 @@ pandas = "^2.2.0"
 pandas-stubs = "^2.1.4.231227"
 tiktoken = "^0.5.2"
 pinecone-client = "^3.0.1"
-uvicorn = {extras = ["standard"], version = "^0.27.0"}
+uvicorn = { extras = ["standard"], version = "^0.27.0" }
 python-dotenv = "^1.0.1"
 pydantic-settings = "^2.1.0"
 

@@ -122,6 +122,15 @@ $ pip install mirascope[openai]  #  LLM Convenience Wrappers
 $ pip install mirascope[all]     #  All Extras
 ```
 
+<details>
+<summary>For those using zsh, you'll need to escape brackets:</summary>
+
+```sh
+$ pip install mirascope\[all\]
+```
+
+</details>
+
 ## 🚨 Warning: Strong Opinion 🚨
 
 Prompt Engineering is engineering. Beyond basic illustrative examples, prompting quickly becomes complex. Separating prompts from the engineering workflow will only put limitations on what you can build with LLMs. We firmly believe that prompts are far more than "just f-strings" and thus require developer tools that are purpose-built for building these more complex prompts as easily as possible.
