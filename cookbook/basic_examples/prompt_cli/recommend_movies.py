@@ -1,7 +1,7 @@
 """A script for recommending movies."""
 import os
 
-from movie_prompts import MovieRecommendationPrompt
+from prompts import MovieRecommendationPrompt
 
 from mirascope import OpenAIChat
 
