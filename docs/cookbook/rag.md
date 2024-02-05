@@ -5,7 +5,7 @@ When we need to provide additional information to the model that it hasn't yet b
 - query the dataset with a topic of our choosing
 - retrieve a number of relevant articles
 - ask our chat model to summarize the relevant ones
-- show how to query the dataset both locally and using a vector database [(Pinecone)](https://docs.pinecone.io/)
+- show how to query the dataset both locally and using a vector database ([Pinecone](https://docs.pinecone.io/))
 - show how Mirascope can simplify RAG.
 
 !!! note
@@ -20,6 +20,13 @@ If you haven't already, it will be worth taking a look some of our relevant conc
 - [LLM Convenience Wrappers](https://docs.mirascope.io/latest/concepts/llm_convenience_wrappers/#openaichat)
 
 In addition, here are the variables we will be using in this cookbook recipe:
+
+```python
+# .env
+
+OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
+PINECONE_API_KEY = "YOUR_PINECONE_API_KEY"
+```
 
 ```python
 # config.py
@@ -45,18 +52,13 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 ```
 
-```python
-# .env
 
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
-PINECONE_API_KEY = "YOUR_PINECONE_API_KEY"
-```
 
 ## Load and preprocess the data
 
-Before we load raw data into a pandas `Dataframe`, we have to handle token limits for both chat and embeddings models. In our case, where `gpt-3.5-turbo` has a lower token limit (4096) than the `text-embedding-ada-002` (8191), the chat becomes the limiting factor. A crude solution is to chunk each article into equal token lengths of at most `MAX_TOKENS=1000`, so we may fit 3 article snippets as well as any text in our hand-written section of the prompt. The function `split_text()` below contains the actual chunking logic.
+Before we load raw data into a pandas `Dataframe`, we have to handle large texts which may exceed token limits in the chat or embeddings models. For the models we use in our case, `gpt-3.5-turbo` has a lower token limit (4096) than `text-embedding-ada-002` (8191), so it makes sense to determine a solution based on the chat's token limit. A crude solution is to split any article of token count greater than `MAX_TOKENS=1000` into equal chunks, with each resulting chunk cosisting of less tokens than `MAX_TOKENS`. This way, we may fit 3 article snippets as well as any text in our hand-written section of the prompt. The function `split_text()` below contains the implementation.
 
-For counting the token lengths, we will use [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) since we will be using OpenAI for both the chat and embedding models. [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) is a useful library provided by OpenAI for encoding strings and decoding tokens for their models.
+For counting the number of tokens in an article, we will use [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) since we will be using OpenAI for both the chat and embedding models. [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) is a useful library provided by OpenAI for encoding strings and decoding tokens for their models.
 
 ```python
 # utils.py
@@ -67,6 +69,7 @@ from config import MODEL, TEXT_COLUMN,
 
 def load_data(url: str, max_tokens: int) -> pd.DataFrame:
     """Loads data from a url after splitting larger texts into smaller chunks.
+
     Args:
         url: the url to load the data from.
         max_tokens: the maximum number of tokens per chunk.
@@ -93,10 +96,12 @@ def load_data(url: str, max_tokens: int) -> pd.DataFrame:
 
 def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
     """Roughly splits a text into chunks according to max_tokens.
+
     Text is split into equal word counts, with number of splits determined by how many
     times `max_tokens` goes into the total number of tokens (including partially). Note
     that tokens and characters do not have an exact correspondence, so in certain edge
     cases a chunk may be slightly larger than max_tokens.
+
     Args:
         text: The text to split.
         tokens: How many tokens `text` is.
@@ -141,7 +146,7 @@ print([len(encoder.encode(split_text)) for split_text in split_texts])
 # piece is less than max_tokens=1000, so we get 3200/4 = 800.
 ```
 
-Great! Now our `Dataframe` is loaded in where each article snippet is less than a thousand tokens.
+Great! Now our `Dataframe` is loaded in with article snippets where each snippet is less than a thousand tokens.
 
 ## Embeddings
 
@@ -179,7 +184,7 @@ def embed_df_with_openai(
 ) -> pd.DataFrame:
     """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
-    Note that this functions assumes all texts are less than 8192 tokens long.
+    Note that this function assumes all texts are less than 8192 tokens long.
 
     Args:
         texts: The texts to embed.
@@ -211,29 +216,34 @@ def embed_df_with_openai(
 
 ```
 
+!!! note
+
+    We can embed multiple texts in a single OpenAI call, so we implement a simple greedy algorithm in `embed_df_with_openai()` where batches are built to accomodate ada-02's token limit of 8191.
+
+We call these functions on our pandas `Dataframe` of article snippets, giving us the embedding of each article snippet in the new column `EMBEDDINGS_COLUMN="embeddings"`.
+
 ```python
 # rag_example.py
 
 chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
 df = embed_df_with_openai(df=df, chat=chat.client)
+
+# df[TEXT_COLUMN] contains article snippets
+# df[EMBEDDINGS_COLUMN] contains embedding for each snippet
 ```
-
-!!! note
-
-    We can embed our texts in batches to save on calls to OpenAI, so we implement a simple greedy algorithm in `embed_df_with_openai()`.
 
 ## Retrieval ... but built into our prompts
 
 We mentioned earlier that we will show how to perform retrieval in two ways: locally and via a vector database (Pinecone). In your own projects, you may want to perform retrieval in an entirely different way.
 
-With Mirascope `Prompt`, we can use Python built-ins with Pydantic to easily embed more complex prompt-specific logic directly to the prompt itself — we can focus on prompt engineering, not the little things. This also ensures that we need not worry about prompt-specific logic whenever we use a prompt in our code base.
+With Mirascope `Prompt`, we can use Python built-ins with Pydantic to implement complex, prompt-specific logic directly within the prompt itself — we can focus on prompt engineering, not the little things. This ensures that prompt-specific logic is well encapsulated, forcing a clean separation from the rest of the codebase. Furthermore, any updates to the prompt logic or template can be maintained and versioned with our CLI - check that out [here](https://docs.mirascope.io/latest/concepts/mirascope_cli/).
 
 In this example, we are going to create two different prompts:
 
 - `LocalNewsRagPrompt`: this prompt will use a local `pd.DataFrame` to find the relevant article chunks.
 - `PineconeNewsRagPrompt`: this prompt will query a Pinecone vector database to find the relevant article chunks.
 
-The querying logic for retrieving relevant articles now lives within each prompt. If we make updates to the logic, we can use the Prompt CLI to version these updates — even if we don’t update the prompt template. We also retain functionality for both local and vector database implementations of the prompt.
+The querying logic for relevant article retrieval will live within each prompt's `context` property, regardless of whether it is the local or vector database implementation. In the local iteration, we manually calculate (using the dot product) the distances between each article snippet's embedding and the embedding of our chosen topic - the articles whose embeddings are closest are then chosen. For the vector database, we make a Pinecone API call to perform the same task via their streamlined architecture.
 
 !!! note
 
@@ -371,7 +381,7 @@ class PineconeNewsRagPrompt(Prompt):
 
 ## Retrieval Script For Topics
 
-Thanks to Pydantic, we handled the retrieval functionality internally through the `context` property, despite the different implementations of each class. With this power, we take everything we’ve done so far and execute it with these simple lines:
+We've built the retrieval functionality into the prompts themselves - now, we can build a script to use these prompts without having to worry about formatting the context or retrieving relevant articles:
 
 ```python
 # rag_example.py
