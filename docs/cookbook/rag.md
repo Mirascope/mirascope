@@ -1,6 +1,12 @@
 # Retrieval Augmented Generation (RAG)
 
-When we need to provide additional information to the model that it hasn't yet been trained on, we can retrieve the relevant information from an external source and provide it as context to our model. For our example, we will use a dataset of [news articles from 2004](https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv). We will query the dataset with a topic of our choosing, retrieve a number of relevent articles, then ask our chat model to summarize the relevant ones. We will show how to query the dataset both locally and using a vector database (Pinecone), and how we can use Mirascope's Pydantic capabilities to let the prompts do all the work for us.
+When we need to provide additional information to the model that it hasn't yet been trained on, we can retrieve the relevant information from an external source and provide it as context to our model. For our example, we will use a dataset of [BBC news articles from 2004](https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv). We will:
+
+- query the dataset with a topic of our choosing
+- retrieve a number of relevant articles
+- ask our chat model to summarize the relevant ones
+- show how to query the dataset both locally and using a vector database [(Pinecone)](https://docs.pinecone.io/)
+- show how Mirascope can simplify RAG.
 
 !!! note
 
@@ -8,10 +14,20 @@ When we need to provide additional information to the model that it hasn't yet b
 
 ## Before we get started
 
-To avoid any confusion, take note of the variables in the `config.py` and `.env` files:
+If you haven't already, it will be worth taking a look some of our relevant concept pages for a more detailed explanation of the functionality we'll be using in this walkthrough.
 
-`config.py`
+- [Pydantic Prompts](https://docs.mirascope.io/latest/concepts/pydantic_prompts/) (template variables, messages)
+- [LLM Convenience Wrappers](https://docs.mirascope.io/latest/concepts/llm_convenience_wrappers/#openaichat)
+
+In addition, here are the variables we will be using in this cookbook recipe:
+
 ```python
+# config.py
+
+from typing import Optional
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 MODEL = "gpt-3.5-turbo"
 EMBEDDINGS_MODEL = "text-embedding-ada-002"
 MAX_TOKENS = 1000
@@ -21,28 +37,39 @@ FILENAME = "news_article_dataset.pkl"
 URL = "https://raw.githubusercontent.com/Dawit-1621/BBC-News-Classification/main/Data/BBC%20News%20Test.csv"
 PINECONE_INDEX = "news-articles"
 PINECONE_NAMESPACE = "articles"
+
+class Settings(BaseSettings):
+    openai_api_key: Optional[str] = None
+    pinecone_api_key: Optional[str] = None
+
+    model_config = SettingsConfigDict(env_file=".env")
 ```
 
-`.env`
 ```python
+# .env
+
 OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
 PINECONE_API_KEY = "YOUR_PINECONE_API_KEY"
 ```
 
 ## Load and preprocess the data
 
-Before we just load raw data into a pandas `Dataframe`, we have to remember that calls to both chat and embeddings models have a token limit. In our case, where we will be putting multiple articles into a single prompt as context, the limiting factor is the chat's token limit. The solution is then to chunk larger articles into smaller pieces so we may still fit several retrieved texts into the context window. Using `tiktoken`, we calculate each article's token count and crudely chunk it into equal token sizes such that each chunk is less than a thousand tokens (considering that `gpt-3.5-turbo` has a context window of 4096 tokens):
+Before we load raw data into a pandas `Dataframe`, we have to handle token limits for both chat and embeddings models. In our case, where `gpt-3.5-turbo` has a lower token limit (4096) than the `text-embedding-ada-002` (8191), the chat becomes the limiting factor. A crude solution is to chunk each article into equal token lengths of at most `MAX_TOKENS=1000`, so we may fit 3 article snippets as well as any text in our hand-written section of the prompt. The function `split_text()` below contains the actual chunking logic.
+
+For counting the token lengths, we will use [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) since we will be using OpenAI for both the chat and embedding models. [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) is a useful library provided by OpenAI for encoding strings and decoding tokens for their models.
 
 ```python
 # utils.py
 
+import pandas as pd
+import tiktoken
+from config import MODEL, TEXT_COLUMN,
+
 def load_data(url: str, max_tokens: int) -> pd.DataFrame:
     """Loads data from a url after splitting larger texts into smaller chunks.
-
     Args:
         url: the url to load the data from.
         max_tokens: the maximum number of tokens per chunk.
-
     Returns:
         The dataframe with the data from the url.
     """
@@ -66,17 +93,14 @@ def load_data(url: str, max_tokens: int) -> pd.DataFrame:
 
 def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
     """Roughly splits a text into chunks according to max_tokens.
-
     Text is split into equal word counts, with number of splits determined by how many
     times `max_tokens` goes into the total number of tokens (including partially). Note
     that tokens and characters do not have an exact correspondence, so in certain edge
     cases a chunk may be slightly larger than max_tokens.
-
     Args:
         text: The text to split.
         tokens: How many tokens `text` is.
         max_tokens: The (rough) number of maximum tokens per chunk.
-
     Returns:
         A list of the split texts.
     """
@@ -89,6 +113,7 @@ def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
         split_texts.append(" ".join(words[start:end]))
 
     return split_texts
+
 ```
 
 ```python
@@ -97,38 +122,60 @@ def split_text(text: str, tokens: list[int], max_tokens: int) -> list[str]:
 df = load_data(url=URL, max_tokens=MAX_TOKENS)
 ```
 
+For further clarity, here is an example of the output of `split_texts()`:
+
+```python
+# sample_output of split_texts()
+
+text = "..."
+tokens = encoder.encode(text)
+print(len(tokens))
+
+# Output: 3200
+
+split_texts = split_text(text=text, tokens=tokens, max_tokens=1000)
+print([len(encoder.encode(split_text)) for split_text in split_texts])
+
+# Output: [800 800, 800, 800]
+# Explanation: 4 is the minimum number of times to split 3200 until each
+# piece is less than max_tokens=1000, so we get 3200/4 = 800.
+```
+
 Great! Now our `Dataframe` is loaded in where each article snippet is less than a thousand tokens.
 
-### Embeddings
+## Embeddings
 
-To be able to compare our articles with a topic of our choosing and determine relevancy, we need to embed each of them. Through our wrapper class [`OpenAIChat`](../api/chat/models.md#mirascope.chat.models.OpenAIChat), we can access the `OpenAI` model through the `OpenAI.client` attribute, then call [OpenAI's embeddings](https://platform.openai.com/docs/guides/embeddings):
+To be able to take a topic of our choosing and determine each article’s relevancy, we need to embed them. We define some helper functions to use [OpenAI's embeddings](https://platform.openai.com/docs/guides/embeddings):
 
 ```python
 # utils.py
 
-def embed_with_openai(
-    text: Union[str, list[str]], chat: OpenAIChat
-) -> list[list[float]]:
+from typing import Union
+
+import pandas as pd
+import tiktoken
+from config import EMBEDDINGS_COLUMN, EMBEDDINGS_MODEL, MODEL
+from openai import OpenAI
+
+def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[float]]:
     """Embeds a string using OpenAI's embedding model.
 
     Args:
         text: A `str` or list of `str` to embed.
-        chat: The `OpenAIChat` instance used for embedding.
+        client: The `OpenAI` instance used for embedding.
 
     Returns:
         The embeddings of the text.
     """
     if isinstance(text, str):
         text = [text]
-    embeddings_response = chat.client.embeddings.create(
-        model=EMBEDDINGS_MODEL, input=text
-    )
+    embeddings_response = client.embeddings.create(model=EMBEDDINGS_MODEL, input=text)
     return [datum.embedding for datum in embeddings_response.data]
 
 
 def embed_df_with_openai(
     df: pd.DataFrame,
-    chat: OpenAIChat,
+    client: OpenAI,
 ) -> pd.DataFrame:
     """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
@@ -136,7 +183,7 @@ def embed_df_with_openai(
 
     Args:
         texts: The texts to embed.
-        chat: The `OpenAIChat` instance used for embedding.
+        client: The `OpenAI` instance used for embedding.
 
     Returns:
         The dataframe with the embeddings column added.
@@ -149,7 +196,7 @@ def embed_df_with_openai(
     batch_token_count = 0
     for i, text in enumerate(df[TEXT_COLUMN]):
         if batch_token_count + len(encoder.encode(text)) > max_tokens:
-            embeddings += embed_with_openai(batch, chat)
+            embeddings += embed_with_openai(batch, client)
             batch = [text]
             batch_token_count = len(encoder.encode(text))
         else:
@@ -157,91 +204,57 @@ def embed_df_with_openai(
             batch_token_count += len(encoder.encode(text))
 
     if batch:
-        embeddings += embed_with_openai(batch, chat)
+        embeddings += embed_with_openai(batch, client)
 
     df[EMBEDDINGS_COLUMN] = embeddings
     return df
+
 ```
 
 ```python
 # rag_example.py
 
 chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
-df = embed_df_with_openai(df=df, chat=chat)
+df = embed_df_with_openai(df=df, chat=chat.client)
 ```
 
-Note that we can embed our texts in batches to save on calls to OpenAI, so we implement a simple greedy algorithm in `embed_df_with_openai()`.
+!!! note
 
-### Retrieval ... but built into our prompts
+    We can embed our texts in batches to save on calls to OpenAI, so we implement a simple greedy algorithm in `embed_df_with_openai()`.
 
-We mentioned earlier that we will show how to perform retrieval in two ways: locally and via a vector database (Pinecone). In your own projects, you may want to perform retrieval in an entirely different way! Mirascope lets you build these functionalities into the prompts themselves, allowing for maximum refactorability and a clean prompt engineering experience. At the end of the day, we want to minimize superfluous scripting and trim all the fat which isn't the prompt engineering itself by letting you add pythonic structure and functionality to your prompts. Other than a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/rag_examples/setup_pinecone.py), our end goal is to be able to switch between non-prompting functionalities with one line.
+## Retrieval ... but built into our prompts
 
-First, we define some helper functions to take a topic, embed it, then compare its distance to the embeddings of all of our texts.
+We mentioned earlier that we will show how to perform retrieval in two ways: locally and via a vector database (Pinecone). In your own projects, you may want to perform retrieval in an entirely different way.
 
-```python
-# utils.py
+With Mirascope `Prompt`, we can use Python built-ins with Pydantic to easily embed more complex prompt-specific logic directly to the prompt itself — we can focus on prompt engineering, not the little things. This also ensures that we need not worry about prompt-specific logic whenever we use a prompt in our code base.
 
-# Local Retrieval
-def query_dataframe(
-    df: pd.DataFrame,
-    query: str,
-    num_results: int,
-    chat: OpenAIChat,
-) -> list[str]:
-    """Searches a dataframe with embeddings for the most similar texts to a query.
+In this example, we are going to create two different prompts:
 
-    Since all embeddings vectors are the same length, the dot product is equivalent
-    to cosine similarity and suffices.
+- `LocalNewsRagPrompt`: this prompt will use a local `pd.DataFrame` to find the relevant article chunks.
+- `PineconeNewsRagPrompt`: this prompt will query a Pinecone vector database to find the relevant article chunks.
 
-    Args:
-        df: The dataframe to query.
-        query: The query to compare against for similarity.
-        results: The number of results to return.
-        chat: The `OpenAIChat` instance used for embedding.
+The querying logic for retrieving relevant articles now lives within each prompt. If we make updates to the logic, we can use the Prompt CLI to version these updates — even if we don’t update the prompt template. We also retain functionality for both local and vector database implementations of the prompt.
 
-    Returns:
-        The most similar texts to the query.
-    """
-    query_embedding = embed_with_openai(query, chat)[0]
-    df["similarities"] = df[EMBEDDINGS_COLUMN].apply(
-        lambda x: np.dot(x, query_embedding)
-    )
-    most_similar = df.sort_values("similarities", ascending=False).iloc[:num_results][
-        TEXT_COLUMN
-    ]
+!!! note
 
-    return most_similar.to_list()
+    The querying logic for Pinecone lives within the PineconeNewsRagPrompt, but you must still do a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/rag_examples/setup_pinecone.py).
 
-
-# Pinecone Retrieval
-def query_pinecone(
-    index: Pinecone.Index,
-    query: str,
-    chat: OpenAIChat,
-    num_results: int,
-) -> list[int]:
-    """Searches a Pinecone index for the most similar texts to a query.
-
-    Args:
-        index: The Pinecone index to query.
-        query: The query to compare against for similarity.
-        results: The number of results to return.
-        chat: The `OpenAIChat` instance used for embedding.
-
-    Returns:
-        The most similar texts to the query.
-    """
-    query_embedding = embed_with_openai(query, chat)[0]
-    query_response = index.query(
-        namespace=PINECONE_NAMESPACE, vector=query_embedding, top_k=num_results
-    )
-    return [int(article["id"]) for article in query_response["matches"]]
-```
-
-Now, we can make bake these functionalities into the prompts themselves, with a shared parent class to make editing the core parts of the prompt as easy as possible.
+### LocalNewsRagPrompt
 
 ```python
 # rag_prompts/local_news_rag_prompt.py
+
+import numpy as np
+import pandas as pd
+from config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
+from openai import OpenAI
+from pydantic import ConfigDict
+from utils import embed_with_openai
+
+from mirascope import Prompt, messages
+
+settings = Settings()
+
 
 @messages
 class LocalNewsRagPrompt(Prompt):
@@ -273,18 +286,37 @@ class LocalNewsRagPrompt(Prompt):
     def context(self) -> str:
         """Finds most similar articles in dataframe using embeddings."""
 
-        statements = query_dataframe(
-            df=self.df,
-            query=self.topic,
-            num_results=self.num_statements,
-            chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
+        query_embedding = embed_with_openai(
+            self.topic, OpenAI(api_key=settings.openai_api_key)
+        )[0]
+        self.df["similarities"] = self.df[EMBEDDINGS_COLUMN].apply(
+            lambda x: np.dot(x, query_embedding)
         )
+        most_similar = self.df.sort_values("similarities", ascending=False).iloc[
+            : self.num_statements
+        ][TEXT_COLUMN]
+        statements = most_similar.to_list()
         return "\n".join(
             [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
         )
 ```
+
+### PineconeNewsRagPrompt
+
 ```python
 # rag_prompts/pinecone_news_rag_prompt.py
+
+import pandas as pd
+from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
+from openai import OpenAI
+from pinecone import Pinecone
+from pydantic import ConfigDict
+from utils import embed_with_openai
+
+from mirascope import Prompt, messages
+
+settings = Settings()
+
 
 @messages
 class PineconeNewsRagPrompt(Prompt):
@@ -316,40 +348,77 @@ class PineconeNewsRagPrompt(Prompt):
 
     def __init__(self, **data):
         super().__init__(**data)
-        pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+        pc = Pinecone(api_key=settings.pinecone_api_key)
         self._index = pc.Index(PINECONE_INDEX)
 
     @property
     def context(self) -> str:
         """Finds most similar articles in pinecone using embeddings."""
-        indices = query_pinecone(
-            index=self._index,
-            query=self.topic,
-            chat=OpenAIChat(api_key=os.getenv("OPENAI_API_KEY")),
-            num_results=self.num_statements,
+        query_embedding = embed_with_openai(
+            self.topic, OpenAI(api_key=settings.openai_api_key)
+        )[0]
+        query_response = self._index.query(
+            namespace=PINECONE_NAMESPACE,
+            vector=query_embedding,
+            top_k=self.num_statements,
         )
+        indices = [int(article["id"]) for article in query_response["matches"]]
         statements = self.df.iloc[indices][TEXT_COLUMN].to_list()
         return "\n".join(
             [f"{i+1}. {statement}" for i, statement in enumerate(statements)]
         )
 ```
 
-Thanks to Pydantic, we can handle the retrieval functionality internally through the `context` property, despite their different implementations for each class. With this power, we can execute different versions of the program with only the following lines:
+## Retrieval Script For Topics
+
+Thanks to Pydantic, we handled the retrieval functionality internally through the `context` property, despite the different implementations of each class. With this power, we take everything we’ve done so far and execute it with these simple lines:
 
 ```python
 # rag_example.py
 
+import os
+from argparse import ArgumentParser
+
+import pandas as pd
+from config import FILENAME, MAX_TOKENS, URL, Settings
+from local_news_rag_prompt import LocalNewsRagPrompt
+from pinecone_news_rag_prompt import PineconeNewsRagPrompt
+from setup_pinecone import setup_pinecone
+from utils import embed_df_with_openai, load_data
+
+from mirascope import OpenAIChat
+
+settings = Settings()
+
 def main(use_pinecone=False):
+    chat = OpenAIChat(api_key=settings.openai_api_key)
+    df = load_data(url=URL, max_tokens=MAX_TOKENS)
+    df = embed_df_with_openai(df=df, client=chat.client)
+
+    # This method does nothing if a Pinecone index is already set up.
+    if use_pinecone:
+        setup_pinecone(df=df)
+
     topics = [
         "soccer teams/players going through trouble",
         "environmental factors affecting economy",
         "celebrity or politician scandals",
     ]
     for topic in topics:
-            if use_pinecone:
-                print(summarize_news_pinecone_embeddings(topic, 3, df))
-            else:
-                print(summarize_news_local_embeddings(topic, 3, df))
-            print("\n")
+        if use_pinecone:
+            print(
+                chat.create(PineconeNewsRagPrompt(num_statements=3, topic=topic, df=df))
+            )
+        else:
+            print(chat.create(LocalNewsRagPrompt(num_statements=3, topic=topic, df=df)))
+        print("\n")
 
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Process some flags.")
+    parser.add_argument(
+        "-pc", "--pinecone", action="store_true", help="Activate Pinecone mode"
+    )
+    args = parser.parse_args()
+    main(use_pinecone=args.pinecone)
 ```
