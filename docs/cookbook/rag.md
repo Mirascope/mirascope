@@ -56,7 +56,9 @@ class Settings(BaseSettings):
 
 ## Load and preprocess the data
 
-Before we load raw data into a pandas `Dataframe`, we have to handle large texts which may exceed token limits in the chat or embeddings models. For the models we use in our case, `gpt-3.5-turbo` has a lower token limit (4096) than `text-embedding-ada-002` (8191), so it makes sense to determine a solution based on the chat's token limit. A crude solution is to split any article of token count greater than `MAX_TOKENS=1000` into equal chunks, with each resulting chunk cosisting of less tokens than `MAX_TOKENS`. This way, we may fit 3 article snippets as well as any text in our hand-written section of the prompt. The function `split_text()` below contains the implementation.
+Before we load raw data into a pandas `Dataframe`, we have to handle large texts which may exceed token limits. In our case, we are using `gpt-3.5-turbo`, which has a token limit of 4096. A crude solution is to split any article of token count greater than `MAX_TOKENS=1000` into equal chunks, with each resulting chunk consisting of fewer than `MAX_TOKENS`. This way we can fit up to 3 article snippets as well as any text in our hand-written section of the prompt. Note that we have also made sure that `MAX_TOKENS` is less than the token limit for our embedding model `text-embedding-ada-02` that has a otken limit of 8191.
+
+The function `split_text()` below contains the implementation.
 
 For counting the number of tokens in an article, we will use [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) since we will be using OpenAI for both the chat and embedding models. [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) is a useful library provided by OpenAI for encoding strings and decoding tokens for their models.
 
@@ -199,6 +201,9 @@ def embed_df_with_openai(
     embeddings: list[list[float]] = []
     batch: list[str] = []
     batch_token_count = 0
+    
+    # We can embed multiple texts in a single OpenAI call, so we implement a
+    # simple greedy algorithm according to ada-02's token limit of 8191.
     for i, text in enumerate(df[TEXT_COLUMN]):
         if batch_token_count + len(encoder.encode(text)) > max_tokens:
             embeddings += embed_with_openai(batch, client)
@@ -215,10 +220,6 @@ def embed_df_with_openai(
     return df
 
 ```
-
-!!! note
-
-    We can embed multiple texts in a single OpenAI call, so we implement a simple greedy algorithm in `embed_df_with_openai()` where batches are built to accomodate ada-02's token limit of 8191.
 
 We call these functions on our pandas `Dataframe` of article snippets, giving us the embedding of each article snippet in the new column `EMBEDDINGS_COLUMN="embeddings"`.
 
