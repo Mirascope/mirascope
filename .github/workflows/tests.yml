@@ -32,7 +32,7 @@ jobs:
         run: poetry install --with dev --all-extras
 
       - name: Run Tests
-        run: poetry run pyest tests/ --cov=./ --cov-report=xml
+        run: poetry run pytest tests/ --cov=./ --cov-report=xml
 
       - name: Generate coverage report
         run: poetry run coverage report
