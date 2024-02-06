@@ -25,13 +25,15 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                             "param": {
                                 "type": "string",
                                 "description": "A test parameter.",
+                                "title": "Param",
                             },
-                            "optional": {"type": "integer"},
-                            "tool_call": {
-                                "$ref": "#/$defs/ChatCompletionMessageToolCall"
+                            "optional": {
+                                "type": "integer",
+                                "title": "Optional",
+                                "default": 0,
                             },
                         },
-                        "required": ["tool_call", "param"],
+                        "required": ["param"],
                     },
                 },
             },
@@ -45,12 +47,8 @@ from mirascope.chat.tools import OpenAITool, openai_tool_fn
                     "description": "A test tool with no parameters.",
                     "parameters": {
                         "type": "object",
-                        "properties": {
-                            "tool_call": {
-                                "$ref": "#/$defs/ChatCompletionMessageToolCall"
-                            }
-                        },
-                        "required": ["tool_call"],
+                        "properties": {},
+                        "required": [],
                     },
                 },
             },
