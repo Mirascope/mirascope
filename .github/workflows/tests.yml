@@ -32,4 +32,9 @@ jobs:
         run: poetry install --with dev --all-extras
 
       - name: Run Tests
-        run: poetry run pytest tests/
+        run: poetry run coverage run -m pytest tests/
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
