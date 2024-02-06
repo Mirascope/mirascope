@@ -4,7 +4,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
-from pydantic import Field
+from pydantic import Field, ValidationError
 
 from mirascope.chat.tools import OpenAITool, openai_tool_fn
 
@@ -87,6 +87,7 @@ def test_openai_tool_from_tool_call(fixture_my_tool):
     assert isinstance(tool, fixture_my_tool)
     assert tool.param == "param"
     assert tool.optional == 0
+    assert tool.fn is None
 
 
 def test_openai_tool_from_tool_call_validation_error(fixture_my_tool):
@@ -98,7 +99,20 @@ def test_openai_tool_from_tool_call_validation_error(fixture_my_tool):
         ),
         type="function",
     )
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
+        fixture_my_tool.from_tool_call(tool_call)
+
+
+def test_openai_tool_from_tool_call_json_decode_error(fixture_my_tool):
+    """Tests that `OpenAITool.from_tool_call` raises a ValueError for bad JSON."""
+    tool_call = ChatCompletionMessageToolCall(
+        id="id",
+        function=Function(
+            arguments='{\n  "param": "param",\n  "optional": 0', name="MyTool"
+        ),
+        type="function",
+    )
+    with pytest.raises(ValueError):
         fixture_my_tool.from_tool_call(tool_call)
 
 

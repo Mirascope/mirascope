@@ -140,9 +140,6 @@ def messages(cls: Type[T]) -> Type[T]:
 
     def messages_fn(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
-        if self.__doc__ is None:
-            raise ValueError("`Prompt` must have a prompt template docstring.")
-
         return [
             (match.group(1).lower(), match.group(2))
             for match in re.finditer(
