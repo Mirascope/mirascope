@@ -200,7 +200,7 @@ def test_write_prompt_to_template(
     sample_file_content = dedent(
         '''
     """This is a comment"""
-    foo = bar
+    foo = "bar"
     '''
     )
 

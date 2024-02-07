@@ -43,6 +43,8 @@ class PromptAnalyzer(ast.NodeVisitor):
         """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
+            print("HIT")
+            print(ast.unparse(node.value))
             self.variables[target.id] = ast.literal_eval(node.value)
             print(self.variables)
         self.generic_visit(node)

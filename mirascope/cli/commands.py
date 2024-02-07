@@ -39,7 +39,6 @@ from .utils import (
     find_file_names,
     find_prompt_path,
     find_prompt_paths,
-    get_prompt_analyzer,
     get_prompt_versions,
     get_user_mirascope_settings,
     update_version_text_file,
