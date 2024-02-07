@@ -223,8 +223,7 @@ def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
         stream = chat.stream(fixture_foobar_prompt)
-        for chunk in stream:
-            pass
+        next(stream)
 
 
 class MySchema(BaseModel):

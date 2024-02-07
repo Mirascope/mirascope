@@ -41,6 +41,17 @@ def test_openai_chat_completion_with_tools(
     )
 
 
+def test_openai_chat_completion_no_matching_tools(
+    fixture_chat_completion_with_tools, fixture_empty_tool
+):
+    """Tests that `OpenAIChatCompletion` returns `None` if no tools match."""
+    openai_chat_completion = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_tools, tool_types=[fixture_empty_tool]
+    )
+    assert not openai_chat_completion.tools
+    assert openai_chat_completion.tool is None
+
+
 def test_openai_chat_completion_with_bad_tools(
     fixture_chat_completion_with_bad_tools, fixture_my_tool
 ):
@@ -63,6 +74,7 @@ def test_openai_chat_completion_chunk(fixture_chat_completion_chunk):
     )
     choices = fixture_chat_completion_chunk.choices
     assert openai_chat_completion_chunk.choices == choices
+    assert openai_chat_completion_chunk.choice == choices[0]
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == choices[0].delta.content
     assert str(openai_chat_completion_chunk) == openai_chat_completion_chunk.content
