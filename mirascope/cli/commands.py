@@ -281,16 +281,17 @@ def remove(
         help="Version of prompt to use",
     ),
 ):
-    """Remove the given prompt to the specified version directory.
+    """Removes the version from the versions directory
 
-    Removes the version from the versions directory or all if no version is specified
+    All versions with prev_revision_id matching the deleted version are detached.
 
     Args:
         prompt_file_name: The name of the prompt file to remove.
         version: The version of the prompt to remove
 
     Raises:
-        FileNotFoundError: If the file is not found in the specified prompts directory.
+        FileNotFoundError: If the file is not found in the specified prompts or
+        versions directory.
     """
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings.versions_location
