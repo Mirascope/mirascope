@@ -43,14 +43,13 @@ class OpenAITool(BaseModel):
             fn["parameters"] = {
                 "type": "object",
                 "properties": {
-                    prop: {
-                        key: value
-                        for key, value in prop_schema.items()
-                        if key != "default" and key != "title"
-                    }
+                    prop: {key: value for key, value in prop_schema.items()}
                     for prop, prop_schema in model_schema["properties"].items()
+                    if prop != "tool_call"
                 },
-                "required": model_schema["required"]
+                "required": [
+                    prop for prop in model_schema["required"] if prop != "tool_call"
+                ]
                 if "required" in model_schema
                 else [],
             }

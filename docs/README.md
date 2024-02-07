@@ -11,7 +11,7 @@
         <tr>
             <td align="center" width="420"><em>Simplicity through idiomatic syntax</em></td>
             <td align="center">→</td>
-            <td align="center" width="420"><strong><em>Faster and more reliable release</em></strong></td>
+            <td align="center" width="420"><strong><em>Faster and more reliable releases</em></strong></td>
         </tr>
         <tr>
             <td align="center" width="420"><em>Semi-opinionated methods</em></td>
@@ -121,6 +121,15 @@ $ pip install mirascope[cli]     #  Prompt CLI
 $ pip install mirascope[openai]  #  LLM Convenience Wrappers
 $ pip install mirascope[all]     #  All Extras
 ```
+
+<details>
+<summary>For those using zsh, you'll need to escape brackets:</summary>
+
+```sh
+$ pip install mirascope\[all\]
+```
+
+</details>
 
 ## 🚨 Warning: Strong Opinion 🚨
 
