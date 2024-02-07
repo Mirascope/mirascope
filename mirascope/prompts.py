@@ -6,9 +6,11 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Type, TypeVar
+from typing import Callable, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
+
+from mirascope.chat.types import OpenAIChatCompletion
 
 
 class Prompt(BaseModel):
@@ -60,6 +62,8 @@ class Prompt(BaseModel):
     ```
     '''
 
+    _tags: list[str] = []
+
     @classmethod
     def template(cls) -> str:
         """Custom parsing functionality for docstring prompt.
@@ -94,6 +98,16 @@ class Prompt(BaseModel):
     def messages(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
         return [("user", str(self))]
+
+    def dump(
+        self, completion: Optional[Union[dict, OpenAIChatCompletion]] = None
+    ) -> dict:
+        """Dumps the prompt template to a dictionary."""
+        return {
+            "template": self.template(),
+            "inputs": self.model_dump(),
+            "tags": self._tags,
+        }
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
@@ -154,3 +168,16 @@ def messages(cls: Type[T]) -> Type[T]:
 
     setattr(cls, "messages", property(messages_fn))
     return cls
+
+
+def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
+    def tags_fn(model_class: Type[T]) -> Type[T]:
+        # Step 2: Attach the tags to the model class
+        if isinstance(args, str):
+            tags_list = [args]
+        else:
+            tags_list = args
+        setattr(model_class, "_tags", tags_list)
+        return model_class
+
+    return tags_fn
