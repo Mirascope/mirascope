@@ -157,7 +157,7 @@ async def test_async_openai_chat_stream_messages_kwarg(
     stream = chat.stream(messages=messages)
 
     async for chunk in stream:
-        pass  # we need to call the generator to check the mock create calls
+        pass
 
     mock_create.assert_called_once_with(
         model=model,
@@ -213,8 +213,7 @@ async def test_async_openai_chat_stream_error(mock_create, fixture_foobar_prompt
     chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
     with pytest.raises(Exception):
         astream = chat.stream(fixture_foobar_prompt)
-        async for chunk in astream:
-            pass
+        next(astream)
 
 
 class MySchema(BaseModel):
