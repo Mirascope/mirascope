@@ -15,6 +15,94 @@ from .schemas import MirascopeSettings, VersionTextFile
 ignore_variables = {"prev_revision_id", "revision_id"}
 
 
+class PromptAnalyzer(ast.NodeVisitor):
+    """Utility class for analyzing a Mirascope prompt file."""
+
+    def __init__(self):
+        """Initializes the PromptAnalyzer."""
+        self.imports = []
+        self.from_imports = []
+        self.variables = {}
+        self.classes = []
+        self.decorators = []
+        self.comments = ""
+
+    def visit_Import(self, node):
+        """Extracts imports from the given node."""
+        for alias in node.names:
+            self.imports.append(alias.name)
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        """Extracts from imports from the given node."""
+        for alias in node.names:
+            self.from_imports.append((node.module, alias.name))
+        self.generic_visit(node)
+
+    def visit_Assign(self, node):
+        """Extracts variables from the given node."""
+        target = node.targets[0]
+        if isinstance(target, ast.Name):
+            self.variables[target.id] = ast.literal_eval(node.value)
+            print(self.variables)
+        self.generic_visit(node)
+
+    def visit_ClassDef(self, node):
+        """Extracts classes from the given node."""
+        class_info = {
+            "name": node.name,
+            "bases": [ast.unparse(b) for b in node.bases],
+            "body": "",
+            "decorators": [ast.unparse(d) for d in node.decorator_list],
+            "docstring": None,
+        }
+
+        # Extract docstring if present
+        docstring = ast.get_docstring(node, False)
+        if docstring:
+            class_info["docstring"] = docstring
+
+        # Handle the rest of the class body
+        body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
+        class_info["body"] = "\n".join(ast.unparse(n) for n in body_nodes)
+
+        self.classes.append(class_info)
+
+    def visit_FunctionDef(self, node):
+        """Extracts decorators from function definitions."""
+        for decorator in node.decorator_list:
+            self.decorators.append(ast.unparse(decorator))
+        self.generic_visit(node)
+
+    def visit_Module(self, node):
+        """Extracts comments from the given node."""
+        comments = ast.get_docstring(node, False)
+        self.comments = "" if comments is None else comments
+        self.generic_visit(node)
+
+    def check_class_changed(self, other: "PromptAnalyzer") -> bool:
+        """Compares the classes of this file with the classes of another file."""
+        self_classes = {c["name"]: c for c in self.classes}
+        other_classes = {c["name"]: c for c in other.classes}
+
+        all_class_names = set(self_classes.keys()) | set(other_classes.keys())
+
+        for name in all_class_names:
+            if name in self_classes and name in other_classes:
+                # Compare attributes of classes with the same name
+                class_diff = {
+                    attr: (self_classes[name][attr], other_classes[name][attr])
+                    for attr in self_classes[name]
+                    if self_classes[name][attr] != other_classes[name][attr]
+                }
+                if class_diff:
+                    return True
+            else:
+                return True
+
+        return False
+
+
 def get_user_mirascope_settings(
     ini_file_path: str = "mirascope.ini",
 ) -> MirascopeSettings:
@@ -98,8 +186,8 @@ def find_file_names(directory: str, prefix: str = "") -> list[str]:
     return glob.glob(pattern, root_dir=directory)  # Returns all files found
 
 
-def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
-    """Finds and opens the prompt with the given directory."""
+def find_prompt_paths(directory: Union[Path, str], prefix: str) -> Optional[list[str]]:
+    """Finds and opens all prompts with the given directory."""
     pattern = os.path.join(directory, prefix + "*.py")
     prompt_files = glob.glob(pattern)
 
@@ -107,7 +195,23 @@ def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
         return None  # No files found
 
     # Return first file found
-    return prompt_files[0]
+    return prompt_files
+
+
+def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
+    """Finds and opens the first found prompt with the given directory."""
+    prompt_files = find_prompt_paths(directory, prefix)
+    if prompt_files:
+        return prompt_files[0]
+    return None
+
+
+def get_prompt_analyzer(file: str) -> PromptAnalyzer:
+    """Gets an instance of PromptAnalyzer for a file"""
+    analyzer = PromptAnalyzer()
+    tree = ast.parse(file)
+    analyzer.visit(tree)
+    return analyzer
 
 
 def write_prompt_to_template(
@@ -117,14 +221,13 @@ def write_prompt_to_template(
 ):
     """Writes the given prompt to the template."""
     mirascope_directory = get_user_mirascope_settings().mirascope_location
-    if variables is None:
-        variables = {}
     template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
     template = template_env.get_template("prompt_template.j2")
-    analyzer = PromptAnalyzer()
-    tree = ast.parse(file)
-    analyzer.visit(tree)
+    analyzer = get_prompt_analyzer(file)
+    if variables is None:
+        variables = {}
+
     if command == MirascopeCommand.ADD:
         new_variables = variables | analyzer.variables
     else:  # command == MirascopeCommand.USE
@@ -206,90 +309,3 @@ def check_status(
     if has_file_changed:
         return used_prompt_path
     return None
-
-
-class PromptAnalyzer(ast.NodeVisitor):
-    """Utility class for analyzing a Mirascope prompt file."""
-
-    def __init__(self):
-        """Initializes the PromptAnalyzer."""
-        self.imports = []
-        self.from_imports = []
-        self.variables = {}
-        self.classes = []
-        self.decorators = []
-        self.comments = ""
-
-    def visit_Import(self, node):
-        """Extracts imports from the given node."""
-        for alias in node.names:
-            self.imports.append(alias.name)
-        self.generic_visit(node)
-
-    def visit_ImportFrom(self, node):
-        """Extracts from imports from the given node."""
-        for alias in node.names:
-            self.from_imports.append((node.module, alias.name))
-        self.generic_visit(node)
-
-    def visit_Assign(self, node):
-        """Extracts variables from the given node."""
-        target = node.targets[0]
-        if isinstance(target, ast.Name):
-            self.variables[target.id] = ast.unparse(node.value)
-        self.generic_visit(node)
-
-    def visit_ClassDef(self, node):
-        """Extracts classes from the given node."""
-        class_info = {
-            "name": node.name,
-            "bases": [ast.unparse(b) for b in node.bases],
-            "body": "",
-            "decorators": [ast.unparse(d) for d in node.decorator_list],
-            "docstring": None,
-        }
-
-        # Extract docstring if present
-        docstring = ast.get_docstring(node, False)
-        if docstring:
-            class_info["docstring"] = docstring
-
-        # Handle the rest of the class body
-        body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
-        class_info["body"] = "\n".join(ast.unparse(n) for n in body_nodes)
-
-        self.classes.append(class_info)
-
-    def visit_FunctionDef(self, node):
-        """Extracts decorators from function definitions."""
-        for decorator in node.decorator_list:
-            self.decorators.append(ast.unparse(decorator))
-        self.generic_visit(node)
-
-    def visit_Module(self, node):
-        """Extracts comments from the given node."""
-        comments = ast.get_docstring(node, False)
-        self.comments = "" if comments is None else comments
-        self.generic_visit(node)
-
-    def check_class_changed(self, other: "PromptAnalyzer") -> bool:
-        """Compares the classes of this file with the classes of another file."""
-        self_classes = {c["name"]: c for c in self.classes}
-        other_classes = {c["name"]: c for c in other.classes}
-
-        all_class_names = set(self_classes.keys()) | set(other_classes.keys())
-
-        for name in all_class_names:
-            if name in self_classes and name in other_classes:
-                # Compare attributes of classes with the same name
-                class_diff = {
-                    attr: (self_classes[name][attr], other_classes[name][attr])
-                    for attr in self_classes[name]
-                    if self_classes[name][attr] != other_classes[name][attr]
-                }
-                if class_diff:
-                    return True
-            else:
-                return True
-
-        return False
