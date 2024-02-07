@@ -343,7 +343,7 @@ def remove(
 @app.command(help="Initialize mirascope project")
 def init(
     mirascope_location: str = Option(
-        help="Main mirascope directory", default="mirascope"
+        help="Main mirascope directory", default=".mirascope"
     ),
     prompts_location: str = Option(
         help="Location of prompts directory", default="prompts"
@@ -357,7 +357,7 @@ def init(
     ```
     |
     |-- mirascope.ini
-    |-- mirascope
+    |-- .mirascope
     |   |-- prompt_template.j2
     |   |-- versions/
     |   |   |-- <directory_name>/
