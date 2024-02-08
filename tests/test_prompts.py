@@ -1,6 +1,8 @@
 """Tests for the `prompts` module."""
 from unittest.mock import patch
 
+import pytest
+
 from mirascope.prompts import Prompt, messages
 
 
@@ -81,3 +83,17 @@ def test_messages(fixture_messages_prompt, fixture_expected_messages_prompt_mess
     """Tests that the messages decorator adds a function `messages` attribute."""
     assert hasattr(fixture_messages_prompt, "messages")
     assert fixture_messages_prompt.messages == fixture_expected_messages_prompt_messages
+
+
+@messages
+class NoDocstringPrompt(Prompt):
+    param: str
+
+
+def test_no_docstr():
+    """Tests that `Prompt` throws a value error if it doesn't have a docstring."""
+    with pytest.raises(ValueError):
+        NoDocstringPrompt.template()
+
+    with pytest.raises(ValueError):
+        NoDocstringPrompt().messages

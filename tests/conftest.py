@@ -18,6 +18,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 from pydantic import Field
 
 from mirascope.chat.tools import OpenAITool
+from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
 
 from .test_prompts import FooBarPrompt, MessagesPrompt
 
@@ -333,3 +334,21 @@ def fixture_empty_tool() -> Type[OpenAITool]:
         """A test tool with no parameters."""
 
     return EmptyTool
+
+
+@pytest.fixture()
+def fixture_mirascope_user_settings() -> MirascopeSettings:
+    """Returns a `MirascopeSettings` instance."""
+    return MirascopeSettings(
+        format_command="ruff format",
+        mirascope_location=".test",
+        prompts_location="prompts",
+        version_file_name="version.txt",
+        versions_location=".test/versions",
+    )
+
+
+@pytest.fixture
+def fixture_prompt_versions() -> VersionTextFile:
+    """Returns a `VersionTextFile` instance."""
+    return VersionTextFile(current_revision="0002", latest_revision="0002")

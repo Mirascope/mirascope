@@ -1,3 +1,4 @@
+"""Test for mirascope cli utility functions."""
 from pathlib import Path
 from textwrap import dedent
 from typing import Literal
@@ -10,8 +11,10 @@ from pydantic import ValidationError
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
 from mirascope.cli.schemas import MirascopeSettings
 from mirascope.cli.utils import (
+    PromptAnalyzer,
     check_prompt_changed,
     find_prompt_path,
+    get_prompt_analyzer,
     get_prompt_versions,
     get_user_mirascope_settings,
     write_prompt_to_template,
@@ -180,6 +183,20 @@ def test_check_prompt_changed_import(
     assert check_prompt_changed(first_version_path, second_version_path)
 
 
+def test_get_prompt_analyzer():
+    """Tests that a prompt is properly created from the template"""
+
+    sample_file_content = dedent(
+        '''
+    """This is a comment"""
+    foo = "bar"
+    '''
+    )
+    analyzer = get_prompt_analyzer(sample_file_content)
+    assert analyzer.comments == "This is a comment"
+    assert analyzer.variables == {"foo": "bar"}
+
+
 @pytest.mark.parametrize(
     "command, expected_variables",
     [
@@ -189,7 +206,9 @@ def test_check_prompt_changed_import(
 )
 @patch("mirascope.cli.utils.get_user_mirascope_settings")
 @patch.object(Environment, "get_template")
+@patch("mirascope.cli.utils.get_prompt_analyzer")
 def test_write_prompt_to_template(
+    mock_prompt_analyzer: Mock,
     mock_get_template: Mock,
     mock_settings: Mock,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
@@ -197,12 +216,7 @@ def test_write_prompt_to_template(
 ):
     """Tests that a prompt is properly created from the template"""
 
-    sample_file_content = dedent(
-        '''
-    """This is a comment"""
-    foo = bar
-    '''
-    )
+    sample_file_content = ""
 
     sample_directory = "/mock/directory"
     mock_settings.return_value.location = sample_directory
@@ -211,6 +225,8 @@ def test_write_prompt_to_template(
     sample_template_content = "Template with {{ variables }} and {{ comments }}"
     mock_template.render.return_value = sample_template_content
     mock_get_template.return_value = mock_template
+
+    mock_prompt_analyzer.return_value = PromptAnalyzer()
 
     write_prompt_to_template(sample_file_content, command, expected_variables)
 
