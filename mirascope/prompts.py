@@ -103,11 +103,17 @@ class Prompt(BaseModel):
         self, completion: Optional[Union[dict, OpenAIChatCompletion]] = None
     ) -> dict:
         """Dumps the prompt template to a dictionary."""
-        return {
+        prompt_dict: dict = {
             "template": self.template(),
             "inputs": self.model_dump(),
             "tags": self._tags,
         }
+        completion_dict = {}
+        if isinstance(completion, OpenAIChatCompletion):
+            completion_dict = completion.dump()
+        elif isinstance(completion, dict):
+            completion_dict = completion
+        return prompt_dict | completion_dict
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
