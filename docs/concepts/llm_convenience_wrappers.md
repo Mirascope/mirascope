@@ -282,6 +282,7 @@ completion = chat.stream(
     CurrentWeatherPrompt(),
     tools=tools,  # pass in the tool class
 )
+
 parser = OpenAIToolStreamParser(tools=tools) # pass in the same tool class
 for tool in parser.from_stream(completion):
     print(tool)
@@ -289,7 +290,7 @@ for tool in parser.from_stream(completion):
 
 ### Async
 
-All of the examples above also work with `async` by updating the import from `OpenAIChat` to `AsyncOpenAIChat.`
+All of the examples above also work with `async` by updating the import from `OpenAIChat` to `AsyncOpenAIChat`.
 
 ## Future updates
 
