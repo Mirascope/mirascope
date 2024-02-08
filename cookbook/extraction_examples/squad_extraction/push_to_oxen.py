@@ -6,7 +6,6 @@ import os
 import pandas as pd  # type: ignore
 from eval import normalize_answer
 from oxen import LocalRepo  # type: ignore
-from oxen.user import config_user  # type: ignore
 from pydantic import BaseModel
 from squad import load_geology_squad
 
