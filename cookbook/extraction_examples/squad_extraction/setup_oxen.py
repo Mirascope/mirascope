@@ -2,9 +2,9 @@
 import os
 
 import oxen  # type: ignore
-from config import Settings
 from oxen.auth import config_auth  # type: ignore
 from oxen.user import config_user  # type: ignore
+from squad_config import Settings
 
 settings = Settings()
 

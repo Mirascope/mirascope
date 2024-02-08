@@ -2,9 +2,9 @@
 import argparse
 import json
 
-from config import Settings
-from prompts.question import ExtractedAnswer, QuestionPrompt
 from squad import load_geology_squad
+from squad_config import Settings
+from squad_prompts.question import ExtractedAnswer, QuestionPrompt
 
 from mirascope import OpenAIChat
 
