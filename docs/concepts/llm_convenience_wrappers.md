@@ -296,7 +296,7 @@ All of the examples above also work with `async` by updating the import from `Op
 
 There is a lot more to be added to the Mirascope models. Here is a list in no order of things we are thinking about adding next: 
 
-* data extraction - extract information from text into a Pydantic model
+* data extraction streaming - extract information from text into a Partial Pydantic model
 * additional models - support models beyond OpenAI, particularly OSS models
 
 If you want some of these features implemented or if you think something is useful but not on this list, let us know!
