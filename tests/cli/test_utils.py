@@ -1,3 +1,4 @@
+"""Test for mirascope cli utility functions."""
 from pathlib import Path
 from textwrap import dedent
 from typing import Literal

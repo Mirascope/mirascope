@@ -93,17 +93,17 @@ def add(
     if not used_prompt_path:
         print("No changes detected.")
         return
-    class_directory = os.path.join(version_directory_path, prompt_file_name)
+    prompt_versions_directory = os.path.join(version_directory_path, prompt_file_name)
 
     # Check if prompt file exists
     if not os.path.exists(f"{prompt_directory_path}/{prompt_file_name}.py"):
         raise FileNotFoundError(
             f"Prompt {prompt_file_name}.py not found in {prompt_directory_path}"
         )
-    # Create version directory if it doesn't exist
-    if not os.path.exists(class_directory):
-        os.makedirs(class_directory)
-    version_file_path = os.path.join(class_directory, version_file_name)
+    # Create prompt versions directory if it doesn't exist
+    if not os.path.exists(prompt_versions_directory):
+        os.makedirs(prompt_versions_directory)
+    version_file_path = os.path.join(prompt_versions_directory, version_file_name)
     versions = get_prompt_versions(version_file_path)
 
     # Open user's prompt file
@@ -120,7 +120,7 @@ def add(
             revision_id = f"{int(latest_revision_id)+1:04}"
         # Create revision file
         revision_file = os.path.join(
-            class_directory, f"{revision_id}_{prompt_file_name}.py"
+            prompt_versions_directory, f"{revision_id}_{prompt_file_name}.py"
         )
         with open(
             revision_file,
@@ -236,12 +236,12 @@ def use(
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
-    class_directory = os.path.join(version_directory_path, prompt_file_name)
-    revision_file_path = find_prompt_path(class_directory, version)
-    version_file_path = os.path.join(class_directory, version_file_name)
+    prompt_versions_directory = os.path.join(version_directory_path, prompt_file_name)
+    revision_file_path = find_prompt_path(prompt_versions_directory, version)
+    version_file_path = os.path.join(prompt_versions_directory, version_file_name)
     if revision_file_path is None:
         raise FileNotFoundError(
-            f"Prompt version {version} not found in {class_directory}"
+            f"Prompt version {version} not found in {prompt_versions_directory}"
         )
     # Open versioned prompt file
     with open(revision_file_path, "r", encoding="utf-8") as file:
@@ -296,27 +296,27 @@ def remove(
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings.versions_location
     version_file_name = mirascope_settings.version_file_name
-    class_directory = os.path.join(version_directory_path, prompt_file_name)
-    version_file_path = os.path.join(class_directory, version_file_name)
+    prompt_versions_directory = os.path.join(version_directory_path, prompt_file_name)
+    version_file_path = os.path.join(prompt_versions_directory, version_file_name)
 
     revisions = get_prompt_versions(version_file_path)
     if revisions.current_revision == version:
         print(
-            "Prompt version to delete is current revision. "
+            f"Prompt {prompt_file_name} {version} is currently being used. "
             "Please switch to another version first."
         )
         return
 
-    revision_file_path = find_prompt_path(class_directory, version)
+    revision_file_path = find_prompt_path(prompt_versions_directory, version)
     if not revision_file_path:
         raise FileNotFoundError(
-            f"Prompt version {version} not found in {class_directory}"
+            f"Prompt version {version} not found in {prompt_versions_directory}"
         )
     # TODO: Implement rollback in case of failure
     os.remove(revision_file_path)
 
     # Detach any revisions that had the deleted version as their prev_revision_id
-    revision_file_paths = find_prompt_paths(class_directory, "")
+    revision_file_paths = find_prompt_paths(prompt_versions_directory, "")
     if revision_file_paths is None:
         revision_file_paths = []
     for revision_file_path in revision_file_paths:
@@ -338,6 +338,8 @@ def remove(
         if prev_revision_id_found:
             with open(revision_file_path, "w", encoding="utf-8") as file:
                 file.writelines(lines)
+            print(f"Detached {revision_file_path}")
+    print(f"Prompt {prompt_file_name} {version} successfully removed")
 
 
 @app.command(help="Initialize mirascope project")
