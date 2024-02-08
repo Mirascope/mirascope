@@ -96,11 +96,19 @@ nav:
       - Mirascope CLI: "concepts/mirascope_cli.md"
   - Cookbook:
       - Basic Examples: "cookbook/basic_examples.md"
+      - SQuAD Extraction: "cookbook/squad_extraction.md"
       - RAG: "cookbook/rag.md"
   - API Reference:
       - chat:
           - "api/chat/index.md"
-          - models: "api/chat/models.md"
+          - models:
+              - "api/chat/models/index.md"
+              - OpenAIChat: "api/chat/models/openai_chat.md"
+              - AsyncOpenAIChat: "api/chat/models/openai_chat_async.md"
+          - parsers:
+              - "api/chat/parsers/index.md"
+              - OpenAIParser: "api/chat/parsers/openai_tool_stream_parser.md"
+              - AsyncOpenAIParser: "api/chat/parsers/openai_tool_stream_parser_async.md"
           - tools: "api/chat/tools.md"
           - types: "api/chat/types.md"
           - utils: "api/chat/utils.md"
