@@ -1,4 +1,6 @@
 """Utility functions for the mirascope library."""
+from __future__ import annotations
+
 import ast
 import glob
 import os
@@ -16,7 +18,15 @@ ignore_variables = {"prev_revision_id", "revision_id"}
 
 
 class PromptAnalyzer(ast.NodeVisitor):
-    """Utility class for analyzing a Mirascope prompt file."""
+    """Utility class for analyzing a Mirascope prompt file.
+
+    Example:
+
+        analyzer = PromptAnalyzer()
+        tree = ast.parse(file.read())
+        analyzer.visit(tree)
+
+    """
 
     def __init__(self):
         """Initializes the PromptAnalyzer."""
@@ -79,7 +89,7 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.comments = "" if comments is None else comments
         self.generic_visit(node)
 
-    def check_class_changed(self, other: "PromptAnalyzer") -> bool:
+    def check_class_changed(self, other: PromptAnalyzer) -> bool:
         """Compares the classes of this file with the classes of another file."""
         self_classes = {c["name"]: c for c in self.classes}
         other_classes = {c["name"]: c for c in other.classes}
