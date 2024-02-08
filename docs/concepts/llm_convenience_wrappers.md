@@ -245,7 +245,7 @@ However, attaching the function is not necessary. In fact, often there are times
 ```python
 from typing import Literal
 
-from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from mirascope import OpenAIChat, OpenAITool, Prompt
 from pydantic import Field
 
 class CurrentWeatherPrompt(Prompt):
@@ -266,13 +266,36 @@ completion = chat.create(
 for tool in completion.tools or []:
     print(tool)                      # this is a `GetCurrentWeather` instance
 ```
+### Streaming Tools
+
+We also support streaming of tools using our `OpenAIToolStreamParser` class. Simply replace the `chat.create` with `chat.stream` and call `from_stream`, like so:
+
+```python
+from typing import Callable, Literal, Type, Union
+
+from mirascope import OpenAIChat, OpenAITool, OpenAIToolStreamParser, Prompt
+
+# Using same OpenAITool and Prompt defined in Tool example
+
+tools: list[Union[Callable, Type[OpenAITool]]] = [GetCurrentWeather]
+completion = chat.stream(
+    CurrentWeatherPrompt(),
+    tools=tools,  # pass in the tool class
+)
+parser = OpenAIToolStreamParser(tools=tools) # pass in the same tool class
+for tool in parser.from_stream(completion):
+    print(tool)
+```
+
+### Async
+
+All of the examples above also work with `async` by updating the import from `OpenAIChat` to `AsyncOpenAIChat.`
 
 ## Future updates
 
 There is a lot more to be added to the Mirascope models. Here is a list in no order of things we are thinking about adding next: 
 
 * data extraction - extract information from text into a Pydantic model
-* streaming tools - enable streaming when using tools
 * additional models - support models beyond OpenAI, particularly OSS models
 
 If you want some of these features implemented or if you think something is useful but not on this list, let us know!
