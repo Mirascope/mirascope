@@ -106,7 +106,7 @@ The Prompt CLI and LLM Convenience Wrappers have additional requirements, which 
 
 ## Installation
 
-Install Mirascope and start building with LLMs in minutes.
+Install Mirascope and start building engineering prompts in minutes.
 
 ```sh
 $ pip install mirascope
@@ -114,7 +114,7 @@ $ pip install mirascope
 
 This will install the `mirascope` package along with `pydantic`.
 
-To include extra dependencies, run:
+To include extra dependencies for using the Prompt CLI and/or LLM Convenience Wrappers, run:
 
 ```sh
 $ pip install mirascope[cli]     #  Prompt CLI
