@@ -24,14 +24,6 @@ class JoinedRow(BaseModel):
 
 def join_geology_squad_with_answers(prompt_version: str):
     """Joins the geology-squad data and versioned answers."""
-    repo = LocalRepo("geology-squad")
-
-    filepath = os.path.join(repo.path, prompt_version)
-    if os.path.exists(filepath):
-        raise ValueError(f"{filepath} already exists.")
-
-    os.mkdir(filepath)
-
     questions = load_geology_squad()
     with open(f"geology-squad-answers-{prompt_version}.json") as f:
         extracted_answers = json.load(f)
@@ -56,7 +48,21 @@ def join_geology_squad_with_answers(prompt_version: str):
         )
         for question in questions
     ]
-    df = pd.DataFrame(rows, columns=columns)
+
+    return pd.DataFrame(rows, columns=columns)
+
+
+def main(prompt_version: str):
+    """Uploads the joined geology-squad data and versioned answers."""
+    repo = LocalRepo("geology-squad")
+
+    filepath = os.path.join(repo.path, prompt_version)
+    if os.path.exists(filepath):
+        raise ValueError(f"{filepath} already exists.")
+
+    os.mkdir(filepath)
+
+    df = join_geology_squad_with_answers(prompt_version)
 
     filename = os.path.join(filepath, "answers.csv")
     with open(filename, "w") as f:
@@ -68,12 +74,6 @@ def join_geology_squad_with_answers(prompt_version: str):
         f"Add prompt version {prompt_version} extracted answers joined with questions."
     )
     repo.push()
-
-
-def main(prompt_version: str):
-    """Uploads the joined geology-squad data and versioned answers."""
-    config_user("William Bakst", "william@mirascope.io")
-    join_geology_squad_with_answers(prompt_version)
 
 
 if __name__ == "__main__":
