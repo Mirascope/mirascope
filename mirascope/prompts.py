@@ -175,7 +175,6 @@ def messages(cls: Type[T]) -> Type[T]:
 
 def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
     def tags_fn(model_class: Type[T]) -> Type[T]:
-        # Step 2: Attach the tags to the model class
         if isinstance(args, str):
             tags_list = [args]
         else:
