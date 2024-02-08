@@ -1,11 +1,12 @@
 """A basic example on how to dump the data from a prompt and a chat completion."""
 import os
 
-from mirascope import OpenAIChat, Prompt
+from mirascope import OpenAIChat, Prompt, tags
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
+@tags(["recommendation_project"])
 class BookRecommendationPrompt(Prompt):
     """
     Can you recommend some books on {topic}?
