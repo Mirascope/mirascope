@@ -115,7 +115,7 @@ Now let's make the script even better. To better understand where our LLM is mak
 
     The [`push_to_oxen.py`](https://github.com/Mirascope/mirascope/tree/main/cookbook/extraction_examples/squad_extraction/push_to_oxen.py) script shows how we upload each prompt version's answer for analysis.
 
-[INSERT IMAGE HERE]
+![Screenshot 2024-02-07 at 8 54 35 PM](https://github.com/Mirascope/mirascope/assets/99370834/27ef286c-25db-4647-b42b-20413ebb4bb6)
 
 Two things stick out immediately about the extracted answers:
 
@@ -181,4 +181,7 @@ $ mirascope add question
 
 So just by updating our schema and prompt we've improved the performance of the extraction script by ~6% for exact match and ~1% for F1. We can see in Oxen that there are far fewer incorrect extracted answers:
 
-[INSERT IMAGE HERE]
+![Screenshot 2024-02-07 at 9 40 03 PM](https://github.com/Mirascope/mirascope/assets/99370834/a1075054-fea0-413a-a0b0-5f28c518356d)
+
+It's also worth noting that we now have a record of both prompt versions and their answers. Going forward, it will be easy to iterate on the prompts and more reliably track which prompts perform the best.
+
