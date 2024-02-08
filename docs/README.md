@@ -106,7 +106,7 @@ The Prompt CLI and LLM Convenience Wrappers have additional requirements, which 
 
 ## Installation
 
-Install Mirascope and start building engineering prompts in minutes.
+Install Mirascope and start engineering prompts in minutes.
 
 ```sh
 $ pip install mirascope
