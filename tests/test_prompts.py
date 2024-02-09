@@ -2,8 +2,10 @@
 from unittest.mock import patch
 
 import pytest
+from openai.types.chat import ChatCompletion
 
-from mirascope.prompts import Prompt, messages
+from mirascope.chat.types import OpenAIChatCompletion
+from mirascope.prompts import Prompt, messages, tags
 
 
 class FooBarPrompt(Prompt):
@@ -51,6 +53,16 @@ class MessagesPrompt(Prompt):
         return self.foo + self.bar
 
 
+@tags("test_tag")
+class TagPrompt(Prompt):
+    """This is a test prompt with a tag."""
+
+
+@tags(["multiple", "tags"])
+class TagsPrompt(Prompt):
+    """This is a test prompt with multiple tags."""
+
+
 def test_template():
     """Test that `Prompt` initializes properly."""
     assert (
@@ -79,10 +91,34 @@ def test_save_and_load(fixture_foobar_prompt, tmpdir):
     assert FooBarPrompt.load(filepath) == fixture_foobar_prompt
 
 
-def test_messages(fixture_messages_prompt, fixture_expected_messages_prompt_messages):
+def test_messages(
+    fixture_messages_prompt: MessagesPrompt, fixture_expected_messages_prompt_messages
+):
     """Tests that the messages decorator adds a function `messages` attribute."""
     assert hasattr(fixture_messages_prompt, "messages")
     assert fixture_messages_prompt.messages == fixture_expected_messages_prompt_messages
+
+
+def test_tags(fixture_tag_prompt: TagPrompt, fixture_tags_prompt: TagsPrompt):
+    """Tests that the tags decorator adds a `tags` attribute."""
+    assert hasattr(fixture_tag_prompt, "_tags")
+    assert fixture_tag_prompt._tags == ["test_tag"]
+    assert fixture_tags_prompt._tags == ["multiple", "tags"]
+
+
+def test_prompt_dump(
+    fixture_foobar_prompt: FooBarPrompt, fixture_chat_completion: ChatCompletion
+):
+    """Tests that `Prompt.dump` returns the expected string."""
+    openai_chat_completion = OpenAIChatCompletion(completion=fixture_chat_completion)
+    foobar_prompt_openai_json = fixture_foobar_prompt.dump(openai_chat_completion)
+    random = {"hello": "world"}
+    foobar_prompt_random_json = fixture_foobar_prompt.dump(random)
+    assert foobar_prompt_openai_json["template"] == fixture_foobar_prompt.template()
+    assert foobar_prompt_openai_json["output"]["choices"][0]["message"][
+        "content"
+    ] == str(openai_chat_completion)
+    assert foobar_prompt_random_json["hello"] == "world"
 
 
 @messages

@@ -4,13 +4,13 @@ from typing import Optional, Type
 import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionMessage
 from openai.types.chat.chat_completion import Choice
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
+from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import (
-    ChatCompletionChunk,
     ChoiceDelta,
     ChoiceDeltaToolCall,
     ChoiceDeltaToolCallFunction,
 )
-from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
@@ -20,7 +20,7 @@ from pydantic import Field
 from mirascope.chat.tools import OpenAITool
 from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
 
-from .test_prompts import FooBarPrompt, MessagesPrompt
+from .test_prompts import FooBarPrompt, MessagesPrompt, TagPrompt, TagsPrompt
 
 
 @pytest.fixture()
@@ -51,6 +51,18 @@ def fixture_expected_foobar_prompt_messages(
 def fixture_messages_prompt() -> MessagesPrompt:
     """Returns a `MessagesPrompt` instance."""
     return MessagesPrompt(foo="foo", bar="bar")
+
+
+@pytest.fixture()
+def fixture_tag_prompt() -> TagPrompt:
+    """Returns a `TagPrompt` instance."""
+    return TagPrompt()
+
+
+@pytest.fixture()
+def fixture_tags_prompt() -> TagsPrompt:
+    """Returns a `TagPrompt` instance."""
+    return TagsPrompt()
 
 
 @pytest.fixture()
