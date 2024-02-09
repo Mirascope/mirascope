@@ -1,4 +1,5 @@
 """Class for interacting with AsyncOpenAI through Chat APIs."""
+import datetime
 import logging
 from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
 
@@ -59,10 +60,11 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
 
-        return OpenAIChatCompletion(
+        completion = OpenAIChatCompletion(
             completion=await self.client.chat.completions.create(
                 model=self.model,
                 stream=False,
@@ -70,6 +72,9 @@ class AsyncOpenAIChat:
             ),
             tool_types=openai_tools if tools else None,
         )
+        completion._start_time = start_time
+        completion._end_time = datetime.datetime.now().timestamp() * 1000
+        return completion
 
     async def stream(
         self,

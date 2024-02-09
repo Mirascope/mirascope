@@ -1,5 +1,4 @@
 """Utility functions for mirascope chat."""
-
 from inspect import Parameter, isclass, signature
 from typing import Any, Callable, Optional, Type, Union, cast, get_type_hints
 
