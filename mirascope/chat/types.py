@@ -102,8 +102,6 @@ class OpenAIChatCompletionChunk(BaseModel):
 
     chunk: ChatCompletionChunk
     tool_types: Optional[list[Type[OpenAITool]]] = None
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
 
     @property
     def choices(self) -> list[ChunkChoice]:
