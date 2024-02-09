@@ -1,9 +1,10 @@
 """Tests for the `prompts` module."""
+from typing import Any, Optional
 from unittest.mock import patch
 
 import pytest
 
-from mirascope.prompts import Prompt, messages
+from mirascope.prompts import Prompt, messages, tags
 
 
 class FooBarPrompt(Prompt):
@@ -51,6 +52,16 @@ class MessagesPrompt(Prompt):
         return self.foo + self.bar
 
 
+@tags("test_tag")
+class TagPrompt(Prompt):
+    """This is a test prompt with a tag."""
+
+
+@tags(["multiple", "tags"])
+class TagsPrompt(Prompt):
+    """This is a test prompt with multiple tags."""
+
+
 def test_template():
     """Test that `Prompt` initializes properly."""
     assert (
@@ -79,10 +90,43 @@ def test_save_and_load(fixture_foobar_prompt, tmpdir):
     assert FooBarPrompt.load(filepath) == fixture_foobar_prompt
 
 
-def test_messages(fixture_messages_prompt, fixture_expected_messages_prompt_messages):
+def test_messages(
+    fixture_messages_prompt: MessagesPrompt, fixture_expected_messages_prompt_messages
+):
     """Tests that the messages decorator adds a function `messages` attribute."""
     assert hasattr(fixture_messages_prompt, "messages")
     assert fixture_messages_prompt.messages == fixture_expected_messages_prompt_messages
+
+
+@pytest.mark.parametrize(
+    "prompt, expected_tags",
+    [
+        ("fixture_tag_prompt", ["test_tag"]),
+        ("fixture_tags_prompt", ["multiple", "tags"]),
+    ],
+)
+def test_tags(prompt, expected_tags, request):
+    """Tests that the tags decorator adds a `tags` attribute."""
+    prompt = request.getfixturevalue(prompt)
+    assert hasattr(prompt, "_tags")
+    assert prompt._tags == expected_tags
+
+
+@pytest.mark.parametrize(
+    "completion,expected", [(None, {}), ({"hello": "world"}, {"hello": "world"})]
+)
+def test_prompt_dump(
+    completion: Optional[dict[str, Any]],
+    expected: dict[str, Any],
+    fixture_foobar_prompt: FooBarPrompt,
+):
+    """Tests that `Prompt.dump` returns the expected string."""
+    foobar_prompt_random_json = fixture_foobar_prompt.dump(completion)
+    assert foobar_prompt_random_json["template"] == fixture_foobar_prompt.template()
+    for key, value in expected.items():
+        assert (
+            key in foobar_prompt_random_json and foobar_prompt_random_json[key] == value
+        )
 
 
 @messages

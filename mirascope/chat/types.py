@@ -1,5 +1,5 @@
 """Classes for responses when interacting with a Chat API."""
-from typing import Optional, Type
+from typing import Any, Optional, Type
 
 from openai.types.chat import (
     ChatCompletion,
@@ -20,6 +20,8 @@ class OpenAIChatCompletion(BaseModel):
 
     completion: ChatCompletion
     tool_types: Optional[list[Type[OpenAITool]]] = None
+    _start_time: Optional[float] = None  # The start time of the completion in ms
+    _end_time: Optional[float] = None  # The end time of the completion in ms
 
     @property
     def choices(self) -> list[Choice]:
@@ -81,6 +83,14 @@ class OpenAIChatCompletion(BaseModel):
                 return tool_type.from_tool_call(tool_call)
 
         return None
+
+    def dump(self) -> dict[str, Any]:
+        """Dumps the chat completion to a dictionary."""
+        return {
+            "start_time": self._start_time,
+            "end_time": self._end_time,
+            "output": self.completion.model_dump(),
+        }
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""

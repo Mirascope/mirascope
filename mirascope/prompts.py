@@ -6,7 +6,7 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Type, TypeVar
+from typing import Any, Callable, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -60,6 +60,8 @@ class Prompt(BaseModel):
     ```
     '''
 
+    _tags: list[str] = []
+
     @classmethod
     def template(cls) -> str:
         """Custom parsing functionality for docstring prompt.
@@ -94,6 +96,17 @@ class Prompt(BaseModel):
     def messages(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
         return [("user", str(self))]
+
+    def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+        """Dumps the prompt template to a dictionary."""
+        prompt_dict: dict[str, Any] = {
+            "template": self.template(),
+            "inputs": self.model_dump(),
+            "tags": self._tags,
+        }
+        if completion is not None:
+            return prompt_dict | completion
+        return prompt_dict
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
@@ -151,3 +164,26 @@ def messages(cls: Type[T]) -> Type[T]:
 
     setattr(cls, "messages", property(messages_fn))
     return cls
+
+
+def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
+    """A decorator for adding tags to a `Prompt`.
+
+    Adding this decorator to a `Prompt` updates the `_tags` class attribute to the given
+    value. This is useful for adding metadata to a `Prompt` that can be used for logging
+    or filtering.
+
+    Returns:
+        The decorated class.
+    """
+
+    def tags_fn(model_class: Type[T]) -> Type[T]:
+        """Updates the `_tags` class attribute to the given value."""
+        if isinstance(args, str):
+            tags_list = [args]
+        else:
+            tags_list = args
+        setattr(model_class, "_tags", tags_list)
+        return model_class
+
+    return tags_fn
