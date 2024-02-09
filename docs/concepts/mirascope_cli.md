@@ -136,12 +136,27 @@ Here you specify which prompt and also which version you want to use. This will 
 
 This will let you quickly swap prompts with no code change, the exception being when prompts have different properties.
 
+### Removing prompts
+
+Often times when experimenting with prompts, lots of unused versions will need to be cleaned up in your project.
+
+You can use the `remove` command to delete any version:
+
+```shell
+mirascope remove my_prompt 0001
+```
+
+Here you specify which prompt and version you want to remove. Removal will delete the file but also update any versions that have the deleted version in their `prev_revision_id` to `None`.
+
+!!!note
+
+Please make sure that the `current_revision` is not the same as the prompt you are trying to remove. You can use `mirascope add` if you have incoming changes or `mirascope use` to swap `current_revision`.
+
 ## Future updates
 
 There is a lot more to be added to the Mirascope CLI. Here is a list in no order of things we are thinking about adding next: 
 
 * prompt comparison - A way to compare two different versions with a golden test
-* remove - Remove a prompt
 * history - View the revision history of a version
 
 If you want some of these features implemented or if you think something is useful but not on this list, let us know!
