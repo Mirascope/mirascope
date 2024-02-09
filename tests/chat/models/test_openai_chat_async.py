@@ -33,7 +33,8 @@ async def test_async_openai_chat(
     assert chat.model == model
     completion = await chat.create(prompt, temperature=0.3)
     assert isinstance(completion, OpenAIChatCompletion)
-
+    assert completion._start_time is not None
+    assert completion._end_time is not None
     mock_create.assert_called_once_with(
         model=model,
         messages=get_openai_messages_from_prompt(prompt),

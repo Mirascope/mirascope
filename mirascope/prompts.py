@@ -104,11 +104,9 @@ class Prompt(BaseModel):
             "inputs": self.model_dump(),
             "tags": self._tags,
         }
-        if completion is None:
-            completion_dict = {}
-        else:
-            completion_dict = completion
-        return prompt_dict | completion_dict
+        if completion is not None:
+            return prompt_dict | completion
+        return prompt_dict
 
     def save(self, filepath: str):
         """Saves the prompt to the given filepath."""
