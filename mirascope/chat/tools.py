@@ -52,6 +52,13 @@ class OpenAITool(BaseModel):
                 ]
                 if "required" in model_schema
                 else [],
+                "$defs": {
+                    key: value
+                    for key, value in model_schema["$defs"].items()
+                    if key != "ChatCompletionMessageToolCall" and key != "Function"
+                }
+                if "$defs" in model_schema
+                else {},
             }
 
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
