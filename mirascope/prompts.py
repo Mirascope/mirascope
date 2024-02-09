@@ -6,11 +6,9 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
-
-from mirascope.chat.types import OpenAIChatCompletion
 
 
 class Prompt(BaseModel):
@@ -99,19 +97,16 @@ class Prompt(BaseModel):
         """Returns the docstring as a list of messages."""
         return [("user", str(self))]
 
-    def dump(
-        self, completion: Optional[Union[dict, OpenAIChatCompletion]] = None
-    ) -> dict:
+    def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:
         """Dumps the prompt template to a dictionary."""
-        prompt_dict: dict = {
+        prompt_dict: dict[str, Any] = {
             "template": self.template(),
             "inputs": self.model_dump(),
             "tags": self._tags,
         }
-        completion_dict = {}
-        if isinstance(completion, OpenAIChatCompletion):
-            completion_dict = completion.dump()
-        elif isinstance(completion, dict):
+        if completion is None:
+            completion_dict = {}
+        else:
             completion_dict = completion
         return prompt_dict | completion_dict
 
@@ -174,7 +169,18 @@ def messages(cls: Type[T]) -> Type[T]:
 
 
 def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
+    """A decorator for adding tags to a `Prompt`.
+
+    Adding this decorator to a `Prompt` updates the `_tags` class attribute to the given
+    value. This is useful for adding metadata to a `Prompt` that can be used for logging
+    or filtering.
+
+    Returns:
+        The decorated class.
+    """
+
     def tags_fn(model_class: Type[T]) -> Type[T]:
+        """Updates the `_tags` class attribute to the given value."""
         if isinstance(args, str):
             tags_list = [args]
         else:

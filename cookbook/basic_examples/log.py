@@ -1,7 +1,7 @@
 """A basic example on how to log the data from a prompt and a chat completion."""
 import logging
 import os
-from typing import Optional
+from typing import Any, Optional
 
 import pandas as pd
 from sqlalchemy import JSON, Float, Integer, MetaData, String, create_engine
@@ -57,7 +57,7 @@ def create_database():
     metadata.create_all(engine, tables=table_objects)
 
 
-def log_to_database(prompt_completion: dict):
+def log_to_database(prompt_completion: dict[str, Any]):
     """Create a prompt completion and log it to the database."""
     create_database()
     Session = sessionmaker(engine)
@@ -67,14 +67,14 @@ def log_to_database(prompt_completion: dict):
         session.commit()
 
 
-def log_to_csv(prompt_completion: dict):
+def log_to_csv(prompt_completion: dict[str, Any]):
     """Log the prompt completion to a CSV file."""
     df = pd.DataFrame([prompt_completion])
     with open("log.csv", "w") as f:
         df.to_csv(f, index=False)
 
 
-def log_to_logger(prompt_completion: dict):
+def log_to_logger(prompt_completion: dict[str, Any]):
     """Log the prompt completion to the logger."""
     logger.info(prompt_completion)
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     prompt = BookRecommendationPrompt(topic="how to bake a cake")
     model = OpenAIChat()
     completion = model.create(prompt)
-    prompt_completion = prompt.dump(completion)
+    prompt_completion = prompt.dump(completion.dump())
     log_to_database(prompt_completion)
     log_to_csv(prompt_completion)
     log_to_logger(prompt_completion)

@@ -92,3 +92,12 @@ def test_openai_chat_completion_chunk_with_tools(
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == choices[0].delta.content
     assert openai_chat_completion_chunk.tool_calls == choices[0].delta.tool_calls
+
+
+def test_openai_chat_completion_dump(fixture_chat_completion):
+    """Tests that `OpenAIChatCompletion.dump` returns the expected dictionary."""
+    openai_chat_completion = OpenAIChatCompletion(completion=fixture_chat_completion)
+    openai_chat_completion_json = openai_chat_completion.dump()
+    assert openai_chat_completion_json["output"]["choices"][0]["message"][
+        "content"
+    ] == str(openai_chat_completion)

@@ -6,7 +6,7 @@ from mirascope import OpenAIChat, Prompt, tags
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
-@tags(["recommendation_project"])
+@tags(["recommendation_project", "version:0001"])
 class BookRecommendationPrompt(Prompt):
     """
     Can you recommend some books on {topic}?
@@ -21,6 +21,6 @@ print("Prompt class data:")
 print(prompt.dump())
 completion = model.create(prompt)
 print("ChatCompletion data:")
-print(completion.dump())
+completion_data = completion.dump()
 print("Prompt and ChatCompletion data:")
-print(prompt.dump(completion))
+print(prompt.dump(completion_data))
