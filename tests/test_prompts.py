@@ -1,4 +1,5 @@
 """Tests for the `prompts` module."""
+from typing import Any, Optional
 from unittest.mock import patch
 
 import pytest
@@ -111,12 +112,21 @@ def test_tags(prompt, expected_tags, request):
     assert prompt._tags == expected_tags
 
 
-def test_prompt_dump(fixture_foobar_prompt: FooBarPrompt):
+@pytest.mark.parametrize(
+    "completion,expected", [(None, {}), ({"hello": "world"}, {"hello": "world"})]
+)
+def test_prompt_dump(
+    completion: Optional[dict[str, Any]],
+    expected: dict[str, Any],
+    fixture_foobar_prompt: FooBarPrompt,
+):
     """Tests that `Prompt.dump` returns the expected string."""
-    random = {"hello": "world"}
-    foobar_prompt_random_json = fixture_foobar_prompt.dump(random)
+    foobar_prompt_random_json = fixture_foobar_prompt.dump(completion)
     assert foobar_prompt_random_json["template"] == fixture_foobar_prompt.template()
-    assert foobar_prompt_random_json["hello"] == "world"
+    for key, value in expected.items():
+        assert (
+            key in foobar_prompt_random_json and foobar_prompt_random_json[key] == value
+        )
 
 
 @messages
