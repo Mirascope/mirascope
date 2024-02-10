@@ -1,7 +1,9 @@
 ---
-
-## About:
-Suggest an idea for this project
+name: Feature Request
+about: Functionality you want that is not yet supported
+title: "[FEATURE REQUEST]"
+labels: enhancement
+assignees: ''
 
 ---
 

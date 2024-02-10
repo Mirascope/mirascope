@@ -1,7 +1,9 @@
 ---
-
-## Describe the bug:
-A clear and concise description of what the bug is.
+name: Bug Report
+about: Incorrect or unexpected behavior
+title: "[BUG]"
+labels: bug
+assignees: ''
 
 ---
 
