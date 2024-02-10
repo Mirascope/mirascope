@@ -18,7 +18,14 @@ class _Enum(str, Enum, metaclass=_Metaclass):
 
 
 class MirascopeCommand(_Enum):
-    """CLI commands to be executed."""
+    """CLI commands to be executed.
+
+    - ADD: save a modified prompt to the `/versions` folder.
+    - USE: load a specific version of the prompt from `/versions` as the current prompt.
+    - STATUS: display if any changes have been made to prompts, and if a prompt is
+        specified, displays changes for only said prompt.
+    - INIT: initializes the necessary folders for prompt versioning with CLI.
+    """
 
     ADD = "add"
     USE = "use"
