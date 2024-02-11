@@ -16,7 +16,32 @@ from .tools import OpenAITool
 
 
 class OpenAIChatCompletion(BaseModel):
-    """Convenience wrapper around chat completions."""
+    """Convenience wrapper around chat completions.
+
+    Simpler syntax for a convenient interface to the OpenAI API.
+
+    Example:
+
+    ```python
+    from mirascope import OpenAIChat
+
+    chat = OpenAIChat()
+    response = chat.create("What is 1 + 2?")
+
+    print(response.choices)
+    #> [Choice(finish_reason='stop', index=0, logprobs=None,
+    #  message=ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
+    #  function_call=None, tool_calls=None))]
+
+    print(response.message)
+    #> ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
+    #  function_call=None, tool_calls=None)
+
+    print(response.content)
+    #> 1 + 2 equals 3.
+    ```
+
+    """
 
     completion: ChatCompletion
     tool_types: Optional[list[Type[OpenAITool]]] = None
@@ -98,7 +123,64 @@ class OpenAIChatCompletion(BaseModel):
 
 
 class OpenAIChatCompletionChunk(BaseModel):
-    """Convenience wrapper around chat completion streaming chunks."""
+    '''Convenience wrapper around chat completion streaming chunks.
+
+    Simpler syntax for a convenient interface to the OpenAI API.
+
+    Example:
+
+    ```python
+    from mirascope import OpenAIChat
+
+    chat = OpenAIChat()
+    stream = chat.stream("What is 1 + 2?")
+
+    for chunk in stream:
+        print(chunk.content)
+    #> 1
+    #  +
+    #  2
+    #   equals
+    #
+    #  3
+    #  .
+
+
+    class MyPrompt(Prompt):
+    """Generate a password where the word is {word}."""
+
+    word: str
+
+
+    def password_generator(word: str, number: int) -> str:
+    """Returns a password from a short word and a small number.
+
+    Args:
+        word: a random word with less than 8 letters.
+        number: a random number between 1 and 10000.
+
+    Returns:
+        A password in the form of the word followed by the number.
+    """
+    return word + number
+
+
+    prompt = MyPrompt(word = "leapfrog")
+    chat = OpenAIChat()
+    stream = chat.stream(prompt, tools=[password_generator])
+    arguments = ""
+    for chunk in stream:
+        if chunk.tool_calls:
+            tool_call_function = chunk.tool_calls[0].__dict__["function"]
+            arguments += tool_call_function.__dict__["arguments"]
+
+    print(arguments)
+    #> {
+    #      "word": "leapfrog",
+    #      "number": 1234
+    #  }
+    ```
+    '''
 
     chunk: ChatCompletionChunk
     tool_types: Optional[list[Type[OpenAITool]]] = None

@@ -40,7 +40,7 @@ class Prompt(BaseModel):
 
     print(BookRecommendationPrompt.template())
     #> I've recently read the following books: {titles_in_quotes}. What should I read
-    # next?
+    #  next?
 
     print(str(prompt))
     #> I've recently read the following books: "The Name of the Wind", "The Lord of the
