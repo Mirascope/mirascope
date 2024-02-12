@@ -20,11 +20,16 @@ ignore_variables = {"prev_revision_id", "revision_id"}
 class PromptAnalyzer(ast.NodeVisitor):
     """Utility class for analyzing a Mirascope prompt file.
 
+    The call to `ast.parse()` returns Python code as an AST, whereby each visitor method
+    will be called for the corresponding nodes in the AST via `NodeVisitor.visit()`.
+
     Example:
 
-        analyzer = PromptAnalyzer()
-        tree = ast.parse(file.read())
-        analyzer.visit(tree)
+    ```python
+    analyzer = PromptAnalyzer()
+    tree = ast.parse(file.read())
+    analyzer.visit(tree)
+    ```
 
     """
 
@@ -115,7 +120,18 @@ class PromptAnalyzer(ast.NodeVisitor):
 def get_user_mirascope_settings(
     ini_file_path: str = "mirascope.ini",
 ) -> MirascopeSettings:
-    """Returns the user's mirascope settings."""
+    """Returns the user's mirascope settings.
+
+    Args:
+        ini_file_path: The path to the mirascope.ini file.
+
+    Returns:
+        The user's mirascope settings as a `MirascopeSettings` instance.
+
+    Raises:
+        FileNotFoundError: If the mirascope.ini file is not found.
+        KeyError: If the [mirascope] section is missing from the mirascope.ini file.
+    """
     config = ConfigParser(allow_no_value=True)
     try:
         read_ok = config.read(ini_file_path)
@@ -134,7 +150,14 @@ def get_user_mirascope_settings(
 
 
 def get_prompt_versions(version_file_path: str) -> VersionTextFile:
-    """Returns the versions of the given prompt."""
+    """Returns the versions of the given prompt.
+
+    Args:
+        version_file_path: The path to the prompt.
+
+    Returns:
+        A `VersionTextFile` instance with the versions of current and latest revisions.
+    """
     versions = VersionTextFile()
     try:
         with open(version_file_path, "r", encoding="utf-8") as file:
@@ -151,7 +174,15 @@ def get_prompt_versions(version_file_path: str) -> VersionTextFile:
 
 
 def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -> bool:
-    """Checks if the given prompts have changed."""
+    """Compare two prompts to check if the given prompts have changed.
+
+    Args:
+        file1_path (str): The path to the first prompt.
+        file2_path (str): The path to the second prompt.
+
+    Returns:
+        Whether there are any differences between the two prompts.
+    """
     if file1_path is None or file2_path is None:
         raise FileNotFoundError("Prompt or version file is missing.")
     # Parse the first file
@@ -227,8 +258,22 @@ def write_prompt_to_template(
     file: str,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
     variables: Optional[dict] = None,
-):
-    """Writes the given prompt to the template."""
+) -> str:
+    """Writes the given prompt to the template.
+
+    Deconstructs a prompt with ast and reconstructs it using the jinja2 template, adding
+    revision history into the prompt when the command is `MirascopeCommand.ADD`.
+
+    Args:
+        file: The path to the prompt.
+        command: The CLI command to execute.
+        variables: `None` when the command is `MirascopeCommand.USE` since revision
+            history is not loaded into prompts which are in use, but a dictionary with
+            revision id and revision id when the command is `MirascopeCommand.ADD`.
+
+    Returns:
+        The reconstructed prompt.
+    """
     mirascope_directory = get_user_mirascope_settings().mirascope_location
     template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
@@ -255,8 +300,13 @@ def write_prompt_to_template(
     return template.render(**data)
 
 
-def update_version_text_file(version_file: str, updates: dict):
-    """Updates the version text file."""
+def update_version_text_file(version_file: str, updates: dict) -> None:
+    """Updates the version text file.
+
+    Args:
+        version_file: The path to the version text file.
+        updates: A dictionary of update to the file.
+    """
     try:
         modified_lines = []
         edits_made = {
@@ -295,7 +345,14 @@ def update_version_text_file(version_file: str, updates: dict):
 def check_status(
     mirascope_settings: MirascopeSettings, directory: str
 ) -> Optional[str]:
-    """Checks the status of the given directory."""
+    """Checks the status of the given directory.
+
+    Args:
+        mirascope_settings: The user's mirascope settings.
+        directory: The name of the prompt file (excluding the .py extension).
+
+    Returns:
+        The path to the prompt if the prompt has changed, otherwise `None`."""
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
