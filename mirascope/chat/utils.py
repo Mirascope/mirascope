@@ -20,9 +20,8 @@ def get_openai_messages_from_prompt(
         prompt: A `prompt` or `str` to parse into a list of messages.
 
     Returns:
-        A list of `ChatCompletionMessageParam` instances parsed from the prompt.
-        `ChatCompletionMessageParam` inherits from TypedDict and requires the `role` and
-        `content` keys.
+        A list of `ChatCompletionMessageParam` instances parsed from the prompt, which
+        inherits from TypedDict and requires the `role` and `content` keys.
     """
     if isinstance(prompt, Prompt):
         return [
@@ -59,9 +58,8 @@ def patch_openai_kwargs(
 ) -> None:
     """Sets up the kwargs for an OpenAI API call.
 
-    Messages are parsed into `ChatCompletionMessageParam`s with `role` and `content`
-    keys, and tools (if any exist) are parsed into `ChatCompletionToolParam`s with
-    `name`, `description`, and `parameters` keys.
+    Messages are parsed to have the required `role` and `content` items, and tools
+    (if any exist) are parsed into JSON schemas in order to fit the OpenAI API.
 
     Args:
         kwargs: The kwargs to patch.
@@ -164,7 +162,9 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
 def convert_base_model_to_openai_tool(schema: Type[BaseModel]) -> Type[OpenAITool]:
     """Converts a `BaseModel` schema to an `OpenAITool` instance.
 
-    A docstring is added if needed, and all fields are extracted and passed on.
+    By adding a docstring (if needed) and passing on fields and field information in
+    dictionary format, a Pydantic `BaseModel` can be converted into an `OpenAITool` for
+    performing extraction.
 
     Args:
         schema: The `BaseModel` schema to convert.

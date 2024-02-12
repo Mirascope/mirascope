@@ -18,7 +18,10 @@ from .tools import OpenAITool
 class OpenAIChatCompletion(BaseModel):
     """Convenience wrapper around chat completions.
 
-    Simpler syntax for a convenient interface to the OpenAI API.
+    When using Mirascope's convenience wrappers to interact with OpenAI models via
+    `OpenAIChat`, responses using `OpenAIChat.create()` will return a
+    `OpenAIChatCompletion`, whereby the implemented properties allow for simpler syntax
+    and a convenient developer experience.
 
     Example:
 
@@ -123,9 +126,12 @@ class OpenAIChatCompletion(BaseModel):
 
 
 class OpenAIChatCompletionChunk(BaseModel):
-    '''Convenience wrapper around chat completion streaming chunks.
+    """Convenience wrapper around chat completion streaming chunks.
 
-    Simpler syntax for a convenient interface to the OpenAI API.
+    When using Mirascope's convenience wrappers to interact with OpenAI models via
+    `OpenAIChat`, responses using `OpenAIChat.stream()` will return a
+    `OpenAIChatCompletionChunk`, whereby the implemented properties allow for simpler
+    syntax and a convenient developer experience.
 
     Example:
 
@@ -144,43 +150,8 @@ class OpenAIChatCompletionChunk(BaseModel):
     #
     #  3
     #  .
-
-
-    class MyPrompt(Prompt):
-    """Generate a password where the word is {word}."""
-
-    word: str
-
-
-    def password_generator(word: str, number: int) -> str:
-    """Returns a password from a short word and a small number.
-
-    Args:
-        word: a random word with less than 8 letters.
-        number: a random number between 1 and 10000.
-
-    Returns:
-        A password in the form of the word followed by the number.
-    """
-    return word + number
-
-
-    prompt = MyPrompt(word = "leapfrog")
-    chat = OpenAIChat()
-    stream = chat.stream(prompt, tools=[password_generator])
-    arguments = ""
-    for chunk in stream:
-        if chunk.tool_calls:
-            tool_call_function = chunk.tool_calls[0].__dict__["function"]
-            arguments += tool_call_function.__dict__["arguments"]
-
-    print(arguments)
-    #> {
-    #      "word": "leapfrog",
-    #      "number": 1234
-    #  }
     ```
-    '''
+    """
 
     chunk: ChatCompletionChunk
     tool_types: Optional[list[Type[OpenAITool]]] = None
