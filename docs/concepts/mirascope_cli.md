@@ -150,7 +150,7 @@ Here you specify which prompt and version you want to remove. Removal will delet
 
 !!!note
 
-Please make sure that the `current_revision` is not the same as the prompt you are trying to remove. You can use `mirascope add` if you have incoming changes or `mirascope use` to swap `current_revision`.
+`mirascope remove` will not remove the prompt if `current_revision` is the same as the prompt you are trying to remove. You can use `mirascope add` if you have incoming changes or `mirascope use` to swap current_revision.
 
 ## Future updates
 
