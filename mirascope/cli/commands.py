@@ -39,6 +39,7 @@ from .utils import (
     find_file_names,
     find_prompt_path,
     find_prompt_paths,
+    get_prompt_analyzer,
     get_prompt_versions,
     get_user_mirascope_settings,
     update_version_text_file,
@@ -388,6 +389,7 @@ def init(
         versions_location="versions",
         prompts_location=prompts_location,
         version_file_name="version.txt",
+        auto_tag=True,
     )
 
     # Get templates from the mirascope.cli.generic package

@@ -13,8 +13,17 @@ from jinja2 import Environment, FileSystemLoader
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
 from .schemas import MirascopeSettings, VersionTextFile
+from pydantic import BaseModel
 
 ignore_variables = {"prev_revision_id", "revision_id"}
+
+
+class ClassInfo(BaseModel):
+    name: str
+    bases: list[str]
+    body: str
+    decorators: list[str]
+    docstring: Optional[str]
 
 
 class PromptAnalyzer(ast.NodeVisitor):
@@ -33,7 +42,7 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.imports = []
         self.from_imports = []
         self.variables = {}
-        self.classes = []
+        self.classes: list[ClassInfo] = []
         self.decorators = []
         self.comments = ""
 
@@ -223,6 +232,18 @@ def get_prompt_analyzer(file: str) -> PromptAnalyzer:
     return analyzer
 
 
+def find_list_from_str(string: str) -> Optional[list[str]]:
+    """Finds a list from a string."""
+    start_bracket_index = string.find("[")
+    end_bracket_index = string.find("]")
+    if (
+        start_bracket_index != -1
+        and end_bracket_index != -1
+        and end_bracket_index > start_bracket_index
+    ):
+        new_list = string[start_bracket_index + 1 : end_bracket_index]
+        return new_list.split(",")
+    return None
 def write_prompt_to_template(
     file: str,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
@@ -244,6 +265,20 @@ def write_prompt_to_template(
         new_variables = {
             k: analyzer.variables[k] for k in analyzer.variables if k not in variables
         }
+    for python_class in analyzer.classes:
+        version_tag_exists = False
+        for decorator in python_class.decorators:
+            if decorator.startswith("tags"):
+                decorator_arguments = find_list_from_str(decorator)
+                if decorator_arguments is not None:
+                    
+
+        # parse @tags to get array
+        # check if the array has the tag version:current_version
+        # if it doesnt, append to the decorators
+        # if it doesnt have @tags, add @tags with version:current_version
+        # for each class
+        pass
 
     data = {
         "comments": analyzer.comments,

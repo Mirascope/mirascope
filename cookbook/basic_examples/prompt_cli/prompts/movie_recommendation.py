@@ -1,10 +1,12 @@
 """A prompt for recommending movies of a particular genre."""
-from mirascope.prompts import Prompt, messages
+from mirascope.prompts import Prompt, messages, tags
 
 
 @messages
+@tags(["a", "b"])
 class MovieRecommendationPrompt(Prompt):
     """
+    FOO
     SYSTEM:
     You are the world's most knowledgeable movie buff. You know everything there is to
     know about movies. You have likely seen every movie ever made. Your incredible

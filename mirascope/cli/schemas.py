@@ -12,6 +12,7 @@ class MirascopeSettings(BaseModel):
     prompts_location: str
     version_file_name: str
     format_command: Optional[str] = None
+    auto_tag: Optional[bool] = None
 
     model_config = ConfigDict(extra="forbid")
 
