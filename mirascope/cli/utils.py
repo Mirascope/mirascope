@@ -288,7 +288,7 @@ def _update_tag_decorator_with_version(
                 decorators[index] = f"{import_name}({version_tag})"
             break
     if not tag_exists:
-        decorators.append(f'tags(["{version_tag}"])')
+        decorators.append(f'{import_name}(["{version_tag}"])')
     return import_name
 
 
@@ -332,6 +332,7 @@ def write_prompt_to_template(
             if k not in ignore_variable_keys
         }
 
+    import_tag_name: Optional[str] = None
     for python_class in analyzer.classes:
         decorators = python_class.decorators
         import_tag_name = _update_tag_decorator_with_version(decorators, variables)
