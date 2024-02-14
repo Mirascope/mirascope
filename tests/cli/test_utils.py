@@ -9,7 +9,7 @@ from jinja2 import Environment
 from pydantic import ValidationError
 
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from mirascope.cli.schemas import MirascopeSettings
+from mirascope.cli.schemas import MirascopeCliVariables, MirascopeSettings
 from mirascope.cli.utils import (
     PromptAnalyzer,
     check_prompt_changed,
@@ -200,7 +200,10 @@ def test_get_prompt_analyzer():
 @pytest.mark.parametrize(
     "command, expected_variables",
     [
-        (MirascopeCommand.ADD, {"prev_revision_id": "0001", "revision_id": "0002"}),
+        (
+            MirascopeCommand.ADD,
+            MirascopeCliVariables(prev_revision_id="0001", revision_id="0002"),
+        ),
         (MirascopeCommand.USE, None),
     ],
 )
@@ -212,7 +215,7 @@ def test_write_prompt_to_template(
     mock_get_template: Mock,
     mock_settings: Mock,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
-    expected_variables: dict,
+    expected_variables: MirascopeCliVariables,
 ):
     """Tests that a prompt is properly created from the template"""
 
