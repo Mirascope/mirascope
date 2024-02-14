@@ -52,7 +52,7 @@ class MessagesPrompt(Prompt):
         return self.foo + self.bar
 
 
-@tags("test_tag")
+@tags(["test_tag"])
 class TagPrompt(Prompt):
     """This is a test prompt with a tag."""
 
