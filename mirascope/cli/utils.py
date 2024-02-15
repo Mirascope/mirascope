@@ -48,26 +48,26 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.decorators: list[str] = []
         self.comments: str = ""
 
-    def visit_Import(self, node):
+    def visit_Import(self, node) -> None:
         """Extracts imports from the given node."""
         for alias in node.names:
             self.imports.append(alias.name)
         self.generic_visit(node)
 
-    def visit_ImportFrom(self, node):
+    def visit_ImportFrom(self, node) -> None:
         """Extracts from imports from the given node."""
         for alias in node.names:
             self.from_imports.append((node.module, alias.name))
         self.generic_visit(node)
 
-    def visit_Assign(self, node):
+    def visit_Assign(self, node) -> None:
         """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
             self.variables[target.id] = ast.literal_eval(node.value)
         self.generic_visit(node)
 
-    def visit_ClassDef(self, node):
+    def visit_ClassDef(self, node) -> None:
         """Extracts classes from the given node."""
         class_info = ClassInfo(
             name=node.name,
@@ -88,13 +88,13 @@ class PromptAnalyzer(ast.NodeVisitor):
 
         self.classes.append(class_info)
 
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node) -> None:
         """Extracts decorators from function definitions."""
         for decorator in node.decorator_list:
             self.decorators.append(ast.unparse(decorator))
         self.generic_visit(node)
 
-    def visit_Module(self, node):
+    def visit_Module(self, node) -> None:
         """Extracts comments from the given node."""
         comments = ast.get_docstring(node, False)
         self.comments = "" if comments is None else comments
