@@ -64,7 +64,7 @@ class PromptAnalyzer(ast.NodeVisitor):
         """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
-            self.variables[target.id] = ast.literal_eval(node.value)
+            self.variables[target.id] = ast.unparse(node.value)
         self.generic_visit(node)
 
     def visit_ClassDef(self, node) -> None:
@@ -323,7 +323,10 @@ def write_prompt_to_template(
         variables = MirascopeCliVariables()
 
     if command == MirascopeCommand.ADD:
-        new_variables = variables.__dict__ | analyzer.variables
+        # double quote revision ids to match how `ast.unparse()` formats strings
+        new_variables = {
+            k: f"'{v}'" for k, v in variables.__dict__.items()
+        } | analyzer.variables
     else:  # command == MirascopeCommand.USE
         ignore_variable_keys = dict.fromkeys(ignore_variables, None)
         new_variables = {
