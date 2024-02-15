@@ -41,8 +41,8 @@ class PromptAnalyzer(ast.NodeVisitor):
 
     def __init__(self) -> None:
         """Initializes the PromptAnalyzer."""
-        self.imports: list[str] = []
-        self.from_imports: list[tuple[str, str]] = []
+        self.imports: list[tuple[str, Optional[str]]] = []
+        self.from_imports: list[tuple[str, str, Optional[str]]] = []
         self.variables: dict[str, Any] = {}
         self.classes: list[ClassInfo] = []
         self.decorators: list[str] = []
@@ -51,13 +51,13 @@ class PromptAnalyzer(ast.NodeVisitor):
     def visit_Import(self, node) -> None:
         """Extracts imports from the given node."""
         for alias in node.names:
-            self.imports.append(alias.name)
+            self.imports.append((alias.name, alias.asname))
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node) -> None:
         """Extracts from imports from the given node."""
         for alias in node.names:
-            self.from_imports.append((node.module, alias.name))
+            self.from_imports.append((node.module, alias.name, alias.asname))
         self.generic_visit(node)
 
     def visit_Assign(self, node) -> None:
@@ -292,20 +292,22 @@ def _update_tag_decorator_with_version(
     return import_name
 
 
-def _update_mirascope_imports(imports: list[str]):
+def _update_mirascope_imports(imports: list[tuple[str, Optional[str]]]):
     """Updates the mirascope import."""
-    if not any(import_name == "mirascope" for import_name in imports):
-        imports.append("mirascope")
+    if not any(import_name == "mirascope" for import_name, _ in imports):
+        imports.append(("mirascope", None))
 
 
-def _update_mirascope_from_imports(member: str, from_imports: list[tuple[str, str]]):
+def _update_mirascope_from_imports(
+    member: str, from_imports: list[tuple[str, str, Optional[str]]]
+):
     """Updates the mirascope from import."""
     if not any(
-        (import_name == "mirascope" or import_name == "mirascope.prompts")
-        and alias_name == member
-        for import_name, alias_name in from_imports
+        (module_name == "mirascope" or module_name == "mirascope.prompts")
+        and import_name == member
+        for module_name, import_name, _ in from_imports
     ):
-        from_imports.append(("mirascope", member))
+        from_imports.append(("mirascope", member, None))
 
 
 def write_prompt_to_template(
