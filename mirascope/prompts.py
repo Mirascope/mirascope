@@ -6,7 +6,7 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -166,7 +166,7 @@ def messages(cls: Type[T]) -> Type[T]:
     return cls
 
 
-def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
+def tags(args: list[str]) -> Callable[[Type[T]], Type[T]]:
     """A decorator for adding tags to a `Prompt`.
 
     Adding this decorator to a `Prompt` updates the `_tags` class attribute to the given
@@ -179,11 +179,7 @@ def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
 
     def tags_fn(model_class: Type[T]) -> Type[T]:
         """Updates the `_tags` class attribute to the given value."""
-        if isinstance(args, str):
-            tags_list = [args]
-        else:
-            tags_list = args
-        setattr(model_class, "_tags", tags_list)
+        setattr(model_class, "_tags", args)
         return model_class
 
     return tags_fn

@@ -3,18 +3,29 @@ from __future__ import annotations
 
 import ast
 import glob
+import json
 import os
+import subprocess
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .schemas import MirascopeSettings, VersionTextFile
+from .schemas import MirascopeCliVariables, MirascopeSettings, VersionTextFile
 
 ignore_variables = {"prev_revision_id", "revision_id"}
+
+
+class ClassInfo(BaseModel):
+    name: str
+    bases: list[str]
+    body: str
+    decorators: list[str]
+    docstring: Optional[str]
 
 
 class PromptAnalyzer(ast.NodeVisitor):
@@ -28,62 +39,62 @@ class PromptAnalyzer(ast.NodeVisitor):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the PromptAnalyzer."""
-        self.imports = []
-        self.from_imports = []
-        self.variables = {}
-        self.classes = []
-        self.decorators = []
-        self.comments = ""
+        self.imports: list[str] = []
+        self.from_imports: list[tuple[str, str]] = []
+        self.variables: dict[str, Any] = {}
+        self.classes: list[ClassInfo] = []
+        self.decorators: list[str] = []
+        self.comments: str = ""
 
-    def visit_Import(self, node):
+    def visit_Import(self, node) -> None:
         """Extracts imports from the given node."""
         for alias in node.names:
             self.imports.append(alias.name)
         self.generic_visit(node)
 
-    def visit_ImportFrom(self, node):
+    def visit_ImportFrom(self, node) -> None:
         """Extracts from imports from the given node."""
         for alias in node.names:
             self.from_imports.append((node.module, alias.name))
         self.generic_visit(node)
 
-    def visit_Assign(self, node):
+    def visit_Assign(self, node) -> None:
         """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
             self.variables[target.id] = ast.literal_eval(node.value)
         self.generic_visit(node)
 
-    def visit_ClassDef(self, node):
+    def visit_ClassDef(self, node) -> None:
         """Extracts classes from the given node."""
-        class_info = {
-            "name": node.name,
-            "bases": [ast.unparse(b) for b in node.bases],
-            "body": "",
-            "decorators": [ast.unparse(d) for d in node.decorator_list],
-            "docstring": None,
-        }
+        class_info = ClassInfo(
+            name=node.name,
+            bases=[ast.unparse(base) for base in node.bases],
+            body="",
+            decorators=[ast.unparse(decorator) for decorator in node.decorator_list],
+            docstring=None,
+        )
 
         # Extract docstring if present
         docstring = ast.get_docstring(node, False)
         if docstring:
-            class_info["docstring"] = docstring
+            class_info.docstring = docstring
 
         # Handle the rest of the class body
         body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
-        class_info["body"] = "\n".join(ast.unparse(n) for n in body_nodes)
+        class_info.body = "\n".join(ast.unparse(n) for n in body_nodes)
 
         self.classes.append(class_info)
 
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node) -> None:
         """Extracts decorators from function definitions."""
         for decorator in node.decorator_list:
             self.decorators.append(ast.unparse(decorator))
         self.generic_visit(node)
 
-    def visit_Module(self, node):
+    def visit_Module(self, node) -> None:
         """Extracts comments from the given node."""
         comments = ast.get_docstring(node, False)
         self.comments = "" if comments is None else comments
@@ -91,18 +102,20 @@ class PromptAnalyzer(ast.NodeVisitor):
 
     def check_class_changed(self, other: PromptAnalyzer) -> bool:
         """Compares the classes of this file with the classes of another file."""
-        self_classes = {c["name"]: c for c in self.classes}
-        other_classes = {c["name"]: c for c in other.classes}
+        self_classes = {c.name: c for c in self.classes}
+        other_classes = {c.name: c for c in other.classes}
 
         all_class_names = set(self_classes.keys()) | set(other_classes.keys())
 
         for name in all_class_names:
             if name in self_classes and name in other_classes:
+                self_class_dict = self_classes[name].__dict__
+                other_class_dict = other_classes[name].__dict__
                 # Compare attributes of classes with the same name
                 class_diff = {
-                    attr: (self_classes[name][attr], other_classes[name][attr])
-                    for attr in self_classes[name]
-                    if self_classes[name][attr] != other_classes[name][attr]
+                    attr: (self_class_dict[attr], other_class_dict[attr])
+                    for attr in self_class_dict
+                    if self_class_dict[attr] != other_class_dict[attr]
                 }
                 if class_diff:
                     return True
@@ -223,10 +236,82 @@ def get_prompt_analyzer(file: str) -> PromptAnalyzer:
     return analyzer
 
 
+def _find_list_from_str(string: str) -> Optional[list[str]]:
+    """Finds a list from a string."""
+    start_bracket_index = string.find("[")
+    end_bracket_index = string.find("]")
+    if (
+        start_bracket_index != -1
+        and end_bracket_index != -1
+        and end_bracket_index > start_bracket_index
+    ):
+        new_list = string[start_bracket_index : end_bracket_index + 1]
+        return json.loads(new_list.replace("'", '"'))
+    return None
+
+
+def _update_tag_decorator_with_version(
+    decorators: list[str], variables: MirascopeCliVariables
+) -> Optional[str]:
+    """Updates the tag decorator and returns the import name."""
+    if variables.revision_id is None:
+        return None
+    import_name = "tags"
+    tag_exists = False
+    version_tag_prefix = "version:"  # mirascope tag prefix
+    version_tag = f"{version_tag_prefix}{variables.revision_id}"
+    for index, decorator in enumerate(decorators):
+        # TODO: Update `mirascope.tags` work with import alias
+        if any(decorator.startswith(prefix) for prefix in ("tags(", "mirascope.tags(")):
+            tag_exists = True
+            import_name = decorator.split("(")[0]
+            decorator_arguments = _find_list_from_str(decorator)
+            if decorator_arguments is not None:
+                if f"{version_tag}" in decorator_arguments:
+                    # The version tag already exists
+                    break
+                elif any(
+                    argument.startswith(version_tag_prefix)
+                    for argument in decorator_arguments
+                ):
+                    # Replace the version tag with the current version
+                    for i, word in enumerate(decorator_arguments):
+                        if word.startswith(version_tag_prefix):
+                            decorator_arguments[i] = f"{version_tag}"
+                    decorators[index] = f"{import_name}({decorator_arguments})"
+                else:
+                    # Tag decorator exists, append the current version to the tags
+                    decorator_arguments.append(f"{version_tag}")
+                    decorators[index] = f"{import_name}({decorator_arguments})"
+            else:
+                # Add tags decorator
+                decorators[index] = f"{import_name}({version_tag})"
+            break
+    if not tag_exists:
+        decorators.append(f'{import_name}(["{version_tag}"])')
+    return import_name
+
+
+def _update_mirascope_imports(imports: list[str]):
+    """Updates the mirascope import."""
+    if not any(import_name == "mirascope" for import_name in imports):
+        imports.append("mirascope")
+
+
+def _update_mirascope_from_imports(member: str, from_imports: list[tuple[str, str]]):
+    """Updates the mirascope from import."""
+    if not any(
+        (import_name == "mirascope" or import_name == "mirascope.prompts")
+        and alias_name == member
+        for import_name, alias_name in from_imports
+    ):
+        from_imports.append(("mirascope", member))
+
+
 def write_prompt_to_template(
     file: str,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
-    variables: Optional[dict] = None,
+    variables: Optional[MirascopeCliVariables] = None,
 ):
     """Writes the given prompt to the template."""
     mirascope_directory = get_user_mirascope_settings().mirascope_location
@@ -235,15 +320,27 @@ def write_prompt_to_template(
     template = template_env.get_template("prompt_template.j2")
     analyzer = get_prompt_analyzer(file)
     if variables is None:
-        variables = {}
+        variables = MirascopeCliVariables()
 
     if command == MirascopeCommand.ADD:
-        new_variables = variables | analyzer.variables
+        new_variables = variables.__dict__ | analyzer.variables
     else:  # command == MirascopeCommand.USE
-        variables = dict.fromkeys(ignore_variables, None)
+        ignore_variable_keys = dict.fromkeys(ignore_variables, None)
         new_variables = {
-            k: analyzer.variables[k] for k in analyzer.variables if k not in variables
+            k: analyzer.variables[k]
+            for k in analyzer.variables
+            if k not in ignore_variable_keys
         }
+
+    import_tag_name: Optional[str] = None
+    for python_class in analyzer.classes:
+        decorators = python_class.decorators
+        import_tag_name = _update_tag_decorator_with_version(decorators, variables)
+
+    if import_tag_name == "tags":
+        _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
+    elif import_tag_name == "mirascope.tags":  # TODO: Update to work with import alias
+        _update_mirascope_imports(analyzer.imports)
 
     data = {
         "comments": analyzer.comments,
@@ -310,7 +407,6 @@ def check_status(
     if current_head is None:
         return used_prompt_path
     current_version_prompt_path = find_prompt_path(prompt_directory, current_head)
-
     # Check if users prompt matches the current prompt version
     has_file_changed = check_prompt_changed(
         current_version_prompt_path, used_prompt_path
@@ -318,3 +414,16 @@ def check_status(
     if has_file_changed:
         return used_prompt_path
     return None
+
+
+def run_format_command(file: str):
+    """Runs the format command on the given file."""
+    mirascope_settings = get_user_mirascope_settings()
+    if mirascope_settings.format_command:
+        format_command: list[str] = mirascope_settings.format_command.split()
+        format_command.append(file)
+        subprocess.run(
+            format_command,
+            check=True,
+            capture_output=True,
+        )
