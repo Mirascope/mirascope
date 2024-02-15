@@ -208,8 +208,10 @@ def test_get_prompt_analyzer():
     "class_decorators",
     [
         ["tags(['movie_project'])"],  # no version
+        ["tags(['version:0001', 'movie_project'])"],  # version first
         ["tags(['movie_project', 'version:0001'])"],  # different version
         ["tags(['movie_project', 'version:0002'])"],  # same as revision_id
+        ["tags(['movie_project', 'version:0002', 'another_tag'])"],  # tag in middle
         [""],  # no tags
         ["mirascope.tags(['movie_project', 'version:0001'])"],  # different import
         ["tags()"],  # improper tags
