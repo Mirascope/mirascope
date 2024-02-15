@@ -1,7 +1,7 @@
 """Test for mirascope cli utility functions."""
 from pathlib import Path
 from textwrap import dedent
-from typing import Union
+from typing import Literal
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -235,7 +235,7 @@ def test_write_prompt_to_template(
     mock_prompt_analyzer: Mock,
     mock_get_template: Mock,
     mock_settings: Mock,
-    command: Union[MirascopeCommand.ADD, MirascopeCommand.USE],
+    command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
     expected_variables: MirascopeCliVariables,
     class_decorators: list[str],
 ):
