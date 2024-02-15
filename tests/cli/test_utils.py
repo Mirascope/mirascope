@@ -213,6 +213,7 @@ def test_get_prompt_analyzer():
         ["tags(['movie_project', 'version:0002'])"],  # same as revision_id
         ["tags(['movie_project', 'version:0002', 'another_tag'])"],  # tag in middle
         [""],  # no tags
+        ["tags(['version:0001', 'version:0002'])"],  # two versions
         ["mirascope.tags(['movie_project', 'version:0001'])"],  # different import
         ["tags()"],  # improper tags
     ],
