@@ -425,10 +425,14 @@ def run_format_command(file: str):
     """Runs the format command on the given file."""
     mirascope_settings = get_user_mirascope_settings()
     if mirascope_settings.format_command:
-        format_command: list[str] = mirascope_settings.format_command.split()
-        format_command.append(file)
-        subprocess.run(
-            format_command,
-            check=True,
-            capture_output=True,
-        )
+        format_commands: list[list[str]] = [
+            command.split() for command in mirascope_settings.format_command.split(";")
+        ]
+        # assuming the final command takes filename as argument, and as final argument
+        format_commands[-1].append(file)
+        for command in format_commands:
+            subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+            )
