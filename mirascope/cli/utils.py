@@ -8,7 +8,7 @@ import os
 import subprocess
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
@@ -39,14 +39,14 @@ class PromptAnalyzer(ast.NodeVisitor):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the PromptAnalyzer."""
-        self.imports = []
-        self.from_imports = []
-        self.variables = {}
-        self.classes: list[ClassInfo] = []  # type: ignore
-        self.decorators = []
-        self.comments = ""
+        self.imports: list[str] = []
+        self.from_imports: list[tuple[str, str]] = []
+        self.variables: dict[str, Any] = {}
+        self.classes: list[ClassInfo] = []
+        self.decorators: list[str] = []
+        self.comments: str = ""
 
     def visit_Import(self, node):
         """Extracts imports from the given node."""
