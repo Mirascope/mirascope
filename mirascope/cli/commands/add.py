@@ -39,7 +39,6 @@ def add(
         FileNotFoundError: If the file is not found in the specified prompts directory.
     """
     mirascope_settings = get_user_mirascope_settings()
-    print(mirascope_settings)
     mirascope_location = mirascope_settings.mirascope_location
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
@@ -104,7 +103,7 @@ def add(
         ) as file2:
             file2.write(
                 write_prompt_to_template(
-                    file.read(), MirascopeCommand.ADD, custom_variables
+                    prompt_file, MirascopeCommand.ADD, custom_variables
                 )
             )
             keys_to_update = {
