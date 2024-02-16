@@ -251,7 +251,7 @@ def _find_list_from_str(string: str) -> Optional[list[str]]:
 
 
 def _update_tag_decorator_with_version(
-    decorators: list[str], variables: MirascopeCliVariables
+    decorators: list[str], variables: MirascopeCliVariables, mirascope_alias: str
 ) -> Optional[str]:
     """Updates the tag decorator and returns the import name."""
     if variables.revision_id is None:
@@ -261,8 +261,10 @@ def _update_tag_decorator_with_version(
     version_tag_prefix = "version:"  # mirascope tag prefix
     version_tag = f"{version_tag_prefix}{variables.revision_id}"
     for index, decorator in enumerate(decorators):
-        # TODO: Update `mirascope.tags` work with import alias
-        if any(decorator.startswith(prefix) for prefix in ("tags(", "mirascope.tags(")):
+        if any(
+            decorator.startswith(prefix)
+            for prefix in ("tags(", f"{mirascope_alias}.tags(")
+        ):
             tag_exists = True
             import_name = decorator.split("(")[0]
             decorator_arguments = _find_list_from_str(decorator)
@@ -338,13 +340,20 @@ def write_prompt_to_template(
         }
 
     import_tag_name: Optional[str] = None
+    mirascope_alias = "mirascope"
+    for name, alias in analyzer.imports:
+        if name == "mirascope" and alias is not None:
+            mirascope_alias = alias
+
     for python_class in analyzer.classes:
         decorators = python_class.decorators
-        import_tag_name = _update_tag_decorator_with_version(decorators, variables)
+        import_tag_name = _update_tag_decorator_with_version(
+            decorators, variables, mirascope_alias
+        )
 
     if import_tag_name == "tags":
         _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
-    elif import_tag_name == "mirascope.tags":  # TODO: Update to work with import alias
+    elif import_tag_name == f"{mirascope_alias}.tags":
         _update_mirascope_imports(analyzer.imports)
 
     data = {
