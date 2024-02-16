@@ -344,6 +344,11 @@ def write_prompt_to_template(
     for name, alias in analyzer.imports:
         if name == "mirascope" and alias is not None:
             mirascope_alias = alias
+            break
+    for module, name, alias in analyzer.from_imports:
+        if module == "mirascope" and name == "tags" and alias is not None:
+            mirascope_alias = alias
+            break
 
     for python_class in analyzer.classes:
         decorators = python_class.decorators
