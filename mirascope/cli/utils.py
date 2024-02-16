@@ -335,7 +335,8 @@ def write_prompt_to_template(
     import_tag_name: Optional[str] = None
     for python_class in analyzer.classes:
         decorators = python_class.decorators
-        import_tag_name = _update_tag_decorator_with_version(decorators, variables)
+        if python_class.bases and python_class.bases[0] == "Prompt":
+            import_tag_name = _update_tag_decorator_with_version(decorators, variables)
 
     if import_tag_name == "tags":
         _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
