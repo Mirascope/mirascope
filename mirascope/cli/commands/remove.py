@@ -36,7 +36,6 @@ def remove(
         FileNotFoundError: If the file is not found in the specified prompts or
           versions directory.
     """
-
     mirascope_settings = get_user_mirascope_settings()
     version_directory_path = mirascope_settings.versions_location
     version_file_name = mirascope_settings.version_file_name

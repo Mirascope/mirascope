@@ -16,19 +16,17 @@ def helper(tmp_path: Path):
     source_dir = (
         Path(__file__).parent.parent.parent / "golden" / "cli" / "commands" / "test_add"
     )
-    destination_dir = tmp_path / "test_add"
-    destination_dir.mkdir()
-    destination_dir_prompts = destination_dir / "prompts"
+    destination_dir_prompts = tmp_path / "prompts"
     source_dir_prompts = source_dir / "prompts"
-    destination_dir_mirascope_dir = destination_dir / ".mirascope"
+    destination_dir_mirascope_dir = tmp_path / ".mirascope"
     destination_dir_mirascope_dir.mkdir()
     shutil.copytree(source_dir_prompts, destination_dir_prompts, dirs_exist_ok=True)
 
 
 # @pytest.mark.parametrize(
-#     "golden_prompt", ["golden_prompt1", "golden_prompt2", "golden_prompt3"]
+#     "golden_prompt", ["prompt1", "prompt2", "prompt3"]
 # )
-@pytest.mark.parametrize("golden_prompt", ["golden_prompt1"])
+@pytest.mark.parametrize("golden_prompt", ["prompt1"])
 @pytest.mark.parametrize(
     "mirascope_settings",
     [
@@ -48,7 +46,7 @@ def helper(tmp_path: Path):
         # ),
     ],
 )
-@patch("mirascope.cli.utils.get_user_mirascope_settings")
+@patch("mirascope.cli.commands.add.get_user_mirascope_settings")
 def test_add(
     mock_get_mirascope_settings: MagicMock,
     mirascope_settings: MirascopeSettings,

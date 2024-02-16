@@ -43,8 +43,6 @@ def add(
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
     auto_tag = mirascope_settings.auto_tag
-    print("RETRE")
-    print(mirascope_settings)
     # Check status before continuing
     used_prompt_path = check_status(mirascope_settings, prompt_file_name)
     if not used_prompt_path:
