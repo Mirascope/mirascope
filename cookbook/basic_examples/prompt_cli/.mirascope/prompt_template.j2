@@ -1,28 +1,33 @@
 {%- if comments -%}
 """{{ comments }}"""
 {%- endif -%}
-{%- if imports %}
-{%- for import in imports %}
+{%- if imports -%}
+{%- for import, alias in imports -%}
+{%- if alias %}
+import {{ import }} as {{alias}}
+{%- else %}
 import {{ import }}
-{% endfor %}
 {%- endif -%}
-{%- if from_imports %}
-{%- set from_import_groups = {} %}
-{%- for module, name in from_imports %}
-    {%- if module not in from_import_groups %}
-        {%- set _ = from_import_groups.update({module: [name]}) %}
-    {%- else %}
-        {%- set _ = from_import_groups[module].append(name) %}
-    {%- endif %}
 {%- endfor -%}
+{%- endif %}
 
-{%- for module, names in from_import_groups.items() %}
-from {{ module }} import {{ names | join(', ') }}
-{% endfor -%}
-{%- endif -%}
+{% if from_imports -%}
+{%- set from_import_groups = {} -%}
+{%- for module, name, alias in from_imports -%}
+    {% if module not in from_import_groups %}
+        {%- set _ = from_import_groups.update({module: [(name, alias)]}) -%}
+    {%- else -%}
+        {%- set _ = from_import_groups[module].append((name, alias)) -%}
+    {%- endif -%}
+{%- endfor -%}
+{% for module, names in from_import_groups.items() -%}
+from {{ module }} import {% for name, alias in names %}{% if alias %}{{ name }} as {{ alias }}{% else %}{{ name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endfor %}
+{% endif -%}
+
 {% if variables %}
 {%- for var_name, var_value in variables.items() -%}
-{{ var_name }} = "{{ var_value }}"
+{{ var_name }} = {{ var_value }}
 {% endfor %}
 {% endif -%}
 {% for class in classes -%}
