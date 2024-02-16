@@ -1,4 +1,4 @@
-"""Test for mirascope cli commands functions."""
+"""Test for mirascope cli remove commands functions."""
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -11,10 +11,10 @@ from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
 runner = CliRunner()
 
 
-@patch("mirascope.cli.commands.get_user_mirascope_settings")
-@patch("mirascope.cli.commands.get_prompt_versions")
-@patch("mirascope.cli.commands.find_prompt_path")
-@patch("mirascope.cli.commands.find_prompt_paths")
+@patch("mirascope.cli.commands.remove.get_user_mirascope_settings")
+@patch("mirascope.cli.commands.remove.get_prompt_versions")
+@patch("mirascope.cli.commands.remove.find_prompt_path")
+@patch("mirascope.cli.commands.remove.find_prompt_paths")
 @patch("os.remove")
 def test_remove(
     mock_remove: MagicMock,
@@ -50,10 +50,10 @@ def test_remove(
     assert result.exit_code == 0
 
 
-@patch("mirascope.cli.commands.get_user_mirascope_settings")
-@patch("mirascope.cli.commands.get_prompt_versions")
-@patch("mirascope.cli.commands.find_prompt_path")
-@patch("mirascope.cli.commands.find_prompt_paths")
+@patch("mirascope.cli.utils.get_user_mirascope_settings")
+@patch("mirascope.cli.utils.get_prompt_versions")
+@patch("mirascope.cli.utils.find_prompt_path")
+@patch("mirascope.cli.utils.find_prompt_paths")
 @patch("os.remove")
 def test_remove_no_prompt_paths(
     mock_remove: MagicMock,
@@ -84,8 +84,8 @@ def test_remove_no_prompt_paths(
     assert result.exit_code == 0
 
 
-@patch("mirascope.cli.commands.get_user_mirascope_settings")
-@patch("mirascope.cli.commands.get_prompt_versions")
+@patch("mirascope.cli.utils.get_user_mirascope_settings")
+@patch("mirascope.cli.utils.get_prompt_versions")
 @patch("os.remove")
 def test_remove_current_revision_collision(
     mock_remove: MagicMock,
@@ -113,9 +113,9 @@ def test_remove_current_revision_collision(
     )
 
 
-@patch("mirascope.cli.commands.get_user_mirascope_settings")
-@patch("mirascope.cli.commands.get_prompt_versions")
-@patch("mirascope.cli.commands.find_prompt_path")
+@patch("mirascope.cli.utils.get_user_mirascope_settings")
+@patch("mirascope.cli.utils.get_prompt_versions")
+@patch("mirascope.cli.utils.find_prompt_path")
 def test_remove_file_not_found(
     mock_prompt_path: MagicMock,
     mock_prompt_versions: MagicMock,

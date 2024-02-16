@@ -146,6 +146,20 @@ def get_user_mirascope_settings(
         ) from e
 
 
+def prompts_directory_files() -> list[str]:
+    """Returns a list of files in the user's prompts directory."""
+    mirascope_settings = get_user_mirascope_settings()
+    prompt_file_names = find_file_names(mirascope_settings.prompts_location)
+    return [f"{name[:-3]}" for name in prompt_file_names]  # remove .py extension
+
+
+def parse_prompt_file_name(prompt_file_name: str) -> str:
+    """Returns the file name without the .py extension."""
+    if prompt_file_name.endswith(".py"):
+        return prompt_file_name[:-3]
+    return prompt_file_name
+
+
 def get_prompt_versions(version_file_path: str) -> VersionTextFile:
     """Returns the versions of the given prompt."""
     versions = VersionTextFile()

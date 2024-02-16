@@ -12,7 +12,7 @@ packages = [{ include = "mirascope" }]
 repository = "https://github.com/Mirascope/mirascope"
 
 [tool.poetry.scripts]
-mirascope = 'mirascope.cli.commands:app'
+mirascope = 'mirascope.cli.main:app'
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
