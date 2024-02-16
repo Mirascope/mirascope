@@ -1,11 +1,11 @@
 """A prompt for asking a question about a paragraph of text.
 
 {
-  "exact": 85.34482758620689,
-  "f1": 91.55579573683022,
+  "exact": 79.3103448275862,
+  "f1": 89.4777077966733
   "total": 116,
-  "HasAns_exact": 85.34482758620689,
-  "HasAns_f1": 91.55579573683022,
+  "HasAns_exact": 79.3103448275862,
+  "HasAns_f1": 89.4777077966733,
   "HasAns_total": 116
 }
 """
