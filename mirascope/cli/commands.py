@@ -146,7 +146,7 @@ def add(
         ) as file2:
             file2.write(
                 write_prompt_to_template(
-                    file.read(), MirascopeCommand.ADD, custom_variables
+                    prompt_file, MirascopeCommand.ADD, custom_variables
                 )
             )
             keys_to_update = {

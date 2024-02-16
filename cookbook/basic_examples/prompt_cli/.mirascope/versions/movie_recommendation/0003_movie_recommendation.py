@@ -1,10 +1,12 @@
 """A prompt for recommending movies of a particular genre."""
-from mirascope.prompts import Prompt, messages
+
+from mirascope.prompts import Prompt, messages, tags
 
 prev_revision_id = "0002"
 revision_id = "0003"
 
 
+@tags(["version:0003"])
 @messages
 class MovieRecommendationPrompt(Prompt):
     """

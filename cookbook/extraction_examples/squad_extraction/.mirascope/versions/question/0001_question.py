@@ -1,17 +1,18 @@
 """A prompt for asking a question about a paragraph of text.
 
 {
-  "exact": 79.3103448275862,
-  "f1": 89.4777077966733,
+  "exact": 85.34482758620689,
+  "f1": 91.55579573683022,
   "total": 116,
-  "HasAns_exact": 79.3103448275862,
-  "HasAns_f1": 89.4777077966733,
+  "HasAns_exact": 85.34482758620689,
+  "HasAns_f1": 91.55579573683022,
   "HasAns_total": 116
 }
 """
+
 from pydantic import BaseModel
 
-from mirascope import Prompt
+from mirascope import Prompt, tags
 
 prev_revision_id = "None"
 revision_id = "0001"
@@ -23,6 +24,7 @@ class ExtractedAnswer(BaseModel):
     answer: str
 
 
+@tags(["version:0001"])
 class QuestionPrompt(Prompt):
     """
     Paragraph: {paragraph}
