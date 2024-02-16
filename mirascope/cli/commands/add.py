@@ -39,6 +39,8 @@ def add(
         FileNotFoundError: If the file is not found in the specified prompts directory.
     """
     mirascope_settings = get_user_mirascope_settings()
+    print(mirascope_settings)
+    mirascope_location = mirascope_settings.mirascope_location
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
@@ -48,7 +50,9 @@ def add(
     if not used_prompt_path:
         print("No changes detected.")
         return
-    prompt_versions_directory = os.path.join(version_directory_path, prompt_file_name)
+    prompt_versions_directory = os.path.join(
+        mirascope_location, version_directory_path, prompt_file_name
+    )
 
     # Check if prompt file exists
     if not os.path.exists(f"{prompt_directory_path}/{prompt_file_name}.py"):
