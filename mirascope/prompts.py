@@ -6,7 +6,7 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -176,8 +176,8 @@ def messages(cls: Type[T]) -> Type[T]:
     return cls
 
 
-def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
-    """A decorator for adding tags to a `Prompt`.
+def tags(args: list[str]) -> Callable[[Type[T]], Type[T]]:
+    '''A decorator for adding tags to a `Prompt`.
 
     Adding this decorator to a `Prompt` updates the `_tags` class attribute to the given
     value. This is useful for adding metadata to a `Prompt` that can be used for logging
@@ -191,23 +191,28 @@ def tags(args: Union[list[str], str]) -> Callable[[Type[T]], Type[T]]:
 
     @tags(["book_recommendation", "entertainment"])
     class BookRecommendationPrompt(Prompt):
-    ...
+        """
+        SYSTEM:
+        You are the world's greatest librarian.
+
+        USER:
+        I've recently read this book: {book_title}.
+        What should I read next?
+        """
+
+        book_title: [str]
 
     print(BookRecommendationPrompt.dump()["tags"])
     #> ['book_recommendation', 'entertainment']
     ```
 
     Returns:
-        The decorated class.
-    """
+        The decorated class with `_tags` class attribute set.
+    '''
 
     def tags_fn(model_class: Type[T]) -> Type[T]:
         """Updates the `_tags` class attribute to the given value."""
-        if isinstance(args, str):
-            tags_list = [args]
-        else:
-            tags_list = args
-        setattr(model_class, "_tags", tags_list)
+        setattr(model_class, "_tags", args)
         return model_class
 
     return tags_fn

@@ -31,15 +31,15 @@ class OpenAITool(BaseModel):
         color: str
 
     def animal_matcher(fav_food: str, fav_color: str) -> str:
-    """Tells you your most likely favorite animal from personality traits.
+        """Tells you your most likely favorite animal from personality traits.
 
-    Args:
-        fav_food: your favorite food.
-        fav_color: your favorite color.
+        Args:
+            fav_food: your favorite food.
+            fav_color: your favorite color.
 
-    Returns:
-        The animal most likely to be your favorite based on traits.
-    """
+        Returns:
+            The animal most likely to be your favorite based on traits.
+        """
     return "Your favorite animal is the best one, a frog."
 
 
@@ -120,8 +120,8 @@ class OpenAITool(BaseModel):
     def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
         """Extracts an instance of the tool constructed from a tool call response.
 
-        Takes `ChatCompletionMessageToolCall` from an OpenAI chat completion response,
-        then parses it into an `OpenAITool` instance suitable for Mirascope API.
+        Given `ChatCompletionMessageToolCall` from an OpenAI chat completion response,
+        takes its function arguments and creates an `OpenAITool` instance from it.
 
         Args:
             tool_call: The `ChatCompletionMessageToolCall` to extract the tool from.

@@ -20,21 +20,41 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
 class OpenAIChat:
-    """A convenience wrapper for the OpenAI Chat client.
+    '''A convenience wrapper for the OpenAI Chat client.
 
     The Mirascope convenience wrapper for OpenAI provides a more user-friendly interface
-    for interacting with their API. For detailed usage instructions, check out the
-    following links.
+    for interacting with their API. For detailed usage examples, check out the cookbook.
 
-    `OpenAIChat.create`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/create.py
+    Example:
 
-    `OpenAIChat.stream`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/stream.py
+    ```python
+    import os
 
-    `OpenAIChat.extract`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/extract_book_info.py
-    """
+    from mirascope import OpenAIChat, Prompt
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+
+    class BookRecommendationPrompt(Prompt):
+        """
+        Can you recommend some books on {topic}?
+        """
+
+        topic: str
+
+
+    prompt = BookRecommendationPrompt(topic="how to bake a cake")
+    model = OpenAIChat()
+    res = model.create(prompt)
+
+    print(str(res))
+    #> Certinly! Here are some books on how to bake a cake:
+    #  1. "The Cake Bible" by Rose Levy Beranbaum
+    #  2. "Joy of Baking" by Irma S Rombauer and Marion Rombauer Becker
+    #  ...
+    ```
+
+    '''
 
     def __init__(
         self,

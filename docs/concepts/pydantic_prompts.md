@@ -139,6 +139,32 @@ print(prompt.messages)
 [("system", "You are the world's greatest librarian"), ("user", "Can you recommend some books on coding?")]
 ```
 
+### Tags and Dump
+
+You can add tags to help organize prompts when you want to use them outside your project. For example, you might want to dump all your prompt inputs and outputs for validating prompt quality into a CSV file, or database. 
+
+!!! note 
+	
+	`@tags` decorator adds `_tags` private attribute to the class
+
+```python
+from mirascope import Prompt, tags
+
+@tags(["recommendation_project", "version:0001"])
+class BookRecommendationPrompt(Prompt):
+    """
+    Can you recommend some books on {topic}?
+    """
+
+    topic: str
+
+
+prompt = BookRecommendationPrompt(topic="how to bake a cake")
+model = OpenAIChat()
+print(prompt.dump())
+# {'template': 'Can you recommend some books on {topic}?', 'inputs': {'topic': 'how to bake a cake'}, 'tags': ['recommendation_project', 'version:0001']}
+```
+
 ## Future updates
 
 There is a lot more to be added to Mirascope prompts. Here is a list in no order of things we are thinking about adding next: 

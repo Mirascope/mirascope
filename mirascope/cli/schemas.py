@@ -12,6 +12,7 @@ class MirascopeSettings(BaseModel):
     prompts_location: str
     version_file_name: str
     format_command: Optional[str] = None
+    auto_tag: Optional[bool] = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -21,3 +22,10 @@ class VersionTextFile(BaseModel):
 
     current_revision: Optional[str] = Field(default=None)
     latest_revision: Optional[str] = Field(default=None)
+
+
+class MirascopeCliVariables(BaseModel):
+    """Prompt version variables used internally by mirascope."""
+
+    prev_revision_id: Optional[str] = Field(default=None)
+    revision_id: Optional[str] = Field(default=None)

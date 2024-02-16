@@ -17,7 +17,7 @@ def get_openai_messages_from_prompt(
     """Returns a list of messages parsed from the prompt.
 
     Args:
-        prompt: A `prompt` or `str` to parse into a list of messages.
+        prompt: A `Prompt` or `str` to parse into a list of messages.
 
     Returns:
         A list of `ChatCompletionMessageParam` instances parsed from the prompt, which
@@ -38,10 +38,10 @@ def convert_tools_list_to_openai_tools(
     """Converts a list of `Callable` or `OpenAITool` instances to an `OpenAITool` list.
 
     Args:
-        A list of functions or `OpenAITool`s.
+        tools: A list of functions or `OpenAITool`s.
 
     Returns:
-        A list of all items converted to `OpenAITool`s.
+        A list of all items converted to `OpenAITool` instances.
     """
     if not tools:
         return None
@@ -58,8 +58,10 @@ def patch_openai_kwargs(
 ) -> None:
     """Sets up the kwargs for an OpenAI API call.
 
-    Messages are parsed to have the required `role` and `content` items, and tools
-    (if any exist) are parsed into JSON schemas in order to fit the OpenAI API.
+    Kwargs are parsed as such: messages are formatted to have the required `role` and
+    `content` items; tools (if any exist) are parsed into JSON schemas in order to fit
+    the OpenAI API; tool choice, if not provided, is set to "auto". Other kwargs are
+    left unchanged.
 
     Args:
         kwargs: The kwargs to patch.
@@ -84,8 +86,9 @@ def patch_openai_kwargs(
 def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
     """Constructs an `OpenAITool` type from the given function.
 
-    This method assumes all function parameters are properly documented in identical
+    This method expects all function parameters to be properly documented in identical
     order with identical variable names, as well as descriptions of each parameter.
+    Errors will be raised if any of these conditions are not met.
 
     Args:
         fn: The function to convert.

@@ -23,7 +23,6 @@ Typical usage example:
         $ mirascope use my_prompt 0001
 """
 import os
-import subprocess
 from importlib.resources import files
 from pathlib import Path
 from typing import Optional
@@ -33,7 +32,7 @@ from typer import Argument, Option, Typer
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .schemas import MirascopeSettings
+from .schemas import MirascopeCliVariables, MirascopeSettings
 from .utils import (
     check_status,
     find_file_names,
@@ -41,6 +40,7 @@ from .utils import (
     find_prompt_paths,
     get_prompt_versions,
     get_user_mirascope_settings,
+    run_format_command,
     update_version_text_file,
     write_prompt_to_template,
 )
@@ -87,6 +87,7 @@ def add(
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
+    auto_tag = mirascope_settings.auto_tag
 
     # Check status before continuing
     used_prompt_path = check_status(mirascope_settings, prompt_file_name)
@@ -107,9 +108,8 @@ def add(
     versions = get_prompt_versions(version_file_path)
 
     # Open user's prompt file
-    with open(
-        f"{prompt_directory_path}/{prompt_file_name}.py", "r+", encoding="utf-8"
-    ) as file:
+    user_prompt_file = os.path.join(prompt_directory_path, f"{prompt_file_name}.py")
+    with open(user_prompt_file, "r+", encoding="utf-8") as file:
         # Increment revision id
         if versions.latest_revision is None:
             # first revision
@@ -122,18 +122,31 @@ def add(
         revision_file = os.path.join(
             prompt_versions_directory, f"{revision_id}_{prompt_file_name}.py"
         )
+        custom_variables = MirascopeCliVariables(
+            prev_revision_id=versions.current_revision,
+            revision_id=revision_id,
+        )
+        prompt_file = file.read()
+
+        if auto_tag:
+            new_prompt_file = write_prompt_to_template(
+                prompt_file, MirascopeCommand.USE, custom_variables
+            )
+            # Replace contents of user's prompt file with new prompt file with tags
+            file.seek(0)
+            file.write(new_prompt_file)
+            file.truncate()
+            # Reset file pointer to beginning of file for revision file read
+            file.seek(0)
+            run_format_command(user_prompt_file)
         with open(
             revision_file,
             "w+",
             encoding="utf-8",
         ) as file2:
-            custom_variables = {
-                "prev_revision_id": versions.current_revision,
-                "revision_id": revision_id,
-            }
             file2.write(
                 write_prompt_to_template(
-                    file.read(), MirascopeCommand.ADD, custom_variables
+                    prompt_file, MirascopeCommand.ADD, custom_variables
                 )
             )
             keys_to_update = {
@@ -142,14 +155,7 @@ def add(
             }
             update_version_text_file(version_file_path, keys_to_update)
     if revision_file:
-        if mirascope_settings.format_command:
-            format_command: list[str] = mirascope_settings.format_command.split()
-            format_command.append(revision_file)
-            subprocess.run(
-                format_command,
-                check=True,
-                capture_output=True,
-            )
+        run_format_command(revision_file)
     print(
         "Adding "
         f"{version_directory_path}/{prompt_file_name}/{revision_id}_{prompt_file_name}.py"
@@ -251,14 +257,7 @@ def use(
     with open(prompt_file_path, "w+", encoding="utf-8") as file2:
         file2.write(write_prompt_to_template(content, MirascopeCommand.USE))
     if prompt_file_path:
-        if mirascope_settings.format_command:
-            format_command: list[str] = mirascope_settings.format_command.split()
-            format_command.append(prompt_file_path)
-            subprocess.run(
-                format_command,
-                check=True,
-                capture_output=True,
-            )
+        run_format_command(prompt_file_path)
 
     # Update version file with new current revision
     keys_to_update = {
@@ -388,6 +387,7 @@ def init(
         versions_location="versions",
         prompts_location=prompts_location,
         version_file_name="version.txt",
+        auto_tag=True,
     )
 
     # Get templates from the mirascope.cli.generic package

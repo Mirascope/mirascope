@@ -357,6 +357,7 @@ def fixture_mirascope_user_settings() -> MirascopeSettings:
         prompts_location="prompts",
         version_file_name="version.txt",
         versions_location=".test/versions",
+        auto_tag=True,
     )
 
 

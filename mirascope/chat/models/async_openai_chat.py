@@ -20,21 +20,46 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
 class AsyncOpenAIChat:
-    """A convenience wrapper for the AsyncOpenAI Chat client.
+    '''A convenience wrapper for the AsyncOpenAI Chat client.
 
     The Mirascope convenience wrapper for OpenAI provides a more user-friendly interface
-    for interacting with their API. For detailed usage instructions, check out the
-    following links.
+    for interacting with their API. For detailed usage examples, check out the cookbook.
 
-    `AsyncOpenAIChat.create`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/create_async.py
+    Example:
 
-    `AsyncOpenAIChat.stream`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/stream_async.py
+    ```python
+    import asyncio
+    import os
 
-    `AsyncOpenAIChat.extract`:
-    https://github.com/Mirascope/mirascope/blob/main/cookbook/basic_examples/extract_book_info_async.py
-    """
+    from mirascope import AsyncOpenAIChat, Prompt
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+    class BookRecommendationPrompt(Prompt):
+        """
+        Can you recommend some books on {topic}?
+        """
+
+        topic: str
+
+
+    prompt = BookRecommendationPrompt(topic="how to bake a cake")
+
+    model = AsyncOpenAIChat()
+
+
+    async def create_book_recommendation():
+        """Asynchronously creates the response for a call to the model using `prompt`."""
+        return await model.create(prompt)
+
+
+    print(asyncio.run(create_book_recommendation()))
+    #> Certinly! Here are some books on how to bake a cake:
+    #  1. "The Cake Bible" by Rose Levy Beranbaum
+    #  2. "Joy of Baking" by Irma S Rombauer and Marion Rombauer Becker
+    #  ...
+    ```
+    '''
 
     def __init__(
         self,

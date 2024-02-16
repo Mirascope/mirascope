@@ -9,8 +9,9 @@ from jinja2 import Environment
 from pydantic import ValidationError
 
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from mirascope.cli.schemas import MirascopeSettings
+from mirascope.cli.schemas import MirascopeCliVariables, MirascopeSettings
 from mirascope.cli.utils import (
+    ClassInfo,
     PromptAnalyzer,
     check_prompt_changed,
     find_prompt_path,
@@ -26,6 +27,12 @@ def _get_mirascope_ini() -> str:
     """Get the contents of the mirascope.ini.j2 file"""
     mirascope_ini_path = Path("mirascope/cli/generic/mirascope.ini.j2")
     return mirascope_ini_path.read_text(encoding="utf-8")
+
+
+def _get_prompt_template() -> str:
+    """Get the contents of the prompt_template.j2 file"""
+    prompt_template_path = Path("mirascope/cli/generic/prompt_template.j2")
+    return prompt_template_path.read_text(encoding="utf-8")
 
 
 def test_valid_mirascope_settings(tmp_path: Path):
@@ -198,9 +205,26 @@ def test_get_prompt_analyzer():
 
 
 @pytest.mark.parametrize(
+    "class_decorators",
+    [
+        ["tags(['movie_project'])"],  # no version
+        ["tags(['version:0001', 'movie_project'])"],  # version first
+        ["tags(['movie_project', 'version:0001'])"],  # different version
+        ["tags(['movie_project', 'version:0002'])"],  # same as revision_id
+        ["tags(['movie_project', 'version:0002', 'another_tag'])"],  # tag in middle
+        [""],  # no tags
+        ["tags(['version:0001', 'version:0002'])"],  # two versions
+        ["mirascope.tags(['movie_project', 'version:0001'])"],  # different import
+        ["tags()"],  # improper tags
+    ],
+)
+@pytest.mark.parametrize(
     "command, expected_variables",
     [
-        (MirascopeCommand.ADD, {"prev_revision_id": "0001", "revision_id": "0002"}),
+        (
+            MirascopeCommand.ADD,
+            MirascopeCliVariables(prev_revision_id="0001", revision_id="0002"),
+        ),
         (MirascopeCommand.USE, None),
     ],
 )
@@ -212,7 +236,8 @@ def test_write_prompt_to_template(
     mock_get_template: Mock,
     mock_settings: Mock,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
-    expected_variables: dict,
+    expected_variables: MirascopeCliVariables,
+    class_decorators: list[str],
 ):
     """Tests that a prompt is properly created from the template"""
 
@@ -222,11 +247,20 @@ def test_write_prompt_to_template(
     mock_settings.return_value.location = sample_directory
 
     mock_template = MagicMock()
-    sample_template_content = "Template with {{ variables }} and {{ comments }}"
-    mock_template.render.return_value = sample_template_content
+    mock_template.render.return_value = _get_prompt_template()
     mock_get_template.return_value = mock_template
-
-    mock_prompt_analyzer.return_value = PromptAnalyzer()
+    prompt_analyzer = PromptAnalyzer()
+    prompt_analyzer.comments = "A prompt for recommending movies of a particular genre."
+    prompt_analyzer.classes = [
+        ClassInfo(
+            name="MovieRecommendationPrompt",
+            docstring="Please recommend a list of movies in the {genre} category.",
+            body="",
+            bases=["Prompt"],
+            decorators=class_decorators,
+        ),
+    ]
+    mock_prompt_analyzer.return_value = prompt_analyzer
 
     write_prompt_to_template(sample_file_content, command, expected_variables)
 
