@@ -13,7 +13,7 @@ from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
 runner = CliRunner()
 
 
-def initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
+def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
     if not golden_prompt.endswith(".py"):
         golden_prompt = f"{golden_prompt}.py"
     source_file = Path(__file__).parent / "golden" / golden_prompt
@@ -79,7 +79,7 @@ def test_add(
         "0001" if current_revision is None else f"{int(current_revision)+1:04d}"
     )
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
-        initialize_tmp_mirascope(Path(td), golden_prompt)
+        _initialize_tmp_mirascope(Path(td), golden_prompt)
         result = runner.invoke(
             app,
             ["add", golden_prompt],
