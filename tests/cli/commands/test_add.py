@@ -1,4 +1,5 @@
 """Test for mirascope cli add command functions."""
+import os
 import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -73,22 +74,27 @@ def test_add(
     mock_get_mirascope_settings_add.return_value = mirascope_settings
     mock_get_mirascope_settings.return_value = mirascope_settings
     mock_get_prompt_versions.return_value = version_text_file
+    current_revision = version_text_file.current_revision
+    next_revision = (
+        "0001" if current_revision is None else f"{int(current_revision)+1:04d}"
+    )
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         initialize_tmp_mirascope(Path(td), golden_prompt)
         result = runner.invoke(
             app,
             ["add", golden_prompt],
         )
-        print(result.output)
-        # with open(
-        #     Path(td)
-        #     / ".mirascope"
-        #     / "versions"
-        #     / golden_prompt
-        #     / f"0001_{golden_prompt}.py"
-        # ) as f:
-        #     content = f.read()
-        #     print(content)
+        assert (
+            result.output.strip()
+            == f"Adding versions/{golden_prompt}/{next_revision}_{golden_prompt}.py"
+        )
+        assert os.path.exists(
+            Path(td)
+            / ".mirascope"
+            / "versions"
+            / golden_prompt
+            / f"{next_revision}_{golden_prompt}.py"
+        )
 
 
 @patch("mirascope.cli.commands.add.get_user_mirascope_settings")
