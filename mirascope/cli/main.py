@@ -23,19 +23,10 @@ Typical usage example:
         $ mirascope use my_prompt 0001
 """
 
-import os
 
-from typer import Argument, Typer
+from typer import Typer
 
 from .commands import add, init, remove, status, use
-from .utils import (
-    find_prompt_path,
-    find_prompt_paths,
-    get_prompt_versions,
-    get_user_mirascope_settings,
-    parse_prompt_file_name,
-    prompts_directory_files,
-)
 
 app = Typer()
 

@@ -117,8 +117,9 @@ def test_add_unknown_file(mock_get_mirascope_settings_add: MagicMock):
 def test_add_no_changes(
     mock_get_mirascope_settings_add: MagicMock,
     mock_check_status: MagicMock,
+    tmp_path: Path,
 ):
-    """Tests that `add` fails when the prompt file does not exist."""
+    """Tests that `add` does nothing when prompt did not change."""
     mock_check_status.return_value = None
     mock_get_mirascope_settings_add.return_value = MirascopeSettings(
         mirascope_location=".mirascope",
@@ -127,5 +128,8 @@ def test_add_no_changes(
         prompts_location="prompts",
         versions_location="versions",
     )
-    result = runner.invoke(app, ["add", "unknown_prompt"], catch_exceptions=False)
-    assert result.output.strip() == "No changes detected."
+    prompt = "simple_prompt"
+    with runner.isolated_filesystem(temp_dir=tmp_path) as td:
+        _initialize_tmp_mirascope(Path(td), prompt)
+        result = runner.invoke(app, ["add", prompt])
+        assert result.output.strip() == "No changes detected."
