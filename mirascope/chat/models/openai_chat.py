@@ -20,7 +20,41 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
 class OpenAIChat:
-    """A convenience wrapper for the OpenAI Chat client."""
+    '''A convenience wrapper for the OpenAI Chat client.
+
+    The Mirascope convenience wrapper for OpenAI provides a more user-friendly interface
+    for interacting with their API. For detailed usage examples, check out the cookbook.
+
+    Example:
+
+    ```python
+    import os
+
+    from mirascope import OpenAIChat, Prompt
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+
+    class BookRecommendationPrompt(Prompt):
+        """
+        Can you recommend some books on {topic}?
+        """
+
+        topic: str
+
+
+    prompt = BookRecommendationPrompt(topic="how to bake a cake")
+    model = OpenAIChat()
+    res = model.create(prompt)
+
+    print(str(res))
+    #> Certinly! Here are some books on how to bake a cake:
+    #  1. "The Cake Bible" by Rose Levy Beranbaum
+    #  2. "Joy of Baking" by Irma S Rombauer and Marion Rombauer Becker
+    #  ...
+    ```
+
+    '''
 
     def __init__(
         self,
@@ -123,6 +157,11 @@ class OpenAIChat:
         **kwargs,
     ) -> BaseModelT:
         """Extracts the given schema from the response of a chat `create` call.
+
+        The given schema is converted into an `OpenAITool`, complete with a description
+        of the tool, all of the fields, and their types. This allows us to take
+        advantage of OpenAI's tool/function calling functionality to extract information
+        from a prompt according to the context provided by the `BaseModel` schema.
 
         Args:
             schema: The `BaseModel` schema to extract from the completion.

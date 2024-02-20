@@ -16,7 +16,35 @@ from .tools import OpenAITool
 
 
 class OpenAIChatCompletion(BaseModel):
-    """Convenience wrapper around chat completions."""
+    """Convenience wrapper around chat completions.
+
+    When using Mirascope's convenience wrappers to interact with OpenAI models via
+    `OpenAIChat`, responses using `OpenAIChat.create()` will return a
+    `OpenAIChatCompletion`, whereby the implemented properties allow for simpler syntax
+    and a convenient developer experience.
+
+    Example:
+
+    ```python
+    from mirascope import OpenAIChat
+
+    chat = OpenAIChat()
+    response = chat.create("What is 1 + 2?")
+
+    print(response.choices)
+    #> [Choice(finish_reason='stop', index=0, logprobs=None,
+    #  message=ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
+    #  function_call=None, tool_calls=None))]
+
+    print(response.message)
+    #> ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
+    #  function_call=None, tool_calls=None)
+
+    print(response.content)
+    #> 1 + 2 equals 3.
+    ```
+
+    """
 
     completion: ChatCompletion
     tool_types: Optional[list[Type[OpenAITool]]] = None
@@ -98,7 +126,32 @@ class OpenAIChatCompletion(BaseModel):
 
 
 class OpenAIChatCompletionChunk(BaseModel):
-    """Convenience wrapper around chat completion streaming chunks."""
+    """Convenience wrapper around chat completion streaming chunks.
+
+    When using Mirascope's convenience wrappers to interact with OpenAI models via
+    `OpenAIChat`, responses using `OpenAIChat.stream()` will return a
+    `OpenAIChatCompletionChunk`, whereby the implemented properties allow for simpler
+    syntax and a convenient developer experience.
+
+    Example:
+
+    ```python
+    from mirascope import OpenAIChat
+
+    chat = OpenAIChat()
+    stream = chat.stream("What is 1 + 2?")
+
+    for chunk in stream:
+        print(chunk.content)
+    #> 1
+    #  +
+    #  2
+    #   equals
+    #
+    #  3
+    #  .
+    ```
+    """
 
     chunk: ChatCompletionChunk
     tool_types: Optional[list[Type[OpenAITool]]] = None
@@ -127,12 +180,11 @@ class OpenAIChatCompletionChunk(BaseModel):
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:
         """Returns the partial tool calls for the 0th choice message.
 
-        The first and last `list[ChoiceDeltaToolCall]` will be None indicating start
-        and end of stream respectively. The next `list[ChoiceDeltaToolCall]` will
-        contain the name of the tool and index and subsequent
-        `list[ChoiceDeltaToolCall]`s will contain the arguments which will be strings
-        that need to be concatenated with future `list[ChoiceDeltaToolCall]`s to form a
-        complete JSON tool calls.
+        The first `list[ChoiceDeltaToolCall]` will contain the name of the tool and
+        index, and subsequent `list[ChoiceDeltaToolCall]`s will contain the arguments
+        which will be strings that need to be concatenated with future
+        `list[ChoiceDeltaToolCall]`s to form a complete JSON tool calls. The last
+        `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
         """
         return self.delta.tool_calls
 

@@ -17,16 +17,11 @@ class Prompt(BaseModel):
     Example:
 
     ```python
-    from mirascope import Prompt, messages
+    from mirascope import Prompt
 
 
-    @messages
     class BookRecommendationPrompt(Prompt):
         """
-        SYSTEM:
-        You are the world's greatest librarian.
-
-        USER:
         I've recently read the following books: {titles_in_quotes}.
         What should I read next?
         """
@@ -44,19 +39,16 @@ class Prompt(BaseModel):
     )
 
     print(BookRecommendationPrompt.template())
-    #> SYSTEM: You are the world's greatest librarian.
-    #> USER: I've recently read the following books: {titles_in_quotes}. What should I
-    #  read next?
+    #> I've recently read the following books: {titles_in_quotes}. What should I read
+    #  next?
 
     print(str(prompt))
-    #> SYSTEM: You are the world's greatest librarian.
-    #> USER: I've recently read the following books: "The Name of the Wind", "The Lord
-    #  of the Rings". What should I read next?
+    #> I've recently read the following books: "The Name of the Wind", "The Lord of the
+    #  Rings". What should I read next?
 
-    prompt.messages
-    #> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently
-    #   read the following books: "The Name of the Wind", "The Lord of the Rings". What
-    #   should I read next?')]
+    print(prompt.messages)
+    #> [('user', 'I\'ve recently read the following books: "The Name of the Wind", "The
+    #  Lord of the Rings". What should I read next?')]
     ```
     '''
 
@@ -124,7 +116,7 @@ T = TypeVar("T", bound=Prompt)
 
 
 def messages(cls: Type[T]) -> Type[T]:
-    """A decorator for updating the `messages` class attribute of a `Prompt`.
+    '''A decorator for updating the `messages` class attribute of a `Prompt`.
 
     Adding this decorator to a `Prompt` updates the `messages` class attribute
     to parse the docstring as a list of messages. Each message is a tuple containing
@@ -133,23 +125,41 @@ def messages(cls: Type[T]) -> Type[T]:
         <role>:
         <content>
 
-    For example, you might want to first include a system prompt followed by a user
-    prompt, which you can structure as follows:
+    Example:
 
+    ```python
+    from mirascope import Prompt, messages
+
+
+    @messages
+    class BookRecommendationPrompt(Prompt):
+        """
         SYSTEM:
-        This would be the system message content.
+        You are the world's greatest librarian.
 
         USER:
-        This would be the user message content.
+        I've recently read this book: {book_title}.
+        What should I read next?
+        """
 
-    This decorator currently supports the SYSTEM, USER, and ASSISTANT roles.
+        book_title: [str]
+
+
+    prompt = BookRecommendationPrompt(book_title="The Name of the Wind")
+
+    print(prompt.messages)
+    #> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently
+    #   read this book: The Name of the Wind. What should I read next?')]
+    ```
+
+    This decorator currently supports the SYSTEM, USER, ASSISTANT, and TOOL roles.
 
     Returns:
         The decorated class.
 
     Raises:
         ValueError: If the docstring is empty.
-    """
+    '''
 
     def messages_fn(self) -> list[tuple[str, str]]:
         """Returns the docstring as a list of messages."""
@@ -167,15 +177,38 @@ def messages(cls: Type[T]) -> Type[T]:
 
 
 def tags(args: list[str]) -> Callable[[Type[T]], Type[T]]:
-    """A decorator for adding tags to a `Prompt`.
+    '''A decorator for adding tags to a `Prompt`.
 
     Adding this decorator to a `Prompt` updates the `_tags` class attribute to the given
     value. This is useful for adding metadata to a `Prompt` that can be used for logging
     or filtering.
 
+    Example:
+
+    ```python
+    from mirascope import Prompt, tags
+
+
+    @tags(["book_recommendation", "entertainment"])
+    class BookRecommendationPrompt(Prompt):
+        """
+        SYSTEM:
+        You are the world's greatest librarian.
+
+        USER:
+        I've recently read this book: {book_title}.
+        What should I read next?
+        """
+
+        book_title: [str]
+
+    print(BookRecommendationPrompt.dump()["tags"])
+    #> ['book_recommendation', 'entertainment']
+    ```
+
     Returns:
-        The decorated class.
-    """
+        The decorated class with `_tags` class attribute set.
+    '''
 
     def tags_fn(model_class: Type[T]) -> Type[T]:
         """Updates the `_tags` class attribute to the given value."""
