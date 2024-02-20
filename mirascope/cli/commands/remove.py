@@ -13,7 +13,7 @@ from ..utils import (
 )
 
 
-def remove(
+def remove_command(
     prompt_file_name: str = Argument(
         help="Prompt file to remove",
         autocompletion=prompts_directory_files,

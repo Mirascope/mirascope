@@ -26,12 +26,18 @@ Typical usage example:
 
 from typer import Typer
 
-from .commands import add, init, remove, status, use
+from .commands import (
+    add_command,
+    init_command,
+    remove_command,
+    status_command,
+    use_command,
+)
 
 app = Typer()
 
-app.command(name="add", help="Add a prompt")(add)
-app.command(name="status", help="Check status of prompt(s)")(status)
-app.command(name="use", help="Use a prompt")(use)
-app.command(name="remove", help="Remove a prompt")(remove)
-app.command(name="init", help="Initialize mirascope project")(init)
+app.command(name="add", help="Add a prompt")(add_command)
+app.command(name="status", help="Check status of prompt(s)")(status_command)
+app.command(name="use", help="Use a prompt")(use_command)
+app.command(name="remove", help="Remove a prompt")(remove_command)
+app.command(name="init", help="Initialize mirascope project")(init_command)

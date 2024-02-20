@@ -18,7 +18,7 @@ from ..utils import (
 )
 
 
-def add(
+def add_command(
     prompt_file_name: str = Argument(
         help="Prompt file to add",
         autocompletion=prompts_directory_files,
@@ -39,7 +39,6 @@ def add(
         FileNotFoundError: If the file is not found in the specified prompts directory.
     """
     mirascope_settings = get_user_mirascope_settings()
-    mirascope_location = mirascope_settings.mirascope_location
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
@@ -49,9 +48,7 @@ def add(
     if not used_prompt_path:
         print("No changes detected.")
         return
-    prompt_versions_directory = os.path.join(
-        mirascope_location, version_directory_path, prompt_file_name
-    )
+    prompt_versions_directory = os.path.join(version_directory_path, prompt_file_name)
 
     # Check if prompt file exists
     if not os.path.exists(f"{prompt_directory_path}/{prompt_file_name}.py"):
@@ -113,7 +110,4 @@ def add(
             update_version_text_file(version_file_path, keys_to_update)
     if revision_file:
         run_format_command(revision_file)
-    print(
-        "Adding "
-        f"{version_directory_path}/{prompt_file_name}/{revision_id}_{prompt_file_name}.py"
-    )
+    print("Adding " f"{prompt_versions_directory}/{revision_id}_{prompt_file_name}.py")

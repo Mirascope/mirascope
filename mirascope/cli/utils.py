@@ -218,8 +218,8 @@ def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -
 
 def find_file_names(directory: str, prefix: str = "") -> list[str]:
     """Finds all files in a directory."""
-    pattern = f"[!_]{prefix}*.py"  # ignores private files
-    return glob.glob(pattern, root_dir=directory)  # Returns all files found
+    pattern = os.path.join(directory, "[!_]{prefix}*.py")  # ignores private files
+    return glob.glob(pattern)  # Returns all files found
 
 
 def find_prompt_paths(directory: Union[Path, str], prefix: str) -> Optional[list[str]]:

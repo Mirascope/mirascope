@@ -12,7 +12,7 @@ from ..utils import (
 )
 
 
-def status(
+def status_command(
     prompt_file_name: Optional[str] = Argument(
         help="Prompt to check status on",
         autocompletion=prompts_directory_files,

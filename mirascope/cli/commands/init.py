@@ -9,7 +9,7 @@ from typer import Option
 from ..schemas import MirascopeSettings
 
 
-def init(
+def init_command(
     mirascope_location: str = Option(
         help="Main mirascope directory", default=".mirascope"
     ),

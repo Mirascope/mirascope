@@ -17,7 +17,7 @@ from ..utils import (
 )
 
 
-def use(
+def use_command(
     prompt_file_name: str = Argument(
         help="Prompt file to use",
         autocompletion=prompts_directory_files,

@@ -47,14 +47,14 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
             auto_tag=True,
             version_file_name="version.txt",
             prompts_location="prompts",
-            versions_location="versions",
+            versions_location=".mirascope/versions",
         ),
         MirascopeSettings(
             mirascope_location=".mirascope",
             auto_tag=False,
             version_file_name="version.txt",
             prompts_location="prompts",
-            versions_location="versions",
+            versions_location=".mirascope/versions",
         ),
     ],
 )
@@ -86,12 +86,11 @@ def test_add(
         )
         assert (
             result.output.strip()
-            == f"Adding versions/{golden_prompt}/{next_revision}_{golden_prompt}.py"
+            == f"Adding {mirascope_settings.versions_location}/{golden_prompt}/{next_revision}_{golden_prompt}.py"
         )
         assert os.path.exists(
             Path(td)
-            / ".mirascope"
-            / "versions"
+            / mirascope_settings.versions_location
             / golden_prompt
             / f"{next_revision}_{golden_prompt}.py"
         )
@@ -105,7 +104,7 @@ def test_add_unknown_file(mock_get_mirascope_settings_add: MagicMock):
         auto_tag=True,
         version_file_name="version.txt",
         prompts_location="prompts",
-        versions_location="versions",
+        versions_location=".mirascope/versions",
     )
     with pytest.raises(FileNotFoundError):
         result = runner.invoke(app, ["add", "unknown_prompt"], catch_exceptions=False)
@@ -126,7 +125,7 @@ def test_add_no_changes(
         auto_tag=True,
         version_file_name="version.txt",
         prompts_location="prompts",
-        versions_location="versions",
+        versions_location=".mirascope/versions",
     )
     prompt = "simple_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
