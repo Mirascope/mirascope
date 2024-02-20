@@ -9,9 +9,10 @@
   "HasAns_total": 116
 }
 """
+
 from pydantic import BaseModel
 
-from mirascope import Prompt
+from mirascope import Prompt, tags
 
 prev_revision_id = "None"
 revision_id = "0001"
@@ -23,6 +24,7 @@ class ExtractedAnswer(BaseModel):
     answer: str
 
 
+@tags(["version:0001"])
 class QuestionPrompt(Prompt):
     """
     Paragraph: {paragraph}

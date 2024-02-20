@@ -14,7 +14,15 @@ from .tools import OpenAITool, openai_tool_fn
 def get_openai_messages_from_prompt(
     prompt: Union[Prompt, str],
 ) -> list[ChatCompletionMessageParam]:
-    """Returns a list of messages parsed from the prompt."""
+    """Returns a list of messages parsed from the prompt.
+
+    Args:
+        prompt: A `Prompt` or `str` to parse into a list of messages.
+
+    Returns:
+        A list of `ChatCompletionMessageParam` instances parsed from the prompt, which
+        inherits from TypedDict and requires the `role` and `content` keys.
+    """
     if isinstance(prompt, Prompt):
         return [
             cast(ChatCompletionMessageParam, {"role": role, "content": content})
@@ -27,7 +35,14 @@ def get_openai_messages_from_prompt(
 def convert_tools_list_to_openai_tools(
     tools: Optional[list[Union[Callable, Type[OpenAITool]]]],
 ) -> Optional[list[Type[OpenAITool]]]:
-    """Converts a list of `Callable` or `OpenAITool` instances to an `OpenAITool` list."""
+    """Converts a list of `Callable` or `OpenAITool` instances to an `OpenAITool` list.
+
+    Args:
+        tools: A list of functions or `OpenAITool`s.
+
+    Returns:
+        A list of all items converted to `OpenAITool` instances.
+    """
     if not tools:
         return None
     return [
@@ -40,8 +55,22 @@ def patch_openai_kwargs(
     kwargs: dict[str, Any],
     prompt: Optional[Union[Prompt, str]],
     tools: Optional[list[Type[OpenAITool]]],
-):
-    """Sets up the kwargs for an OpenAI API call."""
+) -> None:
+    """Sets up the kwargs for an OpenAI API call.
+
+    Kwargs are parsed as such: messages are formatted to have the required `role` and
+    `content` items; tools (if any exist) are parsed into JSON schemas in order to fit
+    the OpenAI API; tool choice, if not provided, is set to "auto". Other kwargs are
+    left unchanged.
+
+    Args:
+        kwargs: The kwargs to patch.
+        prompt: The prompt to use.
+        tools: The tools to use, if any.
+
+    Raises:
+        ValueError: if neither `prompt` nor `messages` are provided.
+    """
     if prompt is None:
         if "messages" not in kwargs:
             raise ValueError("Either `prompt` or `messages` must be provided.")
@@ -55,10 +84,11 @@ def patch_openai_kwargs(
 
 
 def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
-    """Constructs and `OpenAITool` type from the given function.
+    """Constructs an `OpenAITool` type from the given function.
 
-    If parameters are not defined in the Args section, then the description will simply
-    be the name of the parameter.
+    This method expects all function parameters to be properly documented in identical
+    order with identical variable names, as well as descriptions of each parameter.
+    Errors will be raised if any of these conditions are not met.
 
     Args:
         fn: The function to convert.
@@ -133,7 +163,18 @@ def convert_function_to_openai_tool(fn: Callable) -> Type[OpenAITool]:
 
 
 def convert_base_model_to_openai_tool(schema: Type[BaseModel]) -> Type[OpenAITool]:
-    """Converts a `BaseModel` schema to an `OpenAITool` instance."""
+    """Converts a `BaseModel` schema to an `OpenAITool` instance.
+
+    By adding a docstring (if needed) and passing on fields and field information in
+    dictionary format, a Pydantic `BaseModel` can be converted into an `OpenAITool` for
+    performing extraction.
+
+    Args:
+        schema: The `BaseModel` schema to convert.
+
+    Returns:
+        The constructed `OpenAITool` instance.
+    """
     internal_doc = (
         f"An `{schema.__name__}` instance with all correctly typed parameters "
         "extracted from the completion. Must include required parameters and may "

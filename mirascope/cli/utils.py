@@ -31,18 +31,23 @@ class ClassInfo(BaseModel):
 class PromptAnalyzer(ast.NodeVisitor):
     """Utility class for analyzing a Mirascope prompt file.
 
+    The call to `ast.parse()` returns Python code as an AST, whereby each visitor method
+    will be called for the corresponding nodes in the AST via `NodeVisitor.visit()`.
+
     Example:
 
-        analyzer = PromptAnalyzer()
-        tree = ast.parse(file.read())
-        analyzer.visit(tree)
+    ```python
+    analyzer = PromptAnalyzer()
+    tree = ast.parse(file.read())
+    analyzer.visit(tree)
+    ```
 
     """
 
     def __init__(self) -> None:
         """Initializes the PromptAnalyzer."""
-        self.imports: list[str] = []
-        self.from_imports: list[tuple[str, str]] = []
+        self.imports: list[tuple[str, Optional[str]]] = []
+        self.from_imports: list[tuple[str, str, Optional[str]]] = []
         self.variables: dict[str, Any] = {}
         self.classes: list[ClassInfo] = []
         self.decorators: list[str] = []
@@ -51,20 +56,20 @@ class PromptAnalyzer(ast.NodeVisitor):
     def visit_Import(self, node) -> None:
         """Extracts imports from the given node."""
         for alias in node.names:
-            self.imports.append(alias.name)
+            self.imports.append((alias.name, alias.asname))
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node) -> None:
         """Extracts from imports from the given node."""
         for alias in node.names:
-            self.from_imports.append((node.module, alias.name))
+            self.from_imports.append((node.module, alias.name, alias.asname))
         self.generic_visit(node)
 
     def visit_Assign(self, node) -> None:
         """Extracts variables from the given node."""
         target = node.targets[0]
         if isinstance(target, ast.Name):
-            self.variables[target.id] = ast.literal_eval(node.value)
+            self.variables[target.id] = ast.unparse(node.value)
         self.generic_visit(node)
 
     def visit_ClassDef(self, node) -> None:
@@ -128,7 +133,18 @@ class PromptAnalyzer(ast.NodeVisitor):
 def get_user_mirascope_settings(
     ini_file_path: str = "mirascope.ini",
 ) -> MirascopeSettings:
-    """Returns the user's mirascope settings."""
+    """Returns the user's mirascope settings.
+
+    Args:
+        ini_file_path: The path to the mirascope.ini file.
+
+    Returns:
+        The user's mirascope settings as a `MirascopeSettings` instance.
+
+    Raises:
+        FileNotFoundError: If the mirascope.ini file is not found.
+        KeyError: If the [mirascope] section is missing from the mirascope.ini file.
+    """
     config = ConfigParser(allow_no_value=True)
     try:
         read_ok = config.read(ini_file_path)
@@ -161,7 +177,14 @@ def parse_prompt_file_name(prompt_file_name: str) -> str:
 
 
 def get_prompt_versions(version_file_path: str) -> VersionTextFile:
-    """Returns the versions of the given prompt."""
+    """Returns the versions of the given prompt.
+
+    Args:
+        version_file_path: The path to the prompt.
+
+    Returns:
+        A `VersionTextFile` instance with the versions of current and latest revisions.
+    """
     versions = VersionTextFile()
     try:
         with open(version_file_path, "r", encoding="utf-8") as file:
@@ -178,7 +201,15 @@ def get_prompt_versions(version_file_path: str) -> VersionTextFile:
 
 
 def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -> bool:
-    """Checks if the given prompts have changed."""
+    """Compare two prompts to check if the given prompts have changed.
+
+    Args:
+        file1_path: The path to the first prompt.
+        file2_path: The path to the second prompt.
+
+    Returns:
+        Whether there are any differences between the two prompts.
+    """
     if file1_path is None or file2_path is None:
         raise FileNotFoundError("Prompt or version file is missing.")
     # Parse the first file
@@ -265,7 +296,7 @@ def _find_list_from_str(string: str) -> Optional[list[str]]:
 
 
 def _update_tag_decorator_with_version(
-    decorators: list[str], variables: MirascopeCliVariables
+    decorators: list[str], variables: MirascopeCliVariables, mirascope_alias: str
 ) -> Optional[str]:
     """Updates the tag decorator and returns the import name."""
     if variables.revision_id is None:
@@ -275,8 +306,10 @@ def _update_tag_decorator_with_version(
     version_tag_prefix = "version:"  # mirascope tag prefix
     version_tag = f"{version_tag_prefix}{variables.revision_id}"
     for index, decorator in enumerate(decorators):
-        # TODO: Update `mirascope.tags` work with import alias
-        if any(decorator.startswith(prefix) for prefix in ("tags(", "mirascope.tags(")):
+        if any(
+            decorator.startswith(prefix)
+            for prefix in ("tags(", f"{mirascope_alias}.tags(")
+        ):
             tag_exists = True
             import_name = decorator.split("(")[0]
             decorator_arguments = _find_list_from_str(decorator)
@@ -306,28 +339,45 @@ def _update_tag_decorator_with_version(
     return import_name
 
 
-def _update_mirascope_imports(imports: list[str]):
+def _update_mirascope_imports(imports: list[tuple[str, Optional[str]]]):
     """Updates the mirascope import."""
-    if not any(import_name == "mirascope" for import_name in imports):
-        imports.append("mirascope")
+    if not any(import_name == "mirascope" for import_name, _ in imports):
+        imports.append(("mirascope", None))
 
 
-def _update_mirascope_from_imports(member: str, from_imports: list[tuple[str, str]]):
+def _update_mirascope_from_imports(
+    member: str, from_imports: list[tuple[str, str, Optional[str]]]
+):
     """Updates the mirascope from import."""
     if not any(
-        (import_name == "mirascope" or import_name == "mirascope.prompts")
-        and alias_name == member
-        for import_name, alias_name in from_imports
+        (module_name == "mirascope" or module_name == "mirascope.prompts")
+        and import_name == member
+        for module_name, import_name, _ in from_imports
     ):
-        from_imports.append(("mirascope", member))
+        from_imports.append(("mirascope", member, None))
 
 
 def write_prompt_to_template(
     file: str,
     command: Literal[MirascopeCommand.ADD, MirascopeCommand.USE],
     variables: Optional[MirascopeCliVariables] = None,
-):
-    """Writes the given prompt to the template."""
+) -> str:
+    """Writes the given prompt to the template.
+
+    Deconstructs a prompt with ast and reconstructs it using the Jinja2 template, adding
+    revision history into the prompt when the command is `MirascopeCommand.ADD`.
+
+    Args:
+        file: The path to the prompt.
+        command: The CLI command to execute.
+        variables: A dictionary of revision ids which are rendered together with
+        variable assignments that are not inside any class. Only relevant when `command`
+        is `MirascopeCommand.ADD` - if `command` is `MirascopeCommand.USE`, `variables`
+        should be `None`.
+
+    Returns:
+        The reconstructed prompt.
+    """
     mirascope_directory = get_user_mirascope_settings().mirascope_location
     template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
@@ -337,7 +387,10 @@ def write_prompt_to_template(
         variables = MirascopeCliVariables()
 
     if command == MirascopeCommand.ADD:
-        new_variables = variables.__dict__ | analyzer.variables
+        # double quote revision ids to match how `ast.unparse()` formats strings
+        new_variables = {
+            k: f"'{v}'" for k, v in variables.__dict__.items()
+        } | analyzer.variables
     else:  # command == MirascopeCommand.USE
         ignore_variable_keys = dict.fromkeys(ignore_variables, None)
         new_variables = {
@@ -347,14 +400,26 @@ def write_prompt_to_template(
         }
 
     import_tag_name: Optional[str] = None
+    mirascope_alias = "mirascope"
+    for name, alias in analyzer.imports:
+        if name == "mirascope" and alias is not None:
+            mirascope_alias = alias
+            break
+    for module, name, alias in analyzer.from_imports:
+        if module == "mirascope" and name == "tags" and alias is not None:
+            mirascope_alias = alias
+            break
+
     for python_class in analyzer.classes:
         decorators = python_class.decorators
         if python_class.bases and python_class.bases[0] == "Prompt":
-            import_tag_name = _update_tag_decorator_with_version(decorators, variables)
+            import_tag_name = _update_tag_decorator_with_version(
+                decorators, variables, mirascope_alias
+            )
 
     if import_tag_name == "tags":
         _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
-    elif import_tag_name == "mirascope.tags":  # TODO: Update to work with import alias
+    elif import_tag_name == f"{mirascope_alias}.tags":
         _update_mirascope_imports(analyzer.imports)
 
     data = {
@@ -367,8 +432,20 @@ def write_prompt_to_template(
     return template.render(**data)
 
 
-def update_version_text_file(version_file: str, updates: dict):
-    """Updates the version text file."""
+def update_version_text_file(
+    version_file: str,
+    updates: dict[str, str],
+) -> None:
+    """Updates the version text file.
+
+    Depending on the contents of `updates`, updates the ids of the current and latest
+    revisions of the prompt.
+
+    Args:
+        version_file: The path to the version text file.
+        updates: A dictionary containing updates to the current revision id and/or
+            the latest revision id.
+    """
     try:
         modified_lines = []
         edits_made = {
@@ -407,7 +484,14 @@ def update_version_text_file(version_file: str, updates: dict):
 def check_status(
     mirascope_settings: MirascopeSettings, directory: str
 ) -> Optional[str]:
-    """Checks the status of the given directory."""
+    """Checks the status of the given directory.
+
+    Args:
+        mirascope_settings: The user's mirascope settings.
+        directory: The name of the prompt file (excluding the .py extension).
+
+    Returns:
+        The path to the prompt if the prompt has changed, otherwise `None`."""
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
@@ -435,10 +519,14 @@ def run_format_command(file: str):
     """Runs the format command on the given file."""
     mirascope_settings = get_user_mirascope_settings()
     if mirascope_settings.format_command:
-        format_command: list[str] = mirascope_settings.format_command.split()
-        format_command.append(file)
-        subprocess.run(
-            format_command,
-            check=True,
-            capture_output=True,
-        )
+        format_commands: list[list[str]] = [
+            command.split() for command in mirascope_settings.format_command.split(";")
+        ]
+        # assuming the final command takes filename as argument, and as final argument
+        format_commands[-1].append(file)
+        for command in format_commands:
+            subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+            )

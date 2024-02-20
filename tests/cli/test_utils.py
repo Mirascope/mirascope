@@ -197,11 +197,19 @@ def test_get_prompt_analyzer():
         '''
     """This is a comment"""
     foo = "bar"
+    number = 1
+    settings = Settings()
+    a_list = [1, 2, 3]
     '''
     )
     analyzer = get_prompt_analyzer(sample_file_content)
     assert analyzer.comments == "This is a comment"
-    assert analyzer.variables == {"foo": "bar"}
+    assert analyzer.variables == {
+        "foo": "'bar'",
+        "number": "1",
+        "settings": "Settings()",
+        "a_list": "[1, 2, 3]",
+    }
 
 
 @pytest.mark.parametrize(
