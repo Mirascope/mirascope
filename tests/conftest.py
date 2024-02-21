@@ -352,11 +352,11 @@ def fixture_empty_tool() -> Type[OpenAITool]:
 def fixture_mirascope_user_settings() -> MirascopeSettings:
     """Returns a `MirascopeSettings` instance."""
     return MirascopeSettings(
-        format_command="ruff format",
-        mirascope_location=".test",
+        format_command="ruff check --select I --fix; ruff format",
+        mirascope_location=".mirascope",
         prompts_location="prompts",
         version_file_name="version.txt",
-        versions_location=".test/versions",
+        versions_location=".mirascope/versions",
         auto_tag=True,
     )
 
