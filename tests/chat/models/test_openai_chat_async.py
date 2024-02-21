@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field, ValidationError
 from mirascope.chat.models import AsyncOpenAIChat
 from mirascope.chat.tools import OpenAITool
 from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from mirascope.chat.utils import get_openai_messages_from_prompt
 from mirascope.prompts import Prompt
 
 pytestmark = pytest.mark.asyncio
@@ -37,7 +36,7 @@ async def test_async_openai_chat(
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=False,
         temperature=0.3,
     )
@@ -91,7 +90,7 @@ async def test_async_openai_chat_tools(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
@@ -136,7 +135,7 @@ async def test_async_openai_chat_stream(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=True,
         temperature=0.3,
     )
@@ -197,7 +196,7 @@ async def test_async_openai_chat_stream_tools(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",

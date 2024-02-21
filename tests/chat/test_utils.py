@@ -6,37 +6,8 @@ from mirascope.chat.tools import OpenAITool
 from mirascope.chat.utils import (
     convert_base_model_to_openai_tool,
     convert_function_to_openai_tool,
-    get_openai_messages_from_prompt,
     patch_openai_kwargs,
 )
-
-
-@pytest.mark.parametrize(
-    "prompt,expected_message_tuples",
-    [
-        (
-            "fixture_foobar_prompt",
-            "fixture_expected_foobar_prompt_messages",
-        ),
-        (
-            "fixture_messages_prompt",
-            "fixture_expected_messages_prompt_messages",
-        ),
-        (
-            "fixture_string_prompt",
-            "fixture_expected_string_prompt_messages",
-        ),
-    ],
-)
-def test_get_openai_messages_from_prompt(prompt, expected_message_tuples, request):
-    """Tests that `get_openai_chat_messages` returns the expected messages."""
-    prompt = request.getfixturevalue(prompt)
-    expected_message_tuples = request.getfixturevalue(expected_message_tuples)
-    messages = get_openai_messages_from_prompt(prompt)
-    assert len(messages) == len(expected_message_tuples)
-    for message, expected_message_tuple in zip(messages, expected_message_tuples):
-        assert message["role"] == expected_message_tuple[0]
-        assert message["content"] == expected_message_tuple[1]
 
 
 def simple_tool(param: str, optional: int = 0) -> None:
@@ -225,7 +196,7 @@ def test_patch_openai_kwargs(fixture_foobar_prompt, fixture_my_tool):
     kwargs = {}
     patch_openai_kwargs(kwargs, fixture_foobar_prompt, [fixture_my_tool])
     assert kwargs == {
-        "messages": get_openai_messages_from_prompt(fixture_foobar_prompt),
+        "messages": fixture_foobar_prompt.messages,
         "tools": [fixture_my_tool.tool_schema()],
         "tool_choice": "auto",
     }
@@ -238,7 +209,7 @@ def test_patch_openai_kwargs_existing_tool_choice(
     kwargs = {"tool_choice": {"name": "MyTool"}}
     patch_openai_kwargs(kwargs, fixture_foobar_prompt, [fixture_my_tool])
     assert kwargs == {
-        "messages": get_openai_messages_from_prompt(fixture_foobar_prompt),
+        "messages": fixture_foobar_prompt.messages,
         "tools": [fixture_my_tool.tool_schema()],
         "tool_choice": {"name": "MyTool"},
     }

@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field, ValidationError
 from mirascope.chat.models import OpenAIChat
 from mirascope.chat.tools import OpenAITool
 from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
-from mirascope.chat.utils import get_openai_messages_from_prompt
 from mirascope.prompts import Prompt
 
 
@@ -43,7 +42,9 @@ def test_openai_chat(
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages
+        if isinstance(prompt, Prompt)
+        else [{"role": "user", "content": prompt}],
         stream=False,
         temperature=0.3,
     )
@@ -97,7 +98,7 @@ def test_openai_chat_tools(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
@@ -150,7 +151,9 @@ def test_openai_chat_stream(
 
     mock_create.assert_called_once_with(
         model=model,
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages
+        if isinstance(prompt, Prompt)
+        else [{"role": "user", "content": prompt}],
         stream=True,
         temperature=0.3,
     )
@@ -207,7 +210,7 @@ def test_openai_chat_stream_tools(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",

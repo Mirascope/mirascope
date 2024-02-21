@@ -2,7 +2,15 @@
 from typing import Optional, Type
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionMessage
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
@@ -66,20 +74,28 @@ def fixture_tags_prompt() -> TagsPrompt:
 
 
 @pytest.fixture()
-def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
+def fixture_expected_messages_prompt_messages() -> list[ChatCompletionMessageParam]:
     """Returns the expected messages parsed from `MessagesPrompt`."""
     return [
-        (
-            "system",
-            "This is the system message about foo.\n    "
-            "This is also the system message.",
+        ChatCompletionSystemMessageParam(
+            role="system",
+            content=(
+                "This is the system message about foo.\n    "
+                "This is also the system message."
+            ),
         ),
-        ("user", "This is the user message about bar."),
-        ("tool", "This is the output of calling a tool."),
-        (
-            "assistant",
-            "This is an assistant message about foobar. "
-            "This is also part of the assistant message.",
+        ChatCompletionUserMessageParam(
+            role="user", content="This is the user message about bar."
+        ),
+        ChatCompletionToolMessageParam(
+            role="tool", content="This is the output of calling a tool."
+        ),  # type: ignore
+        ChatCompletionAssistantMessageParam(
+            role="assistant",
+            content=(
+                "This is an assistant message about foobar. "
+                "This is also part of the assistant message."
+            ),
         ),
     ]
 
