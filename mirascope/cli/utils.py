@@ -378,7 +378,9 @@ def write_prompt_to_template(
     Returns:
         The reconstructed prompt.
     """
-    mirascope_directory = get_user_mirascope_settings().mirascope_location
+    mirascope_settings = get_user_mirascope_settings()
+    mirascope_directory = mirascope_settings.mirascope_location
+    auto_tag = mirascope_settings.auto_tag
     template_loader = FileSystemLoader(searchpath=mirascope_directory)
     template_env = Environment(loader=template_loader)
     template = template_env.get_template("prompt_template.j2")
@@ -389,7 +391,8 @@ def write_prompt_to_template(
     if command == MirascopeCommand.ADD:
         # double quote revision ids to match how `ast.unparse()` formats strings
         new_variables = {
-            k: f"'{v}'" for k, v in variables.__dict__.items()
+            k: f"'{v}'" if isinstance(v, str) else None
+            for k, v in variables.__dict__.items()
         } | analyzer.variables
     else:  # command == MirascopeCommand.USE
         ignore_variable_keys = dict.fromkeys(ignore_variables, None)
@@ -399,28 +402,29 @@ def write_prompt_to_template(
             if k not in ignore_variable_keys
         }
 
-    import_tag_name: Optional[str] = None
-    mirascope_alias = "mirascope"
-    for name, alias in analyzer.imports:
-        if name == "mirascope" and alias is not None:
-            mirascope_alias = alias
-            break
-    for module, name, alias in analyzer.from_imports:
-        if module == "mirascope" and name == "tags" and alias is not None:
-            mirascope_alias = alias
-            break
+    if auto_tag:
+        import_tag_name: Optional[str] = None
+        mirascope_alias = "mirascope"
+        for name, alias in analyzer.imports:
+            if name == "mirascope" and alias is not None:
+                mirascope_alias = alias
+                break
+        for module, name, alias in analyzer.from_imports:
+            if module == "mirascope" and name == "tags" and alias is not None:
+                mirascope_alias = alias
+                break
 
-    for python_class in analyzer.classes:
-        decorators = python_class.decorators
-        if python_class.bases and python_class.bases[0] == "Prompt":
-            import_tag_name = _update_tag_decorator_with_version(
-                decorators, variables, mirascope_alias
-            )
+        for python_class in analyzer.classes:
+            decorators = python_class.decorators
+            if python_class.bases and python_class.bases[0] == "Prompt":
+                import_tag_name = _update_tag_decorator_with_version(
+                    decorators, variables, mirascope_alias
+                )
 
-    if import_tag_name == "tags":
-        _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
-    elif import_tag_name == f"{mirascope_alias}.tags":
-        _update_mirascope_imports(analyzer.imports)
+        if import_tag_name == "tags":
+            _update_mirascope_from_imports(import_tag_name, analyzer.from_imports)
+        elif import_tag_name == f"{mirascope_alias}.tags":
+            _update_mirascope_imports(analyzer.imports)
 
     data = {
         "comments": analyzer.comments,

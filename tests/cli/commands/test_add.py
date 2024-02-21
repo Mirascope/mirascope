@@ -14,9 +14,15 @@ runner = CliRunner()
 
 
 def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
+    """Initializes a temporary mirascope directory with the specified prompt."""
+    golden_prompt_directory = golden_prompt
+    if golden_prompt_directory.endswith(".py"):
+        golden_prompt_directory = golden_prompt[:-3]
     if not golden_prompt.endswith(".py"):
         golden_prompt = f"{golden_prompt}.py"
-    source_file = Path(__file__).parent / "golden" / golden_prompt
+    source_file = (
+        Path(__file__).parent / "golden" / golden_prompt_directory / golden_prompt
+    )
     destination_dir_prompts = tmp_path / "prompts"
     destination_dir_prompts.mkdir()
     shutil.copy(source_file, destination_dir_prompts / golden_prompt)
@@ -48,6 +54,7 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
             version_file_name="version.txt",
             prompts_location="prompts",
             versions_location=".mirascope/versions",
+            format_command="ruff check --select I --fix; ruff format",
         ),
         MirascopeSettings(
             mirascope_location=".mirascope",
@@ -55,6 +62,7 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
             version_file_name="version.txt",
             prompts_location="prompts",
             versions_location=".mirascope/versions",
+            format_command="ruff check --select I --fix; ruff format",
         ),
     ],
 )
@@ -79,6 +87,8 @@ def test_add(
         "0001" if current_revision is None else f"{int(current_revision)+1:04d}"
     )
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
+        if mirascope_settings.auto_tag:
+            golden_prompt = f"{golden_prompt}_auto_tag"
         _initialize_tmp_mirascope(Path(td), golden_prompt)
         result = runner.invoke(
             app,
@@ -88,12 +98,28 @@ def test_add(
             result.output.strip()
             == f"Adding {mirascope_settings.versions_location}/{golden_prompt}/{next_revision}_{golden_prompt}.py"
         )
+        golden_prompt_version_file = f"{next_revision}_{golden_prompt}"
         assert os.path.exists(
             Path(td)
             / mirascope_settings.versions_location
             / golden_prompt
             / f"{next_revision}_{golden_prompt}.py"
         )
+        source_file = (
+            Path(__file__).parent
+            / "golden"
+            / golden_prompt
+            / f"{golden_prompt_version_file}.py"
+        )
+        with open(
+            Path(td)
+            / mirascope_settings.versions_location
+            / golden_prompt
+            / f"{next_revision}_{golden_prompt}.py",
+            "r",
+            encoding="utf-8",
+        ) as file:
+            assert file.read() == source_file.read_text()
 
 
 @patch("mirascope.cli.commands.add.get_user_mirascope_settings")
