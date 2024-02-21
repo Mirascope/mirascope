@@ -48,14 +48,6 @@ def fixture_expected_foobar_prompt_str() -> str:
 
 
 @pytest.fixture()
-def fixture_expected_foobar_prompt_messages(
-    fixture_expected_foobar_prompt_str,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `FooBarPrompt`."""
-    return [("user", fixture_expected_foobar_prompt_str)]
-
-
-@pytest.fixture()
 def fixture_messages_prompt() -> MessagesPrompt:
     """Returns a `MessagesPrompt` instance."""
     return MessagesPrompt(foo="foo", bar="bar")
@@ -71,6 +63,21 @@ def fixture_tag_prompt() -> TagPrompt:
 def fixture_tags_prompt() -> TagsPrompt:
     """Returns a `TagPrompt` instance."""
     return TagsPrompt()
+
+
+@pytest.fixture()
+def fixture_expected_foobar_prompt_messages() -> list[ChatCompletionMessageParam]:
+    """Returns the expected messages parsed from `FooBarPrompt`."""
+    return [
+        ChatCompletionUserMessageParam(
+            role="user",
+            content=(
+                "This is a test prompt about foobar. "
+                "This should be on the same line in the template."
+                "\n    This should be indented on a new line in the template."
+            ),
+        )
+    ]
 
 
 @pytest.fixture()
@@ -104,14 +111,6 @@ def fixture_expected_messages_prompt_messages() -> list[ChatCompletionMessagePar
 def fixture_string_prompt() -> str:
     """Returns a string prompt."""
     return "This is a test prompt."
-
-
-@pytest.fixture()
-def fixture_expected_string_prompt_messages(
-    fixture_string_prompt,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `fixture_string_prompt`."""
-    return [("user", fixture_string_prompt)]
 
 
 @pytest.fixture()
