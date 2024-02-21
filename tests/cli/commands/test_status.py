@@ -56,7 +56,7 @@ def test_status_with_arg(
     fixture_mirascope_user_settings: MirascopeSettings,
     tmp_path: Path,
 ):
-    """Tests that `status` returns the correct status."""
+    """Tests that `status` with arguments returns the correct status."""
     mock_get_mirascope_settings_status.return_value = fixture_mirascope_user_settings
     prompts_location = fixture_mirascope_user_settings.prompts_location
     prompt = "simple_prompt"
@@ -83,7 +83,7 @@ def test_status_no_args(
     fixture_mirascope_user_settings: MirascopeSettings,
     tmp_path: Path,
 ):
-    """Tests that `status` returns the correct status."""
+    """Tests that `status` with no arguments returns the correct status."""
     mock_get_mirascope_settings_status.return_value = fixture_mirascope_user_settings
     prompts_location = fixture_mirascope_user_settings.prompts_location
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
