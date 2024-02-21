@@ -16,8 +16,6 @@ runner = CliRunner()
 def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
     """Initializes a temporary mirascope directory with the specified prompt."""
     golden_prompt_directory = golden_prompt
-    if golden_prompt_directory.endswith(".py"):
-        golden_prompt_directory = golden_prompt[:-3]
     if not golden_prompt.endswith(".py"):
         golden_prompt = f"{golden_prompt}.py"
     source_file = (
