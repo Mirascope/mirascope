@@ -44,7 +44,7 @@ def use_command(
     used_prompt_path = check_status(mirascope_settings, prompt_file_name)
     # Check status before continuing
     if used_prompt_path:
-        print("Changes detected, please add or delete changes first.")
+        print("Changes detected, please add or remove changes first.")
         print(f"\tmirascope add {prompt_file_name}".expandtabs(4))
         return
     version_directory_path = mirascope_settings.versions_location
