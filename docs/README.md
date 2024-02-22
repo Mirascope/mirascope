@@ -47,7 +47,7 @@
 
 ---
 
-**Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic 2.0</a>:
+**Mirascope** is a library purpose-built for Prompt Engineering on top of <a href="https://pydantic.dev" target="_blank">Pydantic</a>:
 
 - Prompts can live as self-contained classes in their own directory:
 
@@ -98,38 +98,13 @@ print(prompt.messages)
 * **Convenience**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
 * **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
 
-## Requirements
-
-**Pydantic** is the only strict requirement, which will be included automatically during installation.
-
-The Prompt CLI and LLM Convenience Wrappers have additional requirements, which you can opt-in to include if you're using those features.
-
 ## Installation
 
 Install Mirascope and start engineering prompts in minutes.
 
 ```sh
-$ pip install mirascope
+pip install mirascope
 ```
-
-This will install the `mirascope` package along with `pydantic`.
-
-To include extra dependencies for using the Prompt CLI and/or LLM Convenience Wrappers, run:
-
-```sh
-$ pip install mirascope[cli]     #  Prompt CLI
-$ pip install mirascope[openai]  #  LLM Convenience Wrappers
-$ pip install mirascope[all]     #  All Extras
-```
-
-<details>
-<summary>For those using zsh, you'll need to escape brackets:</summary>
-
-```sh
-$ pip install mirascope\[all\]
-```
-
-</details>
 
 ## 🚨 Warning: Strong Opinion 🚨
 
