@@ -1,7 +1,5 @@
 """Test for mirascope cli use command functions."""
 import shutil
-import subprocess
-import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
