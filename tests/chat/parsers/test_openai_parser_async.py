@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from mirascope import AsyncOpenAIChat, AsyncOpenAIToolStreamParser, OpenAITool
-from mirascope.chat.utils import get_openai_messages_from_prompt
 
 pytestmark = pytest.mark.asyncio
 
@@ -43,7 +42,7 @@ async def test_from_stream(
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",
-        messages=get_openai_messages_from_prompt(prompt),
+        messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",

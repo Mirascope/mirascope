@@ -8,7 +8,22 @@ from string import Formatter
 from textwrap import dedent
 from typing import Any, Callable, Optional, Type, TypeVar
 
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from pydantic import BaseModel
+
+
+def _format_template(prompt: Prompt, template: str) -> str:
+    """Formats the template with the prompt's attributes."""
+    template_vars = [
+        var for _, var, _, _ in Formatter().parse(template) if var is not None
+    ]
+    return template.format(**{var: getattr(prompt, var) for var in template_vars})
 
 
 class Prompt(BaseModel):
@@ -47,8 +62,11 @@ class Prompt(BaseModel):
     #  Rings". What should I read next?
 
     print(prompt.messages)
-    #> [('user', 'I\'ve recently read the following books: "The Name of the Wind", "The
-    #  Lord of the Rings". What should I read next?')]
+    #> [{
+    #     'role': 'user',
+    #     'content': 'I\'ve recently read the following books: "The Name of the Wind",
+    #                "The Lord of the Rings". What should I read next?',
+    #  }]
     ```
     '''
 
@@ -78,16 +96,12 @@ class Prompt(BaseModel):
 
     def __str__(self) -> str:
         """Returns the docstring prompt template formatted with template variables."""
-        template = self.template()
-        template_vars = [
-            var for _, var, _, _ in Formatter().parse(template) if var is not None
-        ]
-        return template.format(**{var: getattr(self, var) for var in template_vars})
+        return _format_template(self, self.template())
 
     @property
-    def messages(self) -> list[tuple[str, str]]:
+    def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the docstring as a list of messages."""
-        return [("user", str(self))]
+        return [ChatCompletionUserMessageParam(role="user", content=str(self))]
 
     def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:
         """Dumps the prompt template to a dictionary."""
@@ -138,8 +152,7 @@ def messages(cls: Type[T]) -> Type[T]:
         You are the world's greatest librarian.
 
         USER:
-        I've recently read this book: {book_title}.
-        What should I read next?
+        I recently read {book_title}. What should I read next?
         """
 
         book_title: [str]
@@ -148,8 +161,16 @@ def messages(cls: Type[T]) -> Type[T]:
     prompt = BookRecommendationPrompt(book_title="The Name of the Wind")
 
     print(prompt.messages)
-    #> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently
-    #   read this book: The Name of the Wind. What should I read next?')]
+    #> [
+    #    {
+    #      'role': 'system',
+    #      'content': "You are the world's greatest librarian."
+    #    },
+    #    {
+    #      'role': 'user',
+    #      'content': "I recently read The Name of the  Wind. What should I read next?'
+    #    },
+    #  ]
     ```
 
     This decorator currently supports the SYSTEM, USER, ASSISTANT, and TOOL roles.
@@ -161,16 +182,24 @@ def messages(cls: Type[T]) -> Type[T]:
         ValueError: If the docstring is empty.
     '''
 
-    def messages_fn(self) -> list[tuple[str, str]]:
+    def messages_fn(self: Prompt) -> list[ChatCompletionMessageParam]:
         """Returns the docstring as a list of messages."""
-        return [
-            (match.group(1).lower(), match.group(2))
-            for match in re.finditer(
-                r"(SYSTEM|USER|ASSISTANT|TOOL): "
-                r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
-                str(self),
-            )
-        ]
+        message_param_map = {
+            "system": ChatCompletionSystemMessageParam,
+            "user": ChatCompletionUserMessageParam,
+            "assistant": ChatCompletionAssistantMessageParam,
+            "tool": ChatCompletionToolMessageParam,
+        }
+        messages = []
+        for match in re.finditer(
+            r"(SYSTEM|USER|ASSISTANT|TOOL): "
+            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
+            self.template(),
+        ):
+            role = match.group(1).lower()
+            content = _format_template(self, match.group(2))
+            messages.append(message_param_map[role](role=role, content=content))
+        return messages
 
     setattr(cls, "messages", property(messages_fn))
     return cls

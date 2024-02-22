@@ -3,33 +3,12 @@ from inspect import Parameter, isclass, signature
 from typing import Any, Callable, Optional, Type, Union, cast, get_type_hints
 
 from docstring_parser import parse
-from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
 from ..prompts import Prompt
 from .tools import OpenAITool, openai_tool_fn
-
-
-def get_openai_messages_from_prompt(
-    prompt: Union[Prompt, str],
-) -> list[ChatCompletionMessageParam]:
-    """Returns a list of messages parsed from the prompt.
-
-    Args:
-        prompt: A `Prompt` or `str` to parse into a list of messages.
-
-    Returns:
-        A list of `ChatCompletionMessageParam` instances parsed from the prompt, which
-        inherits from TypedDict and requires the `role` and `content` keys.
-    """
-    if isinstance(prompt, Prompt):
-        return [
-            cast(ChatCompletionMessageParam, {"role": role, "content": content})
-            for role, content in prompt.messages
-        ]
-    else:
-        return [cast(ChatCompletionMessageParam, {"role": "user", "content": prompt})]
 
 
 def convert_tools_list_to_openai_tools(
@@ -74,8 +53,12 @@ def patch_openai_kwargs(
     if prompt is None:
         if "messages" not in kwargs:
             raise ValueError("Either `prompt` or `messages` must be provided.")
+    elif isinstance(prompt, str):
+        kwargs["messages"] = [
+            ChatCompletionUserMessageParam(role="user", content=prompt)
+        ]
     else:
-        kwargs["messages"] = get_openai_messages_from_prompt(prompt)
+        kwargs["messages"] = prompt.messages
 
     if tools:
         kwargs["tools"] = [tool.tool_schema() for tool in tools]

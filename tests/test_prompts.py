@@ -90,12 +90,18 @@ def test_save_and_load(fixture_foobar_prompt, tmpdir):
     assert FooBarPrompt.load(filepath) == fixture_foobar_prompt
 
 
-def test_messages(
-    fixture_messages_prompt: MessagesPrompt, fixture_expected_messages_prompt_messages
-):
+@pytest.mark.parametrize(
+    "prompt,expected_messages",
+    [
+        ("fixture_foobar_prompt", "fixture_expected_foobar_prompt_messages"),
+        ("fixture_messages_prompt", "fixture_expected_messages_prompt_messages"),
+    ],
+)
+def test_messages(prompt, expected_messages, request):
     """Tests that the messages decorator adds a function `messages` attribute."""
-    assert hasattr(fixture_messages_prompt, "messages")
-    assert fixture_messages_prompt.messages == fixture_expected_messages_prompt_messages
+    prompt = request.getfixturevalue(prompt)
+    expected_messages = request.getfixturevalue(expected_messages)
+    assert prompt.messages == expected_messages
 
 
 @pytest.mark.parametrize(

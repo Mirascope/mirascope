@@ -2,7 +2,15 @@
 from typing import Optional, Type
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionMessage
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
@@ -40,14 +48,6 @@ def fixture_expected_foobar_prompt_str() -> str:
 
 
 @pytest.fixture()
-def fixture_expected_foobar_prompt_messages(
-    fixture_expected_foobar_prompt_str,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `FooBarPrompt`."""
-    return [("user", fixture_expected_foobar_prompt_str)]
-
-
-@pytest.fixture()
 def fixture_messages_prompt() -> MessagesPrompt:
     """Returns a `MessagesPrompt` instance."""
     return MessagesPrompt(foo="foo", bar="bar")
@@ -66,20 +66,43 @@ def fixture_tags_prompt() -> TagsPrompt:
 
 
 @pytest.fixture()
-def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
+def fixture_expected_foobar_prompt_messages() -> list[ChatCompletionMessageParam]:
+    """Returns the expected messages parsed from `FooBarPrompt`."""
+    return [
+        ChatCompletionUserMessageParam(
+            role="user",
+            content=(
+                "This is a test prompt about foobar. "
+                "This should be on the same line in the template."
+                "\n    This should be indented on a new line in the template."
+            ),
+        )
+    ]
+
+
+@pytest.fixture()
+def fixture_expected_messages_prompt_messages() -> list[ChatCompletionMessageParam]:
     """Returns the expected messages parsed from `MessagesPrompt`."""
     return [
-        (
-            "system",
-            "This is the system message about foo.\n    "
-            "This is also the system message.",
+        ChatCompletionSystemMessageParam(
+            role="system",
+            content=(
+                "This is the system message about foo.\n    "
+                "This is also the system message."
+            ),
         ),
-        ("user", "This is the user message about bar."),
-        ("tool", "This is the output of calling a tool."),
-        (
-            "assistant",
-            "This is an assistant message about foobar. "
-            "This is also part of the assistant message.",
+        ChatCompletionUserMessageParam(
+            role="user", content="This is the user message about bar."
+        ),
+        ChatCompletionToolMessageParam(
+            role="tool", content="This is the output of calling a tool."
+        ),  # type: ignore
+        ChatCompletionAssistantMessageParam(
+            role="assistant",
+            content=(
+                "This is an assistant message about foobar. "
+                "This is also part of the assistant message."
+            ),
         ),
     ]
 
@@ -88,14 +111,6 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
 def fixture_string_prompt() -> str:
     """Returns a string prompt."""
     return "This is a test prompt."
-
-
-@pytest.fixture()
-def fixture_expected_string_prompt_messages(
-    fixture_string_prompt,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `fixture_string_prompt`."""
-    return [("user", fixture_string_prompt)]
 
 
 @pytest.fixture()
