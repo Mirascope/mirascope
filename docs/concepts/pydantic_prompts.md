@@ -114,7 +114,7 @@ By default, the `Prompt` class treats the prompt template as a single user messa
 
 !!! note 
 	
-	`@messages` decorator adds `messages` property to the class
+	`@messages` decorator updates the `messages` property of the class to parse multiple messages, which supports SYSTEM, USER, ASSISTANT, and TOOL
 
 ```python
 from mirascope import messages, Prompt
@@ -136,7 +136,7 @@ print(prompt.messages)
 ```
 
 ```
-[("system", "You are the world's greatest librarian"), ("user", "Can you recommend some books on coding?")]
+[{"role": "system", "content": "You are the world's greatest librarian"}, {"role": "user", "content": "Can you recommend some books on coding?"}]
 ```
 
 ### Tags and Dump

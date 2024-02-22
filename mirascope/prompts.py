@@ -62,8 +62,11 @@ class Prompt(BaseModel):
     #  Rings". What should I read next?
 
     print(prompt.messages)
-    #> [('user', 'I\'ve recently read the following books: "The Name of the Wind", "The
-    #  Lord of the Rings". What should I read next?')]
+    #> [{
+    #     'role': 'user',
+    #     'content': 'I\'ve recently read the following books: "The Name of the Wind",
+    #                "The Lord of the Rings". What should I read next?',
+    #  }]
     ```
     '''
 
@@ -149,8 +152,7 @@ def messages(cls: Type[T]) -> Type[T]:
         You are the world's greatest librarian.
 
         USER:
-        I've recently read this book: {book_title}.
-        What should I read next?
+        I recently read {book_title}. What should I read next?
         """
 
         book_title: [str]
@@ -159,8 +161,16 @@ def messages(cls: Type[T]) -> Type[T]:
     prompt = BookRecommendationPrompt(book_title="The Name of the Wind")
 
     print(prompt.messages)
-    #> [('system', "You are the world's greatest librarian."), ('user', 'I\'ve recently
-    #   read this book: The Name of the Wind. What should I read next?')]
+    #> [
+    #    {
+    #      'role': 'system',
+    #      'content': "You are the world's greatest librarian."
+    #    },
+    #    {
+    #      'role': 'user',
+    #      'content': "I recently read The Name of the  Wind. What should I read next?'
+    #    },
+    #  ]
     ```
 
     This decorator currently supports the SYSTEM, USER, ASSISTANT, and TOOL roles.

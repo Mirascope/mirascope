@@ -86,7 +86,7 @@ print(str(prompt))
 #  What should I read next?
 
 print(prompt.messages)
-#> [('user', 'I\'ve recently read the following books: "The Name of the Wind", "The Lord of the Rings".\nWhat should I read next?')]
+#> [{'role': 'user', 'content': 'I\'ve recently read the following books: "The Name of the Wind", "The Lord of the Rings".\nWhat should I read next?'}]
 ```
 
 ## Why use Mirascope?
@@ -251,7 +251,7 @@ print(prompt)
 #> USER: Hello! It's nice to meet you. My name is William Bakst. How are you today?
 
 print(prompt.messages)
-#> [('system', 'You can only speak in haikus.'), ('user', "Hello! It's nice to meet you. My name is William Bakst. How are you today?")]
+#> [{'role': 'system', 'content': 'You can only speak in haikus.'}, {'role': 'user', 'content': "Hello! It's nice to meet you. My name is William Bakst. How are you today?"}]
 ```
 
 The base `Prompt` class without the decorator will still have the `messages` attribute, but it will return a single user message in the list.
