@@ -6,6 +6,7 @@ import glob
 import json
 import os
 import subprocess
+import sys
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
@@ -248,13 +249,29 @@ def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -
 
 
 def find_file_names(directory: str, prefix: str = "") -> list[str]:
-    """Finds all files in a directory."""
-    pattern = os.path.join(directory, "[!_]{prefix}*.py")  # ignores private files
+    """Finds all files in a directory.
+
+    Args:
+        directory: The directory to search for the prompt.
+        prefix: The prefix of the prompt to search for.
+
+    Returns:
+        A list of file names found.
+    """
+    pattern = os.path.join(directory, f"[!_]{prefix}*.py")  # ignores private files
     return glob.glob(pattern)  # Returns all files found
 
 
 def find_prompt_paths(directory: Union[Path, str], prefix: str) -> Optional[list[str]]:
-    """Finds and opens all prompts with the given directory."""
+    """Finds and opens all prompts with the given directory.
+
+    Args:
+        directory: The directory to search for the prompt.
+        prefix: The prefix of the prompt to search for.
+
+    Returns:
+        A list of paths to the prompt.
+    """
     pattern = os.path.join(directory, prefix + "*.py")
     prompt_files = glob.glob(pattern)
 
@@ -266,7 +283,15 @@ def find_prompt_paths(directory: Union[Path, str], prefix: str) -> Optional[list
 
 
 def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
-    """Finds and opens the first found prompt with the given directory."""
+    """Finds and opens the first found prompt with the given directory.
+
+    Args:
+        directory: The directory to search for the prompt.
+        prefix: The prefix of the prompt to search for.
+
+    Returns:
+        The path to the prompt.
+    """
     prompt_files = find_prompt_paths(directory, prefix)
     if prompt_files:
         return prompt_files[0]
@@ -274,7 +299,14 @@ def find_prompt_path(directory: Union[Path, str], prefix: str) -> Optional[str]:
 
 
 def get_prompt_analyzer(file: str) -> PromptAnalyzer:
-    """Gets an instance of PromptAnalyzer for a file"""
+    """Gets an instance of PromptAnalyzer for a file
+
+    Args:
+        file: The file to analyze
+
+    Returns:
+        An instance of PromptAnalyzer
+    """
     analyzer = PromptAnalyzer()
     tree = ast.parse(file)
     analyzer.visit(tree)
@@ -282,7 +314,14 @@ def get_prompt_analyzer(file: str) -> PromptAnalyzer:
 
 
 def _find_list_from_str(string: str) -> Optional[list[str]]:
-    """Finds a list from a string."""
+    """Finds a list from a string.
+
+    Args:
+        string: The string to find the list from.
+
+    Returns:
+        The list found from the string.
+    """
     start_bracket_index = string.find("[")
     end_bracket_index = string.find("]")
     if (
@@ -298,7 +337,16 @@ def _find_list_from_str(string: str) -> Optional[list[str]]:
 def _update_tag_decorator_with_version(
     decorators: list[str], variables: MirascopeCliVariables, mirascope_alias: str
 ) -> Optional[str]:
-    """Updates the tag decorator and returns the import name."""
+    """Updates the tag decorator and returns the import name.
+
+    Args:
+        decorators: The decorators of the prompt.
+        variables: The variables used by mirascope internal.
+        mirascope_alias: The alias of the mirascope module.
+
+    Returns:
+        The import name of the tag decorator.
+    """
     if variables.revision_id is None:
         return None
     import_name = "tags"
@@ -340,7 +388,11 @@ def _update_tag_decorator_with_version(
 
 
 def _update_mirascope_imports(imports: list[tuple[str, Optional[str]]]):
-    """Updates the mirascope import."""
+    """Updates the mirascope import.
+
+    Args:
+        imports: The imports from the PromptAnalyzer class
+    """
     if not any(import_name == "mirascope" for import_name, _ in imports):
         imports.append(("mirascope", None))
 
@@ -348,7 +400,12 @@ def _update_mirascope_imports(imports: list[tuple[str, Optional[str]]]):
 def _update_mirascope_from_imports(
     member: str, from_imports: list[tuple[str, str, Optional[str]]]
 ):
-    """Updates the mirascope from import."""
+    """Updates the mirascope from imports.
+
+    Args:
+        member: The member to import.
+        from_imports: The from imports from the PromptAnalyzer class
+    """
     if not any(
         (module_name == "mirascope" or module_name == "mirascope.prompts")
         and import_name == member
@@ -495,7 +552,8 @@ def check_status(
         directory: The name of the prompt file (excluding the .py extension).
 
     Returns:
-        The path to the prompt if the prompt has changed, otherwise `None`."""
+        The path to the prompt if the prompt has changed, otherwise `None`.
+    """
     version_directory_path = mirascope_settings.versions_location
     prompt_directory_path = mirascope_settings.prompts_location
     version_file_name = mirascope_settings.version_file_name
@@ -519,8 +577,12 @@ def check_status(
     return None
 
 
-def run_format_command(file: str):
-    """Runs the format command on the given file."""
+def run_format_command(file: str) -> None:
+    """Runs the format command on the given file.
+
+    Args:
+        file: The file to format
+    """
     mirascope_settings = get_user_mirascope_settings()
     if mirascope_settings.format_command:
         format_commands: list[list[str]] = [
@@ -530,7 +592,8 @@ def run_format_command(file: str):
         format_commands[-1].append(file)
         for command in format_commands:
             subprocess.run(
-                command,
+                [sys.executable, "-m"] + command,
                 check=True,
                 capture_output=True,
+                shell=False,
             )
