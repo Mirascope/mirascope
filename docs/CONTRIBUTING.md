@@ -36,8 +36,8 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     - Make sure you are in sync with the main repo:
 
     ```shell
-    git checkout main
-    git pull upstream main
+    git checkout dev
+    git pull upstream dev
     ```
 
     - Create a `git` feature branch with a meaningful name where you will add your contributions.
@@ -89,6 +89,10 @@ Please conform to the [Conventional Commits](https://www.conventionalcommits.org
 All changes to the codebase must be properly unit tested. If a change requires updating an existing unit test, make sure to think through if the change is breaking.
 
 We use `pytest` as our testing framework. If you haven't worked with it before, take a look at [their docs](https://docs.pytest.org/).
+
+Furthermore, we have a full coverage requirement, so all incoming code must have 100% coverage. This policy ensures that every line of code is run in our tests. However, while achieving full coverage is essential, it is not sufficient on its own. Coverage metrics ensure code execution but do not guarantee correctness under all conditions. Make sure to stress test beyond coverage to reduce bugs.
+
+We use a [Codecov dashboard](https://app.codecov.io/github/Mirascope/mirascope/tree/dev) to monitor and track our coverage.
 
 ## Formatting and Linting
 
