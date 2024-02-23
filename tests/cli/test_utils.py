@@ -243,7 +243,7 @@ def test_get_prompt_analyzer():
         def a_function(foo: str, bar: int) -> None:
             pass
 
-    '''
+        '''
     )
     analyzer = get_prompt_analyzer(sample_file_content)
     assert analyzer.comments == "This is a comment"
