@@ -29,3 +29,21 @@ class MirascopeCliVariables(BaseModel):
 
     prev_revision_id: Optional[str] = Field(default=None)
     revision_id: Optional[str] = Field(default=None)
+
+
+class ClassInfo(BaseModel):
+    name: str
+    bases: list[str]
+    body: str
+    decorators: list[str]
+    docstring: Optional[str]
+
+
+class FunctionInfo(BaseModel):
+    name: str
+    args: list[str]
+    returns: Optional[str]
+    body: str
+    decorators: list[str]
+    docstring: Optional[str]
+    is_async: bool

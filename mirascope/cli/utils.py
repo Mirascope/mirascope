@@ -7,26 +7,23 @@ import json
 import os
 import subprocess
 import sys
-from configparser import ConfigParser
+from configparser import ConfigParser, MissingSectionHeaderError
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel
 
 from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .schemas import MirascopeCliVariables, MirascopeSettings, VersionTextFile
+from .schemas import (
+    ClassInfo,
+    FunctionInfo,
+    MirascopeCliVariables,
+    MirascopeSettings,
+    VersionTextFile,
+)
 
 ignore_variables = {"prev_revision_id", "revision_id"}
-
-
-class ClassInfo(BaseModel):
-    name: str
-    bases: list[str]
-    body: str
-    decorators: list[str]
-    docstring: Optional[str]
 
 
 class PromptAnalyzer(ast.NodeVisitor):
@@ -51,7 +48,7 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.from_imports: list[tuple[str, str, Optional[str]]] = []
         self.variables: dict[str, Any] = {}
         self.classes: list[ClassInfo] = []
-        self.decorators: list[str] = []
+        self.functions: list[FunctionInfo] = []
         self.comments: str = ""
 
     def visit_Import(self, node) -> None:
@@ -94,11 +91,38 @@ class PromptAnalyzer(ast.NodeVisitor):
 
         self.classes.append(class_info)
 
-    def visit_FunctionDef(self, node) -> None:
-        """Extracts decorators from function definitions."""
-        for decorator in node.decorator_list:
-            self.decorators.append(ast.unparse(decorator))
-        self.generic_visit(node)
+    def visit_AsyncFunctionDef(self, node):
+        """Extracts async functions from the given node."""
+        return self._visit_Function(node, is_async=True)
+
+    def visit_FunctionDef(self, node):
+        """Extracts functions from the given node."""
+        return self._visit_Function(node, is_async=False)
+
+    def _visit_Function(self, node, is_async):
+        """Extracts functions or async functions from the given node."""
+        # Initial function information setup
+        function_info = FunctionInfo(
+            name=node.name,
+            args=[ast.unparse(arg) for arg in node.args.args],
+            returns=ast.unparse(node.returns) if node.returns else None,
+            body="",
+            decorators=[ast.unparse(decorator) for decorator in node.decorator_list],
+            docstring=None,
+            is_async=is_async,  # Indicates whether the function is async
+        )
+
+        # Extract docstring if present
+        docstring = ast.get_docstring(node, False)
+        if docstring:
+            function_info.docstring = docstring
+
+        # Handle the rest of the function body
+        body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
+        function_info.body = "\n".join(ast.unparse(n) for n in body_nodes)
+
+        # Assuming you have a list to store functions
+        self.functions.append(function_info)
 
     def visit_Module(self, node) -> None:
         """Extracts comments from the given node."""
@@ -106,24 +130,50 @@ class PromptAnalyzer(ast.NodeVisitor):
         self.comments = "" if comments is None else comments
         self.generic_visit(node)
 
+    def check_function_changed(self, other: PromptAnalyzer) -> bool:
+        """Compares the functions of this file with those of another file."""
+        return self._check_definition_changed(other, "function")
+
     def check_class_changed(self, other: PromptAnalyzer) -> bool:
-        """Compares the classes of this file with the classes of another file."""
-        self_classes = {c.name: c for c in self.classes}
-        other_classes = {c.name: c for c in other.classes}
+        """Compares the classes of this file with those of another file."""
+        return self._check_definition_changed(other)
 
-        all_class_names = set(self_classes.keys()) | set(other_classes.keys())
+    def _check_definition_changed(
+        self,
+        other: PromptAnalyzer,
+        definition_type: Optional[Literal["class", "function"]] = "class",
+    ) -> bool:
+        """Compares classes or the functions of this file with those of another file"""
 
-        for name in all_class_names:
-            if name in self_classes and name in other_classes:
-                self_class_dict = self_classes[name].__dict__
-                other_class_dict = other_classes[name].__dict__
-                # Compare attributes of classes with the same name
-                class_diff = {
-                    attr: (self_class_dict[attr], other_class_dict[attr])
-                    for attr in self_class_dict
-                    if self_class_dict[attr] != other_class_dict[attr]
+        self_definitions: Union[list[ClassInfo], list[FunctionInfo]] = (
+            self.classes if definition_type == "class" else self.functions
+        )
+        other_definitions: Union[list[ClassInfo], list[FunctionInfo]] = (
+            other.classes if definition_type == "class" else other.functions
+        )
+
+        self_definitions_dict = {
+            definition.name: definition for definition in self_definitions
+        }
+        other_definitions_dict = {
+            definition.name: definition for definition in other_definitions
+        }
+
+        all_definition_names = set(self_definitions_dict.keys()) | set(
+            other_definitions_dict.keys()
+        )
+
+        for name in all_definition_names:
+            if name in self_definitions_dict and name in other_definitions_dict:
+                self_def_dict = self_definitions_dict[name].__dict__
+                other_def_dict = other_definitions_dict[name].__dict__
+                # Compare attributes of definitions with the same name
+                def_diff = {
+                    attr: (self_def_dict[attr], other_def_dict[attr])
+                    for attr in self_def_dict
+                    if self_def_dict[attr] != other_def_dict[attr]
                 }
-                if class_diff:
+                if def_diff:
                     return True
             else:
                 return True
@@ -157,10 +207,8 @@ def get_user_mirascope_settings(
             )
         mirascope_config = config["mirascope"]
         return MirascopeSettings(**mirascope_config)
-    except KeyError as e:
-        raise KeyError(
-            "The mirascope.ini file is missing the [mirascope] section."
-        ) from e
+    except MissingSectionHeaderError as e:
+        raise MissingSectionHeaderError(ini_file_path, e.lineno, e.source) from e
 
 
 def prompts_directory_files() -> list[str]:
@@ -239,7 +287,7 @@ def check_prompt_changed(file1_path: Optional[str], file2_path: Optional[str]) -
         "from_imports_diff": bool(
             set(analyzer1.from_imports) ^ set(analyzer2.from_imports)
         ),
-        "decorators_diff": bool(set(analyzer1.decorators) ^ set(analyzer2.decorators)),
+        "functions_diff": analyzer1.check_function_changed(analyzer2),
         "variables_diff": set(analyzer1.variables.keys()) - ignore_variables
         ^ set(analyzer2.variables.keys()) - ignore_variables,
         "classes_diff": analyzer1.check_class_changed(analyzer2),
@@ -507,39 +555,34 @@ def update_version_text_file(
         updates: A dictionary containing updates to the current revision id and/or
             the latest revision id.
     """
-    try:
-        modified_lines = []
-        edits_made = {
-            key: False for key in updates
-        }  # Track which keys already exist in the file
-        version_file_path: Path = Path(version_file)
-        if not version_file_path.is_file():
-            version_file_path.touch()
-        # Read the file and apply updates
-        with open(version_file_path, "r", encoding="utf-8") as file:
-            for line in file:
-                # Check if the current line contains any of the keys
-                for key, value in updates.items():
-                    if line.startswith(key + "="):
-                        modified_lines.append(f"{key}={value}\n")
-                        edits_made[key] = True
-                        break
-                else:
-                    # No key found, so keep the line as is
-                    modified_lines.append(line)
-
-            # Add any keys that were not found at the end of the file
+    modified_lines = []
+    edits_made = {
+        key: False for key in updates
+    }  # Track which keys already exist in the file
+    version_file_path: Path = Path(version_file)
+    if not version_file_path.is_file():
+        version_file_path.touch()
+    # Read the file and apply updates
+    with open(version_file_path, "r", encoding="utf-8") as file:
+        for line in file:
+            # Check if the current line contains any of the keys
             for key, value in updates.items():
-                if not edits_made[key]:
+                if line.startswith(key + "="):
                     modified_lines.append(f"{key}={value}\n")
+                    edits_made[key] = True
+                    break
+            else:
+                # No key found, so keep the line as is
+                modified_lines.append(line)
 
-        # Write the modified content back to the file
-        with open(version_file_path, "w", encoding="utf-8") as file:
-            file.writelines(modified_lines)
-    except FileNotFoundError:
-        print(f"The file {version_file} was not found.")
-    except IOError as e:
-        print(f"An I/O error occurred: {e}")
+        # Add any keys that were not found at the end of the file
+        for key, value in updates.items():
+            if not edits_made[key]:
+                modified_lines.append(f"{key}={value}\n")
+
+    # Write the modified content back to the file
+    with open(version_file_path, "w", encoding="utf-8") as file:
+        file.writelines(modified_lines)
 
 
 def check_status(
@@ -562,8 +605,6 @@ def check_status(
 
     # Get the currently used prompt version
     versions = get_prompt_versions(f"{prompt_directory}/{version_file_name}")
-    if versions is None:
-        return used_prompt_path
     current_head = versions.current_revision
     if current_head is None:
         return used_prompt_path
