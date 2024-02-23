@@ -232,8 +232,33 @@ print(prompt.messages)
 The base `Prompt` class without the decorator will still have the `messages` attribute, but it will return a single user message in the list.
 
 <details>
-<summary>Remember: this is python</summary>
-<p>There's nothing stopping you from doing things however you'd like. For example, reclaim the docstring:</p>
+<summary><b>There's nothing stopping you from doing things however you'd like</b>:</summary>
+
+<p>Sometimes writing the messages array yourself can be useful for accessing functionality not yet supported by docstring parser:</p>
+
+```python
+from mirascope import Prompt
+from openai.types.chat import ChatCompletionMessageParam
+
+
+class MessagesPrompt(Prompt):
+    """This is a normal docstring."""
+
+    name: str
+
+    @property
+    def messages(self) -> list[ChatCompletionMessageParam]:
+        """Returns the list of message params."""
+        return [
+            {
+                "role": "user",
+                "name": self.name,
+                "content": f"Hello! My name is {self.name}. How are you today?",
+            },
+        ]
+```
+
+<p>You can also reclaim the docstring if you want:</p>
 
 ```python
 from mirascope import Prompt
@@ -257,6 +282,7 @@ print(prompt)
 ```
 
 <p>Since the `Prompt`'s `str` method uses template, the above will work as expected.</p>
+
 </details>
 
 ### Additional Examples
@@ -305,8 +331,8 @@ client = MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
 
 prompt = GreetingsPrompt(name="William Bakst")
 messages = [
-    ChatMessage(role=role, content=content)
-    for role, content in prompt.messages
+    ChatMessage(role=message["role"], content=message["content"])
+    for message in prompt.messages
 ]
 
 # No streaming
@@ -331,14 +357,9 @@ from prompts import GreetingsPrompt
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 prompt = GreetingsPrompt(name="William Bakst")
-messages = [
-    {"role": role, "content": content}
-    for role, content in prompt.messages
-]
-
 completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
-    messages=messages,
+    messages=prompt.messages,
 )
 ```
 
