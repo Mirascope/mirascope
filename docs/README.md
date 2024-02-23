@@ -98,38 +98,13 @@ print(prompt.messages)
 * **Convenience**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
 * **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
 
-## Requirements
-
-**Pydantic** is the only strict requirement, which will be included automatically during installation.
-
-The Prompt CLI and LLM Convenience Wrappers have additional requirements, which you can opt-in to include if you're using those features.
-
 ## Installation
 
 Install Mirascope and start building with LLMs in minutes.
 
 ```sh
-$ pip install mirascope
+pip install mirascope
 ```
-
-This will install the `mirascope` package along with `pydantic`.
-
-To include extra dependencies, run:
-
-```sh
-$ pip install mirascope[cli]     #  Prompt CLI
-$ pip install mirascope[openai]  #  LLM Convenience Wrappers
-$ pip install mirascope[all]     #  All Extras
-```
-
-<details>
-<summary>For those using zsh, you'll need to escape brackets:</summary>
-
-```sh
-$ pip install mirascope\[all\]
-```
-
-</details>
 
 ## 🚨 Warning: Strong Opinion 🚨
 
@@ -284,12 +259,18 @@ print(prompt)
 <p>Since the `Prompt`'s `str` method uses template, the above will work as expected.</p>
 </details>
 
+### Additional Examples
+
+If you're using our LLM convenience wrappers, you'll need to get an API key to use the model of your choice. [OpenAI Account Setup](https://platform.openai.com/docs/quickstart/account-setup) will walk you through how to get your OpenAI API Key. You can follow similar steps for the provider of your choice (e.g. [Anyscale](https://platform.openai.com/docs/quickstart/account-setup) or [Together](https://docs.together.ai/reference/authentication-1)), or you can use a raw client for non-OpenAI models, like [Mistral](https://docs.together.ai/reference/authentication-1).
+
 Because the `Prompt` class is built on top of `BaseModel`, prompts easily integrate with tools like [FastAPI](https://fastapi.tiangolo.com):
 
 <details>
 <summary>FastAPI Example</summary>
 
 ```python
+import os
+
 from fastapi import FastAPI
 from mirascope import OpenAIChat
 
@@ -313,6 +294,8 @@ You can also use the `Prompt` class with whichever LLM you want to use:
 <summary>Mistral Example</summary>
 
 ```python
+import os
+
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 
@@ -339,6 +322,8 @@ chat_response = client.chat(
 <summary>OpenAI Example</summary>
 
 ```python
+import os
+
 from openai import OpenAI
 
 from prompts import GreetingsPrompt
