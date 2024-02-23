@@ -33,7 +33,9 @@ async def test_from_stream(
     prompt = request.getfixturevalue(prompt)
 
     tools = [request.getfixturevalue(fixture_tool) for fixture_tool in fixture_tools]
-    mock_create.__aiter__.return_value = fixture_chat_completion_chunks_with_tools
+    mock_create.return_value.__aiter__.return_value = (
+        fixture_chat_completion_chunks_with_tools
+    )
     chat = AsyncOpenAIChat(api_key="test")
     stream = chat.stream(prompt, tools=tools)
     parser = AsyncOpenAIToolStreamParser(tools=tools)

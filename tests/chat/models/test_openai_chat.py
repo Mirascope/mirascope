@@ -131,23 +131,21 @@ def test_openai_chat_error(mock_create, fixture_foobar_prompt):
 )
 def test_openai_chat_stream(
     mock_create,
-    fixture_chat_completion_chunk,
+    fixture_chat_completion_chunks,
     prompt,
     request,
 ):
     """Tests that `OpenAIChat` returns the expected response when streaming."""
     prompt = request.getfixturevalue(prompt)
-    mock_create.return_value = [fixture_chat_completion_chunk] * 3
+    mock_create.return_value = fixture_chat_completion_chunks
 
     model = "gpt-3.5-turbo-16k"
     chat = OpenAIChat(model, api_key="test")
     stream = chat.stream(prompt, temperature=0.3)
 
-    for chunk in stream:
+    for i, chunk in enumerate(stream):
         assert isinstance(chunk, OpenAIChatCompletionChunk)
-        assert chunk.chunk == fixture_chat_completion_chunk
-        for i, choice in enumerate(chunk.choices):
-            assert choice == fixture_chat_completion_chunk.choices[i]
+        assert chunk.chunk == fixture_chat_completion_chunks[i]
 
     mock_create.assert_called_once_with(
         model=model,

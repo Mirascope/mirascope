@@ -122,7 +122,9 @@ async def test_async_openai_chat_stream(
 ):
     """Tests that `AsyncOpenAIChat` returns the expected response when streaming."""
     prompt = request.getfixturevalue(prompt)
-    mock_create.__aiter__.return_value = [fixture_chat_completion_chunk] * 3
+    mock_create.return_value.__aiter__.return_value = [
+        fixture_chat_completion_chunk
+    ] * 3
 
     model = "gpt-3.5-turbo-16k"
     chat = AsyncOpenAIChat(model, api_key="test")
@@ -149,7 +151,9 @@ async def test_async_openai_chat_stream_messages_kwarg(
     mock_create, fixture_chat_completion_chunk
 ):
     """Tests that `AsyncOpenAIChat.stream` works with a messages kwarg."""
-    mock_create.__aiter__.return_value = [fixture_chat_completion_chunk] * 3
+    mock_create.return_value.__aiter__.return_value = [
+        fixture_chat_completion_chunk
+    ] * 3
 
     model = "gpt-3.5-turbo-16k"
     chat = AsyncOpenAIChat(model, api_key="test")
@@ -184,15 +188,14 @@ async def test_async_openai_chat_stream_tools(
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
-    mock_create.__aiter__.return_value = chunks
+
+    mock_create.return_value.__aiter__.return_value = chunks
 
     chat = AsyncOpenAIChat(api_key="test")
     stream = chat.stream(prompt, tools=tools)
 
-    i = 0
     async for chunk in stream:
-        assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
-        i += 1
+        assert chunk.tool_calls == chunks[0].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
         model="gpt-3.5-turbo",

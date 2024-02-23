@@ -45,3 +45,38 @@ def test_from_stream(
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
     )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        ("fixture_foobar_prompt"),
+    ],
+)
+@pytest.mark.parametrize(
+    "fixture_chat_completion_chunks_with_tools", ["MyTool"], indirect=True
+)
+def test_from_stream_no_tool(
+    mock_create: MagicMock,
+    fixture_chat_completion_chunks_with_tools,
+    prompt,
+    request: pytest.FixtureRequest,
+):
+    """Tests `OpenAIToolStreamParser.from_stream` with no tools."""
+    prompt = request.getfixturevalue(prompt)
+
+    mock_create.return_value = fixture_chat_completion_chunks_with_tools
+    chat = OpenAIChat(api_key="test")
+    stream = chat.stream(prompt)
+    parser = OpenAIToolStreamParser(tools=[])
+    assert sum(1 for _ in parser.from_stream(stream)) == 0
+
+    mock_create.assert_called_once_with(
+        model="gpt-3.5-turbo",
+        messages=prompt.messages,
+        stream=True,
+    )

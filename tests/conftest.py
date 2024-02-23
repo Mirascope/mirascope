@@ -1,5 +1,5 @@
 """Fixtures for repeated use in testing."""
-from typing import Optional, Type
+from typing import Type
 
 import pytest
 from openai.types.chat import (
@@ -205,39 +205,58 @@ def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
-def fixture_chat_completion_chunk() -> ChatCompletionChunk:
+def fixture_chat_completion_chunks() -> list[ChatCompletionChunk]:
+    """Returns chat completion chunks."""
+    return [
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    **{"logprobs": None},
+                    delta=ChoiceDelta(content="I'm"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    **{"logprobs": None},
+                    delta=ChoiceDelta(content="testing"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+    ]
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunk(
+    fixture_chat_completion_chunks,
+) -> ChatCompletionChunk:
     """Returns a chat completion chunk."""
-    return ChatCompletionChunk(
-        id="test_id",
-        choices=[
-            ChunkChoice(
-                **{"logprobs": None},
-                delta=ChoiceDelta(content="I'm"),
-                finish_reason="stop",
-                index=0,
-            ),
-            ChunkChoice(
-                **{"logprobs": None},
-                delta=ChoiceDelta(content="testing"),
-                finish_reason="stop",
-                index=0,
-            ),
-        ],
-        created=0,
-        model="test_model",
-        object="chat.completion.chunk",
-    )
+    return fixture_chat_completion_chunks[0]
 
 
 @pytest.fixture()
 def fixture_chat_completion_chunks_with_tools(
-    request: Optional[pytest.FixtureRequest] = None,
+    request: pytest.FixtureRequest,
 ) -> list[ChatCompletionChunk]:
     """Returns a list of chat completion chunks with tool calls."""
-    if request:
+    try:
         name = request.param
-    else:
+    except AttributeError:
         name = None
+
     return [
         ChatCompletionChunk(
             id="test_id",
@@ -304,6 +323,19 @@ def fixture_chat_completion_chunks_with_tools(
                             )
                         ]
                     ),
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    logprobs=None,
+                    delta=ChoiceDelta(tool_calls=None),
                     finish_reason="stop",
                     index=0,
                 ),
