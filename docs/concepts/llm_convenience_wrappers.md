@@ -15,7 +15,7 @@ Mirascope provides convenience wrappers around the OpenAI client to make writing
 
 ### Create
 
-You can initialize an [`OpenAIChat`](../api/chat/models.md#mirascope.chat.models.OpenAIChat) instance and call [`create`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.create) to generate an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion):
+You can initialize an [`OpenAIChat`](../api/chat/models/openai_chat.md#mirascope.chat.models.openai_chat.OpenAIChat) instance and call [`create`](../api/chat/models/openai_chat.md#mirascope.chat.models.openai_chat.OpenAIChat.create) to generate an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion):
 
 ```python
 from mirascope import OpenAIChat, Prompt
@@ -104,7 +104,7 @@ recipe = recipe_by_chef_using("apples", "japanese")
 
 ### Streaming
 
-You can use the [`stream`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
+You can use the [`stream`](../api/chat/models/openai_chat.md#mirascope.chat.models.openai_chat.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
 
 ```python
 chat = OpenAIChat()
@@ -132,7 +132,7 @@ chunk.content  # original.choices[0].delta.content
 
 ### Extraction
 
-Often you want to extract structured information into a format like JSON. The [`extract`](../api/chat/models.md#mirascope.chat.models.OpenAIChat.extract) method makes this extremely easy by extracting the information into a Pydantic `BaseModel` schema that you define:
+Often you want to extract structured information into a format like JSON. The [`extract`](../api/chat/models/openai_chat.md#mirascope.chat.models.openai_chat.OpenAIChat.extract) method makes this extremely easy by extracting the information into a Pydantic `BaseModel` schema that you define:
 
 ```python
 from mirascope import OpenAIChat
