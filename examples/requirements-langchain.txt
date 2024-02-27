@@ -1,0 +1,4 @@
+langsmith==0.1.9
+langchain-core==0.1.26
+langchain-openai==0.0.7
+pydantic-settings==2.2.1
