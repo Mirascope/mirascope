@@ -97,13 +97,6 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        if tools is not None:
-            warn(
-                "The `tools` parameter is deprecated; version>=0.3.0. "
-                "Use `CallParams` inside of your `Prompt` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if isinstance(prompt, Prompt):
             if self.model != "gpt-3.5-turbo":
                 warn(
@@ -114,6 +107,14 @@ class OpenAIChat:
                     stacklevel=2,
                 )
             self.model = prompt._call_params.model
+
+            if tools is not None:
+                warn(
+                    "The `tools` parameter is deprecated; version>=0.3.0. "
+                    "Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
             if prompt._call_params.tools is not None:
                 tools = prompt._call_params.tools
 
@@ -157,13 +158,6 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        if tools is not None:
-            warn(
-                "The `tools` parameter is deprecated; version>=0.3.0. "
-                "Use `CallParams` inside of your `Prompt` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if isinstance(prompt, Prompt):
             if self.model != "gpt-3.5-turbo":
                 warn(
@@ -174,6 +168,14 @@ class OpenAIChat:
                     stacklevel=2,
                 )
             self.model = prompt._call_params.model
+
+            if tools is not None:
+                warn(
+                    "The `tools` parameter is deprecated; version>=0.3.0. "
+                    "Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
             if prompt._call_params.tools is not None:
                 tools = prompt._call_params.tools
 
