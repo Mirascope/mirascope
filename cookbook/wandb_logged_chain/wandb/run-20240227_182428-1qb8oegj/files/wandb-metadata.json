@@ -1,0 +1,49 @@
+{
+    "os": "macOS-12.6-arm64-arm-64bit",
+    "python": "3.10.9",
+    "heartbeatAt": "2024-02-27T23:24:28.632171",
+    "startedAt": "2024-02-27T23:24:28.106088",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/brianpark/PythonProjects/mirascope/cookbook/wandb_logged_chain/wandb_chain.py",
+    "codePathLocal": "wandb_chain.py",
+    "codePath": "cookbook/wandb_logged_chain/wandb_chain.py",
+    "git": {
+        "remote": "git@github.com:Mirascope/mirascope.git",
+        "commit": "a60705d4075b0aa48e504d28adf64512c90244e7"
+    },
+    "email": "brian@mirascope.io",
+    "root": "/Users/brianpark/PythonProjects/mirascope",
+    "host": "Brians-Air-2",
+    "username": "brianpark",
+    "executable": "/Users/brianpark/Library/Caches/pypoetry/virtualenvs/mirascope-8yT5C7h6-py3.10/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3204,
+        "min": 600,
+        "max": 3204
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3204,
+            "min": 600,
+            "max": 3204
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 460.4317207336426,
+            "used": 21.764842987060547
+        }
+    },
+    "gpuapple": {
+        "type": "arm",
+        "vendor": "Apple"
+    },
+    "memory": {
+        "total": 8.0
+    }
+}

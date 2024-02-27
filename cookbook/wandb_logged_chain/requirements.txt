@@ -1,0 +1,2 @@
+mirascope[all]==^0.2.0
+wandb>=0.15.4
