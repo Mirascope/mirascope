@@ -121,5 +121,4 @@ def test_use_no_version_file(
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(Path(td), prompt, [f"0001_{prompt}"])
         with pytest.raises(FileNotFoundError):
-            result = runner.invoke(app, ["use", prompt, "0002"], catch_exceptions=False)
-            assert result.exit_code == 1
+            runner.invoke(app, ["use", prompt, "0002"], catch_exceptions=False)

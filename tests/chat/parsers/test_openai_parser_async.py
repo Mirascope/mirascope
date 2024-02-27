@@ -43,7 +43,7 @@ async def test_from_stream(
         assert isinstance(tool, OpenAITool)
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],

@@ -41,7 +41,7 @@ def test_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=model,
+        model=model if isinstance(prompt, str) else prompt._call_params.model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -90,14 +90,15 @@ def test_openai_chat_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
+    prompt._call_params.tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
-    completion = chat.create(prompt, tools=tools)
+    completion = chat.create(prompt, tools=[])
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -112,7 +113,7 @@ def test_openai_chat_tools(
 )
 def test_openai_chat_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     with pytest.raises(Exception):
         chat.create(fixture_foobar_prompt)
 
@@ -148,7 +149,7 @@ def test_openai_chat_stream(
         assert chunk.chunk == fixture_chat_completion_chunks[i]
 
     mock_create.assert_called_once_with(
-        model=model,
+        model=model if isinstance(prompt, str) else prompt._call_params.model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -197,17 +198,18 @@ def test_openai_chat_stream_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
+    prompt._call_params.tools = tools
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
     mock_create.return_value = chunks
 
     chat = OpenAIChat(api_key="test")
-    stream = chat.stream(prompt, tools=tools)
+    stream = chat.stream(prompt, tools=[])
 
     for i, chunk in enumerate(stream):
         assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -222,7 +224,7 @@ def test_openai_chat_stream_tools(
 )
 def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles OpenAI errors thrown during stream."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     with pytest.raises(Exception):
         stream = chat.stream(fixture_foobar_prompt)
         next(stream)
@@ -258,7 +260,7 @@ def test_openai_chat_extract(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     prompt = Prompt()
     model = chat.extract(MySchema, prompt, retries=retries)
 
@@ -305,7 +307,7 @@ def test_openai_chat_extract_with_validation_error(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_bad_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     prompt = Prompt()
     with pytest.raises(ValidationError):
         chat.extract(MySchema, prompt, retries=retries)

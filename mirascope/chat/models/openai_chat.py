@@ -2,6 +2,7 @@
 import datetime
 import logging
 from typing import Callable, Generator, Optional, Type, TypeVar, Union
+from warnings import warn
 
 from openai import OpenAI
 from pydantic import BaseModel, ValidationError
@@ -77,11 +78,13 @@ class OpenAIChat:
 
         Args:
             prompt: The prompt to use for the call. This can either be a `Prompt`
-                instance, a raw string, or `None`. If `prompt` is `None`, then the call
-                will attempt to use the `messages` keyword argument.
-            tools: A list of `OpenAITool` types or `Callable` functions that the
-                creation call can decide to use. If `tools` is provided, `tool_choice`
-                will be set to `auto` unless manually specified.
+                instance, a raw string, or `None`. If `prompt` is a `Prompt` instance,
+                then the call will use the `CallParams` in the prompt before anything
+                else. If `prompt` is `None`, then the call will attempt to use the
+                `messages` keyword argument.
+            tools: (Deprecated) A list of `OpenAITool` types or `Callable` functions
+                that the creation call can decide to use. If `tools` is provided,
+                `tool_choice` will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -94,6 +97,26 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        if tools is not None:
+            warn(
+                "The `tools` parameter is deprecated; version>=0.3.0. "
+                "Use `CallParams` inside of your `Prompt` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if isinstance(prompt, Prompt):
+            if self.model != "gpt-3.5-turbo":
+                warn(
+                    "The `model` parameter will be ignored when `prompt` is of type "
+                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
+                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.model = prompt._call_params.model
+            if prompt._call_params.tools is not None:
+                tools = prompt._call_params.tools
+
         start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
@@ -134,6 +157,26 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        if tools is not None:
+            warn(
+                "The `tools` parameter is deprecated; version>=0.3.0. "
+                "Use `CallParams` inside of your `Prompt` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if isinstance(prompt, Prompt):
+            if self.model != "gpt-3.5-turbo":
+                warn(
+                    "The `model` parameter will be ignored when `prompt` is of type "
+                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
+                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.model = prompt._call_params.model
+            if prompt._call_params.tools is not None:
+                tools = prompt._call_params.tools
+
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
 
@@ -165,7 +208,9 @@ class OpenAIChat:
 
         Args:
             schema: The `BaseModel` schema to extract from the completion.
-            prompt: The prompt from which the schema will be extracted.
+            prompt: The prompt from which the schema will be extracted. If `prompt` is
+                a `Prompt` instance, then the call will use the `CallParams` in the
+                prompt.
             retries: The maximum number of times to retry the query on validation error.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:

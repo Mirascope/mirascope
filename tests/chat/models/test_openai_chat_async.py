@@ -28,14 +28,14 @@ async def test_async_openai_chat(
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = AsyncOpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model=model, api_key="test")
     assert chat.model == model
     completion = await chat.create(prompt, temperature=0.3)
     assert isinstance(completion, OpenAIChatCompletion)
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=model,
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=False,
         temperature=0.3,
@@ -82,14 +82,15 @@ async def test_async_openai_chat_tools(
     """Tests that `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
+    prompt._call_params.tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = AsyncOpenAIChat(api_key="test")
-    completion = await chat.create(prompt, tools=tools)
+    completion = await chat.create(prompt, tools=[])
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -104,7 +105,7 @@ async def test_async_openai_chat_tools(
 )
 async def test_async_openai_chat_error(mock_create, fixture_foobar_prompt):
     """Tests that `AsyncOpenAIChat` handles OpenAI errors thrown during create."""
-    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat(api_key="test")
     with pytest.raises(Exception):
         await chat.create(fixture_foobar_prompt)
 
@@ -124,8 +125,7 @@ async def test_async_openai_chat_stream(
     prompt = request.getfixturevalue(prompt)
     mock_create.return_value.__aiter__.return_value = fixture_chat_completion_chunks
 
-    model = "gpt-3.5-turbo-16k"
-    chat = AsyncOpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model="gpt-3.5-turbo-16k", api_key="test")
     astream = chat.stream(prompt, temperature=0.3)
     i = 0
     async for chunk in astream:
@@ -136,7 +136,7 @@ async def test_async_openai_chat_stream(
         i += 1
 
     mock_create.assert_called_once_with(
-        model=model,
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=True,
         temperature=0.3,
@@ -185,18 +185,19 @@ async def test_async_openai_chat_stream_tools(
     """Tests `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
+    prompt._call_params.tools = tools
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
 
     mock_create.return_value.__aiter__.return_value = chunks
 
     chat = AsyncOpenAIChat(api_key="test")
-    stream = chat.stream(prompt, tools=tools)
+    stream = chat.stream(prompt, tools=[])
 
     async for chunk in stream:
         assert chunk.tool_calls == chunks[0].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt._call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -211,7 +212,7 @@ async def test_async_openai_chat_stream_tools(
 )
 async def test_async_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     """Tests that `AsyyncOpenAIChat` handles OpenAI errors thrown during stream."""
-    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat(api_key="test")
     with pytest.raises(Exception):
         astream = chat.stream(fixture_foobar_prompt)
         next(astream)
@@ -250,7 +251,7 @@ async def test_async_openai_chat_extract(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat(api_key="test")
     prompt = Prompt()
     model = await chat.extract(MySchema, prompt, retries=retries)
 
@@ -283,7 +284,7 @@ async def test_async_openai_chat_extract_messages_prompt(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat("gpt-3.5-turbo-16k", api_key="test")
     messages = [{"role": "user", "content": "content"}]
     model = await chat.extract(MySchema, messages=messages)
 
@@ -304,7 +305,7 @@ async def test_async_openai_chat_extract_with_validation_error(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_bad_tools, tool_types=tools
     )
-    chat = AsyncOpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = AsyncOpenAIChat(api_key="test")
     prompt = Prompt()
     with pytest.raises(ValidationError):
         await chat.extract(MySchema, prompt, retries=retries)

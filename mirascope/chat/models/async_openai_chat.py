@@ -2,6 +2,7 @@
 import datetime
 import logging
 from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
+from warnings import warn
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
@@ -99,6 +100,26 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        if tools is not None:
+            warn(
+                "The `tools` parameter is deprecated; version>=0.3.0. "
+                "Use `CallParams` inside of your `Prompt` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if isinstance(prompt, Prompt):
+            if self.model != "gpt-3.5-turbo":
+                warn(
+                    "The `model` parameter will be ignored when `prompt` is of type "
+                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
+                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.model = prompt._call_params.model
+            if prompt._call_params.tools is not None:
+                tools = prompt._call_params.tools
+
         start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
@@ -140,6 +161,26 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        if tools is not None:
+            warn(
+                "The `tools` parameter is deprecated; version>=0.3.0. "
+                "Use `CallParams` inside of your `Prompt` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if isinstance(prompt, Prompt):
+            if self.model != "gpt-3.5-turbo":
+                warn(
+                    "The `model` parameter will be ignored when `prompt` is of type "
+                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
+                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.model = prompt._call_params.model
+            if prompt._call_params.tools is not None:
+                tools = prompt._call_params.tools
+
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
 
