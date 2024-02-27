@@ -9,12 +9,13 @@ arguments for the chain.
 
 import os
 
-from config import Settings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 
 from mirascope import Prompt
+
+from .config import Settings
 
 settings = Settings()
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key

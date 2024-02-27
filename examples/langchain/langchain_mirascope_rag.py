@@ -10,12 +10,13 @@ https://docs.mirascope.io/latest/cookbook/rag/.
 import os
 from typing import Union
 
-from config import Settings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai.chat_models import ChatOpenAI
 
 from mirascope import Prompt
+
+from .config import Settings
 
 settings = Settings()
 
