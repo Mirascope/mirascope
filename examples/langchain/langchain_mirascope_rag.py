@@ -3,7 +3,8 @@
 https://python.langchain.com/docs/expression_language/get_started#rag-search-example
 
 Since LangChain's example uses Pydantic V1 for vectorstore this example uses a basic 
-context but a more advanced implementation of context can be found in cookbook/news_rag.
+context but a more advanced implementation of context can be found in 
+https://docs.mirascope.io/latest/cookbook/rag/.
 """
 
 import os
