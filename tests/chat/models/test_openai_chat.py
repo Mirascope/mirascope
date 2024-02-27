@@ -33,7 +33,7 @@ def test_openai_chat(
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     assert chat.model == model
 
     completion = chat.create(prompt, temperature=0.3)
@@ -59,7 +59,7 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     assert chat.model == model
 
     messages = [{"role": "user", "content": "content"}]
@@ -141,7 +141,7 @@ def test_openai_chat_stream(
     mock_create.return_value = fixture_chat_completion_chunks
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     stream = chat.stream(prompt, temperature=0.3)
 
     for i, chunk in enumerate(stream):
@@ -167,7 +167,7 @@ def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_
     mock_create.return_value = [fixture_chat_completion_chunk] * 3
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     messages = [{"role": "user", "content": "content"}]
     stream = chat.stream(messages=messages)
 
@@ -289,7 +289,7 @@ def test_openai_chat_extract_messages_prompt(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(model="gpt-3.5-turbo", api_key="test")
     messages = [{"role": "user", "content": "content"}]
     model = chat.extract(MySchema, messages=messages)
 

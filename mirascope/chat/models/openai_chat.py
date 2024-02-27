@@ -59,14 +59,18 @@ class OpenAIChat:
 
     def __init__(
         self,
-        model: str = "gpt-3.5-turbo",
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         **kwargs,
     ):
         """Initializes an instance of `OpenAIChat."""
+        if "model" in kwargs:
+            self.model = kwargs.pop("model")
+            self.model_is_set = True
+        else:
+            self.model = "gpt-3.5-turbo"
+            self.model_is_set = False
         self.client = OpenAI(api_key=api_key, base_url=base_url, **kwargs)
-        self.model = model
 
     def create(
         self,
@@ -98,7 +102,7 @@ class OpenAIChat:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         if isinstance(prompt, Prompt):
-            if self.model != "gpt-3.5-turbo":
+            if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
                     "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
@@ -159,7 +163,7 @@ class OpenAIChat:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         if isinstance(prompt, Prompt):
-            if self.model != "gpt-3.5-turbo":
+            if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
                     "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "

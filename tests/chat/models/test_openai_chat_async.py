@@ -51,7 +51,7 @@ async def test_async_openai_chat_messages_kwarg(mock_create, fixture_chat_comple
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = AsyncOpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model=model, api_key="test")
     assert chat.model == model
 
     messages = [{"role": "user", "content": "content"}]
@@ -154,7 +154,7 @@ async def test_async_openai_chat_stream_messages_kwarg(
     mock_create.return_value.__aiter__.return_value = fixture_chat_completion_chunks
 
     model = "gpt-3.5-turbo-16k"
-    chat = AsyncOpenAIChat(model, api_key="test")
+    chat = AsyncOpenAIChat(model=model, api_key="test")
     messages = [{"role": "user", "content": "content"}]
     stream = chat.stream(messages=messages)
 
@@ -284,7 +284,7 @@ async def test_async_openai_chat_extract_messages_prompt(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = AsyncOpenAIChat("gpt-3.5-turbo-16k", api_key="test")
+    chat = AsyncOpenAIChat(model="gpt-3.5-turbo-16k", api_key="test")
     messages = [{"role": "user", "content": "content"}]
     model = await chat.extract(MySchema, messages=messages)
 
