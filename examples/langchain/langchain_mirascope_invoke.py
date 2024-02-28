@@ -30,7 +30,8 @@ class TellMeAJokePrompt(Prompt):
     language: str
 
     # We can leverage Pydantic's `@computed_field` to create a new field to be invoked
-    @computed_field
+    @computed_field  # type: ignore[misc]
+    @property
     def topic_x_language(self) -> str:
         """The topic and language combined"""
         return f"{self.topic} in {self.language}"
