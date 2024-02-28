@@ -110,7 +110,7 @@ def test_openai_chat_tools(
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
-    completion = chat.create(prompt, tools=[], extract=False)
+    completion = chat.create(prompt, tools=[])
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
@@ -332,3 +332,21 @@ def test_openai_chat_extract_with_validation_error(
         chat.extract(MySchema, prompt, retries=retries)
 
     assert mock_create.call_count == retries + 1
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+def test_openai_chat_extract_no_deprecation_warning(
+    mock_create,
+    fixture_foobar_prompt,
+    fixture_chat_completion_with_schema_tool,
+):
+    """Tests that `OpenAIChat.extract` raises a deprecation warning."""
+    mock_create.return_value = fixture_chat_completion_with_schema_tool
+
+    chat = OpenAIChat(api_key="test")
+    chat.extract(MySchema, fixture_foobar_prompt)
+
+    assert "extract" not in mock_create.call_args.kwargs
