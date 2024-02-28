@@ -5,7 +5,7 @@ from typing import Callable, Generator, Optional, Type, TypeVar, Union
 from warnings import filterwarnings, warn
 
 from openai import OpenAI
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, create_model
 
 from ...prompts import Prompt
 from ..tools import OpenAITool
@@ -105,6 +105,7 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        extract = kwargs.pop("extract") if "extract" in kwargs else False
         if isinstance(prompt, Prompt):
             if self.model_is_set:
                 warn(
@@ -117,16 +118,13 @@ class OpenAIChat:
                 )
             self.model = prompt.call_params().model
 
-            if tools is not None:
-                if "extract" in kwargs:
-                    kwargs.pop("extract")
-                else:
-                    warn(
-                        "The `tools` parameter is deprecated; version>=0.3.0. "
-                        "Use `OpenAICallParams` inside of your `Prompt` instead.",
-                        DeprecationWarning,
-                        stacklevel=2,
-                    )
+            if tools is not None and not extract:
+                warn(
+                    "The `tools` parameter is deprecated; version>=0.3.0. "
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
             if prompt.call_params().tools is not None:
                 tools = prompt.call_params().tools
 
@@ -252,7 +250,9 @@ class OpenAIChat:
         )
 
         try:
-            return schema(**completion.tool.model_dump())  # type: ignore
+            model = schema(**completion.tool.model_dump())  # type: ignore
+            model._completion = completion
+            return model
         except (AttributeError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
