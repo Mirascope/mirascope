@@ -10,11 +10,11 @@ import os
 from argparse import ArgumentParser
 
 import pandas as pd
-from config import FILENAME, MAX_TOKENS, URL, Settings
+from rag_config import FILENAME, MAX_TOKENS, URL, Settings
 from rag_prompts.local_news_rag_prompt import LocalNewsRagPrompt
 from rag_prompts.pinecone_news_rag_prompt import PineconeNewsRagPrompt
+from rag_utils import embed_df_with_openai, load_data
 from setup_pinecone import setup_pinecone
-from utils import embed_df_with_openai, load_data
 
 from mirascope import OpenAIChat
 

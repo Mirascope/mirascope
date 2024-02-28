@@ -2,7 +2,7 @@
 import datetime
 import logging
 from typing import Callable, Generator, Optional, Type, TypeVar, Union
-from warnings import warn
+from warnings import filterwarnings, warn
 
 from openai import OpenAI
 from pydantic import BaseModel, ValidationError
@@ -16,6 +16,7 @@ from ..utils import (
     patch_openai_kwargs,
 )
 
+filterwarnings("always", category=DeprecationWarning, module="mirascope")
 logger = logging.getLogger("mirascope")
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -46,9 +47,9 @@ class OpenAIChat:
 
     prompt = BookRecommendationPrompt(topic="how to bake a cake")
     model = OpenAIChat()
-    res = model.create(prompt)
+    completion = model.create(prompt)
 
-    print(str(res))
+    print(completion)
     #> Certinly! Here are some books on how to bake a cake:
     #  1. "The Cake Bible" by Rose Levy Beranbaum
     #  2. "Joy of Baking" by Irma S Rombauer and Marion Rombauer Becker
@@ -117,12 +118,15 @@ class OpenAIChat:
             self.model = prompt.call_params().model
 
             if tools is not None:
-                warn(
-                    "The `tools` parameter is deprecated; version>=0.3.0. "
-                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
+                if "extract" in kwargs:
+                    kwargs.pop("extract")
+                else:
+                    warn(
+                        "The `tools` parameter is deprecated; version>=0.3.0. "
+                        "Use `OpenAICallParams` inside of your `Prompt` instead.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
             if prompt.call_params().tools is not None:
                 tools = prompt.call_params().tools
 
@@ -243,6 +247,7 @@ class OpenAIChat:
                 "type": "function",
                 "function": {"name": tool.__name__},
             },
+            extract=True,
             **kwargs,
         )
 
