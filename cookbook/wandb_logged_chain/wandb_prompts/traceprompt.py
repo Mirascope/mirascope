@@ -1,9 +1,10 @@
+"""Parent class for prompts that inherit WandB prompt logging functionality."""
 from typing import Literal, Union
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from utils import get_time_in_ms
 
-from mirascope import Prompt
+from mirascope import OpenAICallParams, Prompt
 from mirascope.chat import OpenAIChatCompletion
 from wandb.sdk.data_types.trace_tree import Trace
 
@@ -12,8 +13,7 @@ class TracePrompt(Prompt):
     """Parent class for inherited WandB functionality."""
 
     span_type: Literal["tool", "llm"]
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 
     def span(
         self,

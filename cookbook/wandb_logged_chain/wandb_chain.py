@@ -1,7 +1,6 @@
-import os
+"""Main script for logging a chain of prompts to WandB."""
 
-from dotenv import load_dotenv
-from utils import get_time_in_ms
+from utils import Settings, get_time_in_ms
 from wandb_prompts.coolnessprompt import Coolness, CoolnessPrompt
 from wandb_prompts.partyinviteprompt import PartyInvitePrompt
 from wandb_prompts.whoprompt import Person, WhoPrompt
@@ -10,10 +9,11 @@ import wandb
 from mirascope import OpenAIChat
 from wandb.sdk.data_types.trace_tree import Trace
 
-load_dotenv()
+settings = Settings()
+
 
 if __name__ == "__main__":
-    wandb.login(key=os.getenv("WANDB_API_KEY"))
+    wandb.login(key=settings.wandb_api_key)
     wandb.init(project="wandb_logged_chain")
 
     root_span = Trace(
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         start_time_ms=get_time_in_ms(),
         metadata={"user": "mirascope_user"},
     )
-    chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo-1106")
+    chat = OpenAIChat(api_key=settings.openai_api_key)
 
     who_prompt = WhoPrompt(span_type="tool", person="Brian")
     start_time = get_time_in_ms()
