@@ -19,7 +19,7 @@ class OpenAITool(BaseModel):
     Example:
 
     ```python
-    from mirascope import CallParams, Prompt, OpenAIChat, OpenAIToolStreamParser
+    from mirascope import OpenAICallParams, Prompt, OpenAIChat, OpenAIToolStreamParser
 
 
     def animal_matcher(fav_food: str, fav_color: str) -> str:
@@ -44,7 +44,7 @@ class OpenAITool(BaseModel):
         food: str
         color: str
 
-        _call_params: CallParams = CallParams(tools=[animal_matcher])
+        _call_params: OpenAICallParams = OpenAICallParams(tools=[animal_matcher])
 
 
     prompt = AnimalPrompt(food="pizza", color="red")

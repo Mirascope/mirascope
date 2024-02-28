@@ -12,7 +12,7 @@
 
 from pydantic import BaseModel
 
-from mirascope import CallParams, Prompt, tags
+from mirascope import OpenAICallParams, Prompt, tags
 
 prev_revision_id = "None"
 revision_id = "0001"
@@ -35,4 +35,4 @@ class QuestionPrompt(Prompt):
     paragraph: str
     question: str
 
-    _call_params: CallParams = CallParams(model="gpt-3.5-turbo-1106")
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")

@@ -86,9 +86,9 @@ class OpenAIChat:
         Args:
             prompt: The prompt to use for the call. This can either be a `Prompt`
                 instance, a raw string, or `None`. If `prompt` is a `Prompt` instance,
-                then the call will use the `CallParams` in the prompt before anything
-                else. If `prompt` is `None`, then the call will attempt to use the
-                `messages` keyword argument.
+                then the call will use the `OpenAICallParams` in the prompt before
+                anything else. If `prompt` is `None`, then the call will attempt to use
+                the `messages` keyword argument.
             tools: (Deprecated) A list of `OpenAITool` types or `Callable` functions
                 that the creation call can decide to use. If `tools` is provided,
                 `tool_choice` will be set to `auto` unless manually specified.
@@ -108,8 +108,9 @@ class OpenAIChat:
             if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
-                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
-                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    "`Prompt` in favor of `OpenAICallParams.model` field inside of "
+                    "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
+                    "`Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -118,7 +119,7 @@ class OpenAIChat:
             if tools is not None:
                 warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
-                    "Use `CallParams` inside of your `Prompt` instead.",
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -169,8 +170,9 @@ class OpenAIChat:
             if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
-                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
-                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    "`Prompt` in favor of `OpenAICallParams.model` field inside of "
+                    "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
+                    "`Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -179,7 +181,7 @@ class OpenAIChat:
             if tools is not None:
                 warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
-                    "Use `CallParams` inside of your `Prompt` instead.",
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -218,8 +220,8 @@ class OpenAIChat:
         Args:
             schema: The `BaseModel` schema to extract from the completion.
             prompt: The prompt from which the schema will be extracted. If `prompt` is
-                a `Prompt` instance, then the call will use the `CallParams` in the
-                prompt.
+                a `Prompt` instance, then the call will use the `OpenAICallParams` in
+                the prompt.
             retries: The maximum number of times to retry the query on validation error.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from mirascope.prompts import CallParams, Prompt, messages, tags
+from mirascope.prompts import OpenAICallParams, Prompt, messages, tags
 
 
 class FooBarPrompt(Prompt):
@@ -17,7 +17,7 @@ class FooBarPrompt(Prompt):
 
     foo: str
     bar: str
-    _call_params: CallParams = CallParams(model="gpt-3.5-turbo-1106")
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 
     @property
     def foobar(self) -> str:

@@ -2,7 +2,7 @@
 import os
 from typing import Literal
 
-from mirascope import CallParams, OpenAIChat, Prompt
+from mirascope import OpenAICallParams, OpenAIChat, Prompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -25,7 +25,7 @@ def get_current_weather(
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[get_current_weather]
     )
 

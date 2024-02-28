@@ -8,7 +8,7 @@ from pydantic import Field
 from mirascope import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,
-    CallParams,
+    OpenAICallParams,
     OpenAITool,
     Prompt,
     openai_tool_fn,
@@ -35,7 +35,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106",
         tools=[GetCurrentWeather],  # pass in function itself for automatic conversion
     )

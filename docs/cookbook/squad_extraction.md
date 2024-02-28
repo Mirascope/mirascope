@@ -30,7 +30,7 @@ $ mirascope init --prompts_location squad_prompts; touch prompts/question.py
 
 ```python
 # squad_prompts/question.py
-from mirascope import Prompt
+from mirascope import OpenAICallParams, Prompt
 from pydantic import BaseModel, Field
 
 
@@ -50,7 +50,7 @@ class QuestionPrompt(Prompt):
     paragraph: str
     question: str
 
-    _call_params: CallParams = CallParams(model="gpt-3.5-turbo-1106")
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 ```
 
 Next we'll define the schema we want to extract from the paragraph and a function to extract the schema from a given question:

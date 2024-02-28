@@ -32,7 +32,7 @@ def _format_template(prompt: Prompt, template: str) -> str:
     return template.format(**{var: getattr(prompt, var) for var in template_vars})
 
 
-class CallParams(BaseModel):
+class OpenAICallParams(BaseModel):
     """The parameters to use when calling the OpenAI Chat API with a prompt."""
 
     model: str
@@ -106,11 +106,11 @@ class Prompt(BaseModel):
     ```
     '''
 
-    _call_params: CallParams = CallParams(model="gpt-3.5-turbo-16k")
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-16k")
     _tags: list[str] = []
 
     @classmethod
-    def call_params(cls) -> CallParams:
+    def call_params(cls) -> OpenAICallParams:
         """Returns the default value set for `call_params`."""
         return cls._call_params.default  # type: ignore
 
@@ -121,14 +121,6 @@ class Prompt(BaseModel):
             return cls._tags
         else:
             return cls._tags.default
-
-    # prompt_config: PromptConfig = PromptConfig(tags=[], call_params=CallParams())
-    # model_config = ...
-
-    # @classmethod
-    # def call_params(cls) -> CallParams:
-    #     """Returns the default call parameters."""
-    #     return CallParams(model="gpt-3.5-turbo-16k")
 
     @classmethod
     def template(cls) -> str:

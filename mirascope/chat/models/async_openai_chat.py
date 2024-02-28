@@ -111,8 +111,9 @@ class AsyncOpenAIChat:
             if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
-                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
-                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    "`Prompt` in favor of `OpenAICallParams.model` field inside of "
+                    "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
+                    "`Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -121,7 +122,7 @@ class AsyncOpenAIChat:
             if tools is not None:
                 warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
-                    "Use `CallParams` inside of your `Prompt` instead.",
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -173,8 +174,9 @@ class AsyncOpenAIChat:
             if self.model_is_set:
                 warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
-                    "`Prompt` in favor of `CallParams.model` field inside of `prompt`; "
-                    "version>=0.3.0. Use `CallParams` inside of your `Prompt` instead.",
+                    "`Prompt` in favor of `OpenAICallParams.model` field inside of "
+                    "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
+                    "`Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
@@ -183,7 +185,7 @@ class AsyncOpenAIChat:
             if tools is not None:
                 warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
-                    "Use `CallParams` inside of your `Prompt` instead.",
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )

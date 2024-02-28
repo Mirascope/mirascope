@@ -171,7 +171,7 @@ Tools are extremely useful when you want the model to intelligently choose to ou
 ```python
 from typing import Literal
 
-from mirascope import CallParams, OpenAIChat, Prompt
+from mirascope import OpenAICallParams, OpenAIChat, Prompt
 
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
@@ -191,7 +191,7 @@ def get_current_weather(
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106",
         tools=[get_current_weather]  # pass in the function itself
     )
@@ -211,7 +211,7 @@ You can also define your own `OpenAITool` class. This is necessary when the func
 ```python
 from typing import Literal
 
-from mirascope import CallParams, OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from mirascope import OpenAICallParams, OpenAIChat, OpenAITool, Prompt, openai_tool_fn
 from pydantic import Field
 
 
@@ -233,7 +233,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
@@ -253,7 +253,7 @@ However, attaching the function is not necessary. In fact, often there are times
 ```python
 from typing import Literal
 
-from mirascope import CallParams, OpenAIChat, OpenAITool, Prompt
+from mirascope import OpenAICallParams, OpenAIChat, OpenAITool, Prompt
 from pydantic import Field
 
 
@@ -267,7 +267,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
@@ -286,7 +286,13 @@ We also support streaming of tools using our `OpenAIToolStreamParser` class. Sim
 ```python
 from typing import Literal
 
-from mirascope import CallParams, OpenAIChat, OpenAITool, OpenAIToolStreamParser, Prompt
+from mirascope import (
+    OpenAICallParams,
+    OpenAIChat,
+    OpenAITool,
+    OpenAIToolStreamParser,
+    Prompt,
+)
 from pydantic import Field
 
 
@@ -300,7 +306,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: CallParams = CallParams(
+    _call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
