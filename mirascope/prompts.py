@@ -154,7 +154,26 @@ class Prompt(PromptConfig, BaseModel):
     @property
     def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the docstring as a list of messages."""
-        return [ChatCompletionUserMessageParam(role="user", content=str(self))]
+        message_param_map = {
+            "system": ChatCompletionSystemMessageParam,
+            "user": ChatCompletionUserMessageParam,
+            "assistant": ChatCompletionAssistantMessageParam,
+            "tool": ChatCompletionToolMessageParam,
+        }
+        messages = []
+        for match in re.finditer(
+            r"(SYSTEM|USER|ASSISTANT|TOOL): "
+            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
+            self.template(),
+        ):
+            role = match.group(1).lower()
+            content = _format_template(self, match.group(2))
+            messages.append(message_param_map[role](role=role, content=content))
+        if len(messages) == 0:
+            messages.append(
+                ChatCompletionUserMessageParam(role="user", content=str(self))
+            )
+        return messages
 
     def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:
         """Dumps the prompt template to a dictionary."""
@@ -239,27 +258,11 @@ def messages(cls: Type[T]) -> Type[T]:
     Raises:
         ValueError: If the docstring is empty.
     '''
-
-    def messages_fn(self: Prompt) -> list[ChatCompletionMessageParam]:
-        """Returns the docstring as a list of messages."""
-        message_param_map = {
-            "system": ChatCompletionSystemMessageParam,
-            "user": ChatCompletionUserMessageParam,
-            "assistant": ChatCompletionAssistantMessageParam,
-            "tool": ChatCompletionToolMessageParam,
-        }
-        messages = []
-        for match in re.finditer(
-            r"(SYSTEM|USER|ASSISTANT|TOOL): "
-            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
-            self.template(),
-        ):
-            role = match.group(1).lower()
-            content = _format_template(self, match.group(2))
-            messages.append(message_param_map[role](role=role, content=content))
-        return messages
-
-    setattr(cls, "messages", property(messages_fn))
+    warnings.warn(
+        "The `messages` decorator is deprecated and no longer necessary. You can write a `messages` style docstring without the decorator; version>=0.3.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return cls
 
 

@@ -29,7 +29,13 @@ from mirascope.chat.tools import OpenAITool
 from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
 from mirascope.prompts import OpenAICallParams
 
-from .test_prompts import FooBarPrompt, MessagesPrompt, TagPrompt, TagsPrompt
+from .test_prompts import (
+    DecoratorMessagesPrompt,
+    FooBarPrompt,
+    MessagesPrompt,
+    TagPrompt,
+    TagsPrompt,
+)
 
 
 @pytest.fixture()
@@ -46,6 +52,12 @@ def fixture_expected_foobar_prompt_str() -> str:
         "This should be on the same line in the template."
         "\n    This should be indented on a new line in the template."
     )
+
+
+@pytest.fixture()
+def fixture_decorator_messages_prompt() -> DecoratorMessagesPrompt:
+    """Returns a `DecoratorMessagesPrompt` instance."""
+    return DecoratorMessagesPrompt(foo="foo", bar="bar")
 
 
 @pytest.fixture()

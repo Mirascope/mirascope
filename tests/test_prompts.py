@@ -26,6 +26,33 @@ class FooBarPrompt(Prompt):
 
 
 @messages
+class DecoratorMessagesPrompt(Prompt):
+    """
+    SYSTEM:
+    This is the system message about {foo}.
+
+        This is also the system message.
+
+    USER:
+    This is the user message about {bar}.
+
+    TOOL:
+    This is the output of calling a tool.
+
+    ASSISTANT:
+    This is an assistant message about {foobar}.
+    This is also part of the assistant message.
+    """
+
+    foo: str
+    bar: str
+
+    @property
+    def foobar(self) -> str:
+        """Returns `foo` and `bar` concatenated."""
+        return self.foo + self.bar
+
+
 class MessagesPrompt(Prompt):
     """
     SYSTEM:
@@ -96,6 +123,10 @@ def test_save_and_load(fixture_foobar_prompt, tmpdir):
     [
         ("fixture_foobar_prompt", "fixture_expected_foobar_prompt_messages"),
         ("fixture_messages_prompt", "fixture_expected_messages_prompt_messages"),
+        (
+            "fixture_decorator_messages_prompt",
+            "fixture_expected_messages_prompt_messages",
+        ),
     ],
 )
 def test_messages(prompt, expected_messages, request):
