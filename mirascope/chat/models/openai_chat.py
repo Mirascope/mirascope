@@ -5,7 +5,7 @@ from typing import Callable, Generator, Optional, Type, TypeVar, Union
 from warnings import filterwarnings, warn
 
 from openai import OpenAI
-from pydantic import BaseModel, ValidationError, create_model
+from pydantic import BaseModel, ValidationError
 
 from ...prompts import Prompt
 from ..tools import OpenAITool

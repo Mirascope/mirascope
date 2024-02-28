@@ -1,16 +1,6 @@
 """Utility functions for mirascope chat."""
 from inspect import Parameter, isclass, signature
-from typing import (
-    Any,
-    Callable,
-    Generic,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    get_type_hints,
-)
+from typing import Any, Callable, Optional, Type, Union, cast, get_type_hints
 
 from docstring_parser import parse
 from openai.types.chat import ChatCompletionUserMessageParam
@@ -19,7 +9,6 @@ from pydantic.fields import FieldInfo
 
 from ..prompts import Prompt
 from .tools import OpenAITool, openai_tool_fn
-from .types import OpenAIChatCompletion
 
 
 def convert_tools_list_to_openai_tools(
