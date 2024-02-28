@@ -2,7 +2,7 @@
 from typing import Literal, Union
 
 from pydantic import BaseModel
-from utils import get_time_in_ms
+from wandb_utils import get_time_in_ms
 
 from mirascope import OpenAICallParams, Prompt
 from mirascope.chat import OpenAIChatCompletion

@@ -1,6 +1,6 @@
 """Main script for logging a chain of prompts to WandB."""
 
-from utils import Settings, get_time_in_ms
+from wandb_utils import Settings, get_time_in_ms
 from wandb_prompts.coolnessprompt import Coolness, CoolnessPrompt
 from wandb_prompts.partyinviteprompt import PartyInvitePrompt
 from wandb_prompts.whoprompt import Person, WhoPrompt
