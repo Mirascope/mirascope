@@ -1,10 +1,10 @@
 """Prompt for local RAG."""
 import numpy as np
 import pandas as pd
-from config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
 from openai import OpenAI
 from pydantic import ConfigDict
-from utils import embed_with_openai
+from rag_config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
+from rag_utils import embed_with_openai
 
 from mirascope import Prompt, messages
 
