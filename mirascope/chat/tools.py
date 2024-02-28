@@ -19,16 +19,8 @@ class OpenAITool(BaseModel):
     Example:
 
     ```python
-    from mirascope import Prompt, OpenAIChat, OpenAIToolStreamParser
+    from mirascope import CallParams, Prompt, OpenAIChat, OpenAIToolStreamParser
 
-    class AnimalPrompt(Prompt):
-        """
-        Tell me my favorite animal if my favorite food is {food} and my
-        favorite color is {color}.
-        """
-
-        food: str
-        color: str
 
     def animal_matcher(fav_food: str, fav_color: str) -> str:
         """Tells you your most likely favorite animal from personality traits.
@@ -40,23 +32,35 @@ class OpenAITool(BaseModel):
         Returns:
             The animal most likely to be your favorite based on traits.
         """
-    return "Your favorite animal is the best one, a frog."
+        return "Your favorite animal is the best one, a frog."
+
+
+    class AnimalPrompt(Prompt):
+        """
+        Tell me my favorite animal if my favorite food is {food} and my
+        favorite color is {color}.
+        """
+
+        food: str
+        color: str
+
+        _call_params: CallParams = CallParams(tools=[animal_matcher])
 
 
     prompt = AnimalPrompt(food="pizza", color="red")
     chat = OpenAIChat()
 
-    response = chat.create(prompt, tools=[animal_matcher])
+    response = chat.create(prompt)
     tool = response.tool
 
-    print(tool.fn(**tool.model_dump(exclude=["tool_call"])))
+    print(tool.fn(**tool.model_dump(exclude={"tool_call"})))
     #> Your favorite animal is the best one, a frog.
 
-    stream = chat.stream(prompt, tools=[animal_matcher])
-    parser = OpenAIToolStreamParser(tools=[animal_matcher])
+    stream = chat.stream(prompt)
+    parser = OpenAIToolStreamParser(tools=prompt.call_params().tools)
 
     for tool in parser.from_stream(stream):
-        print(tool.fn(**tool.model_dump(exclude=["tool_call"])))
+        print(tool.fn(**tool.model_dump(exclude={"tool_call"})))
     #> Your favorite animal is the best one, a frog.
     ```
     '''

@@ -110,6 +110,27 @@ class Prompt(BaseModel):
     _tags: list[str] = []
 
     @classmethod
+    def call_params(cls) -> CallParams:
+        """Returns the default value set for `call_params`."""
+        return cls._call_params.default  # type: ignore
+
+    @classmethod
+    def tags(cls) -> list[str]:
+        """Returns the default value set for `_tags`."""
+        if isinstance(cls._tags, list):
+            return cls._tags
+        else:
+            return cls._tags.default
+
+    # prompt_config: PromptConfig = PromptConfig(tags=[], call_params=CallParams())
+    # model_config = ...
+
+    # @classmethod
+    # def call_params(cls) -> CallParams:
+    #     """Returns the default call parameters."""
+    #     return CallParams(model="gpt-3.5-turbo-16k")
+
+    @classmethod
     def template(cls) -> str:
         """Custom parsing functionality for docstring prompt.
 
@@ -146,6 +167,11 @@ class Prompt(BaseModel):
             "template": self.template(),
             "inputs": self.model_dump(),
             "tags": self._tags,
+            "call_params": {
+                key: value
+                for key, value in self.call_params().model_dump().items()
+                if value is not None
+            },
         }
         if completion is not None:
             return prompt_dict | completion

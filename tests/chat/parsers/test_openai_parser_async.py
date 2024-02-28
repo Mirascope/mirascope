@@ -15,8 +15,11 @@ pytestmark = pytest.mark.asyncio
 @pytest.mark.parametrize(
     "prompt,fixture_tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 @pytest.mark.parametrize(
@@ -31,8 +34,8 @@ async def test_from_stream(
 ):
     """Tests that `OpenAIToolStreamParser.from_stream` returns the expected tools."""
     prompt = request.getfixturevalue(prompt)
-
     tools = [request.getfixturevalue(fixture_tool) for fixture_tool in fixture_tools]
+
     mock_create.return_value.__aiter__.return_value = (
         fixture_chat_completion_chunks_with_tools
     )
@@ -43,7 +46,7 @@ async def test_from_stream(
         assert isinstance(tool, OpenAITool)
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],

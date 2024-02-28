@@ -62,9 +62,9 @@ def patch_openai_kwargs(
         kwargs.update(
             {
                 key: value
-                for key, value in prompt._call_params.model_dump(
-                    exclude={"tools", "model"}
-                ).items()
+                for key, value in prompt.call_params()
+                .model_dump(exclude={"tools", "model"})
+                .items()
                 if value is not None
             }
         )

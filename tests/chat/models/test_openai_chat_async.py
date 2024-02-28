@@ -35,7 +35,7 @@ async def test_async_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=False,
         temperature=0.3,
@@ -72,8 +72,11 @@ async def test_async_openai_chat_messages_kwarg(mock_create, fixture_chat_comple
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 async def test_async_openai_chat_tools(
@@ -82,7 +85,6 @@ async def test_async_openai_chat_tools(
     """Tests that `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
-    prompt._call_params.tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = AsyncOpenAIChat(api_key="test")
@@ -90,7 +92,7 @@ async def test_async_openai_chat_tools(
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -136,7 +138,7 @@ async def test_async_openai_chat_stream(
         i += 1
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         temperature=0.3,
@@ -175,8 +177,11 @@ async def test_async_openai_chat_stream_messages_kwarg(
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 async def test_async_openai_chat_stream_tools(
@@ -185,7 +190,6 @@ async def test_async_openai_chat_stream_tools(
     """Tests `AsyncOpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
-    prompt._call_params.tools = tools
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
 
     mock_create.return_value.__aiter__.return_value = chunks
@@ -197,7 +201,7 @@ async def test_async_openai_chat_stream_tools(
         assert chunk.tool_calls == chunks[0].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],

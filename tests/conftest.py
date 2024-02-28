@@ -27,6 +27,7 @@ from pydantic import Field
 
 from mirascope.chat.tools import OpenAITool
 from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
+from mirascope.prompts import CallParams
 
 from .test_prompts import FooBarPrompt, MessagesPrompt, TagPrompt, TagsPrompt
 
@@ -362,6 +363,44 @@ class MyTool(OpenAITool):
     optional: int = 0
 
 
+class EmptyTool(OpenAITool):
+    """A test tool with no parameters."""
+
+
+@pytest.fixture()
+def fixture_empty_tool() -> Type[OpenAITool]:
+    """Returns an `EmptyTool` class."""
+    return EmptyTool
+
+
+class FooBarPromptWithMyTool(FooBarPrompt):
+    __doc__ = FooBarPrompt.__doc__
+
+    _call_params: CallParams = CallParams(model="gpt-3.5-turbo-1106", tools=[MyTool])
+
+
+@pytest.fixture()
+def fixture_foobar_prompt_with_my_tool() -> FooBarPromptWithMyTool:
+    """Returns a `FooBarPromptWithTools` instance."""
+    return FooBarPromptWithMyTool(foo="foo", bar="bar")
+
+
+class FooBarPromptWithMyToolAndEmptyTool(FooBarPrompt):
+    __doc__ = FooBarPrompt.__doc__
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106", tools=[MyTool, EmptyTool]
+    )
+
+
+@pytest.fixture()
+def fixture_foobar_prompt_with_my_tool_and_empty_tool() -> (
+    FooBarPromptWithMyToolAndEmptyTool
+):
+    """Returns a `FooBarPromptWithTools` instance."""
+    return FooBarPromptWithMyToolAndEmptyTool(foo="foo", bar="bar")
+
+
 @pytest.fixture()
 def fixture_my_tool() -> Type[MyTool]:
     """Returns a `MyTool` class."""
@@ -383,16 +422,6 @@ def fixture_my_tool_instance(fixture_my_tool) -> MyTool:
             type="function",
         ),
     )
-
-
-@pytest.fixture()
-def fixture_empty_tool() -> Type[OpenAITool]:
-    """Returns an `EmptyTool` class."""
-
-    class EmptyTool(OpenAITool):
-        """A test tool with no parameters."""
-
-    return EmptyTool
 
 
 @pytest.fixture()

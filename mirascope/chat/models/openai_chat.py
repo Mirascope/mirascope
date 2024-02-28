@@ -110,7 +110,7 @@ class OpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.model = prompt._call_params.model
+            self.model = prompt.call_params().model
 
             if tools is not None:
                 warn(
@@ -119,8 +119,8 @@ class OpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            if prompt._call_params.tools is not None:
-                tools = prompt._call_params.tools
+            if prompt.call_params().tools is not None:
+                tools = prompt.call_params().tools
 
         start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
@@ -171,7 +171,7 @@ class OpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.model = prompt._call_params.model
+            self.model = prompt.call_params().model
 
             if tools is not None:
                 warn(
@@ -180,8 +180,8 @@ class OpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            if prompt._call_params.tools is not None:
-                tools = prompt._call_params.tools
+            if prompt.call_params().tools is not None:
+                tools = prompt.call_params().tools
 
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)

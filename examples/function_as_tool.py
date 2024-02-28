@@ -2,13 +2,9 @@
 import os
 from typing import Literal
 
-from mirascope import OpenAIChat, Prompt
+from mirascope import CallParams, OpenAIChat, Prompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-
-
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
 
 def get_current_weather(
@@ -26,11 +22,16 @@ def get_current_weather(
     return f"{location} is 65 degrees {unit}."
 
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-completion = chat.create(
-    CurrentWeatherPrompt(),
-    tools=[get_current_weather],  # pass in the function itself for automatic conversion
-)
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in San Francisco, Tokyo, and Paris?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106", tools=[get_current_weather]
+    )
+
+
+chat = OpenAIChat()
+completion = chat.create(CurrentWeatherPrompt())
 
 if tools := completion.tools:
     for tool in tools:

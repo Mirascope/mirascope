@@ -41,7 +41,7 @@ def test_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=model if isinstance(prompt, str) else prompt._call_params.model,
+        model=model if isinstance(prompt, str) else prompt.call_params().model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -80,8 +80,11 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 def test_openai_chat_tools(
@@ -90,7 +93,7 @@ def test_openai_chat_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
-    prompt._call_params.tools = tools
+    prompt.call_params().tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
@@ -98,7 +101,7 @@ def test_openai_chat_tools(
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -149,7 +152,7 @@ def test_openai_chat_stream(
         assert chunk.chunk == fixture_chat_completion_chunks[i]
 
     mock_create.assert_called_once_with(
-        model=model if isinstance(prompt, str) else prompt._call_params.model,
+        model=model if isinstance(prompt, str) else prompt.call_params().model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -188,8 +191,11 @@ def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 def test_openai_chat_stream_tools(
@@ -198,18 +204,17 @@ def test_openai_chat_stream_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
-    prompt._call_params.tools = tools
     chunks = [fixture_chat_completion_chunk_with_tools] * 3
     mock_create.return_value = chunks
 
     chat = OpenAIChat(api_key="test")
-    stream = chat.stream(prompt, tools=[])
+    stream = chat.stream(prompt)
 
     for i, chunk in enumerate(stream):
         assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model=prompt._call_params.model,
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],

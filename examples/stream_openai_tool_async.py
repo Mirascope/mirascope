@@ -8,16 +8,13 @@ from pydantic import Field
 from mirascope import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,
+    CallParams,
     OpenAITool,
     Prompt,
     openai_tool_fn,
 )
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-
-
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
 
 def get_current_weather(
@@ -35,17 +32,23 @@ class GetCurrentWeather(OpenAITool):
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
 
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in San Francisco, Tokyo, and Paris?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106",
+        tools=[GetCurrentWeather],  # pass in function itself for automatic conversion
+    )
+
+
 tools: list[Union[Callable, Type[OpenAITool]]] = [GetCurrentWeather]
 
 
 async def stream_openai_tool():
-    chat = AsyncOpenAIChat(model="gpt-3.5-turbo-1106")
-
-    stream_completion = chat.stream(
-        CurrentWeatherPrompt(),
-        tools=tools,  # pass in the function itself for automatic conversion
-    )
-    parser = AsyncOpenAIToolStreamParser(tools=tools)
+    chat = AsyncOpenAIChat()
+    prompt = CurrentWeatherPrompt()
+    stream_completion = chat.stream(prompt)
+    parser = AsyncOpenAIToolStreamParser(tools=prompt.call_params().tools)
     async for partial_tool in parser.from_stream(stream_completion):
         print("data: ", partial_tool.__dict__, "\n\n")
 

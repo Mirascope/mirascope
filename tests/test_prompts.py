@@ -108,6 +108,7 @@ def test_messages(prompt, expected_messages, request):
 @pytest.mark.parametrize(
     "prompt, expected_tags",
     [
+        ("fixture_foobar_prompt", []),
         ("fixture_tag_prompt", ["test_tag"]),
         ("fixture_tags_prompt", ["multiple", "tags"]),
     ],
@@ -116,7 +117,7 @@ def test_tags(prompt, expected_tags, request):
     """Tests that the tags decorator adds a `tags` attribute."""
     prompt = request.getfixturevalue(prompt)
     assert hasattr(prompt, "_tags")
-    assert prompt._tags == expected_tags
+    assert prompt.tags() == expected_tags
 
 
 @pytest.mark.parametrize(

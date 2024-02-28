@@ -171,10 +171,7 @@ Tools are extremely useful when you want the model to intelligently choose to ou
 ```python
 from typing import Literal
 
-from mirascope import OpenAIChat, Prompt
-
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in Los Angeles?"""
+from mirascope import CallParams, OpenAIChat, Prompt
 
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
@@ -190,11 +187,17 @@ def get_current_weather(
     """
     return f"{location} is 65 degrees {unit}."
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-completion = chat.create(
-    CurrentWeatherPrompt(),
-    tools=[get_current_weather],  # pass in the function itself
-)
+
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in Los Angeles?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106",
+        tools=[get_current_weather]  # pass in the function itself
+    )
+
+chat = OpenAIChat()
+completion = chat.create(CurrentWeatherPrompt())
 
 for tool in completion.tools or []:
     print(tool)                      # this is a `GetCurrentWeather` instance
@@ -208,17 +211,16 @@ You can also define your own `OpenAITool` class. This is necessary when the func
 ```python
 from typing import Literal
 
-from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from mirascope import CallParams, OpenAIChat, OpenAITool, Prompt, openai_tool_fn
 from pydantic import Field
 
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in Los Angeles?"""
 
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 ) -> str:
     """Get the current weather in a given location."""
     return f"{location} is 65 degrees {unit}."
+
 
 @openai_tool_fn(get_current_weather)
 class GetCurrentWeather(OpenAITool):
@@ -227,15 +229,21 @@ class GetCurrentWeather(OpenAITool):
     location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-completion = chat.create(
-    CurrentWeatherPrompt(),
-    tools=[GetCurrentWeather],  # pass in the tool class
-)
+
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in Los Angeles?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
+    )
+
+
+chat = OpenAIChat()
+completion = chat.create(CurrentWeatherPrompt())
 
 for tool in completion.tools or []:
-    print(tool)                      # this is a `GetCurrentWeather` instance
-    print(tool.fn(**tool.__dict__))  # this will call `get_current_weather`
+    print(tool)  # this is a `GetCurrentWeather` instance
+    print(tool.fn(**tool.model_dump(exclude={"tool_call"})))  # this will call `get_current_weather`
 ```
 
 Notice that using the [`openai_tool_fn`](../api/chat/tools.md#mirascope.chat.tools.openai_tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
@@ -245,11 +253,9 @@ However, attaching the function is not necessary. In fact, often there are times
 ```python
 from typing import Literal
 
-from mirascope import OpenAIChat, OpenAITool, Prompt
+from mirascope import CallParams, OpenAIChat, OpenAITool, Prompt
 from pydantic import Field
 
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in Los Angeles?"""
 
 class GetCurrentWeather(OpenAITool):
     """Get the current weather in a given location."""
@@ -257,33 +263,53 @@ class GetCurrentWeather(OpenAITool):
     location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-completion = chat.create(
-    CurrentWeatherPrompt(),
-    tools=[GetCurrentWeather],  # pass in the tool class
-)
+
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in Los Angeles?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
+    )
+
+
+chat = OpenAIChat()
+completion = chat.create(CurrentWeatherPrompt())
 
 for tool in completion.tools or []:
-    print(tool)                      # this is a `GetCurrentWeather` instance
+    print(tool)  # this is a `GetCurrentWeather` instance
 ```
+
 ### Streaming Tools
 
 We also support streaming of tools using our `OpenAIToolStreamParser` class. Simply replace the `chat.create` with `chat.stream` and call `from_stream`, like so:
 
 ```python
-from typing import Callable, Literal, Type, Union
+from typing import Literal
 
-from mirascope import OpenAIChat, OpenAITool, OpenAIToolStreamParser, Prompt
+from mirascope import CallParams, OpenAIChat, OpenAITool, OpenAIToolStreamParser, Prompt
+from pydantic import Field
 
-# Using same OpenAITool and Prompt defined in Tool example
 
-tools: list[Union[Callable, Type[OpenAITool]]] = [GetCurrentWeather]
-completion = chat.stream(
-    CurrentWeatherPrompt(),
-    tools=tools,  # pass in the tool class
-)
+class GetCurrentWeather(OpenAITool):
+    """Get the current weather in a given location."""
 
-parser = OpenAIToolStreamParser(tools=tools) # pass in the same tool class
+    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
+    unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+
+
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in Los Angeles?"""
+
+    _call_params: CallParams = CallParams(
+        model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
+    )
+
+
+prompt = CurrentWeatherPrompt()
+chat = OpenAIChat()
+completion = chat.stream(prompt)
+
+parser = OpenAIToolStreamParser(tools=prompt.call_params().tools)  # pass in the same tools
 for tool in parser.from_stream(completion):
     print(tool)
 ```
