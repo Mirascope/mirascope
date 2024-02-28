@@ -12,7 +12,7 @@
 
 from pydantic import BaseModel, Field
 
-from mirascope import Prompt, messages, tags
+from mirascope import OpenAICallParams, Prompt, messages, tags
 
 
 class ExtractedAnswer(BaseModel):
@@ -47,3 +47,5 @@ class QuestionPrompt(Prompt):
 
     paragraph: str
     question: str
+
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")

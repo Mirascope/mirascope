@@ -1,4 +1,5 @@
 """Tests for mirascope openai chat API model classes."""
+from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -33,7 +34,7 @@ def test_openai_chat(
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     assert chat.model == model
 
     completion = chat.create(prompt, temperature=0.3)
@@ -41,13 +42,25 @@ def test_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=model,
+        model=model if isinstance(prompt, str) else prompt.call_params().model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
         stream=False,
         temperature=0.3,
     )
+
+
+def test_openai_chat_with_wrapper():
+    """Tests that `OpenAIChat` can be created with a wrapper."""
+
+    def wrapper(cls: Type[OpenAIChat]) -> Type[OpenAIChat]:
+        setattr(cls, "test_attr", "test_value")
+        return cls
+
+    chat = OpenAIChat(api_key="test", client_wrapper=wrapper)
+    assert hasattr(chat.client, "test_attr")
+    assert chat.client.test_attr == "test_value"
 
 
 @patch(
@@ -59,7 +72,7 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
     mock_create.return_value = fixture_chat_completion
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     assert chat.model == model
 
     messages = [{"role": "user", "content": "content"}]
@@ -80,8 +93,11 @@ def test_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 def test_openai_chat_tools(
@@ -90,14 +106,15 @@ def test_openai_chat_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
+    prompt.call_params().tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
-    completion = chat.create(prompt, tools=tools)
+    completion = chat.create(prompt, tools=[])
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -112,7 +129,7 @@ def test_openai_chat_tools(
 )
 def test_openai_chat_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     with pytest.raises(Exception):
         chat.create(fixture_foobar_prompt)
 
@@ -140,7 +157,7 @@ def test_openai_chat_stream(
     mock_create.return_value = fixture_chat_completion_chunks
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     stream = chat.stream(prompt, temperature=0.3)
 
     for i, chunk in enumerate(stream):
@@ -148,7 +165,7 @@ def test_openai_chat_stream(
         assert chunk.chunk == fixture_chat_completion_chunks[i]
 
     mock_create.assert_called_once_with(
-        model=model,
+        model=model if isinstance(prompt, str) else prompt.call_params().model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -166,7 +183,7 @@ def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_
     mock_create.return_value = [fixture_chat_completion_chunk] * 3
 
     model = "gpt-3.5-turbo-16k"
-    chat = OpenAIChat(model, api_key="test")
+    chat = OpenAIChat(model=model, api_key="test")
     messages = [{"role": "user", "content": "content"}]
     stream = chat.stream(messages=messages)
 
@@ -187,8 +204,11 @@ def test_openai_chat_stream_messages_kwarg(mock_create, fixture_chat_completion_
 @pytest.mark.parametrize(
     "prompt,tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 def test_openai_chat_stream_tools(
@@ -201,13 +221,13 @@ def test_openai_chat_stream_tools(
     mock_create.return_value = chunks
 
     chat = OpenAIChat(api_key="test")
-    stream = chat.stream(prompt, tools=tools)
+    stream = chat.stream(prompt)
 
     for i, chunk in enumerate(stream):
         assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -222,7 +242,7 @@ def test_openai_chat_stream_tools(
 )
 def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     """Tests that `OpenAIChat` handles OpenAI errors thrown during stream."""
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     with pytest.raises(Exception):
         stream = chat.stream(fixture_foobar_prompt)
         next(stream)
@@ -258,7 +278,7 @@ def test_openai_chat_extract(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     prompt = Prompt()
     model = chat.extract(MySchema, prompt, retries=retries)
 
@@ -287,7 +307,7 @@ def test_openai_chat_extract_messages_prompt(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(model="gpt-3.5-turbo", api_key="test")
     messages = [{"role": "user", "content": "content"}]
     model = chat.extract(MySchema, messages=messages)
 
@@ -305,7 +325,7 @@ def test_openai_chat_extract_with_validation_error(
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_bad_tools, tool_types=tools
     )
-    chat = OpenAIChat("gpt-3.5-turbo", api_key="test")
+    chat = OpenAIChat(api_key="test")
     prompt = Prompt()
     with pytest.raises(ValidationError):
         chat.extract(MySchema, prompt, retries=retries)

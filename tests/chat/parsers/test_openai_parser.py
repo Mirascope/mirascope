@@ -13,8 +13,11 @@ from mirascope import OpenAIChat, OpenAITool, OpenAIToolStreamParser
 @pytest.mark.parametrize(
     "prompt,fixture_tools",
     [
-        ("fixture_foobar_prompt", ["fixture_my_tool"]),
-        ("fixture_foobar_prompt", ["fixture_my_tool", "fixture_empty_tool"]),
+        ("fixture_foobar_prompt_with_my_tool", ["fixture_my_tool"]),
+        (
+            "fixture_foobar_prompt_with_my_tool_and_empty_tool",
+            ["fixture_my_tool", "fixture_empty_tool"],
+        ),
     ],
 )
 @pytest.mark.parametrize(
@@ -39,7 +42,7 @@ def test_from_stream(
         assert isinstance(tool, OpenAITool)
 
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
+        model=prompt.call_params().model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -52,31 +55,26 @@ def test_from_stream(
     new_callable=MagicMock,
 )
 @pytest.mark.parametrize(
-    "prompt",
-    [
-        ("fixture_foobar_prompt"),
-    ],
-)
-@pytest.mark.parametrize(
     "fixture_chat_completion_chunks_with_tools", ["MyTool"], indirect=True
 )
 def test_from_stream_no_tool(
     mock_create: MagicMock,
     fixture_chat_completion_chunks_with_tools,
-    prompt,
+    fixture_foobar_prompt,
     request: pytest.FixtureRequest,
 ):
     """Tests `OpenAIToolStreamParser.from_stream` with no tools."""
-    prompt = request.getfixturevalue(prompt)
 
     mock_create.return_value = fixture_chat_completion_chunks_with_tools
     chat = OpenAIChat(api_key="test")
-    stream = chat.stream(prompt)
+    stream = chat.stream(fixture_foobar_prompt)
     parser = OpenAIToolStreamParser(tools=[])
     assert sum(1 for _ in parser.from_stream(stream)) == 0
 
+    print(fixture_foobar_prompt.call_params())
+
     mock_create.assert_called_once_with(
-        model="gpt-3.5-turbo",
-        messages=prompt.messages,
+        model=fixture_foobar_prompt.call_params().model,
+        messages=fixture_foobar_prompt.messages,
         stream=True,
     )

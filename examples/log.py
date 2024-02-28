@@ -28,6 +28,7 @@ class OpenAIChatCompletionTable(Base):
     template: Mapped[str] = mapped_column(String(), nullable=False)
     inputs: Mapped[Optional[dict]] = mapped_column(JSONB)
     tags: Mapped[Optional[list[str]]] = mapped_column(JSON)
+    call_params: Mapped[Optional[dict]] = mapped_column(JSONB)
     start_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     end_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     output: Mapped[Optional[dict]] = mapped_column(JSONB)

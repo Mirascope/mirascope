@@ -145,10 +145,11 @@ You can add tags to help organize prompts when you want to use them outside your
 
 !!! note 
 	
-	`@tags` decorator adds `_tags` private attribute to the class
+	`@tags` updates the `_tags` private attribute of the class with the provided list of tags, which you can access using the `tags` classmethod.
 
 ```python
-from mirascope import Prompt, tags
+from mirascope import OpenAIChat, Prompt, tags
+
 
 @tags(["recommendation_project", "version:0001"])
 class BookRecommendationPrompt(Prompt):
@@ -162,7 +163,7 @@ class BookRecommendationPrompt(Prompt):
 prompt = BookRecommendationPrompt(topic="how to bake a cake")
 model = OpenAIChat()
 print(prompt.dump())
-# {'template': 'Can you recommend some books on {topic}?', 'inputs': {'topic': 'how to bake a cake'}, 'tags': ['recommendation_project', 'version:0001']}
+# {'template': 'Can you recommend some books on {topic}?', 'inputs': {'topic': 'how to bake a cake'}, 'tags': ['recommendation_project', 'version:0001'], 'call_params': {'model': 'gpt-3.5-turbo-16k'}}
 ```
 
 ## Future updates

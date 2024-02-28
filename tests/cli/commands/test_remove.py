@@ -129,5 +129,4 @@ def test_remove_file_not_found(
     mock_prompt_versions.return_value = fixture_prompt_versions
 
     with pytest.raises(FileNotFoundError):
-        result = runner.invoke(app, ["remove", "test", "0001"], catch_exceptions=False)
-        assert result.exit_code == 1
+        runner.invoke(app, ["remove", "test", "0001"], catch_exceptions=False)
