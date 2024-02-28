@@ -17,7 +17,7 @@ class FooBarPrompt(Prompt):
 
     foo: str
     bar: str
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 
     @property
     def foobar(self) -> str:
