@@ -35,3 +35,11 @@ for text in texts:
         retries=5,
     )
     print(text_info)
+
+    # Output:
+
+    # text: "Hey buddy, want to grab lunch tomorrow?"
+    # labels=[<Labels.QUESTION: 'question'>, <Labels.NICE: 'nice'>]
+
+    # text: "You will pay for what you have done, you pathetic loser."
+    # labels=[<Labels.AGGRESSIVE: 'aggressive'>, <Labels.STATEMENT: 'statement'>]
