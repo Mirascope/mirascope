@@ -3,13 +3,13 @@ from typing import Union
 
 import pandas as pd
 import tiktoken
-from config import (
+from openai import OpenAI
+from rag_config import (
     EMBEDDINGS_COLUMN,
     EMBEDDINGS_MODEL,
     MODEL,
     TEXT_COLUMN,
 )
-from openai import OpenAI
 
 
 def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[float]]:

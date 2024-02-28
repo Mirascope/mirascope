@@ -9,10 +9,10 @@ case of failed upsertions, manually delete the Pinecone Index and try again.
 import os
 
 import pandas as pd
-from config import EMBEDDINGS_COLUMN, PINECONE_INDEX
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 from pinecone.core.client.exceptions import PineconeApiException
+from rag_config import EMBEDDINGS_COLUMN, PINECONE_INDEX
 
 load_dotenv()
 

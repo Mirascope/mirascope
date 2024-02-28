@@ -1,10 +1,10 @@
 """Prompt for Pinecone RAG."""
 import pandas as pd
-from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
 from openai import OpenAI
 from pinecone import Pinecone
 from pydantic import ConfigDict
-from utils import embed_with_openai
+from rag_config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
+from rag_utils import embed_with_openai
 
 from mirascope import Prompt, messages
 
