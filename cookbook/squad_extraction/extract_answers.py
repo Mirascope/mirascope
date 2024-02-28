@@ -13,7 +13,7 @@ settings = Settings()
 
 def main(prompt_version: str):
     """Extracts answers for SQuAD 2.0 questions using GPT 3.5 Turbo."""
-    chat = OpenAIChat(model="gpt-3.5-turbo-1106", api_key=settings.openai_api_key)
+    chat = OpenAIChat(api_key=settings.openai_api_key)
     questions = load_geology_squad()
     extracted_answers = {
         question.id: chat.extract(

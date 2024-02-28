@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from mirascope.prompts import Prompt, messages, tags
+from mirascope.prompts import OpenAICallParams, Prompt, messages, tags
 
 
 class FooBarPrompt(Prompt):
@@ -17,6 +17,7 @@ class FooBarPrompt(Prompt):
 
     foo: str
     bar: str
+    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 
     @property
     def foobar(self) -> str:
@@ -107,6 +108,7 @@ def test_messages(prompt, expected_messages, request):
 @pytest.mark.parametrize(
     "prompt, expected_tags",
     [
+        ("fixture_foobar_prompt", []),
         ("fixture_tag_prompt", ["test_tag"]),
         ("fixture_tags_prompt", ["multiple", "tags"]),
     ],
@@ -115,7 +117,7 @@ def test_tags(prompt, expected_tags, request):
     """Tests that the tags decorator adds a `tags` attribute."""
     prompt = request.getfixturevalue(prompt)
     assert hasattr(prompt, "_tags")
-    assert prompt._tags == expected_tags
+    assert prompt.tags() == expected_tags
 
 
 @pytest.mark.parametrize(

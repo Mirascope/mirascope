@@ -59,6 +59,15 @@ def patch_openai_kwargs(
         ]
     else:
         kwargs["messages"] = prompt.messages
+        kwargs.update(
+            {
+                key: value
+                for key, value in prompt.call_params()
+                .model_dump(exclude={"tools", "model"})
+                .items()
+                if value is not None
+            }
+        )
 
     if tools:
         kwargs["tools"] = [tool.tool_schema() for tool in tools]

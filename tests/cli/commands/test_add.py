@@ -131,8 +131,7 @@ def test_add_unknown_file(mock_get_mirascope_settings_add: MagicMock):
         versions_location=".mirascope/versions",
     )
     with pytest.raises(FileNotFoundError):
-        result = runner.invoke(app, ["add", "unknown_prompt"], catch_exceptions=False)
-        assert result.exit_code == 1
+        runner.invoke(app, ["add", "unknown_prompt"], catch_exceptions=False)
 
 
 @patch("mirascope.cli.commands.add.check_status")

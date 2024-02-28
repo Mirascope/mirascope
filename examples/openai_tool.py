@@ -4,13 +4,9 @@ from typing import Literal
 
 from pydantic import Field
 
-from mirascope import OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from mirascope import OpenAICallParams, OpenAIChat, OpenAITool, Prompt, openai_tool_fn
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-
-
-class CurrentWeatherPrompt(Prompt):
-    """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
 
 def get_current_weather(
@@ -28,11 +24,16 @@ class GetCurrentWeather(OpenAITool):
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-completion = chat.create(
-    CurrentWeatherPrompt(),
-    tools=[GetCurrentWeather],  # pass in the function itself for automatic conversion
-)
+class CurrentWeatherPrompt(Prompt):
+    """What's the weather like in San Francisco, Tokyo, and Paris?"""
+
+    _call_params: OpenAICallParams = OpenAICallParams(
+        model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
+    )
+
+
+chat = OpenAIChat()
+completion = chat.create(CurrentWeatherPrompt())
 
 if tools := completion.tools:
     for tool in tools:
