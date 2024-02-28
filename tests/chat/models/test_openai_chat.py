@@ -1,4 +1,5 @@
 """Tests for mirascope openai chat API model classes."""
+from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -48,6 +49,18 @@ def test_openai_chat(
         stream=False,
         temperature=0.3,
     )
+
+
+def test_openai_chat_with_wrapper():
+    """Tests that `OpenAIChat` can be created with a wrapper."""
+
+    def wrapper(cls: Type[OpenAIChat]) -> Type[OpenAIChat]:
+        setattr(cls, "test_attr", "test_value")
+        return cls
+
+    chat = OpenAIChat(api_key="test", client_wrapper=wrapper)
+    assert hasattr(chat.client, "test_attr")
+    assert chat.client.test_attr == "test_value"
 
 
 @patch(

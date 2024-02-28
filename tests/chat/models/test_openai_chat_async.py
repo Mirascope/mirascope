@@ -1,4 +1,5 @@
 """Tests for mirascope async openai chat API model classes."""
+from typing import Type
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -40,6 +41,18 @@ async def test_async_openai_chat(
         stream=False,
         temperature=0.3,
     )
+
+
+def test_async_openai_chat_with_wrapper():
+    """Tests that `OpenAIChat` can be created with a wrapper."""
+
+    def wrapper(cls: Type[AsyncOpenAIChat]) -> Type[AsyncOpenAIChat]:
+        setattr(cls, "test_attr", "test_value")
+        return cls
+
+    chat = AsyncOpenAIChat(api_key="test", client_wrapper=wrapper)
+    assert hasattr(chat.client, "test_attr")
+    assert chat.client.test_attr == "test_value"
 
 
 @patch(

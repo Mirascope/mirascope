@@ -61,6 +61,7 @@ class OpenAIChat:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
+        client_wrapper: Optional[Callable] = None,
         **kwargs,
     ):
         """Initializes an instance of `OpenAIChat."""
@@ -71,6 +72,8 @@ class OpenAIChat:
             self.model = "gpt-3.5-turbo"
             self.model_is_set = False
         self.client = OpenAI(api_key=api_key, base_url=base_url, **kwargs)
+        if client_wrapper is not None:
+            self.client = client_wrapper(self.client)
 
     def create(
         self,
