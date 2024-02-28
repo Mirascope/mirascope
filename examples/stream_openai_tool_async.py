@@ -35,7 +35,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106",
         tools=[GetCurrentWeather],  # pass in function itself for automatic conversion
     )
@@ -48,7 +48,7 @@ async def stream_openai_tool():
     chat = AsyncOpenAIChat()
     prompt = CurrentWeatherPrompt()
     stream_completion = chat.stream(prompt)
-    parser = AsyncOpenAIToolStreamParser(tools=prompt.call_params().tools)
+    parser = AsyncOpenAIToolStreamParser(tools=prompt.call_params.tools)
     async for partial_tool in parser.from_stream(stream_completion):
         print("data: ", partial_tool.__dict__, "\n\n")
 

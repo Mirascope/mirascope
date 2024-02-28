@@ -46,7 +46,7 @@ async def test_from_stream(
         assert isinstance(tool, OpenAITool)
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],

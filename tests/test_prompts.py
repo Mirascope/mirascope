@@ -17,7 +17,7 @@ class FooBarPrompt(Prompt):
 
     foo: str
     bar: str
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 
     @property
     def foobar(self) -> str:
@@ -117,7 +117,7 @@ def test_tags(prompt, expected_tags, request):
     """Tests that the tags decorator adds a `tags` attribute."""
     prompt = request.getfixturevalue(prompt)
     assert hasattr(prompt, "_tags")
-    assert prompt.tags() == expected_tags
+    assert prompt._tags == expected_tags
 
 
 @pytest.mark.parametrize(
