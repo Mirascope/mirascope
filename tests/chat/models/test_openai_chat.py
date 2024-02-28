@@ -110,7 +110,7 @@ def test_openai_chat_tools(
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
-    completion = chat.create(prompt, tools=[])
+    completion = chat.create(prompt, tools=[], extract=False)
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
