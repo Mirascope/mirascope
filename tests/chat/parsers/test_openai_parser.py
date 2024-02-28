@@ -42,7 +42,7 @@ def test_from_stream(
         assert isinstance(tool, OpenAITool)
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -71,10 +71,10 @@ def test_from_stream_no_tool(
     parser = OpenAIToolStreamParser(tools=[])
     assert sum(1 for _ in parser.from_stream(stream)) == 0
 
-    print(fixture_foobar_prompt.call_params())
+    print(fixture_foobar_prompt.call_params)
 
     mock_create.assert_called_once_with(
-        model=fixture_foobar_prompt.call_params().model,
+        model=fixture_foobar_prompt.call_params.model,
         messages=fixture_foobar_prompt.messages,
         stream=True,
     )

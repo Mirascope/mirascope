@@ -1,8 +1,8 @@
 """Class for interacting with AsyncOpenAI through Chat APIs."""
 import datetime
 import logging
+import warnings
 from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
-from warnings import filterwarnings, warn
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
@@ -16,7 +16,7 @@ from ..utils import (
     patch_openai_kwargs,
 )
 
-filterwarnings("always", category=DeprecationWarning, module="mirascope")
+warnings.filterwarnings("always", category=DeprecationWarning, module="mirascope")
 logger = logging.getLogger("mirascope")
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -111,7 +111,7 @@ class AsyncOpenAIChat:
         extract = kwargs.pop("extract") if "extract" in kwargs else False
         if isinstance(prompt, Prompt):
             if self.model_is_set:
-                warn(
+                warnings.warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
                     "`Prompt` in favor of `OpenAICallParams.model` field inside of "
                     "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
@@ -119,17 +119,17 @@ class AsyncOpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.model = prompt.call_params().model
+            self.model = prompt.call_params.model
 
             if tools is not None and not extract:
-                warn(
+                warnings.warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
                     "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            if prompt.call_params().tools is not None:
-                tools = prompt.call_params().tools
+            if prompt.call_params.tools is not None:
+                tools = prompt.call_params.tools
 
         start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
@@ -174,7 +174,7 @@ class AsyncOpenAIChat:
         """
         if isinstance(prompt, Prompt):
             if self.model_is_set:
-                warn(
+                warnings.warn(
                     "The `model` parameter will be ignored when `prompt` is of type "
                     "`Prompt` in favor of `OpenAICallParams.model` field inside of "
                     "`prompt`; version>=0.3.0. Use `OpenAICallParams` inside of your "
@@ -182,17 +182,17 @@ class AsyncOpenAIChat:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.model = prompt.call_params().model
+            self.model = prompt.call_params.model
 
             if tools is not None:
-                warn(
+                warnings.warn(
                     "The `tools` parameter is deprecated; version>=0.3.0. "
                     "Use `OpenAICallParams` inside of your `Prompt` instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            if prompt.call_params().tools is not None:
-                tools = prompt.call_params().tools
+            if prompt.call_params.tools is not None:
+                tools = prompt.call_params.tools
 
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)

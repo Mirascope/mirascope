@@ -117,7 +117,7 @@ def test_tags(prompt, expected_tags, request):
     """Tests that the tags decorator adds a `tags` attribute."""
     prompt = request.getfixturevalue(prompt)
     assert hasattr(prompt, "_tags")
-    assert prompt.tags() == expected_tags
+    assert prompt._tags == expected_tags
 
 
 @pytest.mark.parametrize(

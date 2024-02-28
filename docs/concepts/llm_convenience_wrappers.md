@@ -315,7 +315,7 @@ prompt = CurrentWeatherPrompt()
 chat = OpenAIChat()
 completion = chat.stream(prompt)
 
-parser = OpenAIToolStreamParser(tools=prompt.call_params().tools)  # pass in the same tools
+parser = OpenAIToolStreamParser(tools=prompt.call_params.tools)  # pass in the same tools
 for tool in parser.from_stream(completion):
     print(tool)
 ```

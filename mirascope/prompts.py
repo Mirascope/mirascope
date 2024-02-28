@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pickle
 import re
+import warnings
 from string import Formatter
 from textwrap import dedent
 from typing import Any, Callable, Optional, Type, TypeVar, Union
@@ -22,6 +23,14 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import BaseModel, ConfigDict
 
 from .chat.tools import OpenAITool
+
+warnings.filterwarnings(
+    "ignore", message='Field name "call_params" shadows an attribute in parent "Prompt"'
+)
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "call_params" shadows an attribute in parent "PromptConfig"',
+)
 
 
 def _format_template(prompt: Prompt, template: str) -> str:
@@ -62,7 +71,15 @@ class OpenAICallParams(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class Prompt(BaseModel):
+class PromptConfig:
+    """The configuration for a `Prompt`."""
+
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-0125")
+    # TODO: Add support for prompt tags with CLI instead of _tags.
+    # tags: list[str] = []
+
+
+class Prompt(PromptConfig, BaseModel):
     '''A Pydantic model for prompts.
 
     Example:
@@ -106,21 +123,7 @@ class Prompt(BaseModel):
     ```
     '''
 
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-16k")
     _tags: list[str] = []
-
-    @classmethod
-    def call_params(cls) -> OpenAICallParams:
-        """Returns the default value set for `call_params`."""
-        return cls._call_params.default  # type: ignore
-
-    @classmethod
-    def tags(cls) -> list[str]:
-        """Returns the default value set for `_tags`."""
-        if isinstance(cls._tags, list):
-            return cls._tags
-        else:
-            return cls._tags.default
 
     @classmethod
     def template(cls) -> str:
@@ -161,7 +164,7 @@ class Prompt(BaseModel):
             "tags": self._tags,
             "call_params": {
                 key: value
-                for key, value in self.call_params().model_dump().items()
+                for key, value in self.call_params.model_dump().items()
                 if value is not None
             },
         }

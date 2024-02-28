@@ -57,7 +57,7 @@ class OpenAITool(BaseModel):
     #> Your favorite animal is the best one, a frog.
 
     stream = chat.stream(prompt)
-    parser = OpenAIToolStreamParser(tools=prompt.call_params().tools)
+    parser = OpenAIToolStreamParser(tools=prompt.call_params.tools)
 
     for tool in parser.from_stream(stream):
         print(tool.fn(**tool.model_dump(exclude={"tool_call"})))
