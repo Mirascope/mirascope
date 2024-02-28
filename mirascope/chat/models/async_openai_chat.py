@@ -108,6 +108,7 @@ class AsyncOpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        extract = kwargs.pop("extract") if "extract" in kwargs else False
         if isinstance(prompt, Prompt):
             if self.model_is_set:
                 warn(
@@ -120,16 +121,13 @@ class AsyncOpenAIChat:
                 )
             self.model = prompt.call_params().model
 
-            if tools is not None:
-                if "extract" in kwargs:
-                    kwargs.pop("extract")
-                else:
-                    warn(
-                        "The `tools` parameter is deprecated; version>=0.3.0. "
-                        "Use `OpenAICallParams` inside of your `Prompt` instead.",
-                        DeprecationWarning,
-                        stacklevel=2,
-                    )
+            if tools is not None and not extract:
+                warn(
+                    "The `tools` parameter is deprecated; version>=0.3.0. "
+                    "Use `OpenAICallParams` inside of your `Prompt` instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
             if prompt.call_params().tools is not None:
                 tools = prompt.call_params().tools
 
@@ -253,7 +251,9 @@ class AsyncOpenAIChat:
         )
 
         try:
-            return schema(**completion.tool.model_dump())  # type: ignore
+            model = schema(**completion.tool.model_dump())  # type: ignore
+            model._completion = completion
+            return model
         except ValidationError as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")

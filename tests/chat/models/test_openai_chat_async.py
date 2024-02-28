@@ -308,6 +308,7 @@ async def test_async_openai_chat_extract_messages_prompt(
 
     mock_create.assert_called_once()
     assert isinstance(model, MySchema)
+    assert model._completion == mock_create.return_value
 
 
 @patch(

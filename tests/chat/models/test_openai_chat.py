@@ -314,6 +314,7 @@ def test_openai_chat_extract_messages_prompt(
 
     mock_create.assert_called_once()
     assert isinstance(model, MySchema)
+    assert model._completion == mock_create.return_value
 
 
 @patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
