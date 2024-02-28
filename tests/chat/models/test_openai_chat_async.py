@@ -277,6 +277,7 @@ async def test_async_openai_chat_extract(
     prompt_arg = mock_create.call_args.args[0]
     assert prompt_arg.model_dump() == prompt.model_dump()
 
+    mock_create.call_args.kwargs.pop("extract")
     tools_arg, tool_choice_arg = list(mock_create.call_args.kwargs.values())
     assert len(tools_arg) == 1
     assert tools_arg[0].model_json_schema() == MySchemaTool.model_json_schema()
