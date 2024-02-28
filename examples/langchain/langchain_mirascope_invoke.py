@@ -13,6 +13,7 @@ from langchain_config import Settings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from pydantic import computed_field
 
 from mirascope import Prompt
 
@@ -22,17 +23,24 @@ os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 class TellMeAJokePrompt(Prompt):
     """
-    tell me a short joke about {topic}
+    tell me a short joke about {topic_x_language}
     """
 
     topic: str
+    language: str
+
+    # We can leverage Pydantic's `@computed_field` to create a new field to be invoked
+    @computed_field
+    def topic_x_language(self) -> str:
+        """The topic and language combined"""
+        return f"{self.topic} in {self.language}"
 
 
-joke_prompt = TellMeAJokePrompt(topic="ice cream")
+joke_prompt = TellMeAJokePrompt(topic="ice cream", language="english")
 prompt = ChatPromptTemplate.from_template(joke_prompt.template())
+
 model = ChatOpenAI(model="gpt-4")
 output_parser = StrOutputParser()
-
 chain = prompt | model | output_parser
 
 print(chain.invoke(joke_prompt.model_dump()))
