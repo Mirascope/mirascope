@@ -277,6 +277,7 @@ async def test_async_openai_chat_extract(
     prompt_arg = mock_create.call_args.args[0]
     assert prompt_arg.model_dump() == prompt.model_dump()
 
+    mock_create.call_args.kwargs.pop("extract")
     tools_arg, tool_choice_arg = list(mock_create.call_args.kwargs.values())
     assert len(tools_arg) == 1
     assert tools_arg[0].model_json_schema() == MySchemaTool.model_json_schema()
@@ -328,3 +329,21 @@ async def test_async_openai_chat_extract_with_validation_error(
         await chat.extract(MySchema, prompt, retries=retries)
 
     assert mock_create.call_count == retries + 1
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+)
+async def test_openai_chat_extract_no_deprecation_warning(
+    mock_create,
+    fixture_foobar_prompt,
+    fixture_chat_completion_with_schema_tool,
+):
+    """Tests that `OpenAIChat.extract` raises a deprecation warning."""
+    mock_create.return_value = fixture_chat_completion_with_schema_tool
+
+    chat = AsyncOpenAIChat(api_key="test")
+    await chat.extract(MySchema, fixture_foobar_prompt)
+
+    assert "extract" not in mock_create.call_args.kwargs
