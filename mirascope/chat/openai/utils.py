@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from ..prompts import Prompt
+from ...prompts import Prompt
 from .tools import OpenAITool, openai_tool_fn
 
 

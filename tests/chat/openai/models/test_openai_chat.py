@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from mirascope.chat.models import OpenAIChat
-from mirascope.chat.tools import OpenAITool
-from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
+from mirascope.chat.openai.models import OpenAIChat
+from mirascope.chat.openai.tools import OpenAITool
+from mirascope.chat.openai.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from mirascope.prompts import Prompt
 
 
@@ -262,7 +262,7 @@ class MySchemaTool(OpenAITool):
     optional: int = 0
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@patch("mirascope.chat.openai.models.OpenAIChat.create", new_callable=MagicMock)
 @pytest.mark.parametrize("prompt", [Prompt(), "This is a test prompt."])
 @pytest.mark.parametrize("retries", [1, 3, 5])
 def test_openai_chat_extract(
@@ -299,7 +299,7 @@ def test_openai_chat_extract(
     assert model.model_dump() == schema_instance.model_dump()
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@patch("mirascope.chat.openai.models.OpenAIChat.create", new_callable=MagicMock)
 def test_openai_chat_extract_messages_prompt(
     mock_create, fixture_my_tool, fixture_chat_completion_with_tools
 ):
@@ -317,7 +317,7 @@ def test_openai_chat_extract_messages_prompt(
     assert model._completion == mock_create.return_value
 
 
-@patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)
+@patch("mirascope.chat.openai.models.OpenAIChat.create", new_callable=MagicMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
 def test_openai_chat_extract_with_validation_error(
     mock_create, retries, fixture_my_tool, fixture_chat_completion_with_bad_tools

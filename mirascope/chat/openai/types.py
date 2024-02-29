@@ -1,17 +1,22 @@
 """Classes for responses when interacting with a Chat API."""
-from typing import Any, Optional, Type
+from typing import Any, Callable, Optional, Type, Union
 
+from httpx import Timeout
+from openai._types import Body, Headers, Query
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionChunk,
     ChatCompletionMessageToolCall,
+    ChatCompletionToolChoiceOptionParam,
 )
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaToolCall
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
-from pydantic import BaseModel
+from openai.types.chat.completion_create_params import ResponseFormat
+from pydantic import BaseModel, ConfigDict
 
+from ...prompts import BaseCallParams
 from .tools import OpenAITool
 
 
@@ -191,3 +196,32 @@ class OpenAIChatCompletionChunk(BaseModel):
     def __str__(self) -> str:
         """Returns the chunk content for the 0th choice."""
         return self.content if self.content is not None else ""
+
+
+class OpenAICallParams(BaseCallParams):
+    """The parameters to use when calling the OpenAI Chat API with a prompt."""
+
+    frequency_penalty: Optional[float] = None
+    logit_bias: Optional[dict[str, int]] = None
+    logprobs: Optional[bool] = None
+    max_tokens: Optional[int] = None
+    n: Optional[int] = None
+    presence_penalty: Optional[float] = None
+    response_format: Optional[ResponseFormat] = None
+    seed: Optional[int] = None
+    stop: Union[Optional[str], list[str]] = None
+    temperature: Optional[float] = None
+    tool_choice: Optional[ChatCompletionToolChoiceOptionParam] = None
+    tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None
+    top_logprobs: Optional[int] = None
+    top_p: Optional[float] = None
+    user: Optional[str] = None
+    # Values defined below take precedence over values defined elsewhere. Use these
+    # params to pass additional parameters to the API if necessary that aren't already
+    # available as params.
+    extra_headers: Optional[Headers] = None
+    extra_query: Optional[Query] = None
+    extra_body: Optional[Body] = None
+    timeout: Optional[Union[float, Timeout]] = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)

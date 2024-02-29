@@ -9,20 +9,10 @@ from string import Formatter
 from textwrap import dedent
 from typing import Any, Callable, Optional, Type, TypeVar, Union
 
-from httpx import Timeout
-from openai._types import Body, Headers, Query
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-    ChatCompletionSystemMessageParam,
-    ChatCompletionToolChoiceOptionParam,
-    ChatCompletionToolMessageParam,
-    ChatCompletionUserMessageParam,
-)
-from openai.types.chat.completion_create_params import ResponseFormat
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from .chat.tools import OpenAITool
+from .messages import AssistantMessage, Message, SystemMessage, ToolMessage, UserMessage
+from .tools import BaseTool
 
 warnings.filterwarnings(
     "ignore", message='Field name "call_params" shadows an attribute in parent "Prompt"'
@@ -41,40 +31,17 @@ def _format_template(prompt: Prompt, template: str) -> str:
     return template.format(**{var: getattr(prompt, var) for var in template_vars})
 
 
-class OpenAICallParams(BaseModel):
-    """The parameters to use when calling the OpenAI Chat API with a prompt."""
+class BaseCallParams(BaseModel):
+    """The base parameters for calling a model with a prompt."""
 
     model: str
-    frequency_penalty: Optional[float] = None
-    logit_bias: Optional[dict[str, int]] = None
-    logprobs: Optional[bool] = None
-    max_tokens: Optional[int] = None
-    n: Optional[int] = None
-    presence_penalty: Optional[float] = None
-    response_format: Optional[ResponseFormat] = None
-    seed: Optional[int] = None
-    stop: Union[Optional[str], list[str]] = None
-    temperature: Optional[float] = None
-    tool_choice: Optional[ChatCompletionToolChoiceOptionParam] = None
-    tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None
-    top_logprobs: Optional[int] = None
-    top_p: Optional[float] = None
-    user: Optional[str] = None
-    # Values defined below take precedence over values defined elsewhere. Use these
-    # params to pass additional parameters to the API if necessary that aren't already
-    # available as params.
-    extra_headers: Optional[Headers] = None
-    extra_query: Optional[Query] = None
-    extra_body: Optional[Body] = None
-    timeout: Optional[Union[float, Timeout]] = None
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
 
 
 class PromptConfig:
     """The configuration for a `Prompt`."""
 
-    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-0125")
+    call_params: BaseCallParams = BaseCallParams(model="gpt-3.5-turbo-0125")
     # TODO: Add support for prompt tags with CLI instead of _tags.
     # tags: list[str] = []
 
@@ -152,13 +119,13 @@ class Prompt(PromptConfig, BaseModel):
         return _format_template(self, self.template())
 
     @property
-    def messages(self) -> list[ChatCompletionMessageParam]:
+    def messages(self) -> list[Message]:
         """Returns the docstring as a list of messages."""
         message_param_map = {
-            "system": ChatCompletionSystemMessageParam,
-            "user": ChatCompletionUserMessageParam,
-            "assistant": ChatCompletionAssistantMessageParam,
-            "tool": ChatCompletionToolMessageParam,
+            "system": SystemMessage,
+            "user": UserMessage,
+            "assistant": AssistantMessage,
+            "tool": ToolMessage,
         }
         messages = []
         for match in re.finditer(
@@ -170,9 +137,7 @@ class Prompt(PromptConfig, BaseModel):
             content = _format_template(self, match.group(2))
             messages.append(message_param_map[role](role=role, content=content))
         if len(messages) == 0:
-            messages.append(
-                ChatCompletionUserMessageParam(role="user", content=str(self))
-            )
+            messages.append(UserMessage(role="user", content=str(self)))
         return messages
 
     def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:

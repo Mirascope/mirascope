@@ -1,3 +1,3 @@
 # chat.models
 
-::: mirascope.chat.models
+::: mirascope.chat.openai.models

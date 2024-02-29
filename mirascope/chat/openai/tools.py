@@ -6,10 +6,12 @@ from json import JSONDecodeError
 from typing import Callable, Optional, Type, TypeVar, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+
+from ...prompts.tools import BaseTool
 
 
-class OpenAITool(BaseModel):
+class OpenAITool(BaseTool):
     '''A base class for easy use of tools with the OpenAI Chat client.
 
     `OpenAITool` internally handles the logic that allows you to use tools with simple

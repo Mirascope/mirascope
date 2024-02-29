@@ -2,7 +2,7 @@
 import pytest
 from pydantic import ValidationError
 
-from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
+from mirascope.chat.openai.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 
 
 def test_openai_chat_completion(fixture_chat_completion):

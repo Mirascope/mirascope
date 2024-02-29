@@ -6,7 +6,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 from pydantic import Field, ValidationError
 
-from mirascope.chat.tools import OpenAITool, openai_tool_fn
+from mirascope.chat.openai.tools import OpenAITool, openai_tool_fn
 
 
 @pytest.mark.parametrize(

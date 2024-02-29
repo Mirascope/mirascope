@@ -1,3 +1,3 @@
 # chat.models.AsyncOpenAIChat
 
-::: mirascope.chat.models.AsyncOpenAIChat
+::: mirascope.chat.openai.models.AsyncOpenAIChat

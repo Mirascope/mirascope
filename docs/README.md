@@ -237,8 +237,7 @@ The base `Prompt` class without the decorator will still have the `messages` att
 <p>Sometimes writing the messages array yourself can be useful for accessing functionality not yet supported by docstring parser:</p>
 
 ```python
-from mirascope import Prompt
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope import Message, Prompt
 
 
 class MessagesPrompt(Prompt):
@@ -247,7 +246,7 @@ class MessagesPrompt(Prompt):
     name: str
 
     @property
-    def messages(self) -> list[ChatCompletionMessageParam]:
+    def messages(self) -> list[Message]:
         """Returns the list of message params."""
         return [
             {

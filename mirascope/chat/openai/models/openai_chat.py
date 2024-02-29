@@ -1,13 +1,13 @@
-"""Class for interacting with AsyncOpenAI through Chat APIs."""
+"""Class for interacting with OpenAI through Chat APIs."""
 import datetime
 import logging
 import warnings
-from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
+from typing import Callable, Generator, Optional, Type, TypeVar, Union
 
-from openai import AsyncOpenAI
+from openai import OpenAI
 from pydantic import BaseModel, ValidationError
 
-from ...prompts import Prompt
+from ....prompts import Prompt
 from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from ..utils import (
@@ -21,8 +21,8 @@ logger = logging.getLogger("mirascope")
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
-class AsyncOpenAIChat:
-    '''A convenience wrapper for the AsyncOpenAI Chat client.
+class OpenAIChat:
+    '''A convenience wrapper for the OpenAI Chat client.
 
     The Mirascope convenience wrapper for OpenAI provides a more user-friendly interface
     for interacting with their API. For detailed usage examples, check out the cookbook.
@@ -30,12 +30,12 @@ class AsyncOpenAIChat:
     Example:
 
     ```python
-    import asyncio
     import os
 
-    from mirascope import AsyncOpenAIChat, Prompt
+    from mirascope import OpenAIChat, Prompt
 
     os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
 
     class BookRecommendationPrompt(Prompt):
         """
@@ -46,21 +46,16 @@ class AsyncOpenAIChat:
 
 
     prompt = BookRecommendationPrompt(topic="how to bake a cake")
+    model = OpenAIChat()
+    completion = model.create(prompt)
 
-    model = AsyncOpenAIChat()
-
-
-    async def create_book_recommendation():
-        """Asynchronously creates the response for a call to the model using `prompt`."""
-        return await model.create(prompt)
-
-
-    print(asyncio.run(create_book_recommendation()))
+    print(completion)
     #> Certinly! Here are some books on how to bake a cake:
     #  1. "The Cake Bible" by Rose Levy Beranbaum
     #  2. "Joy of Baking" by Irma S Rombauer and Marion Rombauer Becker
     #  ...
     ```
+
     '''
 
     def __init__(
@@ -70,32 +65,34 @@ class AsyncOpenAIChat:
         client_wrapper: Optional[Callable] = None,
         **kwargs,
     ):
-        """Initializes an instance of `AsyncOpenAIChat."""
+        """Initializes an instance of `OpenAIChat."""
         if "model" in kwargs:
             self.model = kwargs.pop("model")
             self.model_is_set = True
         else:
             self.model = "gpt-3.5-turbo"
             self.model_is_set = False
-        self.client = AsyncOpenAI(api_key=api_key, base_url=base_url, **kwargs)
+        self.client = OpenAI(api_key=api_key, base_url=base_url, **kwargs)
         if client_wrapper is not None:
             self.client = client_wrapper(self.client)
 
-    async def create(
+    def create(
         self,
         prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
     ) -> OpenAIChatCompletion:
-        """Asynchronously makes a call to the model using `prompt`.
+        """Makes a call to the model using `prompt`.
 
         Args:
             prompt: The prompt to use for the call. This can either be a `Prompt`
-                instance, a raw string, or `None`. If `prompt` is `None`, then the call
-                will attempt to use the `messages` keyword argument.
-            tools: A list of `OpenAITool` types or `Callable` functions that the
-                creation call can decide to use. If `tools` is provided, `tool_choice`
-                will be set to `auto` unless manually specified.
+                instance, a raw string, or `None`. If `prompt` is a `Prompt` instance,
+                then the call will use the `OpenAICallParams` in the prompt before
+                anything else. If `prompt` is `None`, then the call will attempt to use
+                the `messages` keyword argument.
+            tools: (Deprecated) A list of `OpenAITool` types or `Callable` functions
+                that the creation call can decide to use. If `tools` is provided,
+                `tool_choice` will be set to `auto` unless manually specified.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
                 https://platform.openai.com/docs/api-reference/chat/create
@@ -134,9 +131,8 @@ class AsyncOpenAIChat:
         start_time = datetime.datetime.now().timestamp() * 1000
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
-
         completion = OpenAIChatCompletion(
-            completion=await self.client.chat.completions.create(
+            completion=self.client.chat.completions.create(
                 model=self.model,
                 stream=False,
                 **kwargs,
@@ -147,13 +143,13 @@ class AsyncOpenAIChat:
         completion._end_time = datetime.datetime.now().timestamp() * 1000
         return completion
 
-    async def stream(
+    def stream(
         self,
         prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
         **kwargs,
-    ) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
-        """Asynchronously streams the response for a call to the model using `prompt`.
+    ) -> Generator[OpenAIChatCompletionChunk, None, None]:
+        """Streams the response for a call to the model using `prompt`.
 
         Args:
             prompt: The `Prompt` to use for the call.
@@ -197,25 +193,26 @@ class AsyncOpenAIChat:
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
 
-        completion_stream = await self.client.chat.completions.create(
+        completion_stream = self.client.chat.completions.create(
             model=self.model,
             stream=True,
             **kwargs,
         )
 
-        async for chunk in completion_stream:
+        for chunk in completion_stream:
             yield OpenAIChatCompletionChunk(
-                chunk=chunk, tool_types=openai_tools if tools else None
+                chunk=chunk,
+                tool_types=openai_tools if tools else None,
             )
 
-    async def extract(
+    def extract(
         self,
         schema: Type[BaseModelT],
         prompt: Optional[Union[Prompt, str]] = None,
         retries: int = 0,
         **kwargs,
     ) -> BaseModelT:
-        """Extracts the given schema from the response of a chat `create` call async.
+        """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `OpenAITool`, complete with a description
         of the tool, all of the fields, and their types. This allows us to take
@@ -224,7 +221,9 @@ class AsyncOpenAIChat:
 
         Args:
             schema: The `BaseModel` schema to extract from the completion.
-            prompt: The prompt from which the schema will be extracted.
+            prompt: The prompt from which the schema will be extracted. If `prompt` is
+                a `Prompt` instance, then the call will use the `OpenAICallParams` in
+                the prompt.
             retries: The maximum number of times to retry the query on validation error.
             **kwargs: Additional keyword arguments to pass to the API call. You can
                 find available keyword arguments here:
@@ -239,7 +238,7 @@ class AsyncOpenAIChat:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         tool = convert_base_model_to_openai_tool(schema)
-        completion = await self.create(
+        completion = self.create(
             prompt,
             tools=[tool],
             tool_choice={
@@ -254,10 +253,10 @@ class AsyncOpenAIChat:
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model
-        except ValidationError as e:
+        except (AttributeError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: update this to include failure history once prompts can handle
                 # chat history properly.
-                return await self.extract(schema, prompt, retries - 1)
+                return self.extract(schema, prompt, retries - 1)
             raise  # re-raise if we have no retries left

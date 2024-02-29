@@ -2,8 +2,8 @@
 import pytest
 from pydantic import BaseModel, Field
 
-from mirascope.chat.tools import OpenAITool
-from mirascope.chat.utils import (
+from mirascope.chat.openai.tools import OpenAITool
+from mirascope.chat.openai.utils import (
     convert_base_model_to_openai_tool,
     convert_function_to_openai_tool,
     patch_openai_kwargs,

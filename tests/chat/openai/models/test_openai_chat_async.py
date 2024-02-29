@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pydantic import BaseModel, Field, ValidationError
 
-from mirascope.chat.models import AsyncOpenAIChat
-from mirascope.chat.tools import OpenAITool
-from mirascope.chat.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
+from mirascope.chat.openai.models import AsyncOpenAIChat
+from mirascope.chat.openai.tools import OpenAITool
+from mirascope.chat.openai.types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from mirascope.prompts import Prompt
 
 pytestmark = pytest.mark.asyncio
@@ -250,7 +250,7 @@ class MySchemaTool(OpenAITool):
 
 
 @patch(
-    "mirascope.chat.models.AsyncOpenAIChat.create",
+    "mirascope.chat.openai.models.AsyncOpenAIChat.create",
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("prompt", [Prompt(), "This is a test prompt."])
@@ -291,7 +291,7 @@ async def test_async_openai_chat_extract(
 
 
 @patch(
-    "mirascope.chat.models.AsyncOpenAIChat.create",
+    "mirascope.chat.openai.models.AsyncOpenAIChat.create",
     new_callable=AsyncMock,
 )
 async def test_async_openai_chat_extract_messages_prompt(
@@ -312,7 +312,7 @@ async def test_async_openai_chat_extract_messages_prompt(
 
 
 @patch(
-    "mirascope.chat.models.AsyncOpenAIChat.create",
+    "mirascope.chat.openai.models.AsyncOpenAIChat.create",
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
