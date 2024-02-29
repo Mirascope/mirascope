@@ -12,7 +12,8 @@ class TracePrompt(Prompt):
     """Parent class for inherited WandB functionality."""
 
     span_type: Literal["tool", "llm"]
-    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-0125")
+
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
     def span(
         self, completion: Union[OpenAIChatCompletion, BaseModel], parent: Trace
@@ -31,7 +32,14 @@ class TracePrompt(Prompt):
             dump = completion.dump()
         elif isinstance(completion, BaseModel):
             output = {"assistant": str(completion.model_dump())}
-            dump = completion._completion.dump()  # type: ignore
+            if not hasattr(completion, "_completion"):
+                raise ValueError(
+                    "Completion of type `BaseModel` was not created using the `extract`"
+                    " function and does not contain the necessary `_completion` private"
+                    " attribute."
+                )
+            else:
+                dump = completion._completion.dump()
 
         span = Trace(
             name=self.__class__.__name__,

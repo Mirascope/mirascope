@@ -48,9 +48,9 @@ if __name__ == "__main__":
         span_type="llm", coolness=coolness_completion.coolness
     )
     party_completion = chat.create(party_invite_prompt)
-    party_invite_prompt.span(party_completion, coolness_span)
+    party_span = party_invite_prompt.span(party_completion, coolness_span)
 
-    root_span._span.end_time_ms = round(datetime.datetime.now().timestamp() * 1000)
+    root_span._span.end_time_ms = party_span._span.end_time_ms
     root_span.add_inputs_and_outputs(
         inputs={
             "query1": str(who_prompt),
