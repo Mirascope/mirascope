@@ -2,7 +2,7 @@
 import datetime
 import logging
 import warnings
-from typing import AsyncGenerator, Callable, Optional, Type, TypeVar, Union
+from typing import Any, AsyncGenerator, Callable, Optional, Type, TypeVar, Union
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel, ValidationError
@@ -68,7 +68,7 @@ class AsyncOpenAIChat:
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         client_wrapper: Optional[Callable] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """Initializes an instance of `AsyncOpenAIChat."""
         if "model" in kwargs:
@@ -85,7 +85,7 @@ class AsyncOpenAIChat:
         self,
         prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> OpenAIChatCompletion:
         """Asynchronously makes a call to the model using `prompt`.
 
@@ -151,7 +151,7 @@ class AsyncOpenAIChat:
         self,
         prompt: Optional[Union[Prompt, str]] = None,
         tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
         """Asynchronously streams the response for a call to the model using `prompt`.
 
@@ -213,7 +213,7 @@ class AsyncOpenAIChat:
         schema: Type[BaseModelT],
         prompt: Optional[Union[Prompt, str]] = None,
         retries: int = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> BaseModelT:
         """Extracts the given schema from the response of a chat `create` call async.
 
