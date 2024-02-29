@@ -46,7 +46,7 @@ class OpenAITool(BaseTool):
         food: str
         color: str
 
-        call_params: OpenAICallParams = OpenAICallParams(tools=[animal_matcher])
+        call_params = OpenAICallParams(tools=[animal_matcher])
 
 
     prompt = AnimalPrompt(food="pizza", color="red")
