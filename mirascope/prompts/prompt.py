@@ -30,9 +30,6 @@ class BaseCallParams(BaseModel):
     tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
 
 
-BaseCallParamsT = TypeVar("BaseCallParamsT", bound=BaseCallParams)
-
-
 class Prompt(BaseModel):
     '''A Pydantic model for prompts.
 
@@ -79,7 +76,7 @@ class Prompt(BaseModel):
     ```
     '''
 
-    call_params: ClassVar[BaseCallParamsT] = BaseCallParams(model="gpt-3.5-turbo-0125")
+    call_params: ClassVar[BaseCallParams] = BaseCallParams(model="gpt-3.5-turbo-0125")
     tags: ClassVar[list[str]] = []
 
     @classmethod
