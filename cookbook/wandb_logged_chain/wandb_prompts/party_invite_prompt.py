@@ -1,7 +1,7 @@
 """Prompt for determining who to invite to party."""
 from mirascope import messages
 
-from .traceprompt import TracePrompt
+from .trace_prompt import TracePrompt
 
 
 @messages

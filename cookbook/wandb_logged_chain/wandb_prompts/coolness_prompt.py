@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 from mirascope import messages
 
-from .traceprompt import TracePrompt
+from .trace_prompt import TracePrompt
 
 
 class Coolness(BaseModel):

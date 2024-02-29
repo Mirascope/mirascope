@@ -1,7 +1,7 @@
 """Prompt to ask who I am."""
 from pydantic import BaseModel
 
-from .traceprompt import TracePrompt
+from .trace_prompt import TracePrompt
 
 
 class Person(BaseModel):

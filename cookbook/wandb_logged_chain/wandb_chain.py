@@ -5,9 +5,9 @@ from typing import Optional
 import wandb
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from wandb.sdk.data_types.trace_tree import Trace
-from wandb_prompts.coolnessprompt import Coolness, CoolnessPrompt
-from wandb_prompts.partyinviteprompt import PartyInvitePrompt
-from wandb_prompts.whoprompt import Person, WhoPrompt
+from wandb_prompts.coolness_prompt import Coolness, CoolnessPrompt
+from wandb_prompts.party_invite_prompt import PartyInvitePrompt
+from wandb_prompts.who_prompt import Person, WhoPrompt
 
 from mirascope import OpenAIChat
 
