@@ -2,24 +2,20 @@
 from typing import Literal, Union
 
 from pydantic import BaseModel
-from wandb_utils import get_time_in_ms
+from wandb.sdk.data_types.trace_tree import Trace
 
 from mirascope import OpenAICallParams, Prompt
 from mirascope.chat import OpenAIChatCompletion
-from wandb.sdk.data_types.trace_tree import Trace
 
 
 class TracePrompt(Prompt):
     """Parent class for inherited WandB functionality."""
 
     span_type: Literal["tool", "llm"]
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
     def span(
-        self,
-        completion: Union[OpenAIChatCompletion, BaseModel],
-        parent: Trace,
-        start_time: int,
+        self, completion: Union[OpenAIChatCompletion, BaseModel], parent: Trace
     ) -> Trace:
         """Returns a span connected to parent."""
         if isinstance(completion, OpenAIChatCompletion):
@@ -32,16 +28,18 @@ class TracePrompt(Prompt):
                 }
             else:
                 output = {"assistant": str(completion)}
+            dump = completion.dump()
         elif isinstance(completion, BaseModel):
             output = {"assistant": str(completion.model_dump())}
+            dump = completion._completion.dump()  # type: ignore
 
         span = Trace(
             name=self.__class__.__name__,
             kind=self.span_type,
             status_code="success",
             status_message=None,
-            start_time_ms=start_time,
-            end_time_ms=get_time_in_ms(),
+            start_time_ms=dump["start_time"],
+            end_time_ms=dump["end_time"],
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=output,
         )
