@@ -27,7 +27,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 

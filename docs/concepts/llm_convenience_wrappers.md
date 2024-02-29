@@ -191,7 +191,7 @@ def get_current_weather(
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106",
         tools=[get_current_weather]  # pass in the function itself
     )
@@ -233,7 +233,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
@@ -267,7 +267,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
@@ -306,7 +306,7 @@ class GetCurrentWeather(OpenAITool):
 class CurrentWeatherPrompt(Prompt):
     """What's the weather like in Los Angeles?"""
 
-    _call_params: OpenAICallParams = OpenAICallParams(
+    call_params: OpenAICallParams = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[GetCurrentWeather]
     )
 
@@ -315,7 +315,7 @@ prompt = CurrentWeatherPrompt()
 chat = OpenAIChat()
 completion = chat.stream(prompt)
 
-parser = OpenAIToolStreamParser(tools=prompt.call_params().tools)  # pass in the same tools
+parser = OpenAIToolStreamParser(tools=prompt.call_params.tools)  # pass in the same tools
 for tool in parser.from_stream(completion):
     print(tool)
 ```

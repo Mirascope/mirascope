@@ -48,4 +48,4 @@ class QuestionPrompt(Prompt):
     paragraph: str
     question: str
 
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")

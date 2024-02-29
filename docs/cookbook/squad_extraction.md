@@ -50,7 +50,7 @@ class QuestionPrompt(Prompt):
     paragraph: str
     question: str
 
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
+    call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo-1106")
 ```
 
 Next we'll define the schema we want to extract from the paragraph and a function to extract the schema from a given question:

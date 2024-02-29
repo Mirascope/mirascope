@@ -42,7 +42,7 @@ def test_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=model if isinstance(prompt, str) else prompt.call_params().model,
+        model=model if isinstance(prompt, str) else prompt.call_params.model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -106,7 +106,7 @@ def test_openai_chat_tools(
     """Tests that `OpenAIChat` returns the expected response when called with tools."""
     prompt = request.getfixturevalue(prompt)
     tools = [request.getfixturevalue(tool) for tool in tools]
-    prompt.call_params().tools = tools
+    prompt.call_params.tools = tools
     mock_create.return_value = fixture_chat_completion_with_tools
 
     chat = OpenAIChat(api_key="test")
@@ -114,7 +114,7 @@ def test_openai_chat_tools(
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -165,7 +165,7 @@ def test_openai_chat_stream(
         assert chunk.chunk == fixture_chat_completion_chunks[i]
 
     mock_create.assert_called_once_with(
-        model=model if isinstance(prompt, str) else prompt.call_params().model,
+        model=model if isinstance(prompt, str) else prompt.call_params.model,
         messages=prompt.messages
         if isinstance(prompt, Prompt)
         else [{"role": "user", "content": prompt}],
@@ -227,7 +227,7 @@ def test_openai_chat_stream_tools(
         assert chunk.tool_calls == chunks[i].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -314,6 +314,7 @@ def test_openai_chat_extract_messages_prompt(
 
     mock_create.assert_called_once()
     assert isinstance(model, MySchema)
+    assert model._completion == mock_create.return_value
 
 
 @patch("mirascope.chat.models.OpenAIChat.create", new_callable=MagicMock)

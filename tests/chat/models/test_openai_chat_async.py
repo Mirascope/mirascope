@@ -36,7 +36,7 @@ async def test_async_openai_chat(
     assert completion._start_time is not None
     assert completion._end_time is not None
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=False,
         temperature=0.3,
@@ -105,7 +105,7 @@ async def test_async_openai_chat_tools(
     assert isinstance(completion, OpenAIChatCompletion)
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=False,
         tools=[tool.tool_schema() for tool in tools],
@@ -151,7 +151,7 @@ async def test_async_openai_chat_stream(
         i += 1
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=True,
         temperature=0.3,
@@ -214,7 +214,7 @@ async def test_async_openai_chat_stream_tools(
         assert chunk.tool_calls == chunks[0].choices[0].delta.tool_calls
 
     mock_create.assert_called_once_with(
-        model=prompt.call_params().model,
+        model=prompt.call_params.model,
         messages=prompt.messages,
         stream=True,
         tools=[tool.tool_schema() for tool in tools],
@@ -308,6 +308,7 @@ async def test_async_openai_chat_extract_messages_prompt(
 
     mock_create.assert_called_once()
     assert isinstance(model, MySchema)
+    assert model._completion == mock_create.return_value
 
 
 @patch(
