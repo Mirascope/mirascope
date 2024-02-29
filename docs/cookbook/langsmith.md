@@ -100,7 +100,7 @@ print(completion)
 
 Login to [LangSmith](https://smith.langchain.com/) and view your results
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cdff5c1f-9a65-4b1f-a9cf-3d66efd732ee/297f43ff-13c2-499d-aa34-7ee1c5525302/Untitled.png)
+![langsmith](https://github.com/Mirascope/mirascope/assets/15950811/6ac51f61-6c81-4c35-abc0-63a84e8b5bbd)
 
 ## Extract
 
