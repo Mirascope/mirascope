@@ -1,4 +1,12 @@
 """A module for interacting with Chat APIs."""
-from .models import AsyncOpenAIChat, OpenAIChat
-from .parsers import AsyncOpenAIToolStreamParser, OpenAIToolStreamParser
-from .types import OpenAIChatCompletion, OpenAIChatCompletionChunk
+from .openai import (
+    AsyncOpenAIChat,
+    AsyncOpenAIToolStreamParser,
+    OpenAICallParams,
+    OpenAIChat,
+    OpenAIChatCompletion,
+    OpenAIChatCompletionChunk,
+    OpenAITool,
+    OpenAIToolStreamParser,
+    openai_tool_fn,
+)

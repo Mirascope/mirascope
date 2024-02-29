@@ -9,13 +9,13 @@ Mirascope provides convenience wrappers around the OpenAI client to make writing
     - Chaining is no different from writing basic python functions
 - Convenient
     - You could do it yourself -- and you still can -- but there's just something nice about calling `str(res)` to get the response content
-    - You only need to pass in a [`Prompt`](../api/prompts.md) and we'll handle the rest
+    - You only need to pass in a [`Prompt`](../api/prompts/prompt.md) and we'll handle the rest
 
 ## OpenAIChat
 
 ### Create
 
-You can initialize an [`OpenAIChat`](../api/chat/models/openai_chat.md#mirascope.chat.models.OpenAIChat) instance and call [`create`](../api/chat/models/openai_chat.md#mirascope.chat.models.OpenAIChat.create) to generate an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion):
+You can initialize an [`OpenAIChat`](../api/chat/openai/models/openai_chat.md#mirascope.chat.openai.models.OpenAIChat) instance and call [`create`](../api/chat/openai/models/openai_chat.md#mirascope.chat.openai.models.OpenAIChat.create) to generate an [`OpenAIChatCompletion`](../api/chat/openai/types.md#mirascope.chat.openai.types.OpenAIChatCompletion):
 
 ```python
 from mirascope import OpenAIChat, Prompt
@@ -44,7 +44,7 @@ print(completion)
 
 #### Completion
 
-The `create` method returns an [`OpenAIChatCompletion`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletion) class instance, which is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai`. In fact, you can access everything from the original chunk as desired. The primary purpose of the class is to provide convenience.
+The `create` method returns an [`OpenAIChatCompletion`](../api/chat/openai/types.md#mirascope.chat.openai.types.OpenAIChatCompletion) class instance, which is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai`. In fact, you can access everything from the original chunk as desired. The primary purpose of the class is to provide convenience.
 
 ```python
 from mirascope.chat.types import OpenAIChatCompletion
@@ -104,7 +104,7 @@ recipe = recipe_by_chef_using("apples", "japanese")
 
 ### Streaming
 
-You can use the [`stream`](../api/chat/models/openai_chat.md#mirascope.chat.models.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
+You can use the [`stream`](../api/chat/openai/models/openai_chat.md#mirascope.chat.openai.models.OpenAIChat.stream) method to stream a response. All this is doing is setting `stream=True` and providing the [`OpenAIChatCompletionChunk`](../api/chat/openai/types.md#mirascope.chat.openai.types.OpenAIChatCompletionChunk) convenience wrappers around the response chunks.
 
 ```python
 chat = OpenAIChat()
@@ -115,7 +115,7 @@ for chunk in stream:
 
 #### OpenAIChatCompletionChunk
 
-The `stream` method returns an [`OpenAIChatCompletionChunk`](../api/chat/types.md#mirascope.chat.types.OpenAIChatCompletionChunk) instance, which is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
+The `stream` method returns an [`OpenAIChatCompletionChunk`](../api/chat/openai/types.md#mirascope.chat.openai.types.OpenAIChatCompletionChunk) instance, which is a convenience wrapper around the [`ChatCompletionChunk`](https://platform.openai.com/docs/api-reference/chat/streaming) class in `openai`
 
 ```python
 from mirascope.chat.types import OpenAIChatCompletionChunk
@@ -132,7 +132,7 @@ chunk.content  # original.choices[0].delta.content
 
 ### Extraction
 
-Often you want to extract structured information into a format like JSON. The [`extract`](../api/chat/models/openai_chat.md#mirascope.chat.models.OpenAIChat.extract) method makes this extremely easy by extracting the information into a Pydantic `BaseModel` schema that you define:
+Often you want to extract structured information into a format like JSON. The [`extract`](../api/chat/openai/models/openai_chat.md#mirascope.chat.openai.models.OpenAIChat.extract) method makes this extremely easy by extracting the information into a Pydantic `BaseModel` schema that you define:
 
 ```python
 from mirascope import OpenAIChat
@@ -204,7 +204,7 @@ for tool in completion.tools or []:
     print(tool.fn(**tool.__dict__))  # this will call `get_current_weather`
 ```
 
-This works by automatically converting the given function into an [`OpenAITool`](../api/chat/tools.md#mirascope.chat.tools.OpenAITool) class. The `completion.tools` property then returns an actual instance of the tool.
+This works by automatically converting the given function into an [`OpenAITool`](../api/chat/openai/tools.md#mirascope.chat.openai.tools.OpenAITool) class. The `completion.tools` property then returns an actual instance of the tool.
 
 You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
 
@@ -246,7 +246,7 @@ for tool in completion.tools or []:
     print(tool.fn(**tool.model_dump(exclude={"tool_call"})))  # this will call `get_current_weather`
 ```
 
-Notice that using the [`openai_tool_fn`](../api/chat/tools.md#mirascope.chat.tools.openai_tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
+Notice that using the [`openai_tool_fn`](../api/chat/openai/tools.md#mirascope.chat.openai.tools.openai_tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
 
 However, attaching the function is not necessary. In fact, often there are times where the intention of using a tool is not to call a function but to extract information from text. In these cases there is no need to attach the function at all. Simply define the `OpenAITool` class without the attached function and access the extracted information through the arguments of the `completion.tools` instances:
 

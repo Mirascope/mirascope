@@ -237,8 +237,7 @@ The base `Prompt` class without the decorator will still have the `messages` att
 <p>Sometimes writing the messages array yourself can be useful for accessing functionality not yet supported by docstring parser:</p>
 
 ```python
-from mirascope import Prompt
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope import Message, Prompt
 
 
 class MessagesPrompt(Prompt):
@@ -247,7 +246,7 @@ class MessagesPrompt(Prompt):
     name: str
 
     @property
-    def messages(self) -> list[ChatCompletionMessageParam]:
+    def messages(self) -> list[Message]:
         """Returns the list of message params."""
         return [
             {
@@ -370,7 +369,7 @@ completion = client.chat.completions.create(
 - Check out all of the possibilities of what you can do with [Pydantic Prompts](concepts/pydantic_prompts.md).
 - Take a look at our [Mirascope CLI](concepts/mirascope_cli.md) for a semi-opinionated prompt mangement system.
 - For convenience, we provide some wrappers around the OpenAI Python SDK for common tasks such as creation, streaming, tools, and extraction. We've found that the concepts covered in [LLM Convenience Wrappers](concepts/llm_convenience_wrappers.md) make building LLM-powered apps delightful.
-- The [API Reference](api/prompts.md) contains full details on all classes, methods, functions, etc.
+- The [API Reference](api/prompts/prompt.md) contains full details on all classes, methods, functions, etc.
 - You can take a look at [code examples](https://github.com/Mirascope/mirascope/tree/main/cookbook) in the repo that demonstrate how to use the library effectively.
 
 ## Contributing
@@ -387,7 +386,7 @@ Any and all help is greatly appreciated! Check out our page on [how you can help
 - [X] Functions as OpenAI tools
 - [ ] Better chat history
 - [ ] Testing for prompts
-- [ ] Logging prompts and their responses
+- [X] Logging prompts and their responses
 - [ ] Evaluating prompt quality
 - [ ] RAG
 - [ ] Agents

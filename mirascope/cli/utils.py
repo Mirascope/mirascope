@@ -476,9 +476,9 @@ def write_prompt_to_template(
         file: The path to the prompt.
         command: The CLI command to execute.
         variables: A dictionary of revision ids which are rendered together with
-        variable assignments that are not inside any class. Only relevant when `command`
-        is `MirascopeCommand.ADD` - if `command` is `MirascopeCommand.USE`, `variables`
-        should be `None`.
+            variable assignments that are not inside any class. Only relevant when
+            `command` is `MirascopeCommand.ADD` - if `command` is
+            `MirascopeCommand.USE`, `variables` should be `None`.
 
     Returns:
         The reconstructed prompt.

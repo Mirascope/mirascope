@@ -1,6 +1,6 @@
 # Pydantic Prompts
 
-The [`Prompt`](../api/prompts.md#mirascope.prompts.Prompt) class is the core of Mirascope, which extends Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/api/base_model/). The class leverages the power of python to make writing more complex prompts as easy and readable as possible. The docstring is automatically formatted as a prompt so that you can write prompts in the style of your codebase.
+The [`Prompt`](../api/prompts/prompt.md#mirascope.prompts.prompt.Prompt) class is the core of Mirascope, which extends Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/api/base_model/). The class leverages the power of python to make writing more complex prompts as easy and readable as possible. The docstring is automatically formatted as a prompt so that you can write prompts in the style of your codebase.
 
 ## Why should you care?
 
@@ -18,7 +18,7 @@ The [`Prompt`](../api/prompts.md#mirascope.prompts.Prompt) class is the core of 
 - **All of the above helps lead to production ready code**
 
 
-## The [`Prompt`](../api/prompts.md#mirascope.prompts.Prompt) Class
+## The [`Prompt`](../api/prompts/prompt.md#mirascope.prompts.prompt.Prompt) Class
 
 The docstring of the class acts as the prompt's template, and the attributes act as the template variables:
 
