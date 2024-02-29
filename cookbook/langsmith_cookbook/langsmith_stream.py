@@ -3,9 +3,9 @@ import os
 
 from langsmith import wrappers
 from langsmith_config import Settings
-from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope import OpenAICallParams, OpenAIChat, Prompt
+from mirascope.prompts.messages import Message
 
 settings = Settings()
 
@@ -26,11 +26,12 @@ class ChatPrompt(Prompt):
     """
 
     message: str
-    history: list[ChatCompletionMessageParam] = []
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo")
+    history: list[Message] = []
+
+    call_params = OpenAICallParams(model="gpt-3.5-turbo")
 
     @property
-    def messages(self) -> list[ChatCompletionMessageParam]:
+    def messages(self) -> list[Message]:
         return [
             {"role": "system", "content": "You are a helpful AI."},
             *self.history,
@@ -59,7 +60,7 @@ for chunk in stream:
     print(chunk, end="")
     response += str(chunk)
 
-chat_history: list[ChatCompletionMessageParam] = []
+chat_history: list[Message] = []
 print()
 chat_history.extend(
     [

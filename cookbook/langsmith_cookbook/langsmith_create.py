@@ -20,9 +20,7 @@ class BookRecommendationPrompt(Prompt):
 
     topic: str
 
-    _call_params: OpenAICallParams = OpenAICallParams(
-        model="gpt-3.5-turbo", temperature=0.5, max_tokens=100
-    )
+    call_params = OpenAICallParams(model="gpt-3.5-turbo", temperature=0.1)
 
 
 prompt = BookRecommendationPrompt(topic="how to bake a cake")

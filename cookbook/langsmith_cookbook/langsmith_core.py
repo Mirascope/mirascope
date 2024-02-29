@@ -25,7 +25,7 @@ class BookRecommendationPrompt(Prompt):
 
     topic: str
 
-    _call_params: OpenAICallParams = OpenAICallParams(model="gpt-3.5-turbo")
+    call_params = OpenAICallParams(model="gpt-3.5-turbo")
 
 
 prompt = BookRecommendationPrompt(topic="how to bake a cake")
