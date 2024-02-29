@@ -7,20 +7,12 @@ import re
 import warnings
 from string import Formatter
 from textwrap import dedent
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, ClassVar, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
 from .messages import AssistantMessage, Message, SystemMessage, ToolMessage, UserMessage
 from .tools import BaseTool
-
-warnings.filterwarnings(
-    "ignore", message='Field name "call_params" shadows an attribute in parent "Prompt"'
-)
-warnings.filterwarnings(
-    "ignore",
-    message='Field name "call_params" shadows an attribute in parent "PromptConfig"',
-)
 
 
 def _format_template(prompt: Prompt, template: str) -> str:
@@ -38,21 +30,16 @@ class BaseCallParams(BaseModel):
     tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
 
 
-class PromptConfig:
-    """The configuration for a `Prompt`."""
-
-    call_params: BaseCallParams = BaseCallParams(model="gpt-3.5-turbo-0125")
-    # TODO: Add support for prompt tags with CLI instead of _tags.
-    # tags: list[str] = []
+BaseCallParamsT = TypeVar("BaseCallParamsT", bound=BaseCallParams)
 
 
-class Prompt(PromptConfig, BaseModel):
+class Prompt(BaseModel):
     '''A Pydantic model for prompts.
 
     Example:
 
     ```python
-    from mirascope import Prompt
+    from mirascope import Prompt, BaseCallParams
 
 
     class BookRecommendationPrompt(Prompt):
@@ -62,6 +49,8 @@ class Prompt(PromptConfig, BaseModel):
         """
 
         book_titles: list[str]
+
+        call_params = BaseCallParams(model="gpt-3.5-turbo-0125")
 
         @property
         def titles_in_quotes(self) -> str:
@@ -90,7 +79,8 @@ class Prompt(PromptConfig, BaseModel):
     ```
     '''
 
-    _tags: list[str] = []
+    call_params: ClassVar[BaseCallParamsT] = BaseCallParams(model="gpt-3.5-turbo-0125")
+    tags: ClassVar[list[str]] = []
 
     @classmethod
     def template(cls) -> str:
@@ -145,7 +135,7 @@ class Prompt(PromptConfig, BaseModel):
         prompt_dict: dict[str, Any] = {
             "template": self.template(),
             "inputs": self.model_dump(),
-            "tags": self._tags,
+            "tags": self.tags,
             "call_params": {
                 key: value
                 for key, value in self.call_params.model_dump().items()
@@ -267,7 +257,7 @@ def tags(args: list[str]) -> Callable[[Type[T]], Type[T]]:
 
     def tags_fn(model_class: Type[T]) -> Type[T]:
         """Updates the `_tags` class attribute to the given value."""
-        setattr(model_class, "_tags", args)
+        setattr(model_class, "tags", args)
         return model_class
 
     return tags_fn

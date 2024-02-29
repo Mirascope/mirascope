@@ -419,9 +419,7 @@ def fixture_empty_tool() -> Type[OpenAITool]:
 class FooBarPromptWithMyTool(FooBarPrompt):
     __doc__ = FooBarPrompt.__doc__
 
-    call_params: OpenAICallParams = OpenAICallParams(
-        model="gpt-3.5-turbo-1106", tools=[MyTool]
-    )
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-1106", tools=[MyTool])
 
 
 @pytest.fixture()
@@ -433,7 +431,7 @@ def fixture_foobar_prompt_with_my_tool() -> FooBarPromptWithMyTool:
 class FooBarPromptWithMyToolAndEmptyTool(FooBarPrompt):
     __doc__ = FooBarPrompt.__doc__
 
-    call_params: OpenAICallParams = OpenAICallParams(
+    call_params = OpenAICallParams(
         model="gpt-3.5-turbo-1106", tools=[MyTool, EmptyTool]
     )
 
