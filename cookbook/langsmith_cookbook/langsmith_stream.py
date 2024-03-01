@@ -15,15 +15,7 @@ os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
 class ChatPrompt(Prompt):
-    """
-    SYSTEM: You are a helpful AI.
-
-    INJECT:
-    {history}
-
-    USER:
-    {message}
-    """
+    """A chat with history"""
 
     message: str
     history: list[Message] = []
