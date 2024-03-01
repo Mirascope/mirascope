@@ -1,7 +1,8 @@
 """Prompts with WandB and OpenAI integration to support logging functionality."""
+import datetime
 from typing import Literal, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 from wandb.sdk.data_types.trace_tree import Trace
 
 from mirascope import BaseCallParams, Prompt
@@ -47,7 +48,10 @@ class WandbPrompt(Prompt):
     ```
     '''
 
-    span_type: Literal["tool", "llm"]
+    span_type: Literal["tool", "llm", "chain", "agent"]
+    _creation_time_ms: int = PrivateAttr(
+        default_factory=lambda: round(datetime.datetime.now().timestamp() * 1000)
+    )
 
     call_params = BaseCallParams(model="gpt-3.5-turbo-0125")
 
@@ -107,6 +111,9 @@ class WandbPrompt(Prompt):
     def trace_error(self, error: Exception, parent: Trace) -> Trace:
         """Returns an error trace connected to parent.
 
+        Start time is set to time of prompt creation, and end time is set to the time
+        function is called.
+
         Args:
             error: The error to trace.
             parent: The parent trace to connect to.
@@ -120,8 +127,8 @@ class WandbPrompt(Prompt):
             status_code="error",
             status_message=str(error),
             metadata={"call_params": dict(self.call_params)},
-            start_time_ms=None,
-            end_time_ms=None,
+            start_time_ms=self._creation_time_ms,
+            end_time_ms=round(datetime.datetime.now().timestamp() * 1000),
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=None,
         )
