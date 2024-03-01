@@ -11,7 +11,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 from wandb.sdk.data_types.trace_tree import Trace
 
-from mirascope import OpenAIChatCompletion, OpenAITool
+from mirascope import OpenAIChatCompletion
 from mirascope.chat.openai.utils import convert_function_to_openai_tool
 from mirascope.integrations.wandb.wandb_prompt import WandbPrompt
 

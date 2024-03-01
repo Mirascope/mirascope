@@ -1,11 +1,10 @@
 """Prompt for determining who to invite to party."""
 from mirascope import messages
-
-from .trace_prompt import TracePrompt
+from mirascope.integrations.wandb import WandbPrompt
 
 
 @messages
-class PartyInvitePrompt(TracePrompt):
+class PartyInvitePrompt(WandbPrompt):
     """
     SYSTEM:
     You're a bouncer and you let people into the party only if they're at least somewhat
