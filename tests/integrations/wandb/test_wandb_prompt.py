@@ -65,7 +65,7 @@ def test_trace_completion(mock_Trace: MagicMock):
             system_fingerprint=None,
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
-        tool_types=[convert_function_to_openai_tool(test_fn)],
+        tool_types=[convert_function_to_openai_tool(tool_fn)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "TestPrompt"
@@ -84,7 +84,7 @@ def test_trace_completion(mock_Trace: MagicMock):
     mock_Trace.assert_called_once()
 
 
-def test_fn(word: str) -> str:
+def tool_fn(word: str) -> str:
     """Test function."""
     return word + "!"
 
@@ -113,7 +113,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
                                 id="1",
                                 function=Function(
                                     arguments='{"word": "pizza"}',
-                                    name="TestFn",
+                                    name="ToolFn",
                                 ),
                                 type="function",
                             )
@@ -127,7 +127,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
             system_fingerprint=None,
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
-        tool_types=[convert_function_to_openai_tool(test_fn)],
+        tool_types=[convert_function_to_openai_tool(tool_fn)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "TestPrompt"
@@ -146,7 +146,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
         "assistant": {
             "tool_call": {
                 "id": "1",
-                "function": {"arguments": '{"word": "pizza"}', "name": "TestFn"},
+                "function": {"arguments": '{"word": "pizza"}', "name": "ToolFn"},
                 "type": "function",
             },
             "word": "pizza",
