@@ -71,5 +71,5 @@ try:
     content = chat.create(QuestionPrompt(question="cake recipe?"))
     guide = chat.extract(HowToGuide, str(content))
     print(guide)
-except ValidationError as e:
-    print(e)
+except ValidationError:
+    print("Either the text was not a question or it is not relevant to the topic.")
