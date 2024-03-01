@@ -9,7 +9,43 @@ from mirascope.chat import OpenAIChatCompletion
 
 
 class WandbPrompt(Prompt):
-    """Parent class for inherited WandB functionality."""
+    '''Parent class for inherited WandB functionality.
+
+    Use this class's built in `trace` and `trace_error` methods to log traces to WandB.
+
+    Example:
+
+    ```python
+    import wandb
+    from wandb.sdk.data_types.trace_tree import Trace
+    from mirascope.wandb.integrations.wandb_prompt import WandbPrompt
+
+    wandb.login(key="YOUR_WANDB_API_KEY")
+    wandb.init(project="wandb_logged_chain")
+    root_span = Trace(
+        name="root",
+        kind="chain",
+        start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
+        metadata={"user": "mirascope_user"},
+    )
+    chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
+
+    class HiPrompt(WandbPrompt):
+    """{greeting}."""
+
+    greeting: str
+
+    prompt = HiPrompt(span_type="llm", greeting="Hello")
+    completion = chat.create(prompt)
+    span = prompt.trace(completion, parent=root_span)
+
+    error_prompt = HiPrompt(span_type="llm", greeting="Hello" * 100000)
+    try:
+        completion = chat.create(error_prompt)
+    except Exception as e:
+        span = error_prompt.trace_error(e, parent=root_span)
+    ```
+    '''
 
     span_type: Literal["tool", "llm"]
 
@@ -32,14 +68,14 @@ class WandbPrompt(Prompt):
         if isinstance(completion, OpenAIChatCompletion):
             if completion.tool and completion.tool.fn:
                 output = {
-                    "assistant": completion.tool,
+                    "assistant": completion.tool.model_dump(),
                     "tool_output": completion.tool.fn(
                         **completion.tool.model_dump(exclude={"tool_call"})
                     ),
                 }
             else:
                 output = {"assistant": str(completion)}
-            dump = completion.dump()
+            open_ai_chat_completion = completion
         elif isinstance(completion, BaseModel):
             output = {"assistant": str(completion.model_dump())}
             if not hasattr(completion, "_completion"):
@@ -49,14 +85,17 @@ class WandbPrompt(Prompt):
                     " attribute."
                 )
             else:
-                dump = completion._completion.dump()
-
+                open_ai_chat_completion = completion._completion
+        dump = open_ai_chat_completion.dump()
         span = Trace(
             name=self.__class__.__name__,
             kind=self.span_type,
             status_code="success",
             status_message=None,
-            metadata={"model": self.call_params.model},
+            metadata={
+                "call_params": dict(self.call_params),
+                "usage": dict(open_ai_chat_completion.completion.usage),  # type: ignore
+            },
             start_time_ms=dump["start_time"],
             end_time_ms=dump["end_time"],
             inputs={message["role"]: message["content"] for message in self.messages},
@@ -80,7 +119,7 @@ class WandbPrompt(Prompt):
             kind=self.span_type,
             status_code="error",
             status_message=str(error),
-            metadata={"model": self.call_params.model},
+            metadata={"call_params": dict(self.call_params)},
             start_time_ms=None,
             end_time_ms=None,
             inputs={message["role"]: message["content"] for message in self.messages},
