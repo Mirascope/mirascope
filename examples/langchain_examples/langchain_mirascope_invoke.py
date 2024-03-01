@@ -1,7 +1,6 @@
 """This example is a simple invoke from LangChain documentation using mirascope
 
-https://python.langchain.com/docs/expression_language/get_started
-#basic-example-prompt-model-output-parser
+https://python.langchain.com/docs/expression_language/get_started#basic-example-prompt-model-output-parser
 
 The example uses Mirascope Prompts to validate the inputs and easily generate the invoke
 arguments for the chain.
