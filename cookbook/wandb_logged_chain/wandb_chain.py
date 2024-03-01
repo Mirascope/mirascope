@@ -38,17 +38,17 @@ if __name__ == "__main__":
 
     who_prompt = WhoPrompt(span_type="tool", person="Brian")
     who_completion = chat.extract(Person, who_prompt)
-    who_span = who_prompt.span(who_completion, root_span)
+    who_span = who_prompt.trace(who_completion, root_span)
 
     coolness_prompt = CoolnessPrompt(span_type="tool", person=who_completion.person)
     coolness_completion = chat.extract(Coolness, coolness_prompt)
-    coolness_span = coolness_prompt.span(coolness_completion, who_span)
+    coolness_span = coolness_prompt.trace(coolness_completion, who_span)
 
     party_invite_prompt = PartyInvitePrompt(
         span_type="llm", coolness=coolness_completion.coolness
     )
     party_completion = chat.create(party_invite_prompt)
-    party_span = party_invite_prompt.span(party_completion, coolness_span)
+    party_span = party_invite_prompt.trace(party_completion, coolness_span)
 
     root_span._span.end_time_ms = party_span._span.end_time_ms
     root_span.add_inputs_and_outputs(

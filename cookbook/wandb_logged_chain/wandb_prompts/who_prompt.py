@@ -1,7 +1,7 @@
 """Prompt to ask who I am."""
 from pydantic import BaseModel
 
-from .trace_prompt import TracePrompt
+from mirascope.integrations.wandb import WandbPrompt
 
 
 class Person(BaseModel):
@@ -10,7 +10,7 @@ class Person(BaseModel):
     person: str
 
 
-class WhoPrompt(TracePrompt):
+class WhoPrompt(WandbPrompt):
     """Who is {person}?"""
 
     person: str
