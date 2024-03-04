@@ -22,6 +22,12 @@ Jinja2 = "^3.1.3"
 openai = "^1.6.0"
 docstring-parser = "^0.15"
 
+# A list of optional dependencies that are required for certain features
+google-generativeai = { version = "^0.4.0", optional = true }
+
+[tool.poetry.extras]
+gemini = ["google-generativeai"]
+
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
 pytest = "^7.4.0"
