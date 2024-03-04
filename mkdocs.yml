@@ -98,6 +98,7 @@ nav:
       - SQuAD Extraction: "cookbook/squad_extraction.md"
       - RAG: "cookbook/rag.md"
       - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
+      - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
   - API Reference:
       - chat:
           - "api/chat/index.md"
