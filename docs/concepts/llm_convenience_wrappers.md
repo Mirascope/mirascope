@@ -211,7 +211,7 @@ You can also define your own `OpenAITool` class. This is necessary when the func
 ```python
 from typing import Literal
 
-from mirascope import OpenAICallParams, OpenAIChat, OpenAITool, Prompt, openai_tool_fn
+from mirascope import OpenAICallParams, OpenAIChat, OpenAITool, Prompt, tool_fn
 from pydantic import Field
 
 
@@ -222,7 +222,7 @@ def get_current_weather(
     return f"{location} is 65 degrees {unit}."
 
 
-@openai_tool_fn(get_current_weather)
+@tool_fn(get_current_weather)
 class GetCurrentWeather(OpenAITool):
     """Get the current weather in a given location."""
 
@@ -246,7 +246,7 @@ for tool in completion.tools or []:
     print(tool.fn(**tool.model_dump(exclude={"tool_call"})))  # this will call `get_current_weather`
 ```
 
-Notice that using the [`openai_tool_fn`](../api/chat/openai/tools.md#mirascope.chat.openai.tools.openai_tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
+Notice that using the [`tool_fn`](../api/prompts/tools.md#mirascope.prompts.tools.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
 
 However, attaching the function is not necessary. In fact, often there are times where the intention of using a tool is not to call a function but to extract information from text. In these cases there is no need to attach the function at all. Simply define the `OpenAITool` class without the attached function and access the extracted information through the arguments of the `completion.tools` instances:
 

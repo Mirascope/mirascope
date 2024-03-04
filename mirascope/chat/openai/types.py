@@ -1,4 +1,4 @@
-"""Classes for responses when interacting with a Chat API."""
+"""Type classes for interacting with the OpenAI Chat API."""
 from typing import Any, Callable, Optional, Type, Union
 
 from httpx import Timeout
@@ -21,7 +21,7 @@ from .tools import OpenAITool
 
 
 class OpenAIChatCompletion(BaseModel):
-    """Convenience wrapper around chat completions.
+    """Convenience wrapper around OpenAI chat completions.
 
     When using Mirascope's convenience wrappers to interact with OpenAI models via
     `OpenAIChat`, responses using `OpenAIChat.create()` will return a
@@ -201,6 +201,7 @@ class OpenAIChatCompletionChunk(BaseModel):
 class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI Chat API with a prompt."""
 
+    model: str = "gpt-3.5-turbo-0125"
     frequency_penalty: Optional[float] = None
     logit_bias: Optional[dict[str, int]] = None
     logprobs: Optional[bool] = None

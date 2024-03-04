@@ -6,7 +6,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 from pydantic import Field, ValidationError
 
-from mirascope.chat.openai.tools import OpenAITool, openai_tool_fn
+from mirascope.chat.openai.tools import OpenAITool
 
 
 @pytest.mark.parametrize(
@@ -114,25 +114,3 @@ def test_openai_tool_from_tool_call_json_decode_error(fixture_my_tool):
     )
     with pytest.raises(ValueError):
         fixture_my_tool.from_tool_call(tool_call)
-
-
-def test_openai_tool_fn_decorator(fixture_my_tool):
-    """Tests that the `fn` property returns the function that the tool describes."""
-
-    def my_tool(param: str, optional: int = 0) -> None:
-        """A test tool function."""
-
-    assert (
-        openai_tool_fn(my_tool)(fixture_my_tool)(
-            param="param",
-            optional=0,
-            tool_call=ChatCompletionMessageToolCall(
-                id="id",
-                function=Function(
-                    arguments='{\n  "param": "param",\n  "optional": 0}', name="MyTool"
-                ),
-                type="function",
-            ),
-        ).fn
-        == my_tool
-    )

@@ -8,10 +8,10 @@ from openai import OpenAI
 from pydantic import BaseModel, ValidationError
 
 from ....prompts import Prompt
+from ....prompts.tools import convert_base_model_to_tool
 from ..tools import OpenAITool
 from ..types import OpenAIChatCompletion, OpenAIChatCompletionChunk
 from ..utils import (
-    convert_base_model_to_openai_tool,
     convert_tools_list_to_openai_tools,
     patch_openai_kwargs,
 )
@@ -25,7 +25,7 @@ class OpenAIChat:
     '''A convenience wrapper for the OpenAI Chat client.
 
     The Mirascope convenience wrapper for OpenAI provides a more user-friendly interface
-    for interacting with their API. For detailed usage examples, check out the cookbook.
+    for interacting with their API. For more usage details, check out our examples.
 
     Example:
 
@@ -237,7 +237,7 @@ class OpenAIChat:
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        tool = convert_base_model_to_openai_tool(schema)
+        tool = convert_base_model_to_tool(schema, OpenAITool)
         completion = self.create(
             prompt,
             tools=[tool],

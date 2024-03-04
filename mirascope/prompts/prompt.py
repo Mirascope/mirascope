@@ -15,7 +15,7 @@ from .messages import AssistantMessage, Message, SystemMessage, ToolMessage, Use
 from .tools import BaseTool
 
 
-def _format_template(prompt: Prompt, template: str) -> str:
+def format_template(prompt: Prompt, template: str) -> str:
     """Formats the template with the prompt's attributes."""
     template_vars = [
         var for _, var, _, _ in Formatter().parse(template) if var is not None
@@ -103,7 +103,7 @@ class Prompt(BaseModel):
 
     def __str__(self) -> str:
         """Returns the docstring prompt template formatted with template variables."""
-        return _format_template(self, self.template())
+        return format_template(self, self.template())
 
     @property
     def messages(self) -> list[Message]:
@@ -121,7 +121,7 @@ class Prompt(BaseModel):
             self.template(),
         ):
             role = match.group(1).lower()
-            content = _format_template(self, match.group(2))
+            content = format_template(self, match.group(2))
             messages.append(message_param_map[role](role=role, content=content))
         if len(messages) == 0:
             messages.append(UserMessage(role="user", content=str(self)))

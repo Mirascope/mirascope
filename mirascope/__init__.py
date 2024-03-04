@@ -10,9 +10,8 @@ from .chat.openai import (
     OpenAIChatCompletionChunk,
     OpenAITool,
     OpenAIToolStreamParser,
-    openai_tool_fn,
 )
 from .partial import Partial
-from .prompts import BaseCallParams, Prompt, messages, tags
+from .prompts import BaseCallParams, BaseTool, Prompt, messages, tags, tool_fn
 
 __version__ = importlib.metadata.version("mirascope")
