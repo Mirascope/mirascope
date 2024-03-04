@@ -90,9 +90,7 @@ class GeminiPrompt(Prompt):
         tools: Optional[list[Type[GeminiTool]]] = None
         if self.call_params.tools is not None:
             tools = [
-                tool
-                if isclass(tool)
-                else tool_fn(tool)(GeminiTool.from_fn(tool)).tool_schema()
+                tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
                 for tool in self.call_params.tools
             ]
         completion = gemini_pro_model.generate_content(
