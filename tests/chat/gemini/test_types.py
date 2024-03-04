@@ -12,10 +12,7 @@ from google.generativeai.types import (  # type: ignore
 )
 
 from mirascope.chat.gemini.tools import GeminiTool
-from mirascope.chat.gemini.types import (
-    GeminiCompletion,
-    GeminiCompletionChunk,
-)
+from mirascope.chat.gemini.types import GeminiCompletion
 
 
 def test_gemini_completion() -> None:

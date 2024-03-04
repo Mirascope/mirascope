@@ -1,9 +1,8 @@
 """Utility functions for OpenAIChat."""
 from inspect import isclass
-from typing import Any, Callable, Optional, Type, Union, cast
+from typing import Any, Callable, Optional, Type, Union
 
 from openai.types.chat import ChatCompletionUserMessageParam
-from pydantic import BaseModel, create_model
 
 from ...prompts import Prompt
 from ...prompts.tools import convert_function_to_tool

@@ -1,7 +1,7 @@
 """Classes for using tools with Google's Gemini Chat APIs."""
 from __future__ import annotations
 
-from typing import Any, Callable, Type
+from typing import Callable, Type
 
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
