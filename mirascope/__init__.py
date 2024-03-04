@@ -2,7 +2,9 @@
 import importlib.metadata
 
 from . import integrations
-from .chat.openai import (
+from .partial import Partial
+from .prompts import BaseCallParams, BaseTool, Prompt, messages, tags, tool_fn
+from .prompts.openai import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,
     OpenAICallParams,
@@ -12,7 +14,5 @@ from .chat.openai import (
     OpenAITool,
     OpenAIToolStreamParser,
 )
-from .partial import Partial
-from .prompts import BaseCallParams, BaseTool, Prompt, messages, tags, tool_fn
 
 __version__ = importlib.metadata.version("mirascope")

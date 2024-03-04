@@ -1,3 +1,0 @@
-# chat
-
-::: mirascope.chat

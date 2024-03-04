@@ -7,12 +7,18 @@ import re
 import warnings
 from string import Formatter
 from textwrap import dedent
-from typing import Any, Callable, ClassVar, Optional, Type, TypeVar, Union
+from typing import Any, Callable, ClassVar, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 
-from .messages import AssistantMessage, Message, SystemMessage, ToolMessage, UserMessage
-from .tools import BaseTool
+from .types import (
+    AssistantMessage,
+    BaseCallParams,
+    Message,
+    SystemMessage,
+    ToolMessage,
+    UserMessage,
+)
 
 
 def format_template(prompt: Prompt, template: str) -> str:
@@ -21,13 +27,6 @@ def format_template(prompt: Prompt, template: str) -> str:
         var for _, var, _, _ in Formatter().parse(template) if var is not None
     ]
     return template.format(**{var: getattr(prompt, var) for var in template_vars})
-
-
-class BaseCallParams(BaseModel):
-    """The base parameters for calling a model with a prompt."""
-
-    model: str
-    tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
 
 
 class Prompt(BaseModel):

@@ -99,21 +99,6 @@ nav:
       - RAG: "cookbook/rag.md"
       - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
   - API Reference:
-      - chat:
-          - "api/chat/index.md"
-          - openai:
-              - "api/chat/openai/index.md"
-              - models:
-                  - "api/chat/openai/models/index.md"
-                  - OpenAIChat: "api/chat/openai/models/openai_chat.md"
-                  - AsyncOpenAIChat: "api/chat/openai/models/openai_chat_async.md"
-              - parsers:
-                  - "api/chat/openai/parsers/index.md"
-                  - OpenAIParser: "api/chat/openai/parsers/openai_tool_stream_parser.md"
-                  - AsyncOpenAIParser: "api/chat/openai/parsers/openai_tool_stream_parser_async.md"
-              - tools: "api/chat/openai/tools.md"
-              - types: "api/chat/openai/types.md"
-              - utils: "api/chat/openai/utils.md"
       - cli:
           - "api/cli/index.md"
           - commands: "api/cli/commands.md"
@@ -124,6 +109,19 @@ nav:
       - enums: "api/enums.md"
       - prompts:
           - "api/prompts/index.md"
-          - messages: "api/prompts/messages.md"
+          - openai:
+              - "api/prompts/openai/index.md"
+              - models:
+                  - "api/prompts/openai/models/index.md"
+                  - OpenAIChat: "api/prompts/openai/models/openai_chat.md"
+                  - AsyncOpenAIChat: "api/prompts/openai/models/openai_chat_async.md"
+              - parsers:
+                  - "api/prompts/openai/parsers/index.md"
+                  - OpenAIParser: "api/prompts/openai/parsers/openai_tool_stream_parser.md"
+                  - AsyncOpenAIParser: "api/prompts/openai/parsers/openai_tool_stream_parser_async.md"
+              - tools: "api/prompts/openai/tools.md"
+              - types: "api/prompts/openai/types.md"
+              - utils: "api/prompts/openai/utils.md"
           - prompt: "api/prompts/prompt.md"
           - tools: "api/prompts/tools.md"
+          - types: "api/prompts/types.md"
