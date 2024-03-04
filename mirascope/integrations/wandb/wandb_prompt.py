@@ -6,7 +6,7 @@ from pydantic import BaseModel, PrivateAttr
 from wandb.sdk.data_types.trace_tree import Trace
 
 from mirascope import BaseCallParams, Prompt
-from mirascope.chat import OpenAIChatCompletion
+from mirascope.chat.openai import OpenAIChatCompletion
 
 
 class WandbPrompt(Prompt):

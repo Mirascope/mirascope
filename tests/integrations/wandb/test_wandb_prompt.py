@@ -9,11 +9,12 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from pydantic import BaseModel
 from wandb.sdk.data_types.trace_tree import Trace
 
-from mirascope import OpenAIChatCompletion
-from mirascope.chat.openai.utils import convert_function_to_openai_tool
+from mirascope.chat.openai import OpenAIChatCompletion, OpenAITool
 from mirascope.integrations.wandb.wandb_prompt import WandbPrompt
+from mirascope.prompts.tools import convert_function_to_tool
 
 
 class TestPrompt(WandbPrompt):
@@ -65,7 +66,7 @@ def test_trace_completion(mock_Trace: MagicMock):
             system_fingerprint=None,
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
-        tool_types=[convert_function_to_openai_tool(tool_fn)],
+        tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "TestPrompt"
@@ -127,7 +128,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
             system_fingerprint=None,
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
-        tool_types=[convert_function_to_openai_tool(tool_fn)],
+        tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "TestPrompt"
@@ -154,6 +155,47 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
         "tool_output": "pizza!",
     }
     mock_Trace.assert_called_once()
+
+
+class TestModel(BaseModel):
+    param: str
+
+
+def test_trace_base_model():
+    """Tests `trace` method with `BaseModel`."""
+    prompt = TestPrompt(span_type="tool", greeting="Hello")
+
+    completion = TestModel(param="test")
+    with pytest.raises(ValueError):
+        prompt.trace(completion, parent=Trace(name="test"))
+    completion._completion = OpenAIChatCompletion(
+        completion=ChatCompletion(
+            id="test",
+            choices=[
+                Choice(
+                    finish_reason="tool_calls",
+                    index=0,
+                    logprobs=None,
+                    message=ChatCompletionMessage(
+                        content="HI!",
+                        role="assistant",
+                        function_call=None,
+                        tool_calls=None,
+                    ),
+                )
+            ],
+            created=0,
+            model="gpt-3.5-turbo-0125",
+            object="chat.completion",
+            system_fingerprint=None,
+            usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
+        ),
+        tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+    )
+    span = prompt.trace(completion, parent=Trace(name="test"))
+    assert span.name == "TestPrompt"
+    assert span.kind == "TOOL"
+    assert span.status_code == "SUCCESS"
 
 
 def test_trace_error():
