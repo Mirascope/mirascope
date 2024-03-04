@@ -24,9 +24,11 @@ docstring-parser = "^0.15"
 
 # A list of optional dependencies that are required for certain features
 google-generativeai = { version = "^0.4.0", optional = true }
+wandb = { version = "^0.15.4", optional = true }
 
 [tool.poetry.extras]
 gemini = ["google-generativeai"]
+wandb = ["wandb"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -54,8 +56,10 @@ python-dotenv = "^1.0.1"
 pydantic-settings = "^2.1.0"
 sqlalchemy = "^2.0.25"
 psycopg2 = "^2.9.9"
+langsmith = "^0.1.10"
 langchain-core = "^0.1.27"
 langchain-openai = "^0.0.8"
+wandb = "^0.15.4"
 
 [tool.ruff]
 exclude = [

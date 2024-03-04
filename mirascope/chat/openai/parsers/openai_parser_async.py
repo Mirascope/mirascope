@@ -17,10 +17,59 @@ from .utils import (
 
 
 class AsyncOpenAIToolStreamParser(BaseModel):
-    """A utility class to parse `OpenAIChatCompletionChunk`s into `OpenAITools`.
+    '''A utility class to parse `OpenAIChatCompletionChunk`s into `OpenAITools`.
 
     This is an async version of `OpenAIToolStreamParser`.
-    """
+
+    Example:
+
+    ```python
+    import asyncio
+    import os
+    from typing import Callable, Literal, Type, Union
+
+    from pydantic import Field
+
+    from mirascope import (
+        AsyncOpenAIChat,
+        AsyncOpenAIToolStreamParser,
+        OpenAICallParams,
+        OpenAITool,
+        Prompt,
+        openai_tool_fn,
+    )
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+
+    def get_current_weather(
+        location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+    ) -> str:
+        """Returns the current weather in a given location."""
+        return f"{location} is 65 degrees {unit}."
+
+    tools: list[Union[Callable, Type[OpenAITool]]] = [get_current_weather]
+
+    class CurrentWeatherPrompt(Prompt):
+        """What's the weather like in San Francisco, Tokyo, and Paris?"""
+
+        call_params = OpenAICallParams(
+            model="gpt-3.5-turbo-1106",
+            tools=tools,
+        )
+
+    async def stream_openai_tool():
+        chat = AsyncOpenAIChat()
+        prompt = CurrentWeatherPrompt()
+        stream_completion = chat.stream(prompt)
+        parser = AsyncOpenAIToolStreamParser(tools=prompt.call_params.tools)
+        async for partial_tool in parser.from_stream(stream_completion):
+            print("data: ", partial_tool.__dict__, "\n\n")
+
+
+    asyncio.run(stream_openai_tool())
+    ```
+    '''
 
     tool_calls: list[ChatCompletionMessageToolCall] = []
     tools: list[Union[Callable, Type[OpenAITool]]] = []

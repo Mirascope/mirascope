@@ -1,0 +1,3 @@
+mirascope[all]==^0.3.0
+wandb>=0.15.4
+pydantic-settings

@@ -1,6 +1,7 @@
 """mirascope package."""
 import importlib.metadata
 
+from . import integrations
 from .chat.openai import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,

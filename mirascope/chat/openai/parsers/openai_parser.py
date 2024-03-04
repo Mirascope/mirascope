@@ -17,7 +17,52 @@ from .utils import (
 
 
 class OpenAIToolStreamParser(BaseModel):
-    """A utility class to parse `OpenAIChatCompletionChunk`s into `OpenAITools`."""
+    '''A utility class to parse `OpenAIChatCompletionChunk`s into `OpenAITools`.
+
+    Example:
+
+    ```python
+    import os
+    from typing import Callable, Literal, Type, Union
+
+    from pydantic import Field
+
+    from mirascope import (
+        OpenAICallParams,
+        OpenAIChat,
+        OpenAITool,
+        OpenAIToolStreamParser,
+        Prompt,
+    )
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+
+    def get_current_weather(
+        location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+    ) -> str:
+        """Returns the current weather in a given location."""
+        return f"{location} is 65 degrees {unit}."
+
+    tools: list[Union[Callable, Type[OpenAITool]]] = [get_current_weather]
+
+
+    class CurrentWeatherPrompt(Prompt):
+        """What's the weather like in San Francisco, Tokyo, and Paris?"""
+
+        call_params = OpenAICallParams(
+            model="gpt-3.5-turbo-1106",
+            tools=tools,  # pass in function itself for automatic conversion
+        )
+
+
+    chat = OpenAIChat()
+    prompt = CurrentWeatherPrompt()
+    stream_completion = chat.stream(prompt)
+    parser = OpenAIToolStreamParser(tools=tools)
+    for tool in parser.from_stream(stream_completion):
+        print(tool)
+    '''
 
     tool_calls: list[ChatCompletionMessageToolCall] = []
     tools: list[Union[Callable, Type[OpenAITool]]] = []
