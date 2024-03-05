@@ -2,7 +2,7 @@
 
 https://python.langchain.com/docs/expression_language/how_to/map#parallelize-steps
 
-The example uses Mirascope Prompts to validate the inputs and easily generate the invoke
+The example uses Mirascope BasePrompts to validate the inputs and easily generate the invoke
 arguments for the chain.
 """
 import os
@@ -12,19 +12,19 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel
 from langchain_openai import ChatOpenAI
 
-from mirascope import Prompt
+from mirascope import BasePrompt
 
 settings = Settings()
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
-class JokePrompt(Prompt):
+class JokePrompt(BasePrompt):
     """tell me a joke about {topic}"""
 
     topic: str
 
 
-class PoemPrompt(Prompt):
+class PoemPrompt(BasePrompt):
     """write a 2-line poem about {topic}"""
 
     topic: str

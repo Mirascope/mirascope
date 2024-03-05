@@ -4,8 +4,8 @@ import os
 from langsmith import wrappers
 from langsmith_config import Settings
 
-from mirascope import OpenAICallParams, OpenAIChat, Prompt
-from mirascope.prompts.messages import Message
+from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
+from mirascope.base import Message
 
 settings = Settings()
 
@@ -14,7 +14,7 @@ os.environ["LANGCHAIN_TRACING_V2"] = settings.langchain_tracing_v2
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
-class ChatPrompt(Prompt):
+class ChatPrompt(BasePrompt):
     """A chat with history"""
 
     message: str
@@ -31,7 +31,7 @@ class ChatPrompt(Prompt):
         ]
 
 
-class BookRecommendationPrompt(Prompt):
+class BookRecommendationPrompt(BasePrompt):
     """
     Can you recommend some books on {topic}?
     """

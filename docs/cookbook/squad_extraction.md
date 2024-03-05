@@ -22,7 +22,7 @@ class QuestionWithContext(BaseModel):
 
 ## Initial Basic Extraction
 
-To extract an answer to a question, we can use the [`OpenAIChat.extract`](../api/prompts/openai/models/openai_chat.md/#mirascope.prompts.openai.models.OpenAIChat.extract) method to extract the answer. First, let's create a super basic schema and prompt for asking the question and extracting an answer:
+To extract an answer to a question, we can use the [`OpenAIChat.extract`](../api/openai/models/openai_chat.md/#mirascope.openai.models.OpenAIChat.extract) method to extract the answer. First, let's create a super basic schema and prompt for asking the question and extracting an answer:
 
 ```shell
 $ mirascope init --prompts_location squad_prompts; touch prompts/question.py
@@ -144,7 +144,6 @@ class ExtractedAnswer(BaseModel):
     )
 
 
-@messages
 class QuestionPrompt(Prompt):
     """
     SYSTEM:

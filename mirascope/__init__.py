@@ -1,10 +1,15 @@
 """mirascope package."""
 import importlib.metadata
+from contextlib import suppress
 
-from . import integrations
-from .partial import Partial
-from .prompts import BaseCallParams, BaseTool, Prompt, messages, tags, tool_fn
-from .prompts.openai import (
+with suppress(ImportError):
+    from . import gemini
+
+with suppress(ImportError):
+    from . import wandb
+
+from .base import BaseCallParams, BasePrompt, BaseTool, tags, tool_fn
+from .openai import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,
     OpenAICallParams,
@@ -14,5 +19,7 @@ from .prompts.openai import (
     OpenAITool,
     OpenAIToolStreamParser,
 )
+from .partial import Partial
+from .prompts import Prompt, messages
 
 __version__ = importlib.metadata.version("mirascope")

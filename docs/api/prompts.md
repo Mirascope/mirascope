@@ -1,0 +1,3 @@
+# prompts (deprecated)
+
+::: mirascope.prompts

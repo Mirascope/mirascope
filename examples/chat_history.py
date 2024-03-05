@@ -1,13 +1,13 @@
 """A basic example showcasing how to manually manage chat history."""
 import os
 
-from mirascope import OpenAICallParams, OpenAIChat, Prompt
-from mirascope.prompts.messages import Message
+from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
+from mirascope.base import Message
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
-class ChatPrompt(Prompt):
+class ChatPrompt(BasePrompt):
     """A chat with history"""
 
     message: str

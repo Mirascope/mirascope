@@ -12,7 +12,7 @@
 
 from pydantic import BaseModel, Field
 
-from mirascope import OpenAICallParams, Prompt, messages, tags
+from mirascope import BasePrompt, OpenAICallParams, tags
 
 prev_revision_id = "0001"
 revision_id = "0002"
@@ -27,9 +27,8 @@ class ExtractedAnswer(BaseModel):
     )
 
 
-@messages
 @tags(["version:0002"])
-class QuestionPrompt(Prompt):
+class QuestionPrompt(BasePrompt):
     """
     SYSTEM:
     You will be asked a question after you read a paragraph. Your task is to

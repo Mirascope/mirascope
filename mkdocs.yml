@@ -99,6 +99,11 @@ nav:
       - RAG: "cookbook/rag.md"
       - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
   - API Reference:
+      - base:
+          - "api/base/index.md"
+          - prompt: "api/base/prompt.md"
+          - tools: "api/base/tools.md"
+          - types: "api/base/types.md"
       - cli:
           - "api/cli/index.md"
           - commands: "api/cli/commands.md"
@@ -107,21 +112,17 @@ nav:
           - schemas: "api/cli/schemas.md"
           - utils: "api/cli/utils.md"
       - enums: "api/enums.md"
-      - prompts:
-          - "api/prompts/index.md"
-          - openai:
-              - "api/prompts/openai/index.md"
-              - models:
-                  - "api/prompts/openai/models/index.md"
-                  - OpenAIChat: "api/prompts/openai/models/openai_chat.md"
-                  - AsyncOpenAIChat: "api/prompts/openai/models/openai_chat_async.md"
-              - parsers:
-                  - "api/prompts/openai/parsers/index.md"
-                  - OpenAIParser: "api/prompts/openai/parsers/openai_tool_stream_parser.md"
-                  - AsyncOpenAIParser: "api/prompts/openai/parsers/openai_tool_stream_parser_async.md"
-              - tools: "api/prompts/openai/tools.md"
-              - types: "api/prompts/openai/types.md"
-              - utils: "api/prompts/openai/utils.md"
-          - prompt: "api/prompts/prompt.md"
-          - tools: "api/prompts/tools.md"
-          - types: "api/prompts/types.md"
+      - openai:
+          - "api/openai/index.md"
+          - models:
+              - "api/openai/models/index.md"
+              - OpenAIChat: "api/openai/models/openai_chat.md"
+              - AsyncOpenAIChat: "api/openai/models/openai_chat_async.md"
+          - parsers:
+              - "api/openai/parsers/index.md"
+              - OpenAIParser: "api/openai/parsers/openai_tool_stream_parser.md"
+              - AsyncOpenAIParser: "api/openai/parsers/openai_tool_stream_parser_async.md"
+          - tools: "api/openai/tools.md"
+          - types: "api/openai/types.md"
+          - utils: "api/openai/utils.md"
+      - prompts: "api/prompts.md"

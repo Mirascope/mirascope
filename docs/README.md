@@ -198,12 +198,12 @@ print(prompt)
 
 Notice that writing properties in this way ensures prompt-specific logic is tied directly to the prompt. It happens under the hood from the perspective of the person using `GreetingsPrompt` class. Constructing the prompt only requires `name`.
 
-For writing promps with multiple messages with different roles, you can use the `messages` decorator to extend the functionality of the `messages` property:
+For writing promps with multiple messages with different roles, you can use the keywords SYSTEM, USER, ASSISTANT, or TOOL to extend the functionality of the `messages` property:
 
 ```python
-from mirascope import Prompt, messages
+from mirascope import Prompt
 
-@messages
+
 class GreetingsPrompt(Prompt):
     """
     SYSTEM:

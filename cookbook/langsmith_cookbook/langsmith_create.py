@@ -4,7 +4,7 @@ import os
 from langsmith import wrappers
 from langsmith_config import Settings
 
-from mirascope import OpenAICallParams, OpenAIChat, Prompt
+from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
 
 settings = Settings()
 
@@ -13,7 +13,7 @@ os.environ["LANGCHAIN_TRACING_V2"] = settings.langchain_tracing_v2
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
-class BookRecommendationPrompt(Prompt):
+class BookRecommendationPrompt(BasePrompt):
     """
     Can you recommend some books on {topic}?
     """

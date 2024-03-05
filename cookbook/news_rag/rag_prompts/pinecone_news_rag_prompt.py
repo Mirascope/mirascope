@@ -1,4 +1,4 @@
-"""Prompt for Pinecone RAG."""
+"""BasePrompt for Pinecone RAG."""
 import pandas as pd
 from openai import OpenAI
 from pinecone import Pinecone
@@ -6,13 +6,12 @@ from pydantic import ConfigDict
 from rag_config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
 from rag_utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope import BasePrompt
 
 settings = Settings()
 
 
-@messages
-class PineconeNewsRagPrompt(Prompt):
+class PineconeNewsRagPrompt(BasePrompt):
     """
     SYSTEM:
     You are an expert at:

@@ -1,4 +1,4 @@
-"""Prompt for local RAG."""
+"""BasePrompt for local RAG."""
 import numpy as np
 import pandas as pd
 from openai import OpenAI
@@ -6,13 +6,12 @@ from pydantic import ConfigDict
 from rag_config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
 from rag_utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope import BasePrompt
 
 settings = Settings()
 
 
-@messages
-class LocalNewsRagPrompt(Prompt):
+class LocalNewsRagPrompt(BasePrompt):
     """
     SYSTEM:
     You are an expert at:
