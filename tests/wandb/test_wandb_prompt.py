@@ -17,7 +17,7 @@ from mirascope.openai import OpenAIChatCompletion, OpenAITool
 from mirascope.wandb.prompt import WandbPrompt
 
 
-class TestPrompt(WandbPrompt):
+class GreetingsPrompt(WandbPrompt):
     """This is a test prompt. {greeting}!"""
 
     greeting: str
@@ -26,7 +26,7 @@ class TestPrompt(WandbPrompt):
 @pytest.mark.parametrize("span_type", ["tool", "llm"])
 def test__init(span_type):
     """Test initialization."""
-    prompt = TestPrompt(span_type=span_type, greeting="Hello")
+    prompt = GreetingsPrompt(span_type=span_type, greeting="Hello")
     assert prompt.span_type == span_type
     assert prompt.call_params.model == "gpt-3.5-turbo-0125"
 
@@ -43,7 +43,7 @@ def test_init_invalid_span_type():
 )
 def test_trace_completion(mock_Trace: MagicMock):
     """Test `trace` method with `OpenAIChatCompletion`."""
-    prompt = TestPrompt(span_type="llm", greeting="Hello")
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     completion = OpenAIChatCompletion(
         completion=ChatCompletion(
             id="test",
@@ -69,7 +69,7 @@ def test_trace_completion(mock_Trace: MagicMock):
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
-    assert span.name == "TestPrompt"
+    assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "SUCCESS"
     assert span.status_message is None
@@ -96,7 +96,7 @@ def tool_fn(word: str) -> str:
 )
 def test_trace_completion_tool(mock_Trace: MagicMock):
     """Test `trace` method with `OpenAIChatCompletion`."""
-    prompt = TestPrompt(span_type="tool", greeting="Hello")
+    prompt = GreetingsPrompt(span_type="tool", greeting="Hello")
     completion = OpenAIChatCompletion(
         completion=ChatCompletion(
             id="test",
@@ -131,7 +131,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
-    assert span.name == "TestPrompt"
+    assert span.name == "GreetingsPrompt"
     assert span.kind == "TOOL"
     assert span.status_code == "SUCCESS"
     assert span.status_message is None
@@ -157,15 +157,15 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
     mock_Trace.assert_called_once()
 
 
-class TestModel(BaseModel):
+class MyModel(BaseModel):
     param: str
 
 
 def test_trace_base_model():
     """Tests `trace` method with `BaseModel`."""
-    prompt = TestPrompt(span_type="tool", greeting="Hello")
+    prompt = GreetingsPrompt(span_type="tool", greeting="Hello")
 
-    completion = TestModel(param="test")
+    completion = MyModel(param="test")
     with pytest.raises(ValueError):
         prompt.trace(completion, parent=Trace(name="test"))
     completion._completion = OpenAIChatCompletion(
@@ -193,7 +193,7 @@ def test_trace_base_model():
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
-    assert span.name == "TestPrompt"
+    assert span.name == "GreetingsPrompt"
     assert span.kind == "TOOL"
     assert span.status_code == "SUCCESS"
 
@@ -201,9 +201,9 @@ def test_trace_base_model():
 def test_trace_error():
     """Test `trace_error` method."""
     error = Exception("Test error")
-    prompt = TestPrompt(span_type="llm", greeting="Hello")
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     span = prompt.trace_error(error, parent=Trace(name="test"))
-    assert span.name == "TestPrompt"
+    assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "ERROR"
     assert span.status_message == "Test error"

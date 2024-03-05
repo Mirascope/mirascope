@@ -23,10 +23,11 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
-from pydantic import Field
+from pydantic import BaseModel, Field
 
+from mirascope.base.tools import BaseTool
 from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
-from mirascope.openai import OpenAICallParams
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 from mirascope.openai.tools import OpenAITool
 
 from .base.test_prompt import (
@@ -44,6 +45,44 @@ from .test_prompts import (
 def fixture_foobar_prompt() -> FooBarPrompt:
     """Returns a `FooBarPrompt` instance."""
     return FooBarPrompt(foo="foo", bar="bar")
+
+
+@pytest.fixture()
+def fixture_openai_test_prompt(scope="function") -> OpenAIPrompt:
+    """Returns a `OpenAITestPrompt` instance."""
+
+    class OpenAITestPrompt(OpenAIPrompt):
+        """A prompt for testing."""
+
+        call_params = OpenAICallParams(model="gpt-3.5-turbo-16k")
+
+    return OpenAITestPrompt(api_key="test")
+
+
+@pytest.fixture()
+def fixture_my_schema() -> Type[BaseModel]:
+    """Returns a `MySchema` class type."""
+
+    class MySchema(BaseModel):
+        """A test schema."""
+
+        param: str = Field(..., description="A test parameter.")
+        optional: int = 0
+
+    return MySchema
+
+
+@pytest.fixture()
+def fixture_my_schema_tool() -> Type[BaseTool]:
+    """Returns a `MySchemaTool` class type."""
+
+    class MySchemaTool(OpenAITool):
+        """A test schema."""
+
+        param: str = Field(..., description="A test parameter.")
+        optional: int = 0
+
+    return MySchemaTool
 
 
 @pytest.fixture()

@@ -70,6 +70,11 @@ class AsyncOpenAIChat:
         **kwargs: Any,
     ):
         """Initializes an instance of `AsyncOpenAIChat."""
+        warnings.warn(
+            "`AsyncOpenAIChat` is deprecated. Use `OpenAIPrompt` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if "model" in kwargs:
             self.model = kwargs.pop("model")
             self.model_is_set = True

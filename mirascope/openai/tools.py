@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import json
-from typing import cast
+from typing import Callable, Type, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from ..base import BaseTool
+from ..base.tools import convert_base_model_to_tool, convert_function_to_tool
 
 
 class OpenAITool(BaseTool):
@@ -110,3 +111,13 @@ class OpenAITool(BaseTool):
 
         model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)
+
+    @classmethod
+    def from_model(cls, model: Type[BaseModel]) -> Type[OpenAITool]:
+        """Constructs a `OpenAITool` type from a `BaseModel` type."""
+        return convert_base_model_to_tool(model, OpenAITool)
+
+    @classmethod
+    def from_fn(cls, fn: Callable) -> Type[OpenAITool]:
+        """Constructs a `OpenAITool` type from a function."""
+        return convert_function_to_tool(fn, OpenAITool)
