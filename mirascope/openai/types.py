@@ -2,6 +2,7 @@
 from typing import Any, Callable, Optional, Type, Union
 
 from httpx import Timeout
+from openai import AsyncOpenAI, OpenAI
 from openai._types import Body, Headers, Query
 from openai.types.chat import (
     ChatCompletion,
@@ -202,6 +203,9 @@ class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI Chat API with a prompt."""
 
     model: str = "gpt-3.5-turbo-0125"
+    base_url: Optional[str] = None
+    wrapper: Optional[Callable[[OpenAI], OpenAI]] = None
+    async_wrapper: Optional[Callable[[AsyncOpenAI], AsyncOpenAI]] = None
     frequency_penalty: Optional[float] = None
     logit_bias: Optional[dict[str, int]] = None
     logprobs: Optional[bool] = None

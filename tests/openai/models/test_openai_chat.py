@@ -3,11 +3,10 @@ from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from mirascope.base import BasePrompt
 from mirascope.openai.models import OpenAIChat
-from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
     OpenAIChatCompletion,
     OpenAIChatCompletionChunk,
@@ -251,20 +250,6 @@ def test_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
         next(stream)
 
 
-class MySchema(BaseModel):
-    """A test schema."""
-
-    param: str = Field(..., description="A test parameter.")
-    optional: int = 0
-
-
-class MySchemaTool(OpenAITool):
-    """A test schema."""
-
-    param: str = Field(..., description="A test parameter.")
-    optional: int = 0
-
-
 @patch("mirascope.openai.models.OpenAIChat.create", new_callable=MagicMock)
 @pytest.mark.parametrize("prompt", [BasePrompt(), "This is a test prompt."])
 @pytest.mark.parametrize("retries", [1, 3, 5])
@@ -272,6 +257,8 @@ def test_openai_chat_extract(
     mock_create,
     prompt,
     retries,
+    fixture_my_schema,
+    fixture_my_schema_tool,
     fixture_my_tool,
     fixture_my_tool_instance,
     fixture_chat_completion_with_tools,
@@ -283,7 +270,7 @@ def test_openai_chat_extract(
     )
     chat = OpenAIChat(api_key="test")
     prompt = BasePrompt()
-    model = chat.extract(MySchema, prompt, retries=retries)
+    model = chat.extract(fixture_my_schema, prompt, retries=retries)
 
     mock_create.assert_called_once()
 
@@ -293,10 +280,12 @@ def test_openai_chat_extract(
     mock_create.call_args.kwargs.pop("extract")
     tools_arg, tool_choice_arg = list(mock_create.call_args.kwargs.values())
     assert len(tools_arg) == 1
-    assert tools_arg[0].model_json_schema() == MySchemaTool.model_json_schema()
+    assert (
+        tools_arg[0].model_json_schema() == fixture_my_schema_tool.model_json_schema()
+    )
     assert tool_choice_arg == {"type": "function", "function": {"name": "MySchemaTool"}}
-    assert isinstance(model, MySchema)
-    schema_instance = MySchema(
+    assert isinstance(model, fixture_my_schema)
+    schema_instance = fixture_my_schema(
         param=fixture_my_tool_instance.param, optional=fixture_my_tool_instance.optional
     )
     assert model.model_dump() == schema_instance.model_dump()
@@ -304,7 +293,7 @@ def test_openai_chat_extract(
 
 @patch("mirascope.openai.models.OpenAIChat.create", new_callable=MagicMock)
 def test_openai_chat_extract_messages_prompt(
-    mock_create, fixture_my_tool, fixture_chat_completion_with_tools
+    mock_create, fixture_my_schema, fixture_my_tool, fixture_chat_completion_with_tools
 ):
     """Tests that `OpenAIChat.extract` works with a messages prompt."""
     tools = [fixture_my_tool]
@@ -313,17 +302,21 @@ def test_openai_chat_extract_messages_prompt(
     )
     chat = OpenAIChat(model="gpt-3.5-turbo", api_key="test")
     messages = [{"role": "user", "content": "content"}]
-    model = chat.extract(MySchema, messages=messages)
+    model = chat.extract(fixture_my_schema, messages=messages)
 
     mock_create.assert_called_once()
-    assert isinstance(model, MySchema)
+    assert isinstance(model, fixture_my_schema)
     assert model._completion == mock_create.return_value
 
 
 @patch("mirascope.openai.models.OpenAIChat.create", new_callable=MagicMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
 def test_openai_chat_extract_with_validation_error(
-    mock_create, retries, fixture_my_tool, fixture_chat_completion_with_bad_tools
+    mock_create,
+    retries,
+    fixture_my_schema,
+    fixture_my_tool,
+    fixture_chat_completion_with_bad_tools,
 ):
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
@@ -333,7 +326,7 @@ def test_openai_chat_extract_with_validation_error(
     chat = OpenAIChat(api_key="test")
     prompt = BasePrompt()
     with pytest.raises(ValidationError):
-        chat.extract(MySchema, prompt, retries=retries)
+        chat.extract(fixture_my_schema, prompt, retries=retries)
 
     assert mock_create.call_count == retries + 1
 
@@ -344,6 +337,7 @@ def test_openai_chat_extract_with_validation_error(
 )
 def test_openai_chat_extract_no_deprecation_warning(
     mock_create,
+    fixture_my_schema,
     fixture_foobar_prompt,
     fixture_chat_completion_with_schema_tool,
 ):
@@ -351,6 +345,6 @@ def test_openai_chat_extract_no_deprecation_warning(
     mock_create.return_value = fixture_chat_completion_with_schema_tool
 
     chat = OpenAIChat(api_key="test")
-    chat.extract(MySchema, fixture_foobar_prompt)
+    chat.extract(fixture_my_schema, fixture_foobar_prompt)
 
     assert "extract" not in mock_create.call_args.kwargs

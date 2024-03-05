@@ -13,14 +13,13 @@ from mirascope.openai.types import (
     OpenAIChatCompletionChunk,
 )
 
-pytestmark = pytest.mark.asyncio
-
 
 @patch(
     "openai.resources.chat.completions.AsyncCompletions.create",
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+@pytest.mark.asyncio
 async def test_async_openai_chat(
     mock_create,
     fixture_chat_completion,
@@ -62,6 +61,7 @@ def test_async_openai_chat_with_wrapper():
     "openai.resources.chat.completions.AsyncCompletions.create",
     new_callable=AsyncMock,
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_messages_kwarg(mock_create, fixture_chat_completion):
     """Tests that `AsyncOpenAIChat` works with a messages prompt."""
     mock_create.return_value = fixture_chat_completion
@@ -95,6 +95,7 @@ async def test_async_openai_chat_messages_kwarg(mock_create, fixture_chat_comple
         ),
     ],
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_tools(
     mock_create, fixture_chat_completion_with_tools, prompt, tools, request
 ):
@@ -121,6 +122,7 @@ async def test_async_openai_chat_tools(
     new_callable=AsyncMock,
     side_effect=Exception("base exception"),
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_error(mock_create, fixture_foobar_prompt):
     """Tests that `AsyncOpenAIChat` handles OpenAI errors thrown during create."""
     chat = AsyncOpenAIChat(api_key="test")
@@ -133,6 +135,7 @@ async def test_async_openai_chat_error(mock_create, fixture_foobar_prompt):
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("prompt", ["fixture_foobar_prompt", "fixture_messages_prompt"])
+@pytest.mark.asyncio
 async def test_async_openai_chat_stream(
     mock_create,
     fixture_chat_completion_chunks,
@@ -151,7 +154,7 @@ async def test_async_openai_chat_stream(
         assert chunk.chunk == fixture_chat_completion_chunks[i]
         for j, choice in enumerate(chunk.choices):
             assert choice == fixture_chat_completion_chunks[i].choices[j]
-        i += 1
+            i += 1
 
     mock_create.assert_called_once_with(
         model=prompt.call_params.model,
@@ -165,6 +168,7 @@ async def test_async_openai_chat_stream(
     "openai.resources.chat.completions.AsyncCompletions.create",
     new_callable=AsyncMock,
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_stream_messages_kwarg(
     mock_create, fixture_chat_completion_chunks
 ):
@@ -200,6 +204,7 @@ async def test_async_openai_chat_stream_messages_kwarg(
         ),
     ],
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_stream_tools(
     mock_create, fixture_chat_completion_chunk_with_tools, prompt, tools, request
 ):
@@ -230,6 +235,7 @@ async def test_async_openai_chat_stream_tools(
     new_callable=AsyncMock,
     side_effect=Exception("base exception"),
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_stream_error(mock_create, fixture_foobar_prompt):
     """Tests that `AsyyncOpenAIChat` handles OpenAI errors thrown during stream."""
     chat = AsyncOpenAIChat(api_key="test")
@@ -258,6 +264,7 @@ class MySchemaTool(OpenAITool):
 )
 @pytest.mark.parametrize("prompt", [BasePrompt(), "This is a test prompt."])
 @pytest.mark.parametrize("retries", [1, 3, 5])
+@pytest.mark.asyncio
 async def test_async_openai_chat_extract(
     mock_create,
     prompt,
@@ -297,6 +304,7 @@ async def test_async_openai_chat_extract(
     "mirascope.openai.models.AsyncOpenAIChat.create",
     new_callable=AsyncMock,
 )
+@pytest.mark.asyncio
 async def test_async_openai_chat_extract_messages_prompt(
     mock_create, fixture_my_tool, fixture_chat_completion_with_tools
 ):
@@ -319,6 +327,7 @@ async def test_async_openai_chat_extract_messages_prompt(
     new_callable=AsyncMock,
 )
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
+@pytest.mark.asyncio
 async def test_async_openai_chat_extract_with_validation_error(
     mock_create, retries, fixture_my_tool, fixture_chat_completion_with_bad_tools
 ):
@@ -339,6 +348,7 @@ async def test_async_openai_chat_extract_with_validation_error(
     "openai.resources.chat.completions.AsyncCompletions.create",
     new_callable=AsyncMock,
 )
+@pytest.mark.asyncio
 async def test_openai_chat_extract_no_deprecation_warning(
     mock_create,
     fixture_foobar_prompt,

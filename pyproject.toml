@@ -61,6 +61,9 @@ langchain-core = "^0.1.27"
 langchain-openai = "^0.0.8"
 wandb = "^0.15.4"
 
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]
+
 [tool.ruff]
 exclude = [
     ".bzr",

@@ -60,7 +60,7 @@ def patch_openai_kwargs(
             {
                 key: value
                 for key, value in prompt.call_params.model_dump(
-                    exclude={"tools", "model"}
+                    exclude={"tools", "model", "wrapper", "async_wrapper"}
                 ).items()
                 if value is not None
             }

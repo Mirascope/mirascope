@@ -6,7 +6,7 @@ import pickle
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Any, Callable, ClassVar, Optional, Type, TypeVar
+from typing import Any, Callable, ClassVar, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -104,7 +104,7 @@ class BasePrompt(BaseModel):
         return format_template(self, self.template())
 
     @property
-    def messages(self) -> list[Message]:
+    def messages(self) -> Union[list[Message], Any]:
         """Returns the docstring as a list of messages."""
         message_param_map = {
             "system": SystemMessage,

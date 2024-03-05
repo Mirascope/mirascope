@@ -1,5 +1,4 @@
 """Tests for deprecated `Prompt` class."""
-
 from mirascope.prompts import Prompt, messages
 
 
