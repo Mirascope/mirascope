@@ -1,31 +1,13 @@
 """A class for better prompting."""
-
 from __future__ import annotations
 
-import pickle
-import re
 import warnings
-from string import Formatter
-from textwrap import dedent
-from typing import Any, ClassVar, Optional, Type, TypeVar
+from typing import Any, ClassVar, Type, TypeVar
 
 from .base.prompt import BasePrompt
 from .base.types import (
-    AssistantMessage,
     BaseCallParams,
-    Message,
-    SystemMessage,
-    ToolMessage,
-    UserMessage,
 )
-
-
-def format_template(prompt: Prompt, template: str) -> str:
-    """Formats the template with the prompt's attributes."""
-    template_vars = [
-        var for _, var, _, _ in Formatter().parse(template) if var is not None
-    ]
-    return template.format(**{var: getattr(prompt, var) for var in template_vars})
 
 
 class Prompt(BasePrompt):
@@ -88,81 +70,6 @@ class Prompt(BasePrompt):
             stacklevel=2,
         )
         super().__init__(**data)
-
-    @classmethod
-    def template(cls) -> str:
-        """Custom parsing functionality for docstring prompt.
-
-        This function is the first step in formatting the prompt template docstring.
-        For the default `Prompt`, this function dedents the docstring and replaces all
-        repeated sequences of newlines with one fewer newline character. This enables
-        writing blocks of text instead of really long single lines. To include any
-        number of newline characters, simply include one extra.
-
-        Raises:
-            ValueError: If the class docstring is empty.
-        """
-        if cls.__doc__ is None:
-            raise ValueError("`Prompt` must have a prompt template docstring.")
-
-        return re.sub(
-            "(\n+)",
-            lambda x: x.group(0)[:-1] if len(x.group(0)) > 1 else " ",
-            dedent(cls.__doc__).strip("\n"),
-        )
-
-    def __str__(self) -> str:
-        """Returns the docstring prompt template formatted with template variables."""
-        return format_template(self, self.template())
-
-    @property
-    def messages(self) -> list[Message]:
-        """Returns the docstring as a list of messages."""
-        message_param_map = {
-            "system": SystemMessage,
-            "user": UserMessage,
-            "assistant": AssistantMessage,
-            "tool": ToolMessage,
-        }
-        messages = []
-        for match in re.finditer(
-            r"(SYSTEM|USER|ASSISTANT|TOOL): "
-            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
-            self.template(),
-        ):
-            role = match.group(1).lower()
-            content = format_template(self, match.group(2))
-            messages.append(message_param_map[role](role=role, content=content))
-        if len(messages) == 0:
-            messages.append(UserMessage(role="user", content=str(self)))
-        return messages
-
-    def dump(self, completion: Optional[dict[str, Any]] = None) -> dict[str, Any]:
-        """Dumps the prompt template to a dictionary."""
-        prompt_dict: dict[str, Any] = {
-            "template": self.template(),
-            "inputs": self.model_dump(),
-            "tags": self.tags,
-            "call_params": {
-                key: value
-                for key, value in self.call_params.model_dump().items()
-                if value is not None
-            },
-        }
-        if completion is not None:
-            return prompt_dict | completion
-        return prompt_dict
-
-    def save(self, filepath: str):
-        """Saves the prompt to the given filepath."""
-        with open(filepath, "wb") as f:
-            pickle.dump(self, f)
-
-    @classmethod
-    def load(cls, filepath: str) -> Prompt:
-        """Loads the prompt from the given filepath."""
-        with open(filepath, "rb") as f:
-            return pickle.load(f)
 
 
 T = TypeVar("T", bound=Prompt)

@@ -19,7 +19,7 @@ class GeminiCompletion(BaseModel):
     Example:
 
     ```python
-    from mirascope.prompts.gemini import GeminiPrompt
+    from mirascope.gemini import GeminiPrompt
 
 
     class BookRecommendation(GeminiPrompt):
@@ -68,7 +68,7 @@ class GeminiCompletionChunk(BaseModel):
     Example:
 
     ```python
-    from mirascope.prompts.gemini import GeminiPrompt
+    from mirascope.gemini import GeminiPrompt
 
 
     class BookRecommendation(GeminiPrompt):
@@ -95,7 +95,7 @@ class GeminiCallParams(BaseCallParams):
     Example:
 
     ```python
-    from mirascope.prompts.gemini import GeminiPrompt, GeminiCallParams
+    from mirascope.gemini import GeminiPrompt, GeminiCallParams
 
 
     class BookRecommendation(GeminiPrompt):

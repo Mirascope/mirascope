@@ -24,7 +24,7 @@ class GeminiPrompt(BasePrompt):
 
     ```python
     from google.generativeai import configure  # type: ignore
-    from mirascope.prompts.gemini import GeminiPrompt
+    from mirascope.gemini import GeminiPrompt
 
     configure(api_key="YOUR_API_KEY")
 

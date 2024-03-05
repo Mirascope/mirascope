@@ -1,4 +1,4 @@
-"""Tests for the `mirascope.prompts.gemini.types` module."""
+"""Tests for the `mirascope.gemini.types` module."""
 import pytest
 from google.ai.generativelanguage import (
     Candidate,
