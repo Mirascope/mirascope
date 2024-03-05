@@ -100,21 +100,11 @@ nav:
       - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
       - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
   - API Reference:
-      - chat:
-          - "api/chat/index.md"
-          - openai:
-              - "api/chat/openai/index.md"
-              - models:
-                  - "api/chat/openai/models/index.md"
-                  - OpenAIChat: "api/chat/openai/models/openai_chat.md"
-                  - AsyncOpenAIChat: "api/chat/openai/models/openai_chat_async.md"
-              - parsers:
-                  - "api/chat/openai/parsers/index.md"
-                  - OpenAIParser: "api/chat/openai/parsers/openai_tool_stream_parser.md"
-                  - AsyncOpenAIParser: "api/chat/openai/parsers/openai_tool_stream_parser_async.md"
-              - tools: "api/chat/openai/tools.md"
-              - types: "api/chat/openai/types.md"
-              - utils: "api/chat/openai/utils.md"
+      - base:
+          - "api/base/index.md"
+          - prompt: "api/base/prompt.md"
+          - tools: "api/base/tools.md"
+          - types: "api/base/types.md"
       - cli:
           - "api/cli/index.md"
           - commands: "api/cli/commands.md"
@@ -123,8 +113,17 @@ nav:
           - schemas: "api/cli/schemas.md"
           - utils: "api/cli/utils.md"
       - enums: "api/enums.md"
-      - prompts:
-          - "api/prompts/index.md"
-          - messages: "api/prompts/messages.md"
-          - prompt: "api/prompts/prompt.md"
-          - tools: "api/prompts/tools.md"
+      - openai:
+          - "api/openai/index.md"
+          - models:
+              - "api/openai/models/index.md"
+              - OpenAIChat: "api/openai/models/openai_chat.md"
+              - AsyncOpenAIChat: "api/openai/models/openai_chat_async.md"
+          - parsers:
+              - "api/openai/parsers/index.md"
+              - OpenAIParser: "api/openai/parsers/openai_tool_stream_parser.md"
+              - AsyncOpenAIParser: "api/openai/parsers/openai_tool_stream_parser_async.md"
+          - tools: "api/openai/tools.md"
+          - types: "api/openai/types.md"
+          - utils: "api/openai/utils.md"
+      - prompts: "api/prompts.md"

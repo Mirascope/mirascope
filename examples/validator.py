@@ -9,7 +9,7 @@ from typing import Annotated, Union
 
 from pydantic import AfterValidator, BaseModel, Field, ValidationError
 
-from mirascope import OpenAICallParams, OpenAIChat, Prompt
+from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -40,7 +40,7 @@ def validate_question(question: str) -> str:
     return question
 
 
-class QuestionPrompt(Prompt):
+class QuestionPrompt(BasePrompt):
     """
     SYSTEM:
     You are an expert in {topic}.

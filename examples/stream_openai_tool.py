@@ -5,11 +5,11 @@ from typing import Callable, Literal, Type, Union
 from pydantic import Field
 
 from mirascope import (
+    BasePrompt,
     OpenAICallParams,
     OpenAIChat,
     OpenAITool,
     OpenAIToolStreamParser,
-    Prompt,
 )
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
@@ -32,7 +32,7 @@ class GetCurrentWeather(OpenAITool):
 tools: list[Union[Callable, Type[OpenAITool]]] = [GetCurrentWeather]
 
 
-class CurrentWeatherPrompt(Prompt):
+class CurrentWeatherPrompt(BasePrompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
     call_params = OpenAICallParams(

@@ -11,7 +11,7 @@
 """
 from pydantic import BaseModel, Field
 
-from mirascope import Prompt, messages
+from mirascope import BasePrompt
 
 prev_revision_id = None
 revision_id = "0001"
@@ -30,8 +30,7 @@ class ExtractedAnswer(BaseModel):
     )
 
 
-@messages
-class QuestionPrompt(Prompt):
+class QuestionPrompt(BasePrompt):
     """
     SYSTEM:
     You will be asked a question after you read a paragraph. Your task is to

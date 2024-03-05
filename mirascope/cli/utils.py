@@ -455,7 +455,11 @@ def _update_mirascope_from_imports(
         from_imports: The from imports from the PromptAnalyzer class
     """
     if not any(
-        (module_name == "mirascope" or module_name == "mirascope.prompts")
+        (
+            module_name == "mirascope"
+            or module_name == "mirascope.base"
+            or module_name == "mirascope.prompts"
+        )
         and import_name == member
         for module_name, import_name, _ in from_imports
     ):
@@ -521,7 +525,11 @@ def write_prompt_to_template(
 
         for python_class in analyzer.classes:
             decorators = python_class.decorators
-            if python_class.bases and python_class.bases[0] == "Prompt":
+            if (
+                python_class.bases
+                and python_class.bases[0] == "BasePrompt"
+                or python_class.bases[0] == "Prompt"
+            ):
                 import_tag_name = _update_tag_decorator_with_version(
                     decorators, variables, mirascope_alias
                 )

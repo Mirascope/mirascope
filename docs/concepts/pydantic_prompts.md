@@ -1,6 +1,6 @@
 # Pydantic Prompts
 
-The [`Prompt`](../api/prompts/prompt.md#mirascope.prompts.prompt.Prompt) class is the core of Mirascope, which extends Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/api/base_model/). The class leverages the power of python to make writing more complex prompts as easy and readable as possible. The docstring is automatically formatted as a prompt so that you can write prompts in the style of your codebase.
+The [`Prompt`](../api/base/prompt.md#mirascope.base.prompt.Prompt) class is the core of Mirascope, which extends Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/api/base_model/). The class leverages the power of python to make writing more complex prompts as easy and readable as possible. The docstring is automatically formatted as a prompt so that you can write prompts in the style of your codebase.
 
 ## Why should you care?
 
@@ -18,7 +18,7 @@ The [`Prompt`](../api/prompts/prompt.md#mirascope.prompts.prompt.Prompt) class i
 - **All of the above helps lead to production ready code**
 
 
-## The [`Prompt`](../api/prompts/prompt.md#mirascope.prompts.prompt.Prompt) Class
+## The [`Prompt`](../api/base/prompt.md#mirascope.base.prompt.Prompt) Class
 
 The docstring of the class acts as the prompt's template, and the attributes act as the template variables:
 
@@ -110,16 +110,12 @@ Can you recommend some books on the following topic and genre pairs?
 
 ### Messages
 
-By default, the `Prompt` class treats the prompt template as a single user message. If you want to specify a list of messages instead, we provide a decorator to make this easy:
-
-!!! note 
-	
-	`@messages` decorator updates the `messages` property of the class to parse multiple messages, which supports SYSTEM, USER, ASSISTANT, and TOOL
+By default, the `Prompt` class treats the prompt template as a single user message. If you want to specify a list of messages instead, just use the message keywords SYSTEM, USER, ASSISTANT, or TOOL:
 
 ```python
-from mirascope import messages, Prompt
+from mirascope import Prompt
 
-@messages
+
 class BookRecommendationPrompt(Prompt):
 	"""
 	SYSTEM:

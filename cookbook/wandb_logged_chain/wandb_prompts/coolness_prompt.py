@@ -1,8 +1,7 @@
 """Prompt for determining coolness."""
 from pydantic import BaseModel
 
-from mirascope import messages
-from mirascope.integrations.wandb import WandbPrompt
+from mirascope.wandb import WandbPrompt
 
 
 class Coolness(BaseModel):
@@ -11,7 +10,6 @@ class Coolness(BaseModel):
     coolness: int
 
 
-@messages
 class CoolnessPrompt(WandbPrompt):
     """
     SYSTEM: You determine coolness on a scale of 1 to 10. If the person's name is Brian,

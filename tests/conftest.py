@@ -25,16 +25,18 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 from pydantic import Field
 
-from mirascope.chat.openai import OpenAICallParams
-from mirascope.chat.openai.tools import OpenAITool
 from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
+from mirascope.openai import OpenAICallParams
+from mirascope.openai.tools import OpenAITool
 
-from .prompts.test_prompt import (
-    DecoratorMessagesPrompt,
+from .base.test_prompt import (
     FooBarPrompt,
     MessagesPrompt,
     TagPrompt,
     TagsPrompt,
+)
+from .test_prompts import (
+    DecoratorMessagesPrompt,
 )
 
 

@@ -8,7 +8,7 @@ from sqlalchemy import JSON, Float, Integer, MetaData, String, create_engine
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-from mirascope import OpenAIChat, Prompt, tags
+from mirascope import BasePrompt, OpenAIChat, tags
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -35,7 +35,7 @@ class OpenAIChatCompletionTable(Base):
 
 
 @tags(["recommendation_project"])
-class BookRecommendationPrompt(Prompt):
+class BookRecommendationPrompt(BasePrompt):
     """
     Can you recommend some books on {topic}?
     """

@@ -11,14 +11,14 @@ import os
 
 from fastapi import FastAPI
 
-from mirascope import AsyncOpenAIChat, Prompt
+from mirascope import AsyncOpenAIChat, BasePrompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 app = FastAPI()
 
 
-class BookRecommendationPrompt(Prompt):
+class BookRecommendationPrompt(BasePrompt):
     """
     Can you recommend some books on {topic} in a list format?
     """
@@ -26,7 +26,7 @@ class BookRecommendationPrompt(Prompt):
     topic: str
 
 
-class BestForBeginnersPrompt(Prompt):
+class BestForBeginnersPrompt(BasePrompt):
     """
     Given this list {book_list}, which one is the best for beginners?
     """

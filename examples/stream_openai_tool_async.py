@@ -8,10 +8,10 @@ from pydantic import Field
 from mirascope import (
     AsyncOpenAIChat,
     AsyncOpenAIToolStreamParser,
+    BasePrompt,
     OpenAICallParams,
     OpenAITool,
-    Prompt,
-    openai_tool_fn,
+    tool_fn,
 )
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
@@ -24,7 +24,7 @@ def get_current_weather(
     return f"{location} is 65 degrees {unit}."
 
 
-@openai_tool_fn(get_current_weather)
+@tool_fn(get_current_weather)
 class GetCurrentWeather(OpenAITool):
     """Get the current weather in a given location."""
 
@@ -32,7 +32,7 @@ class GetCurrentWeather(OpenAITool):
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 
 
-class CurrentWeatherPrompt(Prompt):
+class CurrentWeatherPrompt(BasePrompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
     call_params = OpenAICallParams(

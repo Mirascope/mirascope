@@ -1,3 +1,0 @@
-# prompts
-
-::: mirascope.prompts

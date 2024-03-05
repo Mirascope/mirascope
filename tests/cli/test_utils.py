@@ -370,7 +370,7 @@ def test_write_prompt_to_template(
             name="MovieRecommendationPrompt",
             docstring="Please recommend a list of movies in the {genre} category.",
             body="",
-            bases=["Prompt"],
+            bases=["BasePrompt"],
             decorators=class_decorators,
         ),
     ]

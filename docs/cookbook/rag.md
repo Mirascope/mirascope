@@ -262,12 +262,11 @@ from openai import OpenAI
 from pydantic import ConfigDict
 from utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope import Prompt
 
 settings = Settings()
 
 
-@messages
 class LocalNewsRagPrompt(Prompt):
     """
     SYSTEM:
@@ -324,12 +323,11 @@ from pinecone import Pinecone
 from pydantic import ConfigDict
 from utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope import Prompt
 
 settings = Settings()
 
 
-@messages
 class PineconeNewsRagPrompt(Prompt):
     """
     SYSTEM:

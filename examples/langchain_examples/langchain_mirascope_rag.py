@@ -15,14 +15,14 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai.chat_models import ChatOpenAI
 
-from mirascope import Prompt
+from mirascope import BasePrompt
 
 settings = Settings()
 
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
-class QuestionPrompt(Prompt):
+class QuestionPrompt(BasePrompt):
     """
     Answer the question based only on the following context:
     {context}

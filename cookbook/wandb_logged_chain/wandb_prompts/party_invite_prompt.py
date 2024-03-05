@@ -1,9 +1,7 @@
 """Prompt for determining who to invite to party."""
-from mirascope import messages
-from mirascope.integrations.wandb import WandbPrompt
+from mirascope.wandb import WandbPrompt
 
 
-@messages
 class PartyInvitePrompt(WandbPrompt):
     """
     SYSTEM:

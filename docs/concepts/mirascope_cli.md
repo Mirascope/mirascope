@@ -94,9 +94,9 @@ Here is what the next iteration of `my_prompt.py` will look like:
 
 ```python
 # prompts/my_prompt.py
-from mirascope.prompts import Prompt, messages
+from mirascope import BasePrompt
 
-@messages
+
 class BookRecommendationPrompt(Prompt):
     """
 	SYSTEM:
