@@ -1,16 +1,12 @@
 """Tests for mirascope openai prompt."""
-from typing import Type
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from openai import AsyncOpenAI, OpenAI
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
-from mirascope.base import BasePrompt
-from mirascope.openai.prompt import OpenAIPrompt
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
-    OpenAICallParams,
     OpenAIChatCompletion,
     OpenAIChatCompletionChunk,
 )
