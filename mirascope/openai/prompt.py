@@ -13,7 +13,6 @@ from typing import (
     Optional,
     Type,
     TypeVar,
-    Union,
     cast,
     overload,
 )
@@ -22,12 +21,13 @@ from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import AfterValidator, BaseModel, ValidationError
 
-from ..base import BasePrompt, is_base_type
+from ..base import BasePrompt, BaseType, is_base_type
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAIChatCompletion, OpenAIChatCompletionChunk
 from .utils import convert_tools_list_to_openai_tools, patch_openai_kwargs
 
 logger = logging.getLogger("mirascope")
+BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
@@ -188,6 +188,10 @@ class OpenAIPrompt(BasePrompt):
             )
 
     @overload
+    def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
+        ...  # pragma: no cover
+
+    @overload
     def extract(self, schema: Type[BaseModelT], retries: int = 0) -> BaseModelT:
         ...  # pragma: no cover
 
@@ -195,9 +199,7 @@ class OpenAIPrompt(BasePrompt):
     def extract(self, schema: Callable, retries: int = 0) -> OpenAITool:
         ...  # pragma: no cover
 
-    def extract(
-        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
-    ) -> Union[BaseModelT, OpenAITool]:
+    def extract(self, schema, retries=0):
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `OpenAITool`, complete with a description
@@ -234,6 +236,7 @@ class OpenAIPrompt(BasePrompt):
         try:
             tool = completion.tool
             if tool is None:
+                print(completion)
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
                 return tool
@@ -251,6 +254,10 @@ class OpenAIPrompt(BasePrompt):
             raise  # re-raise if we have no retries left
 
     @overload
+    def async_extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
+        ...  # pragma: no cover
+
+    @overload
     async def async_extract(
         self, schema: Type[BaseModelT], retries: int = 0
     ) -> BaseModelT:
@@ -260,9 +267,7 @@ class OpenAIPrompt(BasePrompt):
     async def async_extract(self, schema: Callable, retries: int = 0) -> OpenAITool:
         ...  # pragma: no cover
 
-    async def async_extract(
-        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
-    ) -> Union[BaseModelT, OpenAITool]:
+    async def async_extract(self, schema, retries=0):
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `OpenAITool`, complete with a description

@@ -1,4 +1,6 @@
 """Types for working with Mirascope prompts."""
+from enum import Enum
+from inspect import isclass
 from typing import (
     Annotated,
     Any,
@@ -31,9 +33,13 @@ BaseType = Union[
 
 def is_base_type(type_: Any) -> bool:
     """Check if a type is a base type."""
-    return type_ in {str, int, float, bool, list, dict, set, tuple} or get_origin(
-        type_
-    ) in {Literal, Union, Annotated}
+    if isclass(type_) and issubclass(type_, Enum):
+        return True
+    if type_ in {str, int, float, bool, list, dict, set, tuple}:
+        return True
+    if get_origin(type_) in {Literal, Union, Annotated}:
+        return True
+    return False
 
 
 class BaseCallParams(BaseModel):

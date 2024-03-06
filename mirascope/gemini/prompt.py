@@ -133,7 +133,7 @@ class GeminiPrompt(BasePrompt):
         self._end_time = datetime.datetime.now().timestamp() * 1000
 
     @overload
-    def extract(self, schema: Type[BaseTypeT], reqtires: int = 0) -> BaseTypeT:
+    def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
         ...  # pragma: no cover
 
     @overload
