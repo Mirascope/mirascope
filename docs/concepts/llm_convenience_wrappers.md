@@ -9,7 +9,7 @@ Mirascope provides convenience wrappers around the OpenAI client to make writing
     - Chaining is no different from writing basic python functions
 - Convenient
     - You could do it yourself -- and you still can -- but there's just something nice about calling `str(res)` to get the response content
-    - You only need to pass in a [`Prompt`](../api/prompts/prompt.md) and we'll handle the rest
+    - You only need to pass in a [`Prompt`](../api/prompts.md) and we'll handle the rest
 
 ## OpenAIChat
 

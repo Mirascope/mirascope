@@ -100,6 +100,7 @@ nav:
       - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
       - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
   - API Reference:
+      - "api/index.md"
       - base:
           - "api/base/index.md"
           - prompt: "api/base/prompt.md"
