@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from inspect import Parameter, signature
-from typing import Any, Callable, Optional, Type, TypeVar, cast, get_type_hints
+from typing import Any, Callable, Type, TypeVar, cast, get_type_hints
 
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
@@ -17,9 +17,14 @@ class BaseTool(BaseModel, ABC):
     """
 
     @property
-    def fn(self) -> Optional[Callable]:
+    def args(self) -> dict[str, Any]:
+        """The arguments of the tool as a dictionary."""
+        return self.model_dump(exclude={"tool_call"})
+
+    @property
+    def fn(self) -> Callable:
         """Returns the function that the tool describes."""
-        return None
+        raise RuntimeError("Tool does not have an attached function.")
 
     @classmethod
     def tool_schema(cls) -> Any:

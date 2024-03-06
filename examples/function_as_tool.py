@@ -35,7 +35,4 @@ completion = chat.create(CurrentWeatherPrompt())
 
 if tools := completion.tools:
     for tool in tools:
-        if tool.fn:
-            print(tool.fn(**tool.__dict__))
-        else:
-            print("No function found.")
+        print(tool.fn(**tool.__dict__))

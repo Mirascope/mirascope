@@ -2,16 +2,20 @@
 import datetime
 import logging
 import os
+from inspect import isclass
 from typing import (
     Annotated,
     Any,
     AsyncGenerator,
+    Callable,
     ClassVar,
     Generator,
     Optional,
     Type,
     TypeVar,
+    Union,
     cast,
+    overload,
 )
 
 from openai import AsyncOpenAI, OpenAI
@@ -183,7 +187,17 @@ class OpenAIPrompt(BasePrompt):
                 chunk=chunk, tool_types=tools if tools else None
             )
 
+    @overload
     def extract(self, schema: Type[BaseModelT], retries: int = 0) -> BaseModelT:
+        ...  # pragma: no cover
+
+    @overload
+    def extract(self, schema: Callable, retries: int = 0) -> OpenAITool:
+        ...  # pragma: no cover
+
+    def extract(
+        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
+    ) -> Union[BaseModelT, OpenAITool]:
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `OpenAITool`, complete with a description
@@ -204,9 +218,22 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        self.call_params.tools = [OpenAITool.from_model(schema)]
+        return_tool = True
+        if not isclass(schema):
+            openai_tool = OpenAITool.from_fn(schema)
+        elif not hasattr(schema, "from_model"):
+            openai_tool = OpenAITool.from_model(schema)
+            return_tool = False
+        else:
+            openai_tool = schema
+        self.call_params.tools = [openai_tool]
         completion = self.create()
         try:
+            tool = completion.tool
+            if tool is None:
+                raise AttributeError("No tool found in the completion.")
+            if return_tool:
+                return tool
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model
@@ -218,9 +245,19 @@ class OpenAIPrompt(BasePrompt):
                 return self.extract(schema, retries - 1)
             raise  # re-raise if we have no retries left
 
+    @overload
     async def async_extract(
         self, schema: Type[BaseModelT], retries: int = 0
     ) -> BaseModelT:
+        ...  # pragma: no cover
+
+    @overload
+    async def async_extract(self, schema: Callable, retries: int = 0) -> OpenAITool:
+        ...  # pragma: no cover
+
+    async def async_extract(
+        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
+    ) -> Union[BaseModelT, OpenAITool]:
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `OpenAITool`, complete with a description
@@ -241,9 +278,22 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        self.call_params.tools = [OpenAITool.from_model(schema)]
+        return_tool = True
+        if not isclass(schema):
+            openai_tool = OpenAITool.from_fn(schema)
+        elif not hasattr(schema, "from_model"):
+            openai_tool = OpenAITool.from_model(schema)
+            return_tool = False
+        else:
+            openai_tool = schema
+        self.call_params.tools = [openai_tool]
         completion = await self.async_create()
         try:
+            tool = completion.tool
+            if tool is None:
+                raise AttributeError("No tool found in the completion.")
+            if return_tool:
+                return tool
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model
