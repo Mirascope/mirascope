@@ -3,11 +3,17 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from inspect import Parameter, signature
-from typing import Any, Callable, Optional, Type, TypeVar, cast, get_type_hints
+from typing import Any, Callable, Type, TypeVar, cast, get_type_hints
 
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
+
+INTERNAL_DOC = """\
+An `{name}` instance with correctly formatted and typed parameters "
+extracted from the completion. Must include required parameters and may "
+exclude optional parameters unless present in the text.
+"""
 
 
 class BaseTool(BaseModel, ABC):
@@ -17,9 +23,14 @@ class BaseTool(BaseModel, ABC):
     """
 
     @property
-    def fn(self) -> Optional[Callable]:
+    def args(self) -> dict[str, Any]:
+        """The arguments of the tool as a dictionary."""
+        return self.model_dump(exclude={"tool_call"})
+
+    @property
+    def fn(self) -> Callable:
         """Returns the function that the tool describes."""
-        return None
+        raise RuntimeError("Tool does not have an attached function.")
 
     @classmethod
     def tool_schema(cls) -> Any:
@@ -62,6 +73,7 @@ class BaseTool(BaseModel, ABC):
         raise NotImplementedError()
 
 
+T = TypeVar("T")
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
@@ -181,11 +193,6 @@ def convert_base_model_to_tool(
     Returns:
         The constructed `BaseToolT` type.
     """
-    internal_doc = (
-        f"An `{schema.__name__}` instance with all correctly typed parameters "
-        "extracted from the completion. Must include required parameters and may "
-        "exclude optional parameters unless present in the text."
-    )
     field_definitions = {
         field_name: (field_info.annotation, field_info)
         for field_name, field_info in schema.model_fields.items()
@@ -193,6 +200,20 @@ def convert_base_model_to_tool(
     return create_model(
         f"{schema.__name__}Tool",
         __base__=base,
-        __doc__=schema.__doc__ if schema.__doc__ else internal_doc,
+        __doc__=schema.__doc__
+        if schema.__doc__
+        else INTERNAL_DOC.format(name=schema.__name__),
         **cast(dict[str, Any], field_definitions),
+    )
+
+
+def convert_base_type_to_tool(
+    schema: Type[T], base: Type[BaseToolT]
+) -> Type[BaseToolT]:
+    """Converts a `BaseType` to a `BaseToolT` type."""
+    return create_model(
+        f"{schema.__name__[0].upper()}{schema.__name__[1:]}Tool",
+        __base__=base,
+        __doc__=INTERNAL_DOC.format(name=schema.__name__),
+        value=(schema, ...),
     )

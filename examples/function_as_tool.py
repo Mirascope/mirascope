@@ -34,7 +34,4 @@ completion = CurrentWeatherPrompt().create()
 
 if tools := completion.tools:
     for tool in tools:
-        if tool.fn:
-            print(tool.fn(**tool.model_dump(exclude={"tool_call"})))
-        else:
-            print("No function found.")
+        print(tool.fn(**tool.args))

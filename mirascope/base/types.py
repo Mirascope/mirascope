@@ -1,10 +1,45 @@
 """Types for working with Mirascope prompts."""
-from typing import Callable, Iterable, Literal, Optional, Type, TypedDict, Union
+from enum import Enum
+from inspect import isclass
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Iterable,
+    Literal,
+    Optional,
+    Type,
+    TypedDict,
+    Union,
+    get_origin,
+)
 
 from pydantic import BaseModel
 from typing_extensions import Required
 
 from .tools import BaseTool
+
+BaseType = Union[
+    str,
+    int,
+    float,
+    bool,
+    list,
+    set,
+    tuple,
+]
+
+
+def is_base_type(type_: Any) -> bool:
+    """Check if a type is a base type."""
+    if isclass(type_) and issubclass(type_, Enum):
+        return True
+    base_types = {str, int, float, bool, list, set, tuple}
+    if type_ in base_types or get_origin(type_) in base_types.union(
+        {Literal, Union, Annotated}
+    ):
+        return True
+    return False
 
 
 class BaseCallParams(BaseModel):

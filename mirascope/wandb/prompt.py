@@ -70,7 +70,7 @@ class WandbPrompt(BasePrompt):
             The created trace, connected to the parent.
         """
         if isinstance(completion, OpenAIChatCompletion):
-            if completion.tool and completion.tool.fn:
+            if completion.tool:
                 output = {
                     "assistant": completion.tool.model_dump(),
                     "tool_output": completion.tool.fn(

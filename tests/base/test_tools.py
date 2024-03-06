@@ -55,7 +55,9 @@ def test_base_tool():
         },
     }
     tool.from_tool_call(None)
-    assert tool.fn is None
+
+    with pytest.raises(RuntimeError):
+        tool.fn
 
 
 def test_tool_fn_decorator(fixture_my_tool):

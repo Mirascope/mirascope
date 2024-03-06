@@ -319,54 +319,144 @@ async def test_openai_prompt_async_stream_with_tools(
 
 
 @patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
+@pytest.mark.parametrize(
+    "schema,tool",
+    [("fixture_my_schema", "fixture_my_tool"), ("fixture_my_tool", "fixture_my_tool")],
+)
 def test_openai_prompt_extract(
     mock_create,
     fixture_openai_test_prompt,
-    fixture_my_schema,
-    fixture_my_schema_tool,
-    fixture_my_tool,
     fixture_my_tool_instance,
     fixture_chat_completion_with_tools,
+    schema,
+    tool,
+    request,
 ):
     """Tests that `MySchema` can be extracted using `OpenAIChat`."""
-    tools = [fixture_my_tool]
+    schema = request.getfixturevalue(schema)
+    tool = request.getfixturevalue(tool)
+    tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    model = fixture_openai_test_prompt.extract(fixture_my_schema)
-    assert isinstance(model, fixture_my_schema)
-    schema_instance = fixture_my_schema(
-        param=fixture_my_tool_instance.param, optional=fixture_my_tool_instance.optional
+    model = fixture_openai_test_prompt.extract(schema)
+    assert isinstance(model, schema)
+    assert fixture_my_tool_instance.param == model.param
+    assert fixture_my_tool_instance.optional == model.optional
+
+    mock_create.assert_called_once()
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.async_create", new_callable=AsyncMock)
+@pytest.mark.parametrize(
+    "schema,tool",
+    [("fixture_my_schema", "fixture_my_tool"), ("fixture_my_tool", "fixture_my_tool")],
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_my_tool_instance,
+    fixture_chat_completion_with_tools,
+    schema,
+    tool,
+    request,
+):
+    """Tests that `MySchema` can be extracted using `OpenAIChat`."""
+    schema = request.getfixturevalue(schema)
+    tool = request.getfixturevalue(tool)
+    tools = [tool]
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    assert model.model_dump() == schema_instance.model_dump()
+    model = await fixture_openai_test_prompt.async_extract(schema)
+    assert isinstance(model, schema)
+    assert fixture_my_tool_instance.param == model.param
+    assert fixture_my_tool_instance.optional == model.optional
+
+    mock_create.assert_called_once()
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
+def test_openai_prompt_extract_callable(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_my_tool_instance,
+    fixture_chat_completion_with_tools,
+):
+    """Tests that a callable can be extracted using `OpenAIChat`."""
+
+    def my_tool(param: str, optional: int = 0):
+        """A test function."""
+
+    tool = OpenAITool.from_fn(my_tool)
+    tools = [tool]
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_tools, tool_types=tools
+    )
+    model = fixture_openai_test_prompt.extract(my_tool)
+    assert isinstance(model, tool)
+    assert fixture_my_tool_instance.args == model.args
 
     mock_create.assert_called_once()
 
 
 @patch("mirascope.openai.prompt.OpenAIPrompt.async_create", new_callable=AsyncMock)
 @pytest.mark.asyncio
-async def test_openai_prompt_async_extract(
+async def test_openai_prompt_async_extract_callable(
     mock_create,
     fixture_openai_test_prompt,
-    fixture_my_schema,
-    fixture_my_schema_tool,
-    fixture_my_tool,
     fixture_my_tool_instance,
     fixture_chat_completion_with_tools,
 ):
-    """Tests that `MySchema` can be extracted using `OpenAIChat`."""
-    tools = [fixture_my_tool]
+    """Tests that a callable can be extracted using `OpenAIChat`."""
+
+    def my_tool(param: str, optional: int = 0):
+        """A test function."""
+
+    tool = OpenAITool.from_fn(my_tool)
+    tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_tools, tool_types=tools
     )
-    model = await fixture_openai_test_prompt.async_extract(fixture_my_schema)
-    assert isinstance(model, fixture_my_schema)
-    schema_instance = fixture_my_schema(
-        param=fixture_my_tool_instance.param, optional=fixture_my_tool_instance.optional
-    )
-    assert model.model_dump() == schema_instance.model_dump()
+    model = await fixture_openai_test_prompt.async_extract(my_tool)
+    assert isinstance(model, tool)
+    assert fixture_my_tool_instance.args == model.args
 
     mock_create.assert_called_once()
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
+def test_openai_prompt_extract_with_no_tools(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion,
+    fixture_my_schema,
+    fixture_my_tool,
+):
+    """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion, tool_types=[fixture_my_tool]
+    )
+    with pytest.raises(AttributeError):
+        fixture_openai_test_prompt.extract(fixture_my_schema)
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.async_create", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract_with_no_tools(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion,
+    fixture_my_schema,
+    fixture_my_tool,
+):
+    """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion, tool_types=[fixture_my_tool]
+    )
+    with pytest.raises(AttributeError):
+        await fixture_openai_test_prompt.async_extract(fixture_my_schema)
 
 
 @patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
@@ -412,3 +502,44 @@ async def test_openai_prompt_async_extract_with_validation_error(
         )
 
     assert mock_create.call_count == retries + 1
+
+
+class StrTool(OpenAITool):
+    """A wrapper tool for the base string type."""
+
+    value: str
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
+def test_openai_prompt_extract_base_type(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion_with_str_tool,
+):
+    """Tests that a base type can be extracted using `OpenAIChat`."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+    )
+    model = fixture_openai_test_prompt.extract(str)
+    assert isinstance(model, str)
+    assert model == "value"
+
+    mock_create.assert_called_once()
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.async_create", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract_base_type(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion_with_str_tool,
+):
+    """Tests that a base type can be extracted using `OpenAIChat`."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+    )
+    model = await fixture_openai_test_prompt.async_extract(str)
+    assert isinstance(model, str)
+    assert model == "value"
+
+    mock_create.assert_called_once()

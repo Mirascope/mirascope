@@ -20,4 +20,4 @@ class WeatherPrompt(GeminiPrompt):
 
 
 tool = WeatherPrompt().create().tool
-print(tool.fn(tool.model_dump()))  # type: ignore
+print(tool.fn(**tool.args))  # type: ignore

@@ -2,13 +2,19 @@
 from __future__ import annotations
 
 import json
-from typing import Callable, Type, cast
+from typing import Callable, Type, TypeVar, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
 from pydantic import BaseModel, ConfigDict
 
-from ..base import BaseTool
-from ..base.tools import convert_base_model_to_tool, convert_function_to_tool
+from ..base import BaseTool, BaseType
+from ..base.tools import (
+    convert_base_model_to_tool,
+    convert_base_type_to_tool,
+    convert_function_to_tool,
+)
+
+BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class OpenAITool(BaseTool):
@@ -121,3 +127,8 @@ class OpenAITool(BaseTool):
     def from_fn(cls, fn: Callable) -> Type[OpenAITool]:
         """Constructs a `OpenAITool` type from a function."""
         return convert_function_to_tool(fn, OpenAITool)
+
+    @classmethod
+    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[OpenAITool]:
+        """Constructs a `GeminiTool` type from a `BaseType` type."""
+        return convert_base_type_to_tool(base_type, OpenAITool)
