@@ -3,7 +3,17 @@ import datetime
 import logging
 import re
 from inspect import isclass
-from typing import Annotated, ClassVar, Generator, Optional, Type, TypeVar
+from typing import (
+    Annotated,
+    Callable,
+    ClassVar,
+    Generator,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from google.generativeai import GenerativeModel, configure  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
@@ -122,7 +132,17 @@ class GeminiPrompt(BasePrompt):
             yield GeminiCompletionChunk(chunk=chunk)
         self._end_time = datetime.datetime.now().timestamp() * 1000
 
+    @overload
     def extract(self, schema: Type[BaseModelT], retries: int = 0) -> BaseModelT:
+        ...  # pragma: no cover
+
+    @overload
+    def extract(self, schema: Callable, retries: int = 0) -> GeminiTool:
+        ...  # pragma: no cover
+
+    def extract(
+        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
+    ) -> Union[BaseModelT, GeminiTool]:
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `GeminiTool`, complete with a description
@@ -137,9 +157,22 @@ class GeminiPrompt(BasePrompt):
         Returns:
             The `Schema` instance extracted from the completion.
         """
-        self.call_params.tools = [GeminiTool.from_model(schema)]
+        return_tool = True
+        if not isclass(schema):
+            gemini_tool = GeminiTool.from_fn(schema)
+        elif not hasattr(schema, "from_model"):
+            gemini_tool = GeminiTool.from_model(schema)
+            return_tool = False
+        else:
+            gemini_tool = schema
+        self.call_params.tools = [gemini_tool]
         completion = self.create()
         try:
+            tool = completion.tool
+            if tool is None:
+                raise AttributeError("No tool found in the completion.")
+            if return_tool:
+                return tool
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model
