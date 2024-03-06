@@ -2,9 +2,9 @@
 import os
 from typing import Literal
 
-from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def get_current_weather(
@@ -22,7 +22,7 @@ def get_current_weather(
     return f"{location} is 65 degrees {unit}."
 
 
-class CurrentWeatherPrompt(BasePrompt):
+class CurrentWeatherPrompt(OpenAIPrompt):
     """What's the weather like in San Francisco, Tokyo, and Paris?"""
 
     call_params = OpenAICallParams(
@@ -30,12 +30,11 @@ class CurrentWeatherPrompt(BasePrompt):
     )
 
 
-chat = OpenAIChat()
-completion = chat.create(CurrentWeatherPrompt())
+completion = CurrentWeatherPrompt().create()
 
 if tools := completion.tools:
     for tool in tools:
         if tool.fn:
-            print(tool.fn(**tool.__dict__))
+            print(tool.fn(**tool.model_dump(exclude={"tool_call"})))
         else:
             print("No function found.")

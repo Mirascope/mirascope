@@ -1,4 +1,7 @@
-"""A basic example showcasing how to manually manage chat history."""
+"""A basic example showcasing how to manually manage chat history.
+NOTE: This example is now deprecated since chat completions are now done from the 
+prompt itself. Will update."""
+
 import os
 
 from mirascope import BasePrompt, OpenAICallParams, OpenAIChat

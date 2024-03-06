@@ -9,14 +9,14 @@ import os
 
 from fastapi import FastAPI
 
-from mirascope import BasePrompt, OpenAIChat
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 app = FastAPI()
 
 
-class BookRecommendationPrompt(BasePrompt):
+class BookRecommendationPrompt(OpenAIPrompt):
     """
     Can you recommend some books on {topic} in a list format?
     """
@@ -24,7 +24,7 @@ class BookRecommendationPrompt(BasePrompt):
     topic: str
 
 
-class BestForBeginnersPrompt(BasePrompt):
+class BestForBeginnersPrompt(OpenAIPrompt):
     """
     Given this list {book_list}, which one is the best for beginners?
     """
@@ -35,9 +35,8 @@ class BestForBeginnersPrompt(BasePrompt):
 @app.post("/")
 def root(book_recommendation: BookRecommendationPrompt):
     """Generates the best book for beginners on the given topic."""
-    model = OpenAIChat()
-    book_list = model.create(book_recommendation)
+    book_list = book_recommendation.create()
 
     best_for_beginners_prompt = BestForBeginnersPrompt(book_list=str(book_list))
-    best_for_beginners = model.create(best_for_beginners_prompt)
+    best_for_beginners = best_for_beginners_prompt.create()
     return str(best_for_beginners)

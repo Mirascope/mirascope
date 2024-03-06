@@ -3,9 +3,9 @@ import os
 
 from pydantic import BaseModel
 
-from mirascope import OpenAIChat
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class Label(str, enum.Enum):
@@ -22,18 +22,16 @@ class TextLabels(BaseModel):
     labels: list[Label]
 
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-texts = [
-    "Hey buddy, want to grab lunch tomorrow?",
-    "You will pay for what you have done, you pathetic loser.",
-]
-for text in texts:
-    text_info = chat.extract(
-        TextLabels,
-        text,
-        retries=5,
-    )
-    print(text_info.labels)
+class NicePrompt(OpenAIPrompt):
+    """Hey buddy, want to grab lunch tomorrow?"""
+
+
+class MeanPrompt(OpenAIPrompt):
+    """You will pay for what you have done, you pathetic loser."""
+
+
+for prompt in [NicePrompt(), MeanPrompt()]:
+    print(prompt.extract(TextLabels, retries=5))
 
     # Output:
 

@@ -11,14 +11,14 @@ import os
 
 from fastapi import FastAPI
 
-from mirascope import AsyncOpenAIChat, BasePrompt
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 app = FastAPI()
 
 
-class BookRecommendationPrompt(BasePrompt):
+class BookRecommendationPrompt(OpenAIPrompt):
     """
     Can you recommend some books on {topic} in a list format?
     """
@@ -26,7 +26,7 @@ class BookRecommendationPrompt(BasePrompt):
     topic: str
 
 
-class BestForBeginnersPrompt(BasePrompt):
+class BestForBeginnersPrompt(OpenAIPrompt):
     """
     Given this list {book_list}, which one is the best for beginners?
     """
@@ -37,9 +37,8 @@ class BestForBeginnersPrompt(BasePrompt):
 @app.post("/")
 async def root(book_recommendation: BookRecommendationPrompt):
     """Generates the best book for beginners on the given topic."""
-    model = AsyncOpenAIChat()
-    book_list = await model.create(book_recommendation)
+    book_list = await book_recommendation.async_create()
 
     best_for_beginners_prompt = BestForBeginnersPrompt(book_list=str(book_list))
-    best_for_beginners = await model.create(best_for_beginners_prompt)
+    best_for_beginners = await best_for_beginners_prompt.async_create()
     return str(best_for_beginners)
