@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Annotated, Literal, Union
 
-from mirascope.base import BasePrompt, BaseTool, Message
+from mirascope.base import BasePrompt, BaseTool
 from mirascope.base.types import is_base_type
 
 
