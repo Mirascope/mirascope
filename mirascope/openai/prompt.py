@@ -233,6 +233,7 @@ class OpenAIPrompt(BasePrompt):
 
         self.call_params.tools = [openai_tool]
         completion = self.create()
+        print(completion.completion)
         try:
             tool = completion.tool
             if tool is None:
