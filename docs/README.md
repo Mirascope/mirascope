@@ -161,7 +161,7 @@ class BookRecommendation(OpenAIPrompt):
 recommendation = BookRecommendation(genre="fantasy").create()
 ```
 
-We also support [other providers](concepts/prompt/generating_content.md#other-providers) such as Gemini.
+We also support [other providers](concepts/prompt/using_different_model_providers.md) such as Gemini.
 
 ## Dive Deeper
 
