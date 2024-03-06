@@ -5,7 +5,7 @@ from typing import Literal, Union
 from pydantic import BaseModel, PrivateAttr
 from wandb.sdk.data_types.trace_tree import Trace
 
-from mirascope import BaseCallParams, BasePrompt
+from mirascope import BasePrompt
 from mirascope.openai import OpenAIChatCompletion
 
 
@@ -29,22 +29,31 @@ class WandbPrompt(BasePrompt):
         start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
         metadata={"user": "mirascope_user"},
     )
-    chat = OpenAIChat(api_key="YOUR_OPENAI_API_KEY")
 
     class HiPrompt(WandbPrompt):
     """{greeting}."""
 
     greeting: str
 
-    prompt = HiPrompt(span_type="llm", greeting="Hello")
-    completion = chat.create(prompt)
+    prompt = HiPrompt(
+        api_key="YOUR_OPENAI_API_KEY",
+        span_type="llm",
+        greeting="Hello",
+    )
+    completion = prompt.create()
     span = prompt.trace(completion, parent=root_span)
 
-    error_prompt = HiPrompt(span_type="llm", greeting="Hello" * 100000)
+    error_prompt = HiPrompt(
+        api_key="YOUR_OPENAI_API_KEY",
+        span_type="llm",
+        greeting="Hello" * 100000,
+    )
     try:
-        completion = chat.create(error_prompt)
+        completion = prompt.create(error_prompt)
     except Exception as e:
         span = error_prompt.trace_error(e, parent=root_span)
+
+    root_span.log(name="mirascope_trace")
     ```
     '''
 
@@ -52,8 +61,6 @@ class WandbPrompt(BasePrompt):
     _creation_time_ms: int = PrivateAttr(
         default_factory=lambda: round(datetime.datetime.now().timestamp() * 1000)
     )
-
-    call_params = BaseCallParams(model="gpt-3.5-turbo-0125")
 
     def trace(
         self, completion: Union[OpenAIChatCompletion, BaseModel], parent: Trace
