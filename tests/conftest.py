@@ -259,6 +259,37 @@ def fixture_chat_completion_with_schema_tool() -> ChatCompletion:
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_str_tool() -> ChatCompletion:
+    """Returns a chat completion with a tool matching a string base type."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    role="assistant",
+                    tool_calls=[
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                arguments='{\n  "value": "value"}',
+                                name="StrTool",
+                            ),
+                            type="function",
+                        )
+                    ],
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="test_model",
+        object="chat.completion",
+    )
+
+
+@pytest.fixture()
 def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
     """Returns a chat completion with tool calls that don't match the tool's schema."""
     return ChatCompletion(

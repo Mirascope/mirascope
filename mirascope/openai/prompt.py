@@ -22,7 +22,7 @@ from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import AfterValidator, BaseModel, ValidationError
 
-from ..base import BasePrompt
+from ..base import BasePrompt, is_base_type
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAIChatCompletion, OpenAIChatCompletionChunk
 from .utils import convert_tools_list_to_openai_tools, patch_openai_kwargs
@@ -219,13 +219,16 @@ class OpenAIPrompt(BasePrompt):
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         return_tool = True
-        if not isclass(schema):
+        openai_tool = schema
+        if is_base_type(schema):
+            openai_tool = OpenAITool.from_base_type(schema)  # type: ignore
+            return_tool = False
+        elif not isclass(schema):
             openai_tool = OpenAITool.from_fn(schema)
-        elif not hasattr(schema, "from_model"):
+        elif not issubclass(schema, OpenAITool):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
-        else:
-            openai_tool = schema
+
         self.call_params.tools = [openai_tool]
         completion = self.create()
         try:
@@ -234,6 +237,8 @@ class OpenAIPrompt(BasePrompt):
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
                 return tool
+            if is_base_type(schema):
+                return tool.value  # type: ignore
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model
@@ -279,13 +284,16 @@ class OpenAIPrompt(BasePrompt):
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         return_tool = True
-        if not isclass(schema):
+        openai_tool = schema
+        if is_base_type(schema):
+            openai_tool = OpenAITool.from_base_type(schema)  # type: ignore
+            return_tool = False
+        elif not isclass(schema):
             openai_tool = OpenAITool.from_fn(schema)
-        elif not hasattr(schema, "from_model"):
+        elif not issubclass(schema, OpenAITool):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
-        else:
-            openai_tool = schema
+
         self.call_params.tools = [openai_tool]
         completion = await self.async_create()
         try:
@@ -294,6 +302,8 @@ class OpenAIPrompt(BasePrompt):
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
                 return tool
+            if is_base_type(schema):
+                return tool.value  # type: ignore
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model

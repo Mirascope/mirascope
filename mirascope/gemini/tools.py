@@ -1,7 +1,7 @@
 """Classes for using tools with Google's Gemini Chat APIs."""
 from __future__ import annotations
 
-from typing import Callable, Type
+from typing import Callable, Type, TypeVar
 
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
@@ -12,9 +12,13 @@ from pydantic import BaseModel, ConfigDict
 
 from ..base import (
     BaseTool,
+    BaseType,
     convert_base_model_to_tool,
+    convert_base_type_to_tool,
     convert_function_to_tool,
 )
+
+BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class GeminiTool(BaseTool):
@@ -113,3 +117,8 @@ class GeminiTool(BaseTool):
     def from_fn(cls, fn: Callable) -> Type[GeminiTool]:
         """Constructs a `GeminiTool` type from a function."""
         return convert_function_to_tool(fn, GeminiTool)
+
+    @classmethod
+    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[GeminiTool]:
+        """Constructs a `GeminiTool` type from a `BaseType` type."""
+        return convert_base_type_to_tool(base_type, GeminiTool)

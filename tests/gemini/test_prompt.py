@@ -1,5 +1,5 @@
 """Tests for the `GeminiPrompt` class."""
-from typing import Type, Union
+from typing import Type, Union, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -178,8 +178,8 @@ def test_prompt_extract_callable(
     def book_tool(title: str, author: str):
         """Prints the title of the book."""
 
-    model = UserPrompt().extract(book_tool)
-    assert isinstance(model, BookTool)
+    model = cast(BookTool, UserPrompt().extract(book_tool))
+    assert isinstance(model, GeminiTool)
     assert model.title == "The Name of the Wind"
     assert model.author == "Patrick Rothfuss"
 
@@ -236,3 +236,34 @@ def test_prompt_extract_with_retries(mock_generate_content: MagicMock) -> None:
     with pytest.raises(ValidationError):
         UserPrompt().extract(Book, retries=2)
     assert mock_generate_content.call_count == 3
+
+
+@patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
+def test_prompt_extract_base_type(
+    mock_generate_content: MagicMock, fixture_generated_content_with_tools
+) -> None:
+    """Tests that the `GeminiPrompt` class returns the expected base type."""
+    mock_generate_content.return_value = GenerateContentResponseType.from_response(
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    content=Content(
+                        parts=[
+                            Part(
+                                function_call=FunctionCall(
+                                    name="StrTool",
+                                    args={
+                                        "value": "Patrick Rothfuss",
+                                    },
+                                )
+                            )
+                        ],
+                        role="model",
+                    )
+                )
+            ]
+        )
+    )
+    res = UserPrompt().extract(str)
+    assert isinstance(res, str)
+    assert res == "Patrick Rothfuss"

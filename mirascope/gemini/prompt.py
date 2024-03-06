@@ -11,7 +11,6 @@ from typing import (
     Optional,
     Type,
     TypeVar,
-    Union,
     overload,
 )
 
@@ -19,11 +18,12 @@ from google.generativeai import GenerativeModel, configure  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
 from pydantic import AfterValidator, BaseModel, ValidationError
 
-from ..base import BasePrompt, format_template, tool_fn
+from ..base import BasePrompt, BaseType, format_template, is_base_type, tool_fn
 from .tools import GeminiTool
 from .types import GeminiCallParams, GeminiCompletion, GeminiCompletionChunk
 
 logger = logging.getLogger("mirascope")
+BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
@@ -133,6 +133,10 @@ class GeminiPrompt(BasePrompt):
         self._end_time = datetime.datetime.now().timestamp() * 1000
 
     @overload
+    def extract(self, schema: Type[BaseTypeT], reqtires: int = 0) -> BaseTypeT:
+        ...  # pragma: no cover
+
+    @overload
     def extract(self, schema: Type[BaseModelT], retries: int = 0) -> BaseModelT:
         ...  # pragma: no cover
 
@@ -140,9 +144,7 @@ class GeminiPrompt(BasePrompt):
     def extract(self, schema: Callable, retries: int = 0) -> GeminiTool:
         ...  # pragma: no cover
 
-    def extract(
-        self, schema: Union[Type[BaseModelT], Callable], retries: int = 0
-    ) -> Union[BaseModelT, GeminiTool]:
+    def extract(self, schema, retries=0):
         """Extracts the given schema from the response of a chat `create` call.
 
         The given schema is converted into an `GeminiTool`, complete with a description
@@ -158,13 +160,16 @@ class GeminiPrompt(BasePrompt):
             The `Schema` instance extracted from the completion.
         """
         return_tool = True
-        if not isclass(schema):
+        gemini_tool = schema
+        if is_base_type(schema):
+            gemini_tool = GeminiTool.from_base_type(schema)
+            return_tool = False
+        elif not isclass(schema):
             gemini_tool = GeminiTool.from_fn(schema)
-        elif not hasattr(schema, "from_model"):
+        elif not issubclass(schema, GeminiTool):
             gemini_tool = GeminiTool.from_model(schema)
             return_tool = False
-        else:
-            gemini_tool = schema
+
         self.call_params.tools = [gemini_tool]
         completion = self.create()
         try:
@@ -173,6 +178,8 @@ class GeminiPrompt(BasePrompt):
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
                 return tool
+            if is_base_type(schema):
+                return tool.value
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
             return model

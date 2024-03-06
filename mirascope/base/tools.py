@@ -67,6 +67,7 @@ class BaseTool(BaseModel, ABC):
         raise NotImplementedError()
 
 
+T = TypeVar("T")
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
@@ -187,7 +188,7 @@ def convert_base_model_to_tool(
         The constructed `BaseToolT` type.
     """
     internal_doc = (
-        f"An `{schema.__name__}` instance with all correctly typed parameters "
+        f"An `{schema.__name__}` instance with correctly formatted and typed parameters "
         "extracted from the completion. Must include required parameters and may "
         "exclude optional parameters unless present in the text."
     )
@@ -200,4 +201,16 @@ def convert_base_model_to_tool(
         __base__=base,
         __doc__=schema.__doc__ if schema.__doc__ else internal_doc,
         **cast(dict[str, Any], field_definitions),
+    )
+
+
+def convert_base_type_to_tool(
+    schema: Type[T], base: Type[BaseToolT]
+) -> Type[BaseToolT]:
+    """Converts a `BaseType` to a `BaseToolT` type."""
+    return create_model(
+        f"{schema.__name__[0].upper()}{schema.__name__[1:]}Tool",
+        __base__=base,
+        __doc__=f"A tool for extracting a `{schema.__name__}` from the completion.",
+        value=(schema, ...),
     )

@@ -502,3 +502,44 @@ async def test_openai_prompt_async_extract_with_validation_error(
         )
 
     assert mock_create.call_count == retries + 1
+
+
+class StrTool(OpenAITool):
+    """A wrapper tool for the base string type."""
+
+    value: str
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
+def test_openai_prompt_extract_base_type(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion_with_str_tool,
+):
+    """Tests that a base type can be extracted using `OpenAIChat`."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+    )
+    model = fixture_openai_test_prompt.extract(str)
+    assert isinstance(model, str)
+    assert model == "value"
+
+    mock_create.assert_called_once()
+
+
+@patch("mirascope.openai.prompt.OpenAIPrompt.async_create", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract_base_type(
+    mock_create,
+    fixture_openai_test_prompt,
+    fixture_chat_completion_with_str_tool,
+):
+    """Tests that a base type can be extracted using `OpenAIChat`."""
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+    )
+    model = await fixture_openai_test_prompt.async_extract(str)
+    assert isinstance(model, str)
+    assert model == "value"
+
+    mock_create.assert_called_once()
