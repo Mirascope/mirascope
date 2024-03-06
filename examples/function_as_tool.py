@@ -35,4 +35,4 @@ completion = chat.create(CurrentWeatherPrompt())
 
 if tools := completion.tools:
     for tool in tools:
-        print(tool.fn(**tool.__dict__))
+        print(tool.fn(**tool.args))
