@@ -104,6 +104,7 @@ class GeminiPrompt(BasePrompt):
             tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
             for tool in tools
         ]
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = gemini_pro_model.generate_content(
             self.messages,
             stream=False,
@@ -114,6 +115,8 @@ class GeminiPrompt(BasePrompt):
             safety_settings=self.call_params.safety_settings,
             request_options=self.call_params.request_options,
         )
+        completion._end_time = datetime.datetime.now().timestamp() * 1000
+        completion._start_time = completion_start_time
         self._end_time = datetime.datetime.now().timestamp() * 1000
         return GeminiCompletion(completion=completion, tool_types=converted_tools)
 
