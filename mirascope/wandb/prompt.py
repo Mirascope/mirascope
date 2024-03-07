@@ -20,18 +20,14 @@ class WandbPrompt(OpenAIPrompt):
     Example:
 
     ```python
+    import os
     import wandb
-    from wandb.sdk.data_types.trace_tree import Trace
     from mirascope.wandb import WandbPrompt
 
     wandb.login(key="YOUR_WANDB_API_KEY")
     wandb.init(project="wandb_logged_chain")
-    root_span = Trace(
-        name="root",
-        kind="chain",
-        start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
-        metadata={"user": "mirascope_user"},
-    )
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
     class HiPrompt(WandbPrompt):
     """{greeting}."""
@@ -39,22 +35,10 @@ class WandbPrompt(OpenAIPrompt):
     greeting: str
 
     prompt = HiPrompt(
-        api_key="YOUR_OPENAI_API_KEY",
         span_type="llm",
         greeting="Hello",
     )
-    completion = prompt.create()
-    span = prompt.trace(completion, parent=root_span)
-
-    error_prompt = HiPrompt(
-        api_key="YOUR_OPENAI_API_KEY",
-        span_type="llm",
-        greeting="Hello" * 100000,
-    )
-    try:
-        completion = prompt.create(error_prompt)
-    except Exception as e:
-        span = error_prompt.trace_error(e, parent=root_span)
+    completion, span = prompt.create_with_span()
 
     root_span.log(name="mirascope_trace")
     ```
@@ -68,7 +52,7 @@ class WandbPrompt(OpenAIPrompt):
     call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
     def create_with_trace(
-        self, parent: Trace
+        self, parent: Optional[Trace] = None
     ) -> tuple[Optional[OpenAIChatCompletion], Trace]:
         """Creates an OpenAI chat completion and logs it via a W&B `Trace`.
 
@@ -87,23 +71,23 @@ class WandbPrompt(OpenAIPrompt):
 
     @overload
     def extract_with_trace(
-        self, schema: Type[BaseTypeT], parent: Trace, retries: int = 0
+        self, schema: Type[BaseTypeT], parent: Optional[Trace], retries: int = 0
     ) -> tuple[BaseTypeT, Trace]:
         ...  # pragma: no cover
 
     @overload
     def extract_with_trace(
-        self, schema: Type[BaseModelT], parent: Trace, retries: int = 0
+        self, schema: Type[BaseModelT], parent: Optional[Trace], retries: int = 0
     ) -> tuple[BaseModelT, Trace]:
         ...  # pragma: no cover
 
     @overload
     def extract_with_trace(
-        self, schema: Callable, parent: Trace, retries: int = 0
+        self, schema: Callable, parent: Optional[Trace], retries: int = 0
     ) -> tuple[OpenAITool, Trace]:
         ...  # pragma: no cover
 
-    def extract_with_trace(self, schema, parent, retries=0):
+    def extract_with_trace(self, schema, parent=None, retries=0):
         """Calls an OpenAI extraction then logs the result via a W&B `Trace`.
 
         Args:
@@ -122,7 +106,9 @@ class WandbPrompt(OpenAIPrompt):
             return None, self._trace_error(e, parent)
 
     def _trace(
-        self, completion: Union[OpenAIChatCompletion, BaseModel], parent: Trace
+        self,
+        completion: Union[OpenAIChatCompletion, BaseModel],
+        parent: Optional[Trace],
     ) -> Trace:
         """Returns a trace connected to parent.
 
@@ -135,7 +121,6 @@ class WandbPrompt(OpenAIPrompt):
         Returns:
             The created trace, connected to the parent.
         """
-        print("HERE's SOME STUFF \n\n", completion.model_dump())
         if isinstance(completion, OpenAIChatCompletion):
             if completion.tool and self.call_params.tools:
                 output = {
@@ -171,10 +156,11 @@ class WandbPrompt(OpenAIPrompt):
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=output,
         )
-        parent.add_child(span)
+        if parent:
+            parent.add_child(span)
         return span
 
-    def _trace_error(self, error: Exception, parent: Trace) -> Trace:
+    def _trace_error(self, error: Exception, parent: Optional[Trace]) -> Trace:
         """Returns an error trace connected to parent.
 
         Start time is set to time of prompt creation, and end time is set to the time
@@ -198,40 +184,6 @@ class WandbPrompt(OpenAIPrompt):
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=None,
         )
-        parent.add_child(span)
+        if parent:
+            parent.add_child(span)
         return span
-
-
-a = {
-    "completion": {
-        "id": "chatcmpl-8zx6Z6HC6ylxuKAAqHvDIeeW5L1E4",
-        "choices": [
-            {
-                "finish_reason": "tool_calls",
-                "index": 0,
-                "logprobs": None,
-                "message": {
-                    "content": None,
-                    "role": "assistant",
-                    "function_call": None,
-                    "tool_calls": [
-                        {
-                            "id": "call_2gwHFyubYVK68n5R9HwmEjgj",
-                            "function": {
-                                "arguments": '{"coolness":10}',
-                                "name": "CoolnessTool",
-                            },
-                            "type": "function",
-                        }
-                    ],
-                },
-            }
-        ],
-        "created": 1709775899,
-        "model": "gpt-3.5-turbo-0125",
-        "object": "chat.completion",
-        "system_fingerprint": "fp_2b778c6b35",
-        "usage": {"completion_tokens": 17, "prompt_tokens": 103, "total_tokens": 120},
-    },
-    "tool_types": ["<class 'mirascope.base.tools.CoolnessTool'>"],
-}

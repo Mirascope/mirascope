@@ -74,7 +74,7 @@ def test_create_with_trace(mock_trace: MagicMock, mock_create: MagicMock):
     "mirascope.wandb.prompt.WandbPrompt._trace_error",
 )
 def test_create_with_trace_error(mock_trace_error: MagicMock, mock_create: MagicMock):
-    """Test `create` method with `Trace`."""
+    """Test `create` method with `Trace` for error."""
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     mock_create.side_effect = Exception("Test error")
     mock_trace_error.return_value = Trace(name="testtrace")
@@ -83,6 +83,47 @@ def test_create_with_trace_error(mock_trace_error: MagicMock, mock_create: Magic
     assert mock_create.called_once()
     assert completion is None
     assert trace.name == "testtrace"
+
+
+@patch(
+    "wandb.sdk.data_types.trace_tree.Trace.add_child",
+)
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.create",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace",
+)
+def test_create_with_trace_no_parent(
+    mock_trace: MagicMock, mock_create: MagicMock, mock_add: MagicMock
+):
+    """Test `create` method with `Trace` with no parent."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    prompt.create_with_trace()
+    assert mock_trace.called_once()
+    assert mock_create.called_once()
+    assert not mock_add.called
+
+
+@patch(
+    "wandb.sdk.data_types.trace_tree.Trace.add_child",
+)
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.create",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace_error",
+)
+def test_create_with_trace_no_parent_error(
+    mock_trace_error: MagicMock, mock_create: MagicMock, mock_add: MagicMock
+):
+    """Test `create` method with `Trace` with no parent and thrown error."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_create.side_effect = Exception("Test error")
+    prompt.create_with_trace()
+    assert mock_trace_error.called_once()
+    assert mock_create.called_once()
+    assert not mock_add.called
 
 
 class model(BaseModel):
@@ -102,7 +143,7 @@ class model(BaseModel):
 def test_extract_with_trace(
     mock_trace: MagicMock, mock_extract: MagicMock, extraction_type
 ):
-    """Test `create` method with `Trace`."""
+    """Test `extract` method with `Trace`."""
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     mock_extract.return_value = "test extraction"
     mock_trace.return_value = Trace(name="testtrace")
@@ -129,7 +170,7 @@ def test_extract_with_trace(
 def test_extract_with_trace_error(
     mock_trace_error: MagicMock, mock_extract: MagicMock, extraction_type
 ):
-    """Test `create` method with `Trace`."""
+    """Test `extract` method with `Trace` for error."""
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     mock_extract.side_effect = Exception("Test error")
     mock_trace_error.return_value = Trace(name="testtrace")
@@ -140,6 +181,47 @@ def test_extract_with_trace_error(
     assert mock_extract.called_once()
     assert completion is None
     assert trace.name == "testtrace"
+
+
+@patch(
+    "wandb.sdk.data_types.trace_tree.Trace.add_child",
+)
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.extract",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace",
+)
+def test_extract_with_trace_no_parent(
+    mock_trace: MagicMock, mock_extract: MagicMock, mock_add: MagicMock
+):
+    """Test `extract` method with `Trace` with no parent."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    prompt.extract_with_trace(str)  # type: ignore
+    assert mock_trace.called_once()
+    assert mock_extract.called_once()
+    assert not mock_add.called
+
+
+@patch(
+    "wandb.sdk.data_types.trace_tree.Trace.add_child",
+)
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.extract",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace_error",
+)
+def test_extract_with_trace_no_parent_error(
+    mock_trace_error: MagicMock, mock_extract: MagicMock, mock_add: MagicMock
+):
+    """Test `extract` method with `Trace` with no parent."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_extract.side_effect = Exception("Test error")
+    prompt.extract_with_trace(str)  # type: ignore
+    assert mock_trace_error.called_once()
+    assert mock_extract.called_once()
+    assert not mock_add.called
 
 
 @patch(

@@ -20,7 +20,7 @@ from pydantic import BaseModel, ValidationError
 
 from mirascope.gemini import GeminiPrompt
 from mirascope.gemini.tools import GeminiTool
-from mirascope.gemini.types import GeminiCompletion
+from mirascope.gemini.types import GeminiCallParams, GeminiCompletion
 
 
 class UserPrompt(GeminiPrompt):
@@ -267,3 +267,28 @@ def test_prompt_extract_base_type(
     res = UserPrompt().extract(str)
     assert isinstance(res, str)
     assert res == "Patrick Rothfuss"
+
+
+@patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
+def test_gemini_prompt_extract_then_create(
+    mock_create: MagicMock,
+    fixture_generated_content_with_tools,
+):
+    """Tests that calling `create` has no tools after calling `extract`."""
+    mock_create.return_value = fixture_generated_content_with_tools
+
+    class ExtractPrompt(GeminiPrompt):
+        """A prompt for running `extract`."""
+
+        call_params = GeminiCallParams(tools=[BookTool])
+
+    class CreatePrompt(GeminiPrompt):
+        """A prompt for running `create`."""
+
+    ExtractPrompt().extract(Book)
+    assert "tools" in mock_create.call_args.kwargs
+    assert mock_create.call_args.kwargs["tools"]
+
+    CreatePrompt().create()
+    assert "tools" in mock_create.call_args.kwargs
+    assert mock_create.call_args.kwargs["tools"] is None

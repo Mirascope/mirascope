@@ -8,7 +8,8 @@ from sqlalchemy import JSON, Float, Integer, MetaData, String, create_engine
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-from mirascope import BasePrompt, OpenAIChat, tags
+from mirascope import tags
+from mirascope.openai import OpenAIPrompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -35,7 +36,7 @@ class OpenAIChatCompletionTable(Base):
 
 
 @tags(["recommendation_project"])
-class BookRecommendationPrompt(BasePrompt):
+class BookRecommendationPrompt(OpenAIPrompt):
     """
     Can you recommend some books on {topic}?
     """
@@ -82,8 +83,7 @@ def log_to_logger(prompt_completion: dict[str, Any]):
 
 if __name__ == "__main__":
     prompt = BookRecommendationPrompt(topic="how to bake a cake")
-    model = OpenAIChat()
-    completion = model.create(prompt)
+    completion = prompt.create()
     prompt_completion = prompt.dump(completion.dump())
     log_to_database(prompt_completion)
     log_to_csv(prompt_completion)

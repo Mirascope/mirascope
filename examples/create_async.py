@@ -2,12 +2,12 @@
 import asyncio
 import os
 
-from mirascope import AsyncOpenAIChat, BasePrompt
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class BookRecommendationPrompt(BasePrompt):
+class BookRecommendationPrompt(OpenAIPrompt):
     """
     Can you recommend some books on {topic}?
     """
@@ -17,12 +17,10 @@ class BookRecommendationPrompt(BasePrompt):
 
 prompt = BookRecommendationPrompt(topic="how to bake a cake")
 
-model = AsyncOpenAIChat()
-
 
 async def create_book_recommendation():
-    """Asynchronously creates the response for a call to the model using `prompt`."""
-    return await model.create(prompt)
+    """Asynchronously creates the response for a chat completion."""
+    return await prompt.async_create()
 
 
 print(asyncio.run(create_book_recommendation()))

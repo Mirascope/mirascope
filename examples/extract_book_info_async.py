@@ -5,9 +5,9 @@ import os
 
 from pydantic import BaseModel
 
-from mirascope import AsyncOpenAIChat
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class BookInfo(BaseModel):
@@ -17,14 +17,13 @@ class BookInfo(BaseModel):
     author: str
 
 
+class BookInfoPrompt(OpenAIPrompt):
+    """The Name of the Wind is by Patrick Rothfuss."""
+
+
 async def extract_book_info():
     """Asynchronously extracts book info."""
-    chat = AsyncOpenAIChat(model="gpt-3.5-turbo-1106")
-    return await chat.extract(
-        BookInfo,
-        "The Name of the Wind is by Patrick Rothfuss.",
-        retries=5,
-    )
+    return await BookInfoPrompt().async_extract(BookInfo, retries=5)
 
 
 print(asyncio.run(extract_book_info()))

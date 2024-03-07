@@ -87,6 +87,7 @@ def test_openai_tool_from_tool_call(fixture_my_tool):
     assert isinstance(tool, fixture_my_tool)
     assert tool.param == "param"
     assert tool.optional == 0
+    assert tool.args == {"param": "param", "optional": 0}
 
 
 def test_openai_tool_from_tool_call_validation_error(fixture_my_tool):

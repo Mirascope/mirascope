@@ -5,6 +5,7 @@ import re
 from inspect import isclass
 from typing import (
     Annotated,
+    Any,
     Callable,
     ClassVar,
     Generator,
@@ -88,7 +89,7 @@ class GeminiPrompt(BasePrompt):
             messages.append({"role": "user", "parts": [str(self)]})
         return messages
 
-    def create(self) -> GeminiCompletion:
+    def create(self, **kwargs: Any) -> GeminiCompletion:
         """Makes a call to the model using this `GeminiPrompt`.
 
         Returns:
@@ -96,22 +97,25 @@ class GeminiPrompt(BasePrompt):
         """
         self._start_time = datetime.datetime.now().timestamp() * 1000
         gemini_pro_model = GenerativeModel(self.call_params.model)
-        tools: Optional[list[Type[GeminiTool]]] = None
-        if self.call_params.tools is not None:
-            tools = [
-                tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
-                for tool in self.call_params.tools
-            ]
+        tools = kwargs.pop("tools") if "tools" in kwargs else []
+        if self.call_params.tools:
+            tools.extend(self.call_params.tools)
+        converted_tools = [
+            tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
+            for tool in tools
+        ]
         completion = gemini_pro_model.generate_content(
             self.messages,
             stream=False,
-            tools=[tool.tool_schema() for tool in tools] if tools is not None else None,
+            tools=[tool.tool_schema() for tool in converted_tools]
+            if converted_tools
+            else None,
             generation_config=self.call_params.generation_config,
             safety_settings=self.call_params.safety_settings,
             request_options=self.call_params.request_options,
         )
         self._end_time = datetime.datetime.now().timestamp() * 1000
-        return GeminiCompletion(completion=completion, tool_types=tools)
+        return GeminiCompletion(completion=completion, tool_types=converted_tools)
 
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -170,8 +174,7 @@ class GeminiPrompt(BasePrompt):
             gemini_tool = GeminiTool.from_model(schema)
             return_tool = False
 
-        self.call_params.tools = [gemini_tool]
-        completion = self.create()
+        completion = self.create(tools=[gemini_tool])
         try:
             tool = completion.tool
             if tool is None:

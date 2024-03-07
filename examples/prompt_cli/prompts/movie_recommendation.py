@@ -1,9 +1,10 @@
 """A prompt for recommending movies of a particular genre."""
-from mirascope.base import BasePrompt, tags
+from mirascope import tags
+from mirascope.openai import OpenAIPrompt
 
 
 @tags(["version:0003"])
-class MovieRecommendationPrompt(BasePrompt):
+class MovieRecommendationPrompt(OpenAIPrompt):
     """
     SYSTEM:
     You are the world's most knowledgeable movie buff. You know everything there is to

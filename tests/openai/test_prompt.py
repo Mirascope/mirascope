@@ -5,8 +5,10 @@ import pytest
 from openai import AsyncOpenAI, OpenAI
 from pydantic import ValidationError
 
+from mirascope.openai.prompt import OpenAIPrompt
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
+    OpenAICallParams,
     OpenAIChatCompletion,
     OpenAIChatCompletionChunk,
 )
@@ -543,3 +545,60 @@ async def test_openai_prompt_async_extract_base_type(
     assert model == "value"
 
     mock_create.assert_called_once()
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+def test_openai_prompt_extract_then_create(
+    mock_create: MagicMock,
+    fixture_chat_completion_with_tools,
+    fixture_my_tool,
+    fixture_my_schema,
+):
+    """Tests that calling `create` has no tools after calling `extract`."""
+    mock_create.return_value = fixture_chat_completion_with_tools
+
+    class ExtractPrompt(OpenAIPrompt):
+        """A prompt for running `extract`."""
+
+        call_params = OpenAICallParams(tools=[fixture_my_tool])
+
+    class CreatePrompt(OpenAIPrompt):
+        """A prompt for running `create`."""
+
+    ExtractPrompt().extract(fixture_my_schema)
+    assert "tools" in mock_create.call_args.kwargs
+
+    CreatePrompt().create()
+    assert "tools" not in mock_create.call_args.kwargs
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract_then_async_create(
+    mock_create: MagicMock,
+    fixture_chat_completion_with_tools,
+    fixture_my_tool,
+    fixture_my_schema,
+):
+    """Tests that calling `create` has no tools after calling `extract`."""
+    mock_create.return_value = fixture_chat_completion_with_tools
+
+    class ExtractPrompt(OpenAIPrompt):
+        """A prompt for running `extract`."""
+
+        call_params = OpenAICallParams(tools=[fixture_my_tool])
+
+    class CreatePrompt(OpenAIPrompt):
+        """A prompt for running `create`."""
+
+    await ExtractPrompt().async_extract(fixture_my_schema)
+    assert "tools" in mock_create.call_args.kwargs
+
+    await CreatePrompt().async_create()
+    assert "tools" not in mock_create.call_args.kwargs
