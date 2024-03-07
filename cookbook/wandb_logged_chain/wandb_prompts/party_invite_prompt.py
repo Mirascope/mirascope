@@ -2,7 +2,7 @@
 from mirascope.wandb import WandbPrompt
 
 
-class PartyInvitePrompt(WandbPrompt):
+class PartyInvite(WandbPrompt):
     """
     SYSTEM:
     You're a bouncer and you decide if people are allowed into the party. You only let

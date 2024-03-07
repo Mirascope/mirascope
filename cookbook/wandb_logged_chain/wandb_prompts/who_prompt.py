@@ -10,7 +10,7 @@ class Person(BaseModel):
     person: str
 
 
-class WhoPrompt(WandbPrompt):
+class Who(WandbPrompt):
     """Who is {person}?"""
 
     person: str

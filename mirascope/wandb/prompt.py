@@ -1,8 +1,7 @@
 """Prompts with WandB and OpenAI integration to support logging functionality."""
-import datetime
 from typing import Callable, Literal, Optional, Type, TypeVar, Union, overload
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 from wandb.sdk.data_types.trace_tree import Trace
 
 from ..base import BaseType
@@ -34,10 +33,7 @@ class WandbPrompt(OpenAIPrompt):
 
     greeting: str
 
-    prompt = HiPrompt(
-        span_type="llm",
-        greeting="Hello",
-    )
+    prompt = HiPrompt(span_type="llm", greeting="Hello")
     completion, span = prompt.create_with_span()
 
     root_span.log(name="mirascope_trace")
@@ -45,9 +41,6 @@ class WandbPrompt(OpenAIPrompt):
     '''
 
     span_type: Literal["tool", "llm", "chain", "agent"]
-    _creation_time_ms: int = PrivateAttr(
-        default_factory=lambda: round(datetime.datetime.now().timestamp() * 1000)
-    )
 
     call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
@@ -71,19 +64,19 @@ class WandbPrompt(OpenAIPrompt):
 
     @overload
     def extract_with_trace(
-        self, schema: Type[BaseTypeT], parent: Optional[Trace], retries: int = 0
+        self, schema: Type[BaseTypeT], parent: Optional[Trace] = None, retries: int = 0
     ) -> tuple[BaseTypeT, Trace]:
         ...  # pragma: no cover
 
     @overload
     def extract_with_trace(
-        self, schema: Type[BaseModelT], parent: Optional[Trace], retries: int = 0
+        self, schema: Type[BaseModelT], parent: Optional[Trace] = None, retries: int = 0
     ) -> tuple[BaseModelT, Trace]:
         ...  # pragma: no cover
 
     @overload
     def extract_with_trace(
-        self, schema: Callable, parent: Optional[Trace], retries: int = 0
+        self, schema: Callable, parent: Optional[Trace] = None, retries: int = 0
     ) -> tuple[OpenAITool, Trace]:
         ...  # pragma: no cover
 
@@ -127,7 +120,6 @@ class WandbPrompt(OpenAIPrompt):
                     "assistant": completion.tool.model_dump(),
                     "tool_output": completion.tool.fn(**completion.tool.args),
                 }
-                print(output)
             else:
                 output = {"assistant": str(completion)}
             open_ai_chat_completion = completion
@@ -141,7 +133,6 @@ class WandbPrompt(OpenAIPrompt):
                 )
             else:
                 open_ai_chat_completion = completion._completion
-        dump = open_ai_chat_completion.dump()
         span = Trace(
             name=self.__class__.__name__,
             kind=self.span_type,
@@ -151,8 +142,8 @@ class WandbPrompt(OpenAIPrompt):
                 "call_params": dict(self.call_params),
                 "usage": dict(open_ai_chat_completion.completion.usage),  # type: ignore
             },
-            start_time_ms=dump["start_time"],
-            end_time_ms=dump["end_time"],
+            start_time_ms=round(self._start_time) if self._start_time else None,
+            end_time_ms=round(self._end_time) if self._end_time else None,
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=output,
         )
@@ -179,8 +170,8 @@ class WandbPrompt(OpenAIPrompt):
             status_code="error",
             status_message=str(error),
             metadata={"call_params": dict(self.call_params)},
-            start_time_ms=self._creation_time_ms,
-            end_time_ms=round(datetime.datetime.now().timestamp() * 1000),
+            start_time_ms=round(self._start_time) if self._start_time else None,
+            end_time_ms=round(self._end_time) if self._end_time else None,
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=None,
         )
