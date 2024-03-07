@@ -73,9 +73,6 @@ class OpenAIPrompt(BasePrompt):
         AfterValidator(lambda key: _set_api_key(key) if key is not None else None),
     ] = None
 
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
-
     call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
         model="gpt-3.5-turbo-0125",
     )

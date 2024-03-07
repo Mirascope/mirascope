@@ -66,9 +66,6 @@ class GeminiPrompt(BasePrompt):
         AfterValidator(lambda key: configure(api_key=key) if key is not None else None),
     ] = None
 
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
-
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams(
         model="gemini-1.0-pro",
         generation_config={"candidate_count": 1},
