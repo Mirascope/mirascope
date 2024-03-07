@@ -9,8 +9,6 @@ from wandb_prompts.coolness_prompt import Coolness, CoolnessPrompt
 from wandb_prompts.party_invite_prompt import PartyInvitePrompt
 from wandb_prompts.who_prompt import Person, WhoPrompt
 
-from mirascope import OpenAIChat
-
 
 class Settings(BaseSettings):
     """Settings for wandb_logged_chain."""
@@ -34,21 +32,28 @@ if __name__ == "__main__":
         start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
         metadata={"user": "mirascope_user"},
     )
-    chat = OpenAIChat(api_key=settings.openai_api_key)
 
-    who_prompt = WhoPrompt(span_type="tool", person="Brian")
-    who_completion = chat.extract(Person, who_prompt)
-    who_span = who_prompt.trace(who_completion, root_span)
+    who_prompt = WhoPrompt(
+        span_type="tool",
+        person="Brian",
+        api_key=settings.openai_api_key,
+    )
+    who_completion, who_span = who_prompt.extract_with_trace(Person, root_span)
 
-    coolness_prompt = CoolnessPrompt(span_type="tool", person=who_completion.person)
-    coolness_completion = chat.extract(Coolness, coolness_prompt)
-    coolness_span = coolness_prompt.trace(coolness_completion, who_span)
+    coolness_prompt = CoolnessPrompt(
+        span_type="tool", person=who_completion.person, api_key=settings.openai_api_key
+    )
+    coolness_completion, coolness_span = coolness_prompt.extract_with_trace(
+        Coolness, who_span
+    )
 
     party_invite_prompt = PartyInvitePrompt(
-        span_type="llm", coolness=coolness_completion.coolness
+        span_type="llm",
+        coolness=coolness_completion.coolness,
+        api_key=settings.openai_api_key,
     )
-    party_completion = chat.create(party_invite_prompt)
-    party_span = party_invite_prompt.trace(party_completion, coolness_span)
+    party_completion, party_span = party_invite_prompt.create_with_trace(coolness_span)
+    print("\nparty completion:\n", party_completion)
 
     root_span._span.end_time_ms = party_span._span.end_time_ms
     root_span.add_inputs_and_outputs(

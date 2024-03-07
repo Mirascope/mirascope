@@ -1,15 +1,18 @@
 """Prompts with WandB and OpenAI integration to support logging functionality."""
 import datetime
-from typing import Literal, Union
+from typing import Callable, Literal, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel, PrivateAttr
 from wandb.sdk.data_types.trace_tree import Trace
 
-from mirascope import BasePrompt
-from mirascope.openai import OpenAIChatCompletion
+from ..base import BaseType
+from ..openai import OpenAICallParams, OpenAIChatCompletion, OpenAIPrompt, OpenAITool
+
+BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
-class WandbPrompt(BasePrompt):
+class WandbPrompt(OpenAIPrompt):
     '''Parent class for inherited WandB functionality.
 
     Use this class's built in `trace` and `trace_error` methods to log traces to WandB.
@@ -62,7 +65,63 @@ class WandbPrompt(BasePrompt):
         default_factory=lambda: round(datetime.datetime.now().timestamp() * 1000)
     )
 
-    def trace(
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
+
+    def create_with_trace(
+        self, parent: Trace
+    ) -> tuple[Optional[OpenAIChatCompletion], Trace]:
+        """Creates an OpenAI chat completion and logs it via a W&B `Trace`.
+
+        Args:
+            parent: The parent trace to connect to.
+
+        Returns:
+            A tuple containing the completion and its trace (which has been connected
+                to the parent).
+        """
+        try:
+            completion = super().create()
+            return completion, self._trace(completion, parent)
+        except Exception as e:
+            return None, self._trace_error(e, parent)
+
+    @overload
+    def extract_with_trace(
+        self, schema: Type[BaseTypeT], parent: Trace, retries: int = 0
+    ) -> tuple[BaseTypeT, Trace]:
+        ...  # pragma: no cover
+
+    @overload
+    def extract_with_trace(
+        self, schema: Type[BaseModelT], parent: Trace, retries: int = 0
+    ) -> tuple[BaseModelT, Trace]:
+        ...  # pragma: no cover
+
+    @overload
+    def extract_with_trace(
+        self, schema: Callable, parent: Trace, retries: int = 0
+    ) -> tuple[OpenAITool, Trace]:
+        ...  # pragma: no cover
+
+    def extract_with_trace(self, schema, parent, retries=0):
+        """Calls an OpenAI extraction then logs the result via a W&B `Trace`.
+
+        Args:
+            schema: The schema to extract.
+            parent: The parent trace to connect to.
+            retries: The number of times to retry the extraction.
+
+        Returns:
+            A tuple containing the completion and its trace (which has been connected
+                to the parent).
+        """
+        try:
+            completion = super().extract(schema, retries)
+            return completion, self._trace(completion, parent)
+        except Exception as e:
+            return None, self._trace_error(e, parent)
+
+    def _trace(
         self, completion: Union[OpenAIChatCompletion, BaseModel], parent: Trace
     ) -> Trace:
         """Returns a trace connected to parent.
@@ -76,14 +135,14 @@ class WandbPrompt(BasePrompt):
         Returns:
             The created trace, connected to the parent.
         """
+        print("HERE's SOME STUFF \n\n", completion.model_dump())
         if isinstance(completion, OpenAIChatCompletion):
-            if completion.tool:
+            if completion.tool and self.call_params.tools:
                 output = {
                     "assistant": completion.tool.model_dump(),
-                    "tool_output": completion.tool.fn(
-                        **completion.tool.model_dump(exclude={"tool_call"})
-                    ),
+                    "tool_output": completion.tool.fn(**completion.tool.args),
                 }
+                print(output)
             else:
                 output = {"assistant": str(completion)}
             open_ai_chat_completion = completion
@@ -115,7 +174,7 @@ class WandbPrompt(BasePrompt):
         parent.add_child(span)
         return span
 
-    def trace_error(self, error: Exception, parent: Trace) -> Trace:
+    def _trace_error(self, error: Exception, parent: Trace) -> Trace:
         """Returns an error trace connected to parent.
 
         Start time is set to time of prompt creation, and end time is set to the time
@@ -141,3 +200,38 @@ class WandbPrompt(BasePrompt):
         )
         parent.add_child(span)
         return span
+
+
+a = {
+    "completion": {
+        "id": "chatcmpl-8zx6Z6HC6ylxuKAAqHvDIeeW5L1E4",
+        "choices": [
+            {
+                "finish_reason": "tool_calls",
+                "index": 0,
+                "logprobs": None,
+                "message": {
+                    "content": None,
+                    "role": "assistant",
+                    "function_call": None,
+                    "tool_calls": [
+                        {
+                            "id": "call_2gwHFyubYVK68n5R9HwmEjgj",
+                            "function": {
+                                "arguments": '{"coolness":10}',
+                                "name": "CoolnessTool",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
+            }
+        ],
+        "created": 1709775899,
+        "model": "gpt-3.5-turbo-0125",
+        "object": "chat.completion",
+        "system_fingerprint": "fp_2b778c6b35",
+        "usage": {"completion_tokens": 17, "prompt_tokens": 103, "total_tokens": 120},
+    },
+    "tool_types": ["<class 'mirascope.base.tools.CoolnessTool'>"],
+}

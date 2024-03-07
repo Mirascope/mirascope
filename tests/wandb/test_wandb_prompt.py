@@ -38,6 +38,111 @@ def test_init_invalid_span_type():
 
 
 @patch(
+    "mirascope.openai.prompt.OpenAIPrompt.create",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace",
+)
+def test_create_with_trace(mock_trace: MagicMock, mock_create: MagicMock):
+    """Test `create` method with `Trace`."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_create.return_value = OpenAIChatCompletion(
+        completion=ChatCompletion(
+            id="testcompletion",
+            choices=[],
+            created=0,
+            model="gpt-3.5-turbo-0125",
+            object="chat.completion",
+            system_fingerprint=None,
+            usage=None,
+        ),
+        tool_types=[],
+    )
+    mock_trace.return_value = Trace(name="testtrace")
+    completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
+    assert mock_trace.called_once()
+    assert mock_create.called_once()
+    if completion:
+        assert completion.completion.id == "testcompletion"
+    assert trace.name == "testtrace"
+
+
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.create",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace_error",
+)
+def test_create_with_trace_error(mock_trace_error: MagicMock, mock_create: MagicMock):
+    """Test `create` method with `Trace`."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_create.side_effect = Exception("Test error")
+    mock_trace_error.return_value = Trace(name="testtrace")
+    completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
+    assert mock_trace_error.called_once()
+    assert mock_create.called_once()
+    assert completion is None
+    assert trace.name == "testtrace"
+
+
+class model(BaseModel):
+    some_param: str
+
+
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.extract",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace",
+)
+@pytest.mark.parametrize(
+    "extraction_type",
+    [str, lambda x: x, model],
+)
+def test_extract_with_trace(
+    mock_trace: MagicMock, mock_extract: MagicMock, extraction_type
+):
+    """Test `create` method with `Trace`."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_extract.return_value = "test extraction"
+    mock_trace.return_value = Trace(name="testtrace")
+    completion, trace = prompt.extract_with_trace(
+        extraction_type, parent=Trace(name="test")
+    )
+    assert mock_trace.called_once()
+    assert mock_extract.called_once()
+    if completion:
+        assert completion == "test extraction"
+    assert trace.name == "testtrace"
+
+
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.extract",
+)
+@patch(
+    "mirascope.wandb.prompt.WandbPrompt._trace_error",
+)
+@pytest.mark.parametrize(
+    "extraction_type",
+    [str, lambda x: x, model],
+)
+def test_extract_with_trace_error(
+    mock_trace_error: MagicMock, mock_extract: MagicMock, extraction_type
+):
+    """Test `create` method with `Trace`."""
+    prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
+    mock_extract.side_effect = Exception("Test error")
+    mock_trace_error.return_value = Trace(name="testtrace")
+    completion, trace = prompt.extract_with_trace(
+        extraction_type, parent=Trace(name="test")
+    )
+    assert mock_trace_error.called_once()
+    assert mock_extract.called_once()
+    assert completion is None
+    assert trace.name == "testtrace"
+
+
+@patch(
     "wandb.sdk.data_types.trace_tree.Trace.add_child",
     new_callable=MagicMock,
 )
@@ -68,7 +173,7 @@ def test_trace_completion(mock_Trace: MagicMock):
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
-    span = prompt.trace(completion, parent=Trace(name="test"))
+    span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "SUCCESS"
@@ -130,7 +235,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
-    span = prompt.trace(completion, parent=Trace(name="test"))
+    span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
     assert span.kind == "TOOL"
     assert span.status_code == "SUCCESS"
@@ -167,7 +272,7 @@ def test_trace_base_model():
 
     completion = MyModel(param="test")
     with pytest.raises(ValueError):
-        prompt.trace(completion, parent=Trace(name="test"))
+        prompt._trace(completion, parent=Trace(name="test"))
     completion._completion = OpenAIChatCompletion(
         completion=ChatCompletion(
             id="test",
@@ -192,7 +297,7 @@ def test_trace_base_model():
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
     )
-    span = prompt.trace(completion, parent=Trace(name="test"))
+    span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
     assert span.kind == "TOOL"
     assert span.status_code == "SUCCESS"
@@ -202,7 +307,7 @@ def test_trace_error():
     """Test `trace_error` method."""
     error = Exception("Test error")
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
-    span = prompt.trace_error(error, parent=Trace(name="test"))
+    span = prompt._trace_error(error, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "ERROR"
