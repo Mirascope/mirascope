@@ -330,6 +330,7 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
             "total_tokens": 3,
         }
     assert span.inputs == {"user": "This is a test prompt. Hello!"}
+    print(span.outputs)
     assert span.outputs == {
         "assistant": {
             "tool_call": {
