@@ -163,6 +163,7 @@ class GeminiPrompt(BasePrompt):
         Returns:
             The `Schema` instance extracted from the completion.
         """
+        extraction_start_time = datetime.datetime.now().timestamp() * 1000
         return_tool = True
         gemini_tool = schema
         if is_base_type(schema):
@@ -175,21 +176,27 @@ class GeminiPrompt(BasePrompt):
             return_tool = False
 
         completion = self.create(tools=[gemini_tool])
+        self._start_time = extraction_start_time
         try:
             tool = completion.tool
             if tool is None:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool
             if is_base_type(schema):
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool.value
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
+            self._end_time = datetime.datetime.now().timestamp() * 1000
             return model
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
+            if retries == 0:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
             raise  # re-raise if we have no retries left

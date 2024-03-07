@@ -108,11 +108,18 @@ class OpenAIPrompt(BasePrompt):
             tools.extend(self.call_params.tools)
         converted_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, self, converted_tools)
-        completion = client.chat.completions.create(
-            model=self.call_params.model,
-            stream=False,
-            **kwargs,
-        )
+        try:
+            completion_start_time = datetime.datetime.now().timestamp() * 1000
+            completion = client.chat.completions.create(
+                model=self.call_params.model,
+                stream=False,
+                **kwargs,
+            )
+            completion._end_time = datetime.datetime.now().timestamp() * 1000
+            completion._start_time = completion_start_time
+        except Exception:
+            self._end_time = datetime.datetime.now().timestamp() * 1000
+            raise
         self._end_time = datetime.datetime.now().timestamp() * 1000
         return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
 
@@ -138,11 +145,18 @@ class OpenAIPrompt(BasePrompt):
             tools.extend(self.call_params.tools)
         converted_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, self, converted_tools)
-        completion = await client.chat.completions.create(
-            model=self.call_params.model,
-            stream=False,
-            **kwargs,
-        )
+        try:
+            completion_start_time = datetime.datetime.now().timestamp() * 1000
+            completion = await client.chat.completions.create(
+                model=self.call_params.model,
+                stream=False,
+                **kwargs,
+            )
+            completion._end_time = datetime.datetime.now().timestamp() * 1000
+            completion._start_time = completion_start_time
+        except Exception:
+            self._end_time = datetime.datetime.now().timestamp() * 1000
+            raise
         self._end_time = datetime.datetime.now().timestamp() * 1000
         return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
 
@@ -156,6 +170,7 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        self._start_time = datetime.datetime.now().timestamp() * 1000
         client = OpenAI(base_url=self.call_params.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -170,6 +185,8 @@ class OpenAIPrompt(BasePrompt):
         for chunk in stream:
             yield OpenAIChatCompletionChunk(chunk=chunk, tool_types=tools)
 
+        self._end_time = datetime.datetime.now().timestamp() * 1000
+
     async def async_stream(self) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
         """Streams the response for an asynchronous call to the model using `prompt`.
 
@@ -180,6 +197,7 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        self._start_time = datetime.datetime.now().timestamp() * 1000
         client = AsyncOpenAI(base_url=self.call_params.base_url)
         if self.call_params.async_wrapper is not None:
             client = self.call_params.async_wrapper(client)
@@ -196,6 +214,8 @@ class OpenAIPrompt(BasePrompt):
             yield OpenAIChatCompletionChunk(
                 chunk=chunk, tool_types=tools if tools else None
             )
+
+        self._end_time = datetime.datetime.now().timestamp() * 1000
 
     @overload
     def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
@@ -230,6 +250,7 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        extraction_start_time = datetime.datetime.now().timestamp() * 1000
         return_tool = True
         openai_tool = schema
         if is_base_type(schema):
@@ -241,25 +262,35 @@ class OpenAIPrompt(BasePrompt):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
 
-        completion = self.create(tools=[openai_tool])
+        try:
+            completion = self.create(tools=[openai_tool])
+            self._start_time = extraction_start_time
+        except Exception:
+            self._end_time = datetime.datetime.now().timestamp() * 1000
+            self._start_time = extraction_start_time
+            raise
         try:
             tool = completion.tool
             if tool is None:
-                print(completion)
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool
             if is_base_type(schema):
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool.value  # type: ignore
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
+            self._end_time = datetime.datetime.now().timestamp() * 1000
             return model
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
+            if retries == 0:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
             raise  # re-raise if we have no retries left
 
     @overload
@@ -297,6 +328,7 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
+        extraction_start_time = datetime.datetime.now().timestamp() * 1000
         return_tool = True
         openai_tool = schema
         if is_base_type(schema):
@@ -308,22 +340,33 @@ class OpenAIPrompt(BasePrompt):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
 
-        completion = await self.async_create(tools=[openai_tool])
+        try:
+            completion = await self.async_create(tools=[openai_tool])
+            self._start_time = extraction_start_time
+        except Exception:
+            self._end_time = datetime.datetime.now().timestamp() * 1000
+            self._start_time = extraction_start_time
+            raise
         try:
             tool = completion.tool
             if tool is None:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool
             if is_base_type(schema):
+                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool.value  # type: ignore
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
+            self._end_time = datetime.datetime.now().timestamp() * 1000
             return model
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return await self.async_extract(schema, retries - 1)
+            if retries == 0:
+                self._end_time = datetime.datetime.now().timestamp() * 1000
             raise  # re-raise if we have no retries left

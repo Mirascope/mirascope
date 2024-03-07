@@ -101,43 +101,6 @@ async def test_openai_prompt_async_create_with_wrapper(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-def test_openai_prompt_stream_with_wrapper(
-    mock_create, fixture_openai_test_prompt, fixture_chat_completion_chunk
-):
-    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
-    mock_create.return_value = [fixture_chat_completion_chunk]
-    wrapper = MagicMock()
-    wrapper.return_value = OpenAI(api_key="test")
-
-    fixture_openai_test_prompt.call_params.wrapper = wrapper
-    for _ in fixture_openai_test_prompt.stream():
-        pass
-    wrapper.assert_called_once()
-
-
-@patch(
-    "openai.resources.chat.completions.AsyncCompletions.create",
-    new_callable=AsyncMock,
-)
-@pytest.mark.asyncio
-async def test_openai_prompt_async_stream_with_wrapper(
-    mock_create, fixture_openai_test_prompt, fixture_chat_completion_chunk
-):
-    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
-    mock_create.return_value.__aiter__.return_value = [fixture_chat_completion_chunk]
-    wrapper = MagicMock()
-    wrapper.return_value = AsyncOpenAI(api_key="test")
-
-    fixture_openai_test_prompt.call_params.async_wrapper = wrapper
-    async for _ in fixture_openai_test_prompt.async_stream():
-        pass
-    wrapper.assert_called_once()
-
-
-@patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
-)
 def test_openai_prompt_create_with_tools(
     mock_create,
     fixture_openai_test_prompt,
@@ -196,6 +159,31 @@ async def test_openai_prompt_async_create_with_tools(
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
     )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+    side_effect=Exception("base exception"),
+)
+def test_openai_prompt_create_error(mock_create, fixture_openai_test_prompt):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        fixture_openai_test_prompt.create()
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+    side_effect=Exception("base exception"),
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_create_error(
+    mock_create, fixture_openai_test_prompt
+):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        await fixture_openai_test_prompt.async_create()
 
 
 @patch(
@@ -261,6 +249,43 @@ async def test_openai_prompt_async_stream(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
+def test_openai_prompt_stream_with_wrapper(
+    mock_create, fixture_openai_test_prompt, fixture_chat_completion_chunk
+):
+    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
+    mock_create.return_value = [fixture_chat_completion_chunk]
+    wrapper = MagicMock()
+    wrapper.return_value = OpenAI(api_key="test")
+
+    fixture_openai_test_prompt.call_params.wrapper = wrapper
+    for _ in fixture_openai_test_prompt.stream():
+        pass
+    wrapper.assert_called_once()
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_stream_with_wrapper(
+    mock_create, fixture_openai_test_prompt, fixture_chat_completion_chunk
+):
+    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
+    mock_create.return_value.__aiter__.return_value = [fixture_chat_completion_chunk]
+    wrapper = MagicMock()
+    wrapper.return_value = AsyncOpenAI(api_key="test")
+
+    fixture_openai_test_prompt.call_params.async_wrapper = wrapper
+    async for _ in fixture_openai_test_prompt.async_stream():
+        pass
+    wrapper.assert_called_once()
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
 def test_openai_prompt_stream_with_tools(
     mock_create,
     fixture_openai_test_prompt,
@@ -318,6 +343,32 @@ async def test_openai_prompt_async_stream_with_tools(
         tools=[tool.tool_schema() for tool in tools],
         tool_choice="auto",
     )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+    side_effect=Exception("base exception"),
+)
+def test_openai_prompt_stream_error(mock_create, fixture_openai_test_prompt):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        stream = fixture_openai_test_prompt.stream()
+        stream.__next__()
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+    side_effect=Exception("base exception"),
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_stream_error(
+    mock_create, fixture_openai_test_prompt
+):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        await fixture_openai_test_prompt.async_stream().__anext__()
 
 
 @patch("mirascope.openai.prompt.OpenAIPrompt.create", new_callable=MagicMock)
@@ -545,6 +596,33 @@ async def test_openai_prompt_async_extract_base_type(
     assert model == "value"
 
     mock_create.assert_called_once()
+
+
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.create",
+    new_callable=MagicMock,
+    side_effect=Exception("base exception"),
+)
+def test_openai_prompt_extract_error(
+    mock_create, fixture_openai_test_prompt, fixture_my_schema
+):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        fixture_openai_test_prompt.extract(fixture_my_schema)
+
+
+@patch(
+    "mirascope.openai.prompt.OpenAIPrompt.async_create",
+    new_callable=AsyncMock,
+    side_effect=Exception("base exception"),
+)
+@pytest.mark.asyncio
+async def test_openai_prompt_async_extract_error(
+    mock_create, fixture_openai_test_prompt, fixture_my_schema
+):
+    """Tests that `OpenAIChat` handles OpenAI errors thrown during create."""
+    with pytest.raises(Exception):
+        await fixture_openai_test_prompt.async_extract(fixture_my_schema)
 
 
 @patch(
