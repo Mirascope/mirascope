@@ -103,21 +103,24 @@ class OpenAIPrompt(BasePrompt):
         client = OpenAI(base_url=self.call_params.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        # kwargs: dict[str, Any] = {}
-        tools = convert_tools_list_to_openai_tools(
-            kwargs.pop("tools") if "tools" in kwargs else None
-        )
-        patch_openai_kwargs(kwargs, self, tools)
+        tools = kwargs.pop("tools") if "tools" in kwargs else []
+        if self.call_params.tools:
+            tools.extend(self.call_params.tools)
+        converted_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, self, converted_tools)
         completion = client.chat.completions.create(
             model=self.call_params.model,
             stream=False,
             **kwargs,
         )
         self._end_time = datetime.datetime.now().timestamp() * 1000
-        return OpenAIChatCompletion(completion=completion, tool_types=tools)
+        return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
 
-    async def async_create(self) -> OpenAIChatCompletion:
+    async def async_create(self, **kwargs: Any) -> OpenAIChatCompletion:
         """Makes an asynchronous call to the model using this `OpenAIPrompt`.
+
+        Args:
+            **kwargs: Additional keyword arguments to pass to the `async_create` call.
 
         Returns:
             An `OpenAIChatCompletion` instance.
@@ -130,16 +133,18 @@ class OpenAIPrompt(BasePrompt):
         client = AsyncOpenAI(base_url=self.call_params.base_url)
         if self.call_params.async_wrapper is not None:
             client = self.call_params.async_wrapper(client)
-        kwargs: dict[str, Any] = {}
-        tools = convert_tools_list_to_openai_tools(self.call_params.tools)
-        patch_openai_kwargs(kwargs, self, tools)
+        tools = kwargs.pop("tools") if "tools" in kwargs else []
+        if self.call_params.tools:
+            tools.extend(self.call_params.tools)
+        converted_tools = convert_tools_list_to_openai_tools(tools)
+        patch_openai_kwargs(kwargs, self, converted_tools)
         completion = await client.chat.completions.create(
             model=self.call_params.model,
             stream=False,
             **kwargs,
         )
         self._end_time = datetime.datetime.now().timestamp() * 1000
-        return OpenAIChatCompletion(completion=completion, tool_types=tools)
+        return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
 
     def stream(self) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -236,7 +241,6 @@ class OpenAIPrompt(BasePrompt):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
 
-        # self.call_params.tools = [openai_tool]
         completion = self.create(tools=[openai_tool])
         try:
             tool = completion.tool
@@ -304,8 +308,7 @@ class OpenAIPrompt(BasePrompt):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
 
-        self.call_params.tools = [openai_tool]
-        completion = await self.async_create()
+        completion = await self.async_create(tools=[openai_tool])
         try:
             tool = completion.tool
             if tool is None:
