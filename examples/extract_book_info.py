@@ -3,9 +3,9 @@ import os
 
 from pydantic import BaseModel
 
-from mirascope import OpenAIChat
+from mirascope.openai import OpenAIPrompt
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class BookInfo(BaseModel):
@@ -15,10 +15,9 @@ class BookInfo(BaseModel):
     author: str
 
 
-chat = OpenAIChat(model="gpt-3.5-turbo-1106")
-book_info = chat.extract(
-    BookInfo,
-    "The Name of the Wind is by Patrick Rothfuss.",
-    retries=5,
-)
+class BookInfoPrompt(OpenAIPrompt):
+    """The Name of the Wind is by Patrick Rothfuss."""
+
+
+book_info = BookInfoPrompt().extract(BookInfo, retries=5)
 print(book_info)

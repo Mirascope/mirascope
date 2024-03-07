@@ -1,22 +1,23 @@
 """A basic example showcasing how to manually manage chat history."""
 import os
 
-from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
-from mirascope.base import Message
+from openai.types.chat import ChatCompletionMessageParam
 
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class ChatPrompt(BasePrompt):
+class ChatPrompt(OpenAIPrompt):
     """A chat with history"""
 
     message: str
-    history: list[Message] = []
+    history: list[ChatCompletionMessageParam] = []
 
     call_params = OpenAICallParams(model="gpt-3.5-turbo")
 
     @property
-    def messages(self) -> list[Message]:
+    def messages(self) -> list[ChatCompletionMessageParam]:
         return [
             {"role": "system", "content": "You are a helpful AI."},
             *self.history,
@@ -24,9 +25,7 @@ class ChatPrompt(BasePrompt):
         ]
 
 
-chat_history: list[Message] = []
-
-chat = OpenAIChat()
+chat_history: list[ChatCompletionMessageParam] = []
 
 first_message = "Hello, my favorite ice cream flavor is chocolate. What's yours?"
 
@@ -35,7 +34,7 @@ chat_history.extend(
         {"role": "user", "content": first_message},
         {
             "role": "assistant",
-            "content": str(chat.create(ChatPrompt(message=first_message))),
+            "content": str(ChatPrompt(message=first_message).create()),
         },
     ]
 )
@@ -45,5 +44,5 @@ second_message = (
     "Can you remind me?"
 )
 
-completion = chat.create(ChatPrompt(message=second_message, history=chat_history))
+completion = ChatPrompt(message=second_message, history=chat_history).create()
 print(completion)

@@ -3,15 +3,12 @@ import os
 
 from prompts import MovieRecommendationPrompt
 
-from mirascope import OpenAIChat
-
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def recommend_movies(genre: str):
     """Run the movie recommendation script."""
-    model = OpenAIChat()
-    return str(model.create(MovieRecommendationPrompt(genre=genre)))
+    return str(MovieRecommendationPrompt(genre=genre).create())
 
 
 while True:
