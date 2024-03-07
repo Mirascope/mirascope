@@ -86,8 +86,11 @@ class OpenAIPrompt(BasePrompt):
         messages = super().messages
         return [cast(ChatCompletionMessageParam, message) for message in messages]
 
-    def create(self) -> OpenAIChatCompletion:
+    def create(self, **kwargs: Any) -> OpenAIChatCompletion:
         """Makes a call to the model using this `OpenAIPrompt` instance.
+
+        Args:
+            **kwargs: Additional keyword arguments to pass to the `create` call.
 
         Returns:
             A `OpenAIChatCompletion` instance.
@@ -100,8 +103,10 @@ class OpenAIPrompt(BasePrompt):
         client = OpenAI(base_url=self.call_params.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        kwargs: dict[str, Any] = {}
-        tools = convert_tools_list_to_openai_tools(self.call_params.tools)
+        # kwargs: dict[str, Any] = {}
+        tools = convert_tools_list_to_openai_tools(
+            kwargs.pop("tools") if "tools" in kwargs else None
+        )
         patch_openai_kwargs(kwargs, self, tools)
         completion = client.chat.completions.create(
             model=self.call_params.model,
@@ -231,8 +236,8 @@ class OpenAIPrompt(BasePrompt):
             openai_tool = OpenAITool.from_model(schema)
             return_tool = False
 
-        self.call_params.tools = [openai_tool]
-        completion = self.create()
+        # self.call_params.tools = [openai_tool]
+        completion = self.create(tools=[openai_tool])
         try:
             tool = completion.tool
             if tool is None:
