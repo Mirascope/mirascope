@@ -4,15 +4,12 @@ from typing import Union
 import pandas as pd
 import tiktoken
 from openai import OpenAI
-from rag_config import (
-    EMBEDDINGS_COLUMN,
-    EMBEDDINGS_MODEL,
-    MODEL,
-    TEXT_COLUMN,
-)
+from rag_config import EMBEDDINGS_COLUMN, EMBEDDINGS_MODEL, MODEL, TEXT_COLUMN, Settings
+
+settings = Settings()
 
 
-def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[float]]:
+def embed_with_openai(text: Union[str, list[str]]) -> list[list[float]]:
     """Embeds a string using OpenAI's embedding model.
 
     Args:
@@ -24,14 +21,12 @@ def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[
     """
     if isinstance(text, str):
         text = [text]
+    client = OpenAI(api_key=settings.openai_api_key)
     embeddings_response = client.embeddings.create(model=EMBEDDINGS_MODEL, input=text)
     return [datum.embedding for datum in embeddings_response.data]
 
 
-def embed_df_with_openai(
-    df: pd.DataFrame,
-    client: OpenAI,
-) -> pd.DataFrame:
+def embed_df_with_openai(df: pd.DataFrame) -> pd.DataFrame:
     """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
     Note that this functions assumes all texts are less than 8192 tokens long.
@@ -51,7 +46,7 @@ def embed_df_with_openai(
     batch_token_count = 0
     for i, text in enumerate(df[TEXT_COLUMN]):
         if batch_token_count + len(encoder.encode(text)) > max_tokens:
-            embeddings += embed_with_openai(batch, client)
+            embeddings += embed_with_openai(batch)
             batch = [text]
             batch_token_count = len(encoder.encode(text))
         else:
@@ -59,7 +54,7 @@ def embed_df_with_openai(
             batch_token_count += len(encoder.encode(text))
 
     if batch:
-        embeddings += embed_with_openai(batch, client)
+        embeddings += embed_with_openai(batch)
 
     df[EMBEDDINGS_COLUMN] = embeddings
     return df

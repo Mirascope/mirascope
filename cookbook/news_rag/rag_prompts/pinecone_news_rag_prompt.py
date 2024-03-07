@@ -1,17 +1,16 @@
 """BasePrompt for Pinecone RAG."""
 import pandas as pd
-from openai import OpenAI
 from pinecone import Pinecone
 from pydantic import ConfigDict
 from rag_config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
 from rag_utils import embed_with_openai
 
-from mirascope import BasePrompt
+from mirascope.openai import OpenAIPrompt
 
 settings = Settings()
 
 
-class PineconeNewsRagPrompt(BasePrompt):
+class PineconeNewsRag(OpenAIPrompt):
     """
     SYSTEM:
     You are an expert at:
@@ -46,9 +45,7 @@ class PineconeNewsRagPrompt(BasePrompt):
     @property
     def context(self) -> str:
         """Finds most similar articles in pinecone using embeddings."""
-        query_embedding = embed_with_openai(
-            self.topic, OpenAI(api_key=settings.openai_api_key)
-        )[0]
+        query_embedding = embed_with_openai(self.topic)[0]
         query_response = self._index.query(
             namespace=PINECONE_NAMESPACE,
             vector=query_embedding,
