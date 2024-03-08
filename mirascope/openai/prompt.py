@@ -73,9 +73,6 @@ class OpenAIPrompt(BasePrompt):
         AfterValidator(lambda key: _set_api_key(key) if key is not None else None),
     ] = None
 
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
-
     call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
         model="gpt-3.5-turbo-0125",
     )
@@ -99,7 +96,6 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         client = OpenAI(base_url=self.call_params.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -108,13 +104,18 @@ class OpenAIPrompt(BasePrompt):
             tools.extend(self.call_params.tools)
         converted_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, self, converted_tools)
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
             model=self.call_params.model,
             stream=False,
             **kwargs,
         )
-        self._end_time = datetime.datetime.now().timestamp() * 1000
-        return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
+        return OpenAIChatCompletion(
+            completion=completion,
+            tool_types=converted_tools,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
 
     async def async_create(self, **kwargs: Any) -> OpenAIChatCompletion:
         """Makes an asynchronous call to the model using this `OpenAIPrompt`.
@@ -129,7 +130,6 @@ class OpenAIPrompt(BasePrompt):
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         client = AsyncOpenAI(base_url=self.call_params.base_url)
         if self.call_params.async_wrapper is not None:
             client = self.call_params.async_wrapper(client)
@@ -138,13 +138,18 @@ class OpenAIPrompt(BasePrompt):
             tools.extend(self.call_params.tools)
         converted_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, self, converted_tools)
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
             model=self.call_params.model,
             stream=False,
             **kwargs,
         )
-        self._end_time = datetime.datetime.now().timestamp() * 1000
-        return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
+        return OpenAIChatCompletion(
+            completion=completion,
+            tool_types=converted_tools,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
 
     def stream(self) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -245,7 +250,6 @@ class OpenAIPrompt(BasePrompt):
         try:
             tool = completion.tool
             if tool is None:
-                print(completion)
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
                 return tool
@@ -257,8 +261,7 @@ class OpenAIPrompt(BasePrompt):
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
             raise  # re-raise if we have no retries left
 
@@ -323,7 +326,6 @@ class OpenAIPrompt(BasePrompt):
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return await self.async_extract(schema, retries - 1)
             raise  # re-raise if we have no retries left

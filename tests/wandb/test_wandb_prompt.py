@@ -67,6 +67,8 @@ def test_trace_completion(mock_Trace: MagicMock):
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
@@ -129,6 +131,8 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
@@ -191,6 +195,8 @@ def test_trace_base_model():
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt.trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"

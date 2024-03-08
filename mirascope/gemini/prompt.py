@@ -66,9 +66,6 @@ class GeminiPrompt(BasePrompt):
         AfterValidator(lambda key: configure(api_key=key) if key is not None else None),
     ] = None
 
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
-
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams(
         model="gemini-1.0-pro",
         generation_config={"candidate_count": 1},
@@ -95,7 +92,6 @@ class GeminiPrompt(BasePrompt):
         Returns:
             A `GeminiCompletion` instance.
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         gemini_pro_model = GenerativeModel(self.call_params.model)
         tools = kwargs.pop("tools") if "tools" in kwargs else []
         if self.call_params.tools:
@@ -104,6 +100,7 @@ class GeminiPrompt(BasePrompt):
             tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
             for tool in tools
         ]
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = gemini_pro_model.generate_content(
             self.messages,
             stream=False,
@@ -114,8 +111,12 @@ class GeminiPrompt(BasePrompt):
             safety_settings=self.call_params.safety_settings,
             request_options=self.call_params.request_options,
         )
-        self._end_time = datetime.datetime.now().timestamp() * 1000
-        return GeminiCompletion(completion=completion, tool_types=converted_tools)
+        return GeminiCompletion(
+            completion=completion,
+            tool_types=converted_tools,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
 
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -123,7 +124,6 @@ class GeminiPrompt(BasePrompt):
         Yields:
             A `GeminiCompletionChunk` for each chunk of the response.
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         gemini_pro_model = GenerativeModel(self.call_params.model)
         completion = gemini_pro_model.generate_content(
             self.messages,
@@ -134,7 +134,6 @@ class GeminiPrompt(BasePrompt):
         )
         for chunk in completion:
             yield GeminiCompletionChunk(chunk=chunk)
-        self._end_time = datetime.datetime.now().timestamp() * 1000
 
     @overload
     def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
@@ -189,7 +188,6 @@ class GeminiPrompt(BasePrompt):
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
-                # TODO: update this to include failure history once prompts can handle
-                # chat history properly.
+                # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
             raise  # re-raise if we have no retries left
