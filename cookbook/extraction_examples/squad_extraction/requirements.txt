@@ -1,3 +1,0 @@
-mirascope[all]==^0.2.0
-oxenai
-pydantic-settings
