@@ -57,6 +57,8 @@ def test_create_with_trace(mock_trace: MagicMock, mock_create: MagicMock):
             usage=None,
         ),
         tool_types=[],
+        start_time=0,
+        end_time=0,
     )
     mock_trace.return_value = Trace(name="testtrace")
     completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
@@ -395,7 +397,7 @@ def test_trace_error():
     """Test `trace_error` method."""
     error = Exception("Test error")
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
-    span = prompt._trace_error(error, parent=Trace(name="test"))
+    span = prompt._trace_error(error, parent=Trace(name="test"), start_time=0)
     assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "ERROR"
