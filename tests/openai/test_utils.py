@@ -9,6 +9,7 @@ def test_patch_openai_kwargs(fixture_foobar_prompt, fixture_my_tool):
     kwargs = {}
     patch_openai_kwargs(kwargs, fixture_foobar_prompt, [fixture_my_tool])
     assert kwargs == {
+        "model": fixture_foobar_prompt.call_params.model,
         "messages": fixture_foobar_prompt.messages,
         "tools": [fixture_my_tool.tool_schema()],
         "tool_choice": "auto",
@@ -22,6 +23,7 @@ def test_patch_openai_kwargs_existing_tool_choice(
     kwargs = {"tool_choice": {"name": "MyTool"}}
     patch_openai_kwargs(kwargs, fixture_foobar_prompt, [fixture_my_tool])
     assert kwargs == {
+        "model": fixture_foobar_prompt.call_params.model,
         "messages": fixture_foobar_prompt.messages,
         "tools": [fixture_my_tool.tool_schema()],
         "tool_choice": {"name": "MyTool"},
