@@ -2,7 +2,7 @@
 import datetime
 import os
 import re
-from typing import Annotated, ClassVar, Generator, Iterable, Literal
+from typing import Annotated, ClassVar, Generator, Iterable
 
 from anthropic import Anthropic
 from anthropic.types import MessageParam
