@@ -9,7 +9,7 @@ from langsmith import traceable, wrappers
 from langsmith.run_trees import RunTree
 from langsmith_config import Settings
 
-from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 settings = Settings()
 
@@ -18,35 +18,34 @@ os.environ["LANGCHAIN_TRACING_V2"] = settings.langchain_tracing_v2
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
-class BookRecommendationPrompt(BasePrompt):
+class BookRecommendation(OpenAIPrompt):
     """
     Can you recommend some books on {topic}?
     """
 
     topic: str
 
-    call_params = OpenAICallParams(model="gpt-3.5-turbo")
+    call_params = OpenAICallParams(model="gpt-3.5-turbo", wrapper=wrappers.wrap_openai)
 
 
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
+book_recommendation = BookRecommendation(topic="how to bake a cake")
 
 # Collect run ID using RunTree
 run_id = uuid4()
 rt = RunTree(
     name="OpenAI Call RunTree",
     run_type="llm",
-    inputs={"messages": prompt.messages},
+    inputs={"messages": book_recommendation.messages},
     id=run_id,
 )
-chat = OpenAIChat(client_wrapper=wrappers.wrap_openai)
-completion = chat.create(prompt)
+completion = book_recommendation.create()
 rt.end(outputs=completion.dump()["output"])
 rt.post()
 print("RunTree Run ID: ", run_id)
 
 # Collect run ID using openai_wrapper
 run_id = uuid4()
-chat.create(prompt, langsmith_extra={"run_id": run_id})
+book_recommendation.create(langsmith_extra={"run_id": run_id})
 print("OpenAI Wrapper Run ID: ", run_id)
 
 # Collect run id using traceable decorator
@@ -58,7 +57,7 @@ run_id = uuid4()
     name="OpenAI Call Decorator",
 )
 def call_openai() -> str:
-    return str(chat.create(prompt))
+    return str(book_recommendation.create())
 
 
 result = call_openai(

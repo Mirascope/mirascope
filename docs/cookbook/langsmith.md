@@ -22,10 +22,13 @@ client = wrappers.wrap_openai(OpenAI())
 with Mirascope it looks like this:
 
 ```python
-from mirascope import OpenAIChat
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 from langsmith import wrappers
 
-chat = OpenAIChat(client_wrapper=wrappers.wrap_openai)
+class LangsmithPrompt(OpenAIPrompt):
+    """Your prompt here"""
+
+    call_params = OpenAICallParams(wrapper=wrappers.wrap_openai)
 ```
 
 …and now you have all of LangSmith’s integration with OpenAI with the power of Mirascope Prompts.
@@ -42,7 +45,7 @@ LANGCHAIN_API_KEY=ls__...
 OPENAI_API_KEY=...
 ```
 
-We recommend leveraging [Pydantic Settings](https://github.com/pydantic/pydantic-settings) when getting your secrets. Create a `[config.py](http://config.py)` file:
+We recommend leveraging [Pydantic Settings](https://github.com/pydantic/pydantic-settings) when getting your secrets. Create a `config.py` file:
 
 ```python
 """Global variables for LangSmith."""
@@ -71,7 +74,7 @@ import os
 from langsmith import wrappers
 from config import Settings
 
-from mirascope import OpenAICallParams, OpenAIChat, Prompt
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 settings = Settings()
 
@@ -79,7 +82,8 @@ os.environ["LANGCHAIN_API_KEY"] = settings.langchain_api_key
 os.environ["LANGCHAIN_TRACING_V2"] = settings.langchain_tracing_v2
 os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
-class BookRecommendationPrompt(Prompt):
+
+class BookRecommendation(OpenAIPrompt):
     """
     Can you recommend some books on {topic}?
     """
@@ -87,12 +91,12 @@ class BookRecommendationPrompt(Prompt):
     topic: str
 
     call_params = OpenAICallParams(
-        model="gpt-3.5-turbo", temperature=0.1,
+        model="gpt-3.5-turbo", temperature=0.1, wrapper=wrappers.wrap_openai
     )
 
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
-chat = OpenAIChat(client_wrapper=wrappers.wrap_openai)
-completion = chat.create(prompt)
+
+book_recommendation = BookRecommendation(topic="how to bake a cake")
+completion = book_recommendation.create()
 print(completion)
 ```
 
@@ -110,10 +114,10 @@ Yes, this also works for extract and stream. Here is a simple extract example to
 import os
 
 from langsmith import wrappers
-from langsmith_config import Settings
+from config import Settings
 from pydantic import BaseModel
 
-from mirascope import OpenAIChat
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 settings = Settings()
 
@@ -127,21 +131,26 @@ class BookInfo(BaseModel):
     title: str
     author: str
 
-chat = OpenAIChat(client_wrapper=wrappers.wrap_openai)
-chat.extract(
+
+class BookRecommendation(OpenAIPrompt):
+    """The Name of the Wind by Patrick Rothfuss."""
+
+    call_params = OpenAICallParams(wrapper=wrappers.wrap_openai)
+
+
+book_recommendation = BookRecommendation()
+book_info = book_recommendation.extract(
     BookInfo,
-    "The Name of the Wind is by Patrick Rothfuss.",
     retries=5,
 )
+print(book_info)
 ```
 
 ## Adding Metadata to LangSmith
 
 ```python
-completion = chat.create(
-    prompt,
-    langsmith_extra={"metadata": {"hello": "world"}}
-)
+book_recommendation = BookRecommendation()
+completion = book_recommendation.create(langsmith_extra={"metadata": {"hello": "world"}})
 ```
 
 ## LangChain-specific
