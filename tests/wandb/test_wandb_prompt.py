@@ -62,8 +62,8 @@ def test_create_with_trace(mock_trace: MagicMock, mock_create: MagicMock):
     )
     mock_trace.return_value = Trace(name="testtrace")
     completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
-    assert mock_trace.called_once()
-    assert mock_create.called_once()
+    mock_trace.assert_called_once()
+    mock_create.assert_called_once()
     if completion:
         assert completion.completion.id == "testcompletion"
     assert trace.name == "testtrace"
@@ -81,8 +81,8 @@ def test_create_with_trace_error(mock_trace_error: MagicMock, mock_create: Magic
     mock_create.side_effect = Exception("Test error")
     mock_trace_error.return_value = Trace(name="testtrace")
     completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
-    assert mock_trace_error.called_once()
-    assert mock_create.called_once()
+    mock_trace_error.assert_called_once()
+    mock_create.assert_called_once()
     assert completion is None
     assert trace.name == "testtrace"
 
@@ -102,8 +102,8 @@ def test_create_with_trace_no_parent(
     """Test `create` method with `Trace` with no parent."""
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     prompt.create_with_trace()
-    assert mock_trace.called_once()
-    assert mock_create.called_once()
+    mock_trace.assert_called_once()
+    mock_create.assert_called_once()
     assert not mock_add.called
 
 
@@ -123,8 +123,8 @@ def test_create_with_trace_no_parent_error(
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     mock_create.side_effect = Exception("Test error")
     prompt.create_with_trace()
-    assert mock_trace_error.called_once()
-    assert mock_create.called_once()
+    mock_trace_error.assert_called_once()
+    mock_create.assert_called_once()
     assert not mock_add.called
 
 
@@ -152,8 +152,8 @@ def test_extract_with_trace(
     completion, trace = prompt.extract_with_trace(
         extraction_type, parent=Trace(name="test")
     )
-    assert mock_trace.called_once()
-    assert mock_extract.called_once()
+    mock_trace.assert_called_once()
+    mock_extract.assert_called_once()
     if completion:
         assert completion == "test extraction"
     assert trace.name == "testtrace"
@@ -179,8 +179,8 @@ def test_extract_with_trace_error(
     completion, trace = prompt.extract_with_trace(
         extraction_type, parent=Trace(name="test")
     )
-    assert mock_trace_error.called_once()
-    assert mock_extract.called_once()
+    mock_trace_error.assert_called_once()
+    mock_extract.assert_called_once()
     assert completion is None
     assert trace.name == "testtrace"
 
@@ -200,8 +200,8 @@ def test_extract_with_trace_no_parent(
     """Test `extract` method with `Trace` with no parent."""
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     prompt.extract_with_trace(str)  # type: ignore
-    assert mock_trace.called_once()
-    assert mock_extract.called_once()
+    mock_trace.assert_called_once()
+    mock_extract.assert_called_once()
     assert not mock_add.called
 
 
@@ -221,8 +221,8 @@ def test_extract_with_trace_no_parent_error(
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
     mock_extract.side_effect = Exception("Test error")
     prompt.extract_with_trace(str)  # type: ignore
-    assert mock_trace_error.called_once()
-    assert mock_extract.called_once()
+    mock_trace_error.assert_called_once()
+    mock_extract.assert_called_once()
     assert not mock_add.called
 
 
