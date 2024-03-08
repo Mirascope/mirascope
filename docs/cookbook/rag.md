@@ -232,7 +232,7 @@ df = embed_df_with_openai(df=df)
 
 We mentioned earlier that we will show how to perform retrieval in two ways: locally and via a vector database (Pinecone). In your own projects, you may want to perform retrieval in an entirely different way.
 
-With any of Mirascope's prompts, we can use Python built-ins with Pydantic to implement complex, prompt-specific logic directly within the prompt itself — we can focus on prompt engineering, not the little things. This ensures that prompt-specific logic is well encapsulated, forcing a clean separation from the rest of the codebase. Furthermore, any updates to the prompt logic or template can be maintained and versioned with our CLI - check that out [here](https://docs.mirascope.io/latest/features/engineering_better_prompts/mirascope_cli/).
+With any of Mirascope's prompts, we can use Python built-ins with Pydantic to implement complex, prompt-specific logic directly within the prompt itself — we can focus on prompt engineering, not the little things. This ensures that prompt-specific logic is well encapsulated, forcing a clean separation from the rest of the codebase. Furthermore, any updates to the prompt logic or template can be maintained and versioned with our CLI - check that out [here](../concepts/using_the_mirascope_cli.md).
 
 In this example, we are going to create two different prompt classes using `OpenAIPrompt`:
 
@@ -243,7 +243,7 @@ The querying logic for relevant article retrieval will live within each prompt's
 
 !!! note
 
-    The querying logic for Pinecone lives within the PineconeNewsRagPrompt, but you must still do a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/rag_examples/setup_pinecone.py).
+    The querying logic for Pinecone lives within the PineconeNewsRagPrompt, but you must still do a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/news_rag/setup_pinecone.py).
 
 ### LocalNewsRagPrompt
 

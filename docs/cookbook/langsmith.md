@@ -4,11 +4,11 @@ This recipe will walk you through how to use LangSmith’s tracing functionality
 
 ## Before we get started
 
-You will need a [LangSmith account](https://docs.smith.langchain.com/setup) and API key. Follow their docs on how to setup LangSmith. You will also need to have mirascope installed! Check out [Getting Started](https://docs.mirascope.io/latest/) if you have not installed mirascope yet. Finally, this example uses OpenAI so you will also need an [OpenAI API Key](https://platform.openai.com/docs/quickstart?context=python).
+You will need a [LangSmith account](https://docs.smith.langchain.com/setup) and API key. Follow their docs on how to setup LangSmith. You will also need to have mirascope installed! Check out [Getting Started](../README.md) if you have not installed mirascope yet. Finally, this example uses OpenAI so you will also need an [OpenAI API Key](https://platform.openai.com/docs/quickstart?context=python).
 
 ## Quick Refresher on Mirascope LLM Convenience Wrappers
 
-Mirascope LLM Convenience Wrappers will simply passthrough any param you give it. This means that Mirascope will have any support that LangSmith has with OpenAI. Check out [Mirascope LLM Convenience Wrappers](https://docs.mirascope.io/latest/concepts/llm_convenience_wrappers/) for more details.
+The [`OpenAICallParams`](../api/openai/types.md#mirascope.openai.types.OpenAICallParams) class enable us to pass through parameters to the underlying client as keyword arguments. This means that Mirascope will have any support that LangSmith has with OpenAI.
 
 What this means is that Mirascope can take advantage of LangSmith’s `wrappers` function around OpenAI.
 
@@ -62,7 +62,7 @@ class Settings(BaseSettings):
 
 ```
 
-Note that we keep non-secret settings inside `[config.py](http://config.py)` such as `LANGCHAIN_TRACING_V2`.
+Note that we keep non-secret settings inside `config.py` such as `LANGCHAIN_TRACING_V2`.
 
 ### Create prompt and chat
 

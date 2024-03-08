@@ -36,7 +36,7 @@
 - **Durable**: Seamlessly **customize and extend functionality**.
 - **Intuitive**: Editor support that you expect (e.g. **autocompletion**, **inline errors**)
 - **Clean**: Pydantic together with our Prompt CLI **eliminates prompt-related bugs**.
-- **Integrable**: Easily integrate with **JSON Schema** and other tools such as **[FastAPI](https://fastapi.tiangolo.com/)**
+- **Integrable**: Easily integrate with **JSON Schema** and other tools such as [FastAPI](https://fastapi.tiangolo.com/)
 - **Convenient**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
 - **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
 
@@ -64,6 +64,7 @@ With Mirascope, everything happens with prompts. The idea is to colocate any fun
 ```python
 from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
+
 class BookRecommendation(OpenAIPrompt):
     """Please recommend a {genre} book."""
 
@@ -74,6 +75,7 @@ class BookRecommendation(OpenAIPrompt):
         temperature=0.3,
     )
 
+
 recommendation = BookRecommendation(genre="fantasy").create()
 print(recommendation)
 #> I recommend "The Name of the Wind" by Patrick Rothfuss. It is...
@@ -83,6 +85,7 @@ If you add any of the OpenAI message roles (SYSTEM, USER, ASSISTANT, TOOL) as ke
 
 ```python
 from mirascope.openai import OpenAIPrompt
+
 
 class BookRecommendation(OpenAIPrompt):
     """
@@ -95,6 +98,7 @@ class BookRecommendation(OpenAIPrompt):
 
     genre: str
 
+
 prompt = BookRecommendation(genre="fantasy")
 print(prompt.messages)
 #> [{'role': 'system', 'content': "You are the world's greatest librarian."},
@@ -106,6 +110,7 @@ If you want to write the messages yourself instead of using the docstring messag
 ```python
 from mirascope.openai import OpenAIPrompt
 from openai.types.chat import ChatCompletionMessageParam
+
 
 class BookRecommendation(OpenAIPrompt):
     """This is now just a normal docstring.
@@ -124,6 +129,7 @@ class BookRecommendation(OpenAIPrompt):
             {"role": "user", "content": f"Please recommend a {self.genre} book."},
         ]
 
+
 recommendation = BookRecommendation(genre="fantasy").create()
 print(recommendation)
 #> I recommend "The Name of the Wind" by Patrick Rothfuss. It is...
@@ -133,9 +139,9 @@ print(recommendation)
 
 Prompt classes such as `OpenAIPrompt` have three methods for interacting with the LLM:
 
-- [`create`](concepts/prompt/generating_content.md): Generate a response given a prompt. This will generate raw text unless tools are provided as part of the `call_params`.
-- [`stream`](concepts/prompt/streaming_generating_content.md): Same as `create` except the generated response is returned as a stream of chunks. All chunks together become the full completion.
-- [`extract`](concepts/extraction/index.md): Convenience tooling built on top of tools to make it easy to extract structured information given a prompt and schema.
+- [`create`](concepts/generating_content.md): Generate a response given a prompt. This will generate raw text unless tools are provided as part of the `call_params`.
+- [`stream`](concepts/streaming_generated_content.md): Same as `create` except the generated response is returned as a stream of chunks. All chunks together become the full completion.
+- [`extract`](concepts/extracting_structured_information_using_llms.md): Convenience tooling built on top of tools to make it easy to extract structured information given a prompt and schema.
 
 ### Using Different LLM Providers
 
@@ -148,6 +154,7 @@ from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 os.environ["OPENAI_API_KEY"] = "TOGETHER_API_KEY"
 
+
 class BookRecommendation(OpenAIPrompt):
     """Please recommend a {genre} book."""
 
@@ -158,24 +165,25 @@ class BookRecommendation(OpenAIPrompt):
             base_url="https://api.together.xyz/v1",
     )
 
+
 recommendation = BookRecommendation(genre="fantasy").create()
 ```
 
-We also support [other providers](concepts/prompt/using_different_model_providers.md) such as Gemini.
+We also support [other providers](concepts/using_different_model_providers.md) such as Gemini.
 
 ## Dive Deeper
 
-- Learn why colocation is so important and how combining it with the [Mirascope CLI](concepts/mirascope_cli/index.md) makes engineering better prompts easy.
-- Check out how to [write better prompts](concepts/prompt/write_better_prompts.md) using Mirascope.
-- Become a master of [extracting structured information using LLMs](concepts/extraction/index.md).
-- Take a look at how Mirascope makes using [tools (function calling)](concepts/tools/index.md) simple and clean.
+- Learn why colocation is so important and how combining it with the [Mirascope CLI](concepts/using_the_mirascope_cli.md) makes engineering better prompts easy.
+- Check out how to [write better prompts](concepts/writing_prompts.md) using Mirascope.
+- Become a master of [extracting structured information using LLMs](concepts/extracting_structured_information_using_llms.md).
+- Take a look at how Mirascope makes using [tools (function calling)](concepts/tools_(function_calling).md) simple and clean.
 - The [API Reference](api/index.md) contains full details on all classes, methods, functions, etc.
 
 ## Examples
 
 You can find more usage examples in our [examples](https://github.com/Mirascope/mirascope/tree/main/examples) directory, such as how to easily integrate with FastAPI.
 
-We also have more detailed walkthroughs in our Cookbook docs section. Each cookbook has corresponding full code examples in the [cookbook](https://docs.mirascope.io/latest/cookbook/basic_examples/) directory.
+We also have more detailed walkthroughs in our Cookbook docs section. Each cookbook has corresponding full code examples in the [cookbook](cookbook/wandb_chain.md) directory.
 
 ## What’s Next?
 
