@@ -35,7 +35,7 @@ class WandbPrompt(OpenAIPrompt):
     greeting: str
 
     prompt = HiPrompt(span_type="llm", greeting="Hello")
-    completion, span = prompt.create_with_span()
+    completion, span = prompt.create_with_trace()
 
     root_span.log(name="mirascope_trace")
     ```
