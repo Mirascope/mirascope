@@ -108,7 +108,6 @@ class OpenAIPrompt(BasePrompt):
         patch_openai_kwargs(kwargs, self, converted_tools)
         completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
-            model=self.call_params.model,
             stream=False,
             **kwargs,
         )
@@ -142,7 +141,6 @@ class OpenAIPrompt(BasePrompt):
         patch_openai_kwargs(kwargs, self, converted_tools)
         completion_start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
-            model=self.call_params.model,
             stream=False,
             **kwargs,
         )
@@ -172,7 +170,6 @@ class OpenAIPrompt(BasePrompt):
         tools = convert_tools_list_to_openai_tools(self.call_params.tools)
         patch_openai_kwargs(kwargs, self, tools)
         stream = client.chat.completions.create(
-            model=self.call_params.model,
             stream=True,
             **kwargs,
         )
@@ -200,7 +197,6 @@ class OpenAIPrompt(BasePrompt):
         tools = convert_tools_list_to_openai_tools(self.call_params.tools)
         patch_openai_kwargs(kwargs, self, tools)
         stream = await client.chat.completions.create(
-            model=self.call_params.model,
             stream=True,
             **kwargs,
         )

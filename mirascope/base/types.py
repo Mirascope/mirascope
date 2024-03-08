@@ -48,6 +48,11 @@ class BaseCallParams(BaseModel):
     model: str
     tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
 
+    @property
+    def kwargs(self) -> dict[str, Any]:
+        """Returns the keyword argument call parameters as a dictioanry."""
+        return self.model_dump(exclude={"tools"})
+
 
 class SystemMessage(TypedDict, total=False):
     """A message with the `system` role.

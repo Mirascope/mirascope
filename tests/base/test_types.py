@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Annotated, Literal, Union
 
-from mirascope.base import BasePrompt, BaseTool
+from mirascope.base import BaseCallParams, BasePrompt, BaseTool
 from mirascope.base.types import is_base_type
 
 
@@ -19,3 +19,9 @@ def test_is_base_type() -> None:
     assert not is_base_type(dict)
     assert not is_base_type(BasePrompt)
     assert not is_base_type(BaseTool)
+
+
+def test_call_params_kwargs() -> None:
+    """Tests that call param kwargs are correct."""
+    call_params = BaseCallParams(model="test", tools=[is_base_type])
+    assert call_params.kwargs == {"model": "test"}
