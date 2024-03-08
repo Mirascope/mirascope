@@ -12,7 +12,8 @@
 
 from pydantic import BaseModel
 
-from mirascope import BasePrompt, OpenAICallParams, tags
+from mirascope.base import tags
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 prev_revision_id = "None"
 revision_id = "0001"
@@ -25,7 +26,7 @@ class ExtractedAnswer(BaseModel):
 
 
 @tags(["version:0001"])
-class QuestionPrompt(BasePrompt):
+class QuestionPrompt(OpenAIPrompt):
     """
     Paragraph: {paragraph}
 
