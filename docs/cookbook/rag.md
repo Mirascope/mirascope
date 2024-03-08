@@ -10,14 +10,12 @@ When we need to provide additional information to the model that it hasn't yet b
 
 !!! note
 
-    The following code snippets have been moved around for the sake of clarity in the walkthrough, and may not work if you copy and paste them. For a fully functional script, take a look at the [code](https://github.com/Mirascope/mirascope/blob/main/cookbook/rag_examples/) in our repo.
+    The following code snippets have been moved around for the sake of clarity in the walkthrough, and may not work if you copy and paste them. For a fully functional script, take a look at the [code](https://github.com/Mirascope/mirascope/blob/main/cookbook/news_rag/) in our repo.
 
 ## Before we get started
 
-If you haven't already, it will be worth taking a look some of our relevant concept pages for a more detailed explanation of the functionality we'll be using in this walkthrough.
+If you haven't already, it will be worth taking a look some of our relevant concept pages for a more detailed explanation of the functionality we'll be using in this walkthrough. Specifically, you'll want to know about how Pydantic allows us to integrate python functionality into our [prompts](https://docs.mirascope.io/latest/features/prompt/).
 
-- [Pydantic Prompts](https://docs.mirascope.io/latest/concepts/pydantic_prompts/) (template variables, messages)
-- [LLM Convenience Wrappers](https://docs.mirascope.io/latest/concepts/llm_convenience_wrappers/#openaichat)
 
 In addition, here are the variables we will be using in this cookbook recipe:
 
@@ -29,7 +27,7 @@ PINECONE_API_KEY = "YOUR_PINECONE_API_KEY"
 ```
 
 ```python
-# config.py
+# rag_config.py
 
 from typing import Optional
 
@@ -56,18 +54,18 @@ class Settings(BaseSettings):
 
 ## Load and preprocess the data
 
-Before we load raw data into a pandas `Dataframe`, we have to handle large texts which may exceed token limits. In our case, we are using `gpt-3.5-turbo`, which has a token limit of 4096. A crude solution is to split any article of token count greater than `MAX_TOKENS=1000` into equal chunks, with each resulting chunk consisting of fewer than `MAX_TOKENS`. This way we can fit up to 3 article snippets as well as any text in our hand-written section of the prompt. Note that we have also made sure that `MAX_TOKENS` is less than the token limit for our embedding model `text-embedding-ada-02` that has a otken limit of 8191.
+Before we load raw data into a pandas `Dataframe`, we have to handle large texts which may exceed token limits. In our case, we are using `gpt-3.5-turbo`, which has a token limit of 4096. A crude solution is to split any article of token count greater than `MAX_TOKENS=1000` into equal chunks, with each resulting chunk consisting of fewer than `MAX_TOKENS`. This way we can fit up to 3 article snippets as well as any text in our hand-written section of the prompt. Note that we have also made sure that `MAX_TOKENS` is less than the token limit for our embedding model `text-embedding-ada-02` that has a token limit of 8191.
 
 The function `split_text()` below contains the implementation.
 
 For counting the number of tokens in an article, we will use [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) since we will be using OpenAI for both the chat and embedding models. [tiktoken](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) is a useful library provided by OpenAI for encoding strings and decoding tokens for their models.
 
 ```python
-# utils.py
+# rag_utils.py
 
 import pandas as pd
 import tiktoken
-from config import MODEL, TEXT_COLUMN,
+from rag_config import MODEL, TEXT_COLUMN,
 
 def load_data(url: str, max_tokens: int) -> pd.DataFrame:
     """Loads data from a url after splitting larger texts into smaller chunks.
@@ -155,16 +153,16 @@ Great! Now our `Dataframe` is loaded in with article snippets where each snippet
 To be able to take a topic of our choosing and determine each article’s relevancy, we need to embed them. We define some helper functions to use [OpenAI's embeddings](https://platform.openai.com/docs/guides/embeddings):
 
 ```python
-# utils.py
+# rag_utils.py
 
 from typing import Union
 
 import pandas as pd
 import tiktoken
-from config import EMBEDDINGS_COLUMN, EMBEDDINGS_MODEL, MODEL
+from rag_config import EMBEDDINGS_COLUMN, EMBEDDINGS_MODEL, MODEL, Settings
 from openai import OpenAI
 
-def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[float]]:
+def embed_with_openai(text: Union[str, list[str]]) -> list[list[float]]:
     """Embeds a string using OpenAI's embedding model.
 
     Args:
@@ -176,14 +174,12 @@ def embed_with_openai(text: Union[str, list[str]], client: OpenAI) -> list[list[
     """
     if isinstance(text, str):
         text = [text]
+    client = OpenAI(api_key=settings.openai_api_key)
     embeddings_response = client.embeddings.create(model=EMBEDDINGS_MODEL, input=text)
     return [datum.embedding for datum in embeddings_response.data]
 
 
-def embed_df_with_openai(
-    df: pd.DataFrame,
-    client: OpenAI,
-) -> pd.DataFrame:
+def embed_df_with_openai(df: pd.DataFrame) -> pd.DataFrame:
     """Embeds a Pandas Series of texts in batches using minimal OpenAI calls.
 
     Note that this function assumes all texts are less than 8192 tokens long.
@@ -206,7 +202,7 @@ def embed_df_with_openai(
     # simple greedy algorithm according to ada-02's token limit of 8191.
     for i, text in enumerate(df[TEXT_COLUMN]):
         if batch_token_count + len(encoder.encode(text)) > max_tokens:
-            embeddings += embed_with_openai(batch, client)
+            embeddings += embed_with_openai(batch)
             batch = [text]
             batch_token_count = len(encoder.encode(text))
         else:
@@ -214,7 +210,7 @@ def embed_df_with_openai(
             batch_token_count += len(encoder.encode(text))
 
     if batch:
-        embeddings += embed_with_openai(batch, client)
+        embeddings += embed_with_openai(batch)
 
     df[EMBEDDINGS_COLUMN] = embeddings
     return df
@@ -226,8 +222,7 @@ We call these functions on our pandas `Dataframe` of article snippets, giving us
 ```python
 # rag_example.py
 
-chat = OpenAIChat(api_key=os.getenv("OPENAI_API_KEY"))
-df = embed_df_with_openai(df=df, chat=chat.client)
+df = embed_df_with_openai(df=df)
 
 # df[TEXT_COLUMN] contains article snippets
 # df[EMBEDDINGS_COLUMN] contains embedding for each snippet
@@ -237,18 +232,18 @@ df = embed_df_with_openai(df=df, chat=chat.client)
 
 We mentioned earlier that we will show how to perform retrieval in two ways: locally and via a vector database (Pinecone). In your own projects, you may want to perform retrieval in an entirely different way.
 
-With Mirascope `Prompt`, we can use Python built-ins with Pydantic to implement complex, prompt-specific logic directly within the prompt itself — we can focus on prompt engineering, not the little things. This ensures that prompt-specific logic is well encapsulated, forcing a clean separation from the rest of the codebase. Furthermore, any updates to the prompt logic or template can be maintained and versioned with our CLI - check that out [here](https://docs.mirascope.io/latest/concepts/mirascope_cli/).
+With any of Mirascope's prompts, we can use Python built-ins with Pydantic to implement complex, prompt-specific logic directly within the prompt itself — we can focus on prompt engineering, not the little things. This ensures that prompt-specific logic is well encapsulated, forcing a clean separation from the rest of the codebase. Furthermore, any updates to the prompt logic or template can be maintained and versioned with our CLI - check that out [here](../concepts/using_the_mirascope_cli.md).
 
-In this example, we are going to create two different prompts:
+In this example, we are going to create two different prompt classes using `OpenAIPrompt`:
 
-- `LocalNewsRagPrompt`: this prompt will use a local `pd.DataFrame` to find the relevant article chunks.
-- `PineconeNewsRagPrompt`: this prompt will query a Pinecone vector database to find the relevant article chunks.
+- `LocalNewsRag`: this prompt class will use a local `pd.DataFrame` to find the relevant article chunks.
+- `PineconeNewsRag`: this prompt class will query a Pinecone vector database to find the relevant article chunks.
 
 The querying logic for relevant article retrieval will live within each prompt's `context` property, regardless of whether it is the local or vector database implementation. In the local iteration, we manually calculate (using the dot product) the distances between each article snippet's embedding and the embedding of our chosen topic - the articles whose embeddings are closest are then chosen. For the vector database, we make a Pinecone API call to perform the same task via their streamlined architecture.
 
 !!! note
 
-    The querying logic for Pinecone lives within the PineconeNewsRagPrompt, but you must still do a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/rag_examples/setup_pinecone.py).
+    The querying logic for Pinecone lives within the PineconeNewsRagPrompt, but you must still do a [one-time pinecone setup](https://github.com/Mirascope/mirascope/blob/main/cookbook/news_rag/setup_pinecone.py).
 
 ### LocalNewsRagPrompt
 
@@ -257,18 +252,16 @@ The querying logic for relevant article retrieval will live within each prompt's
 
 import numpy as np
 import pandas as pd
-from config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
-from openai import OpenAI
 from pydantic import ConfigDict
-from utils import embed_with_openai
+from rag_config import EMBEDDINGS_COLUMN, TEXT_COLUMN, Settings
+from rag_utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope.openai import OpenAIPrompt
 
 settings = Settings()
 
 
-@messages
-class LocalNewsRagPrompt(Prompt):
+class LocalNewsRag(OpenAIPrompt):
     """
     SYSTEM:
     You are an expert at:
@@ -297,9 +290,7 @@ class LocalNewsRagPrompt(Prompt):
     def context(self) -> str:
         """Finds most similar articles in dataframe using embeddings."""
 
-        query_embedding = embed_with_openai(
-            self.topic, OpenAI(api_key=settings.openai_api_key)
-        )[0]
+        query_embedding = embed_with_openai(self.topic)[0]
         self.df["similarities"] = self.df[EMBEDDINGS_COLUMN].apply(
             lambda x: np.dot(x, query_embedding)
         )
@@ -318,19 +309,17 @@ class LocalNewsRagPrompt(Prompt):
 # rag_prompts/pinecone_news_rag_prompt.py
 
 import pandas as pd
-from config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
-from openai import OpenAI
 from pinecone import Pinecone
 from pydantic import ConfigDict
-from utils import embed_with_openai
+from rag_config import PINECONE_INDEX, PINECONE_NAMESPACE, TEXT_COLUMN, Settings
+from rag_utils import embed_with_openai
 
-from mirascope import Prompt, messages
+from mirascope.openai import OpenAIPrompt
 
 settings = Settings()
 
 
-@messages
-class PineconeNewsRagPrompt(Prompt):
+class PineconeNewsRag(OpenAIPrompt):
     """
     SYSTEM:
     You are an expert at:
@@ -365,9 +354,7 @@ class PineconeNewsRagPrompt(Prompt):
     @property
     def context(self) -> str:
         """Finds most similar articles in pinecone using embeddings."""
-        query_embedding = embed_with_openai(
-            self.topic, OpenAI(api_key=settings.openai_api_key)
-        )[0]
+        query_embedding = embed_with_openai(self.topic)[0]
         query_response = self._index.query(
             namespace=PINECONE_NAMESPACE,
             vector=query_embedding,
@@ -391,11 +378,11 @@ import os
 from argparse import ArgumentParser
 
 import pandas as pd
-from config import FILENAME, MAX_TOKENS, URL, Settings
+from rag_config import FILENAME, MAX_TOKENS, URL, Settings
 from local_news_rag_prompt import LocalNewsRagPrompt
 from pinecone_news_rag_prompt import PineconeNewsRagPrompt
 from setup_pinecone import setup_pinecone
-from utils import embed_df_with_openai, load_data
+from rag_utils import embed_df_with_openai, load_data
 
 from mirascope import OpenAIChat
 
@@ -417,11 +404,11 @@ def main(use_pinecone=False):
     ]
     for topic in topics:
         if use_pinecone:
-            print(
-                chat.create(PineconeNewsRagPrompt(num_statements=3, topic=topic, df=df))
-            )
+            pinecone = PineconeNewsRag(num_statements=3, topic=topic, df=df)
+            print(pinecone.create())
         else:
-            print(chat.create(LocalNewsRagPrompt(num_statements=3, topic=topic, df=df)))
+            local = LocalNewsRag(num_statements=3, topic=topic, df=df)
+            print(local.create())
         print("\n")
 
 

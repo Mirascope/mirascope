@@ -1,3 +1,3 @@
-# prompts
+# prompts (deprecated)
 
 ::: mirascope.prompts

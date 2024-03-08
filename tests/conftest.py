@@ -1,8 +1,16 @@
 """Fixtures for repeated use in testing."""
-from typing import Optional, Type
+from typing import Type
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionMessage
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
@@ -15,17 +23,66 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from mirascope.chat.tools import OpenAITool
+from mirascope.base.tools import BaseTool
+from mirascope.cli.schemas import MirascopeSettings, VersionTextFile
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
+from mirascope.openai.tools import OpenAITool
 
-from .test_prompts import FooBarPrompt, MessagesPrompt
+from .base.test_prompt import (
+    FooBarPrompt,
+    MessagesPrompt,
+    TagPrompt,
+    TagsPrompt,
+)
+from .test_prompts import (
+    DecoratorMessagesPrompt,
+)
 
 
 @pytest.fixture()
 def fixture_foobar_prompt() -> FooBarPrompt:
     """Returns a `FooBarPrompt` instance."""
     return FooBarPrompt(foo="foo", bar="bar")
+
+
+@pytest.fixture()
+def fixture_openai_test_prompt(scope="function") -> OpenAIPrompt:
+    """Returns a `OpenAITestPrompt` instance."""
+
+    class OpenAITestPrompt(OpenAIPrompt):
+        """A prompt for testing."""
+
+        call_params = OpenAICallParams(model="gpt-3.5-turbo-16k")
+
+    return OpenAITestPrompt(api_key="test")
+
+
+@pytest.fixture()
+def fixture_my_schema() -> Type[BaseModel]:
+    """Returns a `MySchema` class type."""
+
+    class MySchema(BaseModel):
+        """A test schema."""
+
+        param: str = Field(..., description="A test parameter.")
+        optional: int = 0
+
+    return MySchema
+
+
+@pytest.fixture()
+def fixture_my_schema_tool() -> Type[BaseTool]:
+    """Returns a `MySchemaTool` class type."""
+
+    class MySchemaTool(OpenAITool):
+        """A test schema."""
+
+        param: str = Field(..., description="A test parameter.")
+        optional: int = 0
+
+    return MySchemaTool
 
 
 @pytest.fixture()
@@ -39,11 +96,9 @@ def fixture_expected_foobar_prompt_str() -> str:
 
 
 @pytest.fixture()
-def fixture_expected_foobar_prompt_messages(
-    fixture_expected_foobar_prompt_str,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `FooBarPrompt`."""
-    return [("user", fixture_expected_foobar_prompt_str)]
+def fixture_decorator_messages_prompt() -> DecoratorMessagesPrompt:
+    """Returns a `DecoratorMessagesPrompt` instance."""
+    return DecoratorMessagesPrompt(foo="foo", bar="bar")
 
 
 @pytest.fixture()
@@ -53,20 +108,55 @@ def fixture_messages_prompt() -> MessagesPrompt:
 
 
 @pytest.fixture()
-def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
+def fixture_tag_prompt() -> TagPrompt:
+    """Returns a `TagPrompt` instance."""
+    return TagPrompt()
+
+
+@pytest.fixture()
+def fixture_tags_prompt() -> TagsPrompt:
+    """Returns a `TagPrompt` instance."""
+    return TagsPrompt()
+
+
+@pytest.fixture()
+def fixture_expected_foobar_prompt_messages() -> list[ChatCompletionMessageParam]:
+    """Returns the expected messages parsed from `FooBarPrompt`."""
+    return [
+        ChatCompletionUserMessageParam(
+            role="user",
+            content=(
+                "This is a test prompt about foobar. "
+                "This should be on the same line in the template."
+                "\n    This should be indented on a new line in the template."
+            ),
+        )
+    ]
+
+
+@pytest.fixture()
+def fixture_expected_messages_prompt_messages() -> list[ChatCompletionMessageParam]:
     """Returns the expected messages parsed from `MessagesPrompt`."""
     return [
-        (
-            "system",
-            "This is the system message about foo.\n    "
-            "This is also the system message.",
+        ChatCompletionSystemMessageParam(
+            role="system",
+            content=(
+                "This is the system message about foo.\n    "
+                "This is also the system message."
+            ),
         ),
-        ("user", "This is the user message about bar."),
-        ("tool", "This is the output of calling a tool."),
-        (
-            "assistant",
-            "This is an assistant message about foobar. "
-            "This is also part of the assistant message.",
+        ChatCompletionUserMessageParam(
+            role="user", content="This is the user message about bar."
+        ),
+        ChatCompletionToolMessageParam(
+            role="tool", content="This is the output of calling a tool."
+        ),  # type: ignore
+        ChatCompletionAssistantMessageParam(
+            role="assistant",
+            content=(
+                "This is an assistant message about foobar. "
+                "This is also part of the assistant message."
+            ),
         ),
     ]
 
@@ -75,14 +165,6 @@ def fixture_expected_messages_prompt_messages() -> list[tuple[str, str]]:
 def fixture_string_prompt() -> str:
     """Returns a string prompt."""
     return "This is a test prompt."
-
-
-@pytest.fixture()
-def fixture_expected_string_prompt_messages(
-    fixture_string_prompt,
-) -> list[tuple[str, str]]:
-    """Returns the expected messages parsed from `fixture_string_prompt`."""
-    return [("user", fixture_string_prompt)]
 
 
 @pytest.fixture()
@@ -146,6 +228,68 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_schema_tool() -> ChatCompletion:
+    """Returns a chat completion with a tool matching a BaseModel schema."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    role="assistant",
+                    tool_calls=[
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                arguments='{\n  "param": "param",\n  "optional": 0}',
+                                name="MySchemaTool",
+                            ),
+                            type="function",
+                        )
+                    ],
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="test_model",
+        object="chat.completion",
+    )
+
+
+@pytest.fixture()
+def fixture_chat_completion_with_str_tool() -> ChatCompletion:
+    """Returns a chat completion with a tool matching a string base type."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    role="assistant",
+                    tool_calls=[
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                arguments='{\n  "value": "value"}',
+                                name="StrTool",
+                            ),
+                            type="function",
+                        )
+                    ],
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="test_model",
+        object="chat.completion",
+    )
+
+
+@pytest.fixture()
 def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
     """Returns a chat completion with tool calls that don't match the tool's schema."""
     return ChatCompletion(
@@ -177,39 +321,58 @@ def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
-def fixture_chat_completion_chunk() -> ChatCompletionChunk:
+def fixture_chat_completion_chunks() -> list[ChatCompletionChunk]:
+    """Returns chat completion chunks."""
+    return [
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    **{"logprobs": None},
+                    delta=ChoiceDelta(content="I'm"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    **{"logprobs": None},
+                    delta=ChoiceDelta(content="testing"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+    ]
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunk(
+    fixture_chat_completion_chunks,
+) -> ChatCompletionChunk:
     """Returns a chat completion chunk."""
-    return ChatCompletionChunk(
-        id="test_id",
-        choices=[
-            ChunkChoice(
-                **{"logprobs": None},
-                delta=ChoiceDelta(content="I'm"),
-                finish_reason="stop",
-                index=0,
-            ),
-            ChunkChoice(
-                **{"logprobs": None},
-                delta=ChoiceDelta(content="testing"),
-                finish_reason="stop",
-                index=0,
-            ),
-        ],
-        created=0,
-        model="test_model",
-        object="chat.completion.chunk",
-    )
+    return fixture_chat_completion_chunks[0]
 
 
 @pytest.fixture()
 def fixture_chat_completion_chunks_with_tools(
-    request: Optional[pytest.FixtureRequest] = None,
+    request: pytest.FixtureRequest,
 ) -> list[ChatCompletionChunk]:
     """Returns a list of chat completion chunks with tool calls."""
-    if request:
+    try:
         name = request.param
-    else:
+    except AttributeError:
         name = None
+
     return [
         ChatCompletionChunk(
             id="test_id",
@@ -276,6 +439,19 @@ def fixture_chat_completion_chunks_with_tools(
                             )
                         ]
                     ),
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    logprobs=None,
+                    delta=ChoiceDelta(tool_calls=None),
                     finish_reason="stop",
                     index=0,
                 ),
@@ -302,6 +478,44 @@ class MyTool(OpenAITool):
     optional: int = 0
 
 
+class EmptyTool(OpenAITool):
+    """A test tool with no parameters."""
+
+
+@pytest.fixture()
+def fixture_empty_tool() -> Type[OpenAITool]:
+    """Returns an `EmptyTool` class."""
+    return EmptyTool
+
+
+class FooBarPromptWithMyTool(FooBarPrompt):
+    __doc__ = FooBarPrompt.__doc__
+
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-1106", tools=[MyTool])
+
+
+@pytest.fixture()
+def fixture_foobar_prompt_with_my_tool() -> FooBarPromptWithMyTool:
+    """Returns a `FooBarPromptWithTools` instance."""
+    return FooBarPromptWithMyTool(foo="foo", bar="bar")
+
+
+class FooBarPromptWithMyToolAndEmptyTool(FooBarPrompt):
+    __doc__ = FooBarPrompt.__doc__
+
+    call_params = OpenAICallParams(
+        model="gpt-3.5-turbo-1106", tools=[MyTool, EmptyTool]
+    )
+
+
+@pytest.fixture()
+def fixture_foobar_prompt_with_my_tool_and_empty_tool() -> (
+    FooBarPromptWithMyToolAndEmptyTool
+):
+    """Returns a `FooBarPromptWithTools` instance."""
+    return FooBarPromptWithMyToolAndEmptyTool(foo="foo", bar="bar")
+
+
 @pytest.fixture()
 def fixture_my_tool() -> Type[MyTool]:
     """Returns a `MyTool` class."""
@@ -326,10 +540,19 @@ def fixture_my_tool_instance(fixture_my_tool) -> MyTool:
 
 
 @pytest.fixture()
-def fixture_empty_tool() -> Type[OpenAITool]:
-    """Returns an `EmptyTool` class."""
+def fixture_mirascope_user_settings() -> MirascopeSettings:
+    """Returns a `MirascopeSettings` instance."""
+    return MirascopeSettings(
+        format_command="ruff check --select I --fix; ruff format",
+        mirascope_location=".mirascope",
+        prompts_location="prompts",
+        version_file_name="version.txt",
+        versions_location=".mirascope/versions",
+        auto_tag=True,
+    )
 
-    class EmptyTool(OpenAITool):
-        """A test tool with no parameters."""
 
-    return EmptyTool
+@pytest.fixture
+def fixture_prompt_versions() -> VersionTextFile:
+    """Returns a `VersionTextFile` instance."""
+    return VersionTextFile(current_revision="0002", latest_revision="0002")

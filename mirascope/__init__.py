@@ -1,9 +1,24 @@
 """mirascope package."""
 import importlib.metadata
+from contextlib import suppress
 
-from .chat.models import AsyncOpenAIChat, OpenAIChat
-from .chat.parsers import AsyncOpenAIToolStreamParser, OpenAIToolStreamParser
-from .chat.tools import OpenAITool, openai_tool_fn
+with suppress(ImportError):
+    from . import gemini
+
+with suppress(ImportError):
+    from . import wandb
+
+from .base import BaseCallParams, BasePrompt, BaseTool, tags, tool_fn
+from .openai import (
+    AsyncOpenAIChat,
+    AsyncOpenAIToolStreamParser,
+    OpenAICallParams,
+    OpenAIChat,
+    OpenAIChatCompletion,
+    OpenAIChatCompletionChunk,
+    OpenAITool,
+    OpenAIToolStreamParser,
+)
 from .partial import Partial
 from .prompts import Prompt, messages
 
