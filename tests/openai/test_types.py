@@ -10,7 +10,9 @@ from mirascope.openai.types import (
 
 def test_openai_chat_completion(fixture_chat_completion):
     """Tests that `OpenAIChatCompletion` can be initialized properly."""
-    openai_chat_completion = OpenAIChatCompletion(completion=fixture_chat_completion)
+    openai_chat_completion = OpenAIChatCompletion(
+        completion=fixture_chat_completion, start_time=0, end_time=0
+    )
     choices = fixture_chat_completion.choices
     assert openai_chat_completion.choices == choices
     assert openai_chat_completion.choice == choices[0]
@@ -26,7 +28,10 @@ def test_openai_chat_completion_with_tools(
 ):
     """Tests that `OpenAIChatCompletion` can be initialized properly with tools."""
     openai_chat_completion = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=[fixture_my_tool]
+        completion=fixture_chat_completion_with_tools,
+        tool_types=[fixture_my_tool],
+        start_time=0,
+        end_time=0,
     )
     choices = fixture_chat_completion_with_tools.choices
     assert openai_chat_completion.choices == choices
@@ -49,7 +54,10 @@ def test_openai_chat_completion_no_matching_tools(
 ):
     """Tests that `OpenAIChatCompletion` returns `None` if no tools match."""
     openai_chat_completion = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=[fixture_empty_tool]
+        completion=fixture_chat_completion_with_tools,
+        tool_types=[fixture_empty_tool],
+        start_time=0,
+        end_time=0,
     )
     assert not openai_chat_completion.tools
     assert openai_chat_completion.tool is None
@@ -62,6 +70,8 @@ def test_openai_chat_completion_with_bad_tools(
     completion = OpenAIChatCompletion(
         completion=fixture_chat_completion_with_bad_tools,
         tool_types=[fixture_my_tool],
+        start_time=0,
+        end_time=0,
     )
     with pytest.raises(ValidationError):
         completion.tools
@@ -99,7 +109,9 @@ def test_openai_chat_completion_chunk_with_tools(
 
 def test_openai_chat_completion_dump(fixture_chat_completion):
     """Tests that `OpenAIChatCompletion.dump` returns the expected dictionary."""
-    openai_chat_completion = OpenAIChatCompletion(completion=fixture_chat_completion)
+    openai_chat_completion = OpenAIChatCompletion(
+        completion=fixture_chat_completion, start_time=0, end_time=0
+    )
     openai_chat_completion_json = openai_chat_completion.dump()
     assert openai_chat_completion_json["output"]["choices"][0]["message"][
         "content"
