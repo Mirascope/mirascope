@@ -230,3 +230,14 @@ class OpenAICallParams(BaseCallParams):
     timeout: Optional[Union[float, Timeout]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @property
+    def kwargs(self) -> dict[str, Any]:
+        """Returns the keyword argument call parameters."""
+        return {
+            key: value
+            for key, value in self.model_dump(
+                exclude={"tools", "base_url", "wrapper", "async_wrapper"}
+            ).items()
+            if value is not None
+        }
