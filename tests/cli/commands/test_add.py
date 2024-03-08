@@ -39,7 +39,7 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
     "version_text_file",
     [
         VersionTextFile(current_revision=None, latest_revision=None),
-        # VersionTextFile(current_revision="0001", latest_revision="0001"),
+        VersionTextFile(current_revision="0001", latest_revision="0001"),
     ],
 )
 @pytest.mark.parametrize("golden_prompt", ["simple_prompt"])
@@ -54,14 +54,14 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
             versions_location=".mirascope/versions",
             format_command="ruff check --select I --fix; ruff format",
         ),
-        # MirascopeSettings(
-        #     mirascope_location=".mirascope",
-        #     auto_tag=False,
-        #     version_file_name="version.txt",
-        #     prompts_location="prompts",
-        #     versions_location=".mirascope/versions",
-        #     format_command="ruff check --select I --fix; ruff format",
-        # ),
+        MirascopeSettings(
+            mirascope_location=".mirascope",
+            auto_tag=False,
+            version_file_name="version.txt",
+            prompts_location="prompts",
+            versions_location=".mirascope/versions",
+            format_command="ruff check --select I --fix; ruff format",
+        ),
     ],
 )
 @patch("mirascope.cli.utils.get_user_mirascope_settings")
