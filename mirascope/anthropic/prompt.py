@@ -2,7 +2,7 @@
 import datetime
 import os
 import re
-from typing import Annotated, ClassVar, Generator, Iterable
+from typing import Annotated, ClassVar, Generator, Iterable, Literal
 
 from anthropic import Anthropic
 from anthropic.types import MessageParam
@@ -64,13 +64,19 @@ class AnthropicPrompt(BasePrompt):
 
     @property
     def messages(self) -> Iterable[MessageParam]:
-        """Returns the `ContentsType` messages for Gemini `generate_content`."""
+        """Returns the `MessageParam` messages for Anthropic `create`.
+
+        Raises:
+            ValueError: if the docstring contains an unknown role.
+        """
         messages: list[MessageParam] = []
         for match in re.finditer(
-            r"(USER|ASSISTANT): " r"((.|\n)+?)(?=\n(USER|ASSISTANT):|\Z)",
+            r"(USER|ASSISTANT|[A-Z]*): " r"((.|\n)+?)(?=\n(USER|ASSISTANT|[A-Z]*):|\Z)",
             self.template(),
         ):
-            role: str = match.group(1).lower()
+            role = match.group(1).lower()
+            if role not in ["user", "assistant"]:
+                raise ValueError(f"Unknown role: {role}")
             content = format_template(self, match.group(2))
             messages.append({"role": role, "content": content})
         if len(messages) == 0:

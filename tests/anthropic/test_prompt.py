@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from anthropic import Anthropic
 
+from mirascope.anthropic.prompt import AnthropicPrompt
 from mirascope.anthropic.types import (
     AnthropicCompletion,
     AnthropicCompletionChunk,
@@ -31,6 +32,19 @@ def test_anthropic_prompt_messages(prompt, expected_messages, request):
     """Tests the prompt property."""
     prompt = request.getfixturevalue(prompt)
     assert prompt.messages == expected_messages
+
+
+def test_anthropic_prompt_bad_role():
+    """Tests that messages raises a ValueError when given a bad role."""
+
+    class MyPrompt(AnthropicPrompt):
+        """
+        BAD:
+        Not a real role
+        """
+
+    with pytest.raises(ValueError):
+        MyPrompt().messages
 
 
 @patch(

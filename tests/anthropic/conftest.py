@@ -1,6 +1,5 @@
 """Fixtures for Mirascope's Anthropic module tests."""
 from contextlib import contextmanager
-from typing import Iterable
 
 import pytest
 from anthropic.types import (
@@ -14,7 +13,6 @@ from anthropic.types import (
 from mirascope.anthropic.prompt import AnthropicPrompt
 from mirascope.anthropic.types import (
     AnthropicCallParams,
-    AnthropicCompletionChunk,
 )
 
 
@@ -75,11 +73,13 @@ def fixture_anthropic_message_chunk():
 
 
 @pytest.fixture()
-def fixture_anthropic_message_chunks(fixture_anthropic_message_chunk):
+def fixture_anthropic_message_chunks(
+    fixture_anthropic_message_chunk,
+):
     """Returns a context managed stream."""
 
     @contextmanager
-    def chunks() -> Iterable[AnthropicCompletionChunk]:
+    def chunks():
         yield [fixture_anthropic_message_chunk] * 3
 
     return chunks()
