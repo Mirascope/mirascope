@@ -7,6 +7,19 @@ import pytest
 from mirascope.base import BaseCallParams, BasePrompt, tags
 
 
+def test_base_prompt_bad_role():
+    """Tests that messages raises a ValueError when given a bad role."""
+
+    class MyPrompt(BasePrompt):
+        """
+        BAD:
+        Not a real role
+        """
+
+    with pytest.raises(ValueError):
+        MyPrompt().messages
+
+
 class FooBarPrompt(BasePrompt):
     """
     This is a test prompt about {foobar}.

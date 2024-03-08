@@ -67,6 +67,8 @@ class MistralPrompt(BasePrompt):
                 raise ValueError(f"Unknown role: {role}")
             content = format_template(self, match.group(2))
             messages.append(message_param_map[role](role=role, content=content))
+        if len(messages) == 0:
+            messages.append(UserMessage(role="user", content=str(self)))
         return messages
 
     def create(self, **kwargs: Any) -> MistralChatCompletion:
