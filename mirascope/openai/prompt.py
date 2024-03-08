@@ -146,7 +146,7 @@ class OpenAIPrompt(BasePrompt):
         self._end_time = datetime.datetime.now().timestamp() * 1000
         return OpenAIChatCompletion(completion=completion, tool_types=converted_tools)
 
-    def stream(self) -> Generator[OpenAIChatCompletionChunk, None, None]:
+    def stream(self, **kwargs: Any) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
         Yields:
@@ -159,7 +159,6 @@ class OpenAIPrompt(BasePrompt):
         client = OpenAI(base_url=self.call_params.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        kwargs: dict[str, Any] = {}
         tools = convert_tools_list_to_openai_tools(self.call_params.tools)
         patch_openai_kwargs(kwargs, self, tools)
         stream = client.chat.completions.create(
@@ -170,7 +169,9 @@ class OpenAIPrompt(BasePrompt):
         for chunk in stream:
             yield OpenAIChatCompletionChunk(chunk=chunk, tool_types=tools)
 
-    async def async_stream(self) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
+    async def async_stream(
+        self, **kwargs: Any
+    ) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
         """Streams the response for an asynchronous call to the model using `prompt`.
 
         Yields:
@@ -183,7 +184,6 @@ class OpenAIPrompt(BasePrompt):
         client = AsyncOpenAI(base_url=self.call_params.base_url)
         if self.call_params.async_wrapper is not None:
             client = self.call_params.async_wrapper(client)
-        kwargs: dict[str, Any] = {}
         tools = convert_tools_list_to_openai_tools(self.call_params.tools)
         patch_openai_kwargs(kwargs, self, tools)
         stream = await client.chat.completions.create(

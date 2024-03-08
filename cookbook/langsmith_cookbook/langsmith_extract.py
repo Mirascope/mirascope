@@ -5,7 +5,7 @@ from langsmith import wrappers
 from langsmith_config import Settings
 from pydantic import BaseModel
 
-from mirascope import OpenAIChat
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 settings = Settings()
 
@@ -21,9 +21,15 @@ class BookInfo(BaseModel):
     author: str
 
 
-chat = OpenAIChat(client_wrapper=wrappers.wrap_openai)
-chat.extract(
+class BookRecommendation(OpenAIPrompt):
+    """The Name of the Wind by Patrick Rothfuss."""
+
+    call_params = OpenAICallParams(wrapper=wrappers.wrap_openai)
+
+
+book_recommendation = BookRecommendation()
+book_info = book_recommendation.extract(
     BookInfo,
-    "The Name of the Wind is by Patrick Rothfuss.",
     retries=5,
 )
+print(book_info)
