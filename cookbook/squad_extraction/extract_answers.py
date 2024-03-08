@@ -1,26 +1,27 @@
 """Extracts answers for SQuAD 2.0 questions using GPT 3.5 Turbo."""
 import argparse
 import json
+import os
 
 from squad import load_geology_squad
 from squad_config import Settings
-from squad_prompts.question import ExtractedAnswer, QuestionPrompt
-
-from mirascope import OpenAIChat
+from squad_prompts.question import ExtractedAnswer, Question
 
 settings = Settings()
+if settings.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
 def main(prompt_version: str):
     """Extracts answers for SQuAD 2.0 questions using GPT 3.5 Turbo."""
-    chat = OpenAIChat(api_key=settings.openai_api_key)
     questions = load_geology_squad()
     extracted_answers = {
-        question.id: chat.extract(
+        question.id: Question(paragraph=question.context, question=question.question)
+        .extract(
             ExtractedAnswer,
-            QuestionPrompt(paragraph=question.context, question=question.question),
             retries=2,
-        ).answer
+        )
+        .answer
         for question in questions
     }
     json.dump(

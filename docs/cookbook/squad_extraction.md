@@ -30,7 +30,7 @@ $ mirascope init --prompts_location squad_prompts; touch prompts/question.py
 
 ```python
 # squad_prompts/question.py
-from mirascope import OpenAICallParams, Prompt
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 from pydantic import BaseModel, Field
 
 
@@ -40,7 +40,7 @@ class ExtractedAnswer(BaseModel):
     answer: str
 
 
-class QuestionPrompt(Prompt):
+class Question(OpenAIPrompt):
     """
     Paragraph: {paragraph}
 
@@ -56,22 +56,28 @@ class QuestionPrompt(Prompt):
 Next we'll define the schema we want to extract from the paragraph and a function to extract the schema from a given question:
 
 ```python
+import os
+
 from pydantic import BaseModel
 
 from config import Settings
 from prompts.question import ExtractedAnswer, QuestionPrompt
 
 settings = Settings()
-chat = OpenAIChat(api_key=settings.openai_api_key)
+if settings.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
 def extract_answer(question: QuestionWithContext) -> str:
     """Returns the extracted `str` answer to `question`."""
-    return chat.extract(
-        ExtractedAnswer,
-        QuestionPrompt(paragraph=question.context, question=question.question),
-        retries=2,  # retry up to 2 more times on validation error
-    ).answer
+    return (
+        Question(paragraph=question.context, question=question.question)
+        .extract(
+            ExtractedAnswer,
+            retries=2,  # retry up to 2 more times on validation error
+        )
+        .answer
+    )
 ```
 
 Now we just need to load the data and extract our answers:
@@ -127,7 +133,7 @@ Two things stick out immediately about the extracted answers:
 Let's update our schema and our prompt so that the LLM tries to extract more concise answers that better match the context paragraph:
 
 ```python
-from mirascope import Prompt, messages
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 from pydantic import BaseModel
 
@@ -144,7 +150,7 @@ class ExtractedAnswer(BaseModel):
     )
 
 
-class QuestionPrompt(Prompt):
+class Question(OpenAIPrompt):
     """
     SYSTEM:
     You will be asked a question after you read a paragraph. Your task is to
@@ -161,6 +167,8 @@ class QuestionPrompt(Prompt):
 
     paragraph: str
     question: str
+
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-1106")
 ```
 
 ```shell

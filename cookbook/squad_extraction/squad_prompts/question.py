@@ -12,7 +12,8 @@
 
 from pydantic import BaseModel, Field
 
-from mirascope import BasePrompt, OpenAICallParams, tags
+from mirascope.base import tags
+from mirascope.openai import OpenAICallParams, OpenAIPrompt
 
 
 class ExtractedAnswer(BaseModel):
@@ -29,7 +30,7 @@ class ExtractedAnswer(BaseModel):
 
 
 @tags(["version:0002"])
-class QuestionPrompt(BasePrompt):
+class Question(OpenAIPrompt):
     """
     SYSTEM:
     You will be asked a question after you read a paragraph. Your task is to
