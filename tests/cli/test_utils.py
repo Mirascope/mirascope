@@ -392,7 +392,7 @@ def test_find_file_names(tmp_path: Path):
     (foo_dir / "_private.py").write_text("foo private")
 
     file_names = find_file_names(str(foo_dir))
-    assert file_names == [str(foo_dir / "public_foo.py")]
+    assert file_names == ["public_foo.py"]
 
 
 @patch("mirascope.cli.utils.get_user_mirascope_settings")
@@ -410,9 +410,7 @@ def test_prompts_directory_files(
     (prompts_directory / "_private.py").write_text("foo private")
 
     file_names = prompts_directory_files()
-    assert file_names == [
-        f"{fixture_mirascope_user_settings.prompts_location}/public_foo"
-    ]
+    assert file_names == ["public_foo"]
 
 
 def test_parse_prompt_file_name():

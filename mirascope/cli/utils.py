@@ -307,7 +307,10 @@ def find_file_names(directory: str, prefix: str = "") -> list[str]:
         A list of file names found.
     """
     pattern = os.path.join(directory, f"[!_]{prefix}*.py")  # ignores private files
-    return glob.glob(pattern)  # Returns all files found
+    matching_files_with_dir = glob.glob(pattern)
+
+    # Removing the directory part from each path
+    return [os.path.basename(file) for file in matching_files_with_dir]
 
 
 def find_prompt_paths(directory: Union[Path, str], prefix: str) -> Optional[list[str]]:
