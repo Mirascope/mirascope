@@ -54,7 +54,7 @@ def fixture_openai_test_prompt(scope="function") -> OpenAIPrompt:
     class OpenAITestPrompt(OpenAIPrompt):
         """A prompt for testing."""
 
-        call_params = OpenAICallParams(model="gpt-3.5-turbo-16k")
+        call_params = OpenAICallParams(model="gpt-3.5-turbo-16k", base_url="test")
 
     return OpenAITestPrompt(api_key="test")
 
