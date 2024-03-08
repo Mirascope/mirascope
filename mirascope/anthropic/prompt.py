@@ -2,7 +2,7 @@
 import datetime
 import os
 import re
-from typing import Annotated, ClassVar, Generator, Iterable
+from typing import Annotated, ClassVar, Generator, Iterable, Literal, cast
 
 from anthropic import Anthropic
 from anthropic.types import MessageParam
@@ -78,7 +78,9 @@ class AnthropicPrompt(BasePrompt):
             if role not in ["user", "assistant"]:
                 raise ValueError(f"Unknown role: {role}")
             content = format_template(self, match.group(2))
-            messages.append({"role": role, "content": content})
+            messages.append(
+                {"role": cast(Literal["user", "assistant"], role), "content": content}
+            )
         if len(messages) == 0:
             messages.append({"role": "user", "content": str(self)})
         return messages
