@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mirascope"
 version = "0.3.0"
-description = "The most pythonic LLM application building experience"
+description = "LLM toolkit for lightning-fast, high-quality development"
 license = "MIT"
 authors = [
     "William Bakst <william@mirascope.io>",
