@@ -1,15 +1,14 @@
 """Main script for logging a chain of prompts to WandB."""
 import datetime
+import os
 from typing import Optional
 
 import wandb
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from wandb.sdk.data_types.trace_tree import Trace
-from wandb_prompts.coolness_prompt import Coolness, CoolnessPrompt
-from wandb_prompts.party_invite_prompt import PartyInvitePrompt
-from wandb_prompts.who_prompt import Person, WhoPrompt
-
-from mirascope import OpenAIChat
+from wandb_prompts.coolness_prompt import Coolness, CoolRating
+from wandb_prompts.party_invite_prompt import PartyInvite
+from wandb_prompts.who_prompt import Person, Who
 
 
 class Settings(BaseSettings):
@@ -22,6 +21,8 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+if settings.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 
 if __name__ == "__main__":
@@ -34,21 +35,19 @@ if __name__ == "__main__":
         start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
         metadata={"user": "mirascope_user"},
     )
-    chat = OpenAIChat(api_key=settings.openai_api_key)
 
-    who_prompt = WhoPrompt(span_type="tool", person="Brian")
-    who_completion = chat.extract(Person, who_prompt)
-    who_span = who_prompt.trace(who_completion, root_span)
+    who_prompt = Who(span_type="tool", person="Brian")
+    who_completion, who_span = who_prompt.extract_with_trace(Person, root_span)
 
-    coolness_prompt = CoolnessPrompt(span_type="tool", person=who_completion.person)
-    coolness_completion = chat.extract(Coolness, coolness_prompt)
-    coolness_span = coolness_prompt.trace(coolness_completion, who_span)
+    coolness_prompt = Coolness(span_type="tool", person=who_completion.person)
+    coolness_completion, coolness_span = coolness_prompt.extract_with_trace(
+        CoolRating, who_span
+    )
 
-    party_invite_prompt = PartyInvitePrompt(
+    party_invite_prompt = PartyInvite(
         span_type="llm", coolness=coolness_completion.coolness
     )
-    party_completion = chat.create(party_invite_prompt)
-    party_span = party_invite_prompt.trace(party_completion, coolness_span)
+    party_completion, party_span = party_invite_prompt.create_with_trace(coolness_span)
 
     root_span._span.end_time_ms = party_span._span.end_time_ms
     root_span.add_inputs_and_outputs(
