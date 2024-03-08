@@ -91,14 +91,26 @@ nav:
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:
-      - Pydantic Prompts: "concepts/pydantic_prompts.md"
-      - LLM Convenience Wrappers: "concepts/llm_convenience_wrappers.md"
-      - Mirascope CLI: "concepts/mirascope_cli.md"
+      - Why we're building Mirascope: "concepts/why_were_building_mirascope.md"
+      - Writing Prompts: "concepts/writing_prompts.md"
+      - Generating content: "concepts/generating_content.md"
+      - Streaming generated content: "concepts/streaming_generated_content.md"
+      - Using different model providers: "concepts/using_different_model_providers.md"
+      - Using the Mirascope CLI: "concepts/using_the_mirascope_cli.md"
+      - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
+      - Defining and extracting schemas: "concepts/defining_and_extracting_schemas.md"
+      - Extracting base types: "concepts/extracting_base_types.md"
+      - Validation: "concepts/validation.md"
+      - Tools (Function Calling): "concepts/tools_(function_calling).md"
+      - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
+      - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
+      - Dumping prompts: "concepts/dumping_prompts.md"
+      - Integrations: "concepts/integrations.md"
   - Cookbook:
+      - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
+      - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
       - SQuAD Extraction: "cookbook/squad_extraction.md"
       - RAG: "cookbook/rag.md"
-      - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
-      - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
   - API Reference:
       - "api/index.md"
       - base:
@@ -114,6 +126,11 @@ nav:
           - schemas: "api/cli/schemas.md"
           - utils: "api/cli/utils.md"
       - enums: "api/enums.md"
+      - gemini:
+          - "api/gemini/index.md"
+          - prompt: "api/gemini/prompt.md"
+          - tools: "api/gemini/tools.md"
+          - types: "api/gemini/types.md"
       - openai:
           - "api/openai/index.md"
           - models:
@@ -124,7 +141,10 @@ nav:
               - "api/openai/parsers/index.md"
               - OpenAIParser: "api/openai/parsers/openai_tool_stream_parser.md"
               - AsyncOpenAIParser: "api/openai/parsers/openai_tool_stream_parser_async.md"
+          - tools: "api/openai/prompt.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
           - utils: "api/openai/utils.md"
-      - prompts: "api/prompts.md"
+      - wandb:
+          - "api/wandb/index.md"
+          - prompt: "api/wandb/prompt.md"

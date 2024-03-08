@@ -2,8 +2,8 @@
 
 This recipe will show you:
 
-- how to use Mirascope’s Weights & Biases integrated [`WandbPrompt`](https://github.com/Mirascope/mirascope/blob/main/mirascope/wandb/prompt.py) for easy logging
-- take advantage of our [extraction](https://docs.mirascope.io/latest/features/prompt/extracting_structured_information) functionality to streamline the flow of data at each step of the chain.
+- how to use Mirascope’s Weights & Biases integrated [`WandbPrompt`](../api/wandb/prompt.md#mirascope.wandb.prompt.WandbPrompt) for easy logging
+- take advantage of our [extraction](../concepts/extracting_structured_information_using_llms.md) functionality to streamline the flow of data at each step of the chain.
 
 For the purposes of this example, we take a silly premise where we want to:
 
