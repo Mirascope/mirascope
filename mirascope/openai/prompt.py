@@ -154,6 +154,9 @@ class OpenAIPrompt(BasePrompt):
     def stream(self, **kwargs: Any) -> Generator[OpenAIChatCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
 
+        Args:
+            **kwargs: Additional keyword arguments to pass to the `stream` call.
+
         Yields:
             A `OpenAIChatCompletionChunk` for each chunk of the response.
 
@@ -178,6 +181,9 @@ class OpenAIPrompt(BasePrompt):
         self, **kwargs: Any
     ) -> AsyncGenerator[OpenAIChatCompletionChunk, None]:
         """Streams the response for an asynchronous call to the model using `prompt`.
+
+        Args:
+            **kwargs: Additional keyword arguments to pass to the `async_stream` call.
 
         Yields:
             A `OpenAIChatCompletionChunk` for each chunk of the response.
