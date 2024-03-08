@@ -24,6 +24,14 @@ from .schemas import (
 )
 
 ignore_variables = {"prev_revision_id", "revision_id"}
+mirascope_prompt_bases = (
+    "BasePrompt",
+    "Prompt",
+    "OpenAIPrompt",
+    "GeminiPrompt",
+    "MistralPrompt",
+    "ClaudePrompt",
+)
 
 
 class PromptAnalyzer(ast.NodeVisitor):
@@ -528,11 +536,7 @@ def write_prompt_to_template(
 
         for python_class in analyzer.classes:
             decorators = python_class.decorators
-            if (
-                python_class.bases
-                and python_class.bases[0] == "BasePrompt"
-                or python_class.bases[0] == "Prompt"
-            ):
+            if python_class.bases and python_class.bases[0] in mirascope_prompt_bases:
                 import_tag_name = _update_tag_decorator_with_version(
                     decorators, variables, mirascope_alias
                 )
