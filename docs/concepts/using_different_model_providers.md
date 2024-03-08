@@ -7,7 +7,7 @@ We currently support the following providers:
 - OpenAI
 - Gemini
 - Mistral (coming soon...)
-- anthropic (coming soon...)
+- Anthropic (coming soon...)
 
 This also means that we support any providers that use these APIs.
 

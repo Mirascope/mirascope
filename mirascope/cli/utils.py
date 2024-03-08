@@ -30,7 +30,7 @@ mirascope_prompt_bases = (
     "OpenAIPrompt",
     "GeminiPrompt",
     "MistralPrompt",
-    "anthropicPrompt",
+    "AnthropicPrompt",
 )
 
 
