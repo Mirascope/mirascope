@@ -1,5 +1,5 @@
 """Fixtures for Mirascope's Anthropic module tests."""
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 
 import pytest
 from anthropic.types import (
@@ -83,3 +83,14 @@ def fixture_anthropic_message_chunks(
         yield [fixture_anthropic_message_chunk] * 3
 
     return chunks()
+
+
+@pytest.fixture()
+def fixture_anthropic_async_message_chunks(fixture_anthropic_message_chunk):
+    """Returns a context managed async stream"""
+
+    @asynccontextmanager
+    async def async_chunks():
+        yield [fixture_anthropic_message_chunk] * 3
+
+    return async_chunks()
