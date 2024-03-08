@@ -57,6 +57,8 @@ def test_create_with_trace(mock_trace: MagicMock, mock_create: MagicMock):
             usage=None,
         ),
         tool_types=[],
+        start_time=0,
+        end_time=0,
     )
     mock_trace.return_value = Trace(name="testtrace")
     completion, trace = prompt.create_with_trace(parent=Trace(name="test"))
@@ -254,6 +256,8 @@ def test_trace_completion(mock_Trace: MagicMock):
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
@@ -316,6 +320,8 @@ def test_trace_completion_tool(mock_Trace: MagicMock):
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
@@ -378,6 +384,8 @@ def test_trace_base_model():
             usage=CompletionUsage(completion_tokens=1, prompt_tokens=2, total_tokens=3),
         ),
         tool_types=[convert_function_to_tool(tool_fn, OpenAITool)],
+        start_time=0,
+        end_time=0,
     )
     span = prompt._trace(completion, parent=Trace(name="test"))
     assert span.name == "GreetingsPrompt"
@@ -389,7 +397,7 @@ def test_trace_error():
     """Test `trace_error` method."""
     error = Exception("Test error")
     prompt = GreetingsPrompt(span_type="llm", greeting="Hello")
-    span = prompt._trace_error(error, parent=Trace(name="test"))
+    span = prompt._trace_error(error, parent=Trace(name="test"), start_time=0)
     assert span.name == "GreetingsPrompt"
     assert span.kind == "LLM"
     assert span.status_code == "ERROR"

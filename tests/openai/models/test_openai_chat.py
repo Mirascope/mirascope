@@ -41,8 +41,8 @@ def test_openai_chat(
 
     completion = chat.create(prompt, temperature=0.3)
     assert isinstance(completion, OpenAIChatCompletion)
-    assert completion._start_time is not None
-    assert completion._end_time is not None
+    assert completion.start_time is not None
+    assert completion.end_time is not None
     mock_create.assert_called_once_with(
         model=model if isinstance(prompt, str) else prompt.call_params.model,
         messages=prompt.messages
@@ -266,7 +266,10 @@ def test_openai_chat_extract(
     """Tests that `MySchema` can be extracted using `OpenAIChat`."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = OpenAIChat(api_key="test")
     prompt = BasePrompt()
@@ -298,7 +301,10 @@ def test_openai_chat_extract_messages_prompt(
     """Tests that `OpenAIChat.extract` works with a messages prompt."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = OpenAIChat(model="gpt-3.5-turbo", api_key="test")
     messages = [{"role": "user", "content": "content"}]
@@ -321,7 +327,10 @@ def test_openai_chat_extract_with_validation_error(
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_bad_tools, tool_types=tools
+        completion=fixture_chat_completion_with_bad_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = OpenAIChat(api_key="test")
     prompt = BasePrompt()

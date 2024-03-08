@@ -28,7 +28,9 @@ def test_gemini_completion() -> None:
                     )
                 ]
             )
-        )
+        ),
+        start_time=0,
+        end_time=0,
     )
     assert str(completion) == "Who is the author?"
     assert completion.tool is None
@@ -77,6 +79,8 @@ def test_gemini_completion_with_tool(tool, expected_tool) -> None:
             )
         ),
         tool_types=[tool],
+        start_time=0,
+        end_time=0,
     )
 
     assert completion.tool == expected_tool

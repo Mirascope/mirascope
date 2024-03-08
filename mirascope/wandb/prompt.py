@@ -1,4 +1,5 @@
 """Prompts with WandB and OpenAI integration to support logging functionality."""
+import datetime
 from typing import Callable, Literal, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel
@@ -34,7 +35,7 @@ class WandbPrompt(OpenAIPrompt):
     greeting: str
 
     prompt = HiPrompt(span_type="llm", greeting="Hello")
-    completion, span = prompt.create_with_span()
+    completion, span = prompt.create_with_trace()
 
     root_span.log(name="mirascope_trace")
     ```
@@ -57,10 +58,11 @@ class WandbPrompt(OpenAIPrompt):
                 to the parent).
         """
         try:
+            start_time = datetime.datetime.now().timestamp() * 1000
             completion = super().create()
             return completion, self._trace(completion, parent)
         except Exception as e:
-            return None, self._trace_error(e, parent)
+            return None, self._trace_error(e, parent, start_time)
 
     @overload
     def extract_with_trace(
@@ -93,10 +95,11 @@ class WandbPrompt(OpenAIPrompt):
                 to the parent).
         """
         try:
+            start_time = datetime.datetime.now().timestamp() * 1000
             completion = super().extract(schema, retries)
             return completion, self._trace(completion, parent)
         except Exception as e:
-            return None, self._trace_error(e, parent)
+            return None, self._trace_error(e, parent, start_time)
 
     def _trace(
         self,
@@ -142,8 +145,8 @@ class WandbPrompt(OpenAIPrompt):
                 "call_params": dict(self.call_params),
                 "usage": dict(open_ai_chat_completion.completion.usage),  # type: ignore
             },
-            start_time_ms=round(self._start_time) if self._start_time else None,
-            end_time_ms=round(self._end_time) if self._end_time else None,
+            start_time_ms=round(open_ai_chat_completion.start_time),
+            end_time_ms=round(open_ai_chat_completion.end_time),
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=output,
         )
@@ -151,7 +154,9 @@ class WandbPrompt(OpenAIPrompt):
             parent.add_child(span)
         return span
 
-    def _trace_error(self, error: Exception, parent: Optional[Trace]) -> Trace:
+    def _trace_error(
+        self, error: Exception, parent: Optional[Trace], start_time: float
+    ) -> Trace:
         """Returns an error trace connected to parent.
 
         Start time is set to time of prompt creation, and end time is set to the time
@@ -160,6 +165,7 @@ class WandbPrompt(OpenAIPrompt):
         Args:
             error: The error to trace.
             parent: The parent trace to connect to.
+            start_time: The time the call to OpenAI was started.
 
         Returns:
             The created error trace, connected to the parent.
@@ -170,8 +176,8 @@ class WandbPrompt(OpenAIPrompt):
             status_code="error",
             status_message=str(error),
             metadata={"call_params": dict(self.call_params)},
-            start_time_ms=round(self._start_time) if self._start_time else None,
-            end_time_ms=round(self._end_time) if self._end_time else None,
+            start_time_ms=round(start_time),
+            end_time_ms=round(datetime.datetime.now().timestamp() * 1000),
             inputs={message["role"]: message["content"] for message in self.messages},
             outputs=None,
         )
