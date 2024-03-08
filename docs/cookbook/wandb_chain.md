@@ -2,8 +2,8 @@
 
 This recipe will show you:
 
-- how to use Mirascope’s Weights & Biases integrated [`WandbPrompt`](https://github.com/Mirascope/mirascope/blob/dev/mirascope/integrations/wandb/wandb_prompt.py) for easy logging
-- take advantage of our [extraction](https://docs.mirascope.io/latest/concepts/llm_convenience_wrappers/#extraction) functionality to streamline the flow of data at each step of the chain.
+- how to use Mirascope’s Weights & Biases integrated [`WandbPrompt`](https://github.com/Mirascope/mirascope/blob/main/mirascope/wandb/prompt.py) for easy logging
+- take advantage of our [extraction](https://docs.mirascope.io/latest/features/prompt/extracting_structured_information) functionality to streamline the flow of data at each step of the chain.
 
 For the purposes of this example, we take a silly premise where we want to:
 
@@ -17,7 +17,7 @@ Before we get started, make sure to have API Keys for both [OpenAI](https://open
 
 ## 3-step chain with only W&B
 
-This following example is adapted from the example in the Weights and Biases documentation (link here):
+This following example is adapted from the example in the Weights and Biases [documentation](https://docs.wandb.ai/guides/prompts):
 
 ```python
 import datetime
@@ -152,24 +152,25 @@ We have to manually calculate start and end times for each call to OpenAI. Furth
 
 Mirascope provides a `WandbPrompt` class which can be inherited by any Mirascope `Prompt` , giving access to:
 
-- automatic setup of `Trace()` with a built-in method `WandbPrompt.trace()`
-- automatic calculations of start and end times
-- passing in the entire `Prompt.call_params` field - as we expand the functionality of call_params, expect to have access to many more details about each chat completion automatically passed into each log.
+- methods which interally create and link a W&B `Trace` when creating chat completions and extractions
+- automatically passing in the entire `Prompt.call_params` field so you can get every detail of your api logged to W&B.
+- an overall cleaner interface to interact with OpenAI's GPT.
 
-In addition, Mirascope’s library comes with extraction functionality, which enables a simpler and more structured way of receiving output the way we want it. Let’s define the prompts as well as their extraction models in 3 files within a directory `/wandb_prompts`:
+Wait, did someone say extractions? Mirascope provides extraction functionality, which let you structure output and pass information along an LLM chain much more smoothly. Let’s define the prompts as well as their extraction models in 3 files within a directory `/wandb_prompts`:
 
 ```python
 # who_prompt.py
-from pydantic import BaseModel
 
-from mirascope.integrations.wandb import WandbPrompt
+from pydantic import BaseModel
+from mirascope.wandb import WandbPrompt
 
 class Person(BaseModel):
     """Person model."""
 
     person: str
 
-class WhoPrompt(WandbPrompt):
+
+class Who(WandbPrompt):
     """Who is {person}?"""
 
     person: str
@@ -177,18 +178,17 @@ class WhoPrompt(WandbPrompt):
 
 ```python
 # coolness_prompt.py
+
 from pydantic import BaseModel
+from mirascope.wandb import WandbPrompt
 
-from mirascope import messages
-from mirascope.integrations.wandb import WandbPrompt
-
-class Coolness(BaseModel):
+class CoolRating(BaseModel):
     """Coolness rating out of 10."""
 
     coolness: int
 
-@messages
-class CoolnessPrompt(WandbPrompt):
+
+class Coolness(WandbPrompt):
     """
     SYSTEM: You determine coolness on a scale of 1 to 10. If the person's name is Brian,
     they get an automatic 10 out of 10, otherwise, they get a random whole number
@@ -202,39 +202,38 @@ class CoolnessPrompt(WandbPrompt):
 
 ```python
 # party_invite_prompt.py
-from mirascope import messages
-from mirascope.integrations.wandb import WandbPrompt
 
-@messages
-class PartyInvitePrompt(WandbPrompt):
+from mirascope.wandb import WandbPrompt
+
+class PartyInvite(WandbPrompt):
     """
     SYSTEM:
-    You're a bouncer and you let people into the party only if they're at least somewhat
-    cool.
+    You're a bouncer and you decide if people are allowed into the party. You only let
+    people in if they're at least somewhat cool.
 
     USER:
-    If I were to say how cool this person is out of 10, I'd say {coolness}. Should they
-    be let into the party?
+    This person is {coolness} out of 10 cool. Should they be let into the party?
     """
 
     coolness: int
 ```
 
-With the prompts written out, the main script becomes much simpler. First, we still need to set up OpenAI and W&B, as well as initialize our root_span:
+With the prompts written out, the main script becomes much simpler. First, we still need to set up W&B and initialize our root_span:
 
 ```python
 # wandb_chain.py
+
 import datetime
+import os
 from typing import Optional
 
 import wandb
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from wandb.sdk.data_types.trace_tree import Trace
-from wandb_prompts.coolness_prompt import Coolness, CoolnessPrompt
-from wandb_prompts.party_invite_prompt import PartyInvitePrompt
-from wandb_prompts.who_prompt import Person, WhoPrompt
+from wandb_prompts.coolness_prompt import Coolness, CoolRating
+from wandb_prompts.party_invite_prompt import PartyInvite
+from wandb_prompts.who_prompt import Person, Who
 
-from mirascope import OpenAIChat
 
 class Settings(BaseSettings):
     """Settings for wandb_logged_chain."""
@@ -244,7 +243,11 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env")
 
+
 settings = Settings()
+if settings.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+
 
 if __name__ == "__main__":
     wandb.login(key=settings.wandb_api_key)
@@ -256,29 +259,31 @@ if __name__ == "__main__":
         start_time_ms=round(datetime.datetime.now().timestamp() * 1000),
         metadata={"user": "mirascope_user"},
     )
-    chat = OpenAIChat(api_key=settings.openai_api_key)
 
 ```
 
-Now, all we need to do is create an instance of each prompt, call GPT using our `chat.create()` , then use the built in `.trace()` method to create a span according to the parameters. The user has to specify what type of W&B span they want when initializing a `WandbPrompt`, but the method will internally handle the distinguishing logic between standard LLM calls, tool calls, and extractions.
+Now, all we need to do is create an instance of each prompt and use the integrated functions `create_with_trace()` or `extract_with_trace()` - these methods call GPT then create a `Trace` affiliated with each completion, which can be linked to a parent span if desired through the `parent` parameter.
 
 ```python
 # wandb_chain.py
 # continued within main:
 
-		who_prompt = WhoPrompt(span_type="tool", person="Brian")
-    who_completion = chat.extract(Person, who_prompt)
-    who_span = who_prompt.trace(who_completion, root_span)
+    who_prompt = Who(span_type="tool", person="Brian")
+    who_completion, who_span = who_prompt.extract_with_trace(
+        schema=Person, parent=root_span
+    )
 
-    coolness_prompt = CoolnessPrompt(span_type="tool", person=who_completion.person)
-    coolness_completion = chat.extract(Coolness, coolness_prompt)
-    coolness_span = coolness_prompt.trace(coolness_completion, who_span)
+    coolness_prompt = Coolness(span_type="tool", person=who_completion.person)
+    coolness_completion, coolness_span = coolness_prompt.extract_with_trace(
+        schema=CoolRating, parent=who_span
+    )
 
-    party_invite_prompt = PartyInvitePrompt(
+    party_invite_prompt = PartyInvite(
         span_type="llm", coolness=coolness_completion.coolness
     )
-    party_completion = chat.create(party_invite_prompt)
-    party_span = party_invite_prompt.trace(party_completion, coolness_span)
+    party_completion, party_span = party_invite_prompt.create_with_trace(
+        parent=coolness_span,
+    )
 
     root_span._span.end_time_ms = party_span._span.end_time_ms
     root_span.add_inputs_and_outputs(
@@ -293,5 +298,6 @@ Now, all we need to do is create an instance of each prompt, call GPT using our 
             "result3": str(party_completion),
         },
     )
-    root_span.log(name="mirascope_trace") 
+    root_span.log(name="mirascope_trace")
 ```
+All done - you should now see the logs with a local directory, as well as have access to them online via [W&B](https://wandb.ai/home).

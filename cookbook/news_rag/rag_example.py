@@ -11,22 +11,18 @@ from argparse import ArgumentParser
 
 import pandas as pd
 from rag_config import FILENAME, MAX_TOKENS, URL, Settings
-from rag_prompts.local_news_rag_prompt import LocalNewsRagPrompt
-from rag_prompts.pinecone_news_rag_prompt import PineconeNewsRagPrompt
+from rag_prompts.local_news_rag_prompt import LocalNewsRag
+from rag_prompts.pinecone_news_rag_prompt import PineconeNewsRag
 from rag_utils import embed_df_with_openai, load_data
 from setup_pinecone import setup_pinecone
-
-from mirascope import OpenAIChat
 
 settings = Settings()
 
 
 def main(use_pinecone=False):
-    chat = OpenAIChat(api_key=settings.openai_api_key)
-
     if not os.path.exists(FILENAME):
         df = load_data(url=URL, max_tokens=MAX_TOKENS)
-        df = embed_df_with_openai(df=df, client=chat.client)
+        df = embed_df_with_openai(df=df)
         df.to_pickle(FILENAME)
     else:
         df = pd.read_pickle(FILENAME)
@@ -41,11 +37,11 @@ def main(use_pinecone=False):
     ]
     for topic in topics:
         if use_pinecone:
-            print(
-                chat.create(PineconeNewsRagPrompt(num_statements=3, topic=topic, df=df))
-            )
+            pinecone = PineconeNewsRag(num_statements=3, topic=topic, df=df)
+            print(pinecone.create())
         else:
-            print(chat.create(LocalNewsRagPrompt(num_statements=3, topic=topic, df=df)))
+            local = LocalNewsRag(num_statements=3, topic=topic, df=df)
+            print(local.create())
         print("\n")
 
 
