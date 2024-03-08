@@ -3,6 +3,9 @@ import importlib.metadata
 from contextlib import suppress
 
 with suppress(ImportError):
+    from . import anthropic
+
+with suppress(ImportError):
     from . import gemini
 
 with suppress(ImportError):

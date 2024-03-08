@@ -40,6 +40,8 @@ def _set_api_key(api_key: str) -> None:
 class OpenAIPrompt(BasePrompt):
     '''A class for prompting OpenAI's Chat API.
 
+    This prompt supports the message types: SYSTEM, USER, ASSISTANT, TOOL
+
     Example:
 
     ```python

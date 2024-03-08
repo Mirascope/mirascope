@@ -1,4 +1,4 @@
-"""Type classes for interacting with the OpenAI Chat API."""
+"""Type classes for interacting with Google's Gemini API."""
 from typing import Any, Callable, Optional, Type, Union
 
 from google.generativeai.types import GenerateContentResponse  # type: ignore
@@ -12,7 +12,7 @@ class GeminiCompletion(BaseModel):
     '''Convenience wrapper around Gemini chat completions.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via
-    `GeminiChat`, responses using `GeminiChat.create()` will return a
+    `GeminiPrompt`, responses using `GeminiPrompt.create()` will return a
     `GeminiCompletion`, whereby the implemented properties allow for simpler syntax
     and a convenient developer experience.
 
@@ -60,10 +60,10 @@ class GeminiCompletion(BaseModel):
 
 
 class GeminiCompletionChunk(BaseModel):
-    '''Convenience wrapper around chat completion streaming chunks.
+    '''Convenience wrapper around Gemini chat completion streaming chunks.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via
-    `GeminiChat`, responses using `GeminiChat.stream()` will return a
+    `GeminiPrompt`, responses using `GeminiPrompt.stream()` will return a
     `GeminiCompletionChunk`, whereby the implemented properties allow for simpler
     syntax and a convenient developer experience.
 

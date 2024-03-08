@@ -31,6 +31,8 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 class GeminiPrompt(BasePrompt):
     '''A class for prompting Google's Gemini Chat API.
 
+    This prompt supports the message types: USER, MODEL, TOOL
+
     Example:
 
     ```python
@@ -119,7 +121,7 @@ class GeminiPrompt(BasePrompt):
         )
 
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
-        """Streams the response for a call to the model using `prompt`.
+        """Streams the response for a call to the model using this prompt.
 
         Yields:
             A `GeminiCompletionChunk` for each chunk of the response.

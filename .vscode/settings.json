@@ -1,4 +1,5 @@
 {
+  "workbench.colorTheme": "Default Dark Modern",
   "files.autoSave": "onFocusChange",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
