@@ -105,7 +105,11 @@ class BasePrompt(BaseModel):
 
     @property
     def messages(self) -> Union[list[Message], Any]:
-        """Returns the docstring as a list of messages."""
+        """Returns the docstring as a list of messages.
+
+        Raises:
+            ValueError: if the docstring contains an unknown role.
+        """
         message_param_map = {
             "system": SystemMessage,
             "user": UserMessage,
@@ -114,11 +118,13 @@ class BasePrompt(BaseModel):
         }
         messages = []
         for match in re.finditer(
-            r"(SYSTEM|USER|ASSISTANT|TOOL): "
-            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL):|\Z)",
+            r"(SYSTEM|USER|ASSISTANT|TOOL|[A-Z]*): "
+            r"((.|\n)+?)(?=\n(SYSTEM|USER|ASSISTANT|TOOL|[A-Z]*):|\Z)",
             self.template(),
         ):
             role = match.group(1).lower()
+            if role not in ["system", "user", "assistant", "tool"]:
+                raise ValueError(f"Unknown role: {role}")
             content = format_template(self, match.group(2))
             messages.append(message_param_map[role](role=role, content=content))
         if len(messages) == 0:

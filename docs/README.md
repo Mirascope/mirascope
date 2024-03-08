@@ -196,7 +196,7 @@ We have a lot on our minds for what to build next, but here are a few things (in
 - [x]  Extracting structured information using LLMs
 - [ ]  Agents
 - [ ]  Support for more LLM providers:
-    - [ ]  Claude
+    - [ ]  Anthropic Tools (Function Calling)
     - [ ]  Mistral
     - [ ]  HuggingFace
 - [ ]  Integrations:

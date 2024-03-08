@@ -42,6 +42,19 @@ class MessagesPrompt(GeminiPrompt):
     """
 
 
+def test_anthropic_prompt_bad_role():
+    """Tests that messages raises a ValueError when given a bad role."""
+
+    class MyPrompt(GeminiPrompt):
+        """
+        BAD:
+        Not a real role
+        """
+
+    with pytest.raises(ValueError):
+        MyPrompt().messages
+
+
 @patch("mirascope.gemini.prompt.configure", return_value=None)
 @pytest.mark.parametrize(
     "prompt_type,expected_messages",

@@ -5,9 +5,9 @@ Testing out various providers is a powerful way to boost the performance of your
 We currently support the following providers:
 
 - OpenAI
+- Anthropic (tools coming soon...)
 - Gemini
 - Mistral (coming soon...)
-- Claude (coming soon...)
 
 This also means that we support any providers that use these APIs.
 

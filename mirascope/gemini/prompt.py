@@ -31,6 +31,8 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 class GeminiPrompt(BasePrompt):
     '''A class for prompting Google's Gemini Chat API.
 
+    This prompt supports the message types: USER, MODEL, TOOL
+
     Example:
 
     ```python
@@ -73,13 +75,20 @@ class GeminiPrompt(BasePrompt):
 
     @property
     def messages(self) -> ContentsType:
-        """Returns the `ContentsType` messages for Gemini `generate_content`."""
+        """Returns the `ContentsType` messages for Gemini `generate_content`.
+
+        Raises:
+            ValueError: if the docstring contains an unknown role.
+        """
         messages = []
         for match in re.finditer(
-            r"(MODEL|USER|TOOL): " r"((.|\n)+?)(?=\n(MODEL|USER|TOOL):|\Z)",
+            r"(MODEL|USER|TOOL|[A-Z]*): "
+            r"((.|\n)+?)(?=\n(MODEL|USER|TOOL|[A-Z]*):|\Z)",
             self.template(),
         ):
             role = match.group(1).lower()
+            if role not in ["model", "user", "tool"]:
+                raise ValueError(f"Unknown role: {role}")
             content = format_template(self, match.group(2))
             messages.append({"role": role, "parts": [content]})
         if len(messages) == 0:
@@ -119,7 +128,7 @@ class GeminiPrompt(BasePrompt):
         )
 
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
-        """Streams the response for a call to the model using `prompt`.
+        """Streams the response for a call to the model using this prompt.
 
         Yields:
             A `GeminiCompletionChunk` for each chunk of the response.
