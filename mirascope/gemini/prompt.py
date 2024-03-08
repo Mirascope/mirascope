@@ -92,7 +92,6 @@ class GeminiPrompt(BasePrompt):
         Returns:
             A `GeminiCompletion` instance.
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         gemini_pro_model = GenerativeModel(self.call_params.model)
         tools = kwargs.pop("tools") if "tools" in kwargs else []
         if self.call_params.tools:
@@ -112,10 +111,12 @@ class GeminiPrompt(BasePrompt):
             safety_settings=self.call_params.safety_settings,
             request_options=self.call_params.request_options,
         )
-        completion._end_time = datetime.datetime.now().timestamp() * 1000
-        completion._start_time = completion_start_time
-        self._end_time = datetime.datetime.now().timestamp() * 1000
-        return GeminiCompletion(completion=completion, tool_types=converted_tools)
+        return GeminiCompletion(
+            completion=completion,
+            tool_types=converted_tools,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
 
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
         """Streams the response for a call to the model using `prompt`.
@@ -123,7 +124,6 @@ class GeminiPrompt(BasePrompt):
         Yields:
             A `GeminiCompletionChunk` for each chunk of the response.
         """
-        self._start_time = datetime.datetime.now().timestamp() * 1000
         gemini_pro_model = GenerativeModel(self.call_params.model)
         completion = gemini_pro_model.generate_content(
             self.messages,
@@ -134,7 +134,6 @@ class GeminiPrompt(BasePrompt):
         )
         for chunk in completion:
             yield GeminiCompletionChunk(chunk=chunk)
-        self._end_time = datetime.datetime.now().timestamp() * 1000
 
     @overload
     def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
@@ -163,7 +162,6 @@ class GeminiPrompt(BasePrompt):
         Returns:
             The `Schema` instance extracted from the completion.
         """
-        extraction_start_time = datetime.datetime.now().timestamp() * 1000
         return_tool = True
         gemini_tool = schema
         if is_base_type(schema):
@@ -176,27 +174,20 @@ class GeminiPrompt(BasePrompt):
             return_tool = False
 
         completion = self.create(tools=[gemini_tool])
-        self._start_time = extraction_start_time
         try:
             tool = completion.tool
             if tool is None:
-                self._end_time = datetime.datetime.now().timestamp() * 1000
                 raise AttributeError("No tool found in the completion.")
             if return_tool:
-                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool
             if is_base_type(schema):
-                self._end_time = datetime.datetime.now().timestamp() * 1000
                 return tool.value
             model = schema(**completion.tool.model_dump())  # type: ignore
             model._completion = completion
-            self._end_time = datetime.datetime.now().timestamp() * 1000
             return model
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
-            if retries == 0:
-                self._end_time = datetime.datetime.now().timestamp() * 1000
             raise  # re-raise if we have no retries left

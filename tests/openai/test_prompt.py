@@ -28,8 +28,6 @@ def test_openai_prompt_create(
     fixture_openai_test_prompt.call_params.temperature = temperature
     completion = fixture_openai_test_prompt.create()
     assert isinstance(completion, OpenAIChatCompletion)
-    assert fixture_openai_test_prompt._start_time is not None
-    assert fixture_openai_test_prompt._end_time is not None
     mock_create.assert_called_once_with(
         model=fixture_openai_test_prompt.call_params.model,
         messages=fixture_openai_test_prompt.messages,
@@ -51,8 +49,6 @@ async def test_openai_prompt_async_create(
 
     completion = await fixture_openai_test_prompt.async_create()
     assert isinstance(completion, OpenAIChatCompletion)
-    assert fixture_openai_test_prompt._start_time is not None
-    assert fixture_openai_test_prompt._end_time is not None
     print(fixture_openai_test_prompt.call_params.temperature)
     mock_create.assert_called_once_with(
         model=fixture_openai_test_prompt.call_params.model,
@@ -390,7 +386,10 @@ def test_openai_prompt_extract(
     tool = request.getfixturevalue(tool)
     tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     model = fixture_openai_test_prompt.extract(schema)
     assert isinstance(model, schema)
@@ -420,7 +419,10 @@ async def test_openai_prompt_async_extract(
     tool = request.getfixturevalue(tool)
     tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     model = await fixture_openai_test_prompt.async_extract(schema)
     assert isinstance(model, schema)
@@ -445,7 +447,10 @@ def test_openai_prompt_extract_callable(
     tool = OpenAITool.from_fn(my_tool)
     tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     model = fixture_openai_test_prompt.extract(my_tool)
     assert isinstance(model, tool)
@@ -470,7 +475,10 @@ async def test_openai_prompt_async_extract_callable(
     tool = OpenAITool.from_fn(my_tool)
     tools = [tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     model = await fixture_openai_test_prompt.async_extract(my_tool)
     assert isinstance(model, tool)
@@ -489,7 +497,10 @@ def test_openai_prompt_extract_with_no_tools(
 ):
     """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion, tool_types=[fixture_my_tool]
+        completion=fixture_chat_completion,
+        tool_types=[fixture_my_tool],
+        start_time=0,
+        end_time=0,
     )
     with pytest.raises(AttributeError):
         fixture_openai_test_prompt.extract(fixture_my_schema)
@@ -506,7 +517,10 @@ async def test_openai_prompt_async_extract_with_no_tools(
 ):
     """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion, tool_types=[fixture_my_tool]
+        completion=fixture_chat_completion,
+        tool_types=[fixture_my_tool],
+        start_time=0,
+        end_time=0,
     )
     with pytest.raises(AttributeError):
         await fixture_openai_test_prompt.async_extract(fixture_my_schema)
@@ -525,7 +539,10 @@ def test_openai_prompt_extract_with_validation_error(
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_bad_tools, tool_types=tools
+        completion=fixture_chat_completion_with_bad_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     with pytest.raises(ValidationError):
         fixture_openai_test_prompt.extract(fixture_my_schema, retries=retries)
@@ -547,7 +564,10 @@ async def test_openai_prompt_async_extract_with_validation_error(
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_bad_tools, tool_types=tools
+        completion=fixture_chat_completion_with_bad_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     with pytest.raises(ValidationError):
         await fixture_openai_test_prompt.async_extract(
@@ -571,7 +591,10 @@ def test_openai_prompt_extract_base_type(
 ):
     """Tests that a base type can be extracted using `OpenAIChat`."""
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+        completion=fixture_chat_completion_with_str_tool,
+        tool_types=[StrTool],
+        start_time=0,
+        end_time=0,
     )
     model = fixture_openai_test_prompt.extract(str)
     assert isinstance(model, str)
@@ -589,7 +612,10 @@ async def test_openai_prompt_async_extract_base_type(
 ):
     """Tests that a base type can be extracted using `OpenAIChat`."""
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_str_tool, tool_types=[StrTool]
+        completion=fixture_chat_completion_with_str_tool,
+        tool_types=[StrTool],
+        start_time=0,
+        end_time=0,
     )
     model = await fixture_openai_test_prompt.async_extract(str)
     assert isinstance(model, str)

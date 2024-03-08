@@ -136,8 +136,6 @@ class BasePrompt(BaseModel):
                 for key, value in self.call_params.model_dump().items()
                 if value is not None
             },
-            "start_time_ms": self._start_time if hasattr(self, "_start_time") else None,
-            "end_time_ms": self._end_time if hasattr(self, "_end_time") else None,
         }
         if completion is not None:
             return prompt_dict | completion

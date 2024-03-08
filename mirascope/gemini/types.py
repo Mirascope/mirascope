@@ -32,8 +32,8 @@ class GeminiCompletion(BaseModel):
 
     completion: GenerateContentResponse  # The completion response from the model
     tool_types: Optional[list[Type[GeminiTool]]] = None
-    _start_time: Optional[float] = None  # The start time of the completion in ms
-    _end_time: Optional[float] = None  # The end time of the completion in ms
+    start_time: float  # The start time of the completion in ms
+    end_time: float  # The end time of the completion in ms
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

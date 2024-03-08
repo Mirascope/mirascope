@@ -139,17 +139,16 @@ class AsyncOpenAIChat:
         openai_tools = convert_tools_list_to_openai_tools(tools)
         patch_openai_kwargs(kwargs, prompt, openai_tools)
 
-        completion = OpenAIChatCompletion(
+        return OpenAIChatCompletion(
             completion=await self.client.chat.completions.create(
                 model=self.model,
                 stream=False,
                 **kwargs,
             ),
             tool_types=openai_tools if tools else None,
+            start_time=start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
         )
-        completion._start_time = start_time
-        completion._end_time = datetime.datetime.now().timestamp() * 1000
-        return completion
 
     async def stream(
         self,

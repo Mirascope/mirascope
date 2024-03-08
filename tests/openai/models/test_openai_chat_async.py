@@ -35,8 +35,8 @@ async def test_async_openai_chat(
     assert chat.model == model
     completion = await chat.create(prompt, temperature=0.3)
     assert isinstance(completion, OpenAIChatCompletion)
-    assert completion._start_time is not None
-    assert completion._end_time is not None
+    assert completion.start_time is not None
+    assert completion.end_time is not None
     mock_create.assert_called_once_with(
         model=prompt.call_params.model,
         messages=prompt.messages,
@@ -276,7 +276,10 @@ async def test_async_openai_chat_extract(
     """Tests that `AsyncOpenAIChat` can be extracted from a `Chat`."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = AsyncOpenAIChat(api_key="test")
     prompt = BasePrompt()
@@ -311,7 +314,10 @@ async def test_async_openai_chat_extract_messages_prompt(
     """Tests that `AsyncOpenAIChat.extract` works with a messages prompt."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_tools, tool_types=tools
+        completion=fixture_chat_completion_with_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = AsyncOpenAIChat(model="gpt-3.5-turbo-16k", api_key="test")
     messages = [{"role": "user", "content": "content"}]
@@ -334,7 +340,10 @@ async def test_async_openai_chat_extract_with_validation_error(
     """Tests that `AsyncOpenAIChat` raises a `ValidationError` when extraction fails."""
     tools = [fixture_my_tool]
     mock_create.return_value = OpenAIChatCompletion(
-        completion=fixture_chat_completion_with_bad_tools, tool_types=tools
+        completion=fixture_chat_completion_with_bad_tools,
+        tool_types=tools,
+        start_time=0,
+        end_time=0,
     )
     chat = AsyncOpenAIChat(api_key="test")
     prompt = BasePrompt()
