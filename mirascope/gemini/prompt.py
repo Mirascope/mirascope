@@ -12,7 +12,6 @@ from typing import (
     Optional,
     Type,
     TypeVar,
-    Union,
     overload,
 )
 
