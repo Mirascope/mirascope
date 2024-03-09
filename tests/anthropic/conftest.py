@@ -89,8 +89,11 @@ def fixture_anthropic_message_chunks(
 def fixture_anthropic_async_message_chunks(fixture_anthropic_message_chunk):
     """Returns a context managed async stream"""
 
+    async def generator():
+        yield fixture_anthropic_message_chunk
+
     @asynccontextmanager
     async def async_chunks():
-        yield [fixture_anthropic_message_chunk] * 3
+        yield generator()
 
     return async_chunks()

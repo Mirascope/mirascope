@@ -1,5 +1,4 @@
 """Tests for mirascope anthropic prompt."""
-from contextlib import asynccontextmanager
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -156,7 +155,7 @@ def test_anthropic_prompt_stream(
 
 @patch(
     "anthropic.resources.messages.AsyncMessages.stream",
-    new_callable=AsyncMock,
+    new_callable=MagicMock,
 )
 @pytest.mark.asyncio
 async def test_anthropic_prompt_async_stream(
@@ -215,7 +214,7 @@ def test_anthropic_prompt_stream_with_wrapper(
 
 @patch(
     "anthropic.resources.messages.AsyncMessages.stream",
-    new_callable=AsyncMock,
+    new_callable=MagicMock,
 )
 @pytest.mark.asyncio
 async def test_anthropic_prompt_async_stream_with_wrapper(
@@ -228,9 +227,9 @@ async def test_anthropic_prompt_async_stream_with_wrapper(
     mock_stream.return_value = fixture_anthropic_async_message_chunks
 
     wrapper = MagicMock()
-    wrapper.return_value = Anthropic()
+    wrapper.return_value = AsyncAnthropic()
 
-    fixture_anthropic_test_prompt.call_params.wrapper = wrapper
+    fixture_anthropic_test_prompt.call_params.async_wrapper = wrapper
 
     stream = fixture_anthropic_test_prompt.async_stream()
     async for chunk in stream:
