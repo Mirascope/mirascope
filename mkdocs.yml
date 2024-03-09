@@ -113,6 +113,10 @@ nav:
       - RAG: "cookbook/rag.md"
   - API Reference:
       - "api/index.md"
+      - anthropic:
+          - "api/anthropic/index.md"
+          - prompt: "api/anthropic/prompt.md"
+          - types: "api/anthropic/types.md"
       - base:
           - "api/base/index.md"
           - prompt: "api/base/prompt.md"

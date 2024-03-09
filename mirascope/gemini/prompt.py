@@ -6,6 +6,7 @@ from inspect import isclass
 from typing import (
     Annotated,
     Any,
+    AsyncGenerator,
     Callable,
     ClassVar,
     Generator,
@@ -127,6 +128,38 @@ class GeminiPrompt(BasePrompt):
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
 
+    async def async_create(self, **kwargs: Any) -> GeminiCompletion:
+        """Makes an asynchronous call to the model using this `GeminiPrompt`.
+
+        Returns:
+            An `GeminiCompletion` instance.
+        """
+        gemini_pro_model = GenerativeModel(self.call_params.model)
+        tools = kwargs.pop("tools") if "tools" in kwargs else []
+        if self.call_params.tools:
+            tools.extend(self.call_params.tools)
+        converted_tools = [
+            tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
+            for tool in tools
+        ]
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
+        completion = await gemini_pro_model.generate_content_async(
+            self.messages,
+            stream=False,
+            tools=[tool.tool_schema() for tool in converted_tools]
+            if converted_tools
+            else None,
+            generation_config=self.call_params.generation_config,
+            safety_settings=self.call_params.safety_settings,
+            request_options=self.call_params.request_options,
+        )
+        return GeminiCompletion(
+            completion=completion,
+            tool_types=converted_tools,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
+
     def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
         """Streams the response for a call to the model using this prompt.
 
@@ -144,6 +177,23 @@ class GeminiPrompt(BasePrompt):
         for chunk in completion:
             yield GeminiCompletionChunk(chunk=chunk)
 
+    async def async_stream(self) -> AsyncGenerator[GeminiCompletionChunk, None]:
+        """Streams the response for a call to the model using this prompt asynchronously.
+
+        Yields:
+            A `GeminiCompletionChunk` for each chunk of the response.
+        """
+        gemini_pro_model = GenerativeModel(self.call_params.model)
+        completion = await gemini_pro_model.generate_content_async(
+            self.messages,
+            stream=True,
+            generation_config=self.call_params.generation_config,
+            safety_settings=self.call_params.safety_settings,
+            request_options=self.call_params.request_options,
+        )
+        async for chunk in completion:
+            yield GeminiCompletionChunk(chunk=chunk)
+
     @overload
     def extract(self, schema: Type[BaseTypeT], retries: int = 0) -> BaseTypeT:
         ...  # pragma: no cover
@@ -157,7 +207,7 @@ class GeminiPrompt(BasePrompt):
         ...  # pragma: no cover
 
     def extract(self, schema, retries=0):
-        """Extracts the given schema from the response of a chat `create` call.
+        """Extracts the given schema from the response of a `create` call.
 
         The given schema is converted into an `GeminiTool`, complete with a description
         of the tool, all of the fields, and their types. This allows us to take
@@ -199,4 +249,65 @@ class GeminiPrompt(BasePrompt):
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: include failure in retry prompt.
                 return self.extract(schema, retries - 1)
+            raise  # re-raise if we have no retries left
+
+    @overload
+    async def async_extract(
+        self, schema: Type[BaseTypeT], retries: int = 0
+    ) -> BaseTypeT:
+        ...  # pragma: no cover
+
+    @overload
+    async def async_extract(
+        self, schema: Type[BaseModelT], retries: int = 0
+    ) -> BaseModelT:
+        ...  # pragma: no cover
+
+    @overload
+    async def async_extract(self, schema: Callable, retries: int = 0) -> GeminiTool:
+        ...  # pragma: no cover
+
+    async def async_extract(self, schema, retries=0):
+        """Asynchronously extracts given schema from response of a `create` call.
+
+        The given schema is converted into an `GeminiTool`, complete with a description
+        of the tool, all of the fields, and their types. This allows us to take
+        advantage of Gemini's tool/function calling functionality to extract information
+        from a prompt according to the context provided by the `BaseModel` schema.
+
+        Args:
+            schema: The `BaseModel` schema to extract from the completion.
+            retries: The maximum number of times to retry the query on validation error.
+
+        Returns:
+            The `Schema` instance extracted from the completion.
+        """
+        return_tool = True
+        gemini_tool = schema
+        if is_base_type(schema):
+            gemini_tool = GeminiTool.from_base_type(schema)
+            return_tool = False
+        elif not isclass(schema):
+            gemini_tool = GeminiTool.from_fn(schema)
+        elif not issubclass(schema, GeminiTool):
+            gemini_tool = GeminiTool.from_model(schema)
+            return_tool = False
+
+        completion = await self.async_create(tools=[gemini_tool])
+        try:
+            tool = completion.tool
+            if tool is None:
+                raise AttributeError("No tool found in the completion.")
+            if return_tool:
+                return tool
+            if is_base_type(schema):
+                return tool.value
+            model = schema(**completion.tool.model_dump())  # type: ignore
+            model._completion = completion
+            return model
+        except (AttributeError, ValueError, ValidationError) as e:
+            if retries > 0:
+                logging.info(f"Retrying due to exception: {e}")
+                # TODO: include failure in retry prompt.
+                return await self.async_extract(schema, retries - 1)
             raise  # re-raise if we have no retries left

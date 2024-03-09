@@ -2,9 +2,17 @@
 import datetime
 import os
 import re
-from typing import Annotated, ClassVar, Generator, Iterable, Literal, cast
+from typing import (
+    Annotated,
+    AsyncGenerator,
+    ClassVar,
+    Generator,
+    Iterable,
+    Literal,
+    cast,
+)
 
-from anthropic import Anthropic
+from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
 from pydantic import BeforeValidator, InstanceOf
 
@@ -106,6 +114,27 @@ class AnthropicPrompt(BasePrompt):
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
 
+    async def async_create(self) -> AnthropicCompletion:
+        """Makes a call to the model using this `AnthropicPrompt` asynchronously.
+
+        Returns:
+            A `AnthropicCompletion` instance.
+        """
+        client = AsyncAnthropic(base_url=self.call_params.base_url)
+        if self.call_params.async_wrapper is not None:
+            client = self.call_params.async_wrapper(client)
+        completion_start_time = datetime.datetime.now().timestamp() * 1000
+        message = await client.messages.create(
+            messages=self.messages,
+            stream=False,
+            **self.call_params.kwargs,
+        )
+        return AnthropicCompletion(
+            completion=message,
+            start_time=completion_start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
+
     def stream(self) -> Generator[AnthropicCompletionChunk, None, None]:
         """Streams the response for a call to the model using this prompt.
 
@@ -119,4 +148,20 @@ class AnthropicPrompt(BasePrompt):
             messages=self.messages, **self.call_params.kwargs
         ) as stream:
             for chunk in stream:
+                yield AnthropicCompletionChunk(chunk=chunk)
+
+    async def async_stream(self) -> AsyncGenerator[AnthropicCompletionChunk, None]:
+        """Streams the response for a call to the model using this prompt asynchronously.
+
+        Yields:
+            An `AnthropicCompletionChunk` for each chunk of the response.
+        """
+        client = AsyncAnthropic(base_url=self.call_params.base_url)
+        if self.call_params.async_wrapper is not None:
+            client = self.call_params.async_wrapper(client)
+        astream = client.messages.stream(
+            messages=self.messages, **self.call_params.kwargs
+        )
+        async with astream as stream:
+            async for chunk in stream:
                 yield AnthropicCompletionChunk(chunk=chunk)

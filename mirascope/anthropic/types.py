@@ -1,7 +1,7 @@
 """Type classes for interacting with Anthropics's Chat API."""
 from typing import Any, Callable, Literal, Optional, Union
 
-from anthropic import Anthropic
+from anthropic import Anthropic, AsyncAnthropic
 from anthropic._types import Body, Headers, Query
 from anthropic.types import (
     ContentBlockDeltaEvent,
@@ -115,6 +115,7 @@ class AnthropicCallParams(BaseCallParams):
 
     base_url: Optional[str] = None
     wrapper: Optional[Callable[[Anthropic], Anthropic]] = None
+    async_wrapper: Optional[Callable[[AsyncAnthropic], AsyncAnthropic]] = None
     max_tokens: int = 1000
     model: str = "claude-3-sonnet-20240229"
     metadata: Optional[Metadata] = None
@@ -136,7 +137,7 @@ class AnthropicCallParams(BaseCallParams):
         return {
             key: value
             for key, value in self.model_dump(
-                exclude={"base_url", "wrapper", "tools"}
+                exclude={"base_url", "wrapper", "async_wrapper", "tools"}
             ).items()
             if value is not None
         }
