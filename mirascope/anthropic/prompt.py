@@ -159,7 +159,7 @@ class AnthropicPrompt(BasePrompt):
         client = AsyncAnthropic(base_url=self.call_params.base_url)
         if self.call_params.async_wrapper is not None:
             client = self.call_params.async_wrapper(client)
-        astream = client.messages.stream(
+        astream = await client.messages.stream(
             messages=self.messages, **self.call_params.kwargs
         )
         async with astream as stream:
