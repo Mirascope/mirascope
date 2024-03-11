@@ -2,20 +2,21 @@
 import datetime
 import os
 import re
-from typing import Annotated, Any, ClassVar, Optional
+from typing import Annotated, Any, ClassVar, Generator, Optional
 
 from mistralai.client import MistralClient
 from pydantic import AfterValidator
 
-from ..base.prompt import BasePrompt, format_template
-from ..base.types import (
+from ..base import (
     AssistantMessage,
+    BasePrompt,
     Message,
     SystemMessage,
     UserMessage,
+    format_template,
 )
-from .types import MistralCallParams, MistralChatCompletion
-from .utils import patch_mistral_kwargs
+from .types import MistralCallParams, MistralChatCompletion, MistralChatCompletionChunk
+from .utils import convert_tools_list_to_mistral_tools, patch_mistral_kwargs
 
 
 def _set_api_key(api_key: str) -> None:
@@ -77,7 +78,10 @@ class MistralPrompt(BasePrompt):
         else:
             client = MistralClient()
 
-        # TODO: tools logic
+        tools = kwargs.pop("tools") if "tools" in kwargs else []
+        if self.call_params.tools:
+            tools.extend(self.call_params.tools)
+        converted_tools = convert_tools_list_to_mistral_tools(tools)
         patch_mistral_kwargs(
             kwargs,
             prompt=self,
@@ -87,7 +91,25 @@ class MistralPrompt(BasePrompt):
         completion = client.chat(model=self.call_params.model, **kwargs)
         return MistralChatCompletion(
             completion=completion,
-            tool_types=self.call_params.tools,
+            tool_types=converted_tools,
             start_time=completion_start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
+
+    def stream(
+        self, **kwargs: Any
+    ) -> Generator[MistralChatCompletionChunk, None, None]:
+        if self.call_params.endpoint:
+            client = MistralClient(endpoint=self.call_params.endpoint)
+        else:
+            client = MistralClient()
+
+        # TODO: tools logic
+        patch_mistral_kwargs(
+            kwargs,
+            prompt=self,
+            tools=self.call_params.tools,
+        )
+        stream = client.chat_stream(model=self.call_params.model, **kwargs)
+        for chunk in stream:
+            yield MistralChatCompletionChunk(chunk=chunk)

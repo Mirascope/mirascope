@@ -1,8 +1,28 @@
 """Utility functions for Mistral convenience wrapper."""
-from typing import Any, Optional, Type
+from inspect import isclass
+from typing import Any, Callable, Optional, Type, Union
 
-from ..base.prompt import BasePrompt
+from ..base import BasePrompt, convert_function_to_tool
 from .tools import MistralTool
+
+
+def convert_tools_list_to_mistral_tools(
+    tools: Optional[list[Union[Callable, Type[MistralTool]]]],
+) -> Optional[list[Type[MistralTool]]]:
+    """Converts a list of `Callable` or `MistralTool` instances to a `MistralTool` list.
+
+    Args:
+        tools: A list of functions or `MistralTool`s.
+
+    Returns:
+        A list of all items converted to `MistralTool` instances.
+    """
+    if not tools:
+        return None
+    return [
+        tool if isclass(tool) else convert_function_to_tool(tool, MistralTool)
+        for tool in tools
+    ]
 
 
 def patch_mistral_kwargs(
@@ -35,5 +55,6 @@ def patch_mistral_kwargs(
     )
 
     if tools:
-        # TODO
-        pass
+        kwargs["tools"] = [tool.tool_schema() for tool in tools]
+        if "tool_choice" not in kwargs:
+            kwargs["tool_choice"] = "auto"

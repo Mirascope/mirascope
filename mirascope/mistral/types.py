@@ -4,6 +4,7 @@ from typing import Any, Optional, Type, Union
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,
     ChatCompletionResponseChoice,
+    ChatCompletionResponseStreamChoice,
     ChatCompletionStreamResponse,
     ChatMessage,
     ToolCall,
@@ -65,6 +66,41 @@ class MistralChatCompletion(BaseModel):
             "end_time": self.end_time,
             "output": self.completion.model_dump(),
         }
+
+    def __str__(self):
+        """Returns the contained string content for the 0th choice."""
+        return self.content if self.content is not None else ""
+
+
+class MistralChatCompletionChunk(BaseModel):
+    """Convenience wrapper for Mistral's chat model completions."""
+
+    chunk: ChatCompletionStreamResponse
+    tool_types: Optional[list[Type[MistralTool]]] = None
+
+    @property
+    def choices(self) -> list[ChatCompletionResponseStreamChoice]:
+        """Returns the array of chat completion choices."""
+        return self.chunk.choices
+
+    @property
+    def choice(self) -> ChatCompletionResponseStreamChoice:
+        """Returns the 0th choice."""
+        return self.chunk.choices[0]
+
+    @property
+    def delta(self) -> ChatMessage:
+        """Returns the delta of the 0th choice."""
+        return self.choice.delta
+
+    @property
+    def content(self) -> Optional[str]:
+        """Returns the content of the delta"""
+        return self.delta.content
+
+    # TODO: implement other properties
+    # @property
+    # def tool_calls(self) -> Optional[list[ChatCompletionMessageToolCall]]:
 
     def __str__(self):
         """Returns the contained string content for the 0th choice."""
