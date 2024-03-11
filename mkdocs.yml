@@ -106,11 +106,7 @@ nav:
       - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
       - Dumping prompts: "concepts/dumping_prompts.md"
       - Integrations: "concepts/integrations.md"
-  - Cookbook:
-      - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
-      - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
-      - SQuAD Extraction: "cookbook/squad_extraction.md"
-      - RAG: "cookbook/rag.md"
+  - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"
       - anthropic:

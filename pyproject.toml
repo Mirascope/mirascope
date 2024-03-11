@@ -110,7 +110,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["venv"]
+exclude = ["venv", "virtualenvs"]
 
 [[tool.mypy.overrides]]
 module = "tiktoken"

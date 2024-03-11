@@ -1,7 +1,0 @@
-mirascope==^0.3.0
-numpy>=1
-pandas>=1.2.3
-tiktoken
-pinecone-client
-python-dotenv
-pydantic-settings

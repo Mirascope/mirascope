@@ -1,23 +1,9 @@
-"""Types for working with Mirascope prompts."""
-from enum import Enum
-from inspect import isclass
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Iterable,
-    Literal,
-    Optional,
-    Type,
-    TypedDict,
-    Union,
-    get_origin,
-)
+"""Base types and abstract interfaces for typing LLM calls."""
+from abc import ABC, abstractmethod
+from typing import Any, Literal, TypedDict, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing_extensions import Required
-
-from .tools import BaseTool
 
 BaseType = Union[
     str,
@@ -30,78 +16,114 @@ BaseType = Union[
 ]
 
 
-def is_base_type(type_: Any) -> bool:
-    """Check if a type is a base type."""
-    if isclass(type_) and issubclass(type_, Enum):
-        return True
-    base_types = {str, int, float, bool, list, set, tuple}
-    if type_ in base_types or get_origin(type_) in base_types.union(
-        {Literal, Union, Annotated}
-    ):
-        return True
-    return False
-
-
-class BaseCallParams(BaseModel):
-    """The base parameters for calling a model with a prompt."""
-
-    model: str
-    tools: Optional[list[Union[Callable, Type[BaseTool]]]] = None
-
-    @property
-    def kwargs(self) -> dict[str, Any]:
-        """Returns the keyword argument call parameters as a dictioanry."""
-        return self.model_dump(exclude={"tools"})
-
-
 class SystemMessage(TypedDict, total=False):
     """A message with the `system` role.
 
     Attributes:
+        role: The role of the message's author, in this case `system`.
         content: The contents of the message.
-        role: The role of the messages author, in this case `system`.
     """
 
-    content: Required[str]
     role: Required[Literal["system"]]
+    content: Required[str]
 
 
 class UserMessage(TypedDict, total=False):
     """A message with the `user` role.
 
     Attributes:
+        role: The role of the message's author, in this case `user`.
         content: The contents of the message.
-        role: The role of the messages author, in this case `user`.
     """
 
-    content: Required[Union[str, Iterable]]
     role: Required[Literal["user"]]
+    content: Required[str]
 
 
 class AssistantMessage(TypedDict, total=False):
     """A message with the `assistant` role.
 
     Attributes:
+        role: The role of the message's author, in this case `assistant`.
         content: The contents of the message.
-        role: The role of the messages author, in this case `assistant`.
     """
 
-    content: Optional[str]
     role: Required[Literal["assistant"]]
-    tool_calls: Iterable
+    content: Required[str]
+
+
+class ModelMessage(TypedDict, total=False):
+    """A message with the `model` role.
+
+    Attributes:
+        role: The role of the message's author, in this case `model`.
+        content: The contents of the message.
+    """
+
+    role: Required[Literal["model"]]
+    content: Required[str]
 
 
 class ToolMessage(TypedDict, total=False):
     """A message with the `tool` role.
 
     Attributes:
+        role: The role of the message's author, in this case `tool`.
         content: The contents of the message.
-        role: The role of the messages author, in this case `tool`.
     """
 
+    role: Required[Literal["tool"]]
     content: Required[str]
-    role: Required[Literal["system"]]
-    tool_call_id: Required[str]
 
 
-Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage]
+Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage, Any]
+
+
+class BaseCallResponse(BaseModel, ABC):
+    """A base abstract interface for LLM call responses.
+
+    Attributes:
+        response: The original response from whichever model response this wraps.
+    """
+
+    response: Any
+
+    model_config = ConfigDict(extra="allow")
+
+    @property
+    @abstractmethod
+    def content(self) -> str:
+        """Should return the string content of the response.
+
+        If there are multiple choices in a response, this method should select the 0th
+        choice and return it's string content.
+
+        If there is no string content (e.g. when using tools), this method must return
+        the empty string.
+        """
+        ...  # pragma: no cover
+
+
+class BaseCallResponseChunk(BaseModel, ABC):
+    """A base abstract interface for LLM streaming response chunks.
+
+    Attributes:
+        response: The original response chunk from whichever model response this wraps.
+    """
+
+    chunk: Any
+
+    model_config = ConfigDict(extra="allow")
+
+    @property
+    @abstractmethod
+    def content(self) -> str:
+        """Should return the string content of the response chunk.
+
+        If there are multiple choices in a chunk, this method should select the 0th
+        choice and return it's string content.
+
+        If there is no string content (e.g. when using tools), this method must return
+        the empty string.
+        """
+        ...  # pragma: no cover
