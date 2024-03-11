@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from mirascope.base.calls import BaseCall
 from mirascope.base.prompts import BasePrompt
+from mirascope.base.types import BaseCallParams
 
 
 @patch.multiple(BaseCall, __abstractmethods__=set())
@@ -12,7 +13,7 @@ def test_base_call() -> None:
     model = "gpt-3.5-turbo-1106"
 
     class Call(BaseCall):
-        call_params = BaseCall.CallParams(model=model)
+        call_params = BaseCallParams(model=model)
 
     call = Call()  # type: ignore
     assert isinstance(call, BasePrompt)
@@ -24,7 +25,7 @@ def test_extending_base_call() -> None:
     """Tests extending the `BaseCall` interface."""
 
     class ExtendedCall(BaseCall):
-        class CallParams(BaseCall.CallParams):
+        class CallParams(BaseCallParams):
             additional_param: str
 
         call_params: ClassVar[CallParams] = CallParams(

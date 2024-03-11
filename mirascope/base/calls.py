@@ -4,10 +4,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import AsyncGenerator, ClassVar, Generator, Optional
 
-from pydantic import BaseModel, ConfigDict
-
 from .prompts import BasePrompt
-from .types import BaseCallResponse, BaseCallResponseChunk
+from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
 
 
 class BaseCall(BasePrompt, ABC):
@@ -16,17 +14,10 @@ class BaseCall(BasePrompt, ABC):
     api_key: Optional[str] = None
     base_url: Optional[str] = None
 
-    class CallParams(BaseModel):
-        """The parameters with which to make a call."""
-
-        model: str
-
-        model_config = ConfigDict(extra="allow")
-
-    call_params: ClassVar[CallParams]
+    call_params: ClassVar[BaseCallParams]
 
     @abstractmethod
-    def call(self, params: CallParams) -> BaseCallResponse:
+    def call(self, params: Optional[BaseCallParams] = None) -> BaseCallResponse:
         """A call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -36,7 +27,9 @@ class BaseCall(BasePrompt, ABC):
         ...  # pragma: no cover
 
     @abstractmethod
-    async def call_async(self, params: CallParams) -> BaseCallResponse:
+    async def call_async(
+        self, params: Optional[BaseCallParams] = None
+    ) -> BaseCallResponse:
         """An asynchronous call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -47,7 +40,7 @@ class BaseCall(BasePrompt, ABC):
 
     @abstractmethod
     def stream(
-        self, params: CallParams
+        self, params: Optional[BaseCallParams] = None
     ) -> Generator[BaseCallResponseChunk, None, None]:
         """A call to an LLM that streams the response in chunks.
 
@@ -59,7 +52,7 @@ class BaseCall(BasePrompt, ABC):
 
     @abstractmethod
     async def stream_async(
-        self, params: CallParams
+        self, params: Optional[BaseCallParams] = None
     ) -> AsyncGenerator[BaseCallResponseChunk, None]:
         """A asynchronous call to an LLM that streams the response in chunks.
 

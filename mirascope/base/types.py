@@ -1,19 +1,23 @@
 """Base types and abstract interfaces for typing LLM calls."""
 from abc import ABC, abstractmethod
-from typing import Any, Literal, TypedDict, Union
+from inspect import isclass
+from typing import (
+    Any,
+    Callable,
+    Generic,
+    Literal,
+    Optional,
+    Type,
+    TypedDict,
+    TypeVar,
+    Union,
+)
 
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import Required
 
-BaseType = Union[
-    str,
-    int,
-    float,
-    bool,
-    list,
-    set,
-    tuple,
-]
+from .tools import BaseTool
+from .utils import convert_function_to_tool
 
 
 class SystemMessage(TypedDict, total=False):
@@ -79,16 +83,59 @@ class ToolMessage(TypedDict, total=False):
 Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage, Any]
 
 
-class BaseCallResponse(BaseModel, ABC):
+ResponseT = TypeVar("ResponseT", bound=Any)
+BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+
+
+class BaseCallParams(BaseModel, Generic[BaseToolT]):
+    """The parameters with which to make a call."""
+
+    model: str
+    tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
+
+    model_config = ConfigDict(extra="allow")
+
+    def kwargs(self, tool_type: Optional[Type[BaseToolT]] = None) -> dict[str, Any]:
+        """Returns all parameters for the call as a keyword arguments dictionary."""
+        kwargs = {
+            key: value
+            for key, value in self.model_dump(exclude={"tools"}).items()
+            if value is not None
+        }
+        if not self.tools:
+            return kwargs
+        kwargs["tools"] = [
+            tool if isclass(tool) else convert_function_to_tool(tool, tool_type)
+            for tool in self.tools
+        ]
+        return kwargs
+
+
+class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
     """A base abstract interface for LLM call responses.
 
     Attributes:
         response: The original response from whichever model response this wraps.
     """
 
-    response: Any
+    response: ResponseT
+    tool_types: Optional[list[Type[BaseToolT]]] = None
+    start_time: float  # The start time of the completion in ms
+    end_time: float  # The end time of the completion in ms
 
     model_config = ConfigDict(extra="allow")
+
+    @property
+    @abstractmethod
+    def tools(self) -> Optional[list[BaseToolT]]:
+        """Returns the tools for the 0th choice message."""
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def tool(self) -> Optional[BaseToolT]:
+        """Returns the 0th tool for the 0th choice message."""
+        ...  # pragma: no cover
 
     @property
     @abstractmethod
@@ -104,14 +151,17 @@ class BaseCallResponse(BaseModel, ABC):
         ...  # pragma: no cover
 
 
-class BaseCallResponseChunk(BaseModel, ABC):
+ChunkT = TypeVar("ChunkT", bound=Any)
+
+
+class BaseCallResponseChunk(BaseModel, Generic[ChunkT], ABC):
     """A base abstract interface for LLM streaming response chunks.
 
     Attributes:
         response: The original response chunk from whichever model response this wraps.
     """
 
-    chunk: Any
+    chunk: ChunkT
 
     model_config = ConfigDict(extra="allow")
 

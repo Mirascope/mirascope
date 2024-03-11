@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, TypeVar
+from typing import Any, Callable, Generic, Type, TypeVar, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import SkipJsonSchema
 
 DEFAULT_TOOL_DOCSTRING = """\
@@ -13,10 +13,20 @@ extracted from the completion. Must include required parameters and may "
 exclude optional parameters unless present in the text.
 """
 
-_ToolCallTypeT = TypeVar("_ToolCallTypeT", bound=Any)
+BaseType = Union[
+    str,
+    int,
+    float,
+    bool,
+    list,
+    set,
+    tuple,
+]
+
+ToolCallT = TypeVar("ToolCallT", bound=Any)
 
 
-class BaseTool(BaseModel, Generic[_ToolCallTypeT], ABC):
+class BaseTool(BaseModel, Generic[ToolCallT], ABC):
     """A base class for easy use of tools with prompts.
 
     `BaseTool` is an abstract class interface and should not be used directly. When
@@ -25,7 +35,9 @@ class BaseTool(BaseModel, Generic[_ToolCallTypeT], ABC):
     when generating the schema by annotating it with `SkipJsonSchema`.
     """
 
-    tool_call: SkipJsonSchema[_ToolCallTypeT]
+    tool_call: SkipJsonSchema[ToolCallT]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def args(self) -> dict[str, Any]:
@@ -38,7 +50,7 @@ class BaseTool(BaseModel, Generic[_ToolCallTypeT], ABC):
         raise RuntimeError("Tool does not have an attached function.")
 
     @classmethod
-    def tool_schema(cls) -> dict[str, Any]:
+    def tool_schema(cls) -> Any:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
         model_schema = cls.model_json_schema()
 
@@ -55,6 +67,24 @@ class BaseTool(BaseModel, Generic[_ToolCallTypeT], ABC):
 
     @classmethod
     @abstractmethod
-    def from_tool_call(cls, tool_call: _ToolCallTypeT) -> BaseTool:
+    def from_tool_call(cls, tool_call: ToolCallT) -> BaseTool:
         """Extracts an instance of the tool constructed from a tool call response."""
+        ...  # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    def from_model(cls, model: Type[BaseModel]) -> Type[BaseTool]:
+        """Constructs a `BaseTool` type from a `BaseModel` type."""
+        ...  # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    def from_fn(cls, fn: Callable) -> Type[BaseTool]:
+        """Constructs a `BaseTool` type from a function."""
+        ...  # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    def from_base_type(cls, base_type: Type[BaseType]) -> Type[BaseTool]:
+        """Constructs a `BaseTool` type from a `BaseType` type."""
         ...  # pragma: no cover
