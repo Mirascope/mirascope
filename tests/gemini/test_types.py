@@ -36,7 +36,9 @@ def test_gemini_call_response_with_tools(
 
     expected_tool = fixture_expected_book_tool_instance
 
-    tools = [tool for tool in response.tools]
+    tools = response.tools
+    assert tools is not None
+    tools = [tool for tool in tools]
     assert response.tool == expected_tool
     assert len(tools) == 2
     assert tools[0] == expected_tool
@@ -58,7 +60,8 @@ def test_gemini_call_response_with_no_matching_tools(
         end_time=0,
     )
 
-    assert len(response.tools) == 0
+    tools = response.tools
+    assert tools == []
     assert response.tool is None
 
 
