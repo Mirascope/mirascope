@@ -8,9 +8,8 @@ from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import SkipJsonSchema
 
 DEFAULT_TOOL_DOCSTRING = """\
-A `{name}` instance with correctly formatted and typed parameters "
-extracted from the completion. Must include required parameters and may "
-exclude optional parameters unless present in the text.
+Correctly formatted and typed parameters extracted from the completion. Must include "
+"required parameters and may exclude optional parameters unless present in the text.
 """
 
 BaseType = Union[
@@ -58,7 +57,7 @@ class BaseTool(BaseModel, Generic[ToolCallT], ABC):
             "name": model_schema.pop("title"),
             "description": model_schema.pop("description")
             if "description" in model_schema
-            else DEFAULT_TOOL_DOCSTRING.format(cls.__name__),
+            else DEFAULT_TOOL_DOCSTRING,
         }
         if model_schema["properties"]:
             fn["parameters"] = model_schema

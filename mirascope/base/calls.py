@@ -2,13 +2,24 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, ClassVar, Generator, Optional
+from typing import (
+    Any,
+    AsyncGenerator,
+    ClassVar,
+    Generator,
+    Generic,
+    Optional,
+    TypeVar,
+)
 
 from .prompts import BasePrompt
 from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
 
+BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
+BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
 
-class BaseCall(BasePrompt, ABC):
+
+class BaseCall(BasePrompt, Generic[BaseCallResponseT, BaseCallResponseChunkT], ABC):
     """The base class abstract interface for calling LLMs."""
 
     api_key: Optional[str] = None
@@ -17,7 +28,7 @@ class BaseCall(BasePrompt, ABC):
     call_params: ClassVar[BaseCallParams]
 
     @abstractmethod
-    def call(self, params: Optional[BaseCallParams] = None) -> BaseCallResponse:
+    def call(self, **kwargs: Any) -> BaseCallResponseT:
         """A call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -27,9 +38,7 @@ class BaseCall(BasePrompt, ABC):
         ...  # pragma: no cover
 
     @abstractmethod
-    async def call_async(
-        self, params: Optional[BaseCallParams] = None
-    ) -> BaseCallResponse:
+    async def call_async(self, **kwargs: Any) -> BaseCallResponseT:
         """An asynchronous call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -39,9 +48,7 @@ class BaseCall(BasePrompt, ABC):
         ...  # pragma: no cover
 
     @abstractmethod
-    def stream(
-        self, params: Optional[BaseCallParams] = None
-    ) -> Generator[BaseCallResponseChunk, None, None]:
+    def stream(self, **kwargs: Any) -> Generator[BaseCallResponseChunkT, None, None]:
         """A call to an LLM that streams the response in chunks.
 
         An implementation of this function must yield response chunks that extend
@@ -52,11 +59,11 @@ class BaseCall(BasePrompt, ABC):
 
     @abstractmethod
     async def stream_async(
-        self, params: Optional[BaseCallParams] = None
-    ) -> AsyncGenerator[BaseCallResponseChunk, None]:
+        self, **kwargs: Any
+    ) -> AsyncGenerator[BaseCallResponseChunkT, None]:
         """A asynchronous call to an LLM that streams the response in chunks.
 
         An implementation of this function must yield response chunks that extend
         `BaseCallResponseChunk`. This ensures a consistent API and convenience across
         e.g. different model providers."""
-        ...  # pragma: no cover
+        yield ...  # type: ignore # pragma: no cover

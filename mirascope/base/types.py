@@ -80,7 +80,7 @@ class ToolMessage(TypedDict, total=False):
     content: Required[str]
 
 
-Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage, Any]
+Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage]
 
 
 ResponseT = TypeVar("ResponseT", bound=Any)
@@ -95,11 +95,17 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
 
     model_config = ConfigDict(extra="allow")
 
-    def kwargs(self, tool_type: Optional[Type[BaseToolT]] = None) -> dict[str, Any]:
+    def kwargs(
+        self,
+        tool_type: Type[BaseToolT],
+        exclude: Optional[set[str]] = None,
+    ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
+        extra_exclude = {"tools"}
+        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
-            for key, value in self.model_dump(exclude={"tools"}).items()
+            for key, value in self.model_dump(exclude=exclude).items()
             if value is not None
         }
         if not self.tools:
@@ -154,7 +160,7 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
 ChunkT = TypeVar("ChunkT", bound=Any)
 
 
-class BaseCallResponseChunk(BaseModel, Generic[ChunkT], ABC):
+class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
     """A base abstract interface for LLM streaming response chunks.
 
     Attributes:
@@ -162,6 +168,7 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT], ABC):
     """
 
     chunk: ChunkT
+    tool_types: Optional[list[Type[BaseToolT]]] = None
 
     model_config = ConfigDict(extra="allow")
 

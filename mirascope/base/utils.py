@@ -8,10 +8,10 @@ from pydantic.fields import FieldInfo
 
 from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool
 
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
-def tool_fn(fn: Callable) -> Callable[[Type[_BaseToolT]], Type[_BaseToolT]]:
+def tool_fn(fn: Callable) -> Callable[[Type[BaseToolT]], Type[BaseToolT]]:
     """A decorator for adding a function to a tool class.
 
     Adding this decorator will add an `fn` property to the tool class that returns the
@@ -25,7 +25,7 @@ def tool_fn(fn: Callable) -> Callable[[Type[_BaseToolT]], Type[_BaseToolT]]:
         The decorated tool class.
     """
 
-    def decorator(cls: Type[_BaseToolT]) -> Type[_BaseToolT]:
+    def decorator(cls: Type[BaseToolT]) -> Type[BaseToolT]:
         """A decorator for adding a function to a tool class."""
         setattr(cls, "fn", property(lambda self: fn))
         return cls
@@ -33,7 +33,7 @@ def tool_fn(fn: Callable) -> Callable[[Type[_BaseToolT]], Type[_BaseToolT]]:
     return decorator
 
 
-def convert_function_to_tool(fn: Callable, base: Type[_BaseToolT]) -> Type[_BaseToolT]:
+def convert_function_to_tool(fn: Callable, base: Type[BaseToolT]) -> Type[BaseToolT]:
     """Constructs a `BaseToolT` type from the given function.
 
     This method expects all function parameters to be properly documented in identical
@@ -113,8 +113,8 @@ def convert_function_to_tool(fn: Callable, base: Type[_BaseToolT]) -> Type[_Base
 
 
 def convert_base_model_to_tool(
-    schema: Type[BaseModel], base: Type[_BaseToolT]
-) -> Type[_BaseToolT]:
+    schema: Type[BaseModel], base: Type[BaseToolT]
+) -> Type[BaseToolT]:
     """Converts a `BaseModel` schema to a `BaseToolT` type.
 
     By adding a docstring (if needed) and passing on fields and field information in
@@ -134,9 +134,7 @@ def convert_base_model_to_tool(
     return create_model(
         f"{schema.__name__}",
         __base__=base,
-        __doc__=schema.__doc__
-        if schema.__doc__
-        else DEFAULT_TOOL_DOCSTRING.format(name=schema.__name__),
+        __doc__=schema.__doc__ if schema.__doc__ else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
 
@@ -145,12 +143,12 @@ _T = TypeVar("_T")
 
 
 def convert_base_type_to_tool(
-    schema: Type[_T], base: Type[_BaseToolT]
-) -> Type[_BaseToolT]:
+    schema: Type[_T], base: Type[BaseToolT]
+) -> Type[BaseToolT]:
     """Converts a `BaseType` to a `BaseToolT` type."""
     return create_model(
         f"{schema.__name__[0].upper()}{schema.__name__[1:]}",
         __base__=base,
-        __doc__=DEFAULT_TOOL_DOCSTRING.format(name=schema.__name__),
+        __doc__=DEFAULT_TOOL_DOCSTRING,
         value=(schema, ...),
     )

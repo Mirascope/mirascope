@@ -188,19 +188,19 @@ def test_convert_base_model_to_tool(schema: BaseModel) -> None:
 
 
 class Int(BaseTool):
-    __doc__ = DEFAULT_TOOL_DOCSTRING.format(name="int")
+    __doc__ = DEFAULT_TOOL_DOCSTRING
 
     value: int
 
 
 class Str(BaseTool):
-    __doc__ = DEFAULT_TOOL_DOCSTRING.format(name="str")
+    __doc__ = DEFAULT_TOOL_DOCSTRING
 
     value: str
 
 
 class List(BaseTool):
-    __doc__ = DEFAULT_TOOL_DOCSTRING.format(name="list")
+    __doc__ = DEFAULT_TOOL_DOCSTRING
 
     value: list[float]
 

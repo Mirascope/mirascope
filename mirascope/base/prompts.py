@@ -2,7 +2,7 @@
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Union
 
 from pydantic import BaseModel
 
@@ -55,7 +55,7 @@ class BasePrompt(BaseModel):
         """Returns the formatted template."""
         return self._format_template(self.template)
 
-    def messages(self) -> list[Message]:
+    def messages(self) -> Union[list[Message], Any]:
         """Returns the template as a formatted list of messages."""
         message_type_by_role = {
             "system": SystemMessage,
