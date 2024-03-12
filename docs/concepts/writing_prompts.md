@@ -50,13 +50,13 @@ class LongerPrompt(BasePrompt):
 
 ## Editor Support
 
-- Inline Errors [Take new screenshots @Brendan Kao]
+- Inline Errors
     
-    [https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c](https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c)
+    ![https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c](https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c)
     
-- Autocomplete [Take new screenshots @Brendan Kao]
+- Autocomplete
     
-    [https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054](https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054)
+    ![https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054](https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054)
     
 
 ## Template Variables
