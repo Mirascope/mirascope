@@ -2,7 +2,6 @@
 from typing import Any, Optional, TypeVar
 
 from google.generativeai.types import GenerateContentResponse  # type: ignore
-from pydantic import BaseModel, ConfigDict
 
 from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseTool
 from .tools import GeminiTool
@@ -69,6 +68,25 @@ class GeminiCallResponse(BaseCallResponse[GenerateContentResponse, GeminiTool]):
     """
 
     @property
+    def tools(self) -> Optional[list[GeminiTool]]:
+        """Returns the list of tools for the 0th candidate's 0th content part."""
+        if self.tool_types is None:
+            return None
+
+        tool_calls = [
+            part.function_call for part in self.response.candidates[0].content.parts
+        ]
+
+        extracted_tools = []
+        for tool_call in tool_calls:
+            for tool_type in self.tool_types:
+                if tool_call.name == tool_type.__name__:
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                    break
+
+        return extracted_tools
+
+    @property
     def tool(self) -> Optional[GeminiTool]:
         """Returns the 0th tool for the 0th candidate's 0th content part.
 
@@ -129,6 +147,7 @@ class GeminiCallResponseChunk(
     ```
     """
 
+    @property
     def content(self) -> str:
         """Returns the chunk content for the 0th choice."""
         return self.chunk.candidates[0].content.parts[0].text

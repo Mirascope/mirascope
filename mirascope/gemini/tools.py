@@ -21,7 +21,7 @@ from ..base import (
 BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
-class GeminiTool(BaseTool):
+class GeminiTool(BaseTool[FunctionCall]):
     '''A base class for easy use of tools with the Gemini API.
 
     `GeminiTool` internally handles the logic that allows you to use tools with simple
@@ -69,17 +69,14 @@ class GeminiTool(BaseTool):
 
         Returns:
             The constructed `Tool` schema.
-
-        Raises:
-            ValueError: if the class doesn't have a docstring description.
         """
-        model_schema = cls.model_json_schema()
-        if "description" not in model_schema:
-            raise ValueError("Tool must have a docstring description.")
-
         tool_schema = super().tool_schema()
         if "parameters" in tool_schema:
-            tool_schema["parameters"].pop("$defs")
+            if "$defs" in tool_schema["parameters"]:
+                raise ValueError(
+                    "Unfortunately Google's Gemini API cannot handle nested structures "
+                    "with $defs."
+                )
             tool_schema["parameters"]["properties"] = {
                 prop: {
                     key: value for key, value in prop_schema.items() if key != "title"
@@ -108,6 +105,7 @@ class GeminiTool(BaseTool):
         if not tool_call.args:
             raise ValueError("Tool call doesn't have any arguments.")
         model_json = {key: value for key, value in tool_call.args.items()}
+        model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)
 
     @classmethod

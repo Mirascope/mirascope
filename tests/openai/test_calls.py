@@ -66,7 +66,7 @@ def test_openai_call_call_with_tools(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-def test_openai_prompt_create_with_wrapper(
+def test_openai_call_call_with_wrapper(
     mock_create: MagicMock,
     fixture_openai_test_call: OpenAICall,
     fixture_chat_completion: ChatCompletion,
@@ -109,7 +109,7 @@ async def test_openai_call_call_async(
     new_callable=AsyncMock,
 )
 @pytest.mark.asyncio
-async def test_openai_prompt_create_async_with_wrapper(
+async def test_openai_call_call_async_with_wrapper(
     mock_create: AsyncMock,
     fixture_openai_test_call: OpenAICall,
     fixture_chat_completion: ChatCompletion,
@@ -119,7 +119,7 @@ async def test_openai_prompt_create_async_with_wrapper(
     wrapper = MagicMock()
     wrapper.return_value = AsyncOpenAI(api_key="test")
 
-    fixture_openai_test_call.call_params.wrapper = wrapper
+    fixture_openai_test_call.call_params.wrapper_async = wrapper
     await fixture_openai_test_call.call_async()
     wrapper.assert_called_once()
 
@@ -128,7 +128,7 @@ async def test_openai_prompt_create_async_with_wrapper(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-def test_openai_prompt_stream(
+def test_openai_call_stream(
     mock_create: MagicMock,
     fixture_openai_test_call: OpenAICall,
     fixture_chat_completion_chunks: list[ChatCompletionChunk],
@@ -147,6 +147,27 @@ def test_openai_prompt_stream(
         messages=fixture_openai_test_call.messages(),
         stream=True,
     )
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+def test_openai_call_stream_with_wrapper(
+    mock_create: MagicMock,
+    fixture_openai_test_call: OpenAICall,
+    fixture_chat_completion_chunks: list[ChatCompletionChunk],
+) -> None:
+    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
+    mock_create.return_value = fixture_chat_completion_chunks
+    wrapper = MagicMock()
+    wrapper.return_value = OpenAI(api_key="test")
+
+    fixture_openai_test_call.call_params.wrapper = wrapper
+    stream = fixture_openai_test_call.stream()
+    for _ in stream:
+        pass
+    wrapper.assert_called_once()
 
 
 @patch(
@@ -175,3 +196,25 @@ async def test_openai_prompt_stream_async(
         messages=fixture_openai_test_call.messages(),
         stream=True,
     )
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+)
+@pytest.mark.asyncio
+async def test_openai_call_stream_async_with_wrapper(
+    mock_create: AsyncMock,
+    fixture_openai_test_call: OpenAICall,
+    fixture_chat_completion_chunks: list[ChatCompletionChunk],
+) -> None:
+    """Tests `OpenAI` is created with a wrapper in `OpenAIPrompt.create`."""
+    mock_create.return_value.__aiter__.return_value = fixture_chat_completion_chunks
+    wrapper = MagicMock()
+    wrapper.return_value = AsyncOpenAI(api_key="test")
+
+    fixture_openai_test_call.call_params.wrapper_async = wrapper
+    stream = fixture_openai_test_call.stream_async()
+    async for _ in stream:
+        pass
+    wrapper.assert_called_once()

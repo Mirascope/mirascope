@@ -1,15 +1,6 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
-from typing import (
-    Any,
-    AsyncGenerator,
-    ClassVar,
-    Generator,
-    Optional,
-    Type,
-    Union,
-    overload,
-)
+from typing import Any, AsyncGenerator, ClassVar, Generator
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import (
@@ -25,7 +16,9 @@ from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
 
 
-class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BasePrompt):
+class OpenAICall(
+    BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool], BasePrompt
+):
     """A base class for calling OpenAI's Chat Completion models.
 
     Example:
@@ -51,17 +44,18 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
 
     def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the template as a formatted list of messages."""
-        return self._parse_messages(["system", "user", "assistant", "tool"])
-        # message_type_by_role = {
-        #     "system": ChatCompletionSystemMessageParam,
-        #     "user": ChatCompletionUserMessageParam,
-        #     "assistant": ChatCompletionAssistantMessageParam,
-        #     "tool": ChatCompletionToolMessageParam,
-        # }
-        # return [
-        #     message_type_by_role[role](role=role, content=content)
-        #     for role, content in self._parse_messages(list(message_type_by_role.keys()))
-        # ]
+        message_type_by_role = {
+            "system": ChatCompletionSystemMessageParam,
+            "user": ChatCompletionUserMessageParam,
+            "assistant": ChatCompletionAssistantMessageParam,
+            "tool": ChatCompletionToolMessageParam,
+        }
+        return [
+            message_type_by_role[message["role"]](
+                role=message["role"], content=message["content"]
+            )
+            for message in self._parse_messages(list(message_type_by_role.keys()))
+        ]
 
     def call(self, **kwargs: Any) -> OpenAICallResponse:
         """Makes a call to the model using this `OpenAICall` instance.
@@ -77,9 +71,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(
-            OpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
-        )
+        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
             messages=self.messages(),
@@ -107,9 +102,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(
-            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
-        )
+        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
             messages=self.messages(),
@@ -137,9 +133,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(
-            OpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
-        )
+        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
         stream = client.chat.completions.create(
             messages=self.messages(),
             stream=True,
@@ -164,9 +161,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(
-            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
-        )
+        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
         stream = await client.chat.completions.create(
             messages=self.messages(),
             stream=True,
@@ -174,41 +172,3 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
         )
         async for chunk in stream:
             yield OpenAICallResponseChunk(chunk=chunk, tool_types=tool_types)
-
-    ############################## PRIVATE METHODS ###################################
-
-    @overload
-    def _setup(
-        self, client: OpenAI, kwargs: dict[str, Any]
-    ) -> tuple[OpenAI, dict[str, Any], Optional[list[Type[OpenAITool]]]]:
-        ...  # pragma: no cover
-
-    @overload
-    def _setup(
-        self, client: AsyncOpenAI, kwargs: dict[str, Any]
-    ) -> tuple[AsyncOpenAI, dict[str, Any], Optional[list[Type[OpenAITool]]]]:
-        ...  # pragma: no cover
-
-    def _setup(
-        self,
-        client: Union[AsyncOpenAI, OpenAI],
-        kwargs: dict[str, Any],
-    ) -> tuple[
-        Union[AsyncOpenAI, OpenAI], dict[str, Any], Optional[list[Type[OpenAITool]]]
-    ]:
-        """Returns the call params kwargs and tool types.
-
-        The tools in the call params first get converted into OpenAI tools. We then need
-        both the converted tools for the response (so it can construct tools if present
-        in the response) as well as the actual schemas injected through kwargs. This
-        function handles that setup.
-        """
-        call_params = self.call_params.model_copy(update=kwargs)
-        if call_params.wrapper is not None:
-            client = call_params.wrapper(client)  # type: ignore
-        kwargs = call_params.kwargs()
-        tool_types = None
-        if "tools" in kwargs:
-            tool_types = kwargs.pop("tools")
-            kwargs["tools"] = [tool.tool_schema() for tool in tool_types]
-        return client, kwargs, tool_types

@@ -72,9 +72,6 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
 
         Returns:
             The constructed `ChatCompletionToolParam` schema.
-
-        Raises:
-            ValueError: if the class doesn't have a docstring description.
         """
         fn = super().tool_schema()
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})

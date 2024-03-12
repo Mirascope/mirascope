@@ -65,8 +65,10 @@ class BasePrompt(BaseModel):
             "tool": ToolMessage,
         }
         return [
-            message_type_by_role[role](role=role, content=content)
-            for role, content in self._parse_messages(list(message_type_by_role.keys()))
+            message_type_by_role[message["role"]](
+                role=message["role"], content=message["content"]
+            )
+            for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 
     def dump(

@@ -1,20 +1,20 @@
 """A module for prompting Google's Gemini Chat API."""
 import datetime
 import logging
-from inspect import isclass
 from typing import (
     Annotated,
     Any,
+    AsyncGenerator,
     ClassVar,
+    Generator,
     Optional,
-    TypeVar,
 )
 
 from google.generativeai import GenerativeModel, configure  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
-from pydantic import AfterValidator, BaseModel
+from pydantic import AfterValidator
 
-from ..base import BaseCall, BasePrompt, BaseType, tool_fn
+from ..base import BaseCall, BasePrompt
 from .tools import GeminiTool
 from .types import (
     GeminiCallParams,
@@ -23,11 +23,11 @@ from .types import (
 )
 
 logger = logging.getLogger("mirascope")
-BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
-BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 
-class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk], BasePrompt):
+class GeminiCall(
+    BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool], BasePrompt
+):
     '''A class for prompting Google's Gemini Chat API.
 
     This prompt supports the message types: USER, MODEL, TOOL
@@ -76,7 +76,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk], BaseProm
         return self._parse_messages(["model", "user", "tool"])
 
     def call(self, **kwargs: Any) -> GeminiCallResponse:
-        """Makes a call to the model using this `GeminiPrompt`.
+        """Makes an call to the model using this `GeminiCall` instance.
 
         Args:
             **kwargs: Additional keyword arguments that will be used for generating the
@@ -86,94 +86,89 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk], BaseProm
         Returns:
             A `GeminiCallResponse` instance.
         """
-        gemini_pro_model = GenerativeModel(self.call_params.model)
-        tools = kwargs.pop("tools") if "tools" in kwargs else []
-        if self.call_params.tools:
-            tools.extend(self.call_params.tools)
-        converted_tools = [
-            tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
-            for tool in tools
-        ]
-        completion_start_time = datetime.datetime.now().timestamp() * 1000
-        completion = gemini_pro_model.generate_content(
+        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        start_time = datetime.datetime.now().timestamp() * 1000
+        response = gemini_pro_model.generate_content(
             self.messages,
             stream=False,
-            tools=[tool.tool_schema() for tool in converted_tools]
-            if converted_tools
-            else None,
-            generation_config=self.call_params.generation_config,
-            safety_settings=self.call_params.safety_settings,
-            request_options=self.call_params.request_options,
+            tools=kwargs.pop("tools") if "tools" in kwargs else None,
+            **kwargs,
         )
         return GeminiCallResponse(
-            response=completion,
-            tool_types=converted_tools,
-            start_time=completion_start_time,
+            response=response,
+            tool_types=tool_types,
+            start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
 
-    # async def async_create(self, **kwargs: Any) -> GeminiCompletion:
-    #     """Makes an asynchronous call to the model using this `GeminiPrompt`.
+    async def call_async(self, **kwargs: Any) -> GeminiCallResponse:
+        """Makes an asynchronous call to the model using this `GeminiCall` instance.
 
-    #     Returns:
-    #         An `GeminiCompletion` instance.
-    #     """
-    #     gemini_pro_model = GenerativeModel(self.call_params.model)
-    #     tools = kwargs.pop("tools") if "tools" in kwargs else []
-    #     if self.call_params.tools:
-    #         tools.extend(self.call_params.tools)
-    #     converted_tools = [
-    #         tool if isclass(tool) else tool_fn(tool)(GeminiTool.from_fn(tool))
-    #         for tool in tools
-    #     ]
-    #     completion_start_time = datetime.datetime.now().timestamp() * 1000
-    #     completion = await gemini_pro_model.generate_content_async(
-    #         self.messages,
-    #         stream=False,
-    #         tools=[tool.tool_schema() for tool in converted_tools]
-    #         if converted_tools
-    #         else None,
-    #         generation_config=self.call_params.generation_config,
-    #         safety_settings=self.call_params.safety_settings,
-    #         request_options=self.call_params.request_options,
-    #     )
-    #     return GeminiCompletion(
-    #         completion=completion,
-    #         tool_types=converted_tools,
-    #         start_time=completion_start_time,
-    #         end_time=datetime.datetime.now().timestamp() * 1000,
-    #     )
+        Args:
+            **kwargs: Additional keyword arguments that will be used for generating the
+                response. These will override any existing argument settings in call
+                params.
 
-    # def stream(self) -> Generator[GeminiCompletionChunk, None, None]:
-    #     """Streams the response for a call to the model using this prompt.
+        Returns:
+            A `GeminiCallResponse` instance.
+        """
+        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        start_time = datetime.datetime.now().timestamp() * 1000
+        response = await gemini_pro_model.generate_content_async(
+            self.messages,
+            stream=False,
+            tools=kwargs.pop("tools") if "tools" in kwargs else None,
+            **kwargs,
+        )
+        return GeminiCallResponse(
+            response=response,
+            tool_types=tool_types,
+            start_time=start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+        )
 
-    #     Yields:
-    #         A `GeminiCompletionChunk` for each chunk of the response.
-    #     """
-    #     gemini_pro_model = GenerativeModel(self.call_params.model)
-    #     completion = gemini_pro_model.generate_content(
-    #         self.messages,
-    #         stream=True,
-    #         generation_config=self.call_params.generation_config,
-    #         safety_settings=self.call_params.safety_settings,
-    #         request_options=self.call_params.request_options,
-    #     )
-    #     for chunk in completion:
-    #         yield GeminiCompletionChunk(chunk=chunk)
+    def stream(self, **kwargs: Any) -> Generator[GeminiCallResponseChunk, None, None]:
+        """Streams the response for a call using this `GeminiCall`.
 
-    # async def async_stream(self) -> AsyncGenerator[GeminiCompletionChunk, None]:
-    #     """Streams the response for a call to the model using this prompt asynchronously.
+        Args:
+            **kwargs: Additional keyword arguments parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
 
-    #     Yields:
-    #         A `GeminiCompletionChunk` for each chunk of the response.
-    #     """
-    #     gemini_pro_model = GenerativeModel(self.call_params.model)
-    #     completion = await gemini_pro_model.generate_content_async(
-    #         self.messages,
-    #         stream=True,
-    #         generation_config=self.call_params.generation_config,
-    #         safety_settings=self.call_params.safety_settings,
-    #         request_options=self.call_params.request_options,
-    #     )
-    #     async for chunk in completion:
-    #         yield GeminiCompletionChunk(chunk=chunk)
+        Yields:
+            A `GeminiCallResponseChunk` for each chunk of the response.
+        """
+        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        stream = gemini_pro_model.generate_content(
+            self.messages,
+            stream=True,
+            tools=kwargs.pop("tools") if "tools" in kwargs else None,
+            **kwargs,
+        )
+        for chunk in stream:
+            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+
+    async def stream_async(
+        self, **kwargs: Any
+    ) -> AsyncGenerator[GeminiCallResponseChunk, None]:
+        """Streams the response asynchronously for a call using this `GeminiCall`.
+
+        Args:
+            **kwargs: Additional keyword arguments parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
+
+        Yields:
+            A `GeminiCallResponseChunk` for each chunk of the response.
+        """
+        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        stream = await gemini_pro_model.generate_content_async(
+            self.messages,
+            stream=True,
+            tools=kwargs.pop("tools") if "tools" in kwargs else None,
+            **kwargs,
+        )
+        async for chunk in stream:
+            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)

@@ -1,86 +1,76 @@
 """Tests for the `mirascope.gemini.types` module."""
-import pytest
-from google.ai.generativelanguage import (
-    Candidate,
-    Content,
-    FunctionCall,
-    GenerateContentResponse,
-    Part,
-)
-from google.generativeai.types import (  # type: ignore
-    GenerateContentResponse as GenerateContentResponseType,
-)
+from typing import Type
+
+from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from mirascope.gemini.tools import GeminiTool
 from mirascope.gemini.types import GeminiCallResponse
 
 
-def test_gemini_completion() -> None:
-    """Tests the `GeminiCompletion` class."""
-    completion = GeminiCallResponse(
-        completion=GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        content=Content(
-                            parts=[Part(text="Who is the author?")], role="model"
-                        )
-                    )
-                ]
-            )
-        ),
+def test_gemini_call_response(
+    fixture_generate_content_response: GenerateContentResponse,
+) -> None:
+    """Tests the `GeminiCallResponse` class."""
+    response = GeminiCallResponse(
+        response=fixture_generate_content_response,
         start_time=0,
         end_time=0,
     )
-    assert str(completion) == "Who is the author?"
-    assert completion.tool is None
+    assert response.content == "Who is the author?"
+    assert response.tools is None
+    assert response.tool is None
 
 
-class BookTool(GeminiTool):
-    title: str
-    author: str
-
-
-class NotBookTool(GeminiTool):
-    title: str
-
-
-@pytest.mark.parametrize(
-    "tool,expected_tool",
-    [
-        (BookTool, BookTool(title="The Name of the Wind", author="Patrick Rothfuss")),
-        (NotBookTool, None),
-    ],
-)
-def test_gemini_completion_with_tool(tool, expected_tool) -> None:
-    """Tests the `GeminiCompletion` class with a tool."""
-
-    completion = GeminiCallResponse(
-        completion=GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        content=Content(
-                            parts=[
-                                Part(
-                                    function_call=FunctionCall(
-                                        name="BookTool",
-                                        args={
-                                            "title": "The Name of the Wind",
-                                            "author": "Patrick Rothfuss",
-                                        },
-                                    )
-                                )
-                            ],
-                            role="model",
-                        )
-                    )
-                ]
-            )
-        ),
-        tool_types=[tool],
+def test_gemini_call_response_with_tools(
+    fixture_generate_content_response_with_tools: GenerateContentResponse,
+    fixture_book_tool: Type[GeminiTool],
+    fixture_expected_book_tool_instance: GeminiTool,
+) -> None:
+    """Tests the `GeminiCallResponse` class with a tool."""
+    response = GeminiCallResponse(
+        response=fixture_generate_content_response_with_tools,
+        tool_types=[fixture_book_tool],
         start_time=0,
         end_time=0,
     )
 
-    assert completion.tool == expected_tool
+    expected_tool = fixture_expected_book_tool_instance
+
+    tools = [tool for tool in response.tools]
+    assert response.tool == expected_tool
+    assert len(tools) == 2
+    assert tools[0] == expected_tool
+    assert tools[1] == expected_tool
+
+
+def test_gemini_call_response_with_no_matching_tools(
+    fixture_generate_content_response_with_tools: GenerateContentResponse,
+) -> None:
+    """Tests that the `tools` and `tool` convenience functions work with no matches."""
+
+    class NotBookTool(GeminiTool):
+        title: str
+
+    response = GeminiCallResponse(
+        response=fixture_generate_content_response_with_tools,
+        tool_types=[NotBookTool],
+        start_time=0,
+        end_time=0,
+    )
+
+    assert len(response.tools) == 0
+    assert response.tool is None
+
+
+def test_gemini_call_response_with_no_tools(
+    fixture_generate_content_response_with_tools: GenerateContentResponse,
+) -> None:
+    """Tests that the `tools` and `tool` convenience functions work with no tools."""
+    response = GeminiCallResponse(
+        response=fixture_generate_content_response_with_tools,
+        start_time=0,
+        end_time=0,
+    )
+
+    assert response.tools is None
+    assert response.tool is None

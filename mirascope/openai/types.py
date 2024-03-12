@@ -46,9 +46,8 @@ class OpenAICallParams(BaseCallParams[OpenAITool]):
     extra_body: Optional[Body] = None
     timeout: Optional[Union[float, Timeout]] = None
 
-    wrapper: Optional[
-        Union[Callable[[OpenAI], OpenAI], Callable[[AsyncOpenAI], AsyncOpenAI]]
-    ] = None
+    wrapper: Optional[Callable[[OpenAI], OpenAI]] = None
+    wrapper_async: Optional[Callable[[AsyncOpenAI], AsyncOpenAI]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

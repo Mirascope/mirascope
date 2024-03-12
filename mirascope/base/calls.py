@@ -9,17 +9,22 @@ from typing import (
     Generator,
     Generic,
     Optional,
+    Type,
     TypeVar,
 )
 
 from .prompts import BasePrompt
+from .tools import BaseTool
 from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
 
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
+BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
-class BaseCall(BasePrompt, Generic[BaseCallResponseT, BaseCallResponseChunkT], ABC):
+class BaseCall(
+    BasePrompt, Generic[BaseCallResponseT, BaseCallResponseChunkT, BaseToolT], ABC
+):
     """The base class abstract interface for calling LLMs."""
 
     api_key: Optional[str] = None
@@ -67,3 +72,23 @@ class BaseCall(BasePrompt, Generic[BaseCallResponseT, BaseCallResponseChunkT], A
         `BaseCallResponseChunk`. This ensures a consistent API and convenience across
         e.g. different model providers."""
         yield ...  # type: ignore # pragma: no cover
+
+    ############################## PRIVATE METHODS ###################################
+
+    def _setup(
+        self, base_tool_type: Type[BaseToolT], kwargs: dict[str, Any]
+    ) -> tuple[dict[str, Any], Optional[list[Type[BaseToolT]]]]:
+        """Returns the call params kwargs and tool types.
+
+        The tools in the call params first get converted into BaseToolT types. We then
+        need both the converted tools for the response (so it can construct actual tool
+        instances if present in the response) as well as the actual schemas injected
+        through kwargs. This function handles that setup.
+        """
+        call_params = self.call_params.model_copy(update=kwargs)
+        kwargs = call_params.kwargs(tool_type=base_tool_type)
+        tool_types = None
+        if "tools" in kwargs:
+            tool_types = kwargs.pop("tools")
+            kwargs["tools"] = [tool.tool_schema() for tool in tool_types]
+        return kwargs, tool_types
