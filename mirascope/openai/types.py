@@ -66,8 +66,36 @@ class OpenAICallParams(BaseCallParams[OpenAITool]):
 class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     """A convenience wrapper around the OpenAI `ChatCompletion` response.
 
-    Attributes:
-        response: The original `ChatCompletion`.
+    When using Mirascope's convenience wrappers to interact with OpenAI models via
+    `OpenAICall`, responses using `OpenAICall.call()` will return a
+    `OpenAICallResponse`, whereby the implemented properties allow for simpler syntax
+    and a convenient developer experience.
+
+    Example:
+
+    ```python
+    from mirascope.openai import OpenAICall
+
+
+    class BookRecommender(OpenAICall):
+        template = "Please recommend a {genre} book"
+
+        genre: str
+
+
+    response = Bookrecommender(genre="fantasy").call()
+    print(response.content)
+    #> The Name of the Wind
+
+    print(response.message)
+    #> ChatCompletionMessage(content='The Name of the Wind', role='assistant',
+    #  function_call=None, tool_calls=None)
+
+    print(response.choices)
+    #> [Choice(finish_reason='stop', index=0, logprobs=None,
+    #  message=ChatCompletionMessage(content='The Name of the Wind', role='assistant',
+    #  function_call=None, tool_calls=None))]
+    ```
     """
 
     @property
@@ -160,6 +188,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
 
     for chunk in OpenAICall().stream():
         print(chunk.content)
+
     #> 1
     #  +
     #  2

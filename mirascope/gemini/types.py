@@ -1,0 +1,134 @@
+"""Types for interacting with Google's Gemini models using Mirascope."""
+from typing import Any, Optional, TypeVar
+
+from google.generativeai.types import GenerateContentResponse  # type: ignore
+from pydantic import BaseModel, ConfigDict
+
+from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseTool
+from .tools import GeminiTool
+
+BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+
+
+class GeminiCallParams(BaseCallParams[GeminiTool]):
+    """The parameters to use when calling the Gemini API calls.
+
+    Example:
+
+    ```python
+    from mirascope.gemini import GeminiCall, GeminiCallParams
+
+
+    class BookRecommendation(GeminiPrompt):
+        template = "Please recommend a {genre} book"
+
+        genre: str
+
+        call_params = GeminiCallParams(
+            model="gemini-1.0-pro-001",
+            generation_config={"candidate_count": 2},
+        )
+
+
+    response = BookRecommender(genre="fantasy").call()
+    print(response.content)
+    #> The Name of the Wind
+    ```
+    """
+
+    model: str = "gemini-pro"
+    generation_config: Optional[dict[str, Any]] = None
+    safety_settings: Optional[Any] = None
+    request_options: Optional[dict[str, Any]] = None
+
+
+class GeminiCallResponse(BaseCallResponse[GenerateContentResponse, GeminiTool]):
+    """Convenience wrapper around Gemini's `GenerateContentResponse`.
+
+    When using Mirascope's convenience wrappers to interact with Gemini models via
+    `GeminiCall`, responses using `GeminiCall.call()` will return a
+    `GeminiCallResponse`, whereby the implemented properties allow for simpler syntax
+    and a convenient developer experience.
+
+    Example:
+
+    ```python
+    from mirascope.gemini import GeminiPrompt
+
+
+    class BookRecommender(GeminiPrompt):
+        template = "Please recommend a {genre} book"
+
+        genre: str
+
+
+    response = BookRecommender(genre="fantasy").call()
+    print(response.content)
+    #> The Lord of the Rings
+    ```
+    """
+
+    @property
+    def tool(self) -> Optional[GeminiTool]:
+        """Returns the 0th tool for the 0th candidate's 0th content part.
+
+        Raises:
+            ValidationError: if the tool call doesn't match the tool's schema.
+        """
+        if self.tool_types is None:
+            return None
+
+        tool_call = self.response.candidates[0].content.parts[0].function_call
+        for tool_type in self.tool_types:
+            if tool_call.name == tool_type.__name__:
+                return tool_type.from_tool_call(tool_call)
+
+        return None
+
+    @property
+    def content(self) -> str:
+        """Returns the contained string content for the 0th choice."""
+        return self.response.candidates[0].content.parts[0].text
+
+
+class GeminiCallResponseChunk(
+    BaseCallResponseChunk[GenerateContentResponse, GeminiTool]
+):
+    """Convenience wrapper around chat completion streaming chunks.
+
+    When using Mirascope's convenience wrappers to interact with Gemini models via
+    `GeminiCall`, responses using `GeminiCall.stream()` will return a
+    `GeminiCallResponseChunk`, whereby the implemented properties allow for simpler
+    syntax and a convenient developer experience.
+
+    Example:
+
+    ```python
+    from mirascope.gemini import GeminiCall
+
+
+    class BookRecommender(GeminiCall):
+        template = "Please recommend a {genre} book"
+
+        genre: str
+
+
+    for chunk in BookRecommender(genre="science fiction").stream():
+        print(chunk)
+
+    #> D
+    #  u
+    #
+    #  ne
+    #
+    #  by F
+    #  r
+    #  an
+    #  k
+    #  .
+    ```
+    """
+
+    def content(self) -> str:
+        """Returns the chunk content for the 0th choice."""
+        return self.chunk.candidates[0].content.parts[0].text

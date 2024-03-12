@@ -89,8 +89,8 @@ class BasePrompt(BaseModel):
         ]
         return template.format(**{var: getattr(self, var) for var in template_vars})
 
-    def _parse_messages(self, roles: list[str]) -> list[tuple[str, str]]:
-        """Returns the (role, content) messages parsed from the `template` ClassVar.
+    def _parse_messages(self, roles: list[str]) -> list[dict[str, str]]:
+        """Returns messages parsed from the `template` ClassVar.
 
         Raises:
             ValueError: if the template contains an unknown role.
@@ -105,7 +105,7 @@ class BasePrompt(BaseModel):
             if role not in roles:
                 raise ValueError(f"Invalid role: {role}")
             content = self._format_template(match.group(2))
-            messages.append((role, content))
+            messages.append({"role": role, "content": content})
         if len(messages) == 0:
-            messages.append(("user", str(self)))
+            messages.append({"role": "user", "content": self.template})
         return messages

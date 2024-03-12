@@ -5,11 +5,9 @@ from inspect import isclass
 from typing import (
     Annotated,
     Any,
-    Callable,
     ClassVar,
     Generic,
     Literal,
-    Type,
     TypeVar,
     Union,
     get_origin,

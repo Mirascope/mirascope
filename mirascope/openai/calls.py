@@ -51,16 +51,17 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
 
     def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the template as a formatted list of messages."""
-        message_type_by_role = {
-            "system": ChatCompletionSystemMessageParam,
-            "user": ChatCompletionUserMessageParam,
-            "assistant": ChatCompletionAssistantMessageParam,
-            "tool": ChatCompletionToolMessageParam,
-        }
-        return [
-            message_type_by_role[role](role=role, content=content)
-            for role, content in self._parse_messages(list(message_type_by_role.keys()))
-        ]
+        return self._parse_messages(["system", "user", "assistant", "tool"])
+        # message_type_by_role = {
+        #     "system": ChatCompletionSystemMessageParam,
+        #     "user": ChatCompletionUserMessageParam,
+        #     "assistant": ChatCompletionAssistantMessageParam,
+        #     "tool": ChatCompletionToolMessageParam,
+        # }
+        # return [
+        #     message_type_by_role[role](role=role, content=content)
+        #     for role, content in self._parse_messages(list(message_type_by_role.keys()))
+        # ]
 
     def call(self, **kwargs: Any) -> OpenAICallResponse:
         """Makes a call to the model using this `OpenAICall` instance.
@@ -76,7 +77,9 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(OpenAI(base_url=self.base_url), kwargs)
+        client, kwargs, tool_types = self._setup(
+            OpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
             messages=self.messages(),
@@ -105,7 +108,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         client, kwargs, tool_types = self._setup(
-            AsyncOpenAI(base_url=self.base_url), kwargs
+            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
         )
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
@@ -134,7 +137,9 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        client, kwargs, tool_types = self._setup(OpenAI(base_url=self.base_url), kwargs)
+        client, kwargs, tool_types = self._setup(
+            OpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
+        )
         stream = client.chat.completions.create(
             messages=self.messages(),
             stream=True,
@@ -160,7 +165,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk], BaseProm
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         client, kwargs, tool_types = self._setup(
-            AsyncOpenAI(base_url=self.base_url), kwargs
+            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), kwargs
         )
         stream = await client.chat.completions.create(
             messages=self.messages(),

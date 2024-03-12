@@ -93,7 +93,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(
         self,
@@ -129,7 +129,7 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
     start_time: float  # The start time of the completion in ms
     end_time: float  # The end time of the completion in ms
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     @property
     @abstractmethod
@@ -170,7 +170,7 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
     chunk: ChunkT
     tool_types: Optional[list[Type[BaseToolT]]] = None
 
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     @property
     @abstractmethod
