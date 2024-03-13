@@ -26,10 +26,12 @@ from .types import BaseCallParams
 
 logger = logging.getLogger("mirascope")
 
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 ExtractionType = Union[Type[BaseType], Type[BaseModel], Callable]
-ExtractionTypeT = TypeVar("ExtractionTypeT", bound=ExtractionType)
+ExtractedType = Union[BaseType, BaseModelT, BaseToolT]
+ExtractedTypeT = TypeVar("ExtractedTypeT", bound=ExtractedType)
 
 
 def _is_base_type(type_: Any) -> bool:
@@ -42,22 +44,22 @@ def _is_base_type(type_: Any) -> bool:
     )
 
 
-class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], ABC):
+class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], ABC):
     """The base abstract interface for extracting structured information using LLMs."""
 
-    extract_schema: ExtractionTypeT
+    extract_schema: ExtractionType
     api_key: Optional[str] = None
     base_url: Optional[str] = None
 
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](model="gpt-4")
 
     @abstractmethod
-    def extract(self, retries: int = 0) -> ExtractionTypeT:
+    def extract(self, retries: int = 0) -> ExtractedTypeT:
         """Extracts the `extraction_schema` from an LLM call."""
         ...  # pragma: no cover
 
     @abstractmethod
-    async def extract_async(self, retries: int = 0) -> ExtractionTypeT:
+    async def extract_async(self, retries: int = 0) -> ExtractedTypeT:
         """Asynchronously extracts the `extraction_schema` from an LLM call."""
         ...  # pragma: no cover
 
@@ -69,7 +71,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
         tool_type: Type[BaseToolT],
         retries: int,
         **kwargs: Any,
-    ) -> ExtractionTypeT:
+    ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the call response.
 
         The `extract_schema` is converted into a tool, complete with a description of
@@ -94,7 +96,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):
+        class TempCall(call_type):  # type: ignore
             template = self.template
 
             call_params = self.call_params
@@ -113,8 +115,8 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
             if _is_base_type(self.extract_schema):
                 return tool.value
             model = self.extract_schema(**response.tool.model_dump())
-            model._completion = response
-            return model
+            model._completion = response  # type: ignore
+            return model  # type: ignore
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
@@ -128,7 +130,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
         tool_type: Type[BaseToolT],
         retries: int,
         **kwargs: Any,
-    ) -> ExtractionTypeT:
+    ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the asynchronous call response.
 
         The `extract_schema` is converted into a tool, complete with a description of
@@ -153,7 +155,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):
+        class TempCall(call_type):  # type: ignore
             template = self.template
 
             call_params = self.call_params
@@ -172,8 +174,8 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
             if _is_base_type(self.extract_schema):
                 return tool.value
             model = self.extract_schema(**response.tool.model_dump())
-            model._completion = response
-            return model
+            model._completion = response  # type: ignore
+            return model  # type: ignore
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
@@ -189,15 +191,17 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractionTypeT], 
         """Returns the call params kwargs and whether to return the tool directly."""
         call_params = self.call_params.model_copy(update=kwargs)
         kwargs = call_params.kwargs(tool_type=tool_type)
-        return_tool = True
-        tool = self.extract_schema
         if _is_base_type(self.extract_schema):
-            tool = tool_type.from_base_type(self.extract_schema)
+            tool = tool_type.from_base_type(self.extract_schema)  # type: ignore
             return_tool = False
         elif not isclass(self.extract_schema):
             tool = tool_type.from_fn(self.extract_schema)
+            return_tool = True
         elif not issubclass(self.extract_schema, tool_type):
             tool = tool_type.from_model(self.extract_schema)
             return_tool = False
+        else:
+            tool = self.extract_schema
+            return_tool = True
         kwargs["tools"] = [tool]
         return kwargs, return_tool

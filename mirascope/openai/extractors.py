@@ -1,18 +1,15 @@
 """A class for extracting structured information using OpenAI chat models."""
 import logging
-from inspect import isclass
-from typing import Any, ClassVar, Generic, Type, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
-from pydantic import ValidationError
-
-from ..base import BaseExtractor, ExtractionType
+from ..base import BaseExtractor, ExtractedType
 from .calls import OpenAICall
 from .tools import OpenAITool
 from .types import OpenAICallParams
 
 logger = logging.getLogger("mirascope")
 
-T = TypeVar("T", bound=ExtractionType)
+T = TypeVar("T", bound=ExtractedType)
 
 
 class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
@@ -81,7 +78,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
         """
         return self._extract(OpenAICall, OpenAITool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any):
+    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
         """Asynchronously extracts `extract_schema` from the OpenAI call response.
 
         The `extract_schema` is converted into an `OpenAITool`, complete with a

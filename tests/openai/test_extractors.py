@@ -27,7 +27,7 @@ def test_openai_extractor_extract(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -62,7 +62,7 @@ async def test_openai_extractor_extract_async(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -96,10 +96,10 @@ def test_openai_extractor_extract_callable(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[OpenAITool]):
         template = "test"
 
-        extract_schema: Type[BaseModel] = fixture_my_openai_tool_function
+        extract_schema: Callable = fixture_my_openai_tool_function
         call_params = OpenAICallParams(model="gpt-4")
 
     model = TempExtractor().extract()
@@ -126,10 +126,10 @@ async def test_openai_extractor_extract_async_callable(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[OpenAITool]):
         template = "test"
 
-        extract_schema: Type[BaseModel] = fixture_my_openai_tool_function
+        extract_schema: Callable = fixture_my_openai_tool_function
 
         call_params = OpenAICallParams(model="gpt-4")
 
@@ -155,7 +155,7 @@ def test_openai_extractor_extract_with_no_tools(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -182,7 +182,7 @@ async def test_openai_extractor_extract_async_with_no_tools(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -211,7 +211,7 @@ def test_openai_extractor_extract_with_validation_error(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -243,7 +243,7 @@ async def test_openai_extractor_extract_async_with_validation_error(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
+    class TempExtractor(OpenAIExtractor[BaseModel]):
         template = "test"
 
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
@@ -270,7 +270,7 @@ def test_openai_extractor_extract_base_type(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[str]]):
+    class TempExtractor(OpenAIExtractor[str]):
         template = "test"
 
         extract_schema: Type[str] = str
@@ -299,7 +299,7 @@ async def test_openai_prompt_extract_async_base_type(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor[Type[str]]):
+    class TempExtractor(OpenAIExtractor[str]):
         template = "test"
 
         extract_schema: Type[str] = str

@@ -1,14 +1,14 @@
 import logging
 from typing import Any, ClassVar, Generic, TypeVar
 
-from ..base import BaseExtractor, ExtractionType
+from ..base import BaseExtractor, ExtractedType
 from .calls import GeminiCall
 from .tools import GeminiTool
 from .types import GeminiCallParams
 
 logger = logging.getLogger("mirascope")
 
-T = TypeVar("T", bound=ExtractionType)
+T = TypeVar("T", bound=ExtractedType)
 
 
 class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, T], Generic[T]):
