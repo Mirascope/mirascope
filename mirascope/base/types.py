@@ -97,7 +97,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
 
     def kwargs(
         self,
-        tool_type: Type[BaseToolT],
+        tool_type: Optional[Type[BaseToolT]] = None,
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
@@ -108,7 +108,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
             for key, value in self.model_dump(exclude=exclude).items()
             if value is not None
         }
-        if not self.tools:
+        if not self.tools or tool_type is None:
             return kwargs
         kwargs["tools"] = [
             tool if isclass(tool) else convert_function_to_tool(tool, tool_type)

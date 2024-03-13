@@ -76,7 +76,9 @@ class BaseCall(
     ############################## PRIVATE METHODS ###################################
 
     def _setup(
-        self, base_tool_type: Type[BaseToolT], kwargs: dict[str, Any]
+        self,
+        kwargs: dict[str, Any],
+        base_tool_type: Optional[Type[BaseToolT]] = None,
     ) -> tuple[dict[str, Any], Optional[list[Type[BaseToolT]]]]:
         """Returns the call params kwargs and tool types.
 
@@ -88,7 +90,7 @@ class BaseCall(
         call_params = self.call_params.model_copy(update=kwargs)
         kwargs = call_params.kwargs(tool_type=base_tool_type)
         tool_types = None
-        if "tools" in kwargs:
+        if "tools" in kwargs and base_tool_type is not None:
             tool_types = kwargs.pop("tools")
-            kwargs["tools"] = [tool.tool_schema() for tool in tool_types]
+            kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
         return kwargs, tool_types

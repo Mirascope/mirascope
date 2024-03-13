@@ -53,11 +53,11 @@ class OpenAICallParams(BaseCallParams[OpenAITool]):
 
     def kwargs(
         self,
-        tool_type: Type[OpenAITool] = OpenAITool,
+        tool_type: Optional[Type[OpenAITool]] = OpenAITool,
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
-        extra_exclude = {"wrapper"}
+        extra_exclude = {"wrapper", "wrapper_async"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         return super().kwargs(tool_type, exclude)
 

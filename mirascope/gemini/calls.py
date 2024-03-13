@@ -1,4 +1,4 @@
-"""A module for prompting Google's Gemini Chat API."""
+"""A module for calling Google's Gemini Chat API."""
 import datetime
 import logging
 from typing import (
@@ -86,7 +86,7 @@ class GeminiCall(
         Returns:
             A `GeminiCallResponse` instance.
         """
-        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = gemini_pro_model.generate_content(
@@ -113,7 +113,7 @@ class GeminiCall(
         Returns:
             A `GeminiCallResponse` instance.
         """
-        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await gemini_pro_model.generate_content_async(
@@ -139,7 +139,7 @@ class GeminiCall(
         Yields:
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
-        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(kwargs.pop("model"))
         stream = gemini_pro_model.generate_content(
             self.messages,
@@ -162,7 +162,7 @@ class GeminiCall(
         Yields:
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
-        kwargs, tool_types = self._setup(GeminiTool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(kwargs.pop("model"))
         stream = await gemini_pro_model.generate_content_async(
             self.messages,

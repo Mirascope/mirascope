@@ -32,8 +32,8 @@ class OpenAICall(
 
         genre: str
 
-    book = BookRecommender(genre="fantasy").call()
-    print(book)
+    response = BookRecommender(genre="fantasy").call()
+    print(response.content)
     #> There are many great books to read, it ultimately depends...
     ```
     """
@@ -71,7 +71,7 @@ class OpenAICall(
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, OpenAITool)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -102,7 +102,7 @@ class OpenAICall(
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, OpenAITool)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
@@ -133,7 +133,7 @@ class OpenAICall(
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, OpenAITool)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -161,7 +161,7 @@ class OpenAICall(
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(OpenAITool, kwargs)
+        kwargs, tool_types = self._setup(kwargs, OpenAITool)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
