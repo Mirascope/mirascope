@@ -18,8 +18,10 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel, Field
 
+from mirascope.base import tool_fn
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams
@@ -51,6 +53,7 @@ def fixture_chat_completion() -> ChatCompletion:
         created=0,
         model="test_model",
         object="chat.completion",
+        usage=CompletionUsage(completion_tokens=0, prompt_tokens=0, total_tokens=0),
     )
 
 
@@ -77,6 +80,7 @@ def fixture_empty_openai_tool() -> Type[EmptyOpenAITool]:
     return EmptyOpenAITool
 
 
+@tool_fn(lambda param, optional: "test")
 class MyOpenAITool(OpenAITool):
     """A test tool."""
 
@@ -168,6 +172,7 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
         created=0,
         model="test_model",
         object="chat.completion",
+        usage=CompletionUsage(completion_tokens=0, prompt_tokens=0, total_tokens=0),
     )
 
 
