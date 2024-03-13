@@ -30,7 +30,7 @@ class BaseCall(
     api_key: Optional[str] = None
     base_url: Optional[str] = None
 
-    call_params: ClassVar[BaseCallParams]
+    call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](model="gpt-4")
 
     @abstractmethod
     def call(self, **kwargs: Any) -> BaseCallResponseT:

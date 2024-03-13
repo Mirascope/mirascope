@@ -24,10 +24,10 @@ def test_base_call() -> None:
 def test_extending_base_call() -> None:
     """Tests extending the `BaseCall` interface."""
 
-    class ExtendedCall(BaseCall):
-        class CallParams(BaseCallParams):
-            additional_param: str
+    class CallParams(BaseCallParams):
+        additional_param: str
 
+    class ExtendedCall(BaseCall):
         call_params: ClassVar[CallParams] = CallParams(
             model="model", additional_param="param"
         )
@@ -36,9 +36,7 @@ def test_extending_base_call() -> None:
     assert extended_call.call_params.additional_param == "param"
 
     class MyCall(ExtendedCall):
-        call_params = ExtendedCall.CallParams(
-            model="model", additional_param="my_param"
-        )
+        call_params = CallParams(model="model", additional_param="my_param")
 
     my_call = MyCall()  # type: ignore
     assert my_call.call_params.additional_param == "my_param"

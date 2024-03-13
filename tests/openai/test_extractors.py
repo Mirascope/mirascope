@@ -27,14 +27,18 @@ def test_openai_extractor_extract(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     extracted_schema = TempExtractor().extract()
-    assert isinstance(extracted_schema, fixture_my_openai_tool_schema)
+    assert (
+        extracted_schema.model_json_schema()
+        == fixture_my_openai_tool_schema.model_json_schema()
+    )
     assert (
         extracted_schema.model_dump()
         == fixture_my_openai_tool_schema_instance.model_dump()
@@ -58,14 +62,18 @@ async def test_openai_extractor_extract_async(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     extracted_schema = await TempExtractor().extract_async()
-    assert isinstance(extracted_schema, fixture_my_openai_tool_schema)
+    assert (
+        extracted_schema.model_json_schema()
+        == fixture_my_openai_tool_schema.model_json_schema()
+    )
     assert (
         extracted_schema.model_dump()
         == fixture_my_openai_tool_schema_instance.model_dump()
@@ -88,10 +96,10 @@ def test_openai_extractor_extract_callable(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_function
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_function
         call_params = OpenAICallParams(model="gpt-4")
 
     model = TempExtractor().extract()
@@ -118,10 +126,11 @@ async def test_openai_extractor_extract_async_callable(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_function
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_function
+
         call_params = OpenAICallParams(model="gpt-4")
 
     model = await TempExtractor().extract_async()
@@ -146,10 +155,11 @@ def test_openai_extractor_extract_with_no_tools(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     with pytest.raises(AttributeError):
@@ -172,10 +182,11 @@ async def test_openai_extractor_extract_async_with_no_tools(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     with pytest.raises(AttributeError):
@@ -184,7 +195,7 @@ async def test_openai_extractor_extract_async_with_no_tools(
 
 @patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
-def test_openai_prompt_extract_with_validation_error(
+def test_openai_extractor_extract_with_validation_error(
     mock_call: AsyncMock,
     retries: int,
     fixture_my_openai_tool_schema: Type[BaseModel],
@@ -200,10 +211,11 @@ def test_openai_prompt_extract_with_validation_error(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     with pytest.raises(ValidationError):
@@ -215,7 +227,7 @@ def test_openai_prompt_extract_with_validation_error(
 @patch("mirascope.openai.calls.OpenAICall.call_async", new_callable=AsyncMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
 @pytest.mark.asyncio
-async def test_openai_prompt_extract_async_with_validation_error(
+async def test_openai_extractor_extract_async_with_validation_error(
     mock_call: AsyncMock,
     retries: int,
     fixture_my_openai_tool_schema: Type[BaseModel],
@@ -231,10 +243,11 @@ async def test_openai_prompt_extract_async_with_validation_error(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[BaseModel]]):
         template = "test"
 
-        extract_schema = fixture_my_openai_tool_schema
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
         call_params = OpenAICallParams(model="gpt-4")
 
     with pytest.raises(ValidationError):
@@ -244,7 +257,7 @@ async def test_openai_prompt_extract_async_with_validation_error(
 
 
 @patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
-def test_openai_prompt_extract_base_type(
+def test_openai_extractor_extract_base_type(
     mock_call: MagicMock,
     fixture_str_tool: Type[OpenAITool],
     fixture_chat_completion_with_str_tool: ChatCompletion,
@@ -257,10 +270,11 @@ def test_openai_prompt_extract_base_type(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[str]]):
         template = "test"
 
-        extract_schema = str
+        extract_schema: Type[str] = str
+
         call_params = OpenAICallParams(model="gpt-4")
 
     model = TempExtractor().extract()
@@ -285,10 +299,11 @@ async def test_openai_prompt_extract_async_base_type(
         end_time=0,
     )
 
-    class TempExtractor(OpenAIExtractor):
+    class TempExtractor(OpenAIExtractor[Type[str]]):
         template = "test"
 
-        extract_schema = str
+        extract_schema: Type[str] = str
+
         call_params = OpenAICallParams(model="gpt-4")
 
     model = await TempExtractor().extract_async()

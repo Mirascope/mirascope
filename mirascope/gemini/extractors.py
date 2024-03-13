@@ -1,67 +1,61 @@
-"""A class for extracting structured information using OpenAI chat models."""
 import logging
-from inspect import isclass
-from typing import Any, ClassVar, Generic, Type, TypeVar
-
-from pydantic import ValidationError
+from typing import Any, ClassVar, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractionType
-from .calls import OpenAICall
-from .tools import OpenAITool
-from .types import OpenAICallParams
+from .calls import GeminiCall
+from .tools import GeminiTool
+from .types import GeminiCallParams
 
 logger = logging.getLogger("mirascope")
 
 T = TypeVar("T", bound=ExtractionType)
 
 
-class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
-    '''A class for extracting structured information using OpenAI chat models.
+class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, T], Generic[T]):
+    '''A class for extracting structured information using Google's Gemini Chat models.
 
     Example:
 
     ```python
     from typing import Literal
-
-    from mirascope.openai import OpenAIExtractor
     from pydantic import BaseModel
-
+    from mirascope.gemini import GeminiExtractor
 
     class TaskDetails(BaseModel):
         title: str
         priority: Literal["low", "normal", "high"]
         due_date: str
 
-
-    class TaskExtractor(OpenAIExtractor[TaskDetails]):
+    class TaskExtractor(GeminiExtractor[TaskDetails]):
         extract_schema = TaskDetails
 
-        template = """\\
-            Please extract the task details:
-            {task}
+        template = """
+        USER: I need to extract task details.
+        MODEL: Sure, please provide the task description.
+        USER: {task}
         """
 
         task: str
 
-
-    task_description = "Submit quarterly report by next Friday. Task is high priority."
-    task = TaskExtractor(task=task).extract(retries=3)
+    task_description = "Prepare the budget report by next Monday. It's a high priority task."
+    task = TaskExtractor(task=task_description).extract(retries=3)
     assert isinstance(task, TaskDetails)
     print(task)
-    #> title='Submit quarterly report' priority='high' due_date='next Friday'
+    #> title='Prepare the budget report' priority='high' due_date='next Monday'
     ```
     '''
 
-    call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
-        model="gpt-3.5-turbo-0125"
+    call_params: ClassVar[GeminiCallParams] = GeminiCallParams(
+        model="gemini-1.0-pro",
+        generation_config={"candidate_count": 1},
     )
 
     def extract(self, retries: int = 0, **kwargs: Any) -> T:
-        """Extracts `extract_schema` from the OpenAI call response.
+        """Extracts `extract_schema` from the Gemini call response.
 
-        The `extract_schema` is converted into an `OpenAITool`, complete with a
+        The `extract_schema` is converted into a `GeminiTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of OpenAI's tool/function calling functionality to extract
+        take advantage of Gemini's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -76,17 +70,16 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
         Raises:
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
-            OpenAIError: raises any OpenAI errors, see:
-                https://platform.openai.com/docs/guides/error-codes/api-errors
+            GeminiError: raises any Gemini errors.
         """
-        return self._extract(OpenAICall, OpenAITool, retries, **kwargs)
+        return self._extract(GeminiCall, GeminiTool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any):
-        """Asynchronously extracts `extract_schema` from the OpenAI call response.
+    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+        """Asynchronously extracts `extract_schema` from the Gemini call response.
 
-        The `extract_schema` is converted into an `OpenAITool`, complete with a
+        The `extract_schema` is converted into a `GeminiTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of OpenAI's tool/function calling functionality to extract
+        take advantage of Gemini's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -101,7 +94,6 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
         Raises:
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
-            OpenAIError: raises any OpenAI errors, see:
-                https://platform.openai.com/docs/guides/error-codes/api-errors
+            GeminiError: raises any Gemini errors.
         """
-        return await self._extract_async(OpenAICall, OpenAITool, retries, **kwargs)
+        return await self._extract_async(GeminiCall, GeminiTool, retries, **kwargs)
