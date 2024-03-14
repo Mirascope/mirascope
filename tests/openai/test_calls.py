@@ -48,6 +48,7 @@ def test_openai_call_call_with_tools(
 
     class CallWithTools(OpenAICall):
         prompt_template = "test"
+        api_key: str = "test"
 
         call_params = OpenAICallParams(model="gpt-4", tools=[fixture_my_openai_tool])
 
