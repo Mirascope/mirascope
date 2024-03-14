@@ -115,7 +115,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
             if _is_base_type(self.extract_schema):
                 return tool.value
             model = self.extract_schema(**response.tool.model_dump())
-            model._completion = response  # type: ignore
+            model._response = response  # type: ignore
             return model  # type: ignore
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
@@ -174,7 +174,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
             if _is_base_type(self.extract_schema):
                 return tool.value
             model = self.extract_schema(**response.tool.model_dump())
-            model._completion = response  # type: ignore
+            model._response = response  # type: ignore
             return model  # type: ignore
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
