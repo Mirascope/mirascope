@@ -22,9 +22,7 @@ from .types import (
 logger = logging.getLogger("mirascope")
 
 
-class GeminiCall(
-    BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool], BasePrompt
-):
+class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool]):
     '''A class for prompting Google's Gemini Chat API.
 
     This prompt supports the message types: USER, MODEL, TOOL

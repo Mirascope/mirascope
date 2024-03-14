@@ -104,6 +104,7 @@ class PromptAnalyzer(ast.NodeVisitor):
                 and node.end_lineno is not None
                 and node.lineno < node.end_lineno
             ):
+                # reconstruct template strings to be multi-line
                 lines = node.value.s.split("\n")
                 body.append(f'{node.targets[0].id} = """{lines.pop(0).strip()}')
                 for i, line in enumerate(lines):

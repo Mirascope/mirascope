@@ -16,9 +16,7 @@ from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
 
 
-class OpenAICall(
-    BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool], BasePrompt
-):
+class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool]):
     """A base class for calling OpenAI's Chat Completion models.
 
     Example:

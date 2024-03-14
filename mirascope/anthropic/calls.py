@@ -13,9 +13,7 @@ from .types import (
 )
 
 
-class AnthropicCall(
-    BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, Any], BasePrompt
-):
+class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, Any]):
     """A base class for calling Anthropic's Claude models.
 
     Example:
