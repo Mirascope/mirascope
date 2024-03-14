@@ -29,7 +29,7 @@ def trace(
     """Returns a trace connected to parent.
 
     Args:
-        completion: The completion to trace. Handles `OpenAIChatCompletion` output
+        response: The completion to trace. Handles `OpenAIChatCompletion` output
             from both standard OpenAI chat completions, and `BaseModel` for
             extractions.
         parent: The parent trace to connect to.
@@ -226,6 +226,7 @@ class WandbOpenAIExtractor(OpenAIExtractor[T], WandbBasePrompt, Generic[T]):
     def extract_with_trace(
         self,
         parent: Optional[Trace] = None,
+        retries: int = 0,
         **kwargs: Any,
     ) -> tuple[Optional[T], Trace]:
         """Extracts `extract_schema` from the OpenAI call response and traces it.
@@ -252,7 +253,7 @@ class WandbOpenAIExtractor(OpenAIExtractor[T], WandbBasePrompt, Generic[T]):
         """
         try:
             start_time = datetime.datetime.now().timestamp() * 1000
-            model = super().extract()
+            model = super().extract(retries=retries, **kwargs)
             span = trace(self, model._response, parent, **kwargs)  # type: ignore
             return model, span
         except Exception as e:

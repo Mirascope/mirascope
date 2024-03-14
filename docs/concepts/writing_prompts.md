@@ -1,6 +1,6 @@
 # Writing prompts
 
-## The [`BasePrompt`](../api/base/prompt.md#mirascope.base.prompt.Prompt) Class
+## The [`BasePrompt`](../api/base/prompt.md#mirascope.base.prompts.BasePrompt) Class
 
 The docstring of the class acts as the prompt's template, and the attributes act as the template variables:
 
