@@ -363,7 +363,7 @@ def fixture_openai_test_call():
     """Returns an `OpenAICall` instance."""
 
     class OpenAITestCall(OpenAICall):
-        template = """\
+        prompt_template = """\
             SYSTEM: This is a test.
             USER: You are being tested.
         """

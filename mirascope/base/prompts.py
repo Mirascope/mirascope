@@ -31,7 +31,7 @@ class BasePrompt(BaseModel):
     class BookRecommendationPrompt(BasePrompt):
         """A prompt for recommending a book."""
 
-        template = """\\
+        prompt_template = """\\
             SYSTEM: You are the world's greatest librarian.
             USER: Please recommend a {genre} book.
         """
@@ -49,11 +49,11 @@ class BasePrompt(BaseModel):
     '''
 
     tags: ClassVar[list[str]] = []
-    template: ClassVar[str] = ""
+    prompt_template: ClassVar[str] = ""
 
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return self._format_template(self.template)
+        return self._format_template(self.prompt_template.strip())
 
     def messages(self) -> Union[list[Message], Any]:
         """Returns the template as a formatted list of messages."""
@@ -77,7 +77,7 @@ class BasePrompt(BaseModel):
         """Dumps the contents of the prompt into a dictionary."""
         return {
             "tags": self.tags,
-            "template": dedent(self.template).strip("\n"),
+            "template": dedent(self.prompt_template).strip("\n"),
             "inputs": self.model_dump(),
         }
 
@@ -85,11 +85,15 @@ class BasePrompt(BaseModel):
 
     def _format_template(self, template: str):
         """Formats the given `template` with attributes matching template variables."""
-        template = dedent(template).strip("\n")
+        dedented_template = dedent(template).strip("\n")
         template_vars = [
-            var for _, var, _, _ in Formatter().parse(template) if var is not None
+            var
+            for _, var, _, _ in Formatter().parse(dedented_template)
+            if var is not None
         ]
-        return template.format(**{var: getattr(self, var) for var in template_vars})
+        return dedented_template.format(
+            **{var: getattr(self, var) for var in template_vars}
+        )
 
     def _parse_messages(self, roles: list[str]) -> list[dict[str, str]]:
         """Returns messages parsed from the `template` ClassVar.
@@ -101,7 +105,7 @@ class BasePrompt(BaseModel):
         re_roles = "|".join([role.upper() for role in roles] + ["[A-Z]*"])
         for match in re.finditer(
             rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)",
-            self.template,
+            self.prompt_template,
         ):
             role = match.group(1).lower()
             if role not in roles:
@@ -109,7 +113,7 @@ class BasePrompt(BaseModel):
             content = self._format_template(match.group(2))
             messages.append({"role": role, "content": content})
         if len(messages) == 0:
-            messages.append({"role": "user", "content": self.template})
+            messages.append({"role": "user", "content": self.prompt_template})
         return messages
 
 
@@ -131,7 +135,7 @@ def tags(args: list[str]) -> Callable[[Type[BasePromptT]], Type[BasePromptT]]:
 
     @tags(["book_recommendation", "entertainment"])
     class BookRecommendationPrompt(BasePrompt):
-        template = """
+        prompt_template = """
         SYSTEM:
         You are the world's greatest librarian.
 

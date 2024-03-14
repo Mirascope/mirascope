@@ -19,7 +19,7 @@ def test_gemini_call_call(
     mock_generate_content.return_value = fixture_generate_content_response
 
     class TempCall(GeminiCall):
-        template = ""
+        prompt_template = ""
 
     response = TempCall().call()
     assert isinstance(response, GeminiCallResponse)
@@ -37,7 +37,7 @@ def test_gemini_call_call_with_tools(
     mock_generate_content.return_value = fixture_generate_content_response_with_tools
 
     class TempCall(GeminiCall):
-        template = ""
+        prompt_template = ""
 
         call_params = GeminiCallParams(tools=[fixture_book_tool])
 
@@ -57,7 +57,7 @@ async def test_gemini_call_call_async(
     mock_generate_content.return_value = fixture_generate_content_response
 
     class TempCall(GeminiCall):
-        template = ""
+        prompt_template = ""
 
     response = await TempCall().call_async()
     assert isinstance(response, GeminiCallResponse)
@@ -73,7 +73,7 @@ def test_gemini_call_stream(
     mock_generate_content.return_value = fixture_generate_content_chunks
 
     class TempCall(GeminiCall):
-        template = ""
+        prompt_template = ""
 
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 2
@@ -95,7 +95,7 @@ async def test_gemini_call_stream_async(
     )
 
     class TempCall(GeminiCall):
-        template = ""
+        prompt_template = ""
 
     chunks = [chunk async for chunk in TempCall().stream_async()]
     assert len(chunks) == 2

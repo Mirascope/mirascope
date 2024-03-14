@@ -97,7 +97,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
         class TempCall(call_type):  # type: ignore
-            template = self.template
+            prompt_template = self.prompt_template
 
             call_params = self.call_params
 
@@ -156,7 +156,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
         class TempCall(call_type):  # type: ignore
-            template = self.template
+            prompt_template = self.prompt_template
 
             call_params = self.call_params
 

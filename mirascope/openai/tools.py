@@ -44,7 +44,7 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
 
 
     class AnimalMatcher(OpenAICall):
-        template = """\\
+        prompt_template = """\\
             Tell me my favorite animal if my favorite food is {food} and my
             favorite color is {color}.
         """

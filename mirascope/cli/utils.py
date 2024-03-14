@@ -99,7 +99,7 @@ class PromptAnalyzer(ast.NodeVisitor):
             if (
                 isinstance(node, ast.Assign)
                 and isinstance(node.targets[0], ast.Name)
-                and node.targets[0].id == "template"
+                and node.targets[0].id == "prompt_template"
                 and isinstance(node.value, ast.Constant)
                 and node.end_lineno is not None
                 and node.lineno < node.end_lineno

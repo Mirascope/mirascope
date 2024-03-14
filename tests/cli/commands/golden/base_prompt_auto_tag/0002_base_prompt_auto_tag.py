@@ -10,5 +10,5 @@ revision_id = "0002"
 class MovieRecommendationPrompt(BasePrompt):
     """A prompt for recommending movies."""
 
-    template = "Please recommend a list of movies in the {genre} category."
+    prompt_template = "Please recommend a list of movies in the {genre} category."
     genre: str

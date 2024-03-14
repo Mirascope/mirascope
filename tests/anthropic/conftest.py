@@ -19,7 +19,7 @@ def fixture_anthropic_test_call():
     """Returns an Anthropic test prompt."""
 
     class AnthropicTestCall(AnthropicCall):
-        template = "This is a test prompt for Anthropic."
+        prompt_template = "This is a test prompt for Anthropic."
 
         call_params = AnthropicCallParams(temperature=0.3)
 
@@ -31,7 +31,7 @@ def fixture_anthropic_test_messages_call():
     """Returns an Anthropic test prompt with messages."""
 
     class AnthropicTestMessagesPrompt(AnthropicCall):
-        template = """
+        prompt_template = """
         SYSTEM:
         System message
 

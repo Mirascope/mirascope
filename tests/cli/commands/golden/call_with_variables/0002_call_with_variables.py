@@ -14,7 +14,7 @@ a_list = [1, 2, 3]
 class MovieRecommender(OpenAICall):
     """An LLM call for recommending movies, using OpenAI."""
 
-    template = """
+    prompt_template = """
     SYSTEM:
     You are the world's most knowledgeable movie buff. You know everything there is to
     know about movies. You have likely seen every movie ever made. Your incredible

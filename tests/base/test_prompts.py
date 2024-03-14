@@ -1,4 +1,5 @@
 """Tests for the `BasePrompt` class."""
+from textwrap import dedent
 from typing import Any
 
 import pytest
@@ -13,13 +14,13 @@ def test_tags_decorator() -> None:
 
     @tags(["test"])
     class MyPrompt(BasePrompt):
-        template = "test"
+        prompt_template = "test"
 
     assert MyPrompt.tags == ["test"]
 
 
 @pytest.mark.parametrize(
-    "prompt_tags,prompt_template,prompt_data,expected_str,expected_messages,"
+    "prompt_tags,prompt_template_str,prompt_data,expected_str,expected_messages,"
     "expected_dump",
     [
         (
@@ -36,10 +37,12 @@ def test_tags_decorator() -> None:
         ),
         (
             ["multiple", "different", "tags"],
-            """\
+            dedent(
+                """
                 SYSTEM: system message
                 USER: user message about {topic}
-            """,
+                """
+            ),
             {"topic": "testing"},
             "SYSTEM: system message\nUSER: user message about testing",
             [
@@ -56,7 +59,7 @@ def test_tags_decorator() -> None:
 )
 def test_base_prompt(
     prompt_tags: list[str],
-    prompt_template: str,
+    prompt_template_str: str,
     prompt_data: dict[str, Any],
     expected_str: str,
     expected_messages: list[Message],
@@ -66,7 +69,7 @@ def test_base_prompt(
 
     class Prompt(BasePrompt):
         tags = prompt_tags
-        template = prompt_template
+        prompt_template = prompt_template_str
 
         model_config = ConfigDict(extra="allow")
 
@@ -81,6 +84,6 @@ def test_base_prompt_bad_message_role() -> None:
     with pytest.raises(ValueError):
 
         class Prompt(BasePrompt):
-            template = "BAD: Bad role should throw error"
+            prompt_template = "BAD: Bad role should throw error"
 
         Prompt().messages()

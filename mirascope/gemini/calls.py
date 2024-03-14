@@ -42,7 +42,7 @@ class GeminiCall(
 
 
     class BookRecommender(GeminiPrompt):
-        template = """
+        prompt_template = """
         USER: You're the world's greatest librarian.
         MODEL: Ok, I understand I'm the world's greatest librarian. How can I help?
         USER: Please recommend some {genre} books.

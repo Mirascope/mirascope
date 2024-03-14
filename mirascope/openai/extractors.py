@@ -33,7 +33,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
     class TaskExtractor(OpenAIExtractor[TaskDetails]):
         extract_schema = TaskDetails
 
-        template = """\\
+        prompt_template = """\\
             Please extract the task details:
             {task}
         """

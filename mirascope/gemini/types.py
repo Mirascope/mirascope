@@ -19,7 +19,7 @@ class GeminiCallParams(BaseCallParams[GeminiTool]):
 
 
     class BookRecommendation(GeminiPrompt):
-        template = "Please recommend a {genre} book"
+        prompt_template = "Please recommend a {genre} book"
 
         genre: str
 
@@ -56,7 +56,7 @@ class GeminiCallResponse(BaseCallResponse[GenerateContentResponse, GeminiTool]):
 
 
     class BookRecommender(GeminiPrompt):
-        template = "Please recommend a {genre} book"
+        prompt_template = "Please recommend a {genre} book"
 
         genre: str
 
@@ -126,7 +126,7 @@ class GeminiCallResponseChunk(
 
 
     class BookRecommender(GeminiCall):
-        template = "Please recommend a {genre} book"
+        prompt_template = "Please recommend a {genre} book"
 
         genre: str
 

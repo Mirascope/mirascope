@@ -31,7 +31,7 @@ class Answer(BaseModel):
 
 class Answerer(OpenAIExtractor[Answer]):
     extract_schema: Type[Answer] = Answer
-    template = """
+    prompt_template = """
     SYSTEM:
     You will be asked a question after you read a paragraph. Your task is to
     answer the question based on the information in the paragraph. Your answer

@@ -4,7 +4,7 @@ from mirascope import BasePrompt, tags
 
 @tags(["movie_project", "version:0001"])
 class MovieRecommendationPrompt(BasePrompt):
-    template = """
+    prompt_template = """
     SYSTEM:
     You are the world's most knowledgeable movie buff. You know everything there is to
     know about movies. You have likely seen every movie ever made. Your incredible

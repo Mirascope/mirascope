@@ -26,7 +26,7 @@ class AnthropicCallParams(BaseCallParams[Any]):
 
 
     class BookRecommender(AnthropicCall):
-        template = "Please recommend some books."
+        prompt_template = "Please recommend some books."
 
         call_params = AnthropicCallParams(
             model="anthropic-3-opus-20240229",
@@ -79,7 +79,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, Any]):
 
 
     class BookRecommender(AnthropicCall):
-        template = "Please recommend some books."
+        prompt_template = "Please recommend some books."
 
 
     print(BookRecommender().call())
@@ -128,7 +128,7 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent, Any])
 
 
     class BookRecommender(AnthropicCall):
-        template = "Please recommend some books."
+        prompt_template = "Please recommend some books."
 
 
     for chunk in BookRecommender().stream():

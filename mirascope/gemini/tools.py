@@ -41,7 +41,7 @@ class GeminiTool(BaseTool[FunctionCall]):
 
 
     class WeatherForecast(GeminiPrompt):
-        template = "What is the current weather in {city}?"
+        prompt_template = "What is the current weather in {city}?"
 
         city: str
 

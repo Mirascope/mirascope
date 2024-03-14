@@ -18,7 +18,7 @@ from mirascope.openai.wandb import (
 
 
 class MyCall(WandbOpenAICall):
-    template = "test"
+    prompt_template = "test"
 
 
 @pytest.mark.parametrize("span_type", ["tool", "llm"])
@@ -223,9 +223,9 @@ def test_extract_with_trace(
         end_time=0,
     )
 
-    class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):
+    class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
-        template = "test"
+        prompt_template = "test"
 
     model, span = MyExtractor(span_type="tool").extract_with_trace()
 
@@ -234,3 +234,31 @@ def test_extract_with_trace(
     assert model is not None
     assert isinstance(model, fixture_my_openai_tool_schema)
     assert span.name == "testtrace"
+
+
+@patch(
+    "mirascope.openai.extractors.OpenAIExtractor.extract",
+)
+@patch(
+    "mirascope.openai.wandb.trace_error",
+)
+def test_extract_with_trace_error(
+    mock_trace_error: MagicMock,
+    mock_extract: MagicMock,
+    fixture_my_openai_tool_schema: Type[BaseModel],
+):
+    """Test `create` method with `Trace` for error."""
+    mock_extract.side_effect = Exception("Test error")
+    mock_trace_error.return_value = Trace(name="testtrace")
+
+    class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+        prompt_template = "test"
+
+    response, trace = MyExtractor(span_type="llm").extract_with_trace(
+        parent=Trace(name="test")
+    )
+    mock_trace_error.assert_called_once()
+    mock_extract.assert_called_once()
+    assert response is None
+    assert trace.name == "testtrace"

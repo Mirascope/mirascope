@@ -29,7 +29,7 @@ class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, T], Generic[T]):
     class TaskExtractor(GeminiExtractor[TaskDetails]):
         extract_schema = TaskDetails
 
-        template = """
+        prompt_template = """
         USER: I need to extract task details.
         MODEL: Sure, please provide the task description.
         USER: {task}

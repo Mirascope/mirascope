@@ -131,7 +131,7 @@ class WandbOpenAICall(OpenAICall, WandbBasePrompt):
 
 
     class BookRecommender(WandbOpenAICall):
-        template = """
+        prompt_template = """
         SYSTEM:
         You are the world's greatest librarian.
 
@@ -203,7 +203,7 @@ class WandbOpenAIExtractor(OpenAIExtractor[T], WandbBasePrompt, Generic[T]):
 
     class BookRecommender(WandbOpenAIExtractor[Book]):
         extract_schema: Type[Book] = Book
-        template = """
+        prompt_template = """
         SYSTEM:
         You are the world's greatest librarian.
 

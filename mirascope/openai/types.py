@@ -77,7 +77,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
 
 
     class BookRecommender(OpenAICall):
-        template = "Please recommend a {genre} book"
+        prompt_template = "Please recommend a {genre} book"
 
         genre: str
 
@@ -182,7 +182,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
 
 
     class Math(OpenAICall):
-        template = "What is 1 + 2?"
+        prompt_template = "What is 1 + 2?"
 
 
     for chunk in OpenAICall().stream():

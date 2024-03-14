@@ -25,7 +25,7 @@ class AnthropicCall(
 
 
     class BookRecommender(AnthropicCall):
-        template = "Please recommend a {genre} book."
+        prompt_template = "Please recommend a {genre} book."
 
         genre: str
 
