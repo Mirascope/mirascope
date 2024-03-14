@@ -11,7 +11,7 @@ from typing import (
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
 
-from ..base import BaseCall, BasePrompt
+from ..base import BaseCall
 from .tools import GeminiTool
 from .types import (
     GeminiCallParams,

@@ -11,7 +11,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
-from ..base import BaseCall, BasePrompt
+from ..base import BaseCall
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
 

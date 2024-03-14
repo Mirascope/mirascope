@@ -5,7 +5,7 @@ from typing import Any, AsyncGenerator, ClassVar, Generator
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
 
-from ..base import BaseCall, BasePrompt
+from ..base import BaseCall
 from .types import (
     AnthropicCallParams,
     AnthropicCallResponse,
