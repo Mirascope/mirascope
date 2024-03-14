@@ -137,7 +137,6 @@ while True:
 	librarian.history.append(response.message.model_dump())
 	print(f"(Assistant): {response.content}")
 	
-	
 #> (User): What fantasy book should I read?
 #> (Assistant): Have you read the Name of the Wind?
 #> (User): I have! What do you like about it?
