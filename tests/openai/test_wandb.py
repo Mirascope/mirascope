@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from openai.types.chat import ChatCompletion
-from openai.types.completion_usage import CompletionUsage
 from wandb.sdk.data_types.trace_tree import Trace
 
 from mirascope.openai.tools import OpenAITool
@@ -56,6 +55,7 @@ def test_call_with_trace(mock_trace: MagicMock, mock_call: MagicMock):
     response, span = prompt.call_with_trace(parent=Trace(name="test"))
     mock_trace.assert_called_once()
     mock_call.assert_called_once()
+    assert response is not None
     assert response.response.id == "id"
     assert span.name == "testtrace"
 

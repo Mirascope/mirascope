@@ -1,0 +1,20 @@
+[mirascope]
+
+#path to mirascope directory
+mirascope_location = {{ mirascope_location }}
+
+# path to versions directory
+versions_location = %(mirascope_location)s/{{ versions_location }}
+
+# path to prompts directory
+prompts_location = {{ prompts_location }}
+
+# name of versions text file
+version_file_name = {{ version_file_name }}
+
+# formats the version file
+# leave blank to not format 
+format_command = ruff check --select I --fix; ruff format
+
+# auto tag prompts with version
+auto_tag = True

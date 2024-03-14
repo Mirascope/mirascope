@@ -2,7 +2,7 @@
 import importlib.metadata
 from contextlib import suppress
 
-from .base import BasePrompt, Message
+from .base import BaseCallParams, BasePrompt, Message, tags
 
 with suppress(ImportError):
     from . import anthropic

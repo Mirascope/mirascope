@@ -2,7 +2,7 @@
 import re
 from string import Formatter
 from textwrap import dedent
-from typing import Any, ClassVar, Union
+from typing import Any, Callable, ClassVar, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -111,3 +111,48 @@ class BasePrompt(BaseModel):
         if len(messages) == 0:
             messages.append({"role": "user", "content": self.template})
         return messages
+
+
+BasePromptT = TypeVar("BasePromptT", bound=BasePrompt)
+
+
+def tags(args: list[str]) -> Callable[[Type[BasePromptT]], Type[BasePromptT]]:
+    '''A decorator for adding tags to a `BasePrompt`.
+
+    Adding this decorator to a `BasePrompt` updates the `_tags` class attribute to the
+    given value. This is useful for adding metadata to a `BasePrompt` that can be used
+    for logging or filtering.
+
+    Example:
+
+    ```python
+    from mirascope import BasePrompt, tags
+
+
+    @tags(["book_recommendation", "entertainment"])
+    class BookRecommendationPrompt(BasePrompt):
+        template = """
+        SYSTEM:
+        You are the world's greatest librarian.
+
+        USER:
+        I've recently read this book: {book_title}.
+        What should I read next?
+        """
+
+        book_title: [str]
+
+    print(BookRecommendationPrompt.dump()["tags"])
+    #> ['book_recommendation', 'entertainment']
+    ```
+
+    Returns:
+        The decorated class with `tags` class attribute set.
+    '''
+
+    def tags_fn(model_class: Type[BasePromptT]) -> Type[BasePromptT]:
+        """Updates the `tags` class attribute to the given value."""
+        setattr(model_class, "tags", args)
+        return model_class
+
+    return tags_fn

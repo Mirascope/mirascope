@@ -1,7 +1,7 @@
 """Base modules for the Mirascope library."""
 from .calls import BaseCall
 from .extractors import BaseExtractor, ExtractedType
-from .prompts import BasePrompt
+from .prompts import BasePrompt, tags
 from .tools import BaseTool, BaseType
 from .types import (
     BaseCallParams,

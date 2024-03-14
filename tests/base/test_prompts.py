@@ -4,8 +4,18 @@ from typing import Any
 import pytest
 from pydantic import ConfigDict
 
-from mirascope.base.prompts import BasePrompt
+from mirascope.base.prompts import BasePrompt, tags
 from mirascope.base.types import Message
+
+
+def test_tags_decorator() -> None:
+    """Tests the `tags` decorator on a BasePrompt."""
+
+    @tags(["test"])
+    class MyPrompt(BasePrompt):
+        template = "test"
+
+    assert MyPrompt.tags == ["test"]
 
 
 @pytest.mark.parametrize(
