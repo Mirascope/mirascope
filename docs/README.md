@@ -104,7 +104,7 @@ class BookRecommendation(OpenAIPrompt):
 
 
 prompt = BookRecommendation(genre="fantasy")
-print(prompt.messages)
+print(prompt.messages())
 #> [{'role': 'system', 'content': "You are the world's greatest librarian."},
 #   {'role': 'user', 'content': 'Please recommend a fantasy book.'}]
 ```

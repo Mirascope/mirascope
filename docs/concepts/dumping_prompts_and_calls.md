@@ -1,10 +1,10 @@
-# Dumping prompts
+# Dumping prompts and calls
 
-The `.dump()` function can be called from both prompts and completions to output a dictionary of associated data. 
+The `.dump()` function can be called from prompts, calls, and responses to output a dictionary of associated data. 
 
 ## Dumping from the Prompt
 
-When called from `BasePrompt` or any of its subclasses, `.dump()` will give you:
+When called from `BasePrompt` or any of its subclasses like `BaseCall`, `.dump()` will give you:
 
 - the prompt template
 - inputs used to construct the prompt
@@ -16,22 +16,20 @@ When called from `BasePrompt` or any of its subclasses, `.dump()` will give you:
 import os
 
 from mirascope import tags
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAICall
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 @tags(["recommendation_project", "version:0001"])
-class BookRecommendationPrompt(OpenAIPrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic}?"
 
     topic: str
 
 
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
-print(prompt.dump())
+recommender = BookRecommender(topic="how to bake a cake")
+print(recommender.dump())
 
 """
 Output:
@@ -45,8 +43,8 @@ Output:
 }
 """
 
-prompt.create()
-print(prompt.dump())
+recommender.call()
+print(recommender.dump())
 
 """
 Output:
@@ -58,18 +56,18 @@ Output:
 """
 ```
 
-## Dumping from the Completion
+## Dumping from the Response
 
-*(Support for Gemini and Mistral completions coming soon…)*
+*(Support for dumping Gemini and Claude responses coming soon…)*
 
-You can also call `.dump()` on chat completions themselves, which will contain:
+You can also call `.dump()` on responses themselves, which will contain:
 
-- start and end times of the completion
-- parameters of the call to the OpenAI API associated with the completion, within the key “output”
+- start and end times of the response
+- parameters of the call to the API associated with the response, within the key “output”
 
 ```python
-completion = prompt.create() # prompt is an OpenAIPrompt, continued from above
-print(completion.dump())
+response = recomender.call()  # call is an OpenAICall, continued from above
+print(response.dump())
 
 """
 Output:
@@ -101,10 +99,10 @@ Output:
 
 ## Combining Both
 
-We also give you an option to see everything at once by calling `BasePrompt.dump(completion.dump())` , which will append the two dictionaries and display them in one. Note that the `.dump()` function will take any dictionary and append it to the data of the prompt, so feel free to use it flexibly to suit your needs.
+We also give you an option to see everything at once by calling `BasePrompt.dump(response.dump())` , which will append the two dictionaries and display them in one. Note that the `.dump()` function will take any dictionary and append it to the data of the prompt, so feel free to use it flexibly to suit your needs.
 
 ```python
-print(prompt.dump(completion.dump()))
+print(recommender.dump(response.dump()))
 
 """
 Output:
@@ -142,7 +140,7 @@ Output:
 
 ## Logging
 
-Now that you have the JSON dump, it can be useful to log your completions:
+Now that you have the JSON dump, it can be useful to log your responses:
 
 ```python
 """A basic example on how to log the data from a prompt and a chat completion."""
@@ -156,19 +154,19 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from mirascope import tags
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAICall
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 logger = logging.getLogger("mirascope")
-TABLE_NAME = "openai_chat_completions"
+TABLE_NAME = "openai_call_responses"
 
 
 class Base(DeclarativeBase):
     pass
 
 
-class OpenAIChatCompletionTable(Base):
+class OpenAICallResponseTable(Base):
     __tablename__ = TABLE_NAME
     id: Mapped[int] = mapped_column(
         Integer(), primary_key=True, autoincrement=True, nullable=False
@@ -183,10 +181,8 @@ class OpenAIChatCompletionTable(Base):
 
 
 @tags(["recommendation_project"])
-class BookRecommendationPrompt(OpenAIPrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic}?"
 
     topic: str
 
@@ -200,39 +196,39 @@ engine = create_engine(f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NA
 
 
 def create_database():
-    """Create the database and table for the OpenAI chat completions."""
+    """Create the database and table for the OpenAI call response."""
     metadata = MetaData()
     table_objects = [Base.metadata.tables[TABLE_NAME]]
     metadata.create_all(engine, tables=table_objects)
 
 
-def log_to_database(prompt_completion: dict[str, Any]):
-    """Create a prompt completion and log it to the database."""
+def log_to_database(recommender_response: dict[str, Any]):
+    """Create a call response and log it to the database."""
     create_database()
     Session = sessionmaker(engine)
     with Session() as session:
-        openai_completion_db = OpenAIChatCompletionTable(**prompt_completion)
-        session.add(openai_completion_db)
+        openai_completion_db = OpenAICallResponseTable(**recommender_response)
+        session.add(openai_call_responses)
         session.commit()
 
 
-def log_to_csv(prompt_completion: dict[str, Any]):
-    """Log the prompt completion to a CSV file."""
-    df = pd.DataFrame([prompt_completion])
+def log_to_csv(recommender_response: dict[str, Any]):
+    """Log the call response to a CSV file."""
+    df = pd.DataFrame([recommender_response])
     with open("log.csv", "w") as f:
         df.to_csv(f, index=False)
 
 
-def log_to_logger(prompt_completion: dict[str, Any]):
-    """Log the prompt completion to the logger."""
-    logger.info(prompt_completion)
+def log_to_logger(recommender_response: dict[str, Any]):
+    """Log the call response to the logger."""
+    logger.info(recommender_response)
 
 
 if __name__ == "__main__":
-    prompt = BookRecommendationPrompt(topic="how to bake a cake")
-    completion = prompt.create()
-    prompt_completion = prompt.dump(completion.dump())
-    log_to_database(prompt_completion)
-    log_to_csv(prompt_completion)
-    log_to_logger(prompt_completion)
+    recommender = BookRecommender(topic="how to bake a cake")
+    response = recommender.call()
+    recommender_response = recommender.dump(response.dump())
+    log_to_database(recommender_response)
+    log_to_csv(recommender_response)
+    log_to_logger(recommender_response)
 ```

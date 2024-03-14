@@ -40,7 +40,7 @@ class BasePrompt(BaseModel):
 
 
     prompt = BookRecommendationPrompt(genre="fantasy")
-    print(prompt.messages)
+    print(prompt.messages())
     #> [{"role": "user", "content": "Please recommend a fantasy book."}]
 
     print(prompt)
@@ -53,7 +53,7 @@ class BasePrompt(BaseModel):
 
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return self._format_template(self.prompt_template.strip())
+        return self._format_template(self.prompt_template)
 
     def messages(self) -> Union[list[Message], Any]:
         """Returns the template as a formatted list of messages."""
@@ -85,7 +85,7 @@ class BasePrompt(BaseModel):
 
     def _format_template(self, template: str):
         """Formats the given `template` with attributes matching template variables."""
-        dedented_template = dedent(template).strip("\n")
+        dedented_template = dedent(template).strip()
         template_vars = [
             var
             for _, var, _, _ in Formatter().parse(dedented_template)
@@ -130,7 +130,12 @@ class BasePrompt(BaseModel):
                 content = self._format_template(match.group(2))
                 messages.append({"role": role, "content": content})
         if len(messages) == 0:
-            messages.append({"role": "user", "content": self.prompt_template})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": self._format_template(self.prompt_template),
+                }
+            )
         return messages
 
 

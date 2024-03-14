@@ -19,7 +19,7 @@ from mirascope.openai.wandb import (
 
 class MyCall(WandbOpenAICall):
     prompt_template = "test"
-    api_key: str = "test"
+    api_key = "test"
 
 
 @pytest.mark.parametrize("span_type", ["tool", "llm"])
@@ -227,7 +227,7 @@ def test_extract_with_trace(
     class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
         prompt_template = "test"
-        api_key: str = "test"
+        api_key = "test"
 
     model, span = MyExtractor(span_type="tool").extract_with_trace()
 
@@ -256,7 +256,7 @@ def test_extract_with_trace_error(
     class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
         prompt_template = "test"
-        api_key: str = "test"
+        api_key = "test"
 
     response, trace = MyExtractor(span_type="llm").extract_with_trace(
         parent=Trace(name="test")

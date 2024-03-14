@@ -27,9 +27,8 @@ class BaseCall(
 ):
     """The base class abstract interface for calling LLMs."""
 
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
-
+    api_key: ClassVar[Optional[str]] = None
+    base_url: ClassVar[Optional[str]] = None
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](model="gpt-4")
 
     @abstractmethod

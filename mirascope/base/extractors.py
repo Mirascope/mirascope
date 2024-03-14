@@ -48,9 +48,9 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
     """The base abstract interface for extracting structured information using LLMs."""
 
     extract_schema: ExtractionType
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
 
+    api_key: ClassVar[Optional[str]] = None
+    base_url: ClassVar[Optional[str]] = None
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](model="gpt-4")
 
     @abstractmethod

@@ -9,7 +9,9 @@ We recommend you check out their [thorough documentation](https://docs.pydantic.
 When we extract information — for base types, `BaseModel`, or any of our tools — everything is powered by Pydantic. This means that we automatically get type validation and can handle it gracefully:
 
 ```python
-from mirascope.openai import OpenAIPrompt
+from typing import Type
+
+from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel, ValidationError
 
 
@@ -18,12 +20,14 @@ class Book(BaseModel):
 	price: float
 
 
-class BookRecommendation(OpenAIPrompt):
-	"""Please recommend a book."""
+class BookRecommender(OpenAIExtractor[Book]):
+    extract_schema: Type[Book] = Book
+	prompt_template = "Please recommend a book."
 
 
 try:
-	book = BookRecommendation().extract(Book)
+	book = BookRecommender().extract()
+    assert isinstance(book, Book)
 	print(book)
 	#> title='The Alchemist' price=12.99
 except ValidationError as e:
@@ -44,9 +48,9 @@ We can use an LLM to make the determination by adding an [`AfterValidator`](http
 
 ```python
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Type
 
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAIExtractor
 from pydantic import AfterValidator, BaseModel, ValidationError
 
 
@@ -55,29 +59,31 @@ class Label(Enum):
     SAD = "sad story"
 
 
-class Sentiment(OpenAIPrompt):
-    """Is the following happy or sad? {text}."""
+class Sentiment(OpenAIExtractor[Label]):
+    extract_schema: Type[Label] = Label
+    prompt_template = "Is the following happy or sad? {text}."
 
     text: str
 
 
 def validate_happy(story: str) -> str:
     """Check if the content follows the guidelines."""
-    label = Sentiment(text=story).extract(Label)
+    label = Sentiment(text=story).extract()
     assert label == Label.HAPPY, "Story wasn't happy."
     return story
-
-
-class StoryTeller(OpenAIPrompt):
-    """Please tell me a story that's really sad."""
 
 
 class HappyStory(BaseModel):
     story: Annotated[str, AfterValidator(validate_happy)]
 
 
+class StoryTeller(OpenAIExtractor[HappyStory]):
+    extract_template: Type[HappyStory] = HappyStory
+    prompt_template = "Please tell me a story that's really sad."
+
+
 try:
-    story = StoryTeller().extract(HappyStory)  # type: ignore
+    story = StoryTeller().extract()
 except ValidationError as e:
     print(e)
     # > 1 validation error for HappyStoryTool

@@ -2,17 +2,14 @@
 import datetime
 import logging
 from typing import (
-    Annotated,
     Any,
     AsyncGenerator,
     ClassVar,
     Generator,
-    Optional,
 )
 
-from google.generativeai import GenerativeModel, configure  # type: ignore
+from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
-from pydantic import AfterValidator
 
 from ..base import BaseCall, BasePrompt
 from .tools import GeminiTool
@@ -56,11 +53,6 @@ class GeminiCall(
     ```
     '''
 
-    api_key: Annotated[
-        Optional[str],
-        AfterValidator(lambda key: configure(api_key=key) if key is not None else None),
-    ] = None
-
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams(
         model="gemini-1.0-pro",
         generation_config={"candidate_count": 1},
@@ -73,7 +65,10 @@ class GeminiCall(
         Raises:
             ValueError: if the docstring contains an unknown role.
         """
-        return self._parse_messages(["model", "user", "tool"])
+        return [
+            {"role": message["role"], "parts": [message["content"]]}
+            for message in self._parse_messages(["model", "user", "tool"])
+        ]
 
     def call(self, **kwargs: Any) -> GeminiCallResponse:
         """Makes an call to the model using this `GeminiCall` instance.

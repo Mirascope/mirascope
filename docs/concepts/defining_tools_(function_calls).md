@@ -4,7 +4,7 @@ Tools are extremely useful when you want the model to intelligently choose to ou
 
 ## Using tools in Mirascope
 
-Mirascope will automatically convert any function properly documented with a docstring into a tool. This means that you can use any such function as a tool with no additional work. Create a function call, this one is taken from [OpenAI documentation](https://platform.openai.com/docs/guides/function-calling) with Google style python docstrings:
+Mirascope will automatically convert any function properly documented with a docstring into a tool. This means that you can use any such function as a tool with no additional work. The function below is taken from [OpenAI documentation](https://platform.openai.com/docs/guides/function-calling) with Google style python docstrings:
 
 ```python
 import json
@@ -34,6 +34,10 @@ def get_current_weather(
         return json.dumps({"location": location, "temperature": "unknown"})
 ```
 
+!!! note
+
+    We support Google, ReST, Numpydoc, and Epydoc style docstrings.
+
 You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
 
 ```python
@@ -46,7 +50,7 @@ from mirascope.openai import OpenAITool
 
 
 def get_current_weather(location, unit="fahrenheit"):
-		# Assume this function does not have a docstring
+	# Assume this function does not have a docstring
     if "tokyo" in location.lower():
         return json.dumps({"location": "Tokyo", "temperature": "10", "unit": unit})
     elif "san francisco" in location.lower():
@@ -189,4 +193,4 @@ We can take advantage of class inheritance and reduce repetition.
 
 If you are using a function property documented with a docstring, **you do not need to make any code changes** when using other providers. Mirascope will automatically convert these functions to their proper format for you under the hood.
 
-For classes, simply replace `OpenAITool` with your provider of choice e.g. `GeminiTool` to match your choice of prompt.
+For classes, simply replace `OpenAITool` with your provider of choice e.g. `GeminiTool` to match your choice of call.

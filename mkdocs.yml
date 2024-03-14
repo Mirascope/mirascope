@@ -91,7 +91,6 @@ nav:
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:
-      - Why we're building Mirascope: "concepts/why_were_building_mirascope.md"
       - Writing Prompts: "concepts/writing_prompts.md"
       - Generating content: "concepts/generating_content.md"
       - Streaming generated content: "concepts/streaming_generated_content.md"
@@ -104,7 +103,7 @@ nav:
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
       - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
       - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
-      - Dumping prompts: "concepts/dumping_prompts.md"
+      - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
       - Integrations: "concepts/integrations.md"
   - Examples: "examples/index.md"
   - API Reference:

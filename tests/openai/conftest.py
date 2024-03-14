@@ -367,7 +367,7 @@ def fixture_openai_test_call():
             SYSTEM: This is a test.
             USER: You are being tested.
         """
-        api_key: str = "test"
+        api_key = "test"
 
         call_params = OpenAICallParams(model="gpt-4")
 
