@@ -121,7 +121,7 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
                 # TODO: include failure in retry prompt.
-                return self.extract(retries - 1, **kwargs)
+                return self._extract(call_type, tool_type, retries - 1, **kwargs)
             raise  # re-raise if we have no retries left
 
     async def _extract_async(
