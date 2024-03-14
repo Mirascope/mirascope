@@ -111,7 +111,7 @@ class PromptAnalyzer(ast.NodeVisitor):
                     if stripped_line or i < len(lines) - 1:
                         body.append(line.strip())
                 body.append('"""')
-                body.append("")
+                body.append("")  # adds final newline
             else:
                 body.append(ast.unparse(node))
         class_info.body = "\n".join(body)
