@@ -8,13 +8,12 @@ from typing import (
     Literal,
     Optional,
     Type,
-    TypedDict,
     TypeVar,
     Union,
 )
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import Required
+from typing_extensions import Required, TypedDict
 
 from .tools import BaseTool
 from .utils import convert_function_to_tool

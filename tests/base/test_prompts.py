@@ -87,3 +87,48 @@ def test_base_prompt_bad_message_role() -> None:
             prompt_template = "BAD: Bad role should throw error"
 
         Prompt().messages()
+
+
+def test_base_prompt_messages_injection() -> None:
+    """Tests injecting messages into the prompt."""
+
+    class MyPrompt(BasePrompt):
+        prompt_template = """
+        SYSTEM: System message
+        MESSAGES: {history}
+        USER: User message
+        MESSAGES: {context}
+        USER: User message
+        """
+
+        history: list[Message]
+        context: list[Message]
+
+    history: list[Message] = [
+        {"role": "user", "content": "User message"},
+        {"role": "assistant", "content": "Assistant message"},
+    ]
+    context: list[Message] = [{"role": "user", "content": "Context message"}]
+    messages = MyPrompt(history=history, context=context).messages()
+    assert messages == [
+        {"role": "system", "content": "System message"},
+        {"role": "user", "content": "User message"},
+        {"role": "assistant", "content": "Assistant message"},
+        {"role": "user", "content": "User message"},
+        {"role": "user", "content": "Context message"},
+        {"role": "user", "content": "User message"},
+    ]
+
+
+def test_base_prompt_messages_injection_wrong_type() -> None:
+    """Tests that an error is raised if trying to inject a non-list type."""
+
+    class MyPrompt(BasePrompt):
+        prompt_template = """
+        MESSAGES: {bad}
+        """
+
+        bad: int
+
+    with pytest.raises(ValueError):
+        MyPrompt(bad=1).messages()

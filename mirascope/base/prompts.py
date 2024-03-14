@@ -102,16 +102,33 @@ class BasePrompt(BaseModel):
             ValueError: if the template contains an unknown role.
         """
         messages = []
-        re_roles = "|".join([role.upper() for role in roles] + ["[A-Z]*"])
+        re_roles = "|".join(
+            [role.upper() for role in roles] + ["MESSAGES"] + ["[A-Z]*"]
+        )
         for match in re.finditer(
             rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)",
             self.prompt_template,
         ):
             role = match.group(1).lower()
-            if role not in roles:
-                raise ValueError(f"Invalid role: {role}")
-            content = self._format_template(match.group(2))
-            messages.append({"role": role, "content": content})
+            if role == "messages":
+                template_var = [
+                    var
+                    for _, var, _, _ in Formatter().parse(match.group(2))
+                    if var is not None
+                ][0]
+                if not hasattr(self, template_var) or not isinstance(
+                    getattr(self, template_var), list
+                ):
+                    raise ValueError(
+                        f"MESSAGES keyword used with attribute `{template_var}`, which "
+                        "is not a `list` of messages."
+                    )
+                messages += getattr(self, template_var)
+            else:
+                if role not in roles:
+                    raise ValueError(f"Invalid role: {role}")
+                content = self._format_template(match.group(2))
+                messages.append({"role": role, "content": content})
         if len(messages) == 0:
             messages.append({"role": "user", "content": self.prompt_template})
         return messages
