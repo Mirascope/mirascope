@@ -65,7 +65,7 @@ class AnthropicTool(BaseTool[ET.Element]):
         tool_schema = (
             dedent(
                 """
-                <tool_desecription>
+                <tool_description>
                 <tool_name>{name}</tool_name>
                 <description>
                 {description}
@@ -76,7 +76,7 @@ class AnthropicTool(BaseTool[ET.Element]):
             .format(name=cls.__name__, description=json_schema["description"])
         )
         if "parameters" in json_schema:
-            tool_schema += "<parameters>\n"
+            tool_schema += "\n<parameters>\n"
             for prop, definition in json_schema["parameters"]["properties"].items():
                 tool_schema += "<parameter>\n"
                 tool_schema += f"<name>{prop}</name>\n"
@@ -88,7 +88,7 @@ class AnthropicTool(BaseTool[ET.Element]):
                 if "default" in definition:
                     tool_schema += f"<default>{definition['default']}</default>\n"
                 tool_schema += "</parameter>\n"
-            tool_schema == "</parameters>\n"
+            tool_schema += "</parameters>\n"
         tool_schema += "</tool_description>"
         return tool_schema
 

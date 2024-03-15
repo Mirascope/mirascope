@@ -32,7 +32,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
 
 
     class TaskExtractor(OpenAIExtractor[TaskDetails]):
-        extract_schema = TaskDetails
+        extract_schema: Type[TaskDetails] = TaskDetails
 
         prompt_template = """\\
             Please extract the task details:
@@ -43,7 +43,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
 
 
     task_description = "Submit quarterly report by next Friday. Task is high priority."
-    task = TaskExtractor(task=task).extract(retries=3)
+    task = TaskExtractor(task=task_description).extract(retries=3)
     assert isinstance(task, TaskDetails)
     print(task)
     #> title='Submit quarterly report' priority='high' due_date='next Friday'

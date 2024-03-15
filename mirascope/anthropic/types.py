@@ -1,6 +1,6 @@
 """Type classes for interacting with Anthropics's Claude API."""
 import xml.etree.ElementTree as ET
-from typing import Any, Callable, Literal, Optional, Type, Union
+from typing import Any, Callable, Literal, Optional, Type, Union, cast
 
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic._types import Body, Headers, Query
@@ -89,11 +89,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
 
     @property
     def tools(self) -> Optional[list[AnthropicTool]]:
-        """Returns the tools for the 0th choice message.
-
-        NOT YET IMPLEMENTED. Required for abstract base class, but this will always
-        return None until implemented.
-        """
+        """Returns the tools for the 0th choice message."""
         if (
             not self.tool_types
             or self.response.stop_reason != "stop_sequence"
@@ -101,12 +97,16 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
         ):
             return None
 
-        root_node = ET.fromstring(
-            f"<wrapper>{self.response.content}</function_calls></wrapper>"
-        )
-        tool_calls_node = root_node.find("function_calls")
-        if tool_calls_node is None:
-            return None
+        try:
+            root_node = ET.fromstring(
+                f"<wrapper>{self.response.content}</function_calls></wrapper>"
+            )
+        except ET.ParseError as e:
+            raise ValueError("Unable to parse tools from response") from e
+
+        # There must be a <function_calls> tag since we successfully parsed the
+        # XML with the manually added </function_calls> tag.
+        tool_calls_node = cast(ET.Element, root_node.find("function_calls"))
 
         extracted_tools = []
         for tool_call_node in tool_calls_node:
@@ -124,12 +124,9 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
 
     @property
     def tool(self) -> Optional[AnthropicTool]:
-        """Returns the 0th tool for the 0th choice message.
-
-        NOT YET IMPLEMENTED. Required for abstract base class, but this will always
-        return None until implemented.
-        """
+        """Returns the 0th tool for the 0th choice message."""
         tools = self.tools
+        print(tools)
         if tools:
             return tools[0]
         return None

@@ -65,7 +65,7 @@ def convert_function_to_tool(fn: Callable, base: Type[BaseToolT]) -> Type[BaseTo
     if docstring.long_description:
         doc += "\n\n" + docstring.long_description
     if docstring.returns and docstring.returns.description:
-        doc += "\n\n" + docstring.returns.description
+        doc += "\n\n" + "Returns:\n    " + docstring.returns.description
 
     field_definitions = {}
     hints = get_type_hints(fn)

@@ -182,7 +182,11 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         ...
         </parameters>
         </invoke>
+        ...
         </function_calls>
+
+        If you want to call multiple tools, you should put all of the tools inside of
+        the <function_calls> tag as multiple <invoke> elements.
 
         Here are the tools available:
         <tools>

@@ -15,7 +15,7 @@ def test_gemini_extractor_extract_tool(
     fixture_book_tool: Type[GeminiTool],
     fixture_generate_content_response_with_tools: GenerateContentResponse,
 ) -> None:
-    """Tests that the `GeminiPrompt` class returns the expected completion."""
+    """Tests that the `GeminiExtractor` class returns the expected model."""
     mock_generate_content.return_value = fixture_generate_content_response_with_tools
 
     class TempExtractor(GeminiExtractor[Type[GeminiTool]]):
@@ -37,7 +37,7 @@ async def test_gemini_extractor_extract_async_tool(
     fixture_book_tool: Type[GeminiTool],
     fixture_generate_content_response_with_tools: GenerateContentResponse,
 ) -> None:
-    """Tests that the `GeminiPrompt` class returns the expected completion."""
+    """Tests that the `GeminiExtractor` class returns the expected model."""
     mock_generate_content.return_value = fixture_generate_content_response_with_tools
 
     class TempExtractor(GeminiExtractor[Type[GeminiTool]]):
