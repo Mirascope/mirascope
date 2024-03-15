@@ -1,5 +1,6 @@
 """Type classes for interacting with Anthropics's Claude API."""
-from typing import Annotated, Any, Callable, Literal, Optional, Union
+import xml.etree.ElementTree as ET
+from typing import Any, Callable, Literal, Optional, Type, Union, cast
 
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic._types import Body, Headers, Query
@@ -11,12 +12,13 @@ from anthropic.types import (
 )
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
-from pydantic import BeforeValidator, ConfigDict, InstanceOf
+from pydantic import ConfigDict
 
 from ..base.types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from .tools import AnthropicTool
 
 
-class AnthropicCallParams(BaseCallParams[Any]):
+class AnthropicCallParams(BaseCallParams[AnthropicTool]):
     """The parameters to use when calling d Claud API with a prompt.
 
     Example:
@@ -33,9 +35,6 @@ class AnthropicCallParams(BaseCallParams[Any]):
         )
     ```
     """
-
-    # TOOLS ARE NOT YET SUPPORTED
-    tools: Annotated[InstanceOf[None], BeforeValidator(lambda x: None)] = None
 
     max_tokens: int = 1000
     model: str = "claude-3-sonnet-20240229"
@@ -56,7 +55,9 @@ class AnthropicCallParams(BaseCallParams[Any]):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def kwargs(
-        self, tool_type: Optional[Any] = None, exclude: Optional[set[str]] = None
+        self,
+        tool_type: Optional[Type[AnthropicTool]] = None,
+        exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
         extra_exclude = {"wrapper", "wrapper_async"}
@@ -64,7 +65,7 @@ class AnthropicCallParams(BaseCallParams[Any]):
         return super().kwargs(tool_type, exclude)
 
 
-class AnthropicCallResponse(BaseCallResponse[Message, Any]):
+class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     """Convenience wrapper around the Anthropic Claude API.
 
     When using Mirascope's convenience wrappers to interact with Anthropic models via
@@ -86,25 +87,47 @@ class AnthropicCallResponse(BaseCallResponse[Message, Any]):
     ```
     """
 
-    # TOOLS NOT YET SUPPORTED
-    tool_types: Annotated[InstanceOf[None], BeforeValidator(lambda x: None)] = None
+    @property
+    def tools(self) -> Optional[list[AnthropicTool]]:
+        """Returns the tools for the 0th choice message."""
+        if (
+            not self.tool_types
+            or self.response.stop_reason != "stop_sequence"
+            or self.response.stop_sequence != "</function_calls>"
+        ):
+            return None
+
+        try:
+            root_node = ET.fromstring(
+                f"<wrapper>{self.response.content}</function_calls></wrapper>"
+            )
+        except ET.ParseError as e:
+            raise ValueError("Unable to parse tools from response") from e
+
+        # There must be a <function_calls> tag since we successfully parsed the
+        # XML with the manually added </function_calls> tag.
+        tool_calls_node = cast(ET.Element, root_node.find("function_calls"))
+
+        extracted_tools = []
+        for tool_call_node in tool_calls_node:
+            for tool_type in self.tool_types:
+                tool_name_node = tool_call_node.find("tool_name")
+                if (
+                    tool_name_node is not None
+                    and tool_name_node.text == tool_type.__name__
+                ):
+                    tool = tool_type.from_tool_call(tool_call_node)
+                    extracted_tools.append(tool)
+                    break
+
+        return extracted_tools
 
     @property
-    def tools(self) -> None:
-        """Returns the tools for the 0th choice message.
-
-        NOT YET IMPLEMENTED. Required for abstract base class, but this will always
-        return None until implemented.
-        """
-        return None
-
-    @property
-    def tool(self) -> None:
-        """Returns the 0th tool for the 0th choice message.
-
-        NOT YET IMPLEMENTED. Required for abstract base class, but this will always
-        return None until implemented.
-        """
+    def tool(self) -> Optional[AnthropicTool]:
+        """Returns the 0th tool for the 0th choice message."""
+        tools = self.tools
+        if tools:
+            return tools[0]
         return None
 
     @property
@@ -113,7 +136,9 @@ class AnthropicCallResponse(BaseCallResponse[Message, Any]):
         return self.response.content[0].text
 
 
-class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent, Any]):
+class AnthropicCallResponseChunk(
+    BaseCallResponseChunk[MessageStreamEvent, AnthropicTool]
+):
     """Convenience wrapper around the Anthropic API streaming chunks.
 
     When using Mirascope's convenience wrappers to interact with Anthropic models via
@@ -135,9 +160,6 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent, Any])
         print(chunk, end="")
     ```
     """
-
-    # TOOLS NOT YET SUPPORTED
-    tool_types: Annotated[InstanceOf[None], BeforeValidator(lambda x: None)] = None
 
     @property
     def type(
