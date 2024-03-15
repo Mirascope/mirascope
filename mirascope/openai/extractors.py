@@ -19,7 +19,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
     Example:
 
     ```python
-    from typing import Literal
+    from typing import Literal, Type
 
     from mirascope.openai import OpenAIExtractor
     from pydantic import BaseModel

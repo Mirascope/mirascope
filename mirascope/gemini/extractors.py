@@ -17,7 +17,7 @@ class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, T], Generic[T]):
     Example:
 
     ```python
-    from typing import Literal
+    from typing import Literal, Type
     from pydantic import BaseModel
     from mirascope.gemini import GeminiExtractor
 
