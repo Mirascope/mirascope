@@ -1,26 +1,20 @@
-"""A basic prompt for streaming book recommendations on a topic"""
+"""
+Basic example using an OpenAICall to stream a call
+"""
 import os
 
-from mirascope import BasePrompt, OpenAIChat
+from mirascope.openai import OpenAICall
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
-class BookRecommendationPrompt(BasePrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Please recommend a {genre} book."
 
-    topic: str
+    genre: str
 
 
-def stream_book_recommendation(prompt: BookRecommendationPrompt):
-    """Streams the response for a call to the model using `prompt`."""
-    model = OpenAIChat()
-    stream = model.stream(prompt)
-    for chunk in stream:
-        print(chunk, end="")
-
-
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
-stream_book_recommendation(prompt)
+stream = BookRecommender(genre="fantasy").stream()
+for chunk in stream:
+    print(chunk.content, end="")
+# > The Name of the Wind by Patrick Rothfuss

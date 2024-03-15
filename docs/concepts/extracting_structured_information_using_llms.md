@@ -13,12 +13,12 @@ The key challenges in extracting structured information from LLMs include:
 
 ## Mirascope's Approach
 
-Mirascope offers a convenient `extract` method on prompt classes to extract structured information from LLM outputs. This method leverages a combination of natural language processing techniques and heuristics to reliably extract the required structured data. While you can find more details in the following pages, let's consider a simple example where we want to extract task details like due date, priority, and description from a user's natural language input:
+Mirascope offers a convenient `extract` method on extractor classes to extract structured information from LLM outputs. This method leverages tools (function calling) to reliably extract the required structured data. While you can find more details in the following pages, let's consider a simple example where we want to extract task details like due date, priority, and description from a user's natural language input:
 
 ```python
 from typing import Literal
 
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
 
 
@@ -28,10 +28,10 @@ class TaskDetails(BaseModel):
 	description: str
 
 
-class TaskExtractor(OpenAIPrompt):
-	"""
+class TaskExtractor(OpenAIExtractor[TaskDetails]):
+	extract_schema: Type[TaskDetails] = TaskDetails
+	prompt_template = """
 	Extract the task details from the following task:
-
 	{task}
 	"""
 

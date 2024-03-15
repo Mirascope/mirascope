@@ -1,3 +1,0 @@
-# enums
-
-::: mirascope.enums

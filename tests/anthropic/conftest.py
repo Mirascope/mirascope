@@ -10,34 +10,29 @@ from anthropic.types import (
     Usage,
 )
 
-from mirascope.anthropic.prompt import AnthropicPrompt
-from mirascope.anthropic.types import (
-    AnthropicCallParams,
-)
+from mirascope.anthropic.calls import AnthropicCall
+from mirascope.anthropic.types import AnthropicCallParams
 
 
 @pytest.fixture()
-def fixture_anthropic_test_prompt():
+def fixture_anthropic_test_call():
     """Returns an Anthropic test prompt."""
 
-    class AnthropicTestPrompt(AnthropicPrompt):
-        """This is a test prompt for Anthropic."""
+    class AnthropicTestCall(AnthropicCall):
+        prompt_template = "This is a test prompt for Anthropic."
 
         call_params = AnthropicCallParams(temperature=0.3)
 
-    return AnthropicTestPrompt(api_key="test")
+    return AnthropicTestCall(api_key="test")
 
 
 @pytest.fixture()
-def fixture_anthropic_test_messages_prompt():
+def fixture_anthropic_test_messages_call():
     """Returns an Anthropic test prompt with messages."""
 
-    class AnthropicTestMessagesPrompt(AnthropicPrompt):
-        """
-        USER:
-        User message
-
-        ASSISTANT:
+    class AnthropicTestMessagesPrompt(AnthropicCall):
+        prompt_template = """
+        SYSTEM:
         System message
 
         USER:

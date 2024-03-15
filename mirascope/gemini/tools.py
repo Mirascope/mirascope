@@ -1,4 +1,4 @@
-"""Classes for using tools with Google's Gemini Chat APIs."""
+"""Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
 from typing import Callable, Type, TypeVar
@@ -21,8 +21,8 @@ from ..base import (
 BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
-class GeminiTool(BaseTool):
-    '''A base class for easy use of tools with the Gemini Chat client.
+class GeminiTool(BaseTool[FunctionCall]):
+    '''A base class for easy use of tools with the Gemini API.
 
     `GeminiTool` internally handles the logic that allows you to use tools with simple
     calls such as `GeminiCompletion.tool` or `GeminiTool.fn`, as seen in the
@@ -31,7 +31,7 @@ class GeminiTool(BaseTool):
     Example:
 
     ```python
-    from mirascope.gemini import GeminiCallParams, GeminiPrompt, GeminiTool
+    from mirascope.gemini import GeminiCall, GeminiCallParams, GeminiTool
 
 
     class CurrentWeather(GeminiTool):
@@ -40,8 +40,10 @@ class GeminiTool(BaseTool):
         location: str
 
 
-    class WeatherPrompt(GeminiPrompt):
-        """What is the current weather in Tokyo?"""
+    class WeatherForecast(GeminiPrompt):
+        prompt_template = "What is the current weather in {city}?"
+
+        city: str
 
         call_params = GeminiCallParams(
             model="gemini-pro",
@@ -50,8 +52,8 @@ class GeminiTool(BaseTool):
 
 
     prompt = WeatherPrompt()
-    current_weather = prompt.create().tool
-    print(current_weather.location)
+    forecast = WeatherForecast(city="Tokyo").call().tool
+    print(forecast.location)
     #> Tokyo
     ```
     '''
@@ -60,24 +62,21 @@ class GeminiTool(BaseTool):
 
     @classmethod
     def tool_schema(cls) -> Tool:
-        """Constructs a tool schema for use with the OpenAI Chat client.
+        """Constructs a tool schema for use with the Gemini API.
 
         A Mirascope `GeminiTool` is deconstructed into a `Tool` schema for use with the
-        Gemini Chat client.
+        Gemini API.
 
         Returns:
             The constructed `Tool` schema.
-
-        Raises:
-            ValueError: if the class doesn't have a docstring description.
         """
-        model_schema = cls.model_json_schema()
-        if "description" not in model_schema:
-            raise ValueError("Tool must have a docstring description.")
-
         tool_schema = super().tool_schema()
         if "parameters" in tool_schema:
-            tool_schema["parameters"].pop("$defs")
+            if "$defs" in tool_schema["parameters"]:
+                raise ValueError(
+                    "Unfortunately Google's Gemini API cannot handle nested structures "
+                    "with $defs."
+                )
             tool_schema["parameters"]["properties"] = {
                 prop: {
                     key: value for key, value in prop_schema.items() if key != "title"
@@ -106,6 +105,7 @@ class GeminiTool(BaseTool):
         if not tool_call.args:
             raise ValueError("Tool call doesn't have any arguments.")
         model_json = {key: value for key, value in tool_call.args.items()}
+        model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)
 
     @classmethod

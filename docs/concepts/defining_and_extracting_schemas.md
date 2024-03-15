@@ -1,13 +1,15 @@
 # Defining and extracting schemas
 
-Mirascope is built on top of [Pydantic](https://pydantic.dev/). We will walk through the high-level concepts you need to know to get started extracting structured information with LLMs. We recommend reading [their docs](https://docs.pydantic.dev/latest/) for more detailed explanations of everything that you can do with Pydantic.
+Mirascope's extraction functionality is built on top of [Pydantic](https://pydantic.dev/). We will walk through the high-level concepts you need to know to get started extracting structured information with LLMs. We recommend reading [their docs](https://docs.pydantic.dev/latest/) for more detailed explanations of everything that you can do with Pydantic.
 
 ## Model
 
-Defining the schema for extraction is done via models, which are classes that inherit from [`pydantic.BaseModel`](https://docs.pydantic.dev/latest/concepts/models/). We can then use a prompt to extract this schema:
+Defining the schema for extraction is done via models, which are classes that inherit from [`pydantic.BaseModel`](https://docs.pydantic.dev/latest/concepts/models/). We can then use an extractor to extract this schema:
 
 ```python
-from mirascope.openai import OpenAIPrompt
+from typing import Type
+
+from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
 
 
@@ -16,11 +18,13 @@ class Book(BaseModel):
 	author: str
 
 
-class BookRecommendation(OpenAIPrompt):
-	"""The Name of the Wind by Patrick Rothfuss."""
+class BookExtractor(OpenAIExtractor[Book]):
+	extract_schema: Type[Book] = Book
+	prompt_template = "The Name of the Wind by Patrick Rothfuss."
 
 
-book = BookRecommendation().extract(Book)
+book = BookExtractor().extract()
+assert isinstance(book, Book)
 print(book)
 #> title='The Name of the Wind' author='Patrick Rothfuss'
 ```
@@ -32,6 +36,8 @@ You can use tool classes like [`OpenAITool`](../api/openai/tools.md#mirascope.op
 You can also use [`pydantic.Fields`](https://docs.pydantic.dev/latest/concepts/fields/) to add additional information for each field in your schema. Again, this information will be included in the prompt, and we can take advantage of that:
 
 ```python
+from typing import Type
+
 from mirascope.openai import OpenAIPrompt
 from pydantic import BaseModel, Field
 
@@ -41,11 +47,13 @@ class Book(BaseModel):
 	author: str = Field(..., description="Last, First")
 
 
-class BookRecommendation(OpenAIPrompt):
-	"""The Name of the Wind by Patrick Rothfuss."""
+class BookExtractor(OpenAIExtractor[Book]):
+	extract_schema: Type[Book] = Book
+	prompt_template = "The Name of the Wind by Patrick Rothfuss."
 
 
-book = BookRecommendation().extract(Book)
+book = BookExtractor().extract()
+assert isinstance(book, Book)
 print(book)
 #> title='The Name of the Wind' author='Rothfuss, Patrick'
 ```
@@ -57,7 +65,7 @@ Notice how instead of “Patrick Rothfuss” the extracted author is “Rothfuss
 Sometimes the model will fail to extract the schema. This can often be a result of the prompt; however, sometimes it’s simply a failure of the model. If you want to retry the extraction some number of times, you can set `retries` equal to however many retries you want to run (defaults to 0).
 
 ```python
-book = BookRecommendation().extract(Book, retries=3)  # will retry up to 3 times 
+book = BookExtractor().extract(retries=3)  # will retry up to 3 times 
 ```
 
 ## Generating Synthetic Data
@@ -70,16 +78,18 @@ from pydantic import BaseModel
 
 
 class Book(BaseModel):
-	"""A fantasy book."""
+	"""A science fiction book."""
 
 	title: str
 	author: str
 
 
-class BookRecommendation(OpenAIPrompt):
-	"""Please recommend a book."""
+class BookRecommender(OpenAIPrompt[Book]):
+	extract_schema: Type[Book] = Book
+	prompt_template = "Please recommend a book."
 
-book = BookRecommendation().extract(Book)
+book = BookRecommender().extract()
+assert isinstance(book, Book)
 print(book)
 #> title='Dune' author='Frank Herbert'
 ```

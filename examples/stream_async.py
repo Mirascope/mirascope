@@ -1,27 +1,26 @@
-"""A basic prompt for asynchronously streaming book recommendations on a topic"""
+"""
+Basic example using an OpenAICall to async stream an async call
+"""
 import asyncio
 import os
 
-from mirascope import AsyncOpenAIChat, BasePrompt
+from mirascope.openai import OpenAICall
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
-class BookRecommendationPrompt(BasePrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Please recommend a {genre} book."
 
-    topic: str
+    genre: str
 
 
-async def stream_book_recommendation(prompt: BookRecommendationPrompt):
-    """Asynchronously streams the response for a call to the model using `prompt`."""
-    model = AsyncOpenAIChat()
-    astream = model.stream(prompt)
-    async for chunk in astream:
+async def book_recommendation():
+    """Asynchronously creates the response for a chat completion."""
+    stream = await BookRecommender(genre="fantasy").stream_async()
+    async for chunk in stream:
         print(chunk, end="")
 
 
-prompt = BookRecommendationPrompt(topic="how to bake a cake")
-asyncio.run(stream_book_recommendation(prompt))
+asyncio.run(book_recommendation())
+# > The Name of the Wind by Patrick Rothfuss

@@ -1,52 +1,56 @@
-"""A basic example showing how to use field validators to validate the input data.
+"""
+A basic example showing how to use field validators to validate the input data.
 
 Note: All validators are defined in the class because updates to the validators will
 affect the output of the model.
 """
 
 import os
-from typing import Annotated, Union
+from typing import Annotated, Type, Union
 
 from pydantic import AfterValidator, BaseModel, Field, ValidationError
 
-from mirascope import BasePrompt, OpenAICallParams, OpenAIChat
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIExtractor
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
-chat = OpenAIChat()
-
 topic = "baking"
+
+
+class ValidationInfo(BaseModel):
+    is_question: bool = Field(
+        ..., description="True if the text is a question. False otherwise."
+    )
+    is_experience_relevant: bool = Field(
+        ...,
+        description=f"True if question is related to {topic}. False otherwise.",
+    )
+
+
+class Validator(OpenAIExtractor[ValidationInfo]):
+    extract_schema: Type[ValidationInfo] = ValidationInfo
+    prompt_template = "{question}"
+
+    question: str
 
 
 def validate_question(question: str) -> str:
     """Validates the input question."""
 
-    class ValidationInfo(BaseModel):
-        is_question: bool = Field(
-            ..., description="True if the text is a question. False otherwise."
-        )
-        is_experience_relevant: bool = Field(
-            ...,
-            description=f"True if question is related to {topic}. False otherwise.",
-        )
+    info = Validator(question=question).extract()
 
-    text = chat.extract(ValidationInfo, question)
-
-    assert text.is_question, f"The text is not a question: {question}"
+    assert info.is_question, f"The text is not a question: {question}"
     assert (
-        text.is_experience_relevant
+        info.is_experience_relevant
     ), f"The question is not relevant to {topic}: {question}"
 
     return question
 
 
-class QuestionPrompt(BasePrompt):
-    """
-    SYSTEM:
-    You are an expert in {topic}.
-
-    USER:
-    {question}
+class Expert(OpenAICall):
+    prompt_template = """
+    SYSTEM: You are an expert in {topic}.
+    USER: {question}
     """
 
     topic: str = topic
@@ -54,7 +58,7 @@ class QuestionPrompt(BasePrompt):
         ..., description="The user's question."
     )
 
-    call_params = OpenAICallParams(model="gpt-3.5-turbo", temperature=0.1)
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125", temperature=0.1)
 
 
 class HowToGuide(BaseModel):
@@ -65,9 +69,16 @@ class HowToGuide(BaseModel):
     )
 
 
+class Guide(OpenAIExtractor[HowToGuide]):
+    extract_schema: Type[HowToGuide] = HowToGuide
+    prompt_template = "{content}"
+
+    content: str
+
+
 try:
-    content = chat.create(QuestionPrompt(question="cake recipe?"))
-    guide = chat.extract(HowToGuide, str(content))
+    response = Expert(question="cake recipe?").call()
+    guide = Guide(content=response.content).extract()
     print(guide)
 except ValidationError as e:
     print(e)

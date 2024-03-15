@@ -36,32 +36,17 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str):
 
 
 @pytest.mark.parametrize(
+    "golden_prompt,auto_tag",
+    [
+        ("base_prompt", False),
+        ("base_prompt", True),
+    ],
+)
+@pytest.mark.parametrize(
     "version_text_file",
     [
         VersionTextFile(current_revision=None, latest_revision=None),
         VersionTextFile(current_revision="0001", latest_revision="0001"),
-    ],
-)
-@pytest.mark.parametrize("golden_prompt", ["simple_prompt"])
-@pytest.mark.parametrize(
-    "mirascope_settings",
-    [
-        MirascopeSettings(
-            mirascope_location=".mirascope",
-            auto_tag=True,
-            version_file_name="version.txt",
-            prompts_location="prompts",
-            versions_location=".mirascope/versions",
-            format_command="ruff check --select I --fix; ruff format",
-        ),
-        MirascopeSettings(
-            mirascope_location=".mirascope",
-            auto_tag=False,
-            version_file_name="version.txt",
-            prompts_location="prompts",
-            versions_location=".mirascope/versions",
-            format_command="ruff check --select I --fix; ruff format",
-        ),
     ],
 )
 @patch("mirascope.cli.utils.get_user_mirascope_settings")
@@ -71,12 +56,20 @@ def test_add(
     mock_get_prompt_versions: MagicMock,
     mock_get_mirascope_settings_add: MagicMock,
     mock_get_mirascope_settings: MagicMock,
-    mirascope_settings: MirascopeSettings,
     golden_prompt: str,
+    auto_tag: bool,
     version_text_file: VersionTextFile,
     tmp_path: Path,
 ):
     """Tests that `add` adds a prompt to the specified version directory."""
+    mirascope_settings = MirascopeSettings(
+        mirascope_location=".mirascope",
+        version_file_name="version.txt",
+        prompts_location="prompts",
+        versions_location=".mirascope/versions",
+        format_command="ruff check --select I --fix; ruff format",
+        auto_tag=auto_tag,
+    )
     mock_get_mirascope_settings_add.return_value = mirascope_settings
     mock_get_mirascope_settings.return_value = mirascope_settings
     mock_get_prompt_versions.return_value = version_text_file
@@ -150,7 +143,7 @@ def test_add_no_changes(
         prompts_location="prompts",
         versions_location=".mirascope/versions",
     )
-    prompt = "simple_prompt"
+    prompt = "base_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(Path(td), prompt)
         result = runner.invoke(app, ["add", prompt])

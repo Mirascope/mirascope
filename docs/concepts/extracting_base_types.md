@@ -3,14 +3,15 @@
 Mirascope also makes it possible to extract base types without defining a `pydantic.BaseModel` with the same exact format for extraction:
 
 ```python
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAIExtractor
 
 
-class BookRecommendation(OpenAIPrompt):
-	"""Please recommend some science fiction books."""
+class BookRecommender(OpenAIExtractor[list[str]]):
+    extract_schema: Type[list[str]] = list[str]
+	prompt_template = "Please recommend some science fiction books."
 
 
-books = BookRecommendation().extract(list[str])
+books = BookRecommendation().extract()
 print(books)
 #> ['Dune', 'Neuromancer', "Ender's Game", "The Hitchhiker's Guide to the Galaxy", 'Foundation', 'Snow Crash']
 ```
@@ -31,7 +32,7 @@ One nice feature of extracting base types is that we can easily use `Enum` or `L
 from enum import Enum
 # from typing import Literal
 
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAIExtractor
 
 # Label = Literal["is spam", "is not spam"]
 
@@ -41,16 +42,18 @@ class Label(Enum):
     SPAM = "spam"
 
 
-class NotSpam(OpenAIPrompt):
-    """Your car insurance payment has been processed. Thank you for your business."""
+class NotSpam(OpenAIExtractor[Label]):
+    extract_schema: Type[Label] = Label
+    prompt_template = "Your car insurance payment has been processed. Thank you for your business."
 
 
-class Spam(OpenAIPrompt):
-    """I can make you $1000 in just an hour. Interested?"""
+class Spam(OpenAIExtractor[Label]):
+    extract_schema: Type[Label] = Label
+    prompt_template = "I can make you $1000 in just an hour. Interested?"
 
 
-# assert NotSpam().extract(Label) == "is not spam"
-# assert Spam().extract(Label) == "is spam"
-assert NotSpam().extract(Label) == Label.NOT_SPAM
-assert Spam().extract(Label) == Label.SPAM
+# assert NotSpam().extract() == "is not spam"
+# assert Spam().extract() == "is spam"
+assert NotSpam().extract() == Label.NOT_SPAM
+assert Spam().extract() == Label.SPAM
 ```

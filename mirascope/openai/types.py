@@ -1,4 +1,4 @@
-"""Type classes for interacting with the OpenAI Chat API."""
+"""Types for interacting with OpenAI models using Mirascope."""
 from typing import Any, Callable, Optional, Type, Union
 
 from httpx import Timeout
@@ -15,67 +15,108 @@ from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaToolCall
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.completion_create_params import ResponseFormat
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
-from ..base import BaseCallParams
+from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
 from .tools import OpenAITool
 
 
-class OpenAIChatCompletion(BaseModel):
-    """Convenience wrapper around OpenAI chat completions.
+class OpenAICallParams(BaseCallParams[OpenAITool]):
+    """The parameters to use when calling the OpenAI API."""
+
+    model: str = "gpt-3.5-turbo-0125"
+    frequency_penalty: Optional[float] = None
+    logit_bias: Optional[dict[str, int]] = None
+    logprobs: Optional[bool] = None
+    max_tokens: Optional[int] = None
+    n: Optional[int] = None
+    presence_penalty: Optional[float] = None
+    response_format: Optional[ResponseFormat] = None
+    seed: Optional[int] = None
+    stop: Union[Optional[str], list[str]] = None
+    temperature: Optional[float] = None
+    tool_choice: Optional[ChatCompletionToolChoiceOptionParam] = None
+    top_logprobs: Optional[int] = None
+    top_p: Optional[float] = None
+    user: Optional[str] = None
+    # Values defined below take precedence over values defined elsewhere. Use these
+    # params to pass additional parameters to the API if necessary that aren't already
+    # available as params.
+    extra_headers: Optional[Headers] = None
+    extra_query: Optional[Query] = None
+    extra_body: Optional[Body] = None
+    timeout: Optional[Union[float, Timeout]] = None
+
+    wrapper: Optional[Callable[[OpenAI], OpenAI]] = None
+    wrapper_async: Optional[Callable[[AsyncOpenAI], AsyncOpenAI]] = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def kwargs(
+        self,
+        tool_type: Optional[Type[OpenAITool]] = OpenAITool,
+        exclude: Optional[set[str]] = None,
+    ) -> dict[str, Any]:
+        """Returns the keyword argument call parameters."""
+        extra_exclude = {"wrapper", "wrapper_async"}
+        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
+        return super().kwargs(tool_type, exclude)
+
+
+class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
+    """A convenience wrapper around the OpenAI `ChatCompletion` response.
 
     When using Mirascope's convenience wrappers to interact with OpenAI models via
-    `OpenAIChat`, responses using `OpenAIChat.create()` will return a
-    `OpenAIChatCompletion`, whereby the implemented properties allow for simpler syntax
+    `OpenAICall`, responses using `OpenAICall.call()` will return a
+    `OpenAICallResponse`, whereby the implemented properties allow for simpler syntax
     and a convenient developer experience.
 
     Example:
 
     ```python
-    from mirascope import OpenAIChat
+    from mirascope.openai import OpenAICall
 
-    chat = OpenAIChat()
-    response = chat.create("What is 1 + 2?")
+
+    class BookRecommender(OpenAICall):
+        prompt_template = "Please recommend a {genre} book"
+
+        genre: str
+
+
+    response = Bookrecommender(genre="fantasy").call()
+    print(response.content)
+    #> The Name of the Wind
+
+    print(response.message)
+    #> ChatCompletionMessage(content='The Name of the Wind', role='assistant',
+    #  function_call=None, tool_calls=None)
 
     print(response.choices)
     #> [Choice(finish_reason='stop', index=0, logprobs=None,
-    #  message=ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
+    #  message=ChatCompletionMessage(content='The Name of the Wind', role='assistant',
     #  function_call=None, tool_calls=None))]
-
-    print(response.message)
-    #> ChatCompletionMessage(content='1 + 2 equals 3.', role='assistant',
-    #  function_call=None, tool_calls=None)
-
-    print(response.content)
-    #> 1 + 2 equals 3.
     ```
-
     """
-
-    completion: ChatCompletion
-    tool_types: Optional[list[Type[OpenAITool]]] = None
-    start_time: float  # The start time of the completion in ms
-    end_time: float  # The end time of the completion in ms
 
     @property
     def choices(self) -> list[Choice]:
         """Returns the array of chat completion choices."""
-        return self.completion.choices
+        return self.response.choices
 
     @property
     def choice(self) -> Choice:
         """Returns the 0th choice."""
-        return self.completion.choices[0]
+        return self.choices[0]
 
     @property
     def message(self) -> ChatCompletionMessage:
         """Returns the message of the chat completion for the 0th choice."""
-        return self.completion.choices[0].message
+        return self.choice.message
 
     @property
-    def content(self) -> Optional[str]:
+    def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
-        return self.completion.choices[0].message.content
+        return self.message.content if self.message.content is not None else ""
 
     @property
     def tool_calls(self) -> Optional[list[ChatCompletionMessageToolCall]]:
@@ -123,32 +164,31 @@ class OpenAIChatCompletion(BaseModel):
         return {
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "output": self.completion.model_dump(),
+            "output": self.response.model_dump(),
         }
 
-    def __str__(self):
-        """Returns the contained string content for the 0th choice."""
-        return self.content if self.content is not None else ""
 
-
-class OpenAIChatCompletionChunk(BaseModel):
+class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAITool]):
     """Convenience wrapper around chat completion streaming chunks.
 
     When using Mirascope's convenience wrappers to interact with OpenAI models via
-    `OpenAIChat`, responses using `OpenAIChat.stream()` will return a
-    `OpenAIChatCompletionChunk`, whereby the implemented properties allow for simpler
-    syntax and a convenient developer experience.
+    `OpenAICall.stream`, responses will return an `OpenAICallResponseChunk`, whereby
+    the implemented properties allow for simpler syntax and a convenient developer
+    experience.
 
     Example:
 
     ```python
-    from mirascope import OpenAIChat
+    from mirascope.openai import OpenAICall
 
-    chat = OpenAIChat()
-    stream = chat.stream("What is 1 + 2?")
 
-    for chunk in stream:
+    class Math(OpenAICall):
+        prompt_template = "What is 1 + 2?"
+
+
+    for chunk in OpenAICall().stream():
         print(chunk.content)
+
     #> 1
     #  +
     #  2
@@ -156,11 +196,7 @@ class OpenAIChatCompletionChunk(BaseModel):
     #
     #  3
     #  .
-    ```
     """
-
-    chunk: ChatCompletionChunk
-    tool_types: Optional[list[Type[OpenAITool]]] = None
 
     @property
     def choices(self) -> list[ChunkChoice]:
@@ -178,9 +214,9 @@ class OpenAIChatCompletionChunk(BaseModel):
         return self.choices[0].delta
 
     @property
-    def content(self) -> Optional[str]:
+    def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        return self.delta.content
+        return self.delta.content if self.delta.content is not None else ""
 
     @property
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:
@@ -193,51 +229,3 @@ class OpenAIChatCompletionChunk(BaseModel):
         `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
         """
         return self.delta.tool_calls
-
-    def __str__(self) -> str:
-        """Returns the chunk content for the 0th choice."""
-        return self.content if self.content is not None else ""
-
-
-class OpenAICallParams(BaseCallParams):
-    """The parameters to use when calling the OpenAI Chat API with a prompt."""
-
-    model: str = "gpt-3.5-turbo-0125"
-    base_url: Optional[str] = None
-    wrapper: Optional[Callable[[OpenAI], OpenAI]] = None
-    async_wrapper: Optional[Callable[[AsyncOpenAI], AsyncOpenAI]] = None
-    frequency_penalty: Optional[float] = None
-    logit_bias: Optional[dict[str, int]] = None
-    logprobs: Optional[bool] = None
-    max_tokens: Optional[int] = None
-    n: Optional[int] = None
-    presence_penalty: Optional[float] = None
-    response_format: Optional[ResponseFormat] = None
-    seed: Optional[int] = None
-    stop: Union[Optional[str], list[str]] = None
-    temperature: Optional[float] = None
-    tool_choice: Optional[ChatCompletionToolChoiceOptionParam] = None
-    tools: Optional[list[Union[Callable, Type[OpenAITool]]]] = None
-    top_logprobs: Optional[int] = None
-    top_p: Optional[float] = None
-    user: Optional[str] = None
-    # Values defined below take precedence over values defined elsewhere. Use these
-    # params to pass additional parameters to the API if necessary that aren't already
-    # available as params.
-    extra_headers: Optional[Headers] = None
-    extra_query: Optional[Query] = None
-    extra_body: Optional[Body] = None
-    timeout: Optional[Union[float, Timeout]] = None
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    @property
-    def kwargs(self) -> dict[str, Any]:
-        """Returns the keyword argument call parameters."""
-        return {
-            key: value
-            for key, value in self.model_dump(
-                exclude={"tools", "base_url", "wrapper", "async_wrapper"}
-            ).items()
-            if value is not None
-        }
