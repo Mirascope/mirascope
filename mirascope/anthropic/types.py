@@ -126,7 +126,6 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     def tool(self) -> Optional[AnthropicTool]:
         """Returns the 0th tool for the 0th choice message."""
         tools = self.tools
-        print(tools)
         if tools:
             return tools[0]
         return None
