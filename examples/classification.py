@@ -32,7 +32,7 @@ class LabelsExtractor(OpenAIExtractor[TextLabels]):
 
 for extractor in [
     LabelsExtractor(text="Hey buddy, want to grab lunch tomorrow?"),
-    LabelsExtractor("You will pay for what you have done, you pathetic loser."),
+    LabelsExtractor(text="You will pay for what you have done, you pathetic loser."),
 ]:
     print(extractor.extract(retries=5))
 
