@@ -104,7 +104,7 @@ class BasePrompt(BaseModel):
         """
         messages = []
         re_roles = "|".join(
-            [role.upper() for role in roles] + ["MESSAGES"] + ["[A-Z]*"]
+            [role.upper() for role in roles] + ["MESSAGES"] + ["[A-Z]+"]
         )
         for match in re.finditer(
             rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)",

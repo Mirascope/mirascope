@@ -1,4 +1,6 @@
 """A class for extracting structured information using OpenAI chat models."""
+from __future__ import annotations
+
 import logging
 from typing import Any, Generic, TypeVar
 

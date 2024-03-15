@@ -54,7 +54,6 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams()
 
-    @property
     def messages(self) -> ContentsType:
         """Returns the `ContentsType` messages for Gemini `generate_content`.
 
@@ -83,7 +82,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = gemini_pro_model.generate_content(
-            self.messages,
+            self.messages(),
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
@@ -110,7 +109,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await gemini_pro_model.generate_content_async(
-            self.messages,
+            self.messages(),
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
@@ -135,7 +134,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         stream = gemini_pro_model.generate_content(
-            self.messages,
+            self.messages(),
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
@@ -158,7 +157,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         stream = await gemini_pro_model.generate_content_async(
-            self.messages,
+            self.messages(),
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
