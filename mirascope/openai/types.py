@@ -1,4 +1,5 @@
 """Types for interacting with OpenAI models using Mirascope."""
+
 from typing import Any, Callable, Optional, Type, Union
 
 from httpx import Timeout

@@ -1,4 +1,5 @@
 """Tests for the base typing classes."""
+
 from typing import Any
 from unittest.mock import patch
 
