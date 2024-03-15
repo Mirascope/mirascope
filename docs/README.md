@@ -48,13 +48,13 @@ os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 @tags(["version:0003"])
 class Editor(OpenAICall):
     prompt_template = """
-	SYSTEM:
-	You are a top class manga editor.
-	
-	USER:
-	I'm working on a new storyline. What do you think?
-	{storyline}
-	"""
+    SYSTEM:
+    You are a top class manga editor.
+    
+    USER:
+    I'm working on a new storyline. What do you think?
+    {storyline}
+    """
     
     storyline: str
     
@@ -115,10 +115,10 @@ from mirascope.openai import OpenAICall
 
 class Librarian(OpenAICall):
     prompt_template = """
-	SYSTEM: You are the world's greatest librarian.
-	MESSAGES: {history}
-	USER: {question}
-	"""
+    SYSTEM: You are the world's greatest librarian.
+    MESSAGES: {history}
+    USER: {question}
+    """
 
     question: str
     history: list[ChatCompletionMessageParam] = []
@@ -224,18 +224,18 @@ from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
 
 class TaskDetails(BaseModel):
-	description: str
-	due_date: str
-	priority: Literal["low", "normal", "high"]
+    description: str
+    due_date: str
+    priority: Literal["low", "normal", "high"]
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
-	extract_schema: Type[TaskDetails] = TaskDetails
-	prompt_template = """
-	Extract the task details from the following task:
-	{task}
-	"""
+    extract_schema: Type[TaskDetails] = TaskDetails
+    prompt_template = """
+    Extract the task details from the following task:
+    {task}
+    """
 
-	task: str
+    task: str
 
 task = "Submit quarterly report by next Friday. Task is high priority."
 task_details = TaskExtractor(task=task).extract()
@@ -261,13 +261,13 @@ os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 app = FastAPI()
 
 class Book(BaseModel):
-	title: str
-	author: str
-	
+    title: str
+    author: str
+
 
 class BookRecommender(OpenAIExtractor[Book]):
-	extract_schema: Type[Book] = Book
-	prompt_template = "Please recommend a {genre} book."
+    extract_schema: Type[Book] = Book
+    prompt_template = "Please recommend a {genre} book."
 
 @app.post("/")
 def root(book_recommender: BookRecommender) -> Book:
@@ -291,10 +291,6 @@ def root(book_recommender: BookRecommender) -> Book:
 - [ ]  Integrations
     - [x]  Weights & Biases
     - [x]  LangChain / LangSmith
-    - [ ]  … tell us what you’d like integrated!
-- [ ]  Integrations:
-    - [x]  Weights & Biases
-    - [x]  LangSmith
     - [ ]  … tell us what you’d like integrated!
 - [ ]  Evaluating prompts and their quality by version
 
