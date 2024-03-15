@@ -7,10 +7,12 @@ from typing import Any, Callable, Generic, Type, TypeVar, Union
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import SkipJsonSchema
 
-DEFAULT_TOOL_DOCSTRING = """\
-Correctly formatted and typed parameters extracted from the completion. Must include "
-"required parameters and may exclude optional parameters unless present in the text.
-"""
+DEFAULT_TOOL_DOCSTRING = " ".join(
+    """
+Correctly formatted and typed parameters extracted from the completion. Must include
+required parameters and may exclude optional parameters unless present in the text.
+    """.strip().split("\n")
+)
 
 BaseType = Union[
     str,

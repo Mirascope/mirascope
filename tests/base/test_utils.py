@@ -103,6 +103,25 @@ class MethodWithSelfTool(BaseTool):
     param: str
 
 
+def method_with_return_docstring_tool(param: str) -> str:
+    """A method that returns a string.
+
+    Returns:
+        A string.
+    """
+    return "param"  # pragma: no cover
+
+
+class MethodWithReturnDocstringTool(BaseTool):
+    """A method that returns a string.
+
+    Returns:
+        A string.
+    """
+
+    param: str
+
+
 @pytest.mark.parametrize(
     "fn,expected_tool",
     [
@@ -112,6 +131,7 @@ class MethodWithSelfTool(BaseTool):
         (reserved_name_tool, ReservedNameTool),
         (class_method_tool, ClassMethodTool),
         (method_with_self_tool, MethodWithSelfTool),
+        (method_with_return_docstring_tool, MethodWithReturnDocstringTool),
     ],
 )
 def test_convert_function_to_tool(fn: Callable, expected_tool: BaseTool) -> None:
