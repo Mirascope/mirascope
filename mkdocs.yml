@@ -124,10 +124,10 @@ nav:
           - "api/cli/index.md"
           - commands: "api/cli/commands.md"
           - constants: "api/cli/constants.md"
-          - enums: "api/cli/enums.md"
           - generic: "api/cli/generic.md"
           - schemas: "api/cli/schemas.md"
           - utils: "api/cli/utils.md"
+      - enums: "api/enums.md"
       - gemini:
           - "api/gemini/index.md"
           - calls: "api/gemini/calls.md"
