@@ -31,3 +31,21 @@ class MirascopeCommand(_Enum):
     USE = "use"
     STATUS = "status"
     INIT = "init"
+
+
+class MessageRole(_Enum):
+    """Roles that the `BasePrompt` messages parser can parse from the template.
+
+    SYSTEM: A system message.
+    USER: A user message.
+    ASSISTANT: A message response from the assistant or chat client.
+    MODEL: A message response from the assistant or chat client. Model is used by
+        Google's Gemini instead of assistant, which doesn't have system messages.
+    TOOL: A message representing the output of calling a tool.
+    """
+
+    SYSTEM = "system"
+    USER = "user"
+    ASSISTANT = "assistant"
+    MODEL = "model"
+    TOOL = "tool"

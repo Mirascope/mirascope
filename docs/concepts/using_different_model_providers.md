@@ -1,19 +1,19 @@
 # Using different model providers
 
-Testing out various providers is a powerful way to boost the performance of your prompts. Mirascope makes it fast and simple to swap between various providers.
+Testing out various providers is a powerful way to boost the performance of your calls. Mirascope makes it fast and simple to swap between various providers.
 
 We currently support the following providers:
 
 - OpenAI
+- Anthropic (tools coming soon...)
 - Gemini
 - Mistral (coming soon...)
-- Claude (coming soon...)
 
 This also means that we support any providers that use these APIs.
 
 ## Using providers that support the OpenAI API
 
-If you want to use a provider that supports the OpenAI API, simply update the base_url. 
+If you want to use a provider that supports the OpenAI API, simply update the base_url.
 
 This works for endpoints such as:
 
@@ -26,17 +26,18 @@ This works for endpoints such as:
 ```python
 import os
 
+from mirascope.openai import OpenAICall, OpenAICallParams
+
 os.environ["OPENAI_API_KEY"] = "OTHER_PROVIDER_API_KEY"
 
 
-class Recipe(OpenAIPrompt):
-    """
-    Recommend recipes that use {ingredient} as an ingredient
-    """
-  
+class RecipeRecommender(OpenAICall):
+    prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
+    
     ingredient: str
-  
-    call_params = OpenAICallParams(base_url="BASE_URL", model=...)
+    
+    base_url = "BASE_URL"
+    call_params = OpenAICallParams(model="...")
 ```
 
 ## Swapping from OpenAI to Gemini
@@ -45,28 +46,25 @@ The [generative-ai library](https://github.com/GoogleCloudPlatform/generative-ai
 
 This leads to people typically sticking with one provider even when providers release new features frequently. Take for example when Google announced [Gemini 1.5](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#gemini-15), it would be very useful to implement prompts with the new context window. Thankfully, Mirascope makes this swap trivial.
 
-### Assuming you are starting with OpenAIPrompt
+### Assuming you are starting with OpenAICall
 
 ```python
 import os
-from mirascope import OpenAIPrompt, OpenAICallParams
+from mirascope import OpenAICall, OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class Recipe(OpenAIPrompt):
-    """
-    Recommend recipes that use {ingredient} as an ingredient
-    """
-
+class RecipeRecommender(OpenAICall):
+    prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
+    
     ingredient: str
+    
+    call_params = OpenAICallParams(model="...")
 
-    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
-
-recipe = Recipe(ingredient="apples")
-completion = recipe.create()
-print(completion)  # prints the string content of the completion
+response = RecipeRecommender(ingredient="apples").call()
+print(response.content)
 ```
 
 1. First install Mirascope’s integration with gemini if you haven’t already.
@@ -76,7 +74,7 @@ pip install mirascope[gemini]
 ```
 
 1. Swap out OpenAI with Gemini:
-    1. Replace `OpenAIPrompt` and `OpenAICallParams` with `GeminiiPrompt` and `GeminiCallParams` respectively 
+    1. Replace `OpenAICall` and `OpenAICallParams` with `GeminiCall` and `GeminiCallParams` respectively 
     2. Configure your Gemini API Key
     3. Update `GeminiCallParams` with new model and other attributes
 
@@ -87,19 +85,16 @@ from mirasope.gemini import GeminiPrompt, GeminiCallParams
 configure(api_key="YOUR_GEMINI_API_KEY")
 
 
-class GeminiRecipe(GeminiPrompt):
-    """
-    Recommend recipes that use {ingredient} as an ingredient
-    """
-
+class RecipeRecommender(GeminiCall):
+    prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
+    
     ingredient: str
-
+    
     call_params = GeminiCallParams(model="gemini-1.0-pro")
 
 
-recipe = GeminiRecipe(ingredient="apples")
-completion = recipe.create()
-print(completion)  # prints the string content of the completion
+response = RecipeRecommender(ingredient="apples").call()
+print(response.content)
 ```
 
 That’s it for the basic example! Now you can evaluate the quality of your prompt with Gemini.
@@ -115,9 +110,7 @@ from mirascope import OpenAIPrompt, OpenAICallParams
 from openai.types.chat import ChatCompletionMessageParam
 
 
-class Recipe(OpenAIPrompt):
-    """A normal docstring"""
-    
+class Recipe(OpenAICall):
     ingredient: str
     
     call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
@@ -150,13 +143,13 @@ class Recipe(GeminiPrompt):
     @property
     def messages(self) -> ContentsType:
         return [
-            {"role": "user", "content": "You are the world's greatest chef."},
-            {"role": "model", "content": "I am the world's greatest chef."},
-            {"role": "user", "content": f"Can you recommend some recipes that use {self.ingredient} as an ingredient?"},
+            {"role": "user", "parts": ["You are the world's greatest chef."]},
+            {"role": "model", "parts": ["I am the world's greatest chef."]},
+            {"role": "user", "parts": [f"Can you recommend some recipes that use {self.ingredient} as an ingredient?"]},
         ]
 ```
 
-Update the return type from `list[ChatCompletionMessageParam]` to `ContentsType` and the `messages` method. Gemini doesn’t have a `system` role, so instead we need to simulate OpenAI’s `system` message using a `user` → `model` pair. Refer to the providers documentation on how to format their messages array.
+Update the return type from `list[ChatCompletionMessageParam]` to `ContentsType` for the `messages` method. Gemini doesn’t have a `system` role, so instead we need to simulate OpenAI’s `system` message using a `user` → `model` pair. Refer to the providers documentation on how to format their messages array.
 
 ## Swapping to another provider
 

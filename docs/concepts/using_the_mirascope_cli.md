@@ -1,6 +1,6 @@
 # Using the Mirascope CLI
 
-One of the main frustrations of dealing with prompts is keeping track of all the various revisions. Taking inspiration from alembic and git, the Mirascope CLI provides a couple of key commands to make managing prompts easier.
+One of the main frustrations of dealing with prompts and calls is keeping track of all the various revisions. Taking inspiration from alembic and git, the Mirascope CLI provides a couple of key commands to make managing prompts and calls easier.
 
 ## The prompt management environment
 
@@ -10,7 +10,7 @@ The first step to using the Mirascope CLI is to use the `init` command in your p
 mirascope init
 ```
 
-This will create the directories and files to help manage prompts.
+This will create the directories and files to help manage prompts and calls.
 Here is a sample structure created by the `init` function:
 
 ```
@@ -34,12 +34,12 @@ Here is a rundown of each directory and file:
 - `versions/<directory_name` - The sub-directory that is created for each prompt file in the `prompts` directory
 - `version.txt` - A file system method of keeping track of current and latest revisions. Coming soon is revision tracking using a database instead
 - `<revision_id>_<directory_name>.py` - A prompt version that is created by the `mirascope add` command, more on this later.
-- `prompts` - The user's prompt directory that stores all prompt files
+- `prompts` - The user's directory that stores all prompt and call files
 
 The directory names can be changed anytime by modifying the `mirascope.ini` file or when running the `init` command.
 
 ```
-mirascope init --mirascope_location my_mirascope --prompts_location my_prompts
+mirascope init --mirascope_location my_mirascope --prompts_location calls
 ```
 
 ## Saving your first prompt
@@ -47,43 +47,38 @@ mirascope init --mirascope_location my_mirascope --prompts_location my_prompts
 After creating the prompt management directory, you are now ready to build and iterate on some prompts. Begin by adding a Mirascope Prompt to the prompts directory.
 
 ```python
-# prompts/my_prompt.py
-from mirascope.openai import OpenAIPrompt, OpenAICallParams
+# prompts/book_recommender.py
+from mirascope.openai import OpenAICall, OpenAICallParams
 
 
-class BookRecommendation(OpenAIPrompt):
-    """
-    Can you recommend some books on {topic} in a list format?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic} in a list format?"
 
     topic: str
     
     call_params = OpenAICallParams(model="gpt-3.5-turbo")
-
 ```
 
 Once you are happy with the first iteration of this prompt, you can run:
 
 ```
-mirascope add my_prompt
+mirascope add book_recommender
 ```
 
-This will commit `my_prompt.py` to your `versions/` directory, creating a `my_prompt` sub-directory and a `0001_my_prompt.py`.
+This will commit `book_recommender.py` to your `versions/` directory, creating a `book_recommender` sub-directory and a `0001_book_recommender.py`.
 
-Here is what `0001_my_prompt.py` will look like:
+Here is what `0001_book_recommender.py` will look like:
 
 ```python
-# versions/my_prompt/0001_my_prompt.py
-from mirascope.openai import OpenAIPrompt, OpenAICallParams
+# versions/book_recommender/0001_book_recommender.py
+from mirascope.openai import OpenAICall, OpenAICallParams
 
 prev_revision_id = "None"
 revision_id = "0001"
 
 
-class BookRecommendation(OpenAIPrompt):
-    """
-    Can you recommend some books on {topic} in a list format?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic} in a list format?"
 
     topic: str
     
@@ -96,31 +91,28 @@ The variables `prev_revision_id` and `revision_id` will be used for features com
 
 ## Colocate
 
-**Everything that affects the quality of a prompt lives in the prompt.** This is why `call_params` exists in Prompt and why `OpenAI` and other provider wrappers are combined with `BasePrompt`.
+**Everything that affects the quality of a prompt lives in the prompt.** This is why `call_params` exists in `BaseCall` and why `OpenAICall` and other provider wrappers extend the `BasePrompt` class.
 
 ## Iterating on the prompt
 
-Now that this version of `my_prompt` has been saved, you are now free to modify the original `my_prompt.py` and iterate. Maybe, you want to switch to a different provider and compare results.
+Now that this version of `book_recommender` has been saved, you are now free to modify the original `book_recommender.py` and iterate. Maybe, you want to switch to a different provider and compare results.
 
-Here is what the next iteration of `my_prompt.py` will look like:
+Here is what the next iteration of `book_recommender.py` will look like:
 
 ```python
-# prompts/my_prompt.py
+# prompts/book_recommender.py
 from google.generativeai import configure
-from mirasope.gemini import GeminiPrompt, GeminiCallParams
+from mirasope.gemini import GeminiCall, GeminiCallParams
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 
 
-class BookRecommendation(GeminiPrompt):
-	"""
-	Can you recommend some books on {topic} in a list format?
-	"""
+class BookRecommender(GeminiCall):
+	prompt_template = "Can you recommend some books on {topic} in a list format?"
 
 	ingredient: str
 
 	call_params = GeminiCallParams(model="gemini-1.0-pro")
-
 ```
 
 Before adding the next revision of `my_prompt`, you may want to check the status of your prompt.
@@ -134,7 +126,7 @@ mirascope status
 ```
 
 Note that status will also be checked before the `add` or `use` command is run.
-Now we can run the same `add` command in the previous section to commit another version `0002_my_prompt.py`
+Now we can run the same `add` command in the previous section to commit another version `0002_book_recommender.py`
 
 ## Switching between versions
 
@@ -143,10 +135,10 @@ You can now freely switch different providers or use the same provider with a di
 You can use the `use` command to quickly switch between the prompts:
 
 ```
-mirascope use my_prompt 0001
+mirascope use book_recommender 0001
 ```
 
-Here you specify which prompt and also which version you want to use. This will update your `prompts/my_prompt.py` with the contents of `versions/0001_my_prompt.py` (minus the variables used internally).
+Here you specify which prompt and also which version you want to use. This will update your `prompts/book_recommender.py` with the contents of `versions/0001_book_recommender.py` (minus the variables used internally).
 
 This will let you quickly swap prompts or providers with **no code change**, the exception being when prompts have different attributes. In that case, your **linter will detect missing or additional attributes** that need to be addressed.
 
@@ -157,7 +149,7 @@ Often times when experimenting with prompts, a lot of experimental prompts will 
 You can use the `remove` command to delete any version:
 
 ```
-mirascope remove my_prompt 0001
+mirascope remove book_recommender 0001
 ```
 
 Here you specify which prompt and version you want to remove. Removal will delete the file but also update any versions that have the deleted version in their `prev_revision_id` to `None`.

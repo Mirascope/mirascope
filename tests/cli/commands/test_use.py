@@ -15,8 +15,8 @@ runner = CliRunner()
 def _initialize_tmp_mirascope(
     tmp_path: Path, golden_prompt: str, golden_versions: list[str]
 ):
-    """Initializes a temporary mirascope directory with prompt `simple_prompt`."""
-    golden_prompt_directory = "simple_prompt"
+    """Initializes a temporary mirascope directory with prompt `base_prompt`."""
+    golden_prompt_directory = "base_prompt"
     if not golden_prompt.endswith(".py"):
         golden_prompt = f"{golden_prompt}.py"
     golden_versions = [
@@ -30,7 +30,7 @@ def _initialize_tmp_mirascope(
     )
     destination_dir_prompts = tmp_path / "prompts"
     destination_dir_prompts.mkdir()
-    shutil.copy(golden_prompt_source_file, destination_dir_prompts / "simple_prompt.py")
+    shutil.copy(golden_prompt_source_file, destination_dir_prompts / "base_prompt.py")
     destination_dir_mirascope_dir = tmp_path / ".mirascope"
     destination_dir_mirascope_dir.mkdir()
     golden_prompts_dir = (
@@ -53,7 +53,7 @@ def _initialize_tmp_mirascope(
     )
 
 
-@pytest.mark.parametrize("golden_prompt", ["simple_prompt"])
+@pytest.mark.parametrize("golden_prompt", ["base_prompt"])
 @patch("mirascope.cli.utils.get_user_mirascope_settings")
 @patch("mirascope.cli.commands.use.get_user_mirascope_settings")
 def test_use_command(
@@ -66,7 +66,7 @@ def test_use_command(
     """Tests that `use` command updates the prompt file"""
     mock_get_mirascope_settings_use.return_value = fixture_mirascope_user_settings
     mock_get_mirascope_settings.return_value = fixture_mirascope_user_settings
-    prompt = "simple_prompt"
+    prompt = "base_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(
             Path(td), golden_prompt, [f"0001_{prompt}", f"0002_{prompt}"]
@@ -86,10 +86,10 @@ def test_use_command_file_changed(
     """Tests that `use` does not update the prompt file if it has changes."""
     mock_get_mirascope_settings_use.return_value = fixture_mirascope_user_settings
     mock_get_mirascope_settings.return_value = fixture_mirascope_user_settings
-    prompt = "simple_prompt"
+    prompt = "base_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(
-            Path(td), "simple_prompt_with_changes", [f"0001_{prompt}"]
+            Path(td), "base_prompt_with_changes", [f"0001_{prompt}"]
         )
         result = runner.invoke(app, ["use", prompt, "0002"])
         results = result.output.splitlines()
@@ -117,7 +117,7 @@ def test_use_no_version_file(
     """
     mock_get_mirascope_settings_use.return_value = fixture_mirascope_user_settings
     mock_get_mirascope_settings.return_value = fixture_mirascope_user_settings
-    prompt = "simple_prompt"
+    prompt = "base_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(Path(td), prompt, [f"0001_{prompt}"])
         with pytest.raises(FileNotFoundError):

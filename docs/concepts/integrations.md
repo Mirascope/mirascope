@@ -2,15 +2,15 @@
 
 ## Client Wrappers
 
-If you want to use Mirascope in conjunction with another library which implements an OpenAI wrapper (such as LangSmith), you can do so easily by setting the `wrapper` parameter within `OpenAICallParams`. Setting this parameter will internally wrap the `OpenAI` client within an `OpenAIPrompt`, giving you access to both sets of functionalities.
+If you want to use Mirascope in conjunction with another library which implements an OpenAI wrapper (such as LangSmith), you can do so easily by setting the `wrapper` parameter within `OpenAICallParams`. Setting this parameter will internally wrap the `OpenAI` client within an `OpenAICall`, giving you access to both sets of functionalities.
 
 ```python
 from some_library import some_wrapper
+from mirascope.openai import OpenAICall
 
-class BookRecommendationPrompt(BasePrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic}?"
 
     topic: str
 
@@ -20,37 +20,36 @@ class BookRecommendationPrompt(BasePrompt):
 	)
 ```
 
-Now, every call to `create()`, `async_create()`, `stream()`, and `async_stream()` will be executed on top of the wrapped `OpenAI` client.
+Now, every call to `call`, `call_async`, `stream`, and `stream_async` will be executed on top of the wrapped `OpenAI` client.
 
 ## Weights & Biases
 
-If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered -  [`WandbPrompt`](../api/wandb/prompt.md#mirascope.wandb.prompt.WandbPrompt) is an `OpenAIPrompt` with unique creation methods that internally call W&B’s `Trace()` function and log your runs. For standard chat completions, you can use `WandbPrompt.create_with_trace()`, and for extractions, you can use `WandbPrompt.extract_with_trace()`.
+If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered -  [`WandbOpenAICall`](../api/openai/wandb.md#mirascope.openai.wandb.WandbOpenAICall) is an `OpenAICall` with unique creation methods that internally call W&B’s `Trace()` function and log your runs. For standard chat completions, you can use `WandbOpenAICall.call_with_trace()`, and for extractions, you can use [`WandbOpenAIExtractor`](../api/openai/wandb.md#mirascope.openai.wandb.WandbOpenAIExtractor)'s `extract_with_trace` method.
 
 ### Generating Content with a W&B Trace
 
-The `create_with_trace()` function internally calls both `OpenAIPrompt.create()` and `wandb.Trace()` and is configured to properly log both successful completions and errors. 
+The `call_with_trace()` function internally calls both `OpenAICall.call()` and `wandb.Trace()` and is configured to properly log both successful completions and errors. 
 
-Note that unlike a standard `OpenAIPrompt`, it requires the argument `type` to specify the type of `Trace` it initializes.  Once called, it will return a tuple of the `OpenAIChatCompletion`  and the created `Trace`. 
+Note that unlike a standard `OpenAICall`, it requires the argument `type` to specify the type of `Trace` it initializes.  Once called, it will return a tuple of the `OpenAICallResponse`  and the created span `Trace`. 
 
 ```python
 import os
-from mirascope.wandb import WandbPrompt
+from mirascope.openai.wandb import WandbPrompt
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class ExplainPrompt(WandbPrompt):
-	"""Tell me more about {topic} in detail."""
+class Explainer(WandbOpenAICall):
+	prompt_template = "Tell me more about {topic} in detail."
+	
 	topic: str
 
 
-prompt = ExplainPrompt(type="llm",topic="the Roman Empire")
-completion, span = prompt.create_with_trace()
-
+response, span = Explainer(type="llm",topic="the Roman Empire").call_with_trace()
 span.log(name="my_trace")
 ```
 
-In addition, `create_with_trace` can take an argument  `parent` for chained completions, and the initialized `Trace` will be linked with its parent within W&B logs. 
+In addition, `call_with_trace` can take an argument  `parent` for chained completions, and the initialized `Trace` will be linked with its parent within W&B logs. 
 
 ```python
 import os
@@ -59,74 +58,71 @@ from mirascope.wandb import WandbPrompt
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class ExplainPrompt(WandbPrompt):
-	"""Tell me more about {topic} in detail."""
+class Explainer(WandbOpenAICall):
+	prompt_template = "Tell me more about {topic} in detail."
+
 	topic: str
 
 
-class SummaryPrompt(WandbPrompt):
-	"""Summarize the following: {text}"""
+class Summarizer(WandbOpenAICall):
+	prompt_template = "Summarize the following: {text}"
+
 	text: str
 
 
-explain_prompt = ExplainPrompt(type="llm",topic="the Roman Empire")
-explanation, explain_span = explain_prompt.create_with_trace()
+explainer = Explainer(type="llm",topic="the Roman Empire")
+response, explain_span = explainer.call_with_trace()
 
-summary_prompt = SummaryPrompt(type="llm", text=explanation)
-summary, summary_span = summary_prompt.create_with_trace(explain_span)
+summarizer = Summarizer(type="llm", text=explanation.content)
+response, _ = summarizer.call_with_trace(explain_span)
 
 explain_span.log(name="my_trace")
 ```
 
-Since `WandbPrompt` inherits from `OpenAIPrompt`, it will support function calling the same way you would a standard `OpenAIPrompt`, as seen [here](tools_(function_calling).md)
+Since `WandbOpenAICall` inherits from `OpenAICall`, it will support function calling the same way you would a standard `OpenAICall`, as seen [here](tools_(function_calling).md)
 
 ### Extracting with a W&B Trace
 
-When working with longer chains, it is often useful to use extractions so that data is passed along in a structured format. Just like `create_with_trace()` , you will need to pass in a `type` argument to the prompt and a `parent` to the extraction.
+When working with longer chains, it is often useful to use extractions so that data is passed along in a structured format. Just like `call_with_trace()` , you will need to pass in a `type` argument to the extractor and a `parent` to the extraction.
 
 ```python
 import os
-from mirascope.wandb import WandbPrompt
+from typing import Type
+
+from mirascope.wandb import WandbOpenAIExtractor
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class InfoPrompt(WandbPrompt):
-	"""There are 7 oceans on earth."""
+class OceanCounter(WandbOpenAIExtractor[int]):
+	extract_schema: Type[int] = int
+	prompt_template = "There are 7 oceans on earth."
 
 
-info_prompt = InfoPrompt(type="tool")
-completion, span = info_prompt.extract_with_trace(
-	schema=int,
-	parent=root,
-)
+num_oceans, span = OceanCounter(type="tool").extract_with_trace()
 
-root_span.log(name="mirascope_trace")
+span.log(name="mirascope_trace")
 ```
-
-To see `WandbPrompt` in further action, feel free to check out the cookbook example [here](../cookbook/wandb_chain.md).
 
 ## LangChain and LangSmith
 
 ### Logging a LangSmith trace
 
-You can use client wrappers (as mentioned in the first section of this doc) to integrate Mirascope with LangSmith. When using a wrapper, you can generate content as you would with a normal `OpenAIPrompt`:
+You can use client wrappers (as mentioned in the first section of this doc) to integrate Mirascope with LangSmith. When using a wrapper, you can generate content as you would with a normal `OpenAICall`:
 
 ```python
 import os
 from langsmith import wrappers
 
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAICall
 
 os.environ["LANGCHAIN_API_KEY"] = "YOUR_LANGCHAIN_API_KEY"
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class BookRecommendationPrompt(OpenAIPrompt):
-    """
-    Can you recommend some books on {topic}?
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = "Can you recommend some books on {topic}?"
 
     topic: str
 
@@ -135,12 +131,12 @@ class BookRecommendationPrompt(OpenAIPrompt):
 		wrapper=wrappers.wrap_openai
 	)
 
-completion = BookRecommendationPrompt(topic="sci-fi").create()
+response = BookRecommender(topic="sci-fi").call()
 ```
 
-Now, if you log into [LangSmith](https://smith.langchain.com/) , you will be see your results have been traced. Of course, this integration works not just for `create()`, but also for `stream()` and `extract()`. For more details, check out the cookbook example [here](../cookbook/langsmith.md).
+Now, if you log into [LangSmith](https://smith.langchain.com/) , you will be see your results have been traced. Of course, this integration works not just for `call`, but also for `stream` and `extract`.
 
-### Using Mirascope prompts with LangChain
+### Using Mirascope [`BasePrompt`](../api/base/prompts.md#mirascope.base.prompts.BasePrompt) with LangChain
 
 You may also want to use LangChain given it’s tight integration with LangSmith. For us, one issue we had when we first started using LangChain was that their `invoke` function had no type-safety or lint help. This means that calling `invoke({"foox": "foo"})` was a difficult bug to catch. There’s so much functionality in LangChain, and we wanted to make using it more pleasant.
 
@@ -159,9 +155,7 @@ os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
 class JokePrompt(BasePrompt):
-    """
-    tell me a short joke about {topic}
-    """
+    prompt_template = "Tell me a short joke about {topic}"
 
     topic: str
 

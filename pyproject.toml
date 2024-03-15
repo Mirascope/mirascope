@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.3.1"
+version = "0.4.0"
 description = "LLM toolkit for lightning-fast, high-quality development"
 license = "MIT"
 authors = [
@@ -23,12 +23,14 @@ openai = "^1.6.0"
 docstring-parser = "^0.15"
 
 # A list of optional dependencies that are required for certain features
-google-generativeai = { version = "^0.4.0", optional = true }
 wandb = { version = "^0.15.4", optional = true }
+google-generativeai = { version = "^0.4.0", optional = true }
+anthropic = { version = "^0.19.1", optional = true }
 
 [tool.poetry.extras]
-gemini = ["google-generativeai"]
 wandb = ["wandb"]
+gemini = ["google-generativeai"]
+anthropic = ["anthropic"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -108,7 +110,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["venv"]
+exclude = ["venv", "virtualenvs"]
 
 [[tool.mypy.overrides]]
 module = "tiktoken"

@@ -21,7 +21,7 @@ Incorporating tools into LLM workflows opens up a wide range of possibilities, i
 Mirascope provides a clean and intuitive way to incorporate tools into your LLM workflows. The simplest form-factor we offer is to extract a single tool automatically generated from a function. We can then call that function with the extracted arguments:
 
 ```python
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAICall
 
 
 def get_weather(location: str) -> str:
@@ -39,11 +39,11 @@ def get_weather(location: str) -> str:
         return f"I'm sorry, I don't have the weather for {location}."
 
 
-class Weather(OpenAIPrompt):
+class Forecast(OpenAICall):
     """What's the weather in Tokyo?"""
 
 
-weather_tool = Weather().extract(get_weather)
+weather_tool = Forecast().extract(get_weather)
 print(weather_tool.fn(**weather_tool.args))
 #> The weather in Tokyo, Japan is 72 degrees and sunny.
 ```

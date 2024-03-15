@@ -26,11 +26,10 @@ from .schemas import (
 ignore_variables = {"prev_revision_id", "revision_id"}
 mirascope_prompt_bases = (
     "BasePrompt",
-    "Prompt",
-    "OpenAIPrompt",
-    "GeminiPrompt",
-    "MistralPrompt",
-    "ClaudePrompt",
+    "OpenAICall",
+    "GeminiCall",
+    "AnthropicCall",
+    "WandbOpenAICall",
 )
 
 
@@ -95,7 +94,28 @@ class PromptAnalyzer(ast.NodeVisitor):
 
         # Handle the rest of the class body
         body_nodes = [n for n in node.body if not isinstance(n, ast.Expr)]
-        class_info.body = "\n".join(ast.unparse(n) for n in body_nodes)
+        body = []
+        for node in body_nodes:
+            if (
+                isinstance(node, ast.Assign)
+                and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id == "prompt_template"
+                and isinstance(node.value, ast.Constant)
+                and node.end_lineno is not None
+                and node.lineno < node.end_lineno
+            ):
+                # reconstruct template strings to be multi-line
+                lines = node.value.s.split("\n")
+                body.append(f'{node.targets[0].id} = """{lines.pop(0).strip()}')
+                for i, line in enumerate(lines):
+                    stripped_line = line.strip()
+                    if stripped_line or i < len(lines) - 1:
+                        body.append(line.strip())
+                body.append('"""')
+                body.append("")  # adds final newline
+            else:
+                body.append(ast.unparse(node))
+        class_info.body = "\n".join(body)
 
         self.classes.append(class_info)
 

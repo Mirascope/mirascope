@@ -1,1 +1,1 @@
-"""This package contains generic templates that are used to initialize a mirascope project. """
+"""This module contains generic templates used to initialize a mirascope project. """

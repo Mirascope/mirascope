@@ -1,27 +1,30 @@
-"""Tests for the base module types."""
-from enum import Enum
-from typing import Annotated, Literal, Union
+"""Tests for the base typing classes."""
 
-from mirascope.base import BaseCallParams, BasePrompt, BaseTool
-from mirascope.base.types import is_base_type
+from typing import Any
+from unittest.mock import patch
 
-
-def test_is_base_type() -> None:
-    """Tests that `is_base_type` returns the expected value."""
-    assert is_base_type(str)
-    assert is_base_type(int)
-    assert is_base_type(list)
-    assert is_base_type(bool)
-    assert is_base_type(Enum)
-    assert is_base_type(Literal[1, 2])
-    assert is_base_type(Union[str, int])
-    assert is_base_type(Annotated[str, "test"])
-    assert not is_base_type(dict)
-    assert not is_base_type(BasePrompt)
-    assert not is_base_type(BaseTool)
+from mirascope.base.tools import BaseTool
+from mirascope.base.types import BaseCallParams
 
 
-def test_call_params_kwargs() -> None:
-    """Tests that call param kwargs are correct."""
-    call_params = BaseCallParams(model="test", tools=[is_base_type])
-    assert call_params.kwargs == {"model": "test"}
+def test_base_call_params_kwargs() -> None:
+    """Tests that the `kwargs` method returns the correct arguments."""
+    call_params = BaseCallParams[BaseTool[Any]](model="model")
+    assert call_params.kwargs(BaseTool) == {"model": "model"}  # type: ignore
+    assert call_params.kwargs(BaseTool, exclude={"model"}) == {}  # type: ignore
+
+
+@patch.multiple(BaseTool, __abstractmethods__=set())
+def test_base_call_params_kwargs_with_tools() -> None:
+    """Tests that the `kwargs` method returns the correct arguments with tools."""
+
+    def fn(param: str):
+        """A test function"""
+
+    class Tool(BaseTool):
+        """A test tool"""
+
+    call_params = BaseCallParams[Tool](model="model", tools=[fn, Tool])
+    kwargs = call_params.kwargs(Tool)  # type: ignore
+    for tool in kwargs["tools"]:
+        assert issubclass(tool, Tool)

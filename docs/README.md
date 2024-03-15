@@ -1,23 +1,7 @@
-# Mirascope
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" width="420"><em>Simplicity through idiomatic syntax</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>Faster and more reliable releases</em></strong></td>
-        </tr>
-        <tr>
-            <td align="center" width="420"><em>Semi-opinionated methods</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>Reduced complexity that speeds up development</em></strong></td>
-        </tr>
-        <tr>
-            <td align="center" width="420"><em>Reliability through validation</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>More robust applications with fewer bugs</em></strong></td>
-        </tr>
-    </table>
+<div align="center" justiry="start">
+    <a href="https://www.mirascope.io">
+        <img align="bottom" src="https://github.com/Mirascope/mirascope/assets/99370834/e403d7ee-f8bc-4df1-b2d0-33763f021c89" alt="Frog Logo" width="84"/><br><img align="bottom" src="https://uploads-ssl.webflow.com/65a6fd6a1c3b2704d6217d3d/65b5674e9ceef563dc57eb11_Medium%20length%20hero%20headline%20goes%20here.svg" width="400" alt="Mirascope"/>
+    </a>
 </div>
 
 <p align="center">
@@ -31,20 +15,9 @@
 
 ---
 
-**Mirascope** is an open-source Python toolkit built on top of [Pydantic](https://docs.pydantic.dev/latest/) that makes working with Large Language Models (LLMs):
-
-- **Durable**: Seamlessly **customize and extend functionality**.
-- **Intuitive**: Editor support that you expect (e.g. **autocompletion**, **inline errors**)
-- **Clean**: Pydantic together with our Prompt CLI **eliminates prompt-related bugs**.
-- **Integrable**: Easily integrate with **JSON Schema** and other tools such as [FastAPI](https://fastapi.tiangolo.com/)
-- **Convenient**: Tooling that is **clean**, **elegant**, and **delightful** that **you don't need to maintain**.
-- **Open**: Dedication to building **open-source tools** you can use with **your choice of LLM**.
-
-We support any model that works with the OpenAI API, as well as other models such as Gemini.
+**Mirascope** is an LLM toolkit for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
 ## Installation
-
-Install Mirascope and start building with LLMs in minutes.
 
 ```bash
 pip install mirascope
@@ -53,154 +26,277 @@ pip install mirascope
 You can also install additional optional dependencies if you’re using those features:
 
 ```bash
-pip install mirascope[wandb]   # WandbPrompt
-pip install mirascope[gemini]  # GeminiPrompt, ...
+pip install mirascope[anthropic]  # AnthropicCall, ...
+pip install mirascope[gemini]     # GeminiCall, ...
+pip install mirascope[wandb]      # WandbOpenAICall, ...
 ```
 
-## Usage
+## Examples
 
-With Mirascope, everything happens with prompts. The idea is to colocate any functionality that may impact the quality of your prompt — from the template variables to the temperature — so that you don’t need to worry about code changes external to your prompt affecting quality. For simple use-cases, we find that writing prompts as docstrings provides enhanced readability:
+### Colocation
 
-```python
-from mirascope.openai import OpenAICallParams, OpenAIPrompt
-
-
-class BookRecommendation(OpenAIPrompt):
-    """Please recommend a {genre} book."""
-
-    genre: str
-
-    call_params = OpenAICallParams(
-        model="gpt-4",
-        temperature=0.3,
-    )
-
-
-recommendation = BookRecommendation(genre="fantasy").create()
-print(recommendation)
-#> I recommend "The Name of the Wind" by Patrick Rothfuss. It is...
-```
-
-If you add any of the OpenAI message roles (SYSTEM, USER, ASSISTANT, TOOL) as keywords to your prompt docstring, they will automatically get parsed into a list of messages:
-
-```python
-from mirascope.openai import OpenAIPrompt
-
-
-class BookRecommendation(OpenAIPrompt):
-    """
-    SYSTEM:
-    You are the world's greatest librarian.
-
-    USER:
-    Please recommend a {genre} book.
-    """
-
-    genre: str
-
-
-prompt = BookRecommendation(genre="fantasy")
-print(prompt.messages)
-#> [{'role': 'system', 'content': "You are the world's greatest librarian."},
-#   {'role': 'user', 'content': 'Please recommend a fantasy book.'}]
-```
-
-If you want to write the messages yourself instead of using the docstring message parsing, there’s nothing stopping you!
-
-```python
-from mirascope.openai import OpenAIPrompt
-from openai.types.chat import ChatCompletionMessageParam
-
-
-class BookRecommendation(OpenAIPrompt):
-    """This is now just a normal docstring.
-
-    Note that you'll lose any functionality dependent on it,
-    such as `template`.
-    """
-
-    genre: str
-
-    @property
-    def messages(self) -> list[ChatCompletionMessageParam]:
-        """Returns the list of OpenAI prompt messages."""
-        return [
-            {"role": "system", "content": "You are the world's greatest librarian."},
-            {"role": "user", "content": f"Please recommend a {self.genre} book."},
-        ]
-
-
-recommendation = BookRecommendation(genre="fantasy").create()
-print(recommendation)
-#> I recommend "The Name of the Wind" by Patrick Rothfuss. It is...
-```
-
-### Create, Stream, Extract
-
-Prompt classes such as `OpenAIPrompt` have three methods for interacting with the LLM:
-
-- [`create`](concepts/generating_content.md): Generate a response given a prompt. This will generate raw text unless tools are provided as part of the `call_params`.
-- [`stream`](concepts/streaming_generated_content.md): Same as `create` except the generated response is returned as a stream of chunks. All chunks together become the full completion.
-- [`extract`](concepts/extracting_structured_information_using_llms.md): Convenience tooling built on top of tools to make it easy to extract structured information given a prompt and schema.
-
-### Using Different LLM Providers
-
-The `OpenAIPrompt` class supports any endpoint that supports the OpenAI API, including (but not limited to) [Anyscale](https://www.anyscale.com/endpoints), [Together](https://api.together.xyz/playground/chat/meta-llama/Llama-2-70b-chat-hf), and [Groq](https://groq.com/). Simply update the `base_url` and set the proper api key in your environment:
+Colocation is the core of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
 
 ```python
 import os
 
-from mirascope.openai import OpenAICallParams, OpenAIPrompt
+from mirascope import tags
+from mirascope.openai import OpenAICall, OpenAICallParams
 
-os.environ["OPENAI_API_KEY"] = "TOGETHER_API_KEY"
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
+@tags(["version:0003"])
+class Editor(OpenAICall):
+    prompt_template = """
+	SYSTEM:
+	You are a top class manga editor.
+	
+	USER:
+	I'm working on a new storyline. What do you think?
+	{storyline}
+	"""
+    
+    storyline: str
+    
+    call_params = OpenAICallParams(model="gpt-4", temperature=0.4)
 
-class BookRecommendation(OpenAIPrompt):
-    """Please recommend a {genre} book."""
+storyline = "..."
+editor = Editor(storyline=storyline)
 
-    genre: str
+print(editor.messages())
+# > [{'role': 'system', 'content': 'You are a top class manga editor.'}, {'role': 'user', 'content': "I'm working on a new storyline. What do you think?\n..."}]
 
-    call_params = OpenAICallParams(
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
-            base_url="https://api.together.xyz/v1",
-    )
+critique = editor.call()
+print(critique.content)
+# > I think the beginning starts off great, but...
 
-
-recommendation = BookRecommendation(genre="fantasy").create()
+print(editor.dump() | critique.dump())
+# {
+#     "tags": ["version:0003"],
+#     "template": "SYSTEM:\nYou are a top class manga editor.\n\nUSER:\nI'm working on a new storyline. What do you think?\n{storyline}",
+#     "inputs": {"storyline": "..."},
+#     "start_time": 1710452778501.079,
+#     "end_time": 1710452779736.8418,
+#     "output": {
+#         "id": "chatcmpl-92nBykcXyTpxwAbTEM5BOKp99fVmv",
+#         "choices": [
+#             {
+#                 "finish_reason": "stop",
+#                 "index": 0,
+#                 "logprobs": None,
+#                 "message": {
+#                     "content": "As an AI, I need some more context to provide a valuable opinion. Could you please share the details of the storyline?",
+#                     "role": "assistant",
+#                     "function_call": None,
+#                     "tool_calls": None,
+#                 },
+#             }
+#         ],
+#         "created": 1710452778,
+#         "model": "gpt-4-0613",
+#         "object": "chat.completion",
+#         "system_fingerprint": None,
+#         "usage": {"completion_tokens": 25, "prompt_tokens": 33, "total_tokens": 58},
+#     },
+# }
 ```
 
-We also support [other providers](concepts/using_different_model_providers.md) such as Gemini.
+### Chat History
 
-## Dive Deeper
+Our template parser makes inserting chat history beyond easy:
 
-- Learn why colocation is so important and how combining it with the [Mirascope CLI](concepts/using_the_mirascope_cli.md) makes engineering better prompts easy.
-- Check out how to [write better prompts](concepts/writing_prompts.md) using Mirascope.
-- Become a master of [extracting structured information using LLMs](concepts/extracting_structured_information_using_llms.md).
-- Take a look at how Mirascope makes using [tools (function calling)](concepts/tools_(function_calling).md) simple and clean.
-- The [API Reference](api/index.md) contains full details on all classes, methods, functions, etc.
+```python
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+)
 
-## Examples
+from mirascope.openai import OpenAICall
 
-You can find more usage examples in our [examples](https://github.com/Mirascope/mirascope/tree/main/examples) directory, such as how to easily integrate with FastAPI.
+class Librarian(OpenAICall):
+    prompt_template = """
+	SYSTEM: You are the world's greatest librarian.
+	MESSAGES: {history}
+	USER: {question}
+	"""
 
-We also have more detailed walkthroughs in our Cookbook docs section. Each cookbook has corresponding full code examples in the [cookbook](cookbook/wandb_chain.md) directory.
+    question: str
+    history: list[ChatCompletionMessageParam] = []
 
-## What’s Next?
+librarian = Librarian(question="", history=[])
+while True:
+    librarian.question = input("(User): ")
+    response = librarian.call()
+    librarian.history.append({"role": "user", "content": librarian.question})
+    librarian.history.append({"role": "assistant", "content": response.content})
+    print(f"(Assistant): {response.content}")
 
-We have a lot on our minds for what to build next, but here are a few things (in no particular order) that come to mind first:
+#> (User): What fantasy book should I read?
+#> (Assistant): Have you read the Name of the Wind?
+#> (User): I have! What do you like about it?
+#> (Assistant): I love the intricate world-building...
+```
+
+### Tools (Function Calling)
+
+We’ve made implementing and using tools (function calling) intuitive:
+
+```python
+from typing import Literal
+
+from mirascope.openai import OpenAICall, OpenAICallParams
+
+def get_current_weather(
+    location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+):
+    """Get the current weather in a given location."""
+    if "tokyo" in location.lower():
+        print(f"It is 10 degrees {unit} in Tokyo, Japan")
+    elif "san francisco" in location.lower():
+        print(f"It is 72 degrees {unit} in San Francisco, CA")
+    elif "paris" in location.lower():
+        print(f"It is 22 degress {unit} in Paris, France")
+    else:
+        print("I'm not sure what the weather is like in {location}")
+
+class Forecast(OpenAICall):
+    prompt_template = "What's the weather in Tokyo?"
+
+    call_params = OpenAICallParams(model="gpt-4", tools=[get_current_weather])
+
+tool = Forecast().call().tool
+if tool:
+    tool.fn(**tool.args)
+	  #> It is 10 degrees fahrenheit in Tokyo, Japan
+```
+
+### Chaining
+
+Chaining multiple calls together for Chain of Thought (CoT) is as simple as writing a function:
+
+```python
+import os
+from functools import cached_property
+
+from mirascope.openai import OpenAICall, OpenAICallParams
+
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+class ChefSelector(OpenAICall):
+    prompt_template = "Name a chef who is really good at cooking {food_type} food"
+
+    food_type: str
+
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
+
+class RecipeRecommender(ChefSelector):
+    prompt_template = """
+    SYSTEM:
+    Imagine that you are chef {chef}.
+    Your task is to recommend recipes that you, {chef}, would be excited to serve.
+
+    USER:
+    Recommend a {food_type} recipe using {ingredient}.
+    """
+
+    ingredient: str
+    
+    call_params = OpenAICallParams(model="gpt-4")
+
+    @cached_property  # !!! so multiple access doesn't make multiple calls
+    def chef(self) -> str:
+        """Uses `ChefSelector` to select the chef based on the food type."""
+        return ChefSelector(food_type=self.food_type).call().content
+
+response = RecipeRecommender(food_type="japanese", ingredient="apples").call()
+print(response.content)
+# > Certainly! Here's a recipe for a delicious and refreshing Japanese Apple Salad: ...
+```
+
+### Extracting Structured Information
+
+Convenience built on top of tools that makes extracting structured information reliable:
+
+```python
+from typing import Literal, Type
+
+from mirascope.openai import OpenAIExtractor
+from pydantic import BaseModel
+
+class TaskDetails(BaseModel):
+	description: str
+	due_date: str
+	priority: Literal["low", "normal", "high"]
+
+class TaskExtractor(OpenAIExtractor[TaskDetails]):
+	extract_schema: Type[TaskDetails] = TaskDetails
+	prompt_template = """
+	Extract the task details from the following task:
+	{task}
+	"""
+
+	task: str
+
+task = "Submit quarterly report by next Friday. Task is high priority."
+task_details = TaskExtractor(task=task).extract()
+assert isinstance(task_details, TaskDetails)
+print(TaskDetails)
+#> description='Submit quarterly report' due_date='next Friday' priority='high'
+```
+
+### FastAPI Integration
+
+Since we’ve built our `BasePrompt` on top of [Pydantic](https://pydantic.dev/), we integrate with tools like [FastAPI](https://fastapi.tiangolo.com/) out-of-the-box:
+
+```python
+import os
+from typing import Type
+
+from fastapi import FastAPI
+from mirascope.openai import OpenAIExtractor
+from pydantic import BaseModel
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+
+app = FastAPI()
+
+class Book(BaseModel):
+	title: str
+	author: str
+	
+
+class BookRecommender(OpenAIExtractor[Book]):
+	extract_schema: Type[Book] = Book
+	prompt_template = "Please recommend a {genre} book."
+
+@app.post("/")
+def root(book_recommender: BookRecommender) -> Book:
+    """Generates a book based on provided `genre`."""
+    return book_recommender.extract()
+```
+
+## Roadmap
 
 - [x]  Extracting structured information using LLMs
+- [ ]  Additional template parsing for more complex messages
+    - [x]  Chat History
+    - [ ]  Additional Metadata
+    - [ ]  Vision
+- [ ]  RAG
 - [ ]  Agents
 - [ ]  Support for more LLM providers:
-    - [ ]  Claude
+    - [ ]  Anthropic Function Calling
     - [ ]  Mistral
     - [ ]  HuggingFace
+- [ ]  Integrations
+    - [x]  Weights & Biases
+    - [x]  LangChain / LangSmith
+    - [ ]  … tell us what you’d like integrated!
 - [ ]  Integrations:
     - [x]  Weights & Biases
     - [x]  LangSmith
     - [ ]  … tell us what you’d like integrated!
 - [ ]  Evaluating prompts and their quality by version
-- [ ]  Additional docstring parsing for more complex messages
 
 ## Versioning
 

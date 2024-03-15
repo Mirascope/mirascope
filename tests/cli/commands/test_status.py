@@ -13,8 +13,8 @@ runner = CliRunner()
 
 
 def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str, golden_version: str):
-    """Initializes a temporary mirascope directory with prompt `simple_prompt`."""
-    golden_prompt_directory = "simple_prompt"
+    """Initializes a temporary mirascope directory with prompt `base_prompt`."""
+    golden_prompt_directory = "base_prompt"
     if not golden_prompt.endswith(".py"):
         golden_prompt = f"{golden_prompt}.py"
     if not golden_version.endswith(".py"):
@@ -24,7 +24,7 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str, golden_version
     )
     destination_dir_prompts = tmp_path / "prompts"
     destination_dir_prompts.mkdir()
-    shutil.copy(golden_prompt_source_file, destination_dir_prompts / "simple_prompt.py")
+    shutil.copy(golden_prompt_source_file, destination_dir_prompts / "base_prompt.py")
     destination_dir_mirascope_dir = tmp_path / ".mirascope"
     destination_dir_mirascope_dir.mkdir()
     golden_version_source_file = (
@@ -46,9 +46,7 @@ def _initialize_tmp_mirascope(tmp_path: Path, golden_prompt: str, golden_version
     )
 
 
-@pytest.mark.parametrize(
-    "golden_prompt", ["simple_prompt", "simple_prompt_with_changes"]
-)
+@pytest.mark.parametrize("golden_prompt", ["base_prompt", "base_prompt_with_changes"])
 @patch("mirascope.cli.commands.status.get_user_mirascope_settings")
 def test_status_with_arg(
     mock_get_mirascope_settings_status: MagicMock,
@@ -59,7 +57,7 @@ def test_status_with_arg(
     """Tests that `status` with arguments returns the correct status."""
     mock_get_mirascope_settings_status.return_value = fixture_mirascope_user_settings
     prompts_location = fixture_mirascope_user_settings.prompts_location
-    prompt = "simple_prompt"
+    prompt = "base_prompt"
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         _initialize_tmp_mirascope(Path(td), golden_prompt, f"0001_{prompt}")
         result = runner.invoke(app, ["status", prompt])
@@ -73,9 +71,7 @@ def test_status_with_arg(
         assert result.exit_code == 0
 
 
-@pytest.mark.parametrize(
-    "golden_prompt", ["simple_prompt", "simple_prompt_with_changes"]
-)
+@pytest.mark.parametrize("golden_prompt", ["base_prompt", "base_prompt_with_changes"])
 @patch("mirascope.cli.commands.status.get_user_mirascope_settings")
 def test_status_no_args(
     mock_get_mirascope_settings_status: MagicMock,
@@ -87,12 +83,12 @@ def test_status_no_args(
     mock_get_mirascope_settings_status.return_value = fixture_mirascope_user_settings
     prompts_location = fixture_mirascope_user_settings.prompts_location
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
-        _initialize_tmp_mirascope(Path(td), golden_prompt, "0001_simple_prompt")
+        _initialize_tmp_mirascope(Path(td), golden_prompt, "0001_base_prompt")
         result = runner.invoke(app, ["status"])
-        if golden_prompt == "simple_prompt_with_changes":
+        if golden_prompt == "base_prompt_with_changes":
             results = result.output.splitlines()
             assert results[0].strip() == "The following prompts have changed:"
-            assert results[1].strip() == f"{prompts_location}/simple_prompt.py"
+            assert results[1].strip() == f"{prompts_location}/base_prompt.py"
 
         else:
             assert result.output.strip() == "No changes detected."

@@ -1,4 +1,6 @@
-"""A basic example on how to log the data from a prompt and a chat completion."""
+"""
+Dumping makes it easy to log your LLM calls
+"""
 import logging
 import os
 from typing import Any, Optional
@@ -9,7 +11,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from mirascope import tags
-from mirascope.openai import OpenAIPrompt
+from mirascope.openai import OpenAICall
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -36,8 +38,8 @@ class OpenAIChatCompletionTable(Base):
 
 
 @tags(["recommendation_project"])
-class BookRecommendationPrompt(OpenAIPrompt):
-    """
+class BookRecommender(OpenAICall):
+    prompt_template = """
     Can you recommend some books on {topic}?
     """
 
@@ -59,32 +61,32 @@ def create_database():
     metadata.create_all(engine, tables=table_objects)
 
 
-def log_to_database(prompt_completion: dict[str, Any]):
-    """Create a prompt completion and log it to the database."""
+def log_to_database(recommender_response_dump: dict[str, Any]):
+    """Create a recommender response dump and log it to the database."""
     create_database()
     Session = sessionmaker(engine)
     with Session() as session:
-        openai_completion_db = OpenAIChatCompletionTable(**prompt_completion)
+        openai_completion_db = OpenAIChatCompletionTable(**recommender_response_dump)
         session.add(openai_completion_db)
         session.commit()
 
 
-def log_to_csv(prompt_completion: dict[str, Any]):
-    """Log the prompt completion to a CSV file."""
-    df = pd.DataFrame([prompt_completion])
+def log_to_csv(recommender_response_dump: dict[str, Any]):
+    """Log the recommender response dump to a CSV file."""
+    df = pd.DataFrame([recommender_response_dump])
     with open("log.csv", "w") as f:
         df.to_csv(f, index=False)
 
 
-def log_to_logger(prompt_completion: dict[str, Any]):
-    """Log the prompt completion to the logger."""
-    logger.info(prompt_completion)
+def log_to_logger(recommender_response_dump: dict[str, Any]):
+    """Log the recommender response dump to the logger."""
+    logger.info(recommender_response_dump)
 
 
 if __name__ == "__main__":
-    prompt = BookRecommendationPrompt(topic="how to bake a cake")
-    completion = prompt.create()
-    prompt_completion = prompt.dump(completion.dump())
-    log_to_database(prompt_completion)
-    log_to_csv(prompt_completion)
-    log_to_logger(prompt_completion)
+    recommender = BookRecommender(topic="how to bake a cake")
+    response = recommender.call()
+    recommender_response_dump = recommender.dump() | response.dump()
+    log_to_database(recommender_response_dump)
+    log_to_csv(recommender_response_dump)
+    log_to_logger(recommender_response_dump)
