@@ -45,14 +45,14 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
 
     class AnimalMatcher(OpenAICall):
         prompt_template = """\\
-            Tell me my favorite animal if my favorite food is {food} and my
-            favorite color is {color}.
+        Tell me my favorite animal if my favorite food is {food} and my
+        favorite color is {color}.
         """
 
         food: str
         color: str
 
-        call_params = OpenAICall.CallParams(tools=[animal_matcher])
+        call_params = OpenAICallParams(tools=[animal_matcher])
 
 
     response = AnimalMatcher(food="pizza", color="red").call
@@ -112,5 +112,5 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
 
     @classmethod
     def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[OpenAITool]:
-        """Constructs a `GeminiTool` type from a `BaseType` type."""
+        """Constructs a `OpenAITool` type from a `BaseType` type."""
         return convert_base_type_to_tool(base_type, OpenAITool)
