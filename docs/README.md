@@ -106,10 +106,7 @@ print(editor.dump() | critique.dump())
 Our template parser makes inserting chat history beyond easy:
 
 ```python
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-)
+from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.openai import OpenAICall
 
