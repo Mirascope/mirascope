@@ -4,26 +4,6 @@
     </a>
 </div>
 
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" width="420"><em>Simplicity through idiomatic syntax</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>Faster and more reliable releases</em></strong></td>
-        </tr>
-        <tr>
-            <td align="center" width="420"><em>Semi-opinionated methods</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>Reduced complexity that speeds up development</em></strong></td>
-        </tr>
-        <tr>
-            <td align="center" width="420"><em>Reliability through validation</em></td>
-            <td align="center">→</td>
-            <td align="center" width="420"><strong><em>More robust applications with fewer bugs</em></strong></td>
-        </tr>
-    </table>
-</div>
-
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
     <a href="https://codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
@@ -34,8 +14,6 @@
 </p>
 
 ---
-
-# Mirascope
 
 **Mirascope** is an LLM toolkit for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
