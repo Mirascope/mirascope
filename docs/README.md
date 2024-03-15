@@ -282,7 +282,7 @@ def root(book_recommender: BookRecommender) -> Book:
 - [ ]  RAG
 - [ ]  Agents
 - [ ]  Support for more LLM providers:
-    - [ ]  Anthropic Function Calling
+    - [X]  Anthropic Function Calling
     - [ ]  Mistral
     - [ ]  HuggingFace
 - [ ]  Integrations
