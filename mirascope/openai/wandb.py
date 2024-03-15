@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, ClassVar, Generic, Literal, Optional, TypeVar, Union
+from typing import Any, Generic, Literal, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 from wandb.sdk.data_types.trace_tree import Trace
@@ -10,7 +10,6 @@ from wandb.sdk.data_types.trace_tree import Trace
 from ..base import BasePrompt, BaseType, ExtractedType
 from ..openai import (
     OpenAICall,
-    OpenAICallParams,
     OpenAICallResponse,
     OpenAIExtractor,
     OpenAITool,
@@ -218,10 +217,6 @@ class WandbOpenAIExtractor(OpenAIExtractor[T], WandbBasePrompt, Generic[T]):
     #           ^ this is a `Span` returned from the trace (or trace error).
     ```
     '''
-
-    call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
-        model="gpt-3.5-turbo-0125"
-    )
 
     def extract_with_trace(
         self,

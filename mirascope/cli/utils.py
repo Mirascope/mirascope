@@ -13,8 +13,8 @@ from typing import Any, Literal, Optional, Union
 
 from jinja2 import Environment, FileSystemLoader
 
+from ..enums import MirascopeCommand
 from .constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from .enums import MirascopeCommand
 from .schemas import (
     ClassInfo,
     FunctionInfo,

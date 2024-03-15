@@ -12,6 +12,7 @@ from openai.types.chat import (
 )
 
 from ..base import BaseCall
+from ..enums import MessageRole
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
 
@@ -36,20 +37,18 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
     ```
     """
 
-    call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
-        model="gpt-3.5-turbo-0125"
-    )
+    call_params: ClassVar[OpenAICallParams] = OpenAICallParams()
 
     def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the template as a formatted list of messages."""
         message_type_by_role = {
-            "system": ChatCompletionSystemMessageParam,
-            "user": ChatCompletionUserMessageParam,
-            "assistant": ChatCompletionAssistantMessageParam,
-            "tool": ChatCompletionToolMessageParam,
+            MessageRole.SYSTEM: ChatCompletionSystemMessageParam,
+            MessageRole.USER: ChatCompletionUserMessageParam,
+            MessageRole.ASSISTANT: ChatCompletionAssistantMessageParam,
+            MessageRole.TOOL: ChatCompletionToolMessageParam,
         }
         return [
-            message_type_by_role[message["role"]](
+            message_type_by_role[MessageRole(message["role"])](
                 role=message["role"], content=message["content"]
             )
             for message in self._parse_messages(list(message_type_by_role.keys()))

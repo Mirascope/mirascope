@@ -105,7 +105,7 @@ nav:
       - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
       - Integrations: "concepts/integrations.md"
-  - Examples: "examples/index.md"
+  - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"
       - anthropic:

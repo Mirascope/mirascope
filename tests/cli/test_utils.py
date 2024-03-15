@@ -11,7 +11,6 @@ from jinja2 import Environment
 from pydantic import ValidationError
 
 from mirascope.cli.constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from mirascope.cli.enums import MirascopeCommand
 from mirascope.cli.schemas import (
     ClassInfo,
     FunctionInfo,
@@ -30,6 +29,7 @@ from mirascope.cli.utils import (
     prompts_directory_files,
     write_prompt_to_template,
 )
+from mirascope.enums import MirascopeCommand
 
 
 def _get_mirascope_ini() -> str:

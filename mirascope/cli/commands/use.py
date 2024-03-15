@@ -3,8 +3,8 @@ import os
 
 from typer import Argument
 
+from ...enums import MirascopeCommand
 from ..constants import CURRENT_REVISION_KEY
-from ..enums import MirascopeCommand
 from ..utils import (
     check_status,
     find_prompt_path,

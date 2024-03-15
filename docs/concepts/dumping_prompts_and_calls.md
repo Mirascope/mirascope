@@ -99,7 +99,7 @@ Output:
 
 ## Combining Both
 
-We also give you an option to see everything at once by calling `BasePrompt.dump(response.dump())` , which will append the two dictionaries and display them in one. Note that the `.dump()` function will take any dictionary and append it to the data of the prompt, so feel free to use it flexibly to suit your needs.
+We also give you an option to see everything at once by calling `BasePrompt.dump() | response.dump()` , which will union the two dictionaries and display them in one. Note that the `.dump()` function outputs a dictionary, so feel free to use it flexibly to suit your needs.
 
 ```python
 print(recommender.dump(response.dump()))
@@ -227,7 +227,7 @@ def log_to_logger(recommender_response: dict[str, Any]):
 if __name__ == "__main__":
     recommender = BookRecommender(topic="how to bake a cake")
     response = recommender.call()
-    recommender_response = recommender.dump(response.dump())
+    recommender_response = recommender.dump() | response.dump()
     log_to_database(recommender_response)
     log_to_csv(recommender_response)
     log_to_logger(recommender_response)

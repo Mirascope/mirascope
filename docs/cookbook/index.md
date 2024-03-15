@@ -1,4 +1,4 @@
-# Examples
+# Cookbook
 
 !!! warning
 

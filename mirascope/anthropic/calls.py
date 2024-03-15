@@ -6,6 +6,7 @@ from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
 
 from ..base import BaseCall
+from ..enums import MessageRole
 from .types import (
     AnthropicCallParams,
     AnthropicCallResponse,
@@ -38,7 +39,9 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
 
     def messages(self) -> list[MessageParam]:
         """Returns the template as a formatted list of messages."""
-        return self._parse_messages(["system", "user", "assistant"])  # type: ignore
+        return self._parse_messages(
+            [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
+        )  # type: ignore
 
     def call(self, **kwargs: Any) -> AnthropicCallResponse:
         """Makes a call to the model using this `AnthropicCall` instance.
@@ -51,7 +54,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(base_url=self.base_url)
+        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         start_time = datetime.datetime.now().timestamp() * 1000
@@ -77,7 +80,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(base_url=self.base_url)
+        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         start_time = datetime.datetime.now().timestamp() * 1000
@@ -105,7 +108,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(base_url=self.base_url)
+        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         with client.messages.stream(messages=messages, **kwargs) as stream:
@@ -125,7 +128,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(base_url=self.base_url)
+        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         async with client.messages.stream(messages=messages, **kwargs) as stream:

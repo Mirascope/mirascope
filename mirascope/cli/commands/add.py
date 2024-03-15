@@ -3,8 +3,8 @@ import os
 
 from typer import Argument
 
+from ...enums import MirascopeCommand
 from ..constants import CURRENT_REVISION_KEY, LATEST_REVISION_KEY
-from ..enums import MirascopeCommand
 from ..schemas import MirascopeCliVariables
 from ..utils import (
     check_status,

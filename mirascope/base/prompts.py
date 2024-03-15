@@ -6,6 +6,7 @@ from typing import Any, Callable, ClassVar, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
+from ..enums import MessageRole
 from .types import (
     AssistantMessage,
     Message,
@@ -58,14 +59,14 @@ class BasePrompt(BaseModel):
     def messages(self) -> Union[list[Message], Any]:
         """Returns the template as a formatted list of messages."""
         message_type_by_role = {
-            "system": SystemMessage,
-            "user": UserMessage,
-            "assistant": AssistantMessage,
-            "model": ModelMessage,
-            "tool": ToolMessage,
+            MessageRole.SYSTEM: SystemMessage,
+            MessageRole.USER: UserMessage,
+            MessageRole.ASSISTANT: AssistantMessage,
+            MessageRole.MODEL: ModelMessage,
+            MessageRole.TOOL: ToolMessage,
         }
         return [
-            message_type_by_role[message["role"]](
+            message_type_by_role[MessageRole(message["role"])](
                 role=message["role"], content=message["content"]
             )
             for message in self._parse_messages(list(message_type_by_role.keys()))

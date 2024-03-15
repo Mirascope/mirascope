@@ -45,7 +45,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from mirascope import tool_fn
+from mirascope.base import tool_fn
 from mirascope.openai import OpenAITool
 
 

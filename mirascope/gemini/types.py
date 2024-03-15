@@ -35,8 +35,8 @@ class GeminiCallParams(BaseCallParams[GeminiTool]):
     ```
     """
 
-    model: str = "gemini-pro"
-    generation_config: Optional[dict[str, Any]] = None
+    model: str = "gemini-1.0-pro"
+    generation_config: Optional[dict[str, Any]] = {"candidate_count": 1}
     safety_settings: Optional[Any] = None
     request_options: Optional[dict[str, Any]] = None
 

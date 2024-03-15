@@ -39,29 +39,6 @@
 
 **Mirascope** is an LLM toolkit for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
-```python
-from mirascope import BasePrompt
-
-class BookRecommendationPrompt(BasePrompt):
-	prompt_template = """
-	SYSTEM: You are the world's greatest librarian.
-	USER: Please recommend a {genre} book.
-	"""
-	
-	
-prompt = BookRecommendationPrompt(genre="fantasy")
-
-print(prompt)
-#> SYSTEM: You are the world's greatest librarian.
-#  USER: Please recommend a fantasy book.
-
-print(prompt.messages())
-#> [
-#    {"role": "system", "content": "You are the world's greatest librarian."},
-#    {"role": "user", "content": "Please recommend a fantasy book."},
-#  ]
-```
-
 ## Installation
 
 ```bash
@@ -71,25 +48,28 @@ pip install mirascope
 You can also install additional optional dependencies if you’re using those features:
 
 ```bash
-pip install mirascope[wandb]   # WandbPrompt
-pip install mirascope[gemini]  # GeminiPrompt, ...
+pip install mirascope[anthropic]  # AnthropicCall, ...
+pip install mirascope[gemini]     # GeminiCall, ...
+pip install mirascope[wandb]      # WandbOpenAICall, ...
 ```
 
 ## Examples
 
 ### Colocation
 
-Colocation is the core of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is particularly important during rapid development.
+Colocation is the core of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
 
 ```python
 import os
 
+from mirascope import tags
 from mirascope.openai import OpenAICall, OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
+@tags(["version:0003"])
 class Editor(OpenAICall):
-	prompt_template = """
+    prompt_template = """
 	SYSTEM:
 	You are a top class manga editor.
 	
@@ -97,16 +77,50 @@ class Editor(OpenAICall):
 	I'm working on a new storyline. What do you think?
 	{storyline}
 	"""
-	
-	storyline: str
-	
-	call_params = OpenAICallParams(model="gpt-4", temperature=0.4)
-	
+    
+    storyline: str
+    
+    call_params = OpenAICallParams(model="gpt-4", temperature=0.4)
 
 storyline = "..."
-critique = Editor(storyline=storyline).call()
+editor = Editor(storyline=storyline)
+
+print(editor.messages())
+# > [{'role': 'system', 'content': 'You are a top class manga editor.'}, {'role': 'user', 'content': "I'm working on a new storyline. What do you think?\n..."}]
+
+critique = editor.call()
 print(critique.content)
-#> I think the beginning starts off great, but...
+# > I think the beginning starts off great, but...
+
+print(editor.dump() | critique.dump())
+# {
+#     "tags": ["version:0003"],
+#     "template": "SYSTEM:\nYou are a top class manga editor.\n\nUSER:\nI'm working on a new storyline. What do you think?\n{storyline}",
+#     "inputs": {"storyline": "..."},
+#     "start_time": 1710452778501.079,
+#     "end_time": 1710452779736.8418,
+#     "output": {
+#         "id": "chatcmpl-92nBykcXyTpxwAbTEM5BOKp99fVmv",
+#         "choices": [
+#             {
+#                 "finish_reason": "stop",
+#                 "index": 0,
+#                 "logprobs": None,
+#                 "message": {
+#                     "content": "As an AI, I need some more context to provide a valuable opinion. Could you please share the details of the storyline?",
+#                     "role": "assistant",
+#                     "function_call": None,
+#                     "tool_calls": None,
+#                 },
+#             }
+#         ],
+#         "created": 1710452778,
+#         "model": "gpt-4-0613",
+#         "object": "chat.completion",
+#         "system_fingerprint": None,
+#         "usage": {"completion_tokens": 25, "prompt_tokens": 33, "total_tokens": 58},
+#     },
+# }
 ```
 
 ### Chat History
@@ -114,29 +128,31 @@ print(critique.content)
 Our template parser makes inserting chat history beyond easy:
 
 ```python
-from mirascope.openai import OpenAICall
-from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+)
 
+from mirascope.openai import OpenAICall
 
 class Librarian(OpenAICall):
-  prompt_template = """
+    prompt_template = """
 	SYSTEM: You are the world's greatest librarian.
 	MESSAGES: {history}
 	USER: {question}
 	"""
 
-  question: str
-  history: list[ChatCompletionMessageParam] = []
-  
-  
+    question: str
+    history: list[ChatCompletionMessageParam] = []
+
 librarian = Librarian(question="", history=[])
 while True:
-	librarian.question = input("(User): ")
-	response = librarian.call()
-	librarian.history.append({"role": "user", "content": question})
-	librarian.history.append(response.message.model_dump())
-	print(f"(Assistant): {response.content}")
-	
+    librarian.question = input("(User): ")
+    response = librarian.call()
+    librarian.history.append({"role": "user", "content": librarian.question})
+    librarian.history.append({"role": "assistant", "content": response.content})
+    print(f"(Assistant): {response.content}")
+
 #> (User): What fantasy book should I read?
 #> (Assistant): Have you read the Name of the Wind?
 #> (User): I have! What do you like about it?
@@ -154,7 +170,7 @@ from mirascope.openai import OpenAICall, OpenAICallParams
 
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
-) -> str:
+):
     """Get the current weather in a given location."""
     if "tokyo" in location.lower():
         print(f"It is 10 degrees {unit} in Tokyo, Japan")
@@ -224,7 +240,7 @@ print(response.content)
 Convenience built on top of tools that makes extracting structured information reliable:
 
 ```python
-from typing import Literal
+from typing import Literal, Type
 
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel

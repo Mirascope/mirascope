@@ -12,6 +12,7 @@ from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
 
 from ..base import BaseCall
+from ..enums import MessageRole
 from .tools import GeminiTool
 from .types import (
     GeminiCallParams,
@@ -51,10 +52,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
     ```
     '''
 
-    call_params: ClassVar[GeminiCallParams] = GeminiCallParams(
-        model="gemini-1.0-pro",
-        generation_config={"candidate_count": 1},
-    )
+    call_params: ClassVar[GeminiCallParams] = GeminiCallParams()
 
     @property
     def messages(self) -> ContentsType:
@@ -65,7 +63,9 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         return [
             {"role": message["role"], "parts": [message["content"]]}
-            for message in self._parse_messages(["model", "user", "tool"])
+            for message in self._parse_messages(
+                [MessageRole.MODEL, MessageRole.USER, MessageRole.TOOL]
+            )
         ]
 
     def call(self, **kwargs: Any) -> GeminiCallResponse:
@@ -80,7 +80,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = gemini_pro_model.generate_content(
             self.messages,
@@ -107,7 +107,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await gemini_pro_model.generate_content_async(
             self.messages,
@@ -133,7 +133,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         stream = gemini_pro_model.generate_content(
             self.messages,
             stream=True,
@@ -156,7 +156,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(kwargs.pop("model"))
+        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
         stream = await gemini_pro_model.generate_content_async(
             self.messages,
             stream=True,

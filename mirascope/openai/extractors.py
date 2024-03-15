@@ -1,11 +1,10 @@
 """A class for extracting structured information using OpenAI chat models."""
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import OpenAICall
 from .tools import OpenAITool
-from .types import OpenAICallParams
 
 logger = logging.getLogger("mirascope")
 
@@ -48,10 +47,6 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
     #> title='Submit quarterly report' priority='high' due_date='next Friday'
     ```
     '''
-
-    call_params: ClassVar[OpenAICallParams] = OpenAICallParams(
-        model="gpt-3.5-turbo-0125"
-    )
 
     def extract(self, retries: int = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the OpenAI call response.
