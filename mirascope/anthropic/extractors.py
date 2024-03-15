@@ -20,7 +20,7 @@ class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic
     Example:
 
     ```python
-    from typing import Literal
+    from typing import Literal, Type
 
     from mirascope.openai import AnthropicExtractor
     from pydantic import BaseModel
