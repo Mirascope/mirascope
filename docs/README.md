@@ -85,7 +85,7 @@ print(editor.dump() | critique.dump())
 #                 "index": 0,
 #                 "logprobs": None,
 #                 "message": {
-#                     "content": "As an AI, I need some more context to provide a valuable opinion. Could you please share the details of the storyline?",
+#                     "content": "I think the beginning starts off great, but...",
 #                     "role": "assistant",
 #                     "function_call": None,
 #                     "tool_calls": None,
