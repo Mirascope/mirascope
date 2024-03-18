@@ -3,10 +3,12 @@ from typing import Type
 
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,
+    ChatCompletionStreamResponse,
 )
 
 from mirascope.mistral import (
     MistralCallResponse,
+    MistralCallResponseChunk,
     MistralTool,
 )
 
@@ -23,6 +25,20 @@ def test_mistral_call_response(
     assert response.content == "test content"
     assert response.tools is None
     assert response.tool is None
+
+
+def test_mistral_call_response_dump(
+    fixture_chat_completion_response: ChatCompletionResponse,
+):
+    """Tests that `MistralCallResponse.dump` returns the expected dictionary."""
+    response = MistralCallResponse(
+        response=fixture_chat_completion_response, start_time=0, end_time=0
+    )
+    mistral_chat_completion_json = response.dump()
+    assert (
+        mistral_chat_completion_json["output"]["choices"][0]["message"]["content"]
+        == response.content
+    )
 
 
 def test_mistral_call_response_with_tools(
@@ -78,3 +94,24 @@ def test_mistral_call_response_with_no_tools(
 
     assert response.tools is None
     assert response.tool is None
+
+
+def test_mistral_stream_response_with_tools(
+    fixture_chat_completion_stream_response_with_tools: list[
+        ChatCompletionStreamResponse
+    ],
+    fixture_book_tool: Type[MistralTool],
+):
+    """Tests that the streaming response `tool_calls` property works."""
+    response = MistralCallResponseChunk(
+        chunk=fixture_chat_completion_stream_response_with_tools[0],
+        tool_types=[fixture_book_tool],
+    )
+
+    assert response.tool_calls is not None
+    assert (
+        response.tool_calls
+        == fixture_chat_completion_stream_response_with_tools[0]
+        .choices[0]
+        .delta.tool_calls
+    )

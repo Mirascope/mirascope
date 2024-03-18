@@ -137,3 +137,50 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionStreamRespon
             usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
         ),
     ]
+
+
+@pytest.fixture()
+def fixture_chat_completion_stream_response_with_tools() -> (
+    list[ChatCompletionStreamResponse]
+):
+    """Returns a list of `ChatCompletionStreamResponse` chunks with tool calls."""
+    tool_call = ToolCall(
+        id="null",
+        type=ToolType.function,
+        function=FunctionCall(
+            name="BookTool",
+            arguments='{"title": "The Name of the Wind","author": "Patrick Rothfuss"}',
+        ),
+    )
+    return [
+        ChatCompletionStreamResponse(
+            id="test",
+            model="open-mixtral-8x7b",
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(
+                        role="assistant",
+                        tool_calls=[tool_call],
+                    ),
+                    finish_reason=None,
+                )
+            ],
+            usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
+        ),
+        ChatCompletionStreamResponse(
+            id="test",
+            model="open-mixtral-8x7b",
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(
+                        role="assistant",
+                        tool_calls=[tool_call],
+                    ),
+                    finish_reason=None,
+                )
+            ],
+            usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
+        ),
+    ]

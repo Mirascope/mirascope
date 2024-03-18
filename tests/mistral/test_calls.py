@@ -86,18 +86,18 @@ def test_mistral_call_stream(
     assert chunks[1].content == "B"
 
 
-@patch("mistralai.async_client.MistralAsyncClient.chat_stream", new_callable=AsyncMock)
+@patch("mistralai.async_client.MistralAsyncClient.chat_stream", new_callable=MagicMock)
 @pytest.mark.asyncio
-async def test_openai_prompt_stream_async(
-    mock_create: AsyncMock,
+async def test_mistral_stream_async(
+    mock_chat_stream: MagicMock,
     fixture_chat_completion_stream_response: list[ChatCompletionStreamResponse],
 ):
-    """Tests `OpenAIPrompt.stream` returns expected response."""
+    """Tests `MistralCall.stream_async` returns expected response."""
 
     class TempCall(MistralCall):
         prompt_template = ""
 
-    mock_create.return_value.__aiter__.return_value = (
+    mock_chat_stream.return_value.__aiter__.return_value = (
         fixture_chat_completion_stream_response
     )
     temp_call = TempCall()
@@ -109,6 +109,6 @@ async def test_openai_prompt_stream_async(
         assert chunk.chunk == fixture_chat_completion_stream_response[i]
         i += 1
 
-    mock_create.assert_called_once_with(
+    mock_chat_stream.assert_called_once_with(
         messages=temp_call.messages(), model=temp_call.call_params.model
     )

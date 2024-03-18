@@ -84,11 +84,10 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
     @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
-        if isinstance(self.message.content, str):
-            return self.message.content
+        content = self.message.content
         # We haven't seen the `list[str]` response type in practice, so for now we
         # return the first item in the list
-        return self.message.content[0]
+        return content if isinstance(content, str) else content[0]
 
     @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
