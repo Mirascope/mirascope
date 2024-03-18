@@ -153,6 +153,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
-        stream = client.chat_stream(messages=self.messages(), **kwargs)
+        print(kwargs)
+        stream = await client.chat_stream(messages=self.messages(), **kwargs)
         async for chunk in stream:
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)

@@ -12,6 +12,7 @@ from mirascope.mistral import (
     MistralCall,
     MistralCallParams,
     MistralCallResponse,
+    MistralCallResponseChunk,
     MistralTool,
 )
 
@@ -37,10 +38,10 @@ def test_mistral_call_call_with_tools(
     mock_chat_completion: MagicMock,
     fixture_book_tool: Type[MistralTool],
     fixture_expected_book_tool_instance: MistralTool,
-    fixture_generate_content_response_with_tools: ChatCompletionResponse,
+    fixture_chat_completion_response_with_tools: ChatCompletionResponse,
 ) -> None:
     """Tests that `MistralCall.call` works with tools."""
-    mock_chat_completion.return_value = fixture_generate_content_response_with_tools
+    mock_chat_completion.return_value = fixture_chat_completion_response_with_tools
 
     class TempCall(MistralCall):
         prompt_template = ""
@@ -71,10 +72,10 @@ async def test_mistral_call_call_async(
 @patch("mistralai.client.MistralClient.chat_stream", new_callable=MagicMock)
 def test_mistral_call_stream(
     mock_chat_completion: MagicMock,
-    fixture_generate_content_chunks: list[ChatCompletionStreamResponse],
+    fixture_chat_completion_stream_response: list[ChatCompletionStreamResponse],
 ) -> None:
     """Tests that `MistralCall.stream` returns the expected response."""
-    mock_chat_completion.return_value = fixture_generate_content_chunks
+    mock_chat_completion.return_value = fixture_chat_completion_stream_response
 
     class TempCall(MistralCall):
         prompt_template = ""
@@ -83,3 +84,31 @@ def test_mistral_call_stream(
     assert len(chunks) == 2
     assert chunks[0].content == "A"
     assert chunks[1].content == "B"
+
+
+@patch("mistralai.async_client.MistralAsyncClient.chat_stream", new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_openai_prompt_stream_async(
+    mock_create: AsyncMock,
+    fixture_chat_completion_stream_response: list[ChatCompletionStreamResponse],
+):
+    """Tests `OpenAIPrompt.stream` returns expected response."""
+
+    class TempCall(MistralCall):
+        prompt_template = ""
+
+    mock_create.return_value.__aiter__.return_value = (
+        fixture_chat_completion_stream_response
+    )
+    temp_call = TempCall()
+    stream = temp_call.stream_async()
+
+    i = 0
+    async for chunk in stream:
+        assert isinstance(chunk, MistralCallResponseChunk)
+        assert chunk.chunk == fixture_chat_completion_stream_response[i]
+        i += 1
+
+    mock_create.assert_called_once_with(
+        messages=temp_call.messages(), model=temp_call.call_params.model
+    )

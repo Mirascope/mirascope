@@ -76,8 +76,8 @@ def fixture_expected_book_tool_instance() -> BookTool:
 
 
 @pytest.fixture()
-def fixture_generate_content_response_with_tools() -> ChatCompletionResponse:
-    """Returns a `GenerateContentResponse` with tools."""
+def fixture_chat_completion_response_with_tools() -> ChatCompletionResponse:
+    """Returns a `ChatCompletionResponse` with tools."""
     return ChatCompletionResponse(
         id="test tool",
         object="chat.completion",
@@ -109,8 +109,8 @@ def fixture_generate_content_response_with_tools() -> ChatCompletionResponse:
 
 
 @pytest.fixture()
-def fixture_generate_content_chunks() -> list[ChatCompletionStreamResponse]:
-    """Returns a list of `GenerateContentResponse` chunks."""
+def fixture_chat_completion_stream_response() -> list[ChatCompletionStreamResponse]:
+    """Returns a list of `ChatCompletionStreamResponse` chunks."""
     return [
         ChatCompletionStreamResponse(
             id="test",

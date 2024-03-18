@@ -26,11 +26,9 @@ class MistralCallParams(BaseCallParams[MistralTool]):
     max_tokens: Optional[int] = None
     top_p: Optional[float] = None
     random_seed: Optional[int] = None
-    safe_mode: bool = False
-    safe_prompt: bool = False
+    safe_mode: Optional[bool] = None
+    safe_prompt: Optional[bool] = None
     tool_choice: Optional[ToolChoice] = None
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
@@ -88,8 +86,9 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         """The content of the chat completion for the 0th choice."""
         if isinstance(self.message.content, str):
             return self.message.content
-        else:
-            return self.message.content[0]
+        # We haven't seen the `list[str]` response type in practice, so for now we
+        # return the first item in the list
+        return self.message.content[0]
 
     @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
@@ -139,10 +138,6 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
             "end_time": self.end_time,
             "output": self.response.model_dump(),
         }
-
-    def __str__(self):
-        """Returns the contained string content for the 0th choice."""
-        return self.content if self.content is not None else ""
 
 
 class MistralCallResponseChunk(
@@ -202,7 +197,3 @@ class MistralCallResponseChunk(
     def tool_calls(self) -> Optional[list[ToolCall]]:
         """Returns the partial tool calls for the 0th choice message."""
         return self.delta.tool_calls
-
-    def __str__(self):
-        """Returns the contained string content for the 0th choice."""
-        return self.content if self.content is not None else ""

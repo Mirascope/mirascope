@@ -13,10 +13,10 @@ from mirascope.mistral.tools import MistralTool
 def test_mistral_extractor_extract_tool(
     mock_generate_content: MagicMock,
     fixture_book_tool: Type[MistralTool],
-    fixture_generate_content_response_with_tools: ChatCompletionResponse,
+    fixture_chat_completion_response_with_tools: ChatCompletionResponse,
 ) -> None:
     """Tests that the `MistralExtractor` class returns the expected model."""
-    mock_generate_content.return_value = fixture_generate_content_response_with_tools
+    mock_generate_content.return_value = fixture_chat_completion_response_with_tools
 
     class TempExtractor(MistralExtractor[Type[MistralTool]]):
         extract_schema: Type[MistralTool] = fixture_book_tool
@@ -33,10 +33,10 @@ def test_mistral_extractor_extract_tool(
 async def test_mistral_extractor_extract_async_tool(
     mock_generate_content: AsyncMock,
     fixture_book_tool: Type[MistralTool],
-    fixture_generate_content_response_with_tools: ChatCompletionResponse,
+    fixture_chat_completion_response_with_tools: ChatCompletionResponse,
 ) -> None:
     """Tests that the `MistralExtractor` class returns the expected model."""
-    mock_generate_content.return_value = fixture_generate_content_response_with_tools
+    mock_generate_content.return_value = fixture_chat_completion_response_with_tools
 
     class TempExtractor(MistralExtractor[Type[MistralTool]]):
         extract_schema: Type[MistralTool] = fixture_book_tool
