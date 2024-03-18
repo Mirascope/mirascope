@@ -32,9 +32,9 @@ class BasePrompt(BaseModel):
     class BookRecommendationPrompt(BasePrompt):
         """A prompt for recommending a book."""
 
-        prompt_template = """\\
-            SYSTEM: You are the world's greatest librarian.
-            USER: Please recommend a {genre} book.
+        prompt_template = """
+        SYSTEM: You are the world's greatest librarian.
+        USER: Please recommend a {genre} book.
         """
 
         genre: str

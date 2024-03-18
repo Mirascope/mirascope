@@ -178,15 +178,16 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         <invoke>
         <tool_name>$TOOL_NAME</tool_name>
         <parameters>
-        <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
+        <$PARAMETER_NAME element="single">$PARAMETER_VALUE</$PARAMETER_NAME>
+        <$PARAMETER_NAME element="multiple"><item>$ITEM_VALUE</item></$PARAMETER_NAME>
         ...
         </parameters>
         </invoke>
         ...
         </function_calls>
 
-        If you want to call multiple tools, you should put all of the tools inside of
-        the <function_calls> tag as multiple <invoke> elements.
+        Make sure to include all parameters in the tool schema when requested.
+        If you want to call multiple tools, you should put all of the tools inside of the <function_calls> tag as multiple <invoke> elements.
 
         Here are the tools available:
         <tools>

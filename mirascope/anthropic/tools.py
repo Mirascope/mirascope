@@ -18,7 +18,11 @@ BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class AnthropicTool(BaseTool[ET.Element]):
-    '''
+    '''A base class for easy use of tools with the Anthropic Claude client.
+
+    `AnthropicTool` internally handles the logic that allows you to use tools with
+    simple calls such as `AnthropicCallResponse.tool` or `AnthropicTool.fn`, as seen in
+    the example below.
 
     Example:
 
@@ -40,7 +44,7 @@ class AnthropicTool(BaseTool[ET.Element]):
 
 
     class AnimalMatcher(AnthropicCall):
-        prompt_template = """\\
+        prompt_template = """
         Tell me my favorite animal if my favorite food is {food} and my
         favorite color is {color}.
         """
@@ -80,7 +84,13 @@ class AnthropicTool(BaseTool[ET.Element]):
             for prop, definition in json_schema["parameters"]["properties"].items():
                 tool_schema += "<parameter>\n"
                 tool_schema += f"<name>{prop}</name>\n"
-                tool_schema += f"<type>{definition['type']}</type>\n"
+                if definition["type"] == "array" and "items" in definition:
+                    tool_schema += "<type>list</type>\n"
+                    tool_schema += (
+                        f"<element_type>{definition['items']['type']}</element_type>\n"
+                    )
+                else:
+                    tool_schema += f"<type>{definition['type']}</type>\n"
                 if "description" in definition:
                     tool_schema += (
                         f"<description>{definition['description']}</description>\n"
