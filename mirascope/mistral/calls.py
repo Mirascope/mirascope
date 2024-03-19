@@ -51,7 +51,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             A `MistralCallResponse` instance.
 
         Raises:
-            MistralException: raises any OpenAI errors, see:
+            MistralException: raises any Mistral errors, see:
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
@@ -79,7 +79,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             A `MistralCallResponse` instance.
 
         Raises:
-            MistralException: raises any OpenAI errors, see:
+            MistralException: raises any Mistral errors, see:
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
@@ -107,7 +107,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             A `MistralCallResponseChunk` for each chunk of the response.
 
         Raises:
-            MistralException: raises any OpenAI errors, see:
+            MistralException: raises any Mistral errors, see:
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
@@ -132,7 +132,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             A `MistralCallResponseChunk` for each chunk of the response.
 
         Raises:
-            MistralException: raises any OpenAI errors, see:
+            MistralException: raises any Mistral errors, see:
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
