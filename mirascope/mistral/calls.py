@@ -7,12 +7,7 @@ from mistralai.client import MistralClient
 from mistralai.constants import ENDPOINT
 
 from ..base import BaseCall
-from ..base.types import (
-    AssistantMessage,
-    Message,
-    SystemMessage,
-    UserMessage,
-)
+from ..base.types import Message
 from ..enums import MessageRole
 from .tools import MistralTool
 from .types import MistralCallParams, MistralCallResponse, MistralCallResponseChunk
@@ -41,17 +36,9 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
 
     def messages(self) -> list[Message]:
         """Returns the template as a formatted list of messages."""
-        message_type_by_role = {
-            MessageRole.SYSTEM: SystemMessage,
-            MessageRole.USER: UserMessage,
-            MessageRole.ASSISTANT: AssistantMessage,
-        }
-        return [
-            message_type_by_role[MessageRole(message["role"])](
-                role=message["role"], content=message["content"]
-            )
-            for message in self._parse_messages(list(message_type_by_role.keys()))
-        ]
+        return self._parse_messages(
+            [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
+        )
 
     def call(self, **kwargs: Any) -> MistralCallResponse:
         """Makes a call to the model using this `MistralCall` instance.
