@@ -25,39 +25,6 @@ def test_anthropic_call_response(fixture_anthropic_message: Message):
     assert response.tool is None
 
 
-def test_anthropic_call_response_from_tool_call_bad_tool(
-    fixture_anthropic_book_tool: Type[AnthropicTool],
-):
-    """Tests that `AnthropicCallResponse.from_tool_call` fails assert on <invoke>"""
-    response = AnthropicCallResponse(
-        response=Message(
-            id="0",
-            content=[
-                ContentBlock(
-                    text=(
-                        "To get the book information, I will use the BookTool tool:\n\n"
-                        "<function_calls>\n<BAD>\n<tool_name>BookTool</tool_name>\n"
-                        "<parameters>\n<title>The Name of the Wind</title>\n"
-                        "<author>Patrick Rothfuss</author>\n</parameters>\n</BAD>\n"
-                    ),
-                    type="text",
-                )
-            ],
-            model="test",
-            role="assistant",
-            type="message",
-            usage=Usage(input_tokens=0, output_tokens=0),
-            stop_reason="stop_sequence",
-            stop_sequence="</function_calls>",
-        ),
-        tool_types=[fixture_anthropic_book_tool],
-        start_time=0,
-        end_time=1,
-    )
-    with pytest.raises(ValueError):
-        assert response.tools is None
-
-
 def test_anthropic_call_response_no_tools_node(
     fixture_anthropic_book_tool: Type[AnthropicTool],
 ):

@@ -156,19 +156,15 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         if messages[0]["role"] == "system":
             system_message += messages.pop(0)["content"]
         if tool_types:
-            system_message += self._write_tools_system_message(tool_types)
+            tool_schemas = kwargs.pop("tools")
+            system_message += self._write_tools_system_message(tool_schemas)
             kwargs["stop_sequences"] = ["</function_calls>"]
         if system_message:
             kwargs["system"] = system_message
-        if "tools" in kwargs:
-            kwargs.pop("tools")
         return messages, kwargs, tool_types
 
-    def _write_tools_system_message(self, tool_types: list[Type[AnthropicTool]]) -> str:
+    def _write_tools_system_message(self, tool_schemas: list[str]) -> str:
         """Returns the Anthropic Tools System Message from their guide."""
-        tool_schemas = "\n\n".join(
-            [tool_type.tool_schema() for tool_type in tool_types]
-        )
         return dedent(
             """
         In this environment you have access to a set of tools you can use to answer the user's question.
@@ -185,8 +181,29 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         ...
         </function_calls>
 
-        If you want to call multiple tools, you should put all of the tools inside of
-        the <function_calls> tag as multiple <invoke> elements.
+        Make sure to include all parameters in the tool schema when requested.
+        If you want to call multiple tools, you should put all of the tools inside of the <function_calls> tag as multiple <invoke> elements.
+
+        To output nested structured data, encode it as valid XML with tags and values. For example:
+
+        List:
+        <listTypeParameter>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+        </listTypeParameter>
+
+        Dictionary:
+        <dictTypeParameter>
+            <entry>
+                <key>key1</key>
+                <value>value1</value>
+            </entry>
+            <entry>
+                <key>key2</key>
+                <value>value2</value>
+            </entry>
+        </dictTypeParameter>
 
         Here are the tools available:
         <tools>

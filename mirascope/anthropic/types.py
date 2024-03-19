@@ -115,8 +115,9 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
                 if (
                     tool_name_node is not None
                     and tool_name_node.text == tool_type.__name__
+                    and (parameters := tool_call_node.find("parameters"))
                 ):
-                    tool = tool_type.from_tool_call(tool_call_node)
+                    tool = tool_type.from_tool_call(parameters)
                     extracted_tools.append(tool)
                     break
 

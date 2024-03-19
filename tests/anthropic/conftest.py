@@ -47,7 +47,7 @@ def fixture_anthropic_test_messages_call():
 
 
 @pytest.fixture()
-def fixture_anthropic_message():
+def fixture_anthropic_message() -> Message:
     """Returns an Anthropic message."""
     return Message(
         id="0",
@@ -60,7 +60,7 @@ def fixture_anthropic_message():
 
 
 @pytest.fixture()
-def fixture_anthropic_message_with_tools():
+def fixture_anthropic_message_with_tools() -> Message:
     """Returns an Anthropic message with tools XML in the response"""
     return Message(
         id="0",
