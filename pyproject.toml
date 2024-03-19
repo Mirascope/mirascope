@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.5.0"
+version = "0.5.1"
 description = "LLM toolkit for lightning-fast, high-quality development"
 license = "MIT"
 authors = [
@@ -26,11 +26,13 @@ docstring-parser = "^0.15"
 wandb = { version = "^0.15.4", optional = true }
 google-generativeai = { version = "^0.4.0", optional = true }
 anthropic = { version = "^0.19.1", optional = true }
+mistralai = { version = "^0.1.6", optional = true }
 
 [tool.poetry.extras]
 wandb = ["wandb"]
 gemini = ["google-generativeai"]
 anthropic = ["anthropic"]
+mistral = ["mistralai"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -122,6 +124,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "pinecone.core.client.exceptions"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "mistralai"
 ignore_missing_imports = true
 
 [build-system]

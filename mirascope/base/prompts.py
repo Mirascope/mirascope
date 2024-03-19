@@ -32,9 +32,9 @@ class BasePrompt(BaseModel):
     class BookRecommendationPrompt(BasePrompt):
         """A prompt for recommending a book."""
 
-        prompt_template = """\\
-            SYSTEM: You are the world's greatest librarian.
-            USER: Please recommend a {genre} book.
+        prompt_template = """
+        SYSTEM: You are the world's greatest librarian.
+        USER: Please recommend a {genre} book.
         """
 
         genre: str
@@ -96,7 +96,7 @@ class BasePrompt(BaseModel):
             **{var: getattr(self, var) for var in template_vars}
         )
 
-    def _parse_messages(self, roles: list[str]) -> list[dict[str, str]]:
+    def _parse_messages(self, roles: list[str]) -> list[Message]:
         """Returns messages parsed from the `template` ClassVar.
 
         Raises:

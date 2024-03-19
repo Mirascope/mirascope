@@ -35,9 +35,9 @@ class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic
     class TaskExtractor(AnthropicExtractor[TaskDetails]):
         extract_schema: Type[TaskDetails] = TaskDetails
 
-        prompt_template = """\\
-            Please extract the task details:
-            {task}
+        prompt_template = """
+        Please extract the task details:
+        {task}
         """
 
         task: str

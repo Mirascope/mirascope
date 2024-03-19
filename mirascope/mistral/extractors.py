@@ -1,64 +1,53 @@
-"""A class for extracting structured information using OpenAI chat models."""
-from __future__ import annotations
-
+"""A class for extracting structured information using Mistral chat models."""
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
-from .calls import OpenAICall
-from .tools import OpenAITool
-from .types import OpenAICallParams
+from .calls import MistralCall
+from .tools import MistralTool
 
 logger = logging.getLogger("mirascope")
 
 T = TypeVar("T", bound=ExtractedType)
 
 
-class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
-    '''A class for extracting structured information using OpenAI chat models.
+class MistralExtractor(BaseExtractor[MistralCall, MistralTool, T], Generic[T]):
+    '''A class for extracting structured information using Mistral Chat models.
 
     Example:
 
     ```python
-    from typing import Literal, Type
-
-    from mirascope.openai import OpenAIExtractor
+    from mirascope.mistral import MistralExtractor
     from pydantic import BaseModel
-
+    from typing import Literal, Type
 
     class TaskDetails(BaseModel):
         title: str
         priority: Literal["low", "normal", "high"]
         due_date: str
 
-
-    class TaskExtractor(OpenAIExtractor[TaskDetails]):
+    class TaskExtractor(MistralExtractor[TaskDetails]):
         extract_schema: Type[TaskDetails] = TaskDetails
+        call_params = MistralCallParams(model="mistral-large-latest")
 
         prompt_template = """
-        Please extract the task details:
-        {task}
+        Prepare the budget report by next Monday. It's a high priority task.
         """
 
-        task: str
 
-
-    task_description = "Submit quarterly report by next Friday. Task is high priority."
-    task = TaskExtractor(task=task_description).extract(retries=3)
+    task = TaskExtractor().extract(retries=3)
     assert isinstance(task, TaskDetails)
     print(task)
-    #> title='Submit quarterly report' priority='high' due_date='next Friday'
+    # > title='Prepare the budget report' priority='high' due_date='next Monday'
     ```
     '''
 
-    call_params: ClassVar[OpenAICallParams] = OpenAICallParams()
-
     def extract(self, retries: int = 0, **kwargs: Any) -> T:
-        """Extracts `extract_schema` from the OpenAI call response.
+        """Extracts `extract_schema` from the Mistral call response.
 
-        The `extract_schema` is converted into an `OpenAITool`, complete with a
+        The `extract_schema` is converted into an `MistralTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of OpenAI's tool/function calling functionality to extract
+        take advantage of Mistrals's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -73,17 +62,17 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
         Raises:
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
-            OpenAIError: raises any OpenAI errors, see:
-                https://platform.openai.com/docs/guides/error-codes/api-errors
+            MistralException: raises any Mistral exceptions, see:
+                https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
-        return self._extract(OpenAICall, OpenAITool, retries, **kwargs)
+        return self._extract(MistralCall, MistralTool, retries, **kwargs)
 
     async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
-        """Asynchronously extracts `extract_schema` from the OpenAI call response.
+        """Asynchronously extracts `extract_schema` from the Mistral call response.
 
-        The `extract_schema` is converted into an `OpenAITool`, complete with a
+        The `extract_schema` is converted into an `MistralTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of OpenAI's tool/function calling functionality to extract
+        take advantage of Mistrals's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -98,7 +87,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
         Raises:
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
-            OpenAIError: raises any OpenAI errors, see:
-                https://platform.openai.com/docs/guides/error-codes/api-errors
+            MistralException: raises any Mistral exceptions, see:
+                https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
-        return await self._extract_async(OpenAICall, OpenAITool, retries, **kwargs)
+        return await self._extract_async(MistralCall, MistralTool, retries, **kwargs)
