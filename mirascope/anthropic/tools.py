@@ -178,6 +178,7 @@ def _process_schema(schema: dict[str, Any]) -> str:
     return schema_xml
 
 
+# TODO: consider using ET subelements instead of string concat
 def _process_property(definition: dict[str, Any]) -> str:
     prop_xml = ""
     prop_type = definition.get("type", "object")
