@@ -84,11 +84,18 @@ class AnthropicTool(BaseTool[ET.Element]):
             for prop, definition in json_schema["parameters"]["properties"].items():
                 tool_schema += "<parameter>\n"
                 tool_schema += f"<name>{prop}</name>\n"
-                if definition["type"] == "array" and "items" in definition:
-                    tool_schema += "<type>list</type>\n"
-                    tool_schema += (
-                        f"<element_type>{definition['items']['type']}</element_type>\n"
-                    )
+                if definition["type"] == "array":
+                    if "items" in definition:
+                        tool_schema += "<type>list</type>\n"
+                        tool_schema += f"<element_type>{definition['items']['type']}</element_type>\n"
+                    elif "prefixItems" in definition:
+                        tool_schema += f"<type maxItems={definition['maxItems']} minItems={definition['minItems']}>list</type>\n"
+                        for i, item in enumerate(definition["prefixItems"]):
+                            tool_schema += f"<element_type tupleIndex={i}>{item['type']}</element_type>\n"
+                    else:
+                        tool_schema += f"<type>{definition['type']}</type>\n"
+                        if "uniqueItems" in definition:
+                            tool_schema += f"<element_type uniqueItems={definition['uniqueItems']}>{item['type']}</element_type>"
                 else:
                     tool_schema += f"<type>{definition['type']}</type>\n"
                 if "description" in definition:
@@ -127,12 +134,17 @@ class AnthropicTool(BaseTool[ET.Element]):
         parameters: dict[str, Any] = {"tool_call": tool_call}
         parameters_node = tool_call.find("parameters")
         if parameters_node is not None:
-            parameters.update(
-                {
-                    parameter_node.tag: parameter_node.text
-                    for parameter_node in parameters_node
-                }
-            )
+            parameters = {}
+            for parameter_node in parameters_node:
+                if element := parameter_node.get("element", None):
+                    if element == "multiple":
+                        items = [item_node.text for item_node in parameter_node]
+                        parameters.update({parameter_node.tag: items})
+                    else:
+                        parameters.update({parameter_node.tag: parameter_node.text})
+                else:
+                    parameters.update({parameter_node.tag: parameter_node.text})
+        parameters["tool_call"] = tool_call
         return cls.model_validate(parameters)
 
     @classmethod

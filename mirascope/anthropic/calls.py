@@ -156,19 +156,15 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         if messages[0]["role"] == "system":
             system_message += messages.pop(0)["content"]
         if tool_types:
-            system_message += self._write_tools_system_message(tool_types)
+            tool_schemas = kwargs.pop("tools")
+            system_message += self._write_tools_system_message(tool_schemas)
             kwargs["stop_sequences"] = ["</function_calls>"]
         if system_message:
             kwargs["system"] = system_message
-        if "tools" in kwargs:
-            kwargs.pop("tools")
         return messages, kwargs, tool_types
 
-    def _write_tools_system_message(self, tool_types: list[Type[AnthropicTool]]) -> str:
+    def _write_tools_system_message(self, tool_schemas: list[str]) -> str:
         """Returns the Anthropic Tools System Message from their guide."""
-        tool_schemas = "\n\n".join(
-            [tool_type.tool_schema() for tool_type in tool_types]
-        )
         return dedent(
             """
         In this environment you have access to a set of tools you can use to answer the user's question.
@@ -179,7 +175,12 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         <tool_name>$TOOL_NAME</tool_name>
         <parameters>
         <$PARAMETER_NAME element="single">$PARAMETER_VALUE</$PARAMETER_NAME>
-        <$PARAMETER_NAME element="multiple"><item>$ITEM_VALUE</item></$PARAMETER_NAME>
+        <$PARAMETER_NAME element="multiple">
+        <item>
+        $ITEM_VALUE
+        </item>
+        ...
+        </$PARAMETER_NAME>
         ...
         </parameters>
         </invoke>

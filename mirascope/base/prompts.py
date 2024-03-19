@@ -96,7 +96,7 @@ class BasePrompt(BaseModel):
             **{var: getattr(self, var) for var in template_vars}
         )
 
-    def _parse_messages(self, roles: list[str]) -> list[dict[str, str]]:
+    def _parse_messages(self, roles: list[str]) -> list[Message]:
         """Returns messages parsed from the `template` ClassVar.
 
         Raises:
