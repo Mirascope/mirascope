@@ -196,7 +196,9 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         List[object]:
         <parameterName>
             <item>
-                <objectName>objectValue</objectName>
+                <objectName>
+                    <objectValue>value</objectValue>
+                </objectName>
             </item>
         </parameterName>
 
@@ -212,8 +214,9 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
             </entry>
         </parameterName>
 
-        Make sure to properly nest. The above are just examples.
-        Make sure to wrap list elements in the <item> tag and dictionary elements in the <entry> tag.
+        Remember, the above are just examples.
+        Make sure to properly nest by wrapping elements in lists with the <item> tag and dictionary elements with <entry> as necessary.
+        DO NOT FORGET THESE TAGS. Without these tags, we cannot properly parse the information you send.
 
         Here are the tools available:
         <tools>
