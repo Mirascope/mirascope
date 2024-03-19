@@ -187,14 +187,14 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         To output nested structured data, encode it as valid XML with tags and values. For example:
 
         List:
-        <listTypeParameter>
+        <parameterName>
             <item>1</item>
             <item>2</item>
             <item>3</item>
-        </listTypeParameter>
+        </parameterName>
 
         Dictionary:
-        <dictTypeParameter>
+        <parameterName>
             <entry>
                 <key>key1</key>
                 <value>value1</value>
@@ -203,7 +203,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
                 <key>key2</key>
                 <value>value2</value>
             </entry>
-        </dictTypeParameter>
+        </parameterName>
 
         Here are the tools available:
         <tools>
