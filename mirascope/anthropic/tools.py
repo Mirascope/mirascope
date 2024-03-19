@@ -119,8 +119,12 @@ class AnthropicTool(BaseTool[ET.Element]):
                 else:
                     return ""
 
-            if len(children) > 1 and all(
-                child.tag == children[0].tag for child in children
+            if (
+                len(children) > 1
+                and all(child.tag == children[0].tag for child in children)
+            ) or (
+                len(children) == 1
+                and (children[0].tag == "entry" or children[0].tag == "item")
             ):
                 if children[0].tag == "entry":
                     dict_result = {}
