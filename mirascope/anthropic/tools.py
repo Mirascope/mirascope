@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from json import JSONDecodeError, dumps, loads
+from json import JSONDecodeError, loads
 from textwrap import dedent
 from typing import Any, Callable, Optional, Type, TypeVar, Union, cast
 
