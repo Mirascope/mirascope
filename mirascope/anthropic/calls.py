@@ -186,11 +186,18 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
 
         To output nested structured data, encode it as valid XML with tags and values. For example:
 
-        List:
+        List[int]:
         <parameterName>
             <item>1</item>
             <item>2</item>
             <item>3</item>
+        </parameterName>
+
+        List[object]:
+        <parameterName>
+            <item>
+                <objectName>objectValue</objectName>
+            </item>
         </parameterName>
 
         Dictionary:
@@ -204,6 +211,9 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
                 <value>value2</value>
             </entry>
         </parameterName>
+
+        Make sure to properly nest. The above are just examples.
+        Make sure to wrap list elements in the <item> tag and dictionary elements in the <entry> tag.
 
         Here are the tools available:
         <tools>
