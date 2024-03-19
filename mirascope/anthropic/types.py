@@ -136,6 +136,14 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
         """Returns the string content of the 0th message."""
         return self.response.content[0].text
 
+    def dump(self) -> dict[str, Any]:
+        """Dumps the response to a dictionary."""
+        return {
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "output": self.response.model_dump(),
+        }
+
 
 class AnthropicCallResponseChunk(
     BaseCallResponseChunk[MessageStreamEvent, AnthropicTool]
