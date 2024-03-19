@@ -4,7 +4,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from json import JSONDecodeError, loads
 from textwrap import dedent
-from typing import Any, Callable, Optional, Type, TypeVar, Union, cast
+from typing import Any, Callable, Type, TypeVar, Union, cast
 
 from pydantic import BaseModel
 
@@ -81,6 +81,7 @@ class AnthropicTool(BaseTool[ET.Element]):
             .format(name=cls.__name__, description=json_schema["description"])
         )
 
+        tool_schema += "\n"
         if "parameters" in json_schema:
             tool_schema += _process_schema(json_schema["parameters"])
         tool_schema += "</tool_description>"
@@ -118,28 +119,23 @@ class AnthropicTool(BaseTool[ET.Element]):
                 else:
                     return ""
 
-            # General handling for other elements
             if len(children) > 1 and all(
                 child.tag == children[0].tag for child in children
             ):
                 if children[0].tag == "entry":
-                    return {
-                        key.text: _parse_xml_element(value)
-                        for child in children
-                        if (key := child.find("key")) and (value := child.find("value"))
-                    }
+                    dict_result = {}
+                    for child in children:
+                        key, value = child.find("key"), child.find("value")
+                        if key is not None and value is not None:
+                            dict_result[key.text] = _parse_xml_element(value)
+                    return dict_result
                 else:
                     return [_parse_xml_element(child) for child in children]
 
             result: dict[str, Any] = {}
             for child in children:
                 child_value = _parse_xml_element(child)
-                if child.tag in result:
-                    if not isinstance(result[child.tag], list):
-                        result[child.tag] = [result[child.tag]]
-                    result[child.tag].append(child_value)
-                else:
-                    result[child.tag] = child_value
+                result[child.tag] = child_value
             return result
 
         parameters = cast(dict[str, Any], _parse_xml_element(tool_call))
@@ -162,35 +158,27 @@ class AnthropicTool(BaseTool[ET.Element]):
         return convert_base_type_to_tool(base_type, AnthropicTool)
 
 
-def _process_schema(
-    schema: dict[str, Any],
-    parent_type: Optional[str] = None,
-) -> str:
+def _process_schema(schema: dict[str, Any]) -> str:
     schema_xml = ""
     if "$defs" in schema:
-        schema_xml += "\n<definitions>\n"
+        schema_xml += "<definitions>\n"
         for def_name, definition in schema["$defs"].items():
             schema_xml += f"<definition name='{def_name}'>\n"
-            schema_xml += _process_property(definition, parent_type)
+            schema_xml += _process_property(definition)
             schema_xml += "</definition>\n"
         schema_xml += "</definitions>"
     if "properties" in schema:
-        schema_xml += "\n<parameters>\n"
+        schema_xml += "<parameters>\n"
         for prop, definition in schema["properties"].items():
             schema_xml += "<parameter>\n"
             schema_xml += f"<name>{prop}</name>\n"
-            schema_xml += _process_property(definition, parent_type)
+            schema_xml += _process_property(definition)
             schema_xml += "</parameter>\n"
         schema_xml += "</parameters>\n"
-    elif "items" in schema:
-        schema_xml += _process_property(schema, parent_type)
     return schema_xml
 
 
-def _process_property(
-    definition: dict[str, Any],
-    parent_type: Optional[str] = None,
-) -> str:
+def _process_property(definition: dict[str, Any]) -> str:
     prop_xml = ""
     prop_type = definition.get("type", "object")
 
@@ -207,33 +195,34 @@ def _process_property(
         if items_def:
             if isinstance(items_def, dict):
                 prop_xml += "<element_type>\n"
-                prop_xml += _process_property(items_def, "array")
+                prop_xml += _process_property(items_def)
                 prop_xml += "</element_type>\n"
             else:
                 for item in items_def:
                     prop_xml += "<element_type>\n"
-                    prop_xml += _process_property(item, "array")
+                    prop_xml += _process_property(item)
                     prop_xml += "</element_type>\n"
+        if "maxItems" in definition:
+            prop_xml += f"<maxItems>{definition['maxItems']}</maxItems>\n"
+        if "minItems" in definition:
+            prop_xml += f"<minItems>{definition['minItems']}</minItems>\n"
+        if "uniqueItems" in definition:
+            prop_xml += (
+                f"<uniqueItems>{str(definition['uniqueItems']).lower()}</uniqueItems>\n"
+            )
     elif "enum" in definition:
-        if len(definition["enum"]) == 1:
-            prop_xml += "<type>literal</type>\n"
-            prop_xml += f"<value>{definition['enum'][0]}</value>\n"
-        else:
-            prop_xml += "<type>enum</type>\n"
-            prop_xml += "<values>\n"
-            for value in definition["enum"]:
-                prop_xml += f"<value>{value}</value>\n"
-            prop_xml += "</values>\n"
+        prop_xml += "<type>enum</type>\n"
+        prop_xml += "<values>\n"
+        for value in definition["enum"]:
+            prop_xml += f"<value>{value}</value>\n"
+        prop_xml += "</values>\n"
         prop_xml += f"<value_type>{prop_type}</value_type>\n"
     elif "anyOf" in definition:
         prop_xml += "<type>union</type>\n"
         prop_xml += "<options>\n"
         for option in definition["anyOf"]:
             prop_xml += "<option>\n"
-            if option is None:
-                prop_xml += "<type>null</type>\n"
-            else:
-                prop_xml += _process_property(option)
+            prop_xml += _process_property(option)
             prop_xml += "</option>\n"
         prop_xml += "</options>\n"
     elif "const" in definition:
@@ -254,16 +243,6 @@ def _process_property(
     else:
         prop_xml += "<type>object</type>\n"
         prop_xml += _process_schema(definition)
-
-    if parent_type == "array":
-        if "maxItems" in definition:
-            prop_xml += f"<maxItems>{definition['maxItems']}</maxItems>\n"
-        if "minItems" in definition:
-            prop_xml += f"<minItems>{definition['minItems']}</minItems>\n"
-        if "uniqueItems" in definition:
-            prop_xml += (
-                f"<uniqueItems>{str(definition['uniqueItems']).lower()}</uniqueItems>\n"
-            )
 
     if "description" in definition:
         prop_xml += f"<description>{definition['description']}</description>\n"
