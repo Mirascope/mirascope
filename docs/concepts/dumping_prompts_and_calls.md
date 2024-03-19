@@ -58,8 +58,6 @@ Output:
 
 ## Dumping from the Response
 
-*(Support for dumping Gemini and Claude responses coming soon…)*
-
 You can also call `.dump()` on responses themselves, which will contain:
 
 - start and end times of the response

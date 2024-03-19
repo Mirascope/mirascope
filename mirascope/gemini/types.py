@@ -108,6 +108,14 @@ class GeminiCallResponse(BaseCallResponse[GenerateContentResponse, GeminiTool]):
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text
 
+    def dump(self) -> dict[str, Any]:
+        """Dumps the response to a dictionary."""
+        return {
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "output": str(self.response),
+        }
+
 
 class GeminiCallResponseChunk(
     BaseCallResponseChunk[GenerateContentResponse, GeminiTool]

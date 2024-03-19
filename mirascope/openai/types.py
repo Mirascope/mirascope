@@ -161,7 +161,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         return None
 
     def dump(self) -> dict[str, Any]:
-        """Dumps the chat completion to a dictionary."""
+        """Dumps the response to a dictionary."""
         return {
             "start_time": self.start_time,
             "end_time": self.end_time,

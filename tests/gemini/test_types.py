@@ -19,6 +19,11 @@ def test_gemini_call_response(
     assert response.content == "Who is the author?"
     assert response.tools is None
     assert response.tool is None
+    assert response.dump() == {
+        "start_time": 0,
+        "end_time": 0,
+        "output": str(fixture_generate_content_response),
+    }
 
 
 def test_gemini_call_response_with_tools(
