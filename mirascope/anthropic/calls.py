@@ -174,13 +174,7 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         <invoke>
         <tool_name>$TOOL_NAME</tool_name>
         <parameters>
-        <$PARAMETER_NAME element="single">$PARAMETER_VALUE</$PARAMETER_NAME>
-        <$PARAMETER_NAME element="multiple">
-        <item>
-        $ITEM_VALUE
-        </item>
-        ...
-        </$PARAMETER_NAME>
+        <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
         ...
         </parameters>
         </invoke>
@@ -189,6 +183,27 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
 
         Make sure to include all parameters in the tool schema when requested.
         If you want to call multiple tools, you should put all of the tools inside of the <function_calls> tag as multiple <invoke> elements.
+
+        To output nested structured data, encode it as valid XML with tags and values. For example:
+
+        List:
+        <listTypeParameter>
+            <item>1</item>
+            <item>2</item>
+            <item>3</item>
+        </listTypeParameter>
+
+        Dictionary:
+        <dictTypeParameter>
+            <entry>
+                <key>key1</key>
+                <value>value1</value>
+            </entry>
+            <entry>
+                <key>key2</key>
+                <value>value2</value>
+            </entry>
+        </dictTypeParameter>
 
         Here are the tools available:
         <tools>

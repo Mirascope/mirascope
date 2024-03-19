@@ -29,7 +29,9 @@ class BaseCall(
 
     api_key: ClassVar[Optional[str]] = None
     base_url: ClassVar[Optional[str]] = None
-    call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](model="gpt-4")
+    call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](
+        model="gpt-3.5-turbo-0125"
+    )
 
     @abstractmethod
     def call(self, **kwargs: Any) -> BaseCallResponseT:
