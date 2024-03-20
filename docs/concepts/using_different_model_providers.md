@@ -80,7 +80,7 @@ pip install mirascope[gemini]
 
 ```python
 from google.generativeai import configure
-from mirasope.gemini import GeminiPrompt, GeminiCallParams
+from mirasope.gemini import GeminiCall, GeminiCallParams
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 
@@ -106,7 +106,7 @@ What if you want to use a more complex message? The steps above are all the same
 Consider this OpenAI example:
 
 ```python
-from mirascope import OpenAIPrompt, OpenAICallParams
+from mirascope import OpenAICall, OpenAICallParams
 from openai.types.chat import ChatCompletionMessageParam
 
 
@@ -128,12 +128,12 @@ The Gemini example will look like this:
 ```python
 from google.generativeai import configure
 from google.generativeai.types import ContentsType
-from mirasope.gemini import GeminiPrompt, GeminiCallParams
+from mirasope.gemini import GeminiCall, GeminiCallParams
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 
 
-class Recipe(GeminiPrompt):
+class Recipe(GeminiCall):
     """A normal docstring"""
     
     ingredient: str
