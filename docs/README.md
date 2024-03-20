@@ -29,6 +29,7 @@ You can also install additional optional dependencies if you’re using those fe
 pip install mirascope[anthropic]  # AnthropicCall, ...
 pip install mirascope[gemini]     # GeminiCall, ...
 pip install mirascope[wandb]      # WandbOpenAICall, ...
+pip install mirascope[all]        # all optional dependencies
 ```
 
 ## Examples
@@ -45,6 +46,7 @@ from mirascope.openai import OpenAICall, OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
+
 @tags(["version:0003"])
 class Editor(OpenAICall):
     prompt_template = """
@@ -59,6 +61,7 @@ class Editor(OpenAICall):
     storyline: str
     
     call_params = OpenAICallParams(model="gpt-4", temperature=0.4)
+
 
 storyline = "..."
 editor = Editor(storyline=storyline)
@@ -110,6 +113,7 @@ from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.openai import OpenAICall
 
+
 class Librarian(OpenAICall):
     prompt_template = """
     SYSTEM: You are the world's greatest librarian.
@@ -120,12 +124,15 @@ class Librarian(OpenAICall):
     question: str
     history: list[ChatCompletionMessageParam] = []
 
+
 librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history.append({"role": "user", "content": librarian.question})
-    librarian.history.append({"role": "assistant", "content": response.content})
+    librarian.history += [
+        {"role": "user", "content": librarian.question},
+        {"role": "assistant", "content": response.content},
+    ]
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -143,6 +150,7 @@ from typing import Literal
 
 from mirascope.openai import OpenAICall, OpenAICallParams
 
+
 def get_current_weather(
     location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 ):
@@ -155,6 +163,7 @@ def get_current_weather(
         print(f"It is 22 degress {unit} in Paris, France")
     else:
         print("I'm not sure what the weather is like in {location}")
+
 
 class Forecast(OpenAICall):
     prompt_template = "What's the weather in Tokyo?"
@@ -179,12 +188,14 @@ from mirascope.openai import OpenAICall, OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
+
 class ChefSelector(OpenAICall):
     prompt_template = "Name a chef who is really good at cooking {food_type} food"
 
     food_type: str
 
     call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
+
 
 class RecipeRecommender(ChefSelector):
     prompt_template = """
@@ -220,10 +231,12 @@ from typing import Literal, Type
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
 
+
 class TaskDetails(BaseModel):
     description: str
     due_date: str
     priority: Literal["low", "normal", "high"]
+
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
     extract_schema: Type[TaskDetails] = TaskDetails
@@ -233,6 +246,7 @@ class TaskExtractor(OpenAIExtractor[TaskDetails]):
     """
 
     task: str
+
 
 task = "Submit quarterly report by next Friday. Task is high priority."
 task_details = TaskExtractor(task=task).extract()
@@ -257,6 +271,7 @@ os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 app = FastAPI()
 
+
 class Book(BaseModel):
     title: str
     author: str
@@ -265,6 +280,9 @@ class Book(BaseModel):
 class BookRecommender(OpenAIExtractor[Book]):
     extract_schema: Type[Book] = Book
     prompt_template = "Please recommend a {genre} book."
+
+    genre: str
+
 
 @app.post("/")
 def root(book_recommender: BookRecommender) -> Book:
@@ -275,6 +293,7 @@ def root(book_recommender: BookRecommender) -> Book:
 ## Roadmap
 
 - [x]  Extracting structured information using LLMs
+- [ ]  Streaming extraction for tools (function calling)
 - [ ]  Additional template parsing for more complex messages
     - [x]  Chat History
     - [ ]  Additional Metadata

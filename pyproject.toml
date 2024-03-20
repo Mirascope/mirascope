@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.6.1"
+version = "0.6.2"
 description = "LLM toolkit for lightning-fast, high-quality development"
 license = "MIT"
 authors = [
@@ -33,6 +33,7 @@ wandb = ["wandb"]
 gemini = ["google-generativeai"]
 anthropic = ["anthropic"]
 mistral = ["mistralai"]
+all = ["wandb", "google-generativeai", "anthropic", "mistralai"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
