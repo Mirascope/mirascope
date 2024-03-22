@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field
 from mirascope import tags
 from mirascope.openai import OpenAIExtractor
 
+prev_revision_id = "0002"
+revision_id = "0003"
+
 
 class ProblemDetails(BaseModel):
     solving_steps: str = Field(description="The steps to solve the math problem.")
