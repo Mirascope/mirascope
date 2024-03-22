@@ -1,7 +1,5 @@
 from prompts.math_problem import ProblemSolver
 
-from mirascope import tags
-
 problem = """
     Mira the frog ate 12 flies on Monday, and then half as many on Tuesday. On
     Wednesday, Mira ate 4 grasshoppers. On Thursday, he ate 3 more flies than he did
