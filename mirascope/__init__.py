@@ -14,7 +14,7 @@ with suppress(ImportError):
     from . import openai
 
 with suppress(ImportError):
-    from . import mistal
+    from . import mistral
 
 with suppress(ImportError):
     from . import wandb
