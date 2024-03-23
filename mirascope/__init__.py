@@ -13,4 +13,7 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import openai
 
+with suppress(ImportError):
+    from . import wandb
+
 __version__ = importlib.metadata.version("mirascope")
