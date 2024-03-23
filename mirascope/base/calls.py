@@ -23,7 +23,9 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
 class BaseCall(
-    BasePrompt, Generic[BaseCallResponseT, BaseCallResponseChunkT, BaseToolT], ABC
+    BasePrompt,
+    Generic[BaseCallResponseT, BaseCallResponseChunkT, BaseToolT],
+    ABC,
 ):
     """The base class abstract interface for calling LLMs."""
 
