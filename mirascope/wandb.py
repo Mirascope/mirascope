@@ -33,7 +33,7 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 
 
-class WandbBaseCall(BasePrompt):
+class _WandbBaseCall(BasePrompt):
     span_type: Literal["tool", "llm", "chain", "agent"]
 
     api_key: ClassVar[Optional[str]] = None
@@ -57,7 +57,7 @@ class WandbBaseCall(BasePrompt):
         yield ...  # type: ignore # pragma: no cover
 
 
-class WandbBaseExtractor(BasePrompt):
+class _WandbBaseExtractor(BasePrompt):
     span_type: Literal["tool", "llm", "chain", "agent"]
 
     extract_schema: ExtractionType
@@ -78,7 +78,7 @@ class WandbBaseExtractor(BasePrompt):
 
 
 def trace(
-    call: Union[WandbBaseCall, WandbBaseExtractor],
+    call: Union[_WandbBaseCall, _WandbBaseExtractor],
     response: BaseCallResponse,
     tool_type: Optional[Type[BaseTool]],
     parent: Optional[Trace],
@@ -126,7 +126,7 @@ def trace(
 
 
 def trace_error(
-    call: Union[WandbBaseCall, WandbBaseExtractor],
+    call: Union[_WandbBaseCall, _WandbBaseExtractor],
     error: Exception,
     parent: Optional[Trace],
     start_time: float,
@@ -161,7 +161,7 @@ def trace_error(
     return span
 
 
-class WandbCallMixin(WandbBaseCall, Generic[BaseCallResponseT]):
+class WandbCallMixin(_WandbBaseCall, Generic[BaseCallResponseT]):
     '''A mixin for integrating a call with Weights & Biases.
 
     Use this class's built in `call_with_trace` method to log traces to WandB along with
@@ -232,7 +232,7 @@ class WandbCallMixin(WandbBaseCall, Generic[BaseCallResponseT]):
 T = TypeVar("T", bound=ExtractedType)
 
 
-class WandbExtractorMixin(WandbBaseExtractor, Generic[T]):
+class WandbExtractorMixin(_WandbBaseExtractor, Generic[T]):
     '''A extractor mixin for integrating with Weights & Biases.
 
     Use this class's built in `extract_with_trace` method to log traces to WandB along
