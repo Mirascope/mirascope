@@ -16,7 +16,7 @@ class ProblemDetails(BaseModel):
     answer: int = Field(description="the answer to the math problem.")
 
 
-@tags(["version:0002"])
+@tags(["version:0003"])
 class ProblemSolver(OpenAIExtractor[ProblemDetails]):
     extract_schema: Type[ProblemDetails] = ProblemDetails
     prompt_template = """

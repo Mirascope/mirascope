@@ -7,8 +7,8 @@ problem = """
     """
 
 solver = ProblemSolver(problem=problem)
-response = solver.call()
 
+# response = solver.call()
 # print(response.content)
 # Prompt version 1 output
 # > 27 flies
@@ -21,6 +21,7 @@ can save a version of it with:
 in the CLI so we can always go back to the old version if we need!
 """
 
+# response = solver.call()
 # print(response.content)
 # Prompt version 2 output
 # > Let's add up the flies eaten each day to find out the total number of flies Mira ate:
@@ -40,6 +41,9 @@ If we want, we can even implement a third version where instead of using `OpenAI
 we use `OpenAIExtractor` to extract the solving process and solution into a Pydantic
 schema!
 """
+# print(solver.tags)
+# > ['version:0003']
+#
 # print(solver.extract())
 # > solving_steps='Calculate the number of flies eaten each day: ...'
 #   answer=33
