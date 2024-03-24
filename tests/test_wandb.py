@@ -7,19 +7,26 @@ from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 from wandb.sdk.data_types.trace_tree import Trace
 
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
-from mirascope.openai.wandb import (
-    WandbOpenAICall,
-    WandbOpenAIExtractor,
+from mirascope.wandb import (
+    WandbCallMixin,
+    WandbExtractorMixin,
     trace,
     trace_error,
 )
 
+from .conftest import MyOpenAITool
 
-class MyCall(WandbOpenAICall):
+
+class MyCall(OpenAICall, WandbCallMixin[OpenAICallResponse]):
     prompt_template = "test"
     api_key = "test"
+
+
+class MyCallWithTools(MyCall):
+    call_params = OpenAICallParams(tools=[MyOpenAITool])
 
 
 @pytest.mark.parametrize("span_type", ["tool", "llm"])
@@ -40,30 +47,24 @@ def test_init_invalid_span_type():
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.openai.wandb.trace",
+    "mirascope.wandb.trace",
 )
-def test_call_with_trace(mock_trace: MagicMock, mock_call: MagicMock):
+def test_call_with_trace(
+    mock_trace: MagicMock, mock_call: MagicMock, fixture_chat_completion: ChatCompletion
+):
     """Test `call` method with `Trace`."""
-    prompt = MyCall(span_type="llm")
+    call = MyCall(span_type="llm")
     mock_call.return_value = OpenAICallResponse(
-        response=ChatCompletion(
-            id="id",
-            choices=[],
-            created=0,
-            model="gpt-3.5-turbo-0125",
-            object="chat.completion",
-            system_fingerprint=None,
-            usage=None,
-        ),
+        response=fixture_chat_completion,
         start_time=0,
         end_time=0,
     )
     mock_trace.return_value = Trace(name="testtrace")
-    response, span = prompt.call_with_trace(parent=Trace(name="test"))
+    response, span = call.call_with_trace(parent=Trace(name="test"))
     mock_trace.assert_called_once()
     mock_call.assert_called_once()
     assert response is not None
-    assert response.response.id == "id"
+    assert response.response.id == "test_id"
     assert span.name == "testtrace"
 
 
@@ -71,7 +72,35 @@ def test_call_with_trace(mock_trace: MagicMock, mock_call: MagicMock):
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.openai.wandb.trace_error",
+    "mirascope.wandb.trace",
+)
+def test_call_with_trace_with_tools(
+    mock_trace: MagicMock,
+    mock_call: MagicMock,
+    fixture_chat_completion_with_tools: ChatCompletion,
+):
+    """Test `call` method with `Trace`."""
+    call = MyCallWithTools(span_type="llm")
+    mock_call.return_value = OpenAICallResponse(
+        response=fixture_chat_completion_with_tools,
+        tool_types=[MyOpenAITool],
+        start_time=0,
+        end_time=0,
+    )
+    mock_trace.return_value = Trace(name="testtrace")
+    response, span = call.call_with_trace(parent=Trace(name="test"))
+    mock_trace.assert_called_once()
+    mock_call.assert_called_once()
+    assert response is not None
+    assert response.response.id == "test_id"
+    assert span.name == "testtrace"
+
+
+@patch(
+    "mirascope.openai.calls.OpenAICall.call",
+)
+@patch(
+    "mirascope.wandb.trace_error",
 )
 def test_call_with_trace_error(mock_trace_error: MagicMock, mock_call: MagicMock):
     """Test `create` method with `Trace` for error."""
@@ -93,7 +122,7 @@ def test_call_with_trace_error(mock_trace_error: MagicMock, mock_call: MagicMock
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.openai.wandb.trace",
+    "mirascope.wandb.trace",
 )
 def test_call_with_trace_no_parent(
     mock_trace: MagicMock, mock_call: MagicMock, mock_add: MagicMock
@@ -112,12 +141,12 @@ def test_call_with_trace_no_parent(
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.openai.wandb.trace_error",
+    "mirascope.wandb.trace_error",
 )
 def test_call_with_trace_no_parent_error(
     mock_trace_error: MagicMock, mock_call: MagicMock, mock_add: MagicMock
 ):
-    """Test `create` method with `Trace` with no parent and thrown error."""
+    """Test `call_with_trace` method with no parent and thrown error."""
     mock_call.side_effect = Exception("Test error")
     MyCall(span_type="llm").call_with_trace()
     mock_trace_error.assert_called_once()
@@ -134,7 +163,9 @@ def test_trace_response(mock_Trace: MagicMock, fixture_chat_completion: ChatComp
     response = OpenAICallResponse(
         response=fixture_chat_completion, start_time=0, end_time=0
     )
-    span = trace(MyCall(span_type="llm"), response, parent=Trace(name="test"))
+    span = trace(
+        MyCall(span_type="llm"), response, OpenAITool, parent=Trace(name="test")
+    )
     assert span.name == "MyCall"
     assert span.kind == "LLM"
     assert span.status_code == "SUCCESS"
@@ -161,7 +192,9 @@ def test_trace_response_tool(
         start_time=0,
         end_time=0,
     )
-    span = trace(MyCall(span_type="tool"), response, parent=Trace(name="test"))
+    span = trace(
+        MyCall(span_type="tool"), response, OpenAITool, parent=Trace(name="test")
+    )
     assert span.name == "MyCall"
     assert span.kind == "TOOL"
     assert span.status_code == "SUCCESS"
@@ -206,7 +239,7 @@ def test_trace_error():
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.openai.wandb.trace",
+    "mirascope.wandb.trace",
 )
 def test_extract_with_trace(
     mock_trace: MagicMock,
@@ -224,7 +257,10 @@ def test_extract_with_trace(
         end_time=0,
     )
 
-    class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
+    class MyExtractor(
+        OpenAIExtractor[fixture_my_openai_tool_schema],  # type: ignore
+        WandbExtractorMixin[fixture_my_openai_tool_schema],  # type: ignore
+    ):  # type: ignore
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
         prompt_template = "test"
         api_key = "test"
@@ -242,7 +278,7 @@ def test_extract_with_trace(
     "mirascope.openai.extractors.OpenAIExtractor.extract",
 )
 @patch(
-    "mirascope.openai.wandb.trace_error",
+    "mirascope.wandb.trace_error",
 )
 def test_extract_with_trace_error(
     mock_trace_error: MagicMock,
@@ -253,7 +289,10 @@ def test_extract_with_trace_error(
     mock_extract.side_effect = Exception("Test error")
     mock_trace_error.return_value = Trace(name="testtrace")
 
-    class MyExtractor(WandbOpenAIExtractor[fixture_my_openai_tool_schema]):  # type: ignore
+    class MyExtractor(
+        OpenAIExtractor[fixture_my_openai_tool_schema],  # type: ignore
+        WandbExtractorMixin[fixture_my_openai_tool_schema],  # type: ignore
+    ):  # type: ignore
         extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
         prompt_template = "test"
         api_key = "test"
