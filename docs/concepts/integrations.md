@@ -24,7 +24,7 @@ Now, every call to `call`, `call_async`, `stream`, and `stream_async` will be ex
 
 ## Weights & Biases
 
-If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered -  [`WandbCallMixin`](../api/openai/wandb.md#mirascope.wandb.WandbCallMixin) is a mixin with creation methods that internally call W&B’s `Trace()` function so you can easily log your runs. For standard responses, you can use `call_with_trace()`, and for extractions, you can use [`WandbExtractorMixin`](../api/openai/wandb.md#mirascope.wandb.WandbExtractorMixin)'s `extract_with_trace` method. These mixins are agnostic to the LLM provider, so you can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`.
+If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered -  [`WandbCallMixin`](../api/wandb.md#mirascope.wandb.WandbCallMixin) is a mixin with creation methods that internally call W&B’s `Trace()` function so you can easily log your runs. For standard responses, you can use `call_with_trace()`, and for extractions, you can use [`WandbExtractorMixin`](../api/wandb.md#mirascope.wandb.WandbExtractorMixin)'s `extract_with_trace` method. These mixins are agnostic to the LLM provider, so you can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`.
 
 ### Generating Content with a W&B Trace
 

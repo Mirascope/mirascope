@@ -111,6 +111,8 @@ nav:
       - anthropic:
           - "api/anthropic/index.md"
           - calls: "api/anthropic/calls.md"
+          - extractors: "api/anthropic/extractors.md"
+          - tools: "api/anthropic/tools.md"
           - types: "api/anthropic/types.md"
       - base:
           - "api/base/index.md"
@@ -134,10 +136,17 @@ nav:
           - extractors: "api/gemini/extractors.md"
           - tools: "api/gemini/tools.md"
           - types: "api/gemini/types.md"
+      - mistral:
+          - "api/mistral/index.md"
+          - calls: "api/mistral/calls.md"
+          - extractors: "api/mistral/extractors.md"
+          - tools: "api/mistral/tools.md"
+          - types: "api/mistral/types.md"
       - openai:
           - "api/openai/index.md"
           - calls: "api/openai/calls.md"
           - extractors: "api/openai/extractors.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
-          - wandb: "api/openai/wandb.md"
+      - wandb:
+          - "api/wandb.md"

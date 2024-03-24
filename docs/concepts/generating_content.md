@@ -8,7 +8,7 @@ Now that you have your prompt, you can combine it with a model call to generate 
 
 ## OpenAICall
 
-[`OpenAICall`](../api/openai/calls.md#mirascope.openai.calls.OpenAICall) extends [`BasePrompt`](../api/base/prompt.md#mirascope.base.prompts.BasePrompt) and [`BaseCall`](../api/base/calls.md#mirascope.base.calls.BaseCall) to support interacting with the OpenAI API.
+[`OpenAICall`](../api/openai/calls.md#mirascope.openai.calls.OpenAICall) extends [`BasePrompt`](../api/base/prompts.md#mirascope.base.prompts.BasePrompt) and [`BaseCall`](../api/base/calls.md#mirascope.base.calls.BaseCall) to support interacting with the OpenAI API.
 
 ### Call
 
