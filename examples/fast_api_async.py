@@ -24,6 +24,8 @@ class BookRecommender(OpenAIExtractor[Book]):
     extract_schema: Type[Book] = Book
     prompt_template = "Please recommend a {genre} book."
 
+    genre: str
+
 
 @app.post("/")
 async def root(book_recommender: BookRecommender) -> Book:
