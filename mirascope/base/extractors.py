@@ -101,6 +101,8 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         class TempCall(call_type):  # type: ignore
             prompt_template = self.prompt_template
 
+            base_url = call_type.base_url
+            api_key = call_type.api_key
             call_params = call_type.call_params
 
             model_config = ConfigDict(extra="allow")
