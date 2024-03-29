@@ -2,7 +2,7 @@
 import weave
 
 from mirascope.openai import OpenAICall
-from mirascope.weave import with_weave
+from mirascope.wandb.weave import with_weave
 
 
 @with_weave
