@@ -51,6 +51,13 @@ mkdocs-material = "^9.1.18"
 mkdocstrings = "^0.22.0"
 mkdocstrings-python = "^1.1.2"
 
+[tool.poetry.group.examples.dependencies]
+fastapi = "^0.109.0"
+uvicorn = { extras = ["standard"], version = "^0.27.0" }
+pydantic-settings = "^2.1.0"
+sqlalchemy = "^2.0.25"
+psycopg2 = "^2.9.9"
+
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
 
