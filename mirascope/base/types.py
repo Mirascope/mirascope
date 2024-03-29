@@ -8,14 +8,13 @@ from typing import (
     Generic,
     Literal,
     Optional,
-    ParamSpec,
     Type,
     TypeVar,
     Union,
 )
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import Required, TypedDict
+from typing_extensions import ParamSpec, Required, TypedDict
 
 from .tools import BaseTool
 from .utils import convert_function_to_tool
