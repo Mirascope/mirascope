@@ -3,7 +3,7 @@ from typing import Type, TypeVar, overload
 
 import weave
 
-from mirascope.base import BaseCall, BaseExtractor
+from ..base import BaseCall, BaseExtractor
 
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
 BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
