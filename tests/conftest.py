@@ -14,7 +14,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel, Field
 
-from mirascope.base import tool_fn
+from mirascope.base.utils import tool_fn
 from mirascope.openai import OpenAITool
 
 
