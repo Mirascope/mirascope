@@ -23,17 +23,19 @@ openai = "^1.6.0"
 docstring-parser = "^0.15"
 
 # A list of optional dependencies that are required for certain features
-wandb = { version = "^0.15.4", optional = true }
+wandb = { version = "^0.16.4", optional = true }
+weave = { version = "^0.44.0", optional = true }
 google-generativeai = { version = "^0.4.0", optional = true }
 anthropic = { version = "^0.19.1", optional = true }
 mistralai = { version = "^0.1.6", optional = true }
 
 [tool.poetry.extras]
 wandb = ["wandb"]
+weave = ["weave"]
 gemini = ["google-generativeai"]
 anthropic = ["anthropic"]
 mistral = ["mistralai"]
-all = ["wandb", "google-generativeai", "anthropic", "mistralai"]
+all = ["wandb", "weave", "google-generativeai", "anthropic", "mistralai"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -48,23 +50,6 @@ mkdocs = "^1.4.3"
 mkdocs-material = "^9.1.18"
 mkdocstrings = "^0.22.0"
 mkdocstrings-python = "^1.1.2"
-
-[tool.poetry.group.cookbook.dependencies]
-fastapi = "^0.109.0"
-numpy = "^1.26.3"
-pandas = "^2.2.0"
-pandas-stubs = "^2.1.4.231227"
-tiktoken = "^0.5.2"
-pinecone-client = "^3.0.1"
-uvicorn = { extras = ["standard"], version = "^0.27.0" }
-python-dotenv = "^1.0.1"
-pydantic-settings = "^2.1.0"
-sqlalchemy = "^2.0.25"
-psycopg2 = "^2.9.9"
-langsmith = "^0.1.10"
-langchain-core = "^0.1.27"
-langchain-openai = "^0.0.8"
-wandb = "^0.15.4"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
@@ -129,6 +114,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "mistralai"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "weave"
 ignore_missing_imports = true
 
 [build-system]

@@ -19,4 +19,7 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import wandb
 
+with suppress(ImportError):
+    from . import weave
+
 __version__ = importlib.metadata.version("mirascope")

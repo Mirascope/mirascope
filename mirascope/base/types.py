@@ -8,6 +8,7 @@ from typing import (
     Generic,
     Literal,
     Optional,
+    ParamSpec,
     Type,
     TypeVar,
     Union,
@@ -86,12 +87,16 @@ Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage]
 ResponseT = TypeVar("ResponseT", bound=Any)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
+P = ParamSpec("P")
+R = TypeVar("R")
+
 
 class BaseCallParams(BaseModel, Generic[BaseToolT]):
     """The parameters with which to make a call."""
 
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
+    weave: Optional[Callable[[Callable[P, R]], Callable[P, R]]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -101,7 +106,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
-        extra_exclude = {"tools"}
+        extra_exclude = {"tools", "weave"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
