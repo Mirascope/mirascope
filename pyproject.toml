@@ -57,6 +57,8 @@ uvicorn = { extras = ["standard"], version = "^0.27.0" }
 pydantic-settings = "^2.1.0"
 sqlalchemy = "^2.0.25"
 psycopg2 = "^2.9.9"
+pandas = "^2.2.0"
+pandas-stubs = "^2.1.4.231227"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
