@@ -11,13 +11,15 @@ BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
 
 
 @overload
-def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]: ...  # pragma: no cover
+def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_weave(
     cls: Type[BaseExtractorT],
-) -> Type[BaseExtractorT]: ...  # pragma: no cover
+) -> Type[BaseExtractorT]:
+    ...  # pragma: no cover
 
 
 def with_weave(cls):
@@ -35,11 +37,10 @@ def with_weave(cls):
     if hasattr(cls, "stream_async"):
         setattr(cls, "stream_async", weave.op()(cls.stream_async))
 
-    # BUG https://github.com/wandb/weave/issues/1408 prevents extract + weave working
-    # if hasattr(cls, "extract"):
-    #     setattr(cls, "extract", weave.op()(cls.extract))
-    # if hasattr(cls, "extract_async"):
-    #     setattr(cls, "extract_async", weave.op()(cls.extract_async))
+    if hasattr(cls, "extract"):
+        setattr(cls, "extract", weave.op()(cls.extract))
+    if hasattr(cls, "extract_async"):
+        setattr(cls, "extract_async", weave.op()(cls.extract_async))
 
     cls.call_params.weave = weave.op()
     return cls
