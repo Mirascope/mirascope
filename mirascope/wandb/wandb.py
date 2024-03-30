@@ -19,7 +19,7 @@ from typing import (
 from pydantic import BaseModel
 from wandb.sdk.data_types.trace_tree import Trace
 
-from .base import (
+from ..base import (
     BaseCallResponse,
     BasePrompt,
     BaseTool,

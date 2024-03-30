@@ -10,14 +10,14 @@ from wandb.sdk.data_types.trace_tree import Trace
 from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
-from mirascope.wandb import (
+from mirascope.wandb.wandb import (
     WandbCallMixin,
     WandbExtractorMixin,
     trace,
     trace_error,
 )
 
-from .conftest import MyOpenAITool
+from ..conftest import MyOpenAITool
 
 
 class MyCall(OpenAICall, WandbCallMixin[OpenAICallResponse]):
@@ -47,7 +47,7 @@ def test_init_invalid_span_type():
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace",
+    "mirascope.wandb.wandb.trace",
 )
 def test_call_with_trace(
     mock_trace: MagicMock, mock_call: MagicMock, fixture_chat_completion: ChatCompletion
@@ -72,7 +72,7 @@ def test_call_with_trace(
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace",
+    "mirascope.wandb.wandb.trace",
 )
 def test_call_with_trace_with_tools(
     mock_trace: MagicMock,
@@ -100,7 +100,7 @@ def test_call_with_trace_with_tools(
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace_error",
+    "mirascope.wandb.wandb.trace_error",
 )
 def test_call_with_trace_error(mock_trace_error: MagicMock, mock_call: MagicMock):
     """Test `create` method with `Trace` for error."""
@@ -122,7 +122,7 @@ def test_call_with_trace_error(mock_trace_error: MagicMock, mock_call: MagicMock
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace",
+    "mirascope.wandb.wandb.trace",
 )
 def test_call_with_trace_no_parent(
     mock_trace: MagicMock, mock_call: MagicMock, mock_add: MagicMock
@@ -141,7 +141,7 @@ def test_call_with_trace_no_parent(
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace_error",
+    "mirascope.wandb.wandb.trace_error",
 )
 def test_call_with_trace_no_parent_error(
     mock_trace_error: MagicMock, mock_call: MagicMock, mock_add: MagicMock
@@ -239,7 +239,7 @@ def test_trace_error():
     "mirascope.openai.calls.OpenAICall.call",
 )
 @patch(
-    "mirascope.wandb.trace",
+    "mirascope.wandb.wandb.trace",
 )
 def test_extract_with_trace(
     mock_trace: MagicMock,
@@ -278,7 +278,7 @@ def test_extract_with_trace(
     "mirascope.openai.extractors.OpenAIExtractor.extract",
 )
 @patch(
-    "mirascope.wandb.trace_error",
+    "mirascope.wandb.wandb.trace_error",
 )
 def test_extract_with_trace_error(
     mock_trace_error: MagicMock,
