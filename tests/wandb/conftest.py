@@ -100,7 +100,7 @@ class MyOpenAICall(OpenAICall, WandbCallMixin[OpenAICallResponse]):
 
 
 @pytest.fixture()
-def fixture_my_openai_call() -> Type[MyOpenAICall]:
+def fixture_my_openai_call() -> Type[WandbCallMixin]:
     """Returns a `MyCall` class."""
     return MyOpenAICall
 
@@ -110,7 +110,7 @@ class MyOpenAICallWithTools(MyOpenAICall):
 
 
 @pytest.fixture()
-def fixture_my_openai_call_with_tools() -> Type[MyOpenAICallWithTools]:
+def fixture_my_openai_call_with_tools() -> Type[WandbCallMixin]:
     """Returns a `MyCallWithTools` class."""
     return MyOpenAICallWithTools
 

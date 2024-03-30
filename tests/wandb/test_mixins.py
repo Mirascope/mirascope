@@ -1,5 +1,5 @@
 """Tests for the wandb.openai module."""
-from typing import Type
+from typing import Literal, Type
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -11,25 +11,27 @@ from mirascope.openai import OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
 from mirascope.wandb.mixins import (
+    WandbCallMixin,
     WandbExtractorMixin,
-    _WandbBaseCall,
     trace,
     trace_error,
 )
 
 
 @pytest.mark.parametrize("span_type", ["tool", "llm"])
-def test__init(span_type: str, fixture_my_openai_call: _WandbBaseCall):
+def test__init(
+    span_type: Literal["tool", "llm"], fixture_my_openai_call: Type[WandbCallMixin]
+):
     """Test initialization."""
     call = fixture_my_openai_call(span_type=span_type)
     assert call.span_type == span_type
     assert call.call_params.model == "gpt-3.5-turbo-0125"
 
 
-def test_init_invalid_span_type(fixture_my_openai_call: _WandbBaseCall):
+def test_init_invalid_span_type(fixture_my_openai_call: Type[WandbCallMixin]):
     """Test initialization with invalid span type."""
     with pytest.raises(ValueError):
-        fixture_my_openai_call(span_type="invalid")
+        fixture_my_openai_call(span_type="invalid")  # type: ignore
 
 
 @patch(
@@ -41,7 +43,7 @@ def test_init_invalid_span_type(fixture_my_openai_call: _WandbBaseCall):
 def test_call_with_trace(
     mock_trace: MagicMock,
     mock_call: MagicMock,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
     fixture_chat_completion: ChatCompletion,
 ):
     """Test `call` method with `Trace`."""
@@ -69,7 +71,7 @@ def test_call_with_trace(
 def test_call_with_trace_with_tools(
     mock_trace: MagicMock,
     mock_call: MagicMock,
-    fixture_my_openai_call_with_tools: _WandbBaseCall,
+    fixture_my_openai_call_with_tools: Type[WandbCallMixin],
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_with_tools: ChatCompletion,
 ):
@@ -99,7 +101,7 @@ def test_call_with_trace_with_tools(
 def test_call_with_trace_error(
     mock_trace_error: MagicMock,
     mock_call: MagicMock,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
 ):
     """Test `create` method with `Trace` for error."""
     mock_call.side_effect = Exception("Test error")
@@ -126,7 +128,7 @@ def test_call_with_trace_no_parent(
     mock_trace: MagicMock,
     mock_call: MagicMock,
     mock_add: MagicMock,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
 ):
     """Test `create` method with `Trace` with no parent."""
     fixture_my_openai_call(span_type="llm").call_with_trace()
@@ -148,7 +150,7 @@ def test_call_with_trace_no_parent_error(
     mock_trace_error: MagicMock,
     mock_call: MagicMock,
     mock_add: MagicMock,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
 ):
     """Test `call_with_trace` method with no parent and thrown error."""
     mock_call.side_effect = Exception("Test error")
@@ -165,7 +167,7 @@ def test_call_with_trace_no_parent_error(
 def test_trace_response(
     mock_Trace: MagicMock,
     fixture_chat_completion: ChatCompletion,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
 ):
     """Tests `_trace` method with `OpenAIChatCompletion`."""
     response = OpenAICallResponse(
@@ -193,7 +195,7 @@ def test_trace_response(
 )
 def test_trace_response_tool(
     mock_Trace: MagicMock,
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
     fixture_chat_completion_with_tools: ChatCompletion,
     fixture_my_openai_tool: Type[OpenAITool],
 ):
@@ -236,7 +238,7 @@ def test_trace_response_tool(
 
 
 def test_trace_error(
-    fixture_my_openai_call: _WandbBaseCall,
+    fixture_my_openai_call: Type[WandbCallMixin],
 ):
     """Test `trace_error` method."""
     error = Exception("Test error")
