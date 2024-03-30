@@ -1,10 +1,11 @@
 """A class for extracting structured information using Mistral chat models."""
 import logging
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import MistralCall
 from .tools import MistralTool
+from .types import MistralCallParams
 
 logger = logging.getLogger("mirascope")
 
@@ -41,6 +42,8 @@ class MistralExtractor(BaseExtractor[MistralCall, MistralTool, T], Generic[T]):
     # > title='Prepare the budget report' priority='high' due_date='next Monday'
     ```
     '''
+
+    call_params: ClassVar[MistralCallParams] = MistralCallParams()
 
     def extract(self, retries: int = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Mistral call response.
