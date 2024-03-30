@@ -17,7 +17,7 @@ from mirascope.wandb.mixins import (
     trace_error,
 )
 
-from ..conftest import MyOpenAITool
+from .conftest import MyOpenAITool
 
 
 class MyCall(OpenAICall, WandbCallMixin[OpenAICallResponse]):
