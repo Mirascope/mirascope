@@ -59,8 +59,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
+        if self.call_params.weave is not None:
+            chat = self.call_params.weave(client.chat)  # pragma: no cover
+        else:
+            chat = client.chat
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = client.chat(messages=self.messages(), **kwargs)
+        completion = chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
             response=completion,
             tool_types=tool_types,
@@ -87,8 +91,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
+        if self.call_params.weave is not None:
+            chat = self.call_params.weave(client.chat)  # pragma: no cover
+        else:
+            chat = client.chat
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = await client.chat(messages=self.messages(), **kwargs)
+        completion = await chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
             response=completion,
             tool_types=tool_types,

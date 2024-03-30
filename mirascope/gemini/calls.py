@@ -80,8 +80,14 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        if self.call_params.weave is not None:
+            generate_content = self.call_params.weave(
+                gemini_pro_model.generate_content
+            )  # pragma: no cover
+        else:
+            generate_content = gemini_pro_model.generate_content
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = gemini_pro_model.generate_content(
+        response = generate_content(
             self.messages(),
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
@@ -107,8 +113,14 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        if self.call_params.weave is not None:
+            generate_content_async = self.call_params.weave(
+                gemini_pro_model.generate_content_async
+            )  # pragma: no cover
+        else:
+            generate_content_async = gemini_pro_model.generate_content_async
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = await gemini_pro_model.generate_content_async(
+        response = await generate_content_async(
             self.messages(),
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,

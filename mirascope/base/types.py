@@ -85,6 +85,7 @@ Message = Union[SystemMessage, UserMessage, AssistantMessage, ToolMessage]
 
 ResponseT = TypeVar("ResponseT", bound=Any)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+T = TypeVar("T")
 
 
 class BaseCallParams(BaseModel, Generic[BaseToolT]):
@@ -92,6 +93,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
 
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
+    weave: Optional[Callable[[T], T]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -101,7 +103,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
-        extra_exclude = {"tools"}
+        extra_exclude = {"tools", "weave"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value

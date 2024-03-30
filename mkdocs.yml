@@ -149,4 +149,6 @@ nav:
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
       - wandb:
-          - "api/wandb.md"
+          - "api/wandb/index.md"
+          - wandb: "api/wandb/wandb.md"
+          - weave: "api/wandb/weave.md"

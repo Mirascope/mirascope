@@ -27,5 +27,5 @@ class TaskExtractor(OpenAIExtractor[TaskDetails]):
 task = "Submit quarterly report by next Friday. Task is high priority."
 task_details = TaskExtractor(task=task).extract()
 assert isinstance(task_details, TaskDetails)
-print(TaskDetails)
+print(task_details)
 # > description='Submit quarterly report' due_date='next Friday' priority='high'
