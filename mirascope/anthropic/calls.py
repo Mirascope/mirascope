@@ -16,7 +16,9 @@ from .types import (
 )
 
 
-class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, Any]):
+class AnthropicCall(
+    BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, AnthropicTool]
+):
     """A base class for calling Anthropic's Claude models.
 
     Example:
@@ -59,8 +61,12 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
+        if self.call_params.weave is not None:
+            create = self.call_params.weave(client.messages.create)  # pragma: no cover
+        else:
+            create = client.messages.create
         start_time = datetime.datetime.now().timestamp() * 1000
-        message = client.messages.create(
+        message = create(
             messages=messages,
             stream=False,
             **kwargs,
@@ -86,8 +92,12 @@ class AnthropicCall(BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, 
         client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
+        if self.call_params.weave is not None:
+            create = self.call_params.weave(client.messages.create)  # pragma: no cover
+        else:
+            create = client.messages.create
         start_time = datetime.datetime.now().timestamp() * 1000
-        message = await client.messages.create(
+        message = await create(
             messages=messages,
             stream=False,
             **kwargs,
