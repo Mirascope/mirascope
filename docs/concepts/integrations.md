@@ -6,7 +6,7 @@ If you want to seamlessly use Weights & Biases’ logging functionality, we’ve
 
 ### Weave
 
-Mirascope seamlessly integrates with Weave with just a few lines of code. You can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`. Simply add the `with_weave` decorator to your class and the `call`, `call_async`, `stream`, `stream_async`, `extract`, and `extract_async` methods will be automatically logged to the Weave project you initialize.
+Mirascope seamlessly integrates with Weave with just a few lines of code. You can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`. Simply add the [`with_weave`](../api/wandb/weave.md#mirascope.wandb.weave.with_weave) decorator to your class and the `call`, `call_async`, `stream`, `stream_async`, `extract`, and `extract_async` methods will be automatically logged to the Weave project you initialize.
 
 The below examples show how to use the `with_weave` decorator to automatically log your runs to Weave. We've highlighted the lines that we've added to the original example to demonstrate how easy it is to use Weave with Mirascope.
 
@@ -72,7 +72,7 @@ print(task_details)
 
 ### Trace
 
-[`WandbCallMixin`](../api/wandb.md#mirascope.wandb.WandbCallMixin) is a mixin with creation methods that internally call W&B’s `Trace()` function so you can easily log your runs. For standard responses, you can use `call_with_trace()`, and for extractions, you can use [`WandbExtractorMixin`](../api/wandb.md#mirascope.wandb.WandbExtractorMixin)'s `extract_with_trace` method. These mixins are agnostic to the LLM provider, so you can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`.
+[`WandbCallMixin`](../api/wandb/wandb.md#mirascope.wandb.wandb.WandbCallMixin) is a mixin with creation methods that internally call W&B’s `Trace()` function so you can easily log your runs. For standard responses, you can use `call_with_trace()`, and for extractions, you can use [`WandbExtractorMixin`](../api/wandb/wandb.md#mirascope.wandb.wandb.WandbExtractorMixin)'s `extract_with_trace` method. These mixins are agnostic to the LLM provider, so you can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`.
 
 #### Generating Content with a W&B Trace
 
