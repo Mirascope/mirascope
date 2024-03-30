@@ -37,7 +37,7 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
     """
 
     max_tokens: int = 1000
-    model: str = "claude-3-sonnet-20240229"
+    model: str = "claude-3-haiku-20240307"
     metadata: Optional[Metadata] = None
     stop_sequences: Optional[list[str]] = None
     system: Optional[str] = None

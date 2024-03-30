@@ -1,7 +1,10 @@
 """Types for interacting with Google's Gemini models using Mirascope."""
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional, TypeVar, Union
 
-from google.generativeai.types import GenerateContentResponse  # type: ignore
+from google.generativeai.types import (  # type: ignore
+    AsyncGenerateContentResponse,
+    GenerateContentResponse,
+)
 
 from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseTool
 from .tools import GeminiTool
@@ -41,7 +44,11 @@ class GeminiCallParams(BaseCallParams[GeminiTool]):
     request_options: Optional[dict[str, Any]] = None
 
 
-class GeminiCallResponse(BaseCallResponse[GenerateContentResponse, GeminiTool]):
+class GeminiCallResponse(
+    BaseCallResponse[
+        Union[GenerateContentResponse, AsyncGenerateContentResponse], GeminiTool
+    ]
+):
     """Convenience wrapper around Gemini's `GenerateContentResponse`.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via

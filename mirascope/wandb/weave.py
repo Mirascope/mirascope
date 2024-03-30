@@ -1,4 +1,5 @@
 """Integration with Weave from Weights & Biases"""
+
 from typing import Type, TypeVar, overload
 
 import weave
@@ -10,13 +11,13 @@ BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
 
 
 @overload
-def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]:
-    ...  # pragma: no cover
+def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]: ...  # pragma: no cover
 
 
 @overload
-def with_weave(cls: Type[BaseExtractorT]) -> Type[BaseExtractorT]:
-    ...  # pragma: no cover
+def with_weave(
+    cls: Type[BaseExtractorT],
+) -> Type[BaseExtractorT]: ...  # pragma: no cover
 
 
 def with_weave(cls):
