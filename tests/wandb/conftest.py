@@ -15,7 +15,13 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel, Field
 
 from mirascope.base import tool_fn
-from mirascope.openai import OpenAITool
+from mirascope.openai import (
+    OpenAICall,
+    OpenAICallParams,
+    OpenAICallResponse,
+    OpenAITool,
+)
+from mirascope.wandb.mixins import WandbCallMixin
 
 
 @pytest.fixture()
@@ -86,6 +92,27 @@ class MyOpenAITool(OpenAITool):
 
     param: str = Field(..., description="A test parameter.")
     optional: int = 0
+
+
+class MyOpenAICall(OpenAICall, WandbCallMixin[OpenAICallResponse]):
+    prompt_template = "test"
+    api_key = "test"
+
+
+@pytest.fixture()
+def fixture_my_openai_call() -> Type[MyOpenAICall]:
+    """Returns a `MyCall` class."""
+    return MyOpenAICall
+
+
+class MyOpenAICallWithTools(MyOpenAICall):
+    call_params = OpenAICallParams(tools=[MyOpenAITool])
+
+
+@pytest.fixture()
+def fixture_my_openai_call_with_tools() -> Type[MyOpenAICallWithTools]:
+    """Returns a `MyCallWithTools` class."""
+    return MyOpenAICallWithTools
 
 
 @pytest.fixture()
