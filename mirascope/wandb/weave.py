@@ -23,7 +23,31 @@ def with_weave(
 
 
 def with_weave(cls):
-    """Wraps `BaseCall` and `BaseExtractor` functions to automatically use weave."""
+    """Wraps `BaseCall` and `BaseExtractor` functions to automatically use weave.
+
+    Example:
+
+    ```python
+    import weave
+
+    from mirascope.openai import OpenAICall
+    from mirascope.wandb import with_weave
+
+    weave.init("my-project")
+
+
+    @with_weave
+    class BookRecommender(OpenAICall):
+        prompt_template = "Please recommend some {genre} books"
+
+        genre: str
+
+
+    recommender = BookRecommender(genre="fantasy")
+    response = recommender.call()  # this will automatically get logged with weave
+    print(response.content)
+    ```
+    """
     if hasattr(cls, "call"):
         setattr(cls, "call", weave.op()(cls.call))
     if hasattr(cls, "call_async"):
