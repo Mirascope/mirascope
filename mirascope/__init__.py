@@ -17,6 +17,6 @@ with suppress(ImportError):
     from . import mistral
 
 with suppress(ImportError):
-    from .wandb import wandb
+    from .wandb import wandb2
 
 __version__ = importlib.metadata.version("mirascope")
