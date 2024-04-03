@@ -99,6 +99,8 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     ```
     """
 
+    response_format: Optional[ResponseFormat] = None
+
     @property
     def choices(self) -> list[Choice]:
         """Returns the array of chat completion choices."""
@@ -131,17 +133,22 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls:
+        if not self.tool_types:
             return None
 
-        if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
-            raise RuntimeError(
-                "Finish reason was not `tool_calls` or `function_call`, indicating no "
-                "or failed tool use. This is likely due to a limit on output tokens "
-                "that is too low. Note that this could also indicate no tool is beind "
-                "called, so we recommend that you check the output of the call to "
-                "confirm."
-            )
+        if self.response_format != {"type": "json_object"}:
+            if not self.tool_calls:
+                return None
+
+            if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
+                raise RuntimeError(
+                    "Finish reason was not `tool_calls` or `function_call`, indicating "
+                    "no or failed tool use. This is likely due to a limit on output "
+                    "tokens that is too low. Note that this could also indicate no "
+                    "tool is beind called, so we recommend that you check the output "
+                    "of the call to confirm. "
+                    f"Finish Reason: {self.choices[0].finish_reason}"
+                )
 
         extracted_tools = []
         for tool_call in self.tool_calls:
@@ -159,23 +166,9 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls or len(self.tool_calls) == 0:
-            return None
-
-        if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
-            raise RuntimeError(
-                "Finish reason was not `tool_calls` or `function_call`, indicating no "
-                "or failed tool use. This is likely due to a limit on output tokens "
-                "that is too low. Note that this could also indicate no tool is beind "
-                "called, so we recommend that you check the output of the call to "
-                "confirm."
-            )
-
-        tool_call = self.tool_calls[0]
-        for tool_type in self.tool_types:
-            if self.tool_calls[0].function.name == tool_type.__name__:
-                return tool_type.from_tool_call(tool_call)
-
+        tools = self.tools
+        if tools:
+            return tools[0]
         return None
 
     def dump(self) -> dict[str, Any]:
@@ -216,6 +209,8 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
     #  3
     #  .
     """
+
+    response_format: Optional[ResponseFormat] = None
 
     @property
     def choices(self) -> list[ChunkChoice]:

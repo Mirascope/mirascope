@@ -102,7 +102,9 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
                 "Generation stopped before `</function_calls>` stop sequence. "
                 "This is likely due to a limit on output tokens that is too low. "
                 "Note that this could also indicate no tool is beind called, so we "
-                "recommend that you check the output of the call to confirm."
+                "recommend that you check the output of the call to confirm. "
+                f"Stop Reason: {self.response.stop_reason} "
+                f"Stop Sequence: {self.response.stop_sequence}"
             )
 
         try:

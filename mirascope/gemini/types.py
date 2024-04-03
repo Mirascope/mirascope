@@ -86,6 +86,7 @@ class GeminiCallResponse(
                 "This is likely due to a limit on output tokens that is too low. "
                 "Note that this could also indicate no tool is beind called, so we "
                 "recommend that you check the output of the call to confirm."
+                f"Finish Reason: {self.response.candidates[0].finish_reason}"
             )
 
         tool_calls = [
@@ -108,22 +109,9 @@ class GeminiCallResponse(
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        if self.tool_types is None:
-            return None
-
-        if self.response.candidates[0].finish_reason != 1:  # STOP = 1
-            raise RuntimeError(
-                "Generation stopped before the stop sequence. "
-                "This is likely due to a limit on output tokens that is too low. "
-                "Note that this could also indicate no tool is beind called, so we "
-                "recommend that you check the output of the call to confirm."
-            )
-
-        tool_call = self.response.candidates[0].content.parts[0].function_call
-        for tool_type in self.tool_types:
-            if tool_call.name == tool_type.__name__:
-                return tool_type.from_tool_call(tool_call)
-
+        tools = self.tools
+        if tools:
+            return tools[0]
         return None
 
     @property

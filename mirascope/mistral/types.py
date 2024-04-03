@@ -104,12 +104,13 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         if not self.tool_types or not self.tool_calls or len(self.tool_calls) == 0:
             return None
 
-        if self.choices[0].finish_reason != "tool_call":
+        if self.choices[0].finish_reason != "tool_calls":
             raise RuntimeError(
                 "Finish reason was not `tool_call`, indicating no or failed tool use."
                 "This is likely due to a limit on output tokens that is too low. "
                 "Note that this could also indicate no tool is beind called, so we "
-                "recommend that you check the output of the call to confirm."
+                "recommend that you check the output of the call to confirm. "
+                f"Finish Reason: {self.choices[0].finish_reason}"
             )
 
         extracted_tools = []
@@ -128,22 +129,9 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls or len(self.tool_calls) == 0:
-            return None
-
-        if self.choices[0].finish_reason != "tool_call":
-            raise RuntimeError(
-                "Finish reason was not `tool_call`, indicating no or failed tool use."
-                "This is likely due to a limit on output tokens that is too low. "
-                "Note that this could also indicate no tool is beind called, so we "
-                "recommend that you check the output of the call to confirm."
-            )
-
-        tool_call = self.tool_calls[0]
-        for tool_type in self.tool_types:
-            if self.tool_calls[0].function.name == tool_type.__name__:
-                return tool_type.from_tool_call(tool_call)
-
+        tools = self.tools
+        if tools:
+            return tools[0]
         return None
 
     def dump(self) -> dict[str, Any]:
