@@ -102,7 +102,9 @@ def test_openai_call_call_with_tools_json_mode(
         stream=False,
     )
     assert response.tool_types == [fixture_my_openai_tool]
-    assert response.tool.model_dump() == fixture_my_openai_tool_instance.model_dump()
+    tool = response.tool
+    assert tool is not None
+    assert tool.model_dump() == fixture_my_openai_tool_instance.model_dump()
 
 
 @patch(
