@@ -26,6 +26,17 @@ from mirascope.openai.types import OpenAICallParams
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_tools_json_mode(
+    fixture_chat_completion: ChatCompletion,
+) -> ChatCompletion:
+    """Returns a chat completion with a JSON mode tool call."""
+    fixture_chat_completion.choices[
+        0
+    ].message.content = '{\n  "param": "param",\n  "optional": 0}'
+    return fixture_chat_completion
+
+
+@pytest.fixture()
 def fixture_my_schema() -> Type[BaseModel]:
     """Returns a `MySchema` class type."""
 

@@ -15,6 +15,7 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaToolCall
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
+from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import ConfigDict
 
@@ -149,6 +150,20 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                     "of the call to confirm. "
                     f"Finish Reason: {self.choices[0].finish_reason}"
                 )
+        else:
+            # Note: we only handle single tool calls in JSON mode.
+            tool_type = self.tool_types[0]
+            return [
+                tool_type.from_tool_call(
+                    ChatCompletionMessageToolCall(
+                        id="id",
+                        function=Function(
+                            name=tool_type.__name__, arguments=self.content
+                        ),
+                        type="function",
+                    )
+                )
+            ]
 
         extracted_tools = []
         for tool_call in self.tool_calls:

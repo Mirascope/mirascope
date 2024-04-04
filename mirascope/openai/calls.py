@@ -1,6 +1,7 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
-from typing import Any, AsyncGenerator, ClassVar, Generator
+import json
+from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import (
@@ -15,6 +16,19 @@ from ..base import BaseCall
 from ..enums import MessageRole
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
+
+JSON_MODE_CONTENT = """
+Extract a valid JSON object instance from to content using the following schema:
+
+{schema}
+""".strip()
+
+
+def _json_mode_content(tool_type: Type[OpenAITool]) -> str:
+    """Returns the formatted `JSON_MODE_CONTENT` with the given tool type."""
+    return JSON_MODE_CONTENT.format(
+        schema=json.dumps(tool_type.model_json_schema(), indent=2)
+    )
 
 
 class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool]):
@@ -68,13 +82,14 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(kwargs, OpenAITool)
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
+        messages = self._maybe_update_messages(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
-            messages=self.messages(),
+            messages=messages,
             stream=False,
             **kwargs,
         )
@@ -105,9 +120,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
+        messages = self._maybe_update_messages(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
-            messages=self.messages(),
+            messages=messages,
             stream=False,
             **kwargs,
         )
@@ -138,8 +154,9 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
+        messages = self._maybe_update_messages(self.messages(), tool_types)
         stream = client.chat.completions.create(
-            messages=self.messages(),
+            messages=messages,
             stream=True,
             **kwargs,
         )
@@ -172,8 +189,9 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
+        messages = self._maybe_update_messages(self.messages(), tool_types)
         stream = await client.chat.completions.create(
-            messages=self.messages(),
+            messages=messages,
             stream=True,
             **kwargs,
         )
@@ -185,3 +203,31 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 self.call_params.response_format
             )
             yield openai_call_response_chunk
+
+    ############################## PRIVATE METHODS ###################################
+
+    def _setup_openai_kwargs(
+        self,
+        kwargs: dict[str, Any],
+    ) -> tuple[
+        dict[str, Any],
+        Optional[list[Type[OpenAITool]]],
+    ]:
+        """Overrides the `BaseCall._setup` for Anthropic specific setup."""
+        kwargs, tool_types = self._setup(kwargs, OpenAITool)
+        if self.call_params.response_format == {"type": "json_object"} and tool_types:
+            kwargs.pop("tools")
+        return kwargs, tool_types
+
+    def _maybe_update_messages(
+        self,
+        messages: list[ChatCompletionMessageParam],
+        tool_types: Optional[list[type[OpenAITool]]],
+    ) -> list[ChatCompletionMessageParam]:
+        if self.call_params.response_format == {"type": "json_object"} and tool_types:
+            messages.append(
+                ChatCompletionUserMessageParam(
+                    role="user", content=_json_mode_content(tool_type=tool_types[0])
+                )
+            )
+        return messages

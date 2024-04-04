@@ -113,7 +113,7 @@ def fixture_chat_completion_response_with_tools_bad_stop_sequence(
     fixture_chat_completion_response_with_tools: ChatCompletionResponse,
 ) -> ChatCompletionResponse:
     """Returns a `ChatCompletionResponse` with tools."""
-    fixture_chat_completion_response_with_tools.choices[0].finish_reason = "stop"
+    fixture_chat_completion_response_with_tools.choices[0].finish_reason = "stop"  # type: ignore
     return fixture_chat_completion_response_with_tools
 
 

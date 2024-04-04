@@ -74,7 +74,7 @@ def fixture_generate_content_response_with_tools_bad_stop_sequence(
     fixture_generate_content_response_with_tools: GenerateContentResponse,
 ) -> GenerateContentResponse:
     """Returns a `GenerateContentResponse` with tools."""
-    fixture_generate_content_response_with_tools.candidates[0].finish_reason = 0
+    fixture_generate_content_response_with_tools.candidates[0].finish_reason = 0  # type: ignore
     return fixture_generate_content_response_with_tools
 
 
