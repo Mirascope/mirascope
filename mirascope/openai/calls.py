@@ -87,7 +87,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        messages = self._maybe_update_messages(self.messages(), tool_types)
+        messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
             messages=messages,
@@ -121,7 +121,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
-        messages = self._maybe_update_messages(self.messages(), tool_types)
+        messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
             messages=messages,
@@ -155,7 +155,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        messages = self._maybe_update_messages(self.messages(), tool_types)
+        messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = client.chat.completions.create(
             messages=messages,
             stream=True,
@@ -190,7 +190,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
-        messages = self._maybe_update_messages(self.messages(), tool_types)
+        messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = await client.chat.completions.create(
             messages=messages,
             stream=True,
@@ -223,7 +223,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             kwargs.pop("tools")
         return kwargs, tool_types
 
-    def _maybe_update_messages(
+    def _update_messages_if_json(
         self,
         messages: list[ChatCompletionMessageParam],
         tool_types: Optional[list[type[OpenAITool]]],
