@@ -1,6 +1,7 @@
 """Tests for the `mirascope.mistral.types` module."""
 from typing import Type
 
+import pytest
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,
     ChatCompletionStreamResponse,
@@ -62,6 +63,23 @@ def test_mistral_call_response_with_tools(
     assert response.tool == expected_tool
     assert len(tools) == 1
     assert tools[0] == expected_tool
+
+
+def test_mistral_call_response_with_tools_bad_stop_sequence(
+    fixture_chat_completion_response_with_tools_bad_stop_sequence: ChatCompletionResponse,
+    fixture_book_tool: Type[MistralTool],
+    fixture_expected_book_tool_instance: MistralTool,
+) -> None:
+    """Tests the `MistralCallResponse` class with a tool."""
+    response = MistralCallResponse(
+        response=fixture_chat_completion_response_with_tools_bad_stop_sequence,
+        tool_types=[fixture_book_tool],
+        start_time=0,
+        end_time=0,
+    )
+
+    with pytest.raises(RuntimeError):
+        response.tool
 
 
 def test_mistral_call_response_with_no_matching_tools(

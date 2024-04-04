@@ -26,6 +26,17 @@ from mirascope.openai.types import OpenAICallParams
 
 
 @pytest.fixture()
+def fixture_chat_completion_with_tools_json_mode(
+    fixture_chat_completion: ChatCompletion,
+) -> ChatCompletion:
+    """Returns a chat completion with a JSON mode tool call."""
+    fixture_chat_completion.choices[
+        0
+    ].message.content = '{\n  "param": "param",\n  "optional": 0}'
+    return fixture_chat_completion
+
+
+@pytest.fixture()
 def fixture_my_schema() -> Type[BaseModel]:
     """Returns a `MySchema` class type."""
 
@@ -59,13 +70,22 @@ def fixture_my_openai_tool_function() -> Callable:
 
 
 @pytest.fixture()
+def fixture_chat_compmletion_with_tools_bad_stop_sequence(
+    fixture_chat_completion_with_tools: ChatCompletion,
+) -> ChatCompletion:
+    """Returns a chat completion with tool calls but a bad stop sequence."""
+    fixture_chat_completion_with_tools.choices[0].finish_reason = "stop"
+    return fixture_chat_completion_with_tools
+
+
+@pytest.fixture()
 def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
     """Returns a chat completion with tool calls that don't match the tool's schema."""
     return ChatCompletion(
         id="test_id",
         choices=[
             Choice(
-                finish_reason="stop",
+                finish_reason="tool_calls",
                 index=0,
                 message=ChatCompletionMessage(
                     role="assistant",
@@ -275,7 +295,7 @@ def fixture_chat_completion_with_str_tool() -> ChatCompletion:
         id="test_id",
         choices=[
             Choice(
-                finish_reason="stop",
+                finish_reason="tool_calls",
                 index=0,
                 message=ChatCompletionMessage(
                     role="assistant",

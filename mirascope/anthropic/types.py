@@ -1,4 +1,5 @@
 """Type classes for interacting with Anthropics's Claude API."""
+
 import xml.etree.ElementTree as ET
 from typing import Any, Callable, Literal, Optional, Type, Union, cast
 
@@ -90,12 +91,21 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     @property
     def tools(self) -> Optional[list[AnthropicTool]]:
         """Returns the tools for the 0th choice message."""
+        if not self.tool_types:
+            return None
+
         if (
-            not self.tool_types
-            or self.response.stop_reason != "stop_sequence"
+            self.response.stop_reason != "stop_sequence"
             or self.response.stop_sequence != "</function_calls>"
         ):
-            return None
+            raise RuntimeError(
+                "Generation stopped before `</function_calls>` stop sequence. "
+                "This is likely due to a limit on output tokens that is too low. "
+                "Note that this could also indicate no tool is beind called, so we "
+                "recommend that you check the output of the call to confirm. "
+                f"Stop Reason: {self.response.stop_reason} "
+                f"Stop Sequence: {self.response.stop_sequence}"
+            )
 
         try:
             root_node = ET.fromstring(

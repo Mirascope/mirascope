@@ -131,3 +131,18 @@ def test_openai_chat_completion_chunk_with_tools(
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == ""
     assert openai_chat_completion_chunk.tool_calls == choices[0].delta.tool_calls
+
+
+def test_openai_chat_completion_tools_wrong_stop_sequence(
+    fixture_chat_compmletion_with_tools_bad_stop_sequence: ChatCompletion,
+    fixture_my_openai_tool: Type[OpenAITool],
+):
+    """Tests that `OpenAICallResponse` raises a ValidationError with a wrong stop sequence."""
+    response = OpenAICallResponse(
+        response=fixture_chat_compmletion_with_tools_bad_stop_sequence,
+        tool_types=[fixture_my_openai_tool],
+        start_time=0,
+        end_time=0,
+    )
+    with pytest.raises(RuntimeError):
+        response.tool

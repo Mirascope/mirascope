@@ -55,7 +55,7 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
         id="test_id",
         choices=[
             Choice(
-                finish_reason="stop",
+                finish_reason="tool_calls",
                 index=0,
                 message=ChatCompletionMessage(
                     role="assistant",

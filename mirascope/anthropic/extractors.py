@@ -14,6 +14,13 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
+EXTRACT_SYSTEM_MESSAGE = """
+OUTPUT ONLY FUNCTION CALLS WITHOUT ANY ADDITIONAL TEXT.
+You must wrap all invoke calls in the <function_calls> tag.
+ONLY EXTRACT ANSWERS THAT YOU ARE ABSOLUTELY 100% CERTAIN ARE CORRECT.
+""".strip()
+
+
 class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic[T]):
     '''A class for extracting structured information using Anthropic Claude models.
 
@@ -74,6 +81,7 @@ class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
+        kwargs["system"] = EXTRACT_SYSTEM_MESSAGE
         return self._extract(AnthropicCall, AnthropicTool, retries, **kwargs)
 
     async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
@@ -97,6 +105,7 @@ class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
+        kwargs["system"] = EXTRACT_SYSTEM_MESSAGE
         return await self._extract_async(
             AnthropicCall, AnthropicTool, retries, **kwargs
         )

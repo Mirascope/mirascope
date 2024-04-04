@@ -85,6 +85,15 @@ def fixture_anthropic_message_with_tools() -> Message:
 
 
 @pytest.fixture()
+def fixture_anthropic_message_with_tools_bad_stop_reason(
+    fixture_anthropic_message_with_tools: Message,
+) -> Message:
+    """Returns an Anthropic message with tools XML in the response"""
+    fixture_anthropic_message_with_tools.stop_reason = "max_tokens"
+    return fixture_anthropic_message_with_tools
+
+
+@pytest.fixture()
 def fixture_anthropic_message_chunk():
     """Returns an Anthropic message."""
     return ContentBlockDeltaEvent(

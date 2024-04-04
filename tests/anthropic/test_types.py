@@ -30,6 +30,21 @@ def test_anthropic_call_response(fixture_anthropic_message: Message):
     }
 
 
+def test_anthropic_call_response_with_tools_bad_stop_reason(
+    fixture_anthropic_message_with_tools_bad_stop_reason: Message,
+    fixture_anthropic_book_tool: Type[AnthropicTool],
+):
+    """Tests the `AnthropicCallResponse` class with a tool and bad stop reason."""
+    response = AnthropicCallResponse(
+        response=fixture_anthropic_message_with_tools_bad_stop_reason,
+        tool_types=[fixture_anthropic_book_tool],
+        start_time=0,
+        end_time=1,
+    )
+    with pytest.raises(RuntimeError):
+        response.tool
+
+
 def test_anthropic_call_response_no_tools_node(
     fixture_anthropic_book_tool: Type[AnthropicTool],
 ):

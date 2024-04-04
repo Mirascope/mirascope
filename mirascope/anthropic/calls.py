@@ -163,6 +163,8 @@ class AnthropicCall(
         kwargs, tool_types = self._setup(kwargs, AnthropicTool)
         messages = self.messages()
         system_message = ""
+        if "system" in kwargs and kwargs["system"] is not None:
+            system_message += kwargs.pop("system")
         if messages[0]["role"] == "system":
             system_message += messages.pop(0)["content"]
         if tool_types:

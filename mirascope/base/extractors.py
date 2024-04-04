@@ -1,4 +1,5 @@
 """A base abstract interface for extracting structured information using LLMs."""
+
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum

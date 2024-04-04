@@ -4,9 +4,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from openai import AsyncOpenAI, OpenAI
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionUserMessageParam,
+)
+from openai.types.chat.completion_create_params import ResponseFormat
 
-from mirascope.openai.calls import OpenAICall
+from mirascope.openai.calls import OpenAICall, _json_mode_content
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
     OpenAICallParams,
@@ -61,6 +66,46 @@ def test_openai_call_call_with_tools(
         stream=False,
     )
     assert response.tool_types == [fixture_my_openai_tool]
+
+
+@patch("openai.resources.chat.completions.Completions.create", new_callable=MagicMock)
+def test_openai_call_call_with_tools_json_mode(
+    mock_create: MagicMock,
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_instance: OpenAITool,
+    fixture_chat_completion_with_tools_json_mode: ChatCompletion,
+) -> None:
+    """Tests that tools are properly passed to the create call."""
+    mock_create.return_value = fixture_chat_completion_with_tools_json_mode
+
+    class CallWithTools(OpenAICall):
+        prompt_template = "test"
+
+        api_key = "test"
+        call_params = OpenAICallParams(
+            model="gpt-4",
+            tools=[fixture_my_openai_tool],
+            response_format=ResponseFormat(type="json_object"),
+        )
+
+    call_with_tools = CallWithTools()
+    response = call_with_tools.call()
+    mock_create.assert_called_once_with(
+        model="gpt-4",
+        messages=call_with_tools.messages()
+        + [
+            ChatCompletionUserMessageParam(
+                role="user",
+                content=_json_mode_content(tool_type=fixture_my_openai_tool),
+            )
+        ],
+        response_format=ResponseFormat(type="json_object"),
+        stream=False,
+    )
+    assert response.tool_types == [fixture_my_openai_tool]
+    tool = response.tool
+    assert tool is not None
+    assert tool.model_dump() == fixture_my_openai_tool_instance.model_dump()
 
 
 @patch(
