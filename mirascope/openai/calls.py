@@ -11,6 +11,7 @@ from openai.types.chat import (
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
+from openai.types.chat.completion_create_params import ResponseFormat
 
 from ..base import BaseCall
 from ..enums import MessageRole
@@ -215,7 +216,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
     ]:
         """Overrides the `BaseCall._setup` for Anthropic specific setup."""
         kwargs, tool_types = self._setup(kwargs, OpenAITool)
-        if self.call_params.response_format == {"type": "json_object"} and tool_types:
+        if (
+            self.call_params.response_format == ResponseFormat(type="json_object")
+            and tool_types
+        ):
             kwargs.pop("tools")
         return kwargs, tool_types
 
@@ -224,7 +228,10 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         messages: list[ChatCompletionMessageParam],
         tool_types: Optional[list[type[OpenAITool]]],
     ) -> list[ChatCompletionMessageParam]:
-        if self.call_params.response_format == {"type": "json_object"} and tool_types:
+        if (
+            self.call_params.response_format == ResponseFormat(type="json_object")
+            and tool_types
+        ):
             messages.append(
                 ChatCompletionUserMessageParam(
                     role="user", content=_json_mode_content(tool_type=tool_types[0])

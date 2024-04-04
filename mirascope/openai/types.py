@@ -137,7 +137,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if not self.tool_types:
             return None
 
-        if self.response_format != {"type": "json_object"}:
+        if self.response_format != ResponseFormat(type="json_object"):
             if not self.tool_calls:
                 return None
 

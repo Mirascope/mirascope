@@ -9,6 +9,7 @@ from openai.types.chat import (
     ChatCompletionChunk,
     ChatCompletionUserMessageParam,
 )
+from openai.types.chat.completion_create_params import ResponseFormat
 
 from mirascope.openai.calls import OpenAICall, _json_mode_content
 from mirascope.openai.tools import OpenAITool
@@ -84,7 +85,7 @@ def test_openai_call_call_with_tools_json_mode(
         call_params = OpenAICallParams(
             model="gpt-4",
             tools=[fixture_my_openai_tool],
-            response_format={"type": "json_object"},
+            response_format=ResponseFormat(type="json_object"),
         )
 
     call_with_tools = CallWithTools()
@@ -98,7 +99,7 @@ def test_openai_call_call_with_tools_json_mode(
                 content=_json_mode_content(tool_type=fixture_my_openai_tool),
             )
         ],
-        response_format={"type": "json_object"},
+        response_format=ResponseFormat(type="json_object"),
         stream=False,
     )
     assert response.tool_types == [fixture_my_openai_tool]
