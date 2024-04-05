@@ -17,9 +17,9 @@ class BookRecommender(OpenAICall):
 
 async def book_recommendation():
     """Asynchronously creates the response for a chat completion."""
-    stream = await BookRecommender(genre="fantasy").stream_async()
+    stream = BookRecommender(genre="fantasy").stream_async()
     async for chunk in stream:
-        print(chunk, end="")
+        print(chunk.content, end="")
 
 
 asyncio.run(book_recommendation())

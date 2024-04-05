@@ -94,14 +94,13 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             stream=False,
             **kwargs,
         )
-        openai_call_response = OpenAICallResponse(
+        return OpenAICallResponse(
             response=completion,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            response_format=self.call_params.response_format,
         )
-        openai_call_response.response_format = self.call_params.response_format
-        return openai_call_response
 
     async def call_async(self, **kwargs: Any) -> OpenAICallResponse:
         """Makes an asynchronous call to the model using this `OpenAICall`.
@@ -117,7 +116,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(kwargs, OpenAITool)
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
@@ -128,14 +127,13 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             stream=False,
             **kwargs,
         )
-        openai_call_response = OpenAICallResponse(
+        return OpenAICallResponse(
             response=completion,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            response_format=self.call_params.response_format,
         )
-        openai_call_response.response_format = self.call_params.response_format
-        return openai_call_response
 
     def stream(self, **kwargs: Any) -> Generator[OpenAICallResponseChunk, None, None]:
         """Streams the response for a call using this `OpenAICall`.
@@ -151,7 +149,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(kwargs, OpenAITool)
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -162,13 +160,11 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             **kwargs,
         )
         for chunk in stream:
-            openai_call_response_chunk = OpenAICallResponseChunk(
-                chunk=chunk, tool_types=tool_types
+            yield OpenAICallResponseChunk(
+                chunk=chunk,
+                tool_types=tool_types,
+                response_format=self.call_params.response_format,
             )
-            openai_call_response_chunk.response_format = (
-                self.call_params.response_format
-            )
-            yield openai_call_response_chunk
 
     async def stream_async(
         self, **kwargs: Any
@@ -186,7 +182,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        kwargs, tool_types = self._setup(kwargs, OpenAITool)
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
@@ -197,13 +193,11 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             **kwargs,
         )
         async for chunk in stream:
-            openai_call_response_chunk = OpenAICallResponseChunk(
-                chunk=chunk, tool_types=tool_types
+            yield OpenAICallResponseChunk(
+                chunk=chunk,
+                tool_types=tool_types,
+                response_format=self.call_params.response_format,
             )
-            openai_call_response_chunk.response_format = (
-                self.call_params.response_format
-            )
-            yield openai_call_response_chunk
 
     ############################## PRIVATE METHODS ###################################
 

@@ -11,10 +11,13 @@ with suppress(ImportError):
     from . import gemini
 
 with suppress(ImportError):
-    from . import openai
+    from . import groq
 
 with suppress(ImportError):
     from . import mistral
+
+with suppress(ImportError):
+    from . import openai
 
 with suppress(ImportError):
     from . import wandb

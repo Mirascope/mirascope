@@ -978,6 +978,25 @@ files = [
 colorama = ">=0.4"
 
 [[package]]
+name = "groq"
+version = "0.4.2"
+description = "The official Python library for the groq API"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "groq-0.4.2-py3-none-any.whl", hash = "sha256:5b2b472c64d9f35210e0487db465415d47162da3a114031ecbfc8843d26302a5"},
+    {file = "groq-0.4.2.tar.gz", hash = "sha256:42e8b0abd0f2b2da024b9a747d28960d62951a5364f078e1537c9fceeca8259d"},
+]
+
+[package.dependencies]
+anyio = ">=3.5.0,<5"
+distro = ">=1.7.0,<2"
+httpx = ">=0.23.0,<1"
+pydantic = ">=1.9.0,<3"
+sniffio = "*"
+typing-extensions = ">=4.7,<5"
+
+[[package]]
 name = "grpcio"
 version = "1.62.1"
 description = "HTTP/2-based RPC framework"
@@ -3841,9 +3860,10 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [extras]
-all = ["anthropic", "google-generativeai", "mistralai", "wandb", "weave"]
+all = ["anthropic", "google-generativeai", "groq", "mistralai", "wandb", "weave"]
 anthropic = ["anthropic"]
 gemini = ["google-generativeai"]
+groq = ["groq"]
 mistral = ["mistralai"]
 wandb = ["wandb"]
 weave = ["weave"]
@@ -3851,4 +3871,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "b7bf7762d1e518851250f9062ccc7b90c36e2fcd14f440b76c1f8908eff26423"
+content-hash = "155c533bf884601d2f4f38418246a34a093e9ef64a4102d78804d4a9092b9595"
