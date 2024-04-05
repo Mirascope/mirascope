@@ -160,12 +160,11 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             **kwargs,
         )
         for chunk in stream:
-            openai_call_response_chunk = OpenAICallResponseChunk(
+            yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )
-            yield openai_call_response_chunk
 
     async def stream_async(
         self, **kwargs: Any
@@ -194,12 +193,11 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             **kwargs,
         )
         async for chunk in stream:
-            openai_call_response_chunk = OpenAICallResponseChunk(
+            yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )
-            yield openai_call_response_chunk
 
     ############################## PRIVATE METHODS ###################################
 
