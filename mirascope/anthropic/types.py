@@ -127,7 +127,8 @@ class AnthropicCallResponse(
     @property
     def content(self) -> str:
         """Returns the string text of the 0th text block."""
-        return self.response.content[0].text
+        block = self.response.content[0]
+        return block.text if block.type == "text" else ""
 
     def dump(self) -> dict[str, Any]:
         """Dumps the response to a dictionary."""

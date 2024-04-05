@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Type, TypeVar
+from typing import Any, Callable, Type, TypeVar
 
 from anthropic.types.beta.tools import ToolParam, ToolUseBlock
 from pydantic import BaseModel
@@ -90,7 +90,7 @@ class AnthropicTool(BaseTool[ToolUseBlock]):
             ValidationError: if the tool call doesn't match the tool schema.
         """
         model_json = tool_call.input
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json["tool_call"] = tool_call.model_dump()  # type: ignore
         return cls.model_validate(model_json)
 
     @classmethod

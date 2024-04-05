@@ -61,7 +61,7 @@ def fixture_anthropic_message() -> Message:
 
 
 @pytest.fixture()
-def fixture_anthropic_message_with_tools() -> Message:
+def fixture_anthropic_message_with_tools() -> ToolsBetaMessage:
     """Returns an Anthropic message with tools XML in the response"""
     return ToolsBetaMessage(
         id="0",

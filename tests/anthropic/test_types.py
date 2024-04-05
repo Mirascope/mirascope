@@ -8,9 +8,7 @@ from anthropic.types import (
     ContentBlockStartEvent,
     ContentBlockStopEvent,
     Message,
-    Usage,
 )
-from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 
 from mirascope.anthropic.tools import AnthropicTool
 from mirascope.anthropic.types import AnthropicCallResponse, AnthropicCallResponseChunk

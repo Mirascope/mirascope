@@ -1,6 +1,4 @@
 """Tests for the `mirascope.gemini.tools` module."""
-import xml.etree.ElementTree as ET
-from textwrap import dedent
 from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field

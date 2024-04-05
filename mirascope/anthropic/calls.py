@@ -62,7 +62,7 @@ class AnthropicCall(
             client = self.call_params.wrapper(client)
         create = client.messages.create
         if tool_types:
-            create = client.beta.tools.messages.create
+            create = client.beta.tools.messages.create  # type: ignore
         if self.call_params.weave is not None:
             create = self.call_params.weave(create)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
@@ -94,7 +94,7 @@ class AnthropicCall(
             client = self.call_params.wrapper_async(client)
         create = client.messages.create
         if tool_types:
-            create = client.beta.tools.messages.create
+            create = client.beta.tools.messages.create  # type: ignore
         if self.call_params.weave is not None:
             create = self.call_params.weave(create)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
