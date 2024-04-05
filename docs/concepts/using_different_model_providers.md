@@ -4,10 +4,11 @@ Testing out various providers is a powerful way to boost the performance of your
 
 We currently support the following providers:
 
-- OpenAI
-- Anthropic
-- Gemini
-- Mistral
+- [OpenAI](https://platform.openai.com/docs/quickstart?context=python)
+- [Anthropic](https://docs.anthropic.com/claude/docs/quickstart-guide)
+- [Gemini](https://ai.google.dev/tutorials/get_started_web)
+- [Mistral](https://docs.mistral.ai/)
+- [Groq](https://console.groq.com/docs/quickstart)
 
 This also means that we support any providers that use these APIs.
 
@@ -20,7 +21,6 @@ This works for endpoints such as:
 - [Ollama](https://ollama.com/)
 - [Anyscale](https://www.anyscale.com/)
 - [Together](https://www.together.ai/)
-- [Groq](https://groq.com/)
 - and more…
 
 ```python
@@ -69,11 +69,11 @@ print(response.content)
 
 1. First install Mirascope’s integration with gemini if you haven’t already.
 
-```python
-pip install mirascope[gemini]
-```
+    ```python
+    pip install mirascope[gemini]
+    ```
 
-1. Swap out OpenAI with Gemini:
+2. Swap out OpenAI with Gemini:
     1. Replace `OpenAICall` and `OpenAICallParams` with `GeminiCall` and `GeminiCallParams` respectively 
     2. Configure your Gemini API Key
     3. Update `GeminiCallParams` with new model and other attributes
