@@ -191,7 +191,28 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
 class BaseChunkerParams(BaseModel):
     """The parameters with which to make a chunker."""
 
+    chunk_size: Optional[int] = None
+    chunk_overlap: Optional[int] = None
+    length_function: Optional[Callable[[str], int]] = None
+    keep_separator: bool = False
+    add_start_index: bool = False
+    strip_whitespace: bool = True
+
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    def kwargs(
+        self,
+        exclude: Optional[set[str]] = None,
+    ) -> dict[str, Any]:
+        """Returns all parameters for the embedder as a keyword arguments dictionary."""
+        extra_exclude = {"tools", "weave"}
+        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
+        kwargs = {
+            key: value
+            for key, value in self.model_dump(exclude=exclude).items()
+            if value is not None
+        }
+        return kwargs
 
 
 class BaseEmbeddingParams(BaseModel):

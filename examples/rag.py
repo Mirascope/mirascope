@@ -1,6 +1,8 @@
 import os
 import time
+import uuid
 
+from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
@@ -9,6 +11,8 @@ from langchain_text_splitters import CharacterTextSplitter
 from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.openai import OpenAIEmbedder
 from mirascope.openai.types import OpenAIEmbeddingParams
+
+load_dotenv(".env")
 
 home_dir = os.path.expanduser("~")
 raw_documents = TextLoader(f"{home_dir}/Desktop/sotu.txt").load()
@@ -87,7 +91,7 @@ with open(f"{home_dir}/Desktop/sotu.txt") as file:
     my_name = MyName()
     embeddings = my_name.embedder.create_embeddings(split_text)
     data = [embedding.data[0].embedding for embedding in embeddings]
-    ids = [f"{i}" for i, _ in enumerate(embeddings)]
+    ids = [str(uuid.uuid4()) for _ in embeddings]
     my_name.add_documents(embeddings=data, ids=ids)
 
     # QUERY
