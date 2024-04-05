@@ -1,5 +1,6 @@
 """Base modules for the Mirascope library."""
 from .calls import BaseCall
+from .embedders import BaseEmbedder
 from .extractors import BaseExtractor, ExtractedType, ExtractionType
 from .prompts import BasePrompt, tags
 from .tools import BaseTool, BaseType
@@ -7,6 +8,9 @@ from .types import (
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
+    BaseChunkerParams,
+    BaseEmbeddingParams,
+    BaseVectorStoreParams,
     Message,
 )
 from .utils import (
@@ -15,3 +19,5 @@ from .utils import (
     convert_function_to_tool,
     tool_fn,
 )
+from .vectorstores import BaseVectorStore
+from .chunkers import BaseChunker
