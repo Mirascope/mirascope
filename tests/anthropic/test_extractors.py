@@ -10,7 +10,7 @@ from mirascope.anthropic.tools import AnthropicTool
 
 
 @patch(
-    "anthropic.resources.messages.Messages.create",
+    "anthropic.resources.beta.tools.messages.Messages.create",
     new_callable=MagicMock,
 )
 def test_anthropic_extractor_extract_tool(
@@ -23,6 +23,7 @@ def test_anthropic_extractor_extract_tool(
 
     class TempExtractor(AnthropicExtractor[Type[AnthropicTool]]):
         extract_schema: Type[AnthropicTool] = fixture_anthropic_book_tool
+        prompt_template = "test"
 
     tool = TempExtractor().extract()
 
@@ -32,7 +33,7 @@ def test_anthropic_extractor_extract_tool(
 
 
 @patch(
-    "anthropic.resources.messages.AsyncMessages.create",
+    "anthropic.resources.beta.tools.messages.AsyncMessages.create",
     new_callable=AsyncMock,
 )
 @pytest.mark.asyncio
@@ -46,6 +47,7 @@ async def test_anthropic_extractor_extract_async_tool(
 
     class TempExtractor(AnthropicExtractor[Type[AnthropicTool]]):
         extract_schema: Type[AnthropicTool] = fixture_anthropic_book_tool
+        prompt_template = "test"
 
     tool = await TempExtractor().extract_async()
 

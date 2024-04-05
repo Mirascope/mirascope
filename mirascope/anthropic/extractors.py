@@ -15,9 +15,9 @@ T = TypeVar("T", bound=ExtractedType)
 
 
 EXTRACT_SYSTEM_MESSAGE = """
-OUTPUT ONLY FUNCTION CALLS WITHOUT ANY ADDITIONAL TEXT.
-You must wrap all invoke calls in the <function_calls> tag.
+OUTPUT ONLY TOOL CALLS.
 ONLY EXTRACT ANSWERS THAT YOU ARE ABSOLUTELY 100% CERTAIN ARE CORRECT.
+If asked to generate information, you may generate the tool call input.
 """.strip()
 
 

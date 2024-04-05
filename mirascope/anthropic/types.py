@@ -1,7 +1,5 @@
 """Type classes for interacting with Anthropics's Claude API."""
-
-import xml.etree.ElementTree as ET
-from typing import Any, Callable, Literal, Optional, Type, Union, cast
+from typing import Any, Callable, Literal, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic._types import Body, Headers, Query
@@ -11,6 +9,7 @@ from anthropic.types import (
     Message,
     MessageStreamEvent,
 )
+from anthropic.types.beta.tools import ToolsBetaMessage
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
@@ -66,7 +65,9 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
         return super().kwargs(tool_type, exclude)
 
 
-class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
+class AnthropicCallResponse(
+    BaseCallResponse[Union[Message, ToolsBetaMessage], AnthropicTool]
+):
     """Convenience wrapper around the Anthropic Claude API.
 
     When using Mirascope's convenience wrappers to interact with Anthropic models via
@@ -94,40 +95,22 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
         if not self.tool_types:
             return None
 
-        if (
-            self.response.stop_reason != "stop_sequence"
-            or self.response.stop_sequence != "</function_calls>"
-        ):
+        if self.response.stop_reason != "tool_use":
             raise RuntimeError(
-                "Generation stopped before `</function_calls>` stop sequence. "
+                "Generation stopped with stop reason that is not `tool_use`. "
                 "This is likely due to a limit on output tokens that is too low. "
                 "Note that this could also indicate no tool is beind called, so we "
                 "recommend that you check the output of the call to confirm. "
                 f"Stop Reason: {self.response.stop_reason} "
-                f"Stop Sequence: {self.response.stop_sequence}"
             )
-
-        try:
-            root_node = ET.fromstring(
-                f"<wrapper>{self.response.content}</function_calls></wrapper>"
-            )
-        except ET.ParseError as e:
-            raise ValueError("Unable to parse tools from response") from e
-
-        # There must be a <function_calls> tag since we successfully parsed the
-        # XML with the manually added </function_calls> tag.
-        tool_calls_node = cast(ET.Element, root_node.find("function_calls"))
 
         extracted_tools = []
-        for tool_call_node in tool_calls_node:
+        for tool_call in self.response.content:
+            if tool_call.type != "tool_use":
+                continue
             for tool_type in self.tool_types:
-                tool_name_node = tool_call_node.find("tool_name")
-                if (
-                    tool_name_node is not None
-                    and tool_name_node.text == tool_type.__name__
-                    and (parameters := tool_call_node.find("parameters"))
-                ):
-                    tool = tool_type.from_tool_call(parameters)
+                if tool_call.name == tool_type.__name__:
+                    tool = tool_type.from_tool_call(tool_call)
                     extracted_tools.append(tool)
                     break
 
@@ -135,7 +118,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
 
     @property
     def tool(self) -> Optional[AnthropicTool]:
-        """Returns the 0th tool for the 0th choice message."""
+        """Returns the 0th tool for the 0th choice text block."""
         tools = self.tools
         if tools:
             return tools[0]
@@ -143,7 +126,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
 
     @property
     def content(self) -> str:
-        """Returns the string content of the 0th message."""
+        """Returns the string text of the 0th text block."""
         return self.response.content[0].text
 
     def dump(self) -> dict[str, Any]:
