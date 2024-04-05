@@ -1,6 +1,5 @@
 """A module for calling Anthropic's Claude API."""
 import datetime
-from textwrap import dedent
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -61,10 +60,11 @@ class AnthropicCall(
         client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
+        create = client.messages.create
+        if tool_types:
+            create = client.beta.tools.messages.create  # type: ignore
         if self.call_params.weave is not None:
-            create = self.call_params.weave(client.messages.create)  # pragma: no cover
-        else:
-            create = client.messages.create
+            create = self.call_params.weave(create)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
             messages=messages,
@@ -92,10 +92,11 @@ class AnthropicCall(
         client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
+        create = client.messages.create
+        if tool_types:
+            create = client.beta.tools.messages.create  # type: ignore
         if self.call_params.weave is not None:
-            create = self.call_params.weave(client.messages.create)  # pragma: no cover
-        else:
-            create = client.messages.create
+            create = self.call_params.weave(create)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(
             messages=messages,
@@ -167,72 +168,6 @@ class AnthropicCall(
             system_message += kwargs.pop("system")
         if messages[0]["role"] == "system":
             system_message += messages.pop(0)["content"]
-        if tool_types:
-            tool_schemas = kwargs.pop("tools")
-            system_message += self._write_tools_system_message(tool_schemas)
-            kwargs["stop_sequences"] = ["</function_calls>"]
         if system_message:
             kwargs["system"] = system_message
         return messages, kwargs, tool_types
-
-    def _write_tools_system_message(self, tool_schemas: list[str]) -> str:
-        """Returns the Anthropic Tools System Message from their guide."""
-        return dedent(
-            """
-        In this environment you have access to a set of tools you can use to answer the user's question.
-
-        You may call them like this:
-        <function_calls>
-        <invoke>
-        <tool_name>$TOOL_NAME</tool_name>
-        <parameters>
-        <$PARAMETER_NAME>$PARAMETER_VALUE</$PARAMETER_NAME>
-        ...
-        </parameters>
-        </invoke>
-        ...
-        </function_calls>
-
-        Make sure to include all parameters in the tool schema when requested.
-        If you want to call multiple tools, you should put all of the tools inside of the <function_calls> tag as multiple <invoke> elements.
-
-        To output nested structured data, encode it as valid XML with tags and values. For example:
-
-        List[int]:
-        <parameterName>
-            <item>1</item>
-            <item>2</item>
-            <item>3</item>
-        </parameterName>
-
-        List[object]:
-        <parameterName>
-            <item>
-                <objectName>
-                    <objectValue>value</objectValue>
-                </objectName>
-            </item>
-        </parameterName>
-
-        Dictionary:
-        <parameterName>
-            <entry>
-                <key>key1</key>
-                <value>value1</value>
-            </entry>
-            <entry>
-                <key>key2</key>
-                <value>value2</value>
-            </entry>
-        </parameterName>
-
-        Remember, the above are just examples.
-        Make sure to properly nest by wrapping elements in lists with the <item> tag and dictionary elements with <entry> as necessary.
-        DO NOT FORGET THESE TAGS. Without these tags, we cannot properly parse the information you send.
-
-        Here are the tools available:
-        <tools>
-        {tool_schemas}
-        </tools>
-            """.format(tool_schemas=tool_schemas)
-        )

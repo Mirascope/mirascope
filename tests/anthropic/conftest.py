@@ -10,6 +10,7 @@ from anthropic.types import (
     TextDelta,
     Usage,
 )
+from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.tools import AnthropicTool
@@ -60,27 +61,24 @@ def fixture_anthropic_message() -> Message:
 
 
 @pytest.fixture()
-def fixture_anthropic_message_with_tools() -> Message:
+def fixture_anthropic_message_with_tools() -> ToolsBetaMessage:
     """Returns an Anthropic message with tools XML in the response"""
-    return Message(
+    return ToolsBetaMessage(
         id="0",
         content=[
-            ContentBlock(
-                text=(
-                    "To get the book information, I will use the BookTool tool:\n\n"
-                    "<function_calls>\n<invoke>\n<tool_name>BookTool</tool_name>\n"
-                    "<parameters>\n<title>The Name of the Wind</title>\n"
-                    "<author>Patrick Rothfuss</author>\n</parameters>\n</invoke>\n"
-                ),
-                type="text",
-            )
+            ContentBlock(type="text", text="test"),
+            ToolUseBlock(
+                id="test",
+                name="BookTool",
+                input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+                type="tool_use",
+            ),
         ],
         model="test",
         role="assistant",
         type="message",
         usage=Usage(input_tokens=0, output_tokens=0),
-        stop_reason="stop_sequence",
-        stop_sequence="</function_calls>",
+        stop_reason="tool_use",
     )
 
 
