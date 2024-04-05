@@ -20,7 +20,6 @@ from groq.types.chat.chat_completion import (
     ChoiceMessageToolCall,
     ChoiceMessageToolCallFunction,
 )
-from groq.types.chat.completion_create_params import Message
 
 from mirascope.groq.tools import GroqTool
 
