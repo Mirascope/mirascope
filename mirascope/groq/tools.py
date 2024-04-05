@@ -1,10 +1,10 @@
-"""Classes for using tools with Mistral Chat APIs"""
+"""Classes for using tools with Groq's Cloud API."""
 from __future__ import annotations
 
 import json
 from typing import Any, Callable, Type, TypeVar
 
-from mistralai.models.chat_completion import ToolCall
+from groq.types.chat.chat_completion import ChoiceMessageToolCall
 from pydantic import BaseModel
 
 from ..base import BaseTool, BaseType
@@ -17,19 +17,21 @@ from ..base.utils import (
 BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
-class MistralTool(BaseTool[ToolCall]):
-    '''A base class for easy use of tools with the Mistral client.
+class GroqTool(BaseTool[ChoiceMessageToolCall]):
+    '''A base class for easy use of tools with the Groq client.
 
-    `MistralTool` internally handles the logic that allows you to use tools with simple
-    calls such as `MistralCallResponse.tool` or `MistralTool.fn`, as seen in the 
-    examples below.
+    `GroqTool` internally handles the logic that allows you to use tools with simple
+    calls such as `GroqCallResponse.tool` or `GroqTool.fn`, as seen in the  examples
+    below.
     
     Example:
 
     ```python
     import os
 
-    from mirascope.mistral import MistralCall, MistralCallParams
+    from mirascope.groq import GroqCall, GroqCallParams
+
+    os.environ["GROQ_API_KEY"] = "YOUR_API_KEY"
 
 
     def animal_matcher(fav_food: str, fav_color: str) -> str:
@@ -45,7 +47,7 @@ class MistralTool(BaseTool[ToolCall]):
         return "Your favorite animal is the best one, a frog."
 
 
-    class AnimalMatcher(MistralCall):
+    class AnimalMatcher(GroqCall):
         prompt_template = """\\
             Tell me my favorite animal if my favorite food is {food} and my
             favorite color is {color}.
@@ -54,9 +56,8 @@ class MistralTool(BaseTool[ToolCall]):
         food: str
         color: str
 
-        api_key = os.getenv("MISTRAL_API_KEY")
-        call_params = MistralCallParams(
-            model="mistral-large-latest", tools=[animal_matcher]
+        call_params = GroqCallParams(
+            model="mixtral-8x7b-32768", tools=[animal_matcher]
         )
 
 
@@ -71,11 +72,11 @@ class MistralTool(BaseTool[ToolCall]):
 
     @classmethod
     def tool_schema(cls) -> dict[str, Any]:
-        """Constructs a tool schema for use with the Mistral Chat client.
+        """Constructs a tool schema for use with the Groq Cloud API.
 
-        A Mirascope `MistralTool` is deconstructed into a JSON schema, and relevant keys
-        are renamed to match the Mistral API schema used to make functional/tool calls
-        in Mistral API.
+        A Mirascope `GroqTool` is deconstructed into a JSON schema, and relevant keys
+        are renamed to match the schema used to make functional/tool calls in the Groq
+        Cloud API.
 
         Returns:
             The constructed tool schema.
@@ -84,14 +85,14 @@ class MistralTool(BaseTool[ToolCall]):
         return {"type": "function", "function": fn}
 
     @classmethod
-    def from_tool_call(cls, tool_call: ToolCall) -> MistralTool:
+    def from_tool_call(cls, tool_call: ChoiceMessageToolCall) -> GroqTool:
         """Extracts an instance of the tool constructed from a tool call response.
 
-        Given `ToolCall` from a Mistral chat completion response, takes its function
-        arguments and creates a `MistralTool` instance from it.
+        Given `ToolCall` from a Groq chat completion response, takes its function
+        arguments and creates a `GroqTool` instance from it.
 
         Args:
-            tool_call: The Mistral `ToolCall` to extract the tool from.
+            tool_call: The Groq `ToolCall` to extract the tool from.
 
         Returns:
             An instance of the tool constructed from the tool call.
@@ -100,7 +101,9 @@ class MistralTool(BaseTool[ToolCall]):
             ValueError: if the tool call doesn't match the tool schema.
         """
         try:
-            model_json = json.loads(tool_call.function.arguments)
+            model_json = {}
+            if tool_call.function and tool_call.function.arguments:
+                model_json = json.loads(tool_call.function.arguments)
         except json.JSONDecodeError as e:
             raise ValueError() from e
 
@@ -108,16 +111,16 @@ class MistralTool(BaseTool[ToolCall]):
         return cls.model_validate(model_json)
 
     @classmethod
-    def from_model(cls, model: Type[BaseModel]) -> Type[MistralTool]:
-        """Constructs a `MistralTool` type from a `BaseModel` type."""
-        return convert_base_model_to_tool(model, MistralTool)
+    def from_model(cls, model: Type[BaseModel]) -> Type[GroqTool]:
+        """Constructs a `GroqTool` type from a `BaseModel` type."""
+        return convert_base_model_to_tool(model, GroqTool)
 
     @classmethod
-    def from_fn(cls, fn: Callable) -> Type[MistralTool]:
-        """Constructs a `MistralTool` type from a function."""
-        return convert_function_to_tool(fn, MistralTool)
+    def from_fn(cls, fn: Callable) -> Type[GroqTool]:
+        """Constructs a `GroqTool` type from a function."""
+        return convert_function_to_tool(fn, GroqTool)
 
     @classmethod
-    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[MistralTool]:
-        """Constructs a `MistralTool` type from a `BaseType` type."""
-        return convert_base_type_to_tool(base_type, MistralTool)
+    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[GroqTool]:
+        """Constructs a `GroqTool` type from a `BaseType` type."""
+        return convert_base_type_to_tool(base_type, GroqTool)

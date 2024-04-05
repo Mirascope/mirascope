@@ -292,21 +292,26 @@ def root(book_recommender: BookRecommender) -> Book:
 
 ## Roadmap
 
-- [x]  Extracting structured information using LLMs
-- [ ]  Streaming extraction for tools (function calling)
-- [ ]  Additional template parsing for more complex messages
-    - [x]  Chat History
-    - [ ]  Additional Metadata
-    - [ ]  Vision
+- [X]  Extracting structured information using LLMs
 - [ ]  RAG
 - [ ]  Agents
+- [ ]  Streaming extraction for tools (function calling)
+- [ ]  Additional template parsing for more complex messages
+    - [X]  Chat History
+    - [ ]  Better Tool Messages
+    - [ ]  Additional Metadata
+    - [ ]  Vision
 - [ ]  Support for more LLM providers:
-    - [X]  Anthropic Function Calling
-    - [ ]  Mistral
+    - [X]  Anthropic
+    - [X]  Gemini
+    - [X]  Mistral
+    - [X]  Groq
+    - [ ]  Cohere
     - [ ]  HuggingFace
 - [ ]  Integrations
-    - [x]  Weights & Biases
-    - [x]  LangChain / LangSmith
+    - [X]  Weights & Biases Trace
+    - [X]  Weave by Weights & Biases
+    - [X]  LangChain / LangSmith
     - [ ]  … tell us what you’d like integrated!
 - [ ]  Evaluating prompts and their quality by version
 
