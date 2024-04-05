@@ -236,12 +236,12 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, GroqTool]
     @property
     def choice(self) -> ChunkChoice:
         """Returns the 0th choice."""
-        return self.chunk.choices[0]
+        return self.choices[0]
 
     @property
     def delta(self) -> ChoiceDelta:
         """Returns the delta for the 0th choice."""
-        return self.choices[0].delta
+        return self.choice.delta
 
     @property
     def content(self) -> str:
