@@ -3588,13 +3588,13 @@ anyio = ">=3.0.0"
 
 [[package]]
 name = "weave"
-version = "0.46.0"
+version = "0.50.0"
 description = "A toolkit for building composable interactive data driven applications."
 optional = true
 python-versions = ">=3.9"
 files = [
-    {file = "weave-0.46.0-py3-none-any.whl", hash = "sha256:ac5b5d3033975be0a7262a2b58ffe248bda1bcf9ac04e6e6e229b734e876b615"},
-    {file = "weave-0.46.0.tar.gz", hash = "sha256:61c55aa91aa67ebc83232a84c8dbc75ba85b91ee1d6f1a2e976dd93d9723f03f"},
+    {file = "weave-0.50.0-py3-none-any.whl", hash = "sha256:c847a4089ff27489f1e354d02790be4ef756177ea418fd720a0770c6b93736aa"},
+    {file = "weave-0.50.0.tar.gz", hash = "sha256:13c984a1d2c74217f4bf43c07d3d2a47b8129d3284e9459ffe5cf5fd3ec026c7"},
 ]
 
 [package.dependencies]
@@ -3851,4 +3851,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "4d763f4bc8b4f46bef655cb28ca4e103f8c18f96e012f69886db737203b8c69b"
+content-hash = "b7bf7762d1e518851250f9062ccc7b90c36e2fcd14f440b76c1f8908eff26423"
