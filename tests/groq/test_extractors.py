@@ -22,6 +22,7 @@ def test_groq_extractor_extract_tool(
 
     class TempExtractor(GroqExtractor[Type[GroqTool]]):
         extract_schema: Type[GroqTool] = fixture_book_tool
+        api_key = "test"
 
     tool = TempExtractor().extract()
 
@@ -44,6 +45,7 @@ async def test_groq_extractor_extract_async_tool(
 
     class TempExtractor(GroqExtractor[Type[GroqTool]]):
         extract_schema: Type[GroqTool] = fixture_book_tool
+        api_key = "test"
 
     tool = await TempExtractor().extract_async()
 

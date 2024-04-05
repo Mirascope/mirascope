@@ -27,6 +27,7 @@ def test_groq_call_call(
 
     class TempCall(GroqCall):
         prompt_template = ""
+        api_key = "test"
 
     response = TempCall().call()
     assert isinstance(response, GroqCallResponse)
@@ -45,6 +46,7 @@ def test_groq_call_call_with_tools(
 
     class TempCall(GroqCall):
         prompt_template = ""
+        api_key = "test"
 
         call_params = GroqCallParams(tools=[fixture_book_tool])
 
@@ -65,6 +67,7 @@ async def test_groq_call_call_async(
 
     class TempCall(GroqCall):
         prompt_template = ""
+        api_key = "test"
 
     response = await TempCall().call_async()
     assert isinstance(response, GroqCallResponse)
@@ -81,6 +84,7 @@ def test_groq_call_stream(
 
     class TempCall(GroqCall):
         prompt_template = ""
+        api_key = "test"
 
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 2
@@ -100,6 +104,7 @@ async def test_groq_call_stream_async(
 
     class TempCall(GroqCall):
         prompt_template = ""
+        api_key = "test"
 
     mock_create.return_value.__aiter__.return_value = (
         fixture_chat_completion_stream_response
