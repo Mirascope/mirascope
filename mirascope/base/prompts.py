@@ -93,7 +93,17 @@ class BasePrompt(BaseModel):
             if var is not None
         ]
         return dedented_template.format(
-            **{var: getattr(self, var) for var in template_vars}
+            **{
+                var: "\n".join(
+                    [
+                        value if isinstance(value, str) else str(value)
+                        for value in getattr(self, var)
+                    ]
+                )
+                if isinstance(getattr(self, var), list)
+                else getattr(self, var)
+                for var in template_vars
+            }
         )
 
     def _parse_messages(self, roles: list[str]) -> list[Message]:
