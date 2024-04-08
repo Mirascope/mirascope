@@ -1,20 +1,22 @@
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Optional, Union
 
-from chromadb import Client, Collection, QueryResult
+from chromadb import Client, Collection
 from chromadb import Settings as ClientSettings
+from chromadb.api import ClientAPI
 
+from mirascope.base.types import Document
 from mirascope.base.vectorstores import BaseVectorStore
-from mirascope.chroma.types import ChromaParams
+from mirascope.chroma.types import ChromaParams, ChromaQueryResult
 
 
 class ChromaVectorStore(BaseVectorStore):
     """A vectorstore for Chroma."""
 
-    vectorstore_params: ClassVar[ChromaParams] = ChromaParams(get_or_create=True)
+    vectorstore_params = ChromaParams(get_or_create=True)
     client_settings: ClassVar[ClientSettings] = ClientSettings()
 
     @property
-    def _client(self) -> Client:
+    def _client(self) -> ClientAPI:
         return Client(self.client_settings)
 
     @property
@@ -24,12 +26,39 @@ class ChromaVectorStore(BaseVectorStore):
             vectorstore_params = self.vectorstore_params.model_copy(
                 update={"name": self.index_name}
             )
-        return self._client.create_collection(**vectorstore_params.kwargs())
+        return self._client.create_collection(
+            **vectorstore_params.kwargs(),
+            embedding_function=self.embedder,  # type: ignore
+        )
 
-    def get_documents(self, **kwargs: Any) -> list[QueryResult]:
+    def _get_query_results(
+        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
+    ) -> ChromaQueryResult:
         """Queries the vectorstore for closest match"""
-        return self._index.query(**kwargs)
+        if text:
+            if isinstance(text, str):
+                text = [text]
+            query_result = self._index.query(query_texts=text, **kwargs)
+        else:
+            query_result = self._index.query(**kwargs)
 
-    def add_documents(self, **kwargs: Any) -> dict:
+        return ChromaQueryResult.model_validate(query_result)
+
+    def get_documents(
+        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
+    ) -> Optional[list[list[str]]]:
+        return self._get_query_results(text, **kwargs).documents
+
+    def add_documents(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
-        return self._index.upsert(**kwargs)
+        documents: list[Document]
+        if isinstance(text, str):
+            documents = self.chunker.chunk(text)
+        else:
+            documents = text
+
+        return self._index.upsert(
+            ids=[document.id for document in documents],
+            documents=[document.text for document in documents],
+            **kwargs,
+        )

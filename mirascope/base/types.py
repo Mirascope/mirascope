@@ -254,3 +254,11 @@ class BaseVectorStoreParams(BaseModel):
             if value is not None
         }
         return kwargs
+
+
+class Document(BaseModel):
+    """A document to be added to the vectorstore."""
+
+    id: str
+    text: str
+    metadata: Optional[dict[str, Any]] = None
