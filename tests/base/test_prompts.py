@@ -132,3 +132,21 @@ def test_base_prompt_messages_injection_wrong_type() -> None:
 
     with pytest.raises(ValueError):
         MyPrompt(bad=1).messages()
+
+
+def test_base_prompt_list_attribute() -> None:
+    """Tests that attributes of type list are properly injected."""
+
+    class MyPrompt(BasePrompt):
+        prompt_template = """
+        {my_list}
+        {my_list_of_lists}
+        """
+
+        my_list: list[str]
+        my_list_of_lists: list[list[str]]
+
+    my_list = ["my", "list"]
+    my_list_of_lists = [my_list, my_list]
+    prompt = MyPrompt(my_list=my_list, my_list_of_lists=my_list_of_lists)
+    assert str(prompt) == "my\nlist\nmy\nlist\n\nmy\nlist"
