@@ -147,6 +147,6 @@ def test_base_prompt_list_attribute() -> None:
         my_list_of_lists: list[list[str]]
 
     my_list = ["my", "list"]
-    my_list_of_lists = [my_list]
+    my_list_of_lists = [my_list, my_list]
     prompt = MyPrompt(my_list=my_list, my_list_of_lists=my_list_of_lists)
-    assert str(prompt) == "my\nlist\n['my', 'list']"
+    assert str(prompt) == "my\nlist\nmy\nlist\n\nmy\nlist"
