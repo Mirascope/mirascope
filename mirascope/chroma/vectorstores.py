@@ -4,7 +4,8 @@ from chromadb import Client, Collection
 from chromadb import Settings as ClientSettings
 from chromadb.api import ClientAPI
 
-from mirascope.base.types import Document
+from mirascope.base.chunkers import BaseChunker, Document
+from mirascope.base.utils import convert_function_to_chunker
 from mirascope.base.vectorstores import BaseVectorStore
 from mirascope.chroma.types import ChromaParams, ChromaQueryResult
 
@@ -14,6 +15,32 @@ class ChromaVectorStore(BaseVectorStore):
 
     vectorstore_params = ChromaParams(get_or_create=True)
     client_settings: ClassVar[ClientSettings] = ClientSettings()
+
+    def get_documents(
+        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
+    ) -> Optional[list[list[str]]]:
+        return self._get_query_results(text, **kwargs).documents
+
+    def add_documents(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
+        """Takes unstructured data and upserts into vectorstore"""
+        documents: list[Document]
+        if isinstance(text, str):
+            if isinstance(self.chunker, BaseChunker):
+                chunker = self.chunker
+            else:
+                chunker = convert_function_to_chunker(self.chunker, BaseChunker)()
+
+            documents = chunker.chunk(text)
+        else:
+            documents = text
+
+        return self._index.upsert(
+            ids=[document.id for document in documents],
+            documents=[document.text for document in documents],
+            **kwargs,
+        )
+
+    ############################## PRIVATE METHODS ###################################
 
     @property
     def _client(self) -> ClientAPI:
@@ -43,22 +70,3 @@ class ChromaVectorStore(BaseVectorStore):
             query_result = self._index.query(**kwargs)
 
         return ChromaQueryResult.model_validate(query_result)
-
-    def get_documents(
-        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
-    ) -> Optional[list[list[str]]]:
-        return self._get_query_results(text, **kwargs).documents
-
-    def add_documents(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
-        """Takes unstructured data and upserts into vectorstore"""
-        documents: list[Document]
-        if isinstance(text, str):
-            documents = self.chunker.chunk(text)
-        else:
-            documents = text
-
-        return self._index.upsert(
-            ids=[document.id for document in documents],
-            documents=[document.text for document in documents],
-            **kwargs,
-        )

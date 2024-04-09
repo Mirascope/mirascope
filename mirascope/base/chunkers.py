@@ -1,15 +1,23 @@
 import uuid
-from typing import Callable, ClassVar
+from typing import Any, Callable, Optional
 
 from pydantic import BaseModel
 
-from mirascope.base.types import BaseChunkerParams, Document
+
+class Document(BaseModel):
+    """A document to be added to the vectorstore."""
+
+    id: str
+    text: str
+    metadata: Optional[dict[str, Any]] = None
 
 
-def base_chunker(text: str, params: BaseChunkerParams) -> list[Document]:
+def base_chunk_fn(
+    text: str,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 0,
+) -> list[Document]:
     chunks: list[Document] = []
-    chunk_size = params.chunk_size or 0
-    chunk_overlap = params.chunk_overlap or 0
     start: int = 0
     while start < len(text):
         end: int = min(start + chunk_size, len(text))
@@ -19,10 +27,7 @@ def base_chunker(text: str, params: BaseChunkerParams) -> list[Document]:
 
 
 class BaseChunker(BaseModel):
-    chunker_params: ClassVar[BaseChunkerParams] = BaseChunkerParams(
-        chunk_size=1000, chunk_overlap=0
-    )
-    chunk_fn: Callable[[str, BaseChunkerParams], list[Document]] = base_chunker
+    chunk_fn: Callable[[str], list[Document]] = base_chunk_fn
 
     def chunk(self, text: str) -> list[Document]:
-        return self.chunk_fn(text, self.chunker_params)
+        return self.chunk_fn(text)

@@ -188,50 +188,16 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         ...  # pragma: no cover
 
 
-class BaseChunkerParams(BaseModel):
-    """The parameters with which to make a chunker."""
-
-    chunk_size: Optional[int] = None
-    chunk_overlap: Optional[int] = None
-    length_function: Optional[Callable[[str], int]] = None
-    keep_separator: bool = False
-    add_start_index: bool = False
-    strip_whitespace: bool = True
-
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
-
-    def kwargs(
-        self,
-        exclude: Optional[set[str]] = None,
-    ) -> dict[str, Any]:
-        """Returns all parameters for the embedder as a keyword arguments dictionary."""
-        extra_exclude = {"tools", "weave"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
-        kwargs = {
-            key: value
-            for key, value in self.model_dump(exclude=exclude).items()
-            if value is not None
-        }
-        return kwargs
-
-
 class BaseEmbeddingParams(BaseModel):
     """The parameters with which to make an embedding."""
 
     model: str
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    def kwargs(
-        self,
-        exclude: Optional[set[str]] = None,
-    ) -> dict[str, Any]:
+    def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the embedder as a keyword arguments dictionary."""
-        extra_exclude = {"tools", "weave"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
-            key: value
-            for key, value in self.model_dump(exclude=exclude).items()
-            if value is not None
+            key: value for key, value in self.model_dump().items() if value is not None
         }
         return kwargs
 
@@ -241,24 +207,9 @@ class BaseVectorStoreParams(BaseModel):
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    def kwargs(
-        self,
-        exclude: Optional[set[str]] = None,
-    ) -> dict[str, Any]:
+    def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
-        extra_exclude = {"tools", "weave"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
-            key: value
-            for key, value in self.model_dump(exclude=exclude).items()
-            if value is not None
+            key: value for key, value in self.model_dump().items() if value is not None
         }
         return kwargs
-
-
-class Document(BaseModel):
-    """A document to be added to the vectorstore."""
-
-    id: str
-    text: str
-    metadata: Optional[dict[str, Any]] = None

@@ -1,20 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, Callable, ClassVar, Optional, Union
 
 from pydantic import BaseModel
 
-from mirascope.base.chunkers import BaseChunker
-from mirascope.base.embedders import BaseEmbedder
-from mirascope.openai.embedders import OpenAIEmbedder
-
-from .types import BaseVectorStoreParams, Document
+from .chunkers import BaseChunker, Document
+from .embedders import BaseEmbedder
+from .types import BaseVectorStoreParams
 
 
 class BaseVectorStore(BaseModel, ABC):
-    vectorstore_api_key: Optional[str] = None
+    api_key: ClassVar[Optional[str]] = None
     index_name: ClassVar[Optional[str]] = None
-    chunker: ClassVar[BaseChunker] = BaseChunker()
-    embedder: ClassVar[Optional[BaseEmbedder]] = OpenAIEmbedder()
+    chunker: Union[Callable, BaseChunker] = BaseChunker()
+    embedder: ClassVar[Optional[BaseEmbedder]] = BaseEmbedder
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
 
     @abstractmethod
