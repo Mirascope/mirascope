@@ -7,8 +7,10 @@ from inspect import isclass
 from typing import (
     Annotated,
     Any,
+    AsyncGenerator,
     Callable,
     ClassVar,
+    Generator,
     Generic,
     Literal,
     Optional,
@@ -20,8 +22,10 @@ from typing import (
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from ..partial import partial
 from .calls import BaseCall
 from .prompts import BasePrompt
+from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import BaseCallParams
 
@@ -30,6 +34,7 @@ logger = logging.getLogger("mirascope")
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+BaseToolStreamT = TypeVar("BaseToolStreamT", bound=BaseToolStream)
 ExtractionType = Union[Type[BaseType], Type[BaseModel], Callable]
 ExtractedType = Union[BaseType, BaseModelT, BaseToolT]
 ExtractedTypeT = TypeVar("ExtractedTypeT", bound=ExtractedType)
@@ -45,7 +50,9 @@ def _is_base_type(type_: Any) -> bool:
     )
 
 
-class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], ABC):
+class BaseExtractor(
+    BasePrompt, Generic[BaseCallT, BaseToolT, BaseToolStreamT, ExtractedTypeT], ABC
+):
     """The base abstract interface for extracting structured information using LLMs."""
 
     extract_schema: ExtractionType
@@ -66,6 +73,18 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         """Asynchronously extracts the `extraction_schema` from an LLM call."""
         ...  # pragma: no cover
 
+    # @abstractmethod
+    # def stream(self, retries: int = 0) -> Generator[ExtractedTypeT, None, None]:
+    #     """Streams extracted partial `extraction_schema` instances."""
+    #     ...  # pragma: no cove
+
+    # @abstractmethod
+    # async def stream_async(
+    #     self, retries: int = 0
+    # ) -> AsyncGenerator[ExtractedTypeT, None]:
+    #     """Asynchronously streams extracted partial `extraction_schema` instances."""
+    #     ...  # pragma: no cover
+
     ############################## PRIVATE METHODS ###################################
 
     def _extract(
@@ -83,6 +102,9 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         according to the context provided by the `BaseModel` schema.
 
         Args:
+            call_type: The type of call to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
             tool_type: The type of tool to use for extraction. This enables shared code
                 across various model providers that have slight variations but the same
                 internal interfaces.
@@ -113,16 +135,12 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
             **kwargs
         )
         try:
-            tool = response.tool
-            if tool is None:
+            extracted_schema = self._extract_schema(
+                response.tool, self.extract_schema, return_tool, response=response
+            )
+            if extracted_schema is None:
                 raise AttributeError("No tool found in the completion.")
-            if return_tool:
-                return tool
-            if _is_base_type(self.extract_schema):
-                return tool.value
-            model = self.extract_schema(**response.tool.model_dump())
-            model._response = response  # type: ignore
-            return model  # type: ignore
+            return extracted_schema
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
@@ -145,6 +163,9 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
         according to the context provided by the `BaseModel` schema.
 
         Args:
+            call_type: The type of call to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
             tool_type: The type of tool to use for extraction. This enables shared code
                 across various model providers that have slight variations but the same
                 internal interfaces.
@@ -175,16 +196,12 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
             **self.model_dump(exclude={"extract_schema"})
         ).call_async(**kwargs)
         try:
-            tool = response.tool
-            if tool is None:
+            extracted_schema = self._extract_schema(
+                response.tool, self.extract_schema, return_tool, response=response
+            )
+            if extracted_schema is None:
                 raise AttributeError("No tool found in the completion.")
-            if return_tool:
-                return tool
-            if _is_base_type(self.extract_schema):
-                return tool.value
-            model = self.extract_schema(**response.tool.model_dump())
-            model._response = response  # type: ignore
-            return model  # type: ignore
+            return extracted_schema
         except (AttributeError, ValueError, ValidationError) as e:
             if retries > 0:
                 logging.info(f"Retrying due to exception: {e}")
@@ -193,6 +210,181 @@ class BaseExtractor(BasePrompt, Generic[BaseCallT, BaseToolT, ExtractedTypeT], A
                     call_type, tool_type, retries - 1, **kwargs
                 )
             raise  # re-raise if we have no retries left
+
+    def _stream(
+        self,
+        call_type: Type[BaseCallT],
+        tool_type: Type[BaseToolT],
+        tool_stream_type: Type[BaseToolStreamT],
+        retries: int,
+        **kwargs: Any,
+    ) -> Generator[ExtractedTypeT, None, None]:
+        """Streams partial `extract_schema` instances from the streamed chunks.
+
+        The `extract_schema` is converted into a partial tool, complete with a
+        description of the tool, all of the fields, and their types. This allows us to
+        take advantage of tools/function calling functionality to stream information
+        extracted from a prompt according to the context provided by the `BaseModel`
+        schema.
+
+        Args:
+            call_type: The type of call to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
+            tool_type: The type of tool to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
+            tool_stream_type: The type of tool stream to use for streaming tools. This
+                enables shared code across various model providers that have slight
+                variations but the same internal interfaces.
+            retries: The number of call attempts to make on `ValidationError` before
+                giving up and throwing the error to the user.
+            **kwargs: Additional keyword arguments.
+
+        Yields:
+            An instance of the partial `extract_schema` with it's available fields
+            populated.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        kwargs, return_tool = self._setup(tool_type, kwargs)
+
+        class TempCall(call_type):  # type: ignore
+            prompt_template = self.prompt_template
+
+            base_url = self.base_url
+            api_key = self.api_key
+            call_params = self.call_params
+
+            model_config = ConfigDict(extra="allow")
+
+        setattr(TempCall, "messages", self.messages)
+        stream = TempCall(**self.model_dump(exclude={"extract_schema"})).stream(
+            **kwargs
+        )
+        tool_stream = tool_stream_type.from_stream(stream, allow_partial=True)
+        try:
+            yielded = False
+            for partial_tool in tool_stream:
+                extracted_schema = self._extract_schema(
+                    partial_tool, self.extract_schema, return_tool, response=None
+                )
+                if extracted_schema is None:
+                    break
+                yielded = True
+                yield extracted_schema
+
+            if not yielded:
+                raise AttributeError("No tool found in the completion.")
+        except (AttributeError, ValueError, ValidationError) as e:
+            if retries > 0:
+                logging.info(f"Retrying due to exception: {e}")
+                # TODO: include failure in retry prompt.
+                yield from self._stream(
+                    call_type, tool_type, tool_stream_type, retries - 1, **kwargs
+                )
+            raise  # re-raise if we have no retries left
+
+    async def _stream_async(
+        self,
+        call_type: Type[BaseCallT],
+        tool_type: Type[BaseToolT],
+        tool_stream_type: Type[BaseToolStreamT],
+        retries: int,
+        **kwargs: Any,
+    ) -> AsyncGenerator[ExtractedTypeT, None]:
+        """Asynchronously streams partial `extract_schema`s from streamed chunks.
+
+        The `extract_schema` is converted into a partial tool, complete with a
+        description of the tool, all of the fields, and their types. This allows us to
+        take advantage of tools/function calling functionality to stream information
+        extracted from a prompt according to the context provided by the `BaseModel`
+        schema.
+
+        Args:
+            call_type: The type of call to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
+            tool_type: The type of tool to use for extraction. This enables shared code
+                across various model providers that have slight variations but the same
+                internal interfaces.
+            tool_stream_type: The type of tool stream to use for streaming tools. This
+                enables shared code across various model providers that have slight
+                variations but the same internal interfaces.
+            retries: The number of call attempts to make on `ValidationError` before
+                giving up and throwing the error to the user.
+            **kwargs: Additional keyword arguments.
+
+        Yields:
+            An instance of the partial `extract_schema` with it's available fields
+            populated.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        kwargs, return_tool = self._setup(tool_type, kwargs)
+
+        class TempCall(call_type):  # type: ignore
+            prompt_template = self.prompt_template
+
+            base_url = self.base_url
+            api_key = self.api_key
+            call_params = self.call_params
+
+            model_config = ConfigDict(extra="allow")
+
+        setattr(TempCall, "messages", self.messages)
+        stream = TempCall(**self.model_dump(exclude={"extract_schema"})).stream_async(
+            **kwargs
+        )
+        tool_stream = tool_stream_type.from_async_stream(stream, allow_partial=True)
+        try:
+            yielded = False
+            async for partial_tool in tool_stream:
+                extracted_schema = self._extract_schema(
+                    partial_tool, self.extract_schema, return_tool, response=None
+                )
+                if extracted_schema is None:
+                    break
+                yielded = True
+                yield extracted_schema
+
+            if not yielded:
+                raise AttributeError("No tool found in the completion.")
+        except (AttributeError, ValueError, ValidationError) as e:
+            if retries > 0:
+                logging.info(f"Retrying due to exception: {e}")
+                # TODO: include failure in retry prompt.
+                async for partial_tool in self._stream_async(
+                    call_type, tool_type, tool_stream_type, retries - 1, **kwargs
+                ):
+                    yield partial_tool
+            raise  # re-raise if we have no retries left
+
+    def _extract_schema(
+        self,
+        tool: Optional[BaseToolT],
+        schema: ExtractedType,
+        return_tool: bool,
+        response: Optional[Any],
+    ) -> Optional[ExtractedTypeT]:
+        if tool is None:
+            return None
+        if return_tool:
+            return tool
+        if _is_base_type(schema):
+            return tool.value
+        if response:
+            model = schema(**tool.model_dump())
+            model._response = response
+        else:
+            schema = partial(schema)
+            model = schema(**tool.model_dump())
+            model._tool_call = tool.tool_call  # type: ignore
+        return model
 
     def _setup(
         self, tool_type: Type[BaseToolT], kwargs: dict[str, Any]

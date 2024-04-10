@@ -3,6 +3,7 @@ from typing import Type
 
 import pytest
 from openai.types.chat import ChatCompletionChunk
+from openai.types.chat.completion_create_params import ResponseFormat
 
 from mirascope.openai.tool_streams import OpenAIToolStream
 from mirascope.openai.tools import OpenAITool
@@ -87,3 +88,72 @@ async def test_openai_tool_stream_from_async_stream(
     }
     assert tools[5] is not None and tools[5].args == {"param": "param", "optional": 0}
     assert tools[6] is not None and tools[6].args == {"param": "param", "optional": 0}
+
+
+def test_openai_tool_stream_json_mode(
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> None:
+    """Tests streaming tools in JSON mode."""
+
+    def generator():
+        chunk_copy = fixture_chat_completion_chunk_with_tools.model_copy()
+        chunk_copy.response_format = "json_object"
+        chunk_copy.choices[0].delta.content = '{"param": "param", "optional": 0}'
+        yield OpenAICallResponseChunk(
+            chunk=chunk_copy,
+            tool_types=[fixture_my_openai_tool],
+            response_format=ResponseFormat(type="json_object"),
+        )
+
+    tools = list(OpenAIToolStream.from_stream(generator()))
+    assert len(tools) == 1
+    assert tools[0] is not None and tools[0].args == {"param": "param", "optional": 0}
+
+
+def test_openai_tool_stream_json_mode_partial(
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> None:
+    """Tests streaming partial tools in JSON mode."""
+
+    def generator():
+        chunk_copy = fixture_chat_completion_chunk_with_tools.model_copy()
+        chunk_copy.response_format = "json_object"
+        chunk_copy.choices[0].delta.content = '{"param": "param"'
+        yield OpenAICallResponseChunk(
+            chunk=chunk_copy.model_copy(),
+            tool_types=[fixture_my_openai_tool],
+            response_format=ResponseFormat(type="json_object"),
+        )
+        chunk_copy.choices[0].delta.content = ', "optional": 0}'
+        yield OpenAICallResponseChunk(
+            chunk=chunk_copy,
+            tool_types=[fixture_my_openai_tool],
+            response_format=ResponseFormat(type="json_object"),
+        )
+
+    tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
+    assert len(tools) == 3
+    assert tools[0] is not None and tools[0].args == {
+        "param": "param",
+        "optional": None,
+    }
+    assert tools[1] is not None and tools[1].args == {"param": "param", "optional": 0}
+    assert tools[2] is not None and tools[2].args == {"param": "param", "optional": 0}
+
+
+def test_openai_tool_stream_no_tool_types(
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> None:
+    """Tests that None is returned when chunk.tool_types is not set."""
+
+    def generator():
+        yield OpenAICallResponseChunk(
+            chunk=fixture_chat_completion_chunk_with_tools,
+            tool_types=None,
+            response_format=ResponseFormat(type="json_object"),
+        )
+
+    tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
+    assert len(tools) == 0

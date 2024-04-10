@@ -272,10 +272,22 @@ def fixture_chat_completion_chunks_with_tools() -> list[ChatCompletionChunk]:
 
 @pytest.fixture()
 def fixture_chat_completion_chunk_with_tools(
-    fixture_chat_completion_chunks_with_tools,
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
 ) -> ChatCompletionChunk:
     """Returns a chat completion chunk with tool calls."""
     return fixture_chat_completion_chunks_with_tools[0]
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunk_with_bad_tools(
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> ChatCompletionChunk:
+    """Returns a chat completion chunk with tool calls."""
+    chunk = fixture_chat_completion_chunk_with_tools.model_copy()
+    chunk.choices[0].delta.tool_calls[
+        0
+    ].function.arguments = '{\n  "param": 0,\n  "optional": 0}'
+    return chunk
 
 
 @pytest.fixture()

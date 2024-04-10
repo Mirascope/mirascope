@@ -5,6 +5,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from openai.types.chat.completion_create_params import ResponseFormat
 
 from ..base.tool_streams import BaseToolStream
 from ..partial import partial
@@ -24,8 +25,36 @@ def _handle_chunk(
     bool,
 ]:
     """Handles a chunk of the stream."""
-    if not chunk.tool_calls or not chunk.tool_types:
+    if not chunk.tool_types:
         return None, current_tool_call, current_tool_type, False
+
+    if chunk.response_format == ResponseFormat(type="json_object"):
+        # Note: we only handle single tool calls in JSON mode.
+        current_tool_type = chunk.tool_types[0]
+        if chunk.content:
+            current_tool_call.function.arguments += chunk.content
+            if allow_partial:
+                return (
+                    partial(current_tool_type).from_tool_call(
+                        ChatCompletionMessageToolCall(
+                            id="id",
+                            function=Function(
+                                name=current_tool_type.__name__,
+                                arguments=current_tool_call.function.arguments,
+                            ),
+                            type="function",
+                        ),
+                        allow_partial=allow_partial,
+                    ),
+                    current_tool_call,
+                    current_tool_type,
+                    False,
+                )
+        return None, current_tool_call, current_tool_type, False
+
+    if not chunk.tool_calls:
+        return None, current_tool_call, current_tool_type, False
+
     tool_call = chunk.tool_calls[0]
     # Reset on new tool
     if tool_call.id and tool_call.function is not None:
