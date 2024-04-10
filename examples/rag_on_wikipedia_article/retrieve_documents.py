@@ -24,9 +24,7 @@ class WikipediaCall(AnthropicCall):
     @property
     def context(self):
         store = WikipediaStore()
-        documents = store.retrieve(self.question)
-        documents = "\n".join([doc for sublist in documents for doc in sublist])
-        return documents
+        return store.retrieve(self.question)
 
 
 query = "When was caligraphy introduced to Japan and Korea"
