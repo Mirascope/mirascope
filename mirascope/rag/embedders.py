@@ -1,3 +1,4 @@
+"""Embedders for the RAG module."""
 from abc import ABC, abstractmethod
 from typing import ClassVar, Generic, Optional, TypeVar
 

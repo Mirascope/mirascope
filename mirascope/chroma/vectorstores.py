@@ -1,35 +1,30 @@
+from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
 
-from chromadb import Client, Collection
-from chromadb import Settings as ClientSettings
+from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
 from chromadb.api import ClientAPI
 
-from mirascope.base.chunkers import BaseChunker, Document
-from mirascope.base.utils import convert_function_to_chunker
-from mirascope.base.vectorstores import BaseVectorStore
-from mirascope.chroma.types import ChromaParams, ChromaQueryResult
+from ..rag.types import Document
+from ..rag.vectorstores import BaseVectorStore
+from .types import ChromaParams, ChromaQueryResult, ChromaSettings
 
 
 class ChromaVectorStore(BaseVectorStore):
     """A vectorstore for Chroma."""
 
     vectorstore_params = ChromaParams(get_or_create=True)
-    client_settings: ClassVar[ClientSettings] = ClientSettings()
+    client_settings: ClassVar[ChromaSettings] = ChromaSettings(mode="persistent")
 
-    def get_documents(
+    def retrieve(
         self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
     ) -> Optional[list[list[str]]]:
         return self._get_query_results(text, **kwargs).documents
 
-    def add_documents(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
+    def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):
-            if isinstance(self.chunker, BaseChunker):
-                chunker = self.chunker
-            else:
-                chunker = convert_function_to_chunker(self.chunker, BaseChunker)()
-
+            chunker = self.chunker
             documents = chunker.chunk(text)
         else:
             documents = text
@@ -40,13 +35,18 @@ class ChromaVectorStore(BaseVectorStore):
             **kwargs,
         )
 
-    ############################## PRIVATE METHODS ###################################
+    ############################# PRIVATE PROPERTIES #################################
 
-    @property
+    @cached_property
     def _client(self) -> ClientAPI:
-        return Client(self.client_settings)
+        if self.client_settings.mode == "persistent":
+            return PersistentClient(**self.client_settings.kwargs())
+        elif self.client_settings.mode == "http":
+            return HttpClient(**self.client_settings.kwargs())
+        elif self.client_settings.mode == "ephemeral":
+            return EphemeralClient(**self.client_settings.kwargs())
 
-    @property
+    @cached_property
     def _index(self) -> Collection:
         vectorstore_params = self.vectorstore_params
         if self.index_name:
@@ -57,6 +57,8 @@ class ChromaVectorStore(BaseVectorStore):
             **vectorstore_params.kwargs(),
             embedding_function=self.embedder,  # type: ignore
         )
+
+    ############################## PRIVATE METHODS ###################################
 
     def _get_query_results(
         self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any

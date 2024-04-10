@@ -1,15 +1,10 @@
+"""Chunkers for the RAG module."""
 import uuid
-from typing import Any, Callable, Optional
+from typing import Callable, Concatenate
 
 from pydantic import BaseModel
 
-
-class Document(BaseModel):
-    """A document to be added to the vectorstore."""
-
-    id: str
-    text: str
-    metadata: Optional[dict[str, Any]] = None
+from .types import Document
 
 
 def base_chunk_fn(
@@ -17,6 +12,7 @@ def base_chunk_fn(
     chunk_size: int = 1000,
     chunk_overlap: int = 0,
 ) -> list[Document]:
+    """Chunk the text into chunks of size `chunk_size`."""
     chunks: list[Document] = []
     start: int = 0
     while start < len(text):
@@ -27,7 +23,9 @@ def base_chunk_fn(
 
 
 class BaseChunker(BaseModel):
-    chunk_fn: Callable[[str], list[Document]] = base_chunk_fn
+    """"""
+
+    chunk_fn: Callable[Concatenate[str, ...], list[Document]] = base_chunk_fn
 
     def chunk(self, text: str) -> list[Document]:
         return self.chunk_fn(text)

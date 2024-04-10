@@ -1,10 +1,11 @@
+"""A module for calling OpenAI's Embeddings models."""
 import asyncio
 from typing import ClassVar
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types import CreateEmbeddingResponse, Embedding
 
-from ..base import BaseEmbedder
+from ..rag import BaseEmbedder
 from .types import OpenAIEmbeddingParams
 
 

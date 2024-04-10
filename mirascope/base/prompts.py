@@ -92,9 +92,21 @@ class BasePrompt(BaseModel):
             for _, var, _, _ in Formatter().parse(dedented_template)
             if var is not None
         ]
-        return dedented_template.format(
-            **{var: getattr(self, var) for var in template_vars}
-        )
+
+        values = {}
+        for var in template_vars:
+            attr = getattr(self, var)
+            if attr and isinstance(attr, list):
+                if isinstance(attr[0], list):
+                    values[var] = "\n\n".join(
+                        ["\n".join([str(subitem) for subitem in item]) for item in attr]
+                    )
+                else:
+                    values[var] = "\n".join([str(item) for item in attr])
+            else:
+                values[var] = str(attr)
+
+        return dedented_template.format(**values)
 
     def _parse_messages(self, roles: list[str]) -> list[Message]:
         """Returns messages parsed from the `template` ClassVar.

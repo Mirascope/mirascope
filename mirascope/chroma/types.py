@@ -1,11 +1,12 @@
-from typing import Optional
+from typing import Any, Literal, Optional
 
-from chromadb import CollectionMetadata
+from chromadb import CollectionMetadata, Settings
 from chromadb.api.types import URI, Document, IDs, Loadable, Metadata
+from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
 from chromadb.types import Vector
 from pydantic import BaseModel, ConfigDict
 
-from mirascope.base.types import BaseVectorStoreParams
+from ..rag.types import BaseVectorStoreParams
 
 
 class ChromaParams(BaseVectorStoreParams):
@@ -23,3 +24,32 @@ class ChromaQueryResult(BaseModel):
     distances: Optional[list[list[float]]]
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class ChromaSettings(BaseModel):
+    mode: Literal["http", "persistent", "ephemeral"] = "persistent"
+    path: str = "./chroma"
+    host: str = "localhost"
+    port: int = 8000
+    ssl: bool = False
+    headers: Optional[dict[str, str]] = None
+    settings: Optional[Settings] = None
+    tenant: str = DEFAULT_TENANT
+    database: str = DEFAULT_DATABASE
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    def kwargs(self) -> dict[str, Any]:
+        """Returns all parameters for the index as a keyword arguments dictionary."""
+        if self.mode == "http":
+            exclude = {"mode", "path"}
+        elif self.mode == "persistent":
+            exclude = {"mode", "host", "port", "ssl", "headers"}
+        elif self.mode == "ephemeral":
+            exclude = {"mode", "host", "port", "ssl", "headers", "path"}
+        kwargs = {
+            key: value
+            for key, value in self.model_dump(exclude=exclude).items()
+            if value is not None
+        }
+        return kwargs

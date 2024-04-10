@@ -30,6 +30,7 @@ mirascope_prompt_bases = (
     "GeminiCall",
     "AnthropicCall",
     "WandbOpenAICall",
+    "GroqCall",
 )
 
 

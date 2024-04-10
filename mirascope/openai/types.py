@@ -23,8 +23,8 @@ from ..base import (
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
-    BaseEmbeddingParams,
 )
+from ..rag.types import BaseEmbeddingParams
 from .tools import OpenAITool
 
 
