@@ -14,9 +14,11 @@ if settings.openai_api_key:
 
 class WikipediaCall(AnthropicCall):
     prompt_template = """
-    SYSTEM: Answer the question based on the context.
+    SYSTEM: 
+    Answer the question based on the context.
     {context}
-    USER: {question}
+    USER: 
+    {question}
     """
 
     question: str

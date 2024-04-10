@@ -1,31 +1,36 @@
 """Chunkers for the RAG module."""
-import uuid
-from typing import Callable, Concatenate
+from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 
 from .types import Document
 
 
-def base_chunk_fn(
-    text: str,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 0,
-) -> list[Document]:
-    """Chunk the text into chunks of size `chunk_size`."""
-    chunks: list[Document] = []
-    start: int = 0
-    while start < len(text):
-        end: int = min(start + chunk_size, len(text))
-        chunks.append(Document(text=text[start:end], id=str(uuid.uuid4())))
-        start += chunk_size - chunk_overlap
-    return chunks
+class BaseChunker(BaseModel, ABC):
+    """Base class for chunkers.
+
+    Example:
+
+    ```python
+    from mirascope.rag import BaseChunker, Document
 
 
-class BaseChunker(BaseModel):
-    """"""
+    class TextChunker(BaseChunker):
+        chunk_size: int
+        chunk_overlap: int
 
-    chunk_fn: Callable[Concatenate[str, ...], list[Document]] = base_chunk_fn
+        def chunk(self, text: str) -> list[Document]:
+            chunks: list[Document] = []
+            start: int = 0
+            while start < len(text):
+                end: int = min(start + self.chunk_size, len(text))
+                chunks.append(Document(text=text[start:end], id=str(uuid.uuid4())))
+                start += self.chunk_size - self.chunk_overlap
+            return chunks
+    ```
+    """
 
+    @abstractmethod
     def chunk(self, text: str) -> list[Document]:
-        return self.chunk_fn(text)
+        """Returns a Document that contains an id, text, and optionally metadata."""
+        ...  # pragma: no cover

@@ -5,7 +5,7 @@ from mirascope.openai import OpenAIEmbedder
 from mirascope.rag import BaseChunker, Document
 
 
-class MyChunker(BaseChunker):
+class TextChunker(BaseChunker):
     chunk_size: int
     chunk_overlap: int
 
@@ -21,6 +21,6 @@ class MyChunker(BaseChunker):
 
 class WikipediaStore(ChromaVectorStore):
     embedder = OpenAIEmbedder()
-    chunker = MyChunker(chunk_size=1000, chunk_overlap=200)
+    chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
     index_name = "wikipedia-0001"
     client_settings = ChromaSettings()
