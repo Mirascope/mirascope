@@ -31,7 +31,9 @@ jobs:
         uses: snok/install-poetry@v1.3.1
 
       - name: Install dependencies
-        run: poetry install --with dev --all-extras
+        run: |
+          poetry install --with dev --all-extras
+          pip install --upgrade pydantic==2.7.0b1
 
       - name: Run Tests
         run: poetry run pytest tests/ --cov=./ --cov-report=xml

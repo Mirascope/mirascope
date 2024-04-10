@@ -2,6 +2,7 @@
 from .calls import BaseCall
 from .extractors import BaseExtractor, ExtractedType, ExtractionType
 from .prompts import BasePrompt, tags
+from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import (
     BaseCallParams,
