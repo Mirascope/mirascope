@@ -4,7 +4,8 @@ import os
 from rag_config import settings
 from stores.wikipedia_chroma import WikipediaStore
 
-os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+if settings.openai_api_key:
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
