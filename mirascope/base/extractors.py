@@ -73,10 +73,13 @@ class BaseExtractor(
         """Asynchronously extracts the `extraction_schema` from an LLM call."""
         ...  # pragma: no cover
 
+    # Note: only some model providers support streaming tools, so we only implement
+    # streaming for those providers and do not require all extractors to implement
+    # the `stream` and `stream_async` methods.
     # @abstractmethod
     # def stream(self, retries: int = 0) -> Generator[ExtractedTypeT, None, None]:
     #     """Streams extracted partial `extraction_schema` instances."""
-    #     ...  # pragma: no cove
+    #     ...  # pragma: no cover
 
     # @abstractmethod
     # async def stream_async(
