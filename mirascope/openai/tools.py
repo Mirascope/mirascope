@@ -25,7 +25,7 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
     Example:
 
     ```python
-    from mirascope import OpenAICall
+    from mirascope.openai import OpenAICall, OpenAICallParams
 
 
     def animal_matcher(fav_food: str, fav_color: str) -> str:

@@ -41,6 +41,8 @@ class MessageRole(_Enum):
     ASSISTANT: A message response from the assistant or chat client.
     MODEL: A message response from the assistant or chat client. Model is used by
         Google's Gemini instead of assistant, which doesn't have system messages.
+    CHATBOT: A message response from the chat client. Chatbot is used by Cohere instead
+        of assistant.
     TOOL: A message representing the output of calling a tool.
     """
 
@@ -48,4 +50,5 @@ class MessageRole(_Enum):
     USER = "user"
     ASSISTANT = "assistant"
     MODEL = "model"
+    CHATBOT = "chatbot"
     TOOL = "tool"

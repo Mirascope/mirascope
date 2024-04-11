@@ -29,6 +29,7 @@ google-generativeai = { version = "^0.4.0", optional = true }
 anthropic = { version = ">=0.23.1,<1.0.0", optional = true }
 mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
 groq = { version = ">=0.4.2,<1.0.0", optional = true }
+cohere = { version = "^5.2.5", optional = true }
 
 [tool.poetry.extras]
 wandb = ["wandb"]
@@ -37,6 +38,7 @@ gemini = ["google-generativeai"]
 anthropic = ["anthropic"]
 mistral = ["mistralai"]
 groq = ["groq"]
+cohere = ["cohere"]
 all = [
     "wandb",
     "weave",
@@ -44,6 +46,7 @@ all = [
     "anthropic",
     "mistralai",
     "groq",
+    "cohere",
 ]
 
 [tool.poetry.group.dev.dependencies]
