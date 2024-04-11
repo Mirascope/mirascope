@@ -11,7 +11,7 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
-class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, T], Generic[T]):
+class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, Any, T], Generic[T]):
     '''A class for extracting structured information using Google's Gemini Chat models.
 
     Example:

@@ -6,7 +6,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool
+from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool, BaseType
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
@@ -141,15 +141,12 @@ def convert_base_model_to_tool(
     )
 
 
-_T = TypeVar("_T")
-
-
 def convert_base_type_to_tool(
-    schema: Type[_T], base: Type[BaseToolT]
+    schema: Type[BaseType], base: Type[BaseToolT]
 ) -> Type[BaseToolT]:
     """Converts a `BaseType` to a `BaseToolT` type."""
     return create_model(
-        f"{schema.__name__[0].upper()}{schema.__name__[1:]}",
+        f"{schema.__name__.title()}",
         __base__=base,
         __doc__=DEFAULT_TOOL_DOCSTRING,
         value=(schema, ...),

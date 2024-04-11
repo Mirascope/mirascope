@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import json
-from typing import Callable, Type, TypeVar, cast
+from typing import Callable, Type, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
 from pydantic import BaseModel
+from pydantic_core import from_json
 
 from ..base import BaseTool, BaseType
 from ..base.utils import (
@@ -13,8 +14,6 @@ from ..base.utils import (
     convert_base_type_to_tool,
     convert_function_to_tool,
 )
-
-BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
@@ -77,7 +76,11 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
+    def from_tool_call(
+        cls,
+        tool_call: ChatCompletionMessageToolCall,
+        allow_partial: bool = False,
+    ) -> OpenAITool:
         """Extracts an instance of the tool constructed from a tool call response.
 
         Given `ChatCompletionMessageToolCall` from an OpenAI chat completion response,
@@ -92,12 +95,15 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
         Raises:
             ValidationError: if the tool call doesn't match the tool schema.
         """
-        try:
-            model_json = json.loads(tool_call.function.arguments)
-        except json.JSONDecodeError as e:
-            raise ValueError() from e
+        if allow_partial:
+            model_json = from_json(tool_call.function.arguments, allow_partial=True)
+        else:
+            try:
+                model_json = json.loads(tool_call.function.arguments)
+            except json.JSONDecodeError as e:
+                raise ValueError() from e
 
-        model_json["tool_call"] = tool_call
+        model_json["tool_call"] = tool_call.model_dump()
         return cls.model_validate(model_json)
 
     @classmethod
@@ -111,6 +117,6 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
         return convert_function_to_tool(fn, OpenAITool)
 
     @classmethod
-    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[OpenAITool]:
+    def from_base_type(cls, base_type: Type[BaseType]) -> Type[OpenAITool]:
         """Constructs a `OpenAITool` type from a `BaseType` type."""
         return convert_base_type_to_tool(base_type, OpenAITool)

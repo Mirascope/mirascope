@@ -12,7 +12,7 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
-class GroqExtractor(BaseExtractor[GroqCall, GroqTool, T], Generic[T]):
+class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
     '''A class for extracting structured information using Groq Cloud API.
 
     Example:
