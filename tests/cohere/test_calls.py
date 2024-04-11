@@ -30,7 +30,7 @@ def test_cohere_call_call(
     """Tests that `CohereCall.call` returns the expected response."""
     mock_chat.return_value = fixture_non_streamed_response
     wrapper = MagicMock()
-    wrapper.return_value = Client()
+    wrapper.return_value = Client(api_key="test")
 
     class TempCall(CohereCall):
         prompt_template = """
@@ -85,7 +85,7 @@ async def test_cohere_call_call_async(
     """Tests that `CohereCall.call_async` returns the expected response."""
     mock_chat.return_value = fixture_non_streamed_response
     wrapper_async = MagicMock()
-    wrapper_async.return_value = AsyncClient()
+    wrapper_async.return_value = AsyncClient(api_key="test")
 
     class TempCall(CohereCall):
         prompt_template = ""
@@ -107,7 +107,7 @@ def test_cohere_call_stream(
     """Tests that `CohereCall.stream` returns the expected response."""
     mock_chat_stream.return_value = fixture_cohere_response_chunks
     wrapper = MagicMock()
-    wrapper.return_value = Client()
+    wrapper.return_value = Client(api_key="test")
 
     class TempCall(CohereCall):
         prompt_template = ""
@@ -129,7 +129,7 @@ async def test_cohere_call_stream_async(
 ):
     """Tests `CohereCall.stream_async` returns expected response."""
     wrapper_async = MagicMock()
-    wrapper_async.return_value = AsyncClient()
+    wrapper_async.return_value = AsyncClient(api_key="test")
 
     class TempCall(CohereCall):
         prompt_template = ""
