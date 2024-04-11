@@ -2,7 +2,7 @@
 import uuid
 
 from ..types import Document
-from .base import BaseChunker
+from .base_chunker import BaseChunker
 
 
 class TextChunker(BaseChunker):

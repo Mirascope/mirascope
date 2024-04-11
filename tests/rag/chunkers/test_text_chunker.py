@@ -1,5 +1,5 @@
 """Tests for the `TextChunker` class."""
-from mirascope.rag.chunkers.text import TextChunker
+from mirascope.rag.chunkers.text_chunker import TextChunker
 from mirascope.rag.types import Document
 
 
