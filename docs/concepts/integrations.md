@@ -194,7 +194,7 @@ Now, every call to `call`, `call_async`, `stream`, and `stream_async` will be ex
 
 ### Logging a LangSmith trace
 
-You can use client wrappers (as mentioned in the first section of this doc) to integrate Mirascope with LangSmith. When using a wrapper, you can generate content as you would with a normal `OpenAICall`:
+You can use client wrappers (as mentioned in the previous section) to integrate Mirascope with LangSmith. When using a wrapper, you can generate content as you would with a normal `OpenAICall`:
 
 ```python
 import os
