@@ -153,14 +153,8 @@ def fixture_chat_completion_chunk(
 
 
 @pytest.fixture()
-def fixture_chat_completion_chunks_with_tools(
-    request: pytest.FixtureRequest,
-) -> list[ChatCompletionChunk]:
+def fixture_chat_completion_chunks_with_tools() -> list[ChatCompletionChunk]:
     """Returns a list of chat completion chunks with tool calls."""
-    try:
-        name = request.param
-    except AttributeError:
-        name = None
 
     return [
         ChatCompletionChunk(
@@ -174,7 +168,7 @@ def fixture_chat_completion_chunks_with_tools(
                                 index=0,
                                 id="id0",
                                 function=ChoiceDeltaToolCallFunction(
-                                    arguments="", name=name
+                                    arguments="", name="MyOpenAITool"
                                 ),
                                 type="function",
                             )
@@ -196,7 +190,31 @@ def fixture_chat_completion_chunks_with_tools(
                         tool_calls=[
                             ChoiceDeltaToolCall(
                                 index=0,
-                                id="id0",
+                                id=None,
+                                function=ChoiceDeltaToolCallFunction(
+                                    arguments="", name=None
+                                ),
+                                type="function",
+                            )
+                        ]
+                    ),
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionChunk(
+            id="test_id",
+            choices=[
+                ChunkChoice(
+                    logprobs=None,
+                    delta=ChoiceDelta(
+                        tool_calls=[
+                            ChoiceDeltaToolCall(
+                                index=0,
+                                id=None,
                                 function=ChoiceDeltaToolCallFunction(
                                     arguments='{\n "param": "param"', name=None
                                 ),
@@ -220,7 +238,7 @@ def fixture_chat_completion_chunks_with_tools(
                         tool_calls=[
                             ChoiceDeltaToolCall(
                                 index=0,
-                                id="id0",
+                                id=None,
                                 function=ChoiceDeltaToolCallFunction(
                                     arguments=',\n "optional": 0\n}', name=None
                                 ),
@@ -254,10 +272,22 @@ def fixture_chat_completion_chunks_with_tools(
 
 @pytest.fixture()
 def fixture_chat_completion_chunk_with_tools(
-    fixture_chat_completion_chunks_with_tools,
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
 ) -> ChatCompletionChunk:
     """Returns a chat completion chunk with tool calls."""
     return fixture_chat_completion_chunks_with_tools[0]
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunk_with_bad_tools(
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> ChatCompletionChunk:
+    """Returns a chat completion chunk with tool calls."""
+    chunk = fixture_chat_completion_chunk_with_tools.model_copy()
+    chunk.choices[0].delta.tool_calls[
+        0
+    ].function.arguments = '{\n  "param": 0,\n  "optional": 0}'  # type: ignore
+    return chunk
 
 
 @pytest.fixture()

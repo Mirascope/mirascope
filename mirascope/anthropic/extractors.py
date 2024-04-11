@@ -21,7 +21,9 @@ If asked to generate information, you may generate the tool call input.
 """.strip()
 
 
-class AnthropicExtractor(BaseExtractor[AnthropicCall, AnthropicTool, T], Generic[T]):
+class AnthropicExtractor(
+    BaseExtractor[AnthropicCall, AnthropicTool, Any, T], Generic[T]
+):
     '''A class for extracting structured information using Anthropic Claude models.
 
     Example:

@@ -12,7 +12,7 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
-class MistralExtractor(BaseExtractor[MistralCall, MistralTool, T], Generic[T]):
+class MistralExtractor(BaseExtractor[MistralCall, MistralTool, Any, T], Generic[T]):
     '''A class for extracting structured information using Mistral Chat models.
 
     Example:

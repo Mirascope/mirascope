@@ -9,6 +9,7 @@ from mirascope.base.extractors import BaseExtractor
 from mirascope.base.prompts import BasePrompt
 from mirascope.base.tools import BaseTool
 from mirascope.base.types import BaseCallParams
+from mirascope.base.tool_streams import BaseToolStream
 
 
 @patch.multiple(BaseExtractor, __abstractmethods__=set())
@@ -21,7 +22,7 @@ def test_base_extractor() -> None:
         title: str
         details: str
 
-    class Extractor(BaseExtractor[BaseCall, BaseTool, Type[Task]]):
+    class Extractor(BaseExtractor[BaseCall, BaseTool, BaseToolStream, Type[Task]]):
         extract_schema: Type[Task] = Task
         call_params = BaseCallParams(model=model)
 

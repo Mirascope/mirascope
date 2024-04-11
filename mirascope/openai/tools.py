@@ -6,6 +6,7 @@ from typing import Callable, Type, cast
 
 from openai.types.chat import ChatCompletionMessageToolCall, ChatCompletionToolParam
 from pydantic import BaseModel
+from pydantic_core import from_json
 
 from ..base import BaseTool, BaseType
 from ..base.utils import (
@@ -75,7 +76,11 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
         return cast(ChatCompletionToolParam, {"type": "function", "function": fn})
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
+    def from_tool_call(
+        cls,
+        tool_call: ChatCompletionMessageToolCall,
+        allow_partial: bool = False,
+    ) -> OpenAITool:
         """Extracts an instance of the tool constructed from a tool call response.
 
         Given `ChatCompletionMessageToolCall` from an OpenAI chat completion response,
@@ -90,12 +95,15 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
         Raises:
             ValidationError: if the tool call doesn't match the tool schema.
         """
-        try:
-            model_json = json.loads(tool_call.function.arguments)
-        except json.JSONDecodeError as e:
-            raise ValueError() from e
+        if allow_partial:
+            model_json = from_json(tool_call.function.arguments, allow_partial=True)
+        else:
+            try:
+                model_json = json.loads(tool_call.function.arguments)
+            except json.JSONDecodeError as e:
+                raise ValueError() from e
 
-        model_json["tool_call"] = tool_call
+        model_json["tool_call"] = tool_call.model_dump()
         return cls.model_validate(model_json)
 
     @classmethod
