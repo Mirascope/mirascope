@@ -52,6 +52,7 @@ pytest = "^7.4.0"
 ruff = "^0.1.5"
 pytest-asyncio = "^0.23.3"
 pytest-cov = "^4.1.0"
+pydantic = "^2.7.0"
 
 [tool.poetry.group.docs.dependencies]
 mike = "^2.0.0"
