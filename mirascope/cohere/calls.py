@@ -104,7 +104,15 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         Yields:
             A `CohereCallResponseChunk` for each chunk of the response.
         """
-        raise NotImplementedError()
+        message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
+        co = Client(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            co = self.call_params.wrapper(co)
+        chat_stream = co.chat_stream
+        if self.call_params.weave is not None:
+            chat_stream = self.call_params.weave(chat_stream)  # pragma: no cover
+        for event in chat_stream(message=message, **kwargs):
+            yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
     async def stream_async(
         self, **kwargs: Any
@@ -118,7 +126,15 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         Yields:
             A `CohereCallResponseChunk` for each chunk of the response.
         """
-        raise NotImplementedError()
+        message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
+        co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            co = self.call_params.wrapper(co)
+        chat_stream = co.chat_stream
+        if self.call_params.weave is not None:
+            chat_stream = self.call_params.weave(chat_stream)  # pragma: no cover
+        async for event in chat_stream(message=message, **kwargs):
+            yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
     ############################## PRIVATE METHODS ###################################
 

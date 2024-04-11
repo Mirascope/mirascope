@@ -72,7 +72,7 @@ class CohereCallParams(BaseCallParams[CohereTool]):
         return super().kwargs(tool_type, exclude)
 
 
-class CohereCallResponse(BaseCallResponse[Any, CohereTool]):
+class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
     """A convenience wrapper around the Cohere `NonStreamedChatResponse` response.
 
     When using Mirascope's convenience wrappers to interact with Cohere chat models via
@@ -212,6 +212,8 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
     #  3
     #  .
     """
+
+    chunk: SkipValidation[StreamedChatResponse]
 
     @property
     def event_type(

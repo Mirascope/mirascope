@@ -4,7 +4,8 @@ from __future__ import annotations
 from typing import Callable, Type
 
 from cohere.types import Tool, ToolCall, ToolParameterDefinitionsValue
-from pydantic import BaseModel
+from pydantic import BaseModel, SkipValidation
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, BaseType
 from ..base.utils import (
@@ -59,6 +60,8 @@ class CohereTool(BaseTool[ToolCall]):
     ```
     '''
 
+    tool_call: SkipJsonSchema[SkipValidation[ToolCall]]
+
     @classmethod
     def tool_schema(cls) -> Tool:
         """Constructs a tool schema for use with the Cohere chat client.
@@ -112,7 +115,7 @@ class CohereTool(BaseTool[ToolCall]):
             ValidationError: if the tool call doesn't match the tool schema.
         """
         model_json = tool_call.parameters
-        model_json["tool_call"] = tool_call.model_dump()  # type: ignore
+        model_json["tool_call"] = tool_call  # type: ignore
         return cls.model_validate(model_json)
 
     @classmethod
