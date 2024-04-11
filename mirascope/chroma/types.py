@@ -16,12 +16,12 @@ class ChromaParams(BaseVectorStoreParams):
 
 class ChromaQueryResult(BaseModel):
     ids: list[IDs]
-    embeddings: Optional[list[list[Vector]]]
-    documents: Optional[list[list[Document]]]
-    uris: Optional[list[list[URI]]]
-    data: Optional[list[Loadable]]
-    metadatas: Optional[list[list[Optional[Metadata]]]]
-    distances: Optional[list[list[float]]]
+    embeddings: Optional[list[list[Vector]]] = None
+    documents: Optional[list[list[Document]]] = None
+    uris: Optional[list[list[URI]]] = None
+    data: Optional[list[Loadable]] = None
+    metadatas: Optional[list[list[Optional[Metadata]]]] = None
+    distances: Optional[list[list[float]]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

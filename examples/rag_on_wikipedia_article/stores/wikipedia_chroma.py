@@ -1,22 +1,6 @@
-import uuid
-
 from mirascope.chroma import ChromaSettings, ChromaVectorStore
 from mirascope.openai import OpenAIEmbedder
-from mirascope.rag import BaseChunker, Document
-
-
-class TextChunker(BaseChunker):
-    chunk_size: int
-    chunk_overlap: int
-
-    def chunk(self, text: str) -> list[Document]:
-        chunks: list[Document] = []
-        start: int = 0
-        while start < len(text):
-            end: int = min(start + self.chunk_size, len(text))
-            chunks.append(Document(text=text[start:end], id=str(uuid.uuid4())))
-            start += self.chunk_size - self.chunk_overlap
-        return chunks
+from mirascope.rag import TextChunker
 
 
 class WikipediaStore(ChromaVectorStore):

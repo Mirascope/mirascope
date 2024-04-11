@@ -4,7 +4,7 @@ from typing import Any, ClassVar, Optional, Union
 
 from pydantic import BaseModel
 
-from .chunkers import BaseChunker
+from .chunkers import BaseChunker, TextChunker
 from .embedders import BaseEmbedder
 from .types import BaseVectorStoreParams, Document
 
@@ -12,8 +12,8 @@ from .types import BaseVectorStoreParams, Document
 class BaseVectorStore(BaseModel, ABC):
     api_key: ClassVar[Optional[str]] = None
     index_name: ClassVar[Optional[str]] = None
-    chunker: ClassVar[BaseChunker] = BaseChunker()
-    embedder: ClassVar[Optional[BaseEmbedder]] = BaseEmbedder
+    chunker: ClassVar[BaseChunker] = TextChunker(chunk_size=1000, chunk_overlap=200)
+    embedder: ClassVar[Optional[BaseEmbedder]] = None
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
 
     @abstractmethod

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 
-from .types import Document
+from ..types import Document
 
 
 class BaseChunker(BaseModel, ABC):
