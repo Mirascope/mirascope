@@ -31,6 +31,12 @@ class BaseEmbeddingParams(BaseModel):
         return kwargs
 
 
+class BaseQueryResults(BaseModel):
+    """The results of a query."""
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+
 class Document(BaseModel):
     """A document to be added to the vectorstore."""
 

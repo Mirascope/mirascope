@@ -17,8 +17,16 @@ class ChromaVectorStore(BaseVectorStore):
 
     def retrieve(
         self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
-    ) -> Optional[list[list[str]]]:
-        return self._get_query_results(text, **kwargs).documents
+    ) -> ChromaQueryResult:
+        """Queries the vectorstore for closest match"""
+        if text:
+            if isinstance(text, str):
+                text = [text]
+            query_result = self._index.query(query_texts=text, **kwargs)
+        else:
+            query_result = self._index.query(**kwargs)
+
+        return ChromaQueryResult.model_validate(query_result)
 
     def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
@@ -57,18 +65,3 @@ class ChromaVectorStore(BaseVectorStore):
             **vectorstore_params.kwargs(),
             embedding_function=self.embedder,  # type: ignore
         )
-
-    ############################## PRIVATE METHODS ###################################
-
-    def _get_query_results(
-        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
-    ) -> ChromaQueryResult:
-        """Queries the vectorstore for closest match"""
-        if text:
-            if isinstance(text, str):
-                text = [text]
-            query_result = self._index.query(query_texts=text, **kwargs)
-        else:
-            query_result = self._index.query(**kwargs)
-
-        return ChromaQueryResult.model_validate(query_result)

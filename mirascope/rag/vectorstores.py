@@ -1,12 +1,14 @@
 """Vectorstores for the RAG module."""
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
 from .chunkers import BaseChunker, TextChunker
 from .embedders import BaseEmbedder
-from .types import BaseVectorStoreParams, Document
+from .types import BaseQueryResults, BaseVectorStoreParams, Document
+
+BaseQueryResultsT = TypeVar("BaseQueryResultsT", bound=BaseQueryResults)
 
 
 class BaseVectorStore(BaseModel, ABC):
@@ -19,7 +21,7 @@ class BaseVectorStore(BaseModel, ABC):
     @abstractmethod
     def retrieve(
         self, text: Optional[str] = None, **kwargs: Any
-    ) -> Optional[list[list[str]]]:
+    ) -> Optional[BaseQueryResultsT]:
         """Queries the vectorstore for closest match"""
         ...  # pragma: no cover
 
