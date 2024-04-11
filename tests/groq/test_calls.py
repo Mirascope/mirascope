@@ -26,7 +26,7 @@ def test_groq_call_call(
     """Tests that `GroqCall.call` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_response
     wrapper = MagicMock()
-    wrapper.return_value = Groq()
+    wrapper.return_value = Groq(api_key="test")
 
     class TempCall(GroqCall):
         prompt_template = ""
@@ -71,7 +71,7 @@ async def test_groq_call_call_async(
     """Tests that `GroqCall.call_async` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_response
     wrapper_async = MagicMock()
-    wrapper_async.return_value = AsyncGroq()
+    wrapper_async.return_value = AsyncGroq(api_key="test")
 
     class TempCall(GroqCall):
         prompt_template = ""
@@ -92,7 +92,7 @@ def test_groq_call_stream(
     """Tests that `GroqCall.stream` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_stream_response
     wrapper = MagicMock()
-    wrapper.return_value = Groq()
+    wrapper.return_value = Groq(api_key="test")
 
     class TempCall(GroqCall):
         prompt_template = ""
@@ -117,7 +117,7 @@ async def test_groq_call_stream_async(
 ):
     """Tests `GroqCall.stream_async` returns expected response."""
     wrapper_async = MagicMock()
-    wrapper_async.return_value = AsyncGroq()
+    wrapper_async.return_value = AsyncGroq(api_key="test")
 
     class TempCall(GroqCall):
         prompt_template = ""
