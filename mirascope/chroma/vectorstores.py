@@ -1,6 +1,7 @@
 from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
 
+import weave
 from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
 from chromadb.api import ClientAPI
 
@@ -32,8 +33,14 @@ class ChromaVectorStore(BaseVectorStore):
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):
-            chunker = self.chunker
-            documents = chunker.chunk(text)
+            chunk = self.chunker.chunk
+            if self.vectorstore_params.weave is not None and not isinstance(
+                self.chunker, weave.Op
+            ):
+                chunk = self.vectorstore_params.weave(
+                    self.chunker.chunk
+                )  # pragma: no cover
+            documents = chunk(text)
         else:
             documents = text
 
@@ -61,7 +68,13 @@ class ChromaVectorStore(BaseVectorStore):
             vectorstore_params = self.vectorstore_params.model_copy(
                 update={"name": self.index_name}
             )
-        return self._client.create_collection(
+        create_collection = self._client.create_collection
+        if self.vectorstore_params.weave is not None:
+            create_collection = self.vectorstore_params.weave(
+                self._client.create_collection
+            )  # pragma: no cover
+
+        return create_collection(
             **vectorstore_params.kwargs(),
             embedding_function=self.embedder,  # type: ignore
         )

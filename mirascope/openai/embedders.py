@@ -26,9 +26,9 @@ class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
         )
         return embedding_responses
 
-    def __call__(self, input: list[str]) -> list[list[float]]:
+    def __call__(self, inputs: list[str]) -> list[list[float]]:
         embeddings: list[Embedding] = [
-            embedding for response in self.embed(input) for embedding in response.data
+            embedding for response in self.embed(inputs) for embedding in response.data
         ]
         sorted_embeddings = sorted(embeddings, key=lambda e: e.index)
         return [result.embedding for result in sorted_embeddings]
