@@ -374,6 +374,12 @@ class BaseExtractor(
         return_tool: bool,
         response: Optional[Any],
     ) -> Optional[ExtractedTypeT]:
+        """Returns the extracted schema extracted depending on it's extraction type.
+
+        Due to mypy issues with all these generics, we have to type ignore a bunch
+        of stuff so it doesn't complain, but each conditional properly checks types
+        before doing anything specific to that type (it's just that mypy is annoying).
+        """
         if tool is None:
             return None
         if return_tool:
