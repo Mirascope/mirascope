@@ -18,11 +18,14 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
+from openai.types.embedding import Embedding
 from pydantic import BaseModel, Field
 
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams
+from mirascope.openai.embedders import OpenAIEmbedder
 
 
 @pytest.fixture()
@@ -317,3 +320,32 @@ def fixture_chat_completion_with_str_tool() -> ChatCompletion:
         model="test_model",
         object="chat.completion",
     )
+
+
+@pytest.fixture()
+def fixture_embeddings() -> CreateEmbeddingResponse:
+    return CreateEmbeddingResponse(
+        data=[
+            Embedding(
+                embedding=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                index=0,
+                object="embedding",
+            )
+        ],
+        model="test_model",
+        object="list",
+        usage=Usage(
+            prompt_tokens=1,
+            total_tokens=1,
+        ),
+    )
+
+
+@pytest.fixture()
+def fixture_openai_test_embedder():
+    """Returns an `OpenAIEmbedding` instance."""
+
+    class TestEmbedder(OpenAIEmbedder):
+        api_key = "test"
+
+    return TestEmbedder()
