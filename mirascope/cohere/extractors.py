@@ -14,7 +14,7 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
-class CohereExtractor(BaseExtractor[CohereCall, CohereTool, T], Generic[T]):
+class CohereExtractor(BaseExtractor[CohereCall, CohereTool, Any, T], Generic[T]):
     '''A class for extracting structured information using Cohere chat models.
 
     Example:

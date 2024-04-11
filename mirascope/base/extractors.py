@@ -193,7 +193,6 @@ class BaseExtractor(
 
             model_config = ConfigDict(extra="allow")
 
-        setattr(TempCall, "messages", self.messages)
         response = await TempCall(
             **self.model_dump(exclude={"extract_schema"})
         ).call_async(**kwargs)

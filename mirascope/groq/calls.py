@@ -68,6 +68,8 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
         client = Groq(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
         create = client.chat.completions.create
         if self.call_params.weave is not None:
             create = self.call_params.weave(
@@ -96,6 +98,8 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
         client = AsyncGroq(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
         create = client.chat.completions.create
         if self.call_params.weave is not None:
             create = self.call_params.weave(
@@ -124,6 +128,8 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
         client = Groq(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = client.chat.completions.create(
             messages=messages, stream=True, **kwargs
@@ -149,6 +155,8 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
         client = AsyncGroq(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = await client.chat.completions.create(
             messages=messages, stream=True, **kwargs

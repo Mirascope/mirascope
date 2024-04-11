@@ -3,6 +3,7 @@ from typing import Type
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from groq import AsyncGroq, Groq
 from groq.lib.chat_completion_chunk import ChatCompletionChunk
 from groq.types.chat.chat_completion import ChatCompletion
 from groq.types.chat.completion_create_params import Message, ResponseFormat
@@ -24,14 +25,19 @@ def test_groq_call_call(
 ) -> None:
     """Tests that `GroqCall.call` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_response
+    wrapper = MagicMock()
+    wrapper.return_value = Groq()
 
     class TempCall(GroqCall):
         prompt_template = ""
         api_key = "test"
 
+        call_params = GroqCallParams(wrapper=wrapper)
+
     response = TempCall().call()
     assert isinstance(response, GroqCallResponse)
     assert response.content == "test content"
+    wrapper.assert_called_once()
 
 
 @patch("groq.resources.chat.completions.Completions.create", new_callable=MagicMock)
@@ -64,10 +70,14 @@ async def test_groq_call_call_async(
 ) -> None:
     """Tests that `GroqCall.call_async` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_response
+    wrapper_async = MagicMock()
+    wrapper_async.return_value = AsyncGroq()
 
     class TempCall(GroqCall):
         prompt_template = ""
         api_key = "test"
+
+        call_params = GroqCallParams(wrapper_async=wrapper_async)
 
     response = await TempCall().call_async()
     assert isinstance(response, GroqCallResponse)
@@ -81,15 +91,20 @@ def test_groq_call_stream(
 ) -> None:
     """Tests that `GroqCall.stream` returns the expected response."""
     mock_create.return_value = fixture_chat_completion_stream_response
+    wrapper = MagicMock()
+    wrapper.return_value = Groq()
 
     class TempCall(GroqCall):
         prompt_template = ""
         api_key = "test"
 
+        call_params = GroqCallParams(wrapper=wrapper)
+
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 2
     assert chunks[0].content == "A"
     assert chunks[1].content == "B"
+    wrapper.assert_called_once()
 
 
 @patch(
@@ -101,10 +116,14 @@ async def test_groq_call_stream_async(
     fixture_chat_completion_stream_response: list[ChatCompletionChunk],
 ):
     """Tests `GroqCall.stream_async` returns expected response."""
+    wrapper_async = MagicMock()
+    wrapper_async.return_value = AsyncGroq()
 
     class TempCall(GroqCall):
         prompt_template = ""
         api_key = "test"
+
+        call_params = GroqCallParams(wrapper_async=wrapper_async)
 
     mock_create.return_value.__aiter__.return_value = (
         fixture_chat_completion_stream_response
@@ -121,6 +140,7 @@ async def test_groq_call_stream_async(
     mock_create.assert_called_once_with(
         messages=temp_call.messages(), stream=True, model=temp_call.call_params.model
     )
+    wrapper_async.assert_called_once()
 
 
 @patch("groq.resources.chat.completions.Completions.create", new_callable=MagicMock)

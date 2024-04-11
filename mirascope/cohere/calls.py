@@ -80,8 +80,8 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
         co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            co = self.call_params.wrapper(co)
+        if self.call_params.wrapper_async is not None:
+            co = self.call_params.wrapper_async(co)
         chat = co.chat
         if self.call_params.weave is not None:
             chat = self.call_params.weave(chat)  # pragma: no cover
@@ -128,8 +128,8 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
         co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            co = self.call_params.wrapper(co)
+        if self.call_params.wrapper_async is not None:
+            co = self.call_params.wrapper_async(co)
         chat_stream = co.chat_stream
         if self.call_params.weave is not None:
             chat_stream = self.call_params.weave(chat_stream)  # pragma: no cover

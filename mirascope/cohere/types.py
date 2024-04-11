@@ -1,7 +1,15 @@
 """Types for interacting with Cohere chat models using Mirascope."""
 from typing import Any, Callable, Literal, Optional, Sequence, Type
 
-from cohere import AsyncClient, Client
+from cohere import (
+    AsyncClient,
+    Client,
+    StreamedChatResponse_CitationGeneration,
+    StreamedChatResponse_SearchQueriesGeneration,
+    StreamedChatResponse_SearchResults,
+    StreamedChatResponse_StreamEnd,
+    StreamedChatResponse_ToolCallsGeneration,
+)
 from cohere.types import (
     ChatCitation,
     ChatConnector,
@@ -13,6 +21,7 @@ from cohere.types import (
     ChatSearchResult,
     NonStreamedChatResponse,
     StreamedChatResponse,
+    StreamedChatResponse_TextGeneration,
     ToolCall,
 )
 from pydantic import ConfigDict, SkipValidation
@@ -179,7 +188,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         return {
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "output": self.response.model_dump(),
+            "output": self.response.dict(),
         }
 
 
@@ -233,46 +242,48 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
     @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        if self.event_type == "text-generation":
+        if isinstance(self.chunk, StreamedChatResponse_TextGeneration):
             return self.chunk.text
         return ""
 
     @property
     def search_queries(self) -> Optional[list[ChatSearchQuery]]:
         """Returns the search queries for search-query event type else None."""
-        if self.event_type == "search-queries-generation":
-            return self.chunk.search_queries
+        if isinstance(self.chunk, StreamedChatResponse_SearchQueriesGeneration):
+            return self.chunk.search_queries  # type: ignore
         return None
 
     @property
     def search_results(self) -> Optional[list[ChatSearchResult]]:
         """Returns the search results for search-results event type else None."""
-        if self.event_type == "search-results":
+        if isinstance(self.chunk, StreamedChatResponse_SearchResults):
             return self.chunk.search_results
         return None
 
     @property
     def documents(self) -> Optional[list[ChatDocument]]:
         """Returns the documents for citation-generation event type else None."""
-        if self.event_type == "search-results":
+        if isinstance(self.chunk, StreamedChatResponse_SearchResults):
             return self.chunk.documents
         return None
 
     @property
     def citations(self) -> Optional[list[ChatCitation]]:
         """Returns the citations for citation-generation event type else None."""
-        if self.event_type == "citation-generation":
+        if isinstance(self.chunk, StreamedChatResponse_CitationGeneration):
             return self.chunk.citations
         return None
 
     @property
     def response(self) -> Optional[NonStreamedChatResponse]:
         """Returns the response for text-generation event type else None."""
-        if self.event_type == "stream-end":
+        if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
             return self.chunk.response
         return None
 
     @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
         """Returns the partial tool calls for the 0th choice message."""
-        return self.chunk.tool_calls
+        if isinstance(self.chunk, StreamedChatResponse_ToolCallsGeneration):
+            return self.chunk.tool_calls
+        return None
