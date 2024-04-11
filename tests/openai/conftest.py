@@ -286,7 +286,7 @@ def fixture_chat_completion_chunk_with_bad_tools(
     chunk = fixture_chat_completion_chunk_with_tools.model_copy()
     chunk.choices[0].delta.tool_calls[
         0
-    ].function.arguments = '{\n  "param": 0,\n  "optional": 0}'
+    ].function.arguments = '{\n  "param": 0,\n  "optional": 0}'  # type: ignore
     return chunk
 
 

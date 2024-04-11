@@ -386,14 +386,14 @@ async def test_openai_extractor_stream_async(
 @patch("mirascope.openai.calls.OpenAICall.stream", new_callable=MagicMock)
 @pytest.mark.parametrize("retries", [0, 1, 3, 5])
 def test_openai_extractor_stream_with_validation_error(
-    mock_call: MagicMock,
+    mock_stream: MagicMock,
     retries: int,
     fixture_my_openai_tool_schema: Type[BaseModel],
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
 ):
     """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails."""
-    mock_call.return_value = [
+    mock_stream.return_value = [
         OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_bad_tools,
             tool_types=[fixture_my_openai_tool],
@@ -409,6 +409,140 @@ def test_openai_extractor_stream_with_validation_error(
         call_params = OpenAICallParams(model="gpt-4")
 
     with pytest.raises(ValidationError):
-        TempExtractor().stream(retries=retries)
+        for _ in TempExtractor().stream(retries=retries):
+            pass  # pragma: no cover
 
-    assert mock_call.call_count == retries + 1
+    assert mock_stream.call_count == retries + 1
+
+
+@patch("mirascope.openai.calls.OpenAICall.stream_async", new_callable=MagicMock)
+@pytest.mark.parametrize("retries", [0, 1, 3, 5])
+@pytest.mark.asyncio
+async def test_openai_extractor_stream_async_with_validation_error(
+    mock_stream: MagicMock,
+    retries: int,
+    fixture_my_openai_tool_schema: Type[BaseModel],
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
+):
+    """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails."""
+    mock_stream.return_value.__aiter__.return_value = [
+        OpenAICallResponseChunk(
+            chunk=fixture_chat_completion_chunk_with_bad_tools,
+            tool_types=[fixture_my_openai_tool],
+        )
+    ]
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "test"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+    with pytest.raises(ValidationError):
+        async for _ in TempExtractor().stream_async(retries=retries):
+            pass  # pragma: no cover
+
+    assert mock_stream.call_count == retries + 1
+
+
+@patch("mirascope.openai.calls.OpenAICall.stream", new_callable=MagicMock)
+def test_openai_extractor_stream_no_tool(
+    mock_stream: MagicMock,
+    fixture_chat_completion_chunks: list[ChatCompletionChunk],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+):
+    """Tests `OpenAIExtractor` raises a `AttributeError` when no tools is present."""
+    mock_stream.return_value = [
+        OpenAICallResponseChunk(chunk=chunk) for chunk in fixture_chat_completion_chunks
+    ]
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "test"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+    with pytest.raises(AttributeError):
+        for _ in TempExtractor().stream():
+            pass  # pragma: no cover
+
+
+@patch("mirascope.openai.calls.OpenAICall.stream_async", new_callable=MagicMock)
+@pytest.mark.asyncio
+async def test_openai_extractor_stream_async_no_tool(
+    mock_stream: MagicMock,
+    fixture_chat_completion_chunks: list[ChatCompletionChunk],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+):
+    """Tests `OpenAIExtractor` raises a `AttributeError` when no tools is present."""
+    mock_stream.return_value.__aiter__.return_value = [
+        OpenAICallResponseChunk(chunk=chunk) for chunk in fixture_chat_completion_chunks
+    ]
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "test"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+    with pytest.raises(AttributeError):
+        async for _ in TempExtractor().stream_async():
+            pass  # pragma: no cover
+
+
+@patch("mirascope.openai.calls.OpenAICall.stream", new_callable=MagicMock)
+def test_openai_extractor_stream_only_first_tool(
+    mock_stream: MagicMock,
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+):
+    """Tests that `OpenAIExtractor` only extracts the first tool."""
+    mock_stream.return_value = [
+        OpenAICallResponseChunk(chunk=chunk, tool_types=[fixture_my_openai_tool])
+        for chunk in fixture_chat_completion_chunks_with_tools
+    ] * 2
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "test"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+    partial_schemas = list(TempExtractor().stream())
+    assert len(partial_schemas) == 3
+
+
+@patch("mirascope.openai.calls.OpenAICall.stream_async", new_callable=MagicMock)
+@pytest.mark.asyncio
+async def test_openai_extractor_stream_async_only_first_tool(
+    mock_stream: MagicMock,
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+):
+    """Tests that `OpenAIExtractor` only extracts the first tool."""
+    mock_stream.return_value.__aiter__.return_value = [
+        OpenAICallResponseChunk(chunk=chunk, tool_types=[fixture_my_openai_tool])
+        for chunk in fixture_chat_completion_chunks_with_tools
+    ] * 2
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "test"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+    partial_schemas = list([p async for p in TempExtractor().stream_async()])
+    assert len(partial_schemas) == 3

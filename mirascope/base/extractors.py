@@ -374,14 +374,14 @@ class BaseExtractor(
         if tool is None:
             return None
         if return_tool:
-            return tool
+            return tool  # type: ignore
         if _is_base_type(schema):
-            return tool.value
+            return tool.value  # type: ignore
         if response:
-            model = schema(**tool.model_dump())
+            model = schema(**tool.model_dump())  # type: ignore
             model._response = response
         else:
-            schema = partial(schema)
+            schema = partial(schema)  # type: ignore
             model = schema(**tool.model_dump())
             model._tool_call = tool.tool_call  # type: ignore
         return model

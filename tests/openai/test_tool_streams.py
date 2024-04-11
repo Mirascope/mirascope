@@ -1,5 +1,5 @@
 """Tests for OpenAI tool streaming classes."""
-from typing import Type
+from typing import Generator, Type
 
 import pytest
 from openai.types.chat import ChatCompletionChunk
@@ -96,9 +96,8 @@ def test_openai_tool_stream_json_mode(
 ) -> None:
     """Tests streaming tools in JSON mode."""
 
-    def generator():
+    def generator() -> Generator[OpenAICallResponseChunk, None, None]:
         chunk_copy = fixture_chat_completion_chunk_with_tools.model_copy()
-        chunk_copy.response_format = "json_object"
         chunk_copy.choices[0].delta.content = '{"param": "param", "optional": 0}'
         yield OpenAICallResponseChunk(
             chunk=chunk_copy,
@@ -117,9 +116,8 @@ def test_openai_tool_stream_json_mode_partial(
 ) -> None:
     """Tests streaming partial tools in JSON mode."""
 
-    def generator():
+    def generator() -> Generator[OpenAICallResponseChunk, None, None]:
         chunk_copy = fixture_chat_completion_chunk_with_tools.model_copy()
-        chunk_copy.response_format = "json_object"
         chunk_copy.choices[0].delta.content = '{"param": "param"'
         yield OpenAICallResponseChunk(
             chunk=chunk_copy.model_copy(),
@@ -148,7 +146,7 @@ def test_openai_tool_stream_no_tool_types(
 ) -> None:
     """Tests that None is returned when chunk.tool_types is not set."""
 
-    def generator():
+    def generator() -> Generator[OpenAICallResponseChunk, None, None]:
         yield OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_tools,
             tool_types=None,

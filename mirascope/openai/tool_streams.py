@@ -130,7 +130,7 @@ class OpenAIToolStream(BaseToolStream[OpenAICallResponseChunk, OpenAITool]):
     def from_stream(
         cls,
         stream: Generator[OpenAICallResponseChunk, None, None],
-        allow_partial: bool,
+        allow_partial: bool = False,
     ) -> Generator[Optional[OpenAITool], None, None]:
         yield ...  # type: ignore  # pragma: no cover
 
@@ -184,7 +184,7 @@ class OpenAIToolStream(BaseToolStream[OpenAICallResponseChunk, OpenAITool]):
     async def from_async_stream(
         cls,
         stream: AsyncGenerator[OpenAICallResponseChunk, None],
-        allow_partial: bool,
+        allow_partial: bool = False,
     ) -> AsyncGenerator[Optional[OpenAITool], None]:
         yield ...  # type: ignore  # pragma: no cover
 
