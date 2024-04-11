@@ -1,7 +1,7 @@
 """Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
-from typing import Callable, Type, TypeVar
+from typing import Callable, Type
 
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
@@ -17,8 +17,6 @@ from ..base import (
     convert_base_type_to_tool,
     convert_function_to_tool,
 )
-
-BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class GeminiTool(BaseTool[FunctionCall]):
@@ -119,6 +117,6 @@ class GeminiTool(BaseTool[FunctionCall]):
         return convert_function_to_tool(fn, GeminiTool)
 
     @classmethod
-    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[GeminiTool]:
+    def from_base_type(cls, base_type: Type[BaseType]) -> Type[GeminiTool]:
         """Constructs a `GeminiTool` type from a `BaseType` type."""
         return convert_base_type_to_tool(base_type, GeminiTool)
