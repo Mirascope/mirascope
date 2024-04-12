@@ -1,29 +1,39 @@
 """Tests for Mirascope ChromaVectorStore class"""
-from typing import Any
+import uuid
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from mirascope.chroma import ChromaVectorStore
-from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
+from mirascope.chroma.types import ChromaQueryResult
 from mirascope.rag.types import Document
 
 
-@pytest.mark.parametrize("documents", [[Document(text="foo", id="1")], "foo"])
 @patch("chromadb.api.models.Collection.Collection.upsert")
-@patch("mirascope.rag.chunkers.text.TextChunker.chunk")
-def test_chroma_vectorstore_add(
-    mock_text_chunker: MagicMock,
+def test_chroma_vectorstore_add_document(
     mock_upsert: MagicMock,
-    documents: str | list[Document],
-    fixture_persistent_client: ChromaVectorStore,
+    fixture_ephemeral_client: ChromaVectorStore,
 ):
-    """Test the add method of the ChromaVectorStore class."""
-
-    mock_text_chunker.return_value = [Document(text="foo", id="1")]
+    """Test the add method of the ChromaVectorStore class with documents as argument"""
     mock_upsert.return_value = None
-    fixture_persistent_client.add(documents)
+    fixture_ephemeral_client.add([Document(text="foo", id="1")])
     mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
+
+
+@patch("chromadb.api.models.Collection.Collection.upsert")
+@patch("uuid.uuid4")
+def test_chroma_vectorstore_add_text(
+    mock_uuid: MagicMock,
+    mock_upsert: MagicMock,
+    fixture_ephemeral_client: ChromaVectorStore,
+):
+    """Test the add method of the ChromaVectorStore class with string as argument"""
+    mock_uuid.return_value = uuid.UUID("12345678-1234-5678-1234-567812345678")
+    mock_upsert.return_value = None
+    fixture_ephemeral_client.add("foo")
+    mock_upsert.assert_called_once_with(
+        ids=["12345678-1234-5678-1234-567812345678"], documents=["foo"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -32,17 +42,17 @@ def test_chroma_vectorstore_add(
 )
 @patch("chromadb.api.models.Collection.Collection.query")
 def test_chroma_vectorstore_retrieve(
-    mock_upsert: MagicMock,
+    mock_query: MagicMock,
     query_texts: str | dict,
-    fixture_persistent_client: ChromaVectorStore,
+    fixture_ephemeral_client: ChromaVectorStore,
 ):
     """Test the retrieve method of the ChromaVectorStore class."""
-    mock_upsert.return_value = ChromaQueryResult(ids=[["1"]])
+    mock_query.return_value = ChromaQueryResult(ids=[["1"]])
     if isinstance(query_texts, str):
-        fixture_persistent_client.retrieve(query_texts)
+        fixture_ephemeral_client.retrieve(query_texts)
     else:
-        fixture_persistent_client.retrieve(**query_texts)
-    mock_upsert.assert_called_once_with(query_texts=["test_query"])
+        fixture_ephemeral_client.retrieve(**query_texts)
+    mock_query.assert_called_once_with(query_texts=["test_query"])
 
 
 @patch("mirascope.chroma.vectorstores.PersistentClient", new_callable=MagicMock)

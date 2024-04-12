@@ -1,6 +1,10 @@
+"""A module for calling Chroma's Client and Collection."""
+from contextlib import suppress
 from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
 
+with suppress(ImportError):
+    import weave
 from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
 from chromadb.api import ClientAPI
 
@@ -17,15 +21,29 @@ class ChromaVectorStore(BaseVectorStore):
 
     def retrieve(
         self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
-    ) -> Optional[list[list[str]]]:
-        return self._get_query_results(text, **kwargs).documents
+    ) -> ChromaQueryResult:
+        """Queries the vectorstore for closest match"""
+        if text:
+            if isinstance(text, str):
+                text = [text]
+            query_result = self._index.query(query_texts=text, **kwargs)
+        else:
+            query_result = self._index.query(**kwargs)
+
+        return ChromaQueryResult.model_validate(query_result)
 
     def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):
-            chunker = self.chunker
-            documents = chunker.chunk(text)
+            chunk = self.chunker.chunk
+            if self.vectorstore_params.weave is not None and not isinstance(
+                self.chunker, weave.Op
+            ):
+                chunk = self.vectorstore_params.weave(
+                    self.chunker.chunk
+                )  # pragma: no cover
+            documents = chunk(text)
         else:
             documents = text
 
@@ -53,22 +71,13 @@ class ChromaVectorStore(BaseVectorStore):
             vectorstore_params = self.vectorstore_params.model_copy(
                 update={"name": self.index_name}
             )
-        return self._client.create_collection(
+        create_collection = self._client.create_collection
+        if self.vectorstore_params.weave is not None:
+            create_collection = self.vectorstore_params.weave(
+                self._client.create_collection
+            )  # pragma: no cover
+
+        return create_collection(
             **vectorstore_params.kwargs(),
             embedding_function=self.embedder,  # type: ignore
         )
-
-    ############################## PRIVATE METHODS ###################################
-
-    def _get_query_results(
-        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
-    ) -> ChromaQueryResult:
-        """Queries the vectorstore for closest match"""
-        if text:
-            if isinstance(text, str):
-                text = [text]
-            query_result = self._index.query(query_texts=text, **kwargs)
-        else:
-            query_result = self._index.query(**kwargs)
-
-        return ChromaQueryResult.model_validate(query_result)
