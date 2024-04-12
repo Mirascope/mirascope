@@ -44,7 +44,10 @@ def with_weave(cls: Type[BaseEmbedderT]) -> Type[BaseEmbedderT]:
 
 
 def with_weave(cls):
-    """Wraps `BaseCall` and `BaseExtractor` functions to automatically use weave.
+    """Wraps base classes to automatically use weave.
+
+    Supported base classes: `BaseCall`, `BaseExtractor`, `BaseVectorStore`,
+    `BaseChunker`, `BaseEmbedder`
 
     Example:
 

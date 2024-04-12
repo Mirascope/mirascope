@@ -10,6 +10,8 @@ BaseEmbeddingT = TypeVar("BaseEmbeddingT", bound=BaseModel)
 
 
 class BaseEmbedder(BaseModel, Generic[BaseEmbeddingT], ABC):
+    """The base class abstract interface for interacting with LLM embeddings."""
+
     api_key: ClassVar[Optional[str]] = None
     base_url: ClassVar[Optional[str]] = None
     embedding_params: ClassVar[BaseEmbeddingParams] = BaseEmbeddingParams(

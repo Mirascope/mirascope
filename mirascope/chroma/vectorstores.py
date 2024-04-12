@@ -14,7 +14,27 @@ from .types import ChromaParams, ChromaQueryResult, ChromaSettings
 
 
 class ChromaVectorStore(BaseVectorStore):
-    """A vectorstore for Chroma."""
+    """A vectorstore for Chroma.
+
+    Example:
+
+    ```python
+    from mirascope.chroma import ChromaSettings, ChromaVectorStore
+    from mirascope.openai import OpenAIEmbedder
+    from mirascope.rag import TextChunker
+
+
+    class MyStore(ChromaVectorStore):
+        embedder = OpenAIEmbedder()
+        chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
+        index_name = "my_store_0001"
+        client_settings = ChromaSettings()
+
+    my_store = MyStore()
+    documents = my_store.retrieve("my question").documents
+    print(documents)
+    ```
+    """
 
     vectorstore_params = ChromaParams(get_or_create=True)
     client_settings: ClassVar[ChromaSettings] = ChromaSettings(mode="persistent")

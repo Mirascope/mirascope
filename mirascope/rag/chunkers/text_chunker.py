@@ -6,7 +6,18 @@ from .base_chunker import BaseChunker
 
 
 class TextChunker(BaseChunker):
-    """A text chunker that splits a text into chunks of a certain size and overlaps."""
+    """A text chunker that splits a text into chunks of a certain size and overlaps.
+
+    Example:
+
+    ```python
+    from mirascope.rag import TextChunker
+
+    text_chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
+    chunks = text_chunker.chunk("This is a long text that I want to split into chunks.")
+    print(chunks)
+    ```
+    """
 
     chunk_size: int
     chunk_overlap: int

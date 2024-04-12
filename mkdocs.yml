@@ -103,6 +103,7 @@ nav:
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
       - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
       - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
+      - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
       - Integrations: "concepts/integrations.md"
   - Cookbook: "cookbook/index.md"
@@ -122,6 +123,10 @@ nav:
           - tools: "api/base/tools.md"
           - types: "api/base/types.md"
           - utils: "api/base/utils.md"
+      - chroma:
+          - "api/chroma/index.md"
+          - types: "api/chroma/types.md"
+          - vectorstores: "api/chroma/vectorstores.md"
       - cli:
           - "api/cli/index.md"
           - commands: "api/cli/commands.md"
@@ -145,9 +150,18 @@ nav:
       - openai:
           - "api/openai/index.md"
           - calls: "api/openai/calls.md"
+          - embedders: "api/openai/embedders.md"
           - extractors: "api/openai/extractors.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
+      - rag:
+          - "api/rag/index.md"
+          - embedders: "api/rag/embedders.md"
+          - chunkers:
+              - "api/rag/chunkers/index.md"
+              - base_chunker: "api/rag/chunkers/base_chunker.md"
+              - text_chunker: "api/rag/chunkers/text_chunker.md"
+          - vectorstores: "api/rag/vectorstores.md"
       - wandb:
           - "api/wandb/index.md"
           - wandb: "api/wandb/wandb.md"
