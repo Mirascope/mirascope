@@ -85,7 +85,7 @@ def test_anthropic_call_call_json_tools_setup(
                 "role": "assistant",
                 "content": dedent(
                     """
-        For each JSON you output, output ONLY the fields defined by these schemas. Make sure to INCLUDE THE TOOL NAME as `tool_name` field:
+        For each JSON you output, output ONLY the fields defined by these schemas. Include a `tool_name` field that EXACTLY MATCHES the tool name found in the schema matching this tool:
         {tool_schema}
         Here is the JSON requested with only the fields defined in the schema you provided:{assistance}
                     """

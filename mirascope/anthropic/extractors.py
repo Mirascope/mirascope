@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import AnthropicCall
+from .tool_streams import AnthropicToolStream
 from .tools import AnthropicTool
 from .types import AnthropicCallParams
 
@@ -111,3 +112,52 @@ class AnthropicExtractor(
         return await self._extract_async(
             AnthropicCall, AnthropicTool, retries, **kwargs
         )
+
+    def stream(self, retries: int = 0, **kwargs: Any) -> Generator[T, None, None]:
+        """Streams partial instances of `extract_schema` as the schema is streamed.
+
+        The `extract_schema` is converted into a `partial(AnthropicTool)`, which allows
+        for any field (i.e.function argument) in the tool to be `None`. This allows us
+        to stream partial results as we construct the tool from the streamed chunks.
+
+        Args:
+            retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword argument parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
+
+        Yields:
+            The partial `extract_schema` instance from the current buffer.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        yield from self._stream(
+            AnthropicCall, AnthropicTool, AnthropicToolStream, retries, **kwargs
+        )
+
+    async def stream_async(
+        self, retries: int = 0, **kwargs: Any
+    ) -> AsyncGenerator[T, None]:
+        """Asynchronously streams partial instances of `extract_schema` as streamed.
+
+        The `extract_schema` is converted into a `partial(AnthropicTool)`, which allows
+        for any field (i.e.function argument) in the tool to be `None`. This allows us
+        to stream partial results as we construct the tool from the streamed chunks.
+
+        Args:
+            retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword arguments parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
+
+        Yields:
+            The partial `extract_schema` instance from the current buffer.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+        """
+        async for partial_tool in self._stream_async(
+            AnthropicCall, AnthropicTool, AnthropicToolStream, retries, **kwargs
+        ):
+            yield partial_tool
