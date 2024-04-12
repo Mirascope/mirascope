@@ -7,6 +7,8 @@ from anthropic.types import (
     ContentBlock,
     ContentBlockDeltaEvent,
     Message,
+    MessageStartEvent,
+    MessageStreamEvent,
     TextDelta,
     Usage,
 )
@@ -14,7 +16,7 @@ from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.tools import AnthropicTool
-from mirascope.anthropic.types import AnthropicCallParams
+from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponseChunk
 
 
 @pytest.fixture()
@@ -138,3 +140,76 @@ def fixture_anthropic_book_tool() -> Type[BookTool]:
     """Returns the `BookTool` type definition."""
 
     return BookTool
+
+
+@pytest.fixture()
+def fixture_anthropic_call_response_chunks_with_tools(
+    fixture_anthropic_book_tool: Type[AnthropicTool],
+) -> list[AnthropicCallResponseChunk]:
+    """Returns a list of content block delta events with tools."""
+    chunks: list[MessageStreamEvent] = [
+        MessageStartEvent(
+            message=Message(
+                id="id",
+                content=[],
+                role="assistant",
+                type="message",
+                model="test",
+                usage=Usage(input_tokens=0, output_tokens=0),
+            ),
+            type="message_start",
+        ),
+        ContentBlockDeltaEvent(
+            delta=TextDelta(
+                text='"tool_name": "BookTool", "title": "The Name of the Wind"',
+                type="text_delta",
+            ),
+            index=0,
+            type="content_block_delta",
+        ),
+        ContentBlockDeltaEvent(
+            delta=TextDelta(text=', "author": "Patrick Rothfuss"}', type="text_delta"),
+            index=1,
+            type="content_block_delta",
+        ),
+        ContentBlockDeltaEvent(
+            delta=TextDelta(
+                text='{"tool_name": "BookTool", "title": "The Name of the Wind"',
+                type="text_delta",
+            ),
+            index=2,
+            type="content_block_delta",
+        ),
+        ContentBlockDeltaEvent(
+            delta=TextDelta(text=', "author": "Patrick Rothfuss"}', type="text_delta"),
+            index=3,
+            type="content_block_delta",
+        ),
+    ]
+    return [
+        AnthropicCallResponseChunk(
+            chunk=chunk,
+            tool_types=[fixture_anthropic_book_tool],
+            response_format="json",
+        )
+        for chunk in chunks
+    ]
+
+
+@pytest.fixture()
+def fixture_anthropic_call_response_chunk_with_bad_tool(
+    fixture_anthropic_book_tool: Type[AnthropicTool],
+) -> AnthropicCallResponseChunk:
+    """Returns a content block delta event with a bad tool name."""
+    return AnthropicCallResponseChunk(
+        chunk=ContentBlockDeltaEvent(
+            delta=TextDelta(
+                text='"tool_name": "BadTool"',
+                type="text_delta",
+            ),
+            index=3,
+            type="content_block_delta",
+        ),
+        tool_types=[fixture_anthropic_book_tool],
+        response_format="json",
+    )

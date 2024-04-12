@@ -194,7 +194,7 @@ class AnthropicCall(
             if "tools" in kwargs:
                 tools = kwargs.pop("tools")
                 messages[-1]["content"] = (
-                    "For each JSON you output, output ONLY the fields defined by these"
+                    "For each JSON you output, output ONLY the fields defined by these "
                     "schemas. Make sure to INCLUDE THE TOOL NAME as `tool_name` field:"
                     "\n{schemas}\n{json_msg}".format(
                         schemas="\n\n".join([str(tool) for tool in tools]),

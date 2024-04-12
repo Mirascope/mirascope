@@ -1,5 +1,6 @@
 """Tests for `AnthropicCall`."""
-from typing import AsyncContextManager, ContextManager
+from textwrap import dedent
+from typing import AsyncContextManager, ContextManager, Type
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -8,7 +9,9 @@ from anthropic.types import ContentBlockDeltaEvent, Message
 from pytest import FixtureRequest
 
 from mirascope.anthropic.calls import AnthropicCall
+from mirascope.anthropic.tools import AnthropicTool
 from mirascope.anthropic.types import (
+    AnthropicCallParams,
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
 )
@@ -34,6 +37,64 @@ def test_anthropic_call_messages(call: str, expected_messages, request: FixtureR
     """Tests the prompt property."""
     prompt: AnthropicCall = request.getfixturevalue(call)
     assert prompt.messages() == expected_messages
+
+
+@patch(
+    "anthropic.resources.beta.tools.messages.Messages.create",
+    new_callable=MagicMock,
+)
+def test_anthropic_call_call_json_tools_setup(
+    mock_create: MagicMock,
+    fixture_anthropic_book_tool: Type[AnthropicTool],
+    fixture_anthropic_message_with_tools: Message,
+):
+    """Tests `AnthropicCall.call` json mode."""
+    mock_create.return_value = fixture_anthropic_message_with_tools
+
+    class MyCall(AnthropicCall):
+        prompt_template = "SYSTEM: system"
+        api_key = "test"
+        call_params = AnthropicCallParams(
+            system="system",
+            tools=[fixture_anthropic_book_tool],
+            response_format="json",
+            model="test",
+        )
+
+    MyCall().call()
+    tool_schema = {
+        "input_schema": {
+            "properties": {
+                "title": {"title": "Title", "type": "string"},
+                "author": {"title": "Author", "type": "string"},
+            },
+            "required": ["title", "author"],
+            "type": "object",
+        },
+        "name": "BookTool",
+        "description": "Correctly formatted and typed parameters extracted from the completion. Must include required parameters and may exclude optional parameters unless present in the text.",
+    }
+    mock_create.assert_called_once_with(
+        model="test",
+        stream=False,
+        max_tokens=1000,
+        timeout=600,
+        system="system\nsystem\n\nResponse format: JSON.",
+        messages=[
+            {
+                "role": "assistant",
+                "content": dedent(
+                    """
+        For each JSON you output, output ONLY the fields defined by these schemas. Make sure to INCLUDE THE TOOL NAME as `tool_name` field:
+        {tool_schema}
+        Here is the JSON requested with only the fields defined in the schema you provided:{assistance}
+                    """
+                )
+                .format(tool_schema=str(tool_schema), assistance="\n{")
+                .strip(),
+            }
+        ],
+    )
 
 
 @patch(

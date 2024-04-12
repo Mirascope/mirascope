@@ -46,7 +46,6 @@ def _handle_chunk(
             "You must use `response_format='json' to stream tools with Anthropic."
         )
 
-    current_tool_type = chunk.tool_types[0]
     if chunk_content := chunk.content:
         for i, char in enumerate(chunk_content):
             if char == "{":
@@ -55,13 +54,11 @@ def _handle_chunk(
                 num_open_parens -= 1
                 if num_open_parens == 0:
                     buffer += chunk_content[: i + 1] if i < len(chunk_content) else ""
-                    if len(chunk_content) > i:
-                        chunk_content = chunk_content[i + 1 :]
-                    else:
-                        chunk_content = ""
+                    chunk_content = chunk_content[i + 1 :]
                     num_open_parens += chunk_content.count("{")
                     num_open_parens -= chunk_content.count("}")
                     current_tool_call.input = from_json(buffer)
+                    # we have to type ignore since `input` is of type `object`
                     if "tool_name" not in current_tool_call.input:  # type: ignore
                         raise RuntimeError("No `tool_name` field for tool.")
                     tool_name = current_tool_call.input.pop("tool_name")  # type: ignore
@@ -83,28 +80,31 @@ def _handle_chunk(
 
         if allow_partial:
             current_tool_call.input = from_json(buffer, allow_partial=True)
+            # we have to type ignore since `input` is of type `object`
             if "tool_name" in current_tool_call.input:  # type: ignore
                 tool_name = current_tool_call.input.pop("tool_name")  # type: ignore
-                if current_tool_type is not None:
-                    for tool_type in chunk.tool_types:
-                        if tool_type.__name__ == tool_name:
-                            current_tool_type = tool_type
-                            break
-            return (
-                buffer,
-                partial(current_tool_type).from_tool_call(
-                    ToolUseBlock(
-                        id="id",
-                        input=current_tool_call.input,
-                        name=current_tool_type.__name__,
-                        type="tool_use",
-                    )
-                ),
-                current_tool_call,
-                current_tool_type,
-                num_open_parens,
-                False,
-            )
+                for tool_type in chunk.tool_types:
+                    if tool_type.__name__ == tool_name:
+                        current_tool_type = tool_type
+                        break
+                if current_tool_type is None:
+                    raise RuntimeError("Unknown tool returned.")
+            if current_tool_type is not None:
+                return (
+                    buffer,
+                    partial(current_tool_type).from_tool_call(
+                        ToolUseBlock(
+                            id="id",
+                            input=current_tool_call.input,
+                            name=current_tool_type.__name__,
+                            type="tool_use",
+                        )
+                    ),
+                    current_tool_call,
+                    current_tool_type,
+                    num_open_parens,
+                    False,
+                )
     return buffer, None, current_tool_call, current_tool_type, num_open_parens, False
 
 
