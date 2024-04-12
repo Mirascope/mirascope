@@ -49,6 +49,8 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
     extra_body: Optional[Body] = None
     timeout: Optional[Union[float, Timeout]] = 600
 
+    response_format: Optional[Literal["json"]] = None
+
     wrapper: Optional[Callable[[Anthropic], Anthropic]] = None
     wrapper_async: Optional[Callable[[AsyncAnthropic], AsyncAnthropic]] = None
 
@@ -60,7 +62,7 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
-        extra_exclude = {"wrapper", "wrapper_async"}
+        extra_exclude = {"response_format", "wrapper", "wrapper_async"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         return super().kwargs(tool_type, exclude)
 
@@ -88,6 +90,8 @@ class AnthropicCallResponse(
     print(BookRecommender().call())
     ```
     """
+
+    response_format: Optional[Literal["json"]] = None
 
     @property
     def tools(self) -> Optional[list[AnthropicTool]]:
@@ -163,6 +167,8 @@ class AnthropicCallResponseChunk(
         print(chunk, end="")
     ```
     """
+
+    response_format: Optional[Literal["json"]] = None
 
     @property
     def type(

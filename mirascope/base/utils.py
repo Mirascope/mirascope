@@ -106,12 +106,13 @@ def convert_function_to_tool(fn: Callable, base: Type[BaseToolT]) -> Type[BaseTo
             field_info,
         )
 
-    return create_model(
+    model = create_model(
         "".join(word.title() for word in fn.__name__.split("_")),
-        __base__=tool_fn(fn)(base),
+        __base__=base,
         __doc__=doc,
         **cast(dict[str, Any], field_definitions),
     )
+    return tool_fn(fn)(model)
 
 
 def convert_base_model_to_tool(
