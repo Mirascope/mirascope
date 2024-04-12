@@ -2,5 +2,6 @@
 from .calls import OpenAICall
 from .embedders import OpenAIEmbedder
 from .extractors import OpenAIExtractor
+from .tool_streams import OpenAIToolStream
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk

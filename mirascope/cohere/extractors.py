@@ -1,56 +1,64 @@
-"""A module for extracting structured information using Groq's Cloud API."""
+"""A class for extracting structured information using Cohere chat models."""
+from __future__ import annotations
+
 import logging
 from typing import Any, ClassVar, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
-from .calls import GroqCall
-from .tools import GroqTool
-from .types import GroqCallParams
+from .calls import CohereCall
+from .tools import CohereTool
+from .types import CohereCallParams
 
 logger = logging.getLogger("mirascope")
 
 T = TypeVar("T", bound=ExtractedType)
 
 
-class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
-    '''A class for extracting structured information using Groq Cloud API.
+class CohereExtractor(BaseExtractor[CohereCall, CohereTool, Any, T], Generic[T]):
+    '''A class for extracting structured information using Cohere chat models.
 
     Example:
 
     ```python
-    from mirascope.groq import GroqExtractor
-    from pydantic import BaseModel
     from typing import Literal, Type
+
+    from mirascope.cohere import CohereExtractor
+    from pydantic import BaseModel
+
 
     class TaskDetails(BaseModel):
         title: str
         priority: Literal["low", "normal", "high"]
         due_date: str
 
-    class TaskExtractor(GroqExtractor[TaskDetails]):
+
+    class TaskExtractor(CohereExtractor[TaskDetails]):
         extract_schema: Type[TaskDetails] = TaskDetails
-        call_params = GroqCallParams(model="mixtral-8x7b-32768")
 
         prompt_template = """
-        Prepare the budget report by next Monday. It's a high priority task.
+        Please extract the task details:
+        {task}
         """
 
+        task: str
 
-    task = TaskExtractor().extract(retries=3)
+
+    task_description = "Submit quarterly report by next Friday. Task is high priority."
+    task = TaskExtractor(task=task_description).extract(retries=3)
     assert isinstance(task, TaskDetails)
     print(task)
-    # > title='Prepare the budget report' priority='high' due_date='next Monday'
+    #> title='Submit quarterly report' priority='high' due_date='next Friday'
     ```
     '''
 
-    call_params: ClassVar[GroqCallParams] = GroqCallParams()
+    call_params: ClassVar[CohereCallParams] = CohereCallParams()
 
     def extract(self, retries: int = 0, **kwargs: Any) -> T:
-        """Extracts `extract_schema` from the Groq call response.
+        """Extracts `extract_schema` from the Cohere call response.
 
-        The `extract_schema` is converted into an `GroqTool`, complete with a
+        The `extract_schema` is converted into an `CohereTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of Groq's tool/function calling functionality to extract
+        take advantage of Cohere's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -66,14 +74,14 @@ class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        return self._extract(GroqCall, GroqTool, retries, **kwargs)
+        return self._extract(CohereCall, CohereTool, retries, **kwargs)
 
     async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
-        """Asynchronously extracts `extract_schema` from the Groq call response.
+        """Asynchronously extracts `extract_schema` from the Cohere call response.
 
-        The `extract_schema` is converted into an `GroqTool`, complete with a
+        The `extract_schema` is converted into an `CohereTool`, complete with a
         description of the tool, all of the fields, and their types. This allows us to
-        take advantage of Groq's tool/function calling functionality to extract
+        take advantage of Cohere's tool/function calling functionality to extract
         information from a prompt according to the context provided by the `BaseModel`
         schema.
 
@@ -89,4 +97,4 @@ class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        return await self._extract_async(GroqCall, GroqTool, retries, **kwargs)
+        return await self._extract_async(CohereCall, CohereTool, retries, **kwargs)
