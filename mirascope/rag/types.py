@@ -14,14 +14,11 @@ class BaseVectorStoreParams(BaseModel):
 
     def kwargs(
         self,
-        exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
-        extra_exclude = {"weave"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
-            for key, value in self.model_dump(exclude=exclude).items()
+            for key, value in self.model_dump(exclude={"weave"}).items()
             if value is not None
         }
         return kwargs

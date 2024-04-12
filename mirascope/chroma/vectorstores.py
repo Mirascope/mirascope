@@ -1,7 +1,10 @@
+"""A module for calling Chroma's Client and Collection."""
+from contextlib import suppress
 from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
 
-import weave
+with suppress(ImportError):
+    import weave
 from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
 from chromadb.api import ClientAPI
 
