@@ -1,6 +1,6 @@
 """Types for interacting with OpenAI models using Mirascope."""
 
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Callable, Literal, Optional, Type, Union
 
 from httpx import Timeout
 from openai import AsyncOpenAI, OpenAI
@@ -19,8 +19,27 @@ from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import ConfigDict
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..base import (
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+)
+from ..rag.types import BaseEmbeddingParams
 from .tools import OpenAITool
+
+
+class OpenAIEmbeddingParams(BaseEmbeddingParams):
+    input: str = ""
+    model: str = "text-embedding-ada-002"
+    dimensions: Optional[int] = None
+    encoding_format: Optional[Literal["float", "base64"]] = None
+    user: Optional[str] = None
+    # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+    # The extra values given here take precedence over values defined on the client or passed to this method.
+    extra_headers: Optional[Headers] = None
+    extra_query: Optional[Query] = None
+    extra_body: Optional[Body] = None
+    timeout: Optional[Union[float, Timeout]] = None
 
 
 class OpenAICallParams(BaseCallParams[OpenAITool]):
