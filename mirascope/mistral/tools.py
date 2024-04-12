@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, Callable, Type
 
 from mistralai.models.chat_completion import ToolCall
 from pydantic import BaseModel
@@ -13,8 +13,6 @@ from ..base.utils import (
     convert_base_type_to_tool,
     convert_function_to_tool,
 )
-
-BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class MistralTool(BaseTool[ToolCall]):
@@ -118,6 +116,6 @@ class MistralTool(BaseTool[ToolCall]):
         return convert_function_to_tool(fn, MistralTool)
 
     @classmethod
-    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[MistralTool]:
+    def from_base_type(cls, base_type: Type[BaseType]) -> Type[MistralTool]:
         """Constructs a `MistralTool` type from a `BaseType` type."""
         return convert_base_type_to_tool(base_type, MistralTool)

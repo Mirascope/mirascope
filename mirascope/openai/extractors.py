@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import OpenAICall
+from .tool_streams import OpenAIToolStream
 from .tools import OpenAITool
 from .types import OpenAICallParams
 
@@ -14,7 +15,9 @@ logger = logging.getLogger("mirascope")
 T = TypeVar("T", bound=ExtractedType)
 
 
-class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
+class OpenAIExtractor(
+    BaseExtractor[OpenAICall, OpenAITool, OpenAIToolStream, T], Generic[T]
+):
     '''A class for extracting structured information using OpenAI chat models.
 
     Example:
@@ -68,7 +71,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
                 will override any existing arguments in `call_params`.
 
         Returns:
-            The `Schema` instance extracted from the completion.
+            The `extract_schema` instance extracted from the completion.
 
         Raises:
             AttributeError: if there is no tool in the call creation.
@@ -93,7 +96,7 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
                 will override any existing arguments in `call_params`.
 
         Returns:
-            The `Schema` instance extracted from the completion.
+            The `extract_schema` instance extracted from the completion.
 
         Raises:
             AttributeError: if there is no tool in the call creation.
@@ -102,3 +105,56 @@ class OpenAIExtractor(BaseExtractor[OpenAICall, OpenAITool, T], Generic[T]):
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         return await self._extract_async(OpenAICall, OpenAITool, retries, **kwargs)
+
+    def stream(self, retries: int = 0, **kwargs: Any) -> Generator[T, None, None]:
+        """Streams partial instances of `extract_schema` as the schema is streamed.
+
+        The `extract_schema` is converted into a `partial(OpenAITool)`, which allows for
+        any field (i.e.function argument) in the tool to be `None`. This allows us to
+        stream partial results as we construct the tool from the streamed chunks.
+
+        Args:
+            retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword argument parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
+
+        Yields:
+            The partial `extract_schema` instance from the current buffer.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
+        """
+        yield from self._stream(
+            OpenAICall, OpenAITool, OpenAIToolStream, retries, **kwargs
+        )
+
+    async def stream_async(
+        self, retries: int = 0, **kwargs: Any
+    ) -> AsyncGenerator[T, None]:
+        """Asynchronously streams partial instances of `extract_schema` as streamed.
+
+        The `extract_schema` is converted into a `partial(OpenAITool)`, which allows for
+        any field (i.e.function argument) in the tool to be `None`. This allows us to
+        stream partial results as we construct the tool from the streamed chunks.
+
+        Args:
+            retries: The maximum number of times to retry the query on validation error.
+            **kwargs: Additional keyword arguments parameters to pass to the call. These
+                will override any existing arguments in `call_params`.
+
+        Yields:
+            The partial `extract_schema` instance from the current buffer.
+
+        Raises:
+            AttributeError: if there is no tool in the call creation.
+            ValidationError: if the schema cannot be instantiated from the completion.
+            OpenAIError: raises any OpenAI errors, see:
+                https://platform.openai.com/docs/guides/error-codes/api-errors
+        """
+        async for partial_tool in self._stream_async(
+            OpenAICall, OpenAITool, OpenAIToolStream, retries, **kwargs
+        ):
+            yield partial_tool

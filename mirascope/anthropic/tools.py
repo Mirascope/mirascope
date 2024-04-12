@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Type, TypeVar
+from typing import Callable, Type
 
 from anthropic.types.beta.tools import ToolParam, ToolUseBlock
 from pydantic import BaseModel
@@ -13,8 +13,6 @@ from ..base.utils import (
     convert_base_type_to_tool,
     convert_function_to_tool,
 )
-
-BaseTypeT = TypeVar("BaseTypeT", bound=BaseType)
 
 
 class AnthropicTool(BaseTool[ToolUseBlock]):
@@ -104,6 +102,6 @@ class AnthropicTool(BaseTool[ToolUseBlock]):
         return convert_function_to_tool(fn, AnthropicTool)
 
     @classmethod
-    def from_base_type(cls, base_type: Type[BaseTypeT]) -> Type[AnthropicTool]:
+    def from_base_type(cls, base_type: Type[BaseType]) -> Type[AnthropicTool]:
         """Constructs a `AnthropicTool` type from a `BaseType` type."""
         return convert_base_type_to_tool(base_type, AnthropicTool)

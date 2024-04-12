@@ -26,11 +26,18 @@ from .schemas import (
 ignore_variables = {"prev_revision_id", "revision_id"}
 mirascope_prompt_bases = (
     "BasePrompt",
-    "OpenAICall",
-    "GeminiCall",
     "AnthropicCall",
-    "WandbOpenAICall",
+    "AnthropicExtractor",
+    "CohereCall",
+    "CohereExtractor",
+    "GeminiCall",
+    "GeminiExtractor",
     "GroqCall",
+    "GroqExtractor",
+    "MistralCall",
+    "MistralExtractor",
+    "OpenAICall",
+    "OpenAIExtractor",
 )
 
 
