@@ -76,6 +76,7 @@ class AnthropicCall(
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            response_format=self.call_params.response_format,
         )
 
     async def call_async(self, **kwargs: Any) -> AnthropicCallResponse:
@@ -108,6 +109,7 @@ class AnthropicCall(
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            response_format=self.call_params.response_format,
         )
 
     def stream(
@@ -128,7 +130,11 @@ class AnthropicCall(
             client = self.call_params.wrapper(client)
         with client.messages.stream(messages=messages, **kwargs) as stream:
             for chunk in stream:
-                yield AnthropicCallResponseChunk(chunk=chunk, tool_types=tool_types)
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     async def stream_async(
         self, **kwargs: Any
@@ -148,7 +154,11 @@ class AnthropicCall(
             client = self.call_params.wrapper_async(client)
         async with client.messages.stream(messages=messages, **kwargs) as stream:
             async for chunk in stream:
-                yield AnthropicCallResponseChunk(chunk=chunk, tool_types=tool_types)
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     ############################## PRIVATE METHODS ###################################
 
@@ -165,9 +175,34 @@ class AnthropicCall(
         messages = self.messages()
         system_message = ""
         if "system" in kwargs and kwargs["system"] is not None:
-            system_message += kwargs.pop("system")
+            system_message += f'{kwargs.pop("system")}'
         if messages[0]["role"] == "system":
+            if system_message:
+                system_message += "\n"
             system_message += messages.pop(0)["content"]
+        if self.call_params.response_format == "json":
+            if system_message:
+                system_message += "\n\n"
+            system_message += "Response format: JSON."
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": "Here is the JSON requested with only the fields "
+                    "defined in the schema you provided:\n{",
+                }
+            )
+            if "tools" in kwargs:
+                tools = kwargs.pop("tools")
+                messages[-1]["content"] = (
+                    "For each JSON you output, output ONLY the fields defined by these "
+                    "schemas. Include a `tool_name` field that EXACTLY MATCHES the "
+                    "tool name found in the schema matching this tool:"
+                    "\n{schemas}\n{json_msg}".format(
+                        schemas="\n\n".join([str(tool) for tool in tools]),
+                        json_msg=messages[-1]["content"],
+                    )
+                )
         if system_message:
             kwargs["system"] = system_message
+
         return messages, kwargs, tool_types
