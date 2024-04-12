@@ -10,6 +10,22 @@ from .types import OpenAIEmbeddingParams
 
 
 class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
+    """OpenAI Embedder
+
+    Example:
+
+    ```python
+    import os
+    from mirascope.openai import OpenAIEmbedder
+
+    os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+
+    openai_embedder = OpenAIEmbedder()
+    response = openai_embedder.embed(["your text to embed"])
+    print(response)
+    ```
+    """
+
     embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams()
 
     def embed(self, inputs: list[str]) -> list[CreateEmbeddingResponse]:

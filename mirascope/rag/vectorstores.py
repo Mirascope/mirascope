@@ -12,6 +12,8 @@ BaseQueryResultsT = TypeVar("BaseQueryResultsT", bound=BaseQueryResults)
 
 
 class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
+    """The base class abstract interface for interacting with vectorstores."""
+
     api_key: ClassVar[Optional[str]] = None
     index_name: ClassVar[Optional[str]] = None
     chunker: ClassVar[BaseChunker] = TextChunker(chunk_size=1000, chunk_overlap=200)
