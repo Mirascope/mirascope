@@ -1,4 +1,5 @@
 """Tests for Mirascope ChromaVectorStore class"""
+from typing import Union
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -43,7 +44,7 @@ def test_chroma_vectorstore_add_text(
 @patch("chromadb.api.models.Collection.Collection.query")
 def test_chroma_vectorstore_retrieve(
     mock_query: MagicMock,
-    query_texts: str | dict,
+    query_texts: Union[str, dict],
     fixture_ephemeral_client: ChromaVectorStore,
 ):
     """Test the retrieve method of the ChromaVectorStore class."""
