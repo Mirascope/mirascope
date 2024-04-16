@@ -21,7 +21,7 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
 
     @abstractmethod
-    def retrieve(self, text: Optional[str] = None, **kwargs: Any) -> BaseQueryResultsT:
+    def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:
         """Queries the vectorstore for closest match"""
         ...  # pragma: no cover
 

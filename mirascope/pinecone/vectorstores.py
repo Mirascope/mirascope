@@ -59,32 +59,33 @@ class PineconeVectorStore(BaseVectorStore):
 
     vectorstore_params: ClassVar[
         Union[PineconePodParams, PineconeServerlessParams]
-    ] = PineconeServerlessParams(dimension=8, cloud="aws", region="us-east-1")
+    ] = PineconeServerlessParams(cloud="aws", region="us-east-1")
     client_settings: ClassVar[PineconeSettings] = PineconeSettings()
 
     def retrieve(self, text: str, **kwargs: Any) -> PineconeQueryResult:
         """Queries the vectorstore for closest match"""
-        embeddings = self.embedder.embed([text])
+        text_embedding = self.embedder.embed([text])
         if "top_k" not in kwargs:
             kwargs["top_k"] = 8
 
         query_result: QueryResponse = self._index.query(
-            vector=embeddings[0].data[0].embedding,
+            vector=text_embedding[0].embedding,
             **{"include_metadata": True, "include_values": True, **kwargs},
         )
-        ids, scores, documents, embeddings = zip(
-            *(
-                (
-                    match.id,
-                    match.score,
-                    self.handle_retrieve_text([match.values])[0]
-                    if self.handle_retrieve_text
-                    else match.metadata["text"],
-                    match.values,
-                )
-                for match in query_result.matches
+        ids: list[str] = []
+        scores: list[float] = []
+        documents: list[str] = []
+        embeddings: list[list[float]] = []
+        for match in query_result.matches:
+            ids.append(match.id)
+            scores.append(match.score)
+            documents.append(
+                self.handle_retrieve_text([match.values])[0]
+                if self.handle_retrieve_text
+                else match.metadata["text"]
             )
-        )
+            embeddings.append(match.values)
+
         return PineconeQueryResult(
             ids=ids,
             scores=scores,
@@ -114,21 +115,19 @@ class PineconeVectorStore(BaseVectorStore):
         embeddings = self.embedder.embed(inputs)
         if self.handle_add_text:
             self.handle_add_text(documents)
-        vectors = [
-            {
-                "id": documents[i].id,
-                "values": embedding.data[0].embedding,
-                "metadata": {
-                    **(
-                        documents[i].metadata
-                        if documents[i].metadata is not None
-                        else {}
-                    ),
-                    **({"text": documents[i].text} if not self.handle_add_text else {}),
-                },
-            }
-            for i, embedding in enumerate(embeddings)
-        ]
+
+        vectors = []
+        for i, embedding in enumerate(embeddings):
+            if documents[i] is not None:
+                metadata = documents[i].metadata or {}
+                metadata_text = {"text": documents[i].text} if documents[i].text else {}
+                vectors.append(
+                    {
+                        "id": documents[i].id,
+                        "values": embedding.embedding,
+                        "metadata": {**metadata, **metadata_text},
+                    }
+                )
         return self._index.upsert(vectors, **kwargs)
 
     ############################# PRIVATE PROPERTIES #################################

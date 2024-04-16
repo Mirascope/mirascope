@@ -1,5 +1,6 @@
 """Pinecone store for Wikipedia articles."""
-from examples.rag_on_wikipedia_article.rag_config import settings
+from rag_config import settings
+
 from mirascope.openai import OpenAIEmbedder
 from mirascope.pinecone import (
     PineconeServerlessParams,

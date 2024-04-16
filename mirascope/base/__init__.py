@@ -8,6 +8,7 @@ from .types import (
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
+    BaseEmbeddingResponse,
     Message,
 )
 from .utils import (
