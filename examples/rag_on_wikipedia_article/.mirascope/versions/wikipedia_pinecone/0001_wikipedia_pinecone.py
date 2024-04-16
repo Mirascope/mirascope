@@ -10,6 +10,9 @@ from mirascope.pinecone import (
 )
 from mirascope.rag.chunkers import TextChunker
 
+prev_revision_id = None
+revision_id = "0001"
+
 
 class WikipediaStore(PineconeVectorStore):
     embedder = OpenAIEmbedder(dimensions=1536)
