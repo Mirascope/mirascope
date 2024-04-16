@@ -1,11 +1,9 @@
 """Configurations for Mirascope PineconeVectorStore module tests"""
 
-from unittest.mock import MagicMock, patch
 
 import pytest
 from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
 from openai.types.embedding import Embedding
-from pinecone.data import Index
 
 from mirascope.openai.types import EmbeddingResponse
 from mirascope.pinecone import PineconeSettings, PineconeVectorStore

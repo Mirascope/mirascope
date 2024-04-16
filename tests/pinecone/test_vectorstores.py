@@ -2,15 +2,13 @@
 import uuid
 from unittest.mock import MagicMock, patch
 
-from pinecone import Index, Pinecone, QueryResponse, ScoredVector
+from pinecone import QueryResponse, ScoredVector
 
-from mirascope.openai.types import EmbeddingResponse
 from mirascope.pinecone import PineconeVectorStore
-from mirascope.pinecone.types import PineconeQueryResult
 from mirascope.rag.types import Document
 
 
-@patch.object(Pinecone, "__new__", new_callable=MagicMock)
+@patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
 def test_pinecone_vectorstore_add_document(
     mock_pinecone: MagicMock,
     fixture_pinecone: PineconeVectorStore,
@@ -33,7 +31,7 @@ def test_pinecone_vectorstore_add_document(
     )
 
 
-@patch.object(Pinecone, "__new__", new_callable=MagicMock)
+@patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
 @patch("uuid.uuid4")
 def test_pinecone_vectorstore_add_text(
     mock_uuid: MagicMock,
@@ -58,7 +56,7 @@ def test_pinecone_vectorstore_add_text(
     )
 
 
-@patch.object(Pinecone, "__new__", new_callable=MagicMock)
+@patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
 def test_pinecone_vectorstore_retrieve(
     mock_pinecone: MagicMock,
     fixture_pinecone: PineconeVectorStore,
@@ -84,7 +82,7 @@ def test_pinecone_vectorstore_retrieve(
     )
 
 
-@patch.object(Pinecone, "__new__", new_callable=MagicMock)
+@patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
 def test_pinecone_vectorstore_retrieve_with_handler(
     mock_pinecone: MagicMock,
     fixture_pinecone_with_handlers: PineconeVectorStore,
