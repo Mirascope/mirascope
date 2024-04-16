@@ -1,5 +1,7 @@
 """Configuration for the Mirascope chroma module tests."""
 
+import asyncio
+
 import pytest
 
 from mirascope.chroma.types import ChromaSettings
@@ -12,7 +14,7 @@ class TestEmbedder(BaseEmbedder):
         return input
 
     async def embed_async(self, input: list[str]) -> list[str]:
-        return input
+        return input  # pragma: no cover
 
     def __call__(self, input: str) -> list[float]:
         return [1, 2, 3]
@@ -27,6 +29,9 @@ def fixture_persistent_client() -> ChromaVectorStore:
         embedder = TestEmbedder()
         client_settings = ChromaSettings(mode="persistent")
 
+    vectorstore = VectorStore()
+    vectorstore.embedder.embed(["foo"])
+    vectorstore.embedder("foo")
     return VectorStore()
 
 

@@ -1,6 +1,6 @@
 """Tests for Mirascope ChromaVectorStore class"""
-from typing import Union
 import uuid
+from typing import Union
 from unittest.mock import MagicMock, patch
 
 import pytest

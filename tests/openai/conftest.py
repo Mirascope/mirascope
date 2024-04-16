@@ -23,9 +23,9 @@ from openai.types.embedding import Embedding
 from pydantic import BaseModel, Field
 
 from mirascope.openai.calls import OpenAICall
-from mirascope.openai.tools import OpenAITool
-from mirascope.openai.types import OpenAICallParams
 from mirascope.openai.embedders import OpenAIEmbedder
+from mirascope.openai.tools import OpenAITool
+from mirascope.openai.types import OpenAICallParams, OpenAIEmbeddingParams
 
 
 @pytest.fixture()
@@ -377,5 +377,6 @@ def fixture_openai_test_embedder():
 
     class TestEmbedder(OpenAIEmbedder):
         api_key = "test"
+        embedding_params = OpenAIEmbeddingParams(model="test_model")
 
     return TestEmbedder()

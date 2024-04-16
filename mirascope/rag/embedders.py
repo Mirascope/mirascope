@@ -4,9 +4,9 @@ from typing import ClassVar, Generic, Optional, TypeVar
 
 from pydantic import BaseModel
 
-from .types import BaseEmbeddingParams
+from .types import BaseEmbeddingParams, BaseEmbeddingResponse
 
-BaseEmbeddingT = TypeVar("BaseEmbeddingT", bound=BaseModel)
+BaseEmbeddingT = TypeVar("BaseEmbeddingT", bound=BaseEmbeddingResponse)
 
 
 class BaseEmbedder(BaseModel, Generic[BaseEmbeddingT], ABC):

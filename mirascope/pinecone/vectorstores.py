@@ -6,8 +6,7 @@ from typing import Any, Callable, ClassVar, Optional, Union
 with suppress(ImportError):
     import weave
 
-from pinecone import Pinecone, QueryResponse
-from pinecone.data import Index
+from pinecone import Index, Pinecone, QueryResponse
 
 from ..rag.types import Document
 from ..rag.vectorstores import BaseVectorStore
@@ -120,7 +119,11 @@ class PineconeVectorStore(BaseVectorStore):
         for i, embedding in enumerate(embeddings):
             if documents[i] is not None:
                 metadata = documents[i].metadata or {}
-                metadata_text = {"text": documents[i].text} if documents[i].text else {}
+                metadata_text = (
+                    {"text": documents[i].text}
+                    if documents[i].text and not self.handle_add_text
+                    else {}
+                )
                 vectors.append(
                     {
                         "id": documents[i].id,
@@ -139,7 +142,6 @@ class PineconeVectorStore(BaseVectorStore):
     @cached_property
     def _index(self) -> Index:
         if self.index_name not in self._client.list_indexes().names():
-            print(f"Creating index {self.index_name}")
             self._client.create_index(
                 name=self.index_name,
                 dimension=self.embedder.dimensions,

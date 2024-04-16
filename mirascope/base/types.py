@@ -186,27 +186,3 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         the empty string.
         """
         ...  # pragma: no cover
-
-
-class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
-    """A base abstract interface for LLM embedding responses.
-
-    Attributes:
-        response: The original response from whichever model response this wraps.
-    """
-
-    response: ResponseT
-    start_time: float  # The start time of the completion in ms
-    end_time: float  # The end time of the completion in ms
-
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
-
-    @property
-    @abstractmethod
-    def embedding(self) -> list[float]:
-        """Should return the embedding of the response.
-
-        If there are multiple choices in a response, this method should select the 0th
-        choice and return it's embedding.
-        """
-        ...  # pragma: no cover
