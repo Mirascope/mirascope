@@ -31,7 +31,6 @@ from .tools import OpenAITool
 class OpenAIEmbeddingParams(BaseEmbeddingParams):
     input: str = ""
     model: str = "text-embedding-ada-002"
-    dimensions: Optional[int] = None
     encoding_format: Optional[Literal["float", "base64"]] = None
     user: Optional[str] = None
     # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.

@@ -31,6 +31,7 @@ anthropic = { version = ">=0.23.1,<1.0.0", optional = true }
 mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
 groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
+pinecone-client = {version = "^3.2.2", optional = true}
 
 [tool.poetry.extras]
 wandb = ["wandb"]
@@ -38,8 +39,9 @@ weave = ["weave"]
 gemini = ["google-generativeai"]
 anthropic = ["anthropic"]
 mistral = ["mistralai"]
-groq = ["groq"]
 chromadb = ["chromadb"]
+pinecone = ["pinecone-client"]
+groq = ["groq"]
 cohere = ["cohere"]
 all = [
     "wandb",
@@ -48,6 +50,7 @@ all = [
     "anthropic",
     "mistralai",
     "chromadb",
+    "pinecone",
     "groq",
     "cohere",
 ]

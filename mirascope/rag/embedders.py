@@ -17,6 +17,7 @@ class BaseEmbedder(BaseModel, Generic[BaseEmbeddingT], ABC):
     embedding_params: ClassVar[BaseEmbeddingParams] = BaseEmbeddingParams(
         model="text-embedding-ada-002"
     )
+    dimensions: Optional[int] = None
 
     @abstractmethod
     def embed(self, input: list[str]) -> list[BaseEmbeddingT]:

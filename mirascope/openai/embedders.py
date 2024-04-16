@@ -1,6 +1,6 @@
 """A module for calling OpenAI's Embeddings models."""
 import asyncio
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types import CreateEmbeddingResponse, Embedding
@@ -26,7 +26,10 @@ class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
     ```
     """
 
-    embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams()
+    dimensions: Optional[int] = 1536
+    embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams(
+        model="text-embedding-ada-002"
+    )
 
     def embed(self, inputs: list[str]) -> list[CreateEmbeddingResponse]:
         """Call the embedder with multiple inputs"""
@@ -42,9 +45,13 @@ class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
         )
         return embedding_responses
 
-    def __call__(self, inputs: list[str]) -> list[list[float]]:
+    def __call__(self, input: list[str]) -> list[list[float]]:
+        """Call the embedder with a input
+
+        Chroma expects parameter to be `input`.
+        """
         embeddings: list[Embedding] = [
-            embedding for response in self.embed(inputs) for embedding in response.data
+            embedding for response in self.embed(input) for embedding in response.data
         ]
         sorted_embeddings = sorted(embeddings, key=lambda e: e.index)
         return [result.embedding for result in sorted_embeddings]
@@ -56,6 +63,8 @@ class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         embedding_params = self.embedding_params.model_copy(update={"input": input})
         kwargs = embedding_params.kwargs()
+        if self.embedding_params.model != "text-embedding-ada-002":
+            kwargs["dimensions"] = self.dimensions
         return client.embeddings.create(**kwargs)
 
     async def _embed_async(self, input: str) -> CreateEmbeddingResponse:
@@ -63,4 +72,6 @@ class OpenAIEmbedder(BaseEmbedder[CreateEmbeddingResponse]):
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         embedding_params = self.embedding_params.model_copy(update={"input": input})
         kwargs = embedding_params.kwargs()
+        if self.embedding_params.model != "text-embedding-ada-002":
+            kwargs["dimensions"] = self.dimensions
         return await client.embeddings.create(**kwargs)
