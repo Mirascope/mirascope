@@ -146,6 +146,10 @@ nav:
           - extractors: "api/openai/extractors.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
+      - pinecone:
+          - "api/pinecone/index.md"
+          - vectorstores: "api/pinecone/vectorstores.md"
+          - types: "api/pinecone/types.md"
       - rag:
           - "api/rag/index.md"
           - embedders: "api/rag/embedders.md"

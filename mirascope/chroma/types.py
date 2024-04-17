@@ -1,3 +1,4 @@
+"""Types for interacting with Chroma using Mirascope."""
 from typing import Any, Literal, Optional
 
 from chromadb import CollectionMetadata, Settings

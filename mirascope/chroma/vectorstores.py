@@ -27,10 +27,13 @@ class ChromaVectorStore(BaseVectorStore):
     class MyStore(ChromaVectorStore):
         embedder = OpenAIEmbedder()
         chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
-        index_name = "my_store_0001"
+        index_name = "my-store-0001"
         client_settings = ChromaSettings()
 
     my_store = MyStore()
+    with open(f"{PATH_TO_FILE}") as file:
+        data = file.read()
+        my_store.add(data)
     documents = my_store.retrieve("my question").documents
     print(documents)
     ```

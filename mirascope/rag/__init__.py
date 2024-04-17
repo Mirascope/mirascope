@@ -3,6 +3,7 @@ from .chunkers import BaseChunker, TextChunker
 from .embedders import BaseEmbedder
 from .types import (
     BaseEmbeddingParams,
+    BaseEmbeddingResponse,
     BaseQueryResults,
     BaseVectorStoreParams,
     Document,
