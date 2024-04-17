@@ -8,7 +8,7 @@ from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.rag import BaseEmbedder
 
 
-class TestEmbedder(BaseEmbedder):
+class MyEmbedder(BaseEmbedder):
     def embed(self, input: list[str]) -> list[str]:
         return input
 
@@ -25,7 +25,7 @@ def fixture_persistent_client() -> ChromaVectorStore:
 
     class VectorStore(ChromaVectorStore):
         index_name = "test"
-        embedder = TestEmbedder()
+        embedder = MyEmbedder()
         client_settings = ChromaSettings(mode="persistent")
 
     vectorstore = VectorStore()
@@ -40,7 +40,7 @@ def fixture_http_client() -> ChromaVectorStore:
 
     class VectorStore(ChromaVectorStore):
         index_name = "test"
-        embedder = TestEmbedder()
+        embedder = MyEmbedder()
         client_settings = ChromaSettings(mode="http")
 
     return VectorStore()
@@ -53,6 +53,6 @@ def fixture_ephemeral_client() -> ChromaVectorStore:
     class VectorStore(ChromaVectorStore):
         index_name = "test"
         client_settings = ChromaSettings(mode="ephemeral")
-        embedder = TestEmbedder()
+        embedder = MyEmbedder()
 
     return VectorStore()

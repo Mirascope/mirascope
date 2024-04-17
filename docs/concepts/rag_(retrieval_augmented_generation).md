@@ -147,7 +147,7 @@ You can swap out your `Chunkers`, `Embedders`, and `VectorStores` by simply upda
 
 ## Roadmap
 
-- [ ]  Pinecone
-- [ ]  AstraDb
+- [X]  Pinecone
+- [ ]  Astra DB
 - [ ]  Cohere Embeddings
 - [ ]  HuggingFace
