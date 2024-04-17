@@ -104,7 +104,11 @@ nav:
       - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
       - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
-      - Integrations: "concepts/integrations.md"
+  - Integrations:
+      - Client Wrappers: "integrations/client_wrappers.md"
+      - Weights & Biases: "integrations/weights_and_biases.md"
+      - LangChain & LangSmith: "integrations/langchain.md"
+      - Llama Index: "integrations/llama_index.md"
   - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"

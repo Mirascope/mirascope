@@ -1,16 +1,14 @@
-# Integrations
-
-## Weights & Biases
+# Weights & Biases
 
 If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered
 
-### Weave
+## Weave
 
 Mirascope seamlessly integrates with Weave with just a few lines of code. You can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`. Simply add the [`with_weave`](../api/wandb/weave.md#mirascope.wandb.weave.with_weave) decorator to your class and the `call`, `call_async`, `stream`, `stream_async`, `extract`, and `extract_async` methods will be automatically logged to the Weave project you initialize.
 
 The below examples show how to use the `with_weave` decorator to automatically log your runs to Weave. We've highlighted the lines that we've added to the original example to demonstrate how easy it is to use Weave with Mirascope.
 
-#### Call Example
+### Call Example
 
 ```python hl_lines="1 4 6 9"
 import weave
@@ -33,7 +31,7 @@ response = recommender.call()  # this will automatically get logged with weave
 print(response.content)
 ```
 
-#### Extract Example
+### Extract Example
 
 ```python hl_lines="3 7 9 18"
 from typing import Literal, Type
@@ -70,11 +68,11 @@ assert isinstance(task_details, TaskDetails)
 print(task_details)
 ```
 
-### Trace
+## Trace
 
 [`WandbCallMixin`](../api/wandb/wandb.md#mirascope.wandb.wandb.WandbCallMixin) is a mixin with creation methods that internally call W&B’s `Trace()` function so you can easily log your runs. For standard responses, you can use `call_with_trace()`, and for extractions, you can use [`WandbExtractorMixin`](../api/wandb/wandb.md#mirascope.wandb.wandb.WandbExtractorMixin)'s `extract_with_trace` method. These mixins are agnostic to the LLM provider, so you can use it with any `BaseCall` or `BaseExtractor` extension such as `OpenAICall` or `AnthropicCall`.
 
-#### Generating Content with a W&B Trace
+### Generating Content with a W&B Trace
 
 The `call_with_trace()` function internally calls both `call()` and `wandb.Trace()` and is configured to properly log both successful completions and errors.
 
@@ -138,9 +136,9 @@ response, _ = summarizer.call_with_trace(explain_span)
 explain_span.log(name="my_trace")
 ```
 
-Since `WandbCallMixin` just adds a method to the call of your choice (e.g. `OpenAICall` as above), it will support function calling the same way you would a standard `OpenAICall`, as seen [here](tools_(function_calling).md)
+Since `WandbCallMixin` just adds a method to the call of your choice (e.g. `OpenAICall` as above), it will support function calling the same way you would a standard `OpenAICall`, as seen [here](../concepts/tools_(function_calling).md)
 
-#### Extracting with a W&B Trace
+### Extracting with a W&B Trace
 
 When working with longer chains, it is often useful to use extractions so that data is passed along in a structured format. Just like `call_with_trace()` , you will need to pass in a `span_type` argument to the extractor and a `parent` to the extraction.
 
@@ -167,102 +165,3 @@ num_oceans, span = OceanCounter(span_type="tool").extract_with_trace()
 
 span.log(name="mirascope_trace")
 ```
-
-## Client Wrappers
-
-If you want to use Mirascope in conjunction with another library which implements an OpenAI wrapper (such as LangSmith), you can do so easily by setting the `wrapper` parameter within `OpenAICallParams`. Setting this parameter will internally wrap the `OpenAI` client within an `OpenAICall`, giving you access to both sets of functionalities.
-
-```python
-from some_library import some_wrapper
-from mirascope.openai import OpenAICall
-
-
-class BookRecommender(OpenAICall):
-    prompt_template = "Can you recommend some books on {topic}?"
-
-    topic: str
-
-    call_params = OpenAICallParams(
-		model="gpt-3.5-turbo",
-		wrapper=some_wrapper
-	)
-```
-
-Now, every call to `call`, `call_async`, `stream`, and `stream_async` will be executed on top of the wrapped `OpenAI` client.
-
-## LangChain and LangSmith
-
-### Logging a LangSmith trace
-
-You can use client wrappers (as mentioned in the previous section) to integrate Mirascope with LangSmith. When using a wrapper, you can generate content as you would with a normal `OpenAICall`:
-
-```python
-import os
-from langsmith import wrappers
-
-from mirascope.openai import OpenAICall
-
-os.environ["LANGCHAIN_API_KEY"] = "YOUR_LANGCHAIN_API_KEY"
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
-
-
-class BookRecommender(OpenAICall):
-    prompt_template = "Can you recommend some books on {topic}?"
-
-    topic: str
-
-    call_params = OpenAICallParams(
-	    model="gpt-3.5-turbo",
-		wrapper=wrappers.wrap_openai
-	)
-
-response = BookRecommender(topic="sci-fi").call()
-```
-
-Now, if you log into [LangSmith](https://smith.langchain.com/) , you will be see your results have been traced. Of course, this integration works not just for `call`, but also for `stream` and `extract`.
-
-### Using Mirascope [`BasePrompt`](../api/base/prompts.md#mirascope.base.prompts.BasePrompt) with LangChain
-
-You may also want to use LangChain given it’s tight integration with LangSmith. For us, one issue we had when we first started using LangChain was that their `invoke` function had no type-safety or lint help. This means that calling `invoke({"foox": "foo"})` was a difficult bug to catch. There’s so much functionality in LangChain, and we wanted to make using it more pleasant.
-
-With Mirascope prompts, you can instantiate a `ChatPromptTemplate` from a Mirascope prompt template, and you can use the prompt’s `model_dump` method so you don’t have to worry about the invocation dictionary:
-
-```python
-import os
-
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
-
-from mirascope import BasePrompt
-
-os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-
-
-class JokePrompt(BasePrompt):
-    prompt_template = "Tell me a short joke about {topic}"
-
-    topic: str
-
-
-joke_prompt = JokePrompt(topic="ice cream")
-prompt = ChatPromptTemplate.from_template(joke_prompt.template())
-# ^ instead of:
-# prompt = ChatPromptTemplate.from_template("tell me a short joke about {topic}")
-
-model = ChatOpenAI(model="gpt-4")
-output_parser = StrOutputParser()
-chain = prompt | model | output_parser
-
-joke = chain.invoke(joke_prompt.model_dump())
-# ^ instead of:
-# joke = chain.invoke({"topic": "ice cream"})
-print(joke)
-```
-
-## Want more integrations?
-
-If there are features you’d like that we haven’t yet implemented, please submit a feature request to our [GitHub Issues](https://github.com/Mirascope/mirascope/issues).
-
-We also welcome and greatly appreciate [contributions](../CONTRIBUTING.md) if you’re interested in [helping us out](../HELP.md)!
