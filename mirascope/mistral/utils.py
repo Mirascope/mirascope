@@ -33,8 +33,9 @@ def mistral_api_calculate_cost(
     except KeyError:
         return None
 
+    completion_tokens = usage.completion_tokens or 0
     prompt_cost = usage.prompt_tokens * model_pricing["prompt"]
-    completion_cost = usage.completion_tokens * model_pricing["completion"]
+    completion_cost = completion_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

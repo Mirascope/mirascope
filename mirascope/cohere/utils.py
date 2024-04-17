@@ -31,8 +31,10 @@ def cohere_api_calculate_cost(
     except KeyError:
         return None
 
-    prompt_cost = usage.input_tokens * model_pricing["prompt"]
-    completion_cost = usage.output_tokens * model_pricing["completion"]
+    input_tokens = usage.input_tokens or 0
+    output_tokens = usage.output_tokens or 0
+    prompt_cost = input_tokens * model_pricing["prompt"]
+    completion_cost = output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

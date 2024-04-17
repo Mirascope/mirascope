@@ -62,14 +62,17 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat = self.call_params.weave(chat)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = chat(message=message, **kwargs)
+        cost = None
+        if response.meta and response.meta.billed_units:
+            cost = cohere_api_calculate_cost(
+                response.meta.billed_units, self.call_params.model
+            )
         return CohereCallResponse(
             response=response,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
-            cost=cohere_api_calculate_cost(
-                response.meta.billed_units, self.call_params.model
-            ),
+            cost=cost,
         )
 
     async def call_async(self, **kwargs: Any) -> CohereCallResponse:
@@ -91,14 +94,17 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat = self.call_params.weave(chat)  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await chat(message=message, **kwargs)
+        cost = None
+        if response.meta and response.meta.billed_units:
+            cost = cohere_api_calculate_cost(
+                response.meta.billed_units, self.call_params.model
+            )
         return CohereCallResponse(
             response=response,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
-            cost=cohere_api_calculate_cost(
-                response.meta.billed_units, self.call_params.model
-            ),
+            cost=cost,
         )
 
     def stream(self, **kwargs: Any) -> Generator[CohereCallResponseChunk, None, None]:
