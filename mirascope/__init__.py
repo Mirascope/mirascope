@@ -8,6 +8,12 @@ with suppress(ImportError):
     from . import anthropic
 
 with suppress(ImportError):
+    from . import chroma
+
+with suppress(ImportError):
+    from . import cohere
+
+with suppress(ImportError):
     from . import gemini
 
 with suppress(ImportError):
