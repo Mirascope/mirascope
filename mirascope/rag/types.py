@@ -15,8 +15,8 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
     """
 
     response: ResponseT
-    start_time: float  # The start time of the completion in ms
-    end_time: float  # The end time of the completion in ms
+    start_time: float  # The start time of the embedding in ms
+    end_time: float  # The end time of the embedding in ms
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
