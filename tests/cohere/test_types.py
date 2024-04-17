@@ -41,7 +41,7 @@ def test_cohere_call_response_properties(
     fixture_tool_call: ToolCall,
 ):
     call_response = CohereCallResponse(
-        response=fixture_non_streamed_response, start_time=0, end_time=0
+        response=fixture_non_streamed_response, start_time=0, end_time=0, cost=1
     )
 
     assert call_response.content == "Test response"
@@ -54,6 +54,7 @@ def test_cohere_call_response_properties(
         "start_time": 0,
         "end_time": 0,
         "output": fixture_non_streamed_response.dict(),
+        "cost": 1,
     }
 
 
@@ -66,6 +67,7 @@ def test_cohere_call_response_tools(
         tool_types=[fixture_book_tool],
         start_time=0,
         end_time=0,
+        cost=None,
     )
 
     assert call_response.tools is not None

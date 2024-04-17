@@ -42,7 +42,7 @@ def fixture_chat_completion() -> ChatCompletion:
             ),
         ],
         created=0,
-        model="test_model",
+        model="gpt-4",
         object="chat.completion",
         usage=CompletionUsage(completion_tokens=0, prompt_tokens=0, total_tokens=0),
     )

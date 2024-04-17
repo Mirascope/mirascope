@@ -130,6 +130,7 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
     tool_types: Optional[list[Type[BaseToolT]]] = None
     start_time: float  # The start time of the completion in ms
     end_time: float  # The end time of the completion in ms
+    cost: Optional[float] = None  # The cost of the completion in dollars
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 

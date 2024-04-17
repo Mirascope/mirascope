@@ -18,6 +18,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
+from openai.types.completion_usage import CompletionUsage
 from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
 from openai.types.embedding import Embedding
 from pydantic import BaseModel, Field
@@ -107,8 +108,9 @@ def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
             ),
         ],
         created=0,
-        model="test_model",
+        model="gpt-4",
         object="chat.completion",
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
 
 

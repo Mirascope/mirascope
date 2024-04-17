@@ -11,6 +11,7 @@ from ..base.types import Message
 from ..enums import MessageRole
 from .tools import MistralTool
 from .types import MistralCallParams, MistralCallResponse, MistralCallResponseChunk
+from .utils import mistral_api_calculate_cost
 
 
 class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, MistralTool]):
@@ -69,6 +70,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response=completion,
             tool_types=tool_types,
             start_time=start_time,
+            cost=mistral_api_calculate_cost(completion.usage, completion.model),
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
 
@@ -102,6 +104,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=mistral_api_calculate_cost(completion.usage, completion.model),
         )
 
     def stream(self, **kwargs: Any) -> Generator[MistralCallResponseChunk, None, None]:

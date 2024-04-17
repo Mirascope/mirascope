@@ -9,6 +9,7 @@ from ..base import BaseCall
 from ..enums import MessageRole
 from .tools import CohereTool
 from .types import CohereCallParams, CohereCallResponse, CohereCallResponseChunk
+from .utils import cohere_api_calculate_cost
 
 
 class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereTool]):
@@ -66,6 +67,9 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=cohere_api_calculate_cost(
+                response.meta.billed_units, self.call_params.model
+            ),
         )
 
     async def call_async(self, **kwargs: Any) -> CohereCallResponse:
@@ -92,6 +96,9 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=cohere_api_calculate_cost(
+                response.meta.billed_units, self.call_params.model
+            ),
         )
 
     def stream(self, **kwargs: Any) -> Generator[CohereCallResponseChunk, None, None]:

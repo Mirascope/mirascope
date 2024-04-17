@@ -17,6 +17,7 @@ from ..base import BaseCall
 from ..enums import MessageRole
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
+from .utils import openai_api_calculate_cost
 
 JSON_MODE_CONTENT = """
 Extract a valid JSON object instance from to content using the following schema:
@@ -99,6 +100,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=openai_api_calculate_cost(completion.usage, completion.model),
             response_format=self.call_params.response_format,
         )
 
@@ -132,6 +134,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=openai_api_calculate_cost(completion.usage, completion.model),
             response_format=self.call_params.response_format,
         )
 

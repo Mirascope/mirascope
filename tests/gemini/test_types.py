@@ -16,6 +16,7 @@ def test_gemini_call_response(
         response=fixture_generate_content_response,
         start_time=0,
         end_time=0,
+        cost=None,
     )
     assert response.content == "Who is the author?"
     assert response.tools is None
@@ -24,6 +25,7 @@ def test_gemini_call_response(
         "start_time": 0,
         "end_time": 0,
         "output": str(fixture_generate_content_response),
+        "cost": None,
     }
 
 
