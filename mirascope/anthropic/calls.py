@@ -13,6 +13,7 @@ from .types import (
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
 )
+from .utils import anthropic_api_calculate_cost
 
 
 class AnthropicCall(
@@ -76,6 +77,7 @@ class AnthropicCall(
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=anthropic_api_calculate_cost(message.usage, message.model),
             response_format=self.call_params.response_format,
         )
 
@@ -109,6 +111,7 @@ class AnthropicCall(
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=anthropic_api_calculate_cost(message.usage, message.model),
             response_format=self.call_params.response_format,
         )
 

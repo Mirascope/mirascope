@@ -211,6 +211,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
             "start_time": self.start_time,
             "end_time": self.end_time,
             "output": self.response.model_dump(),
+            "cost": self.cost,
         }
 
 

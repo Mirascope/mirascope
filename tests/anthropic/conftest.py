@@ -55,7 +55,7 @@ def fixture_anthropic_message() -> Message:
     return Message(
         id="0",
         content=[ContentBlock(text="test", type="text")],
-        model="test",
+        model="claude-3-haiku-20240307",
         role="assistant",
         type="message",
         usage=Usage(input_tokens=0, output_tokens=0),

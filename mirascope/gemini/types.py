@@ -125,6 +125,7 @@ class GeminiCallResponse(
             "start_time": self.start_time,
             "end_time": self.end_time,
             "output": str(self.response),
+            "cost": self.cost,
         }
 
 

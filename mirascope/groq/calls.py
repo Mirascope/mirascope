@@ -10,6 +10,7 @@ from ..base import BaseCall
 from ..enums import MessageRole
 from .tools import GroqTool
 from .types import GroqCallParams, GroqCallResponse, GroqCallResponseChunk
+from .utils import groq_api_calculate_cost
 
 JSON_MODE_CONTENT = """
 Extract a valid JSON object instance from to content using the following schema:
@@ -84,6 +85,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
             response_format=self.call_params.response_format,
+            cost=groq_api_calculate_cost(completion.usage, completion.model),
         )
 
     async def call_async(self, **kwargs: Any) -> GroqCallResponse:
@@ -114,6 +116,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
             response_format=self.call_params.response_format,
+            cost=groq_api_calculate_cost(completion.usage, completion.model),
         )
 
     def stream(self, **kwargs: Any) -> Generator[GroqCallResponseChunk, None, None]:

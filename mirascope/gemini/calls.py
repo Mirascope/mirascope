@@ -98,6 +98,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=None,
         )
 
     async def call_async(self, **kwargs: Any) -> GeminiCallResponse:
@@ -131,6 +132,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=None,
         )
 
     def stream(self, **kwargs: Any) -> Generator[GeminiCallResponseChunk, None, None]:

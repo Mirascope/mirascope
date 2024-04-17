@@ -19,6 +19,7 @@ from groq.types.chat.chat_completion import (
     ChoiceMessage,
     ChoiceMessageToolCall,
     ChoiceMessageToolCallFunction,
+    Usage,
 )
 
 from mirascope.groq.tools import GroqTool
@@ -48,6 +49,7 @@ def fixture_chat_completion_response(
                 logprobs=ChoiceLogprobs(),
             )
         ],
+        usage=Usage(prompt_tokens=1, completion_tokens=1),
     )
 
 
@@ -103,7 +105,7 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
         id="test tool",
         object="chat.completion",
         created=1,
-        model="llama2-70b-4096",
+        model="tests",
         choices=[
             Choice(
                 index=0,
@@ -124,6 +126,7 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
                 logprobs=ChoiceLogprobs(),
             )
         ],
+        usage=Usage(prompt_tokens=1, completion_tokens=1),
     )
 
 

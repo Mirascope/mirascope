@@ -66,7 +66,7 @@ def test_cohere_call_call_with_tools(
         prompt_template = ""
         api_key = "test"
 
-        call_params = CohereCallParams(tools=[fixture_cohere_book_tool])
+        call_params = CohereCallParams(tools=[fixture_cohere_book_tool], model="test")
 
     response = TempCall().call()
     assert response.tool is not None

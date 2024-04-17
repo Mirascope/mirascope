@@ -3,3 +3,4 @@ from .calls import GroqCall
 from .extractors import GroqExtractor
 from .tools import GroqTool
 from .types import GroqCallParams, GroqCallResponse, GroqCallResponseChunk
+from .utils import groq_api_calculate_cost

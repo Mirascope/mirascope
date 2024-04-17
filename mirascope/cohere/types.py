@@ -189,6 +189,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
             "start_time": self.start_time,
             "end_time": self.end_time,
             "output": self.response.dict(),
+            "cost": self.cost,
         }
 
 

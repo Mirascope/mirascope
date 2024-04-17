@@ -2,7 +2,9 @@
 from typing import Type
 
 import pytest
+from cohere import ApiMetaBilledUnits
 from cohere.types import (
+    ApiMeta,
     ChatCitation,
     ChatSearchQuery,
     ChatSearchResult,
@@ -81,6 +83,7 @@ def fixture_non_streamed_response(
         documents=[fixture_chat_document],
         citations=[fixture_chat_citation],
         tool_calls=[fixture_tool_call],
+        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
     )
 
 
@@ -102,6 +105,7 @@ def fixture_cohere_response_with_tools() -> NonStreamedChatResponse:
                 },
             )
         ],
+        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
     )
 
 
