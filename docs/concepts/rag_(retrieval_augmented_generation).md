@@ -129,6 +129,8 @@ response = QuestionAnswerer(question="{YOUR_QUESTION_HERE}").call()
 print(response.content)
 ```
 
+Note that the `context` property returns a list of document text strings, which will automatically get parsed into the system message with `\n` separators. 
+
 #### Access Client and Index
 
 You can access the VectorStore client and index by getting the private property `_client` and `_index` respectively. This is useful when you need to access VectorStore functionality such as `delete`.
@@ -143,7 +145,11 @@ store._index
 
 ### Other Integrations
 
-You can swap out your `Chunkers`, `Embedders`, and `VectorStores` by simply updating the imports. Let us know who you would like us to integrate with next.
+You can swap out your `Chunkers`, `Embedders`, and `VectorStores` by simply updating the imports.
+
+We've also designed Mirascope RAG so that it's easy to swap in other RAG tooling (e.g. [Llama Index](../integrations/llama_index.md))
+
+Let us know who you would like us to integrate with next.
 
 ## Roadmap
 
