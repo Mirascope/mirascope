@@ -1776,13 +1776,13 @@ test = ["coverage", "flake8 (>=3.0)", "flake8-quotes", "shtab"]
 
 [[package]]
 name = "mirascope-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "The Mirascope Command Line Interface"
 optional = true
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "mirascope_cli-0.1.0-py3-none-any.whl", hash = "sha256:448c0e522e83375e7429fdc1791e7c295139080a39d1be25f1f10cc425addded"},
-    {file = "mirascope_cli-0.1.0.tar.gz", hash = "sha256:2d67e5eab467c5e6e9e9a6bcac8ddd26825756266b6f0ef8c89003409f0d6f46"},
+    {file = "mirascope_cli-0.1.1-py3-none-any.whl", hash = "sha256:6edf81736afb85ab19f02516a4d84ace3d4afa0c8b3ee01583eaa7bac0e36e73"},
+    {file = "mirascope_cli-0.1.1.tar.gz", hash = "sha256:75580ea5aa43a3310998902e09e27402fdd1f26778e437c41a627113b455e00a"},
 ]
 
 [package.dependencies]
@@ -4791,10 +4791,10 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 all = ["anthropic", "chromadb", "cohere", "cohere", "google-generativeai", "groq", "mirascope-cli", "mistralai", "wandb", "weave"]
 anthropic = ["anthropic"]
 chromadb = ["chromadb"]
+cli = ["mirascope-cli"]
 cohere = ["cohere"]
 gemini = ["google-generativeai"]
 groq = ["groq"]
-mirascope-cli = ["mirascope-cli"]
 mistral = ["mistralai"]
 wandb = ["wandb"]
 weave = ["weave"]
@@ -4802,4 +4802,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "01537d6501e297753972c3f49d7110a9ebbb29b87d4040a48a086d06daa0aba7"
+content-hash = "a8f16a734f65c36d4a980461686d1d71bde95448c6e0f2a6f79bd707829e1ab6"

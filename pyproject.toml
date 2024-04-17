@@ -18,7 +18,7 @@ openai = "^1.6.0"
 docstring-parser = "^0.15"
 
 # A list of optional dependencies that are required for certain features
-mirascope-cli = { version = ">=0.1.0,<1.0.0", optional = true }
+mirascope-cli = { version = ">=0.1.1,<1.0.0", optional = true }
 wandb = { version = ">=0.16.4,<1.0.0", optional = true }
 weave = { version = ">=0.50.0,<1.0.0", optional = true }
 google-generativeai = { version = "^0.4.0", optional = true }
@@ -29,7 +29,7 @@ groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
 
 [tool.poetry.extras]
-mirascope-cli = ["mirascope-cli"]
+cli = ["mirascope-cli"]
 anthropic = ["anthropic"]
 chromadb = ["chromadb"]
 cohere = ["cohere"]
