@@ -67,7 +67,9 @@ class PineconeVectorStore(BaseVectorStore):
         if self.vectorstore_params.weave is not None and not isinstance(
             self.chunker, weave.Op
         ):
-            embed = self.vectorstore_params.weave(self.embedder.embed)
+            embed = self.vectorstore_params.weave(
+                self.embedder.embed
+            )  # pragma: no cover
         text_embedding = embed([text])
         if "top_k" not in kwargs:
             kwargs["top_k"] = 8
@@ -120,7 +122,9 @@ class PineconeVectorStore(BaseVectorStore):
         if self.vectorstore_params.weave is not None and not isinstance(
             self.chunker, weave.Op
         ):
-            embed = self.vectorstore_params.weave(self.embedder.embed)
+            embed = self.vectorstore_params.weave(
+                self.embedder.embed
+            )  # pragma: no cover
         embeddings = embed(inputs)
         if self.handle_add_text:
             self.handle_add_text(documents)
