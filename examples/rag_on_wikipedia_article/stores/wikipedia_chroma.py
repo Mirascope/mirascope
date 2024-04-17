@@ -1,3 +1,4 @@
+"""Chroma store for Wikipedia articles."""
 from mirascope.chroma import ChromaSettings, ChromaVectorStore
 from mirascope.openai import OpenAIEmbedder
 from mirascope.rag import TextChunker

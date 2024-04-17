@@ -1,7 +1,35 @@
 """Base types and abstract interfaces for typing Mirascope RAG."""
-from typing import Any, Callable, Optional, TypeVar
+from abc import ABC, abstractmethod
+from typing import Any, Callable, Generic, Optional, TypeVar
 
 from pydantic import BaseModel, ConfigDict
+
+ResponseT = TypeVar("ResponseT", bound=Any)
+
+
+class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
+    """A base abstract interface for LLM embedding responses.
+
+    Attributes:
+        response: The original response from whichever model response this wraps.
+    """
+
+    response: ResponseT
+    start_time: float  # The start time of the embedding in ms
+    end_time: float  # The end time of the embedding in ms
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    @property
+    @abstractmethod
+    def embedding(self) -> list[float]:
+        """Should return the embedding of the response.
+
+        If there are multiple choices in a response, this method should select the 0th
+        choice and return it's embedding.
+        """
+        ...  # pragma: no cover
+
 
 T = TypeVar("T")
 

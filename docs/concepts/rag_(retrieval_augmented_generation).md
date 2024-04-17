@@ -153,7 +153,7 @@ Let us know who you would like us to integrate with next.
 
 ## Roadmap
 
-- [ ]  Pinecone
-- [ ]  AstraDb
+- [X]  Pinecone
+- [ ]  Astra DB
 - [ ]  Cohere Embeddings
 - [ ]  HuggingFace

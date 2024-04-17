@@ -2,7 +2,7 @@
 import os
 
 from rag_config import settings
-from stores.wikipedia_chroma import WikipediaStore
+from stores.wikipedia_pinecone import WikipediaStore
 
 if settings.openai_api_key:
     os.environ["OPENAI_API_KEY"] = settings.openai_api_key

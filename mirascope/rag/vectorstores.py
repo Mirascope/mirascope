@@ -17,11 +17,11 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     api_key: ClassVar[Optional[str]] = None
     index_name: ClassVar[Optional[str]] = None
     chunker: ClassVar[BaseChunker] = TextChunker(chunk_size=1000, chunk_overlap=200)
-    embedder: ClassVar[Optional[BaseEmbedder]] = None
+    embedder: ClassVar[BaseEmbedder]
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
 
     @abstractmethod
-    def retrieve(self, text: Optional[str] = None, **kwargs: Any) -> BaseQueryResultsT:
+    def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:
         """Queries the vectorstore for closest match"""
         ...  # pragma: no cover
 

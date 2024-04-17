@@ -17,6 +17,7 @@ from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaTool
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.chat.completion_create_params import ResponseFormat
+from openai.types.create_embedding_response import CreateEmbeddingResponse
 from pydantic import ConfigDict
 
 from ..base import (
@@ -24,14 +25,13 @@ from ..base import (
     BaseCallResponse,
     BaseCallResponseChunk,
 )
-from ..rag.types import BaseEmbeddingParams
+from ..rag import BaseEmbeddingParams, BaseEmbeddingResponse
 from .tools import OpenAITool
 
 
 class OpenAIEmbeddingParams(BaseEmbeddingParams):
     input: str = ""
     model: str = "text-embedding-ada-002"
-    dimensions: Optional[int] = None
     encoding_format: Optional[Literal["float", "base64"]] = None
     user: Optional[str] = None
     # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -277,3 +277,12 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
         """
         return self.delta.tool_calls
+
+
+class EmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
+    """A convenience wrapper around the OpenAI `CreateEmbeddingResponse` response."""
+
+    @property
+    def embedding(self) -> list[float]:
+        """Returns the embedding for the 0th choice."""
+        return self.response.data[0].embedding

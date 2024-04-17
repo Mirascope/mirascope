@@ -27,11 +27,13 @@ anthropic = { version = ">=0.23.1,<1.0.0", optional = true }
 mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
 groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
+pinecone-client = { version = "^3.2.2", optional = true }
 
 [tool.poetry.extras]
 cli = ["mirascope-cli"]
 anthropic = ["anthropic"]
 chromadb = ["chromadb"]
+pinecone = ["pinecone-client"]
 cohere = ["cohere"]
 gemini = ["google-generativeai"]
 groq = ["groq"]
@@ -42,11 +44,12 @@ all = [
     "mirascope-cli",
     "anthropic",
     "chromadb",
-    "cohere",
     "wandb",
     "weave",
     "google-generativeai",
     "mistralai",
+    "chromadb",
+    "pinecone",
     "groq",
     "cohere",
 ]
@@ -130,6 +133,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "weave"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["pinecone.*"]
 ignore_missing_imports = true
 
 [build-system]
