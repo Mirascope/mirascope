@@ -1,5 +1,5 @@
 """Tests for the base utility functions."""
-from typing import Callable
+from typing import Annotated, Callable
 from unittest.mock import patch
 
 import pytest
@@ -226,7 +226,8 @@ class List(BaseTool):
 
 
 @pytest.mark.parametrize(
-    "type_,expected_tool", [(int, Int), (str, Str), (list[float], List)]
+    "type_,expected_tool",
+    [(int, Int), (str, Str), (list[float], List), (Annotated[str, ...], Str)],
 )
 def test_convert_base_type_to_tool(type_, expected_tool: BaseTool) -> None:
     """Tests that `convert_base_type_to_tool` returns the expected tool."""
