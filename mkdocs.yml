@@ -97,6 +97,7 @@ nav:
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:
+      - Philosophy: "concepts/philosophy.md"
       - Writing Prompts: "concepts/writing_prompts.md"
       - Generating content: "concepts/generating_content.md"
       - Streaming generated content: "concepts/streaming_generated_content.md"
