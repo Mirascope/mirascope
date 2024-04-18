@@ -1,8 +1,8 @@
 # Dumping prompts and calls
 
-The `.dump()` function can be called from prompts, calls, and responses to output a dictionary of associated data. 
+The `.dump()` function can be called from prompts, calls, and responses to output a dictionary of associated data.
 
-## Dumping from the Prompt
+## Dumping from the Prompt and Response
 
 When called from `BasePrompt` or any of its subclasses like `BaseCall`, `.dump()` will give you:
 
@@ -10,7 +10,12 @@ When called from `BasePrompt` or any of its subclasses like `BaseCall`, `.dump()
 - inputs used to construct the prompt
 - the prompt’s tags
 - any parameters specific to the model provider’s API call, if they are not None:
-- start and end times of its affiliated completion, if it has happened
+
+The returned `BaseCallResponse` will also have a `.dump()` method, which includes:
+
+- start and end times in ms of its affiliated completion, if it has happened
+- output of the underlying LLM provider
+- cost in dollars (Gemini not supported)
 
 ```python
 import os
@@ -29,109 +34,45 @@ class BookRecommender(OpenAICall):
 
 
 recommender = BookRecommender(topic="how to bake a cake")
-print(recommender.dump())
+response = recommender.call()
+print(recommender.dump() | response.dump())
 
 """
 Output:
 {
-    "template": "Can you recommend some books on {topic}?",
-    "inputs": {"api_key": None, "topic": "how to bake a cake"},
     "tags": ["recommendation_project", "version:0001"],
-    "call_params": {"model": "gpt-3.5-turbo-0125"},
-    "start_time_ms": None,
-    "end_time_ms": None,
-}
-"""
-
-recommender.call()
-print(recommender.dump())
-
-"""
-Output:
-{
-	# ... same as above
-    "start_time_ms": 1709847166609.473,
-    "end_time_ms": 1709847169424.146,
-}
-"""
-```
-
-## Dumping from the Response
-
-You can also call `.dump()` on responses themselves, which will contain:
-
-- start and end times of the response
-- parameters of the call to the API associated with the response, within the key “output”
-
-```python
-response = recomender.call()  # call is an OpenAICall, continued from above
-print(response.dump())
-
-"""
-Output:
-{
+    "template": "Can you recommend some books on {topic}?",
+    "inputs": {"topic": "how to bake a cake"},
+    "start_time": 1709847166609.473,
+    "end_time": 1709847169424.146,
     "output": {
-        "id": "chatcmpl-8zuVFGO2zgRsyckc9iW8CTSOgiNQm",
+        "id": "chatcmpl-9F8U8TbPJ2abpSXXyIURQr1KRiILw",
         "choices": [
             {
                 "finish_reason": "stop",
                 "index": 0,
-                "logprobs": None,
+                "logprobs": null,
                 "message": {
-                    "content": '1. "The Cake Bible" by Rose Levy Beranbaum...
-					"role": "assistant",
-                    "function_call": None,
-                    "tool_calls": None,
-                },
-            }
-        ],
-        "created": 1709765897,
-        "model": "gpt-3.5-turbo-0125",
-        "object": "chat.completion",
-        "system_fingerprint": "fp_2b778c6b35",
-        "usage": {"completion_tokens": 210, "prompt_tokens": 19, "total_tokens": 229},
-    },
-}
-"""
-```
-
-## Combining Both
-
-We also give you an option to see everything at once by calling `BasePrompt.dump() | response.dump()` , which will union the two dictionaries and display them in one. Note that the `.dump()` function outputs a dictionary, so feel free to use it flexibly to suit your needs.
-
-```python
-print(recommender.dump(response.dump()))
-
-"""
-Output:
-{
-    "template": "Can you recommend some books on {topic}?",
-    "inputs": {"api_key": None, "topic": "how to bake a cake"},
-    "tags": ["recommendation_project", "version:0001"],
-    "call_params": {"model": "gpt-3.5-turbo-0125"},
-    "start_time": 1709837824962.49,
-    "end_time": 1709837825585.0588,
-    "output": {
-        "id": "chatcmpl-8zuVFGO2zgRsyckc9iW8CTSOgiNQm",
-        "choices": [
-            {
-                "finish_reason": "stop",
-                "index": 0,
-                "logprobs": None,
-                "message": {
-                    "content": '1. "The Cake Bible" by Rose Levy Beranbaum...
+                    "content": "...",
                     "role": "assistant",
-                    "function_call": None,
-                    "tool_calls": None,
-                },
+                    "function_call": null,
+                    "tool_calls": null
+                }
             }
         ],
-        "created": 1709765897,
+        "created": 1713394564,
         "model": "gpt-3.5-turbo-0125",
         "object": "chat.completion",
-        "system_fingerprint": "fp_2b778c6b35",
-        "usage": {"completion_tokens": 210, "prompt_tokens": 19, "total_tokens": 229},
-    },
+        "system_fingerprint": "fp_c2295e73ad",
+        "usage": {
+            "completion_tokens": 177,
+            "prompt_tokens": 19,
+            "total_tokens": 196
+        }
+    }
+    }
+    "cost": 0.0001235,
+
 }
 """
 ```
@@ -176,6 +117,7 @@ class OpenAICallResponseTable(Base):
     start_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     end_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     output: Mapped[Optional[dict]] = mapped_column(JSONB)
+    cost: Mapped[Optional[float]] = mapped_column(Float())
 
 
 @tags(["recommendation_project"])

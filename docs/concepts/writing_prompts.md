@@ -24,17 +24,35 @@ The `messages` method parses the `prompt_template` into a list of messages. In t
 ## Editor Support
 
 - Inline Errors
-    
+
     ![https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c](https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c)
-    
+
 - Autocomplete
-    
+
     ![https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054](https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054)
-    
 
 ## Template Variables
 
-When you call `str(prompt)` the template will be formatted using the properties of the class that match the template variables. This means that you can define more complex properties through code. This is particularly useful when you want to inject template variables with custom formatting or template variables that depend on multiple attributes.
+When you call `prompt.messages()` or `str(prompt)` the template will be formatted 
+using the fields and properties of the class that match the template variables. This means that you can define more complex properties through code using the [built in python decorator](https://docs.python.org/3/library/functions.html#property) `@property`. This is particularly useful when you want to inject template variables with custom formatting or template variables that depend on multiple attributes.
+
+```python
+from mirascope import BasePrompt
+
+class BasicAddition(BasePrompt):
+    prompt_template = """
+    Can you solve this math problem for me?
+    {equation}
+    """
+    first_number: float
+    second_number: float
+
+    @property
+    def equation(self) -> str:
+        return f"{self.first_number}+{self.second_number}="
+```
+
+If the type being returned is a list we will automatically format `list` and `list[list]` fields and properties with `\n` and `\n\n` separators, respectively and stringify.
 
 ```python
 from mirascope import BasePrompt
@@ -50,15 +68,13 @@ class BookRecommendationPrompt(BasePrompt):
     genres: list[str]
 
     @property
-    def topics_x_genres(self) -> str:
+    def topics_x_genres(self) -> list[str]:
         """Returns `topics` as a comma separated list."""
-        return "\n".join(
-            [
-                f"Topic: {topic}, Genre: {genre}"
-                for topic in self.topics
-                for genre in self.genres
-            ]
-        )
+        return [
+            f"Topic: {topic}, Genre: {genre}"
+            for topic in self.topics
+            for genre in self.genre
+        ]
 
 
 prompt = BookRecommendationPrompt(
@@ -81,15 +97,15 @@ from mirascope import BasePrompt
 
 
 class BookRecommendationPrompt(BasePrompt):
-	prompt_template = """
-	SYSTEM:
-	You are the world's greatest librarian.
+    prompt_template = """
+    SYSTEM:
+    You are the world's greatest librarian.
 
-	USER:
-	Can you recommend some books on {topic}?
-	"""
+    USER:
+    Can you recommend some books on {topic}?
+    """
 
-	topic: str
+    topic: str
 
 
 prompt = BookRecommendationPrompt(topic="coding")
@@ -101,7 +117,6 @@ print(prompt.messages())
 ```
 
 !!! note
-
     This example is using Mirascope base `Message. If you are using a different provider, refer to the provider's documentation on their message roles.
 
 ## Magic is optional
@@ -143,15 +158,15 @@ from some_llm_provider import LLMProvider
 
 
 class BookRecommendationPrompt(BasePrompt):
-	prompt_template = """
-	SYSTEM:
-	You are the world's greatest librarian.
+    prompt_template = """
+    SYSTEM:
+    You are the world's greatest librarian.
 
-	USER:
-	Can you recommend some books on {topic}?
-	"""
+    USER:
+    Can you recommend some books on {topic}?
+    """
 
-	topic: str
+    topic: str
 
 
 prompt = BookRecommendationPrompt(topic="coding")
@@ -160,7 +175,7 @@ message = client.messages.create(
     model="some-model",
     max_tokens=1000,
     temperature=0.0,
-		stream=False,
+    stream=False,
     messages=prompt.messages()
 )
 ```
