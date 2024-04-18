@@ -86,7 +86,7 @@ while True:
 #> (Assistant): I love the intricate world-building...
 ```
 
-## Overcoming context limits
+## Overcoming context limits with RAG
 
 As your chat gets longer and longer, you will soon approach the context limit for the particular model. One not so great solution is to remove the oldest messages to stay within the context limit. For example:
 
@@ -129,8 +129,6 @@ while True:
 
 Better would be to implement a RAG (Retrieval-Augmented Generation) system for storing all chat history and querying for relevant previous messages for each interaction.
 
-### Mirascope RAG
-
 When the user makes a call, a search is made to find the most relevant information, which is then inserted as context to LLM, like so:
 
 ```python
@@ -140,7 +138,6 @@ from mirascope import OpenAICall, OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
-librarian_knowledge = LibrarianKnowledge()
 
 class Librarian(OpenAICall):
     prompt_template = """
@@ -149,20 +146,20 @@ class Librarian(OpenAICall):
     USER: {question}
     """
 
-    question: str
-    store: librarian_knowledge
+    question: str = ""
+    knowledge: LibrarianKnowledge = LibrarianKnowledge()
 
     @property
     def context(self):
         return self.store.retrieve(self.question).documents
         
-librarian = Librarian(question="")
+
+librarian = Librarian()
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
     content = f"(Assistant): {response.content}"
-    librarian_knowledge.add(librarian.question)
-    librarian_knowledge.add(content)
+    librarian.knowledge.add([librarian.question, content])
     print(content)
 ```
 

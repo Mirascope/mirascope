@@ -101,6 +101,7 @@ nav:
       - Generating content: "concepts/generating_content.md"
       - Streaming generated content: "concepts/streaming_generated_content.md"
       - Supported LLM providers: "concepts/supported_llm_providers.md"
+      - Chat History: "concepts/chat_history.md"
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
       - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
       - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
