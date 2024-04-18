@@ -1,6 +1,16 @@
 """Base utility functions."""
 from inspect import Parameter, signature
-from typing import Any, Callable, Type, TypeVar, cast, get_type_hints
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    Type,
+    TypeVar,
+    cast,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
@@ -146,6 +156,8 @@ def convert_base_type_to_tool(
     schema: Type[BaseType], base: Type[BaseToolT]
 ) -> Type[BaseToolT]:
     """Converts a `BaseType` to a `BaseToolT` type."""
+    if get_origin(schema) == Annotated:
+        schema.__name__ = get_args(schema)[0].__name__
     return create_model(
         f"{schema.__name__.title()}",
         __base__=base,
