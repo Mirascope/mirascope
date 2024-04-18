@@ -4,7 +4,7 @@ Now that you have your prompt, you can combine it with a model call to generate 
 
 !!! note
 
-    This doc uses OpenAI. See [using different model providers](using_different_model_providers.md) for how to generate content with other model providers like Anyscale, Together, Gemini, and more.
+    This doc uses OpenAI. See [supported LLM providers](./supported_llm_providers.md) for how to generate content with other model providers like Anthropic, Mistral, Cohere and more.
 
 ## OpenAICall
 

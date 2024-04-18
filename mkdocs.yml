@@ -62,7 +62,13 @@ markdown_extensions:
       generic: true
   - footnotes
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.mark
   - attr_list
   - pymdownx.emoji:
@@ -94,7 +100,7 @@ nav:
       - Writing Prompts: "concepts/writing_prompts.md"
       - Generating content: "concepts/generating_content.md"
       - Streaming generated content: "concepts/streaming_generated_content.md"
-      - Using different model providers: "concepts/using_different_model_providers.md"
+      - Supported LLM providers: "concepts/supported_llm_providers.md"
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
       - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
       - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
