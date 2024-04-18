@@ -1,9 +1,13 @@
 """
 Our template parser makes inserting chat history beyond easy:
 """
+import os
+
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.openai import OpenAICall
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class Librarian(OpenAICall):
