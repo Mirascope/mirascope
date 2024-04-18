@@ -36,7 +36,7 @@ pip install mirascope[all]        # all optional dependencies
 
 ### Colocation
 
-Colocation is the core of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
+Colocation is one of the core tenets of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
 
 ```python
 import os
@@ -104,7 +104,7 @@ print(editor.dump() | critique.dump())
 # }
 ```
 
-### Chat History
+### [Chat History](./concepts/chat_history.md)
 
 Our template parser makes inserting chat history beyond easy:
 
@@ -141,7 +141,7 @@ while True:
 #> (Assistant): I love the intricate world-building...
 ```
 
-### Tools (Function Calling)
+### [Tools (Function Calling)](./concepts/tools_(function_calling).md)
 
 We’ve made implementing and using tools (function calling) intuitive:
 
@@ -176,7 +176,7 @@ if tool:
 	  #> It is 10 degrees fahrenheit in Tokyo, Japan
 ```
 
-### Chaining
+### [Chaining](./concepts/generating_content.md#chaining)
 
 Chaining multiple calls together for Chain of Thought (CoT) is as simple as writing a function:
 
@@ -221,7 +221,7 @@ print(response.content)
 # > Certainly! Here's a recipe for a delicious and refreshing Japanese Apple Salad: ...
 ```
 
-### Extracting Structured Information
+### [Extracting Structured Information](./concepts/extracting_structured_information_using_llms.md)
 
 Convenience built on top of tools that makes extracting structured information reliable:
 
@@ -255,7 +255,7 @@ print(TaskDetails)
 #> description='Submit quarterly report' due_date='next Friday' priority='high'
 ```
 
-### FastAPI Integration
+### [FastAPI Integration](./integrations/fastapi.md)
 
 Since we’ve built our `BasePrompt` on top of [Pydantic](https://pydantic.dev/), we integrate with tools like [FastAPI](https://fastapi.tiangolo.com/) out-of-the-box:
 
@@ -290,23 +290,35 @@ def root(book_recommender: BookRecommender) -> Book:
     return book_recommender.extract()
 ```
 
+## Supported Providers and Integrations
+
+You can find a list of [supported providers](./concepts/supported_llm_providers.md) with examples of how to use them with Mirascope.
+
+We are constantly working to further integrate Mirascope as seamlessly as possible with as many tools as possible. You can find the [integrations that we currently support](./integrations/client_wrappers.md) in our docs. If there are any integrations that you want, let us know!
+
 ## Roadmap
 
-- [X]  Extracting structured information using LLMs
-- [ ]  RAG
 - [ ]  Agents
-- [ ]  Streaming extraction for tools (function calling)
+- [ ]  RAG
+    - [X]  ChromaDB
+    - [X]  Pinecone
+    - [X]  OpenAI Embeddings
+    - [ ]  Cohere Embeddings
+    - [ ]  Hugging Face
+- [X]  Extracting structured information using LLMs
+- [X]  Streaming extraction for tools (function calling)
 - [ ]  Additional template parsing for more complex messages
     - [X]  Chat History
+    - [X]  List + List[List] Convenience
     - [ ]  Better Tool Messages
     - [ ]  Additional Metadata
     - [ ]  Vision
 - [ ]  Support for more LLM providers:
     - [X]  Anthropic
-    - [X]  Gemini
+    - [X]  Cohere
     - [X]  Mistral
     - [X]  Groq
-    - [ ]  Cohere
+    - [X]  Gemini
     - [ ]  HuggingFace
 - [ ]  Integrations
     - [X]  Weights & Biases Trace
