@@ -11,7 +11,11 @@ When using [tools (function calling)](./tools_(function_calling).md) or [extract
 To stream tools, first call `stream` instead of `call` for an LLM call with tools. Then use the matching provider's tool stream class to stream the tools:
 
 ```python
+import os
+
 from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIToolStream
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def print_book(title: str, author: str, description: str):
@@ -39,11 +43,14 @@ for tool in tool_stream:
 Sometimes you may want to stream partial tools as well (i.e. the unfinished tool call with `None` for arguments that haven't yet been streamed). This can be useful for example when observing an agent's flow in real-time. You can simple set `allow_partial=True` to access this feature. In the following code example, we stream each partial tool and update a live console, printing each full tool call before moving on to the next:
 
 ```python hl_lines="20"
+import os
 import time
 
 from rich.live import Live
 
 from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIToolStream
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def print_book(title: str, author: str, description: str):
@@ -82,10 +89,13 @@ with Live("", refresh_per_second=15) as live:
 You can also stream structured outputs when using an extractor. Simply call the `stream` function to stream partial outputs:
 
 ```python
+import os
 from typing import Literal, Type
 
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class TaskDetails(BaseModel):
