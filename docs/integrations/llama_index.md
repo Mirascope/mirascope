@@ -11,7 +11,7 @@ documents = SimpleDirectoryReader("./paul_graham_essays").load_data()
 retriever = VectorStoreIndex.from_documents(documents).as_retriever()
 
 # Create Paul Graham Bot
-class PaulGrahamBot(OpenAICall):
+class PaulGrahamBot(AnthropicCall):
     prompt_template = """
     SYSTEM:
     Your task is to respond to the user as though you are Paul Graham.

@@ -82,7 +82,7 @@ completion.choices     # original.choices
 response.response      # ChatCompletion(...)
 ```
 
-### Chaining
+### Chain of Thought (CoT)
 
 Adding a chain of calls is as simple as writing a function:
 

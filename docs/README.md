@@ -36,7 +36,7 @@ pip install mirascope[all]        # all optional dependencies
 
 ### Colocation
 
-Colocation is the core of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
+[Colocation](./concepts/philosophy.md#4-colocation) is one of the core tenets of our philosophy. Everything that can impact the quality of a call to an LLM — from the prompt to the model to the temperature — must live together so that we can properly version and test the quality of our calls over time. This is useful since we have all of the information including metadata that we could want for analysis, which is particularly important during rapid development.
 
 ```python
 import os
@@ -106,7 +106,7 @@ print(editor.dump() | critique.dump())
 
 ### Chat History
 
-Our template parser makes inserting chat history beyond easy:
+Our template parser makes inserting [chat history](./concepts/chat_history.md) beyond easy:
 
 ```python
 from openai.types.chat import ChatCompletionMessageParam
@@ -143,7 +143,7 @@ while True:
 
 ### Tools (Function Calling)
 
-We’ve made implementing and using tools (function calling) intuitive:
+We’ve made implementing and using [tools (function calling)](./concepts/tools_(function_calling).md) intuitive:
 
 ```python
 from typing import Literal
@@ -176,9 +176,9 @@ if tool:
 	  #> It is 10 degrees fahrenheit in Tokyo, Japan
 ```
 
-### Chaining
+### Chain of Thought (CoT)
 
-Chaining multiple calls together for Chain of Thought (CoT) is as simple as writing a function:
+Chaining multiple calls together for [Chain of Thought (CoT)](./concepts/generating_content.md#chain-of-thought-cot) is as simple as writing a function:
 
 ```python
 import os
@@ -223,7 +223,7 @@ print(response.content)
 
 ### Extracting Structured Information
 
-Convenience built on top of tools that makes extracting structured information reliable:
+Convenience built on top of tools that makes [extracting structured information](./concepts/extracting_structured_information_using_llms.md) reliable:
 
 ```python
 from typing import Literal, Type
@@ -257,7 +257,7 @@ print(TaskDetails)
 
 ### FastAPI Integration
 
-Since we’ve built our `BasePrompt` on top of [Pydantic](https://pydantic.dev/), we integrate with tools like [FastAPI](https://fastapi.tiangolo.com/) out-of-the-box:
+Since we’ve built our `BasePrompt` on top of [Pydantic](https://pydantic.dev/), we [integrate](./integrations/fastapi.md) with tools like [FastAPI](https://fastapi.tiangolo.com/) out-of-the-box:
 
 ```python
 import os
@@ -290,23 +290,46 @@ def root(book_recommender: BookRecommender) -> Book:
     return book_recommender.extract()
 ```
 
+## Supported Providers and Integrations
+
+You can find a list of [supported providers](./concepts/supported_llm_providers.md) with examples of how to use them with Mirascope.
+
+We are constantly working to further integrate Mirascope as seamlessly as possible with as many tools as possible. You can find the [integrations that we currently support](./integrations/client_wrappers.md) in our docs. If there are any integrations that you want, let us know!
+
 ## Roadmap
 
-- [X]  Extracting structured information using LLMs
-- [ ]  RAG
 - [ ]  Agents
-- [ ]  Streaming extraction for tools (function calling)
+    - [X]  Easy tool calling and execution
+    - [ ]  More convenience around TOOL messages
+    - [ ]  Base classes for ReAct agents
+    - [ ]  Base classes for Query Planning agents
+    - [ ]  Tons of examples...
+- [ ]  RAG
+    - [X]  ChromaDB
+    - [X]  Pinecone
+    - [X]  OpenAI Embeddings
+    - [ ]  Cohere Embeddings
+    - [ ]  Hugging Face
+    - [ ]  Tons of examples...
+- [ ] Mirascope CLI
+    - [X] Versioning prompts / calls / extractors
+    - [ ] RAG CLI (e.g. versioning stores, one-off vector store interactions)
+    - [ ] Versioning integrations with LLMOps tools (e.g. Weave, LangSmith, ...)
+    - [ ] LLM Provider Auto-conversion
+    - [ ] Templates (`mirascope from_template pinecone_rag_openai_call my_call_name`)
+- [X]  Extracting structured information using LLMs
+- [X]  Streaming extraction for tools (function calling)
 - [ ]  Additional template parsing for more complex messages
     - [X]  Chat History
-    - [ ]  Better Tool Messages
+    - [X]  List + List[List] Convenience
     - [ ]  Additional Metadata
     - [ ]  Vision
 - [ ]  Support for more LLM providers:
     - [X]  Anthropic
-    - [X]  Gemini
+    - [X]  Cohere
     - [X]  Mistral
     - [X]  Groq
-    - [ ]  Cohere
+    - [X]  Gemini
     - [ ]  HuggingFace
 - [ ]  Integrations
     - [X]  Weights & Biases Trace
