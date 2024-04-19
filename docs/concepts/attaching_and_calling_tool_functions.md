@@ -27,7 +27,7 @@ class TodaysForecast(OpenAICall):
     )
 ```
 
-The tools are attached to the `call_params` attribute in a Mirascope Call. For more information check out Learn why colocation is so important and how combining it with the [Mirascope CLI](https://github.com/Mirascope/mirascope-cli) makes engineering better prompts and calls easy.
+The tools are attached to the `call_params` attribute in a Mirascope Call. For more information, check out why [colocation](../concepts/philosophy.md#4-colocation) is so important and how combining it with the [Mirascope CLI](https://github.com/Mirascope/mirascope-cli) makes engineering better prompts and calls easy.
 
 ## Using a function properly documented with a docstring
 
