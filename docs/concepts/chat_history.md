@@ -163,4 +163,4 @@ while True:
     print(content)
 ```
 
-Check out the [Mirascope RAG](https://docs.mirascope.io/concepts/rag_%28retrieval_augmented_generation%29/) for a more in-depth look on creating a RAG application with Mirascope.
+Check out [Mirascope RAG](./rag_(retrieval_augmented_generation).md) for a more in-depth look on creating a RAG application with Mirascope.
