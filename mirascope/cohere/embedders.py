@@ -11,19 +11,15 @@ from .types import CohereEmbeddingParams, CohereEmbeddingResponse
 class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
     """Cohere Embedder
 
-    embed-english-v3.0 1024
+    model                           max_dimensions
+    embed-english-v3.0              1024
+    embed-multilingual-v3.0         1024
+    embed-english-light-v3.0        384
+    embed-multilingual-light-v3.0   384
+    embed-english-v2.0              4096
+    embed-english-light-v2.0        1024
+    embed-multilingual-v2.0         768
 
-    embed-multilingual-v3.0 1024
-
-    embed-english-light-v3.0 384
-
-    embed-multilingual-light-v3.0 384
-
-    embed-english-v2.0 4096
-
-    embed-english-light-v2.0 1024
-
-    embed-multilingual-v2.0 768
     Example:
 
     ```python
