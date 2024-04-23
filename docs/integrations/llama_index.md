@@ -28,7 +28,7 @@ class PaulGrahamBot(AnthropicCall):
 
     @property
     def excerpts(self) -> list[str]:
-        """Retreives excerpts from Paul Graham's essays relevant to `query`."""
+        """Retrieves excerpts from Paul Graham's essays relevant to `query`."""
         return [node.get_content() for node in retriever.retrieve(self.query)]
 
 
