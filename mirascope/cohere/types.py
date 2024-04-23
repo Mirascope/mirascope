@@ -1,5 +1,5 @@
 """Types for interacting with Cohere chat models using Mirascope."""
-from typing import Any, Callable, Literal, Optional, Sequence, Type
+from typing import Any, Callable, Literal, Optional, Sequence, Type, Union
 
 from cohere import (
     AsyncClient,
@@ -19,6 +19,7 @@ from cohere.types import (
     ChatRequestToolResultsItem,
     ChatSearchQuery,
     ChatSearchResult,
+    EmbedResponse,
     NonStreamedChatResponse,
     StreamedChatResponse,
     StreamedChatResponse_TextGeneration,
@@ -28,6 +29,7 @@ from pydantic import ConfigDict, SkipValidation
 from typing_extensions import NotRequired, TypedDict
 
 from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..rag.types import BaseEmbeddingParams, BaseEmbeddingResponse
 from .tools import CohereTool
 
 
@@ -288,3 +290,40 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         if isinstance(self.chunk, StreamedChatResponse_ToolCallsGeneration):
             return self.chunk.tool_calls
         return None
+
+
+class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):
+    """A convenience wrapper around the Cohere `EmbedResponse` response."""
+
+    @property
+    def embeddings(
+        self,
+    ) -> Optional[Union[list[list[float]], list[list[int]]]]:
+        """Returns the embeddings"""
+        if isinstance(self.response.embeddings, list):
+            return self.response.embeddings
+        else:
+            if self.response.embeddings.float_:
+                return self.response.embeddings.float_
+            elif self.response.embeddings.int8:
+                return self.response.embeddings.int8
+            elif self.response.embeddings.uint8:
+                return self.response.embeddings.uint8
+            elif self.response.embeddings.binary:
+                return self.response.embeddings.binary
+            elif self.response.embeddings.ubinary:
+                return self.response.embeddings.ubinary
+            return None
+
+
+class CohereEmbeddingParams(BaseEmbeddingParams):
+    model: str = "embed-english-v2.0"
+    input_type: Literal[
+        "search_document", "search_query", "classification", "clustering"
+    ] = "search_query"
+    embedding_types: Optional[
+        Sequence[Literal["float", "int8", "uint8", "binary", "ubinary"]]
+    ] = None
+    truncate: Optional[Literal["none", "end", "start"]] = "end"
+    request_options: Optional[RequestOptions] = None
+    batching: Optional[bool] = True
