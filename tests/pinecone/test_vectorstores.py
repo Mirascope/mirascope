@@ -10,7 +10,7 @@ from mirascope.rag.types import Document
 
 
 @patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
-def test_pinecone_vectorstore_add_document(
+def test_pinecone_vectorstore_add(
     mock_pinecone: MagicMock,
     fixture_pinecone_with_openai: PineconeVectorStore,
 ):
@@ -30,6 +30,21 @@ def test_pinecone_vectorstore_add_document(
             }
         ]
     )
+
+
+@patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
+def test_pinecone_vectorstore_add_no_embedding(
+    mock_pinecone: MagicMock,
+    fixture_pinecone_with_cohere: PineconeVectorStore,
+):
+    """Test `ValueError` is raised when embedding is None during add."""
+    mock_upsert = MagicMock()
+    mock_index = MagicMock()
+    mock_index.return_value.upsert = mock_upsert
+    mock_pinecone.return_value.Index = mock_index
+
+    with pytest.raises(ValueError):
+        fixture_pinecone_with_cohere.add([Document(text="foo", id="1")])
 
 
 @patch("mirascope.pinecone.vectorstores.Pinecone", new_callable=MagicMock)
@@ -88,7 +103,7 @@ def test_pinecone_vectorstore_retrieve_no_embedding(
     mock_pinecone: MagicMock,
     fixture_pinecone_with_cohere: PineconeVectorStore,
 ):
-    """Test the retrieve method of the PineconeVectorStore class."""
+    """Test `ValueError` is raised when embedding is None during retrieve."""
     mock_query = MagicMock()
     mock_index = MagicMock()
     mock_index.return_value.query = mock_query

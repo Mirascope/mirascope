@@ -129,7 +129,8 @@ class PineconeVectorStore(BaseVectorStore):
         embedding_repsonse: BaseEmbeddingResponse = embed(inputs)
         if self.handle_add_text:
             self.handle_add_text(documents)
-
+        if embedding_repsonse.embeddings is None:
+            raise ValueError("Embedding is None")
         vectors = []
         for i, embedding in enumerate(embedding_repsonse.embeddings):
             if documents[i] is not None:

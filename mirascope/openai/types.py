@@ -281,7 +281,7 @@ class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
 
 
 class OpenAIEmbeddingParams(BaseEmbeddingParams):
-    model: str = "text-embedding-ada-002"
+    model: str = "text-embedding-3-small"
     encoding_format: Optional[Literal["float", "base64"]] = None
     user: Optional[str] = None
     # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.

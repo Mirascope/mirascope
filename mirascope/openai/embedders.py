@@ -33,7 +33,7 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
     embed_batch_size: Optional[int] = 20
     max_workers: Optional[int] = 64
     embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams(
-        model="text-embedding-ada-002"
+        model="text-embedding-3-small"
     )
 
     def embed(self, inputs: list[str]) -> OpenAIEmbeddingResponse:

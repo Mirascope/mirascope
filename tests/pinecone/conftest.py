@@ -1,6 +1,8 @@
 """Configurations for Mirascope PineconeVectorStore module tests"""
 
 
+from typing import ClassVar, Optional, Union
+
 import pytest
 from cohere.types import (
     ApiMeta,
@@ -12,7 +14,8 @@ from cohere.types import (
 from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
 from openai.types.embedding import Embedding
 
-from mirascope.cohere.types import CohereEmbeddingResponse
+from mirascope.cohere.embedders import CohereEmbedder
+from mirascope.cohere.types import CohereEmbeddingParams, CohereEmbeddingResponse
 from mirascope.openai.types import OpenAIEmbeddingResponse
 from mirascope.pinecone import PineconeSettings, PineconeVectorStore
 from mirascope.pinecone.types import PineconePodParams
@@ -53,6 +56,7 @@ cohere_embedding_response = CohereEmbeddingResponse(
     ),
     start_time=0,
     end_time=0,
+    embedding_type="int8",
 )
 
 
@@ -67,15 +71,19 @@ class TestOpenAIEmbedder(BaseEmbedder):
         return [1, 2, 3]
 
 
-class TestCohereEmbedder(BaseEmbedder):
+class TestCohereEmbedder(CohereEmbedder):
+    embedding_params = CohereEmbeddingParams()
+
     def embed(self, input: list[str]) -> CohereEmbeddingResponse:
         return cohere_embedding_response
 
     async def embed_async(self, input: list[str]) -> CohereEmbeddingResponse:
         return cohere_embedding_response  # pragma: no cover
 
-    def __call__(self, input: str) -> list[float]:
-        return [1, 2, 3]
+    def __call__(
+        self, input: list[str]
+    ) -> Optional[Union[list[list[float]], list[list[int]]]]:
+        return [[1, 2, 3]]
 
 
 @pytest.fixture
@@ -104,7 +112,7 @@ def fixture_pinecone_with_cohere() -> PineconeVectorStore:
         client_settings = PineconeSettings()
 
     vectorstore = VectorStore()
-    vectorstore.embedder("foo")
+    vectorstore.embedder(["foo"])
     return vectorstore
 
 

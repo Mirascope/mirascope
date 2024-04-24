@@ -42,23 +42,35 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
     def embed(self, inputs: list[str]) -> CohereEmbeddingResponse:
         """Call the embedder with multiple inputs"""
         co = Client(api_key=self.api_key, base_url=self.base_url)
+        embedding_type = (
+            self.embedding_params.embedding_types[0]
+            if self.embedding_params.embedding_types
+            else None
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = co.embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            embedding_type=embedding_type,
         )
 
     async def embed_async(self, inputs: list[str]) -> CohereEmbeddingResponse:
         """Asynchronously call the embedder with multiple inputs"""
         co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
+        embedding_type = (
+            self.embedding_params.embedding_types[0]
+            if self.embedding_params.embedding_types
+            else None
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await co.embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
+            embedding_type=embedding_type,
         )
 
     def __call__(

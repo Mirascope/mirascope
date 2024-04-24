@@ -1,5 +1,5 @@
 """Types for interacting with Cohere chat models using Mirascope."""
-from typing import Any, Callable, Literal, Optional, Sequence, Type, Union
+from typing import Any, Callable, Literal, Optional, Sequence, Type, Union, cast
 
 from cohere import (
     AsyncClient,
@@ -19,6 +19,7 @@ from cohere.types import (
     ChatRequestToolResultsItem,
     ChatSearchQuery,
     ChatSearchResult,
+    EmbedByTypeResponseEmbeddings,
     EmbedResponse,
     NonStreamedChatResponse,
     StreamedChatResponse,
@@ -295,29 +296,30 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):
     """A convenience wrapper around the Cohere `EmbedResponse` response."""
 
+    embedding_type: Optional[
+        Literal["float", "int8", "uint8", "binary", "ubinary"]
+    ] = None
+
     @property
     def embeddings(
         self,
     ) -> Optional[Union[list[list[float]], list[list[int]]]]:
         """Returns the embeddings"""
-        if isinstance(self.response.embeddings, list):
+        if self.response.response_type == "embeddings_floats":
             return self.response.embeddings
         else:
-            if self.response.embeddings.float_:
-                return self.response.embeddings.float_
-            elif self.response.embeddings.int8:
-                return self.response.embeddings.int8
-            elif self.response.embeddings.uint8:
-                return self.response.embeddings.uint8
-            elif self.response.embeddings.binary:
-                return self.response.embeddings.binary
-            elif self.response.embeddings.ubinary:
-                return self.response.embeddings.ubinary
-            return None
+            embedding_type = self.embedding_type
+            if embedding_type == "float":
+                embedding_type == "float_"
+
+            # TODO: Update to model_dump when Cohere updates to Pydantic v2
+            embeddings_by_type: EmbedByTypeResponseEmbeddings = self.response.embeddings
+            embedding_dict = embeddings_by_type.dict()
+            return embedding_dict.get(str(embedding_type), None)
 
 
 class CohereEmbeddingParams(BaseEmbeddingParams):
-    model: str = "embed-english-v2.0"
+    model: str = "embed-english-v3.0"
     input_type: Literal[
         "search_document", "search_query", "classification", "clustering"
     ] = "search_query"
