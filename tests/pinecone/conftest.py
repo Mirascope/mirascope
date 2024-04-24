@@ -1,7 +1,7 @@
 """Configurations for Mirascope PineconeVectorStore module tests"""
 
 
-from typing import ClassVar, Optional, Union
+from typing import Optional, Union
 
 import pytest
 from cohere.types import (

@@ -1,5 +1,5 @@
 """Types for interacting with Cohere chat models using Mirascope."""
-from typing import Any, Callable, Literal, Optional, Sequence, Type, Union, cast
+from typing import Any, Callable, Literal, Optional, Sequence, Type, Union
 
 from cohere import (
     AsyncClient,
