@@ -1,3 +1,4 @@
+import logging
 from contextlib import suppress
 from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
@@ -61,7 +62,7 @@ class AstraVectorStore(BaseVectorStore):
 
     ############################# PRIVATE PROPERTIES #################################
 
-   @cached_property
+    @cached_property
     def _client(self) -> AstraDB:
         """Instantiate and return an AstraDB client configured from settings."""
         try:
