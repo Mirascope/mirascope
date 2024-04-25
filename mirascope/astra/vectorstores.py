@@ -71,3 +71,4 @@ class AstraVectorStore(BaseVectorStore):
             return self._client.collection(self.collection_name)
         except Exception as e:
             logging.error(f"Failed to access or create collection: {e}")
+            raise
