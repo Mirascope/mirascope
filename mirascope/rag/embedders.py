@@ -20,11 +20,11 @@ class BaseEmbedder(BaseModel, Generic[BaseEmbeddingT], ABC):
     dimensions: Optional[int] = None
 
     @abstractmethod
-    def embed(self, input: list[str]) -> list[BaseEmbeddingT]:
+    def embed(self, input: list[str]) -> BaseEmbeddingT:
         """A call to the embedder with a single input"""
         ...  # pragma: no cover
 
     @abstractmethod
-    async def embed_async(self, input: list[str]) -> list[BaseEmbeddingT]:
+    async def embed_async(self, input: list[str]) -> BaseEmbeddingT:
         """Asynchronously call the embedder with a single input"""
         ...  # pragma: no cover

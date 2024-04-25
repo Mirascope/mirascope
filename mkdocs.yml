@@ -140,6 +140,13 @@ nav:
           - "api/chroma/index.md"
           - types: "api/chroma/types.md"
           - vectorstores: "api/chroma/vectorstores.md"
+      - cohere:
+          - "api/cohere/index.md"
+          - calls: "api/cohere/calls.md"
+          - embedders: "api/cohere/embedders.md"
+          - extractors: "api/cohere/extractors.md"
+          - tools: "api/cohere/tools.md"
+          - types: "api/cohere/types.md"
       - enums: "api/enums.md"
       - gemini:
           - "api/gemini/index.md"

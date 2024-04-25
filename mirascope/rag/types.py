@@ -1,6 +1,6 @@
 """Base types and abstract interfaces for typing Mirascope RAG."""
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, Optional, TypeVar
+from typing import Any, Callable, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -22,7 +22,7 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
 
     @property
     @abstractmethod
-    def embedding(self) -> list[float]:
+    def embeddings(self) -> Optional[Union[list[list[float]], list[list[int]]]]:
         """Should return the embedding of the response.
 
         If there are multiple choices in a response, this method should select the 0th
