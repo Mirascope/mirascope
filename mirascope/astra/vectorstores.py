@@ -42,13 +42,22 @@ class AstraVectorStore(BaseVectorStore):
         return AstraQueryResult.convert(results)
 
     def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
-        """Takes unstructured data and upserts into vectorstore"""
+        """Takes unstructured data and upserts into vectorstore.
+        Each document is expected to have text, embeddings, and a source.
+        """
+        if not text:
+            logging.error("No text provided for addition.")
+            return
+        
         documents = self.chunker.chunk(text) if isinstance(text, str) else text
         for document in documents:
-            self._collection.upsert(document.id, {
+            embeddings = self.embedder(document.text)  # Assuming embeddings are pre-calculated
+            document_to_insert = {
                 "text": document.text,
-                "embeddings": self.embedder(document.text)  # Assuming embeddings are pre-calculated
-            })
+                "$vector": embeddings,  # Include vector embeddings
+                "source": kwargs.get("filename", "unknown")  # Optionally include source file name
+            }
+            self._collection.insert_one(document_to_insert)
 
     ############################# PRIVATE PROPERTIES #################################
 
