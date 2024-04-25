@@ -52,13 +52,22 @@ class AstraVectorStore(BaseVectorStore):
 
     ############################# PRIVATE PROPERTIES #################################
 
-    @cached_property
+   @cached_property
     def _client(self) -> AstraDB:
-        return AstraDB(
-            api_endpoint=self.client_settings.api_endpoint,
-            token=self.client_settings.application_token,
-        )
+        """Instantiate and return an AstraDB client configured from settings."""
+        try:
+            return AstraDB(
+                api_endpoint=self.client_settings.api_endpoint,
+                token=self.client_settings.application_token,
+            )
+        except Exception as e:
+            logging.error(f"Failed to initialize AstraDB client: {e}")
+            raise
 
     @cached_property
     def _collection(self):
-        return self._client.collection(self.collection_name)
+        """Access or create the collection based on the name defined in settings."""
+        try:
+            return self._client.collection(self.collection_name)
+        except Exception as e:
+            logging.error(f"Failed to access or create collection: {e}")
