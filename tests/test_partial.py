@@ -1,10 +1,9 @@
 """Tests that `Partial` works to make all fields optional."""
 from typing import Optional
 
-import pytest
 from pydantic import BaseModel
 
-from mirascope.partial import Partial
+from mirascope.partial import partial
 
 
 class ShallowModel(BaseModel):
@@ -24,7 +23,7 @@ class PartialShallowModel(BaseModel):
 def test_shallow_partial():
     """Tests that `Partial` works to make all fields optional in a shallow model."""
     assert (
-        Partial[ShallowModel].model_json_schema()
+        partial(ShallowModel).model_json_schema()
         == PartialShallowModel.model_json_schema()
     )
 
@@ -46,7 +45,7 @@ class PartialDeeperModel(BaseModel):
 def test_deeper_partial():
     """Tests that `Partial` works to make all fields optional in a deeper model."""
     assert (
-        Partial[DeeperModel].model_json_schema()
+        partial(DeeperModel).model_json_schema()
         == PartialDeeperModel.model_json_schema()
     )
 
@@ -70,20 +69,6 @@ class PartialDeepestModel(BaseModel):
 def test_deepest_partial():
     """Tests that `Partial` works to make all fields optional in a deeper model."""
     assert (
-        Partial[DeepestModel].model_json_schema()
+        partial(DeepestModel).model_json_schema()
         == PartialDeepestModel.model_json_schema()
     )
-
-
-def test_cannot_instantiate_partial():
-    """Tests that `Partial` cannot be instantiated."""
-    with pytest.raises(TypeError):
-        Partial()
-
-
-def test_cannot_subclass():
-    """Tests that `Partial` cannot be subclassed."""
-    with pytest.raises(TypeError):
-
-        class Subclass(Partial):
-            """A subclass of `Partial`."""

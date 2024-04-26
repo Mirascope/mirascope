@@ -1,72 +1,79 @@
-"""Utility functions for OpenAIChat."""
-from inspect import isclass
-from typing import Any, Callable, Optional, Type, Union
+"""A module for utility functions for working with OpenAI."""
+from typing import Optional
 
-from openai.types.chat import ChatCompletionUserMessageParam
-
-from ..base import BasePrompt, convert_function_to_tool
-from .tools import OpenAITool
+from openai.types.completion_usage import CompletionUsage
 
 
-def convert_tools_list_to_openai_tools(
-    tools: Optional[list[Union[Callable, Type[OpenAITool]]]],
-) -> Optional[list[Type[OpenAITool]]]:
-    """Converts a list of `Callable` or `OpenAITool` instances to an `OpenAITool` list.
+def openai_api_calculate_cost(
+    usage: CompletionUsage, model="gpt-3.5-turbo-16k"
+) -> Optional[float]:
+    """Calculate the cost of a completion using the OpenAI API.
 
-    Args:
-        tools: A list of functions or `OpenAITool`s.
+    https://openai.com/pricing
 
-    Returns:
-        A list of all items converted to `OpenAITool` instances.
+    Model                     Input               Output
+    gpt-3.5-turbo-0125	    $0.50 / 1M tokens	$1.50 / 1M tokens
+    gpt-3.5-turbo-1106	    $1.00 / 1M tokens	$2.00 / 1M tokens
+    gpt-4-1106-preview	    $10.00 / 1M tokens 	$30.00 / 1M tokens
+    gpt-4	                $30.00 / 1M tokens	$60.00 / 1M tokens
+    text-embedding-3-small	$0.02 / 1M tokens
+    text-embedding-3-large	$0.13 / 1M tokens
+    text-embedding-ada-0002	$0.10 / 1M tokens
     """
-    if not tools:
+    pricing = {
+        "gpt-3.5-turbo-0125": {
+            "prompt": 0.000_000_5,
+            "completion": 0.000_001_5,
+        },
+        "gpt-3.5-turbo-1106": {
+            "prompt": 0.000_001,
+            "completion": 0.000_002,
+        },
+        "gpt-4-1106-preview": {
+            "prompt": 0.000_01,
+            "completion": 0.000_03,
+        },
+        "gpt-4": {
+            "prompt": 0.000_003,
+            "completion": 0.000_006,
+        },
+        "gpt-3.5-turbo-4k": {
+            "prompt": 0.000_015,
+            "completion": 0.000_02,
+        },
+        "gpt-3.5-turbo-16k": {
+            "prompt": 0.000_003,
+            "completion": 0.000_004,
+        },
+        "gpt-4-8k": {
+            "prompt": 0.000_003,
+            "completion": 0.000_006,
+        },
+        "gpt-4-32k": {
+            "prompt": 0.000_006,
+            "completion": 0.000_012,
+        },
+        "text-embedding-3-small": {
+            "prompt": 0.000_000_02,
+            "completion": 0.000_000_02,
+        },
+        "text-embedding-ada-002": {
+            "prompt": 0.000_000_1,
+            "completion": 0.000_000_1,
+        },
+        "text-embedding-3-large": {
+            "prompt": 0.000_000_13,
+            "completion": 0.000_000_13,
+        },
+    }
+
+    try:
+        model_pricing = pricing[model]
+    except KeyError:
         return None
-    return [
-        tool if isclass(tool) else convert_function_to_tool(tool, OpenAITool)
-        for tool in tools
-    ]
 
+    prompt_cost = usage.prompt_tokens * model_pricing["prompt"]
+    completion_cost = usage.completion_tokens * model_pricing["completion"]
+    total_cost = prompt_cost + completion_cost
 
-def patch_openai_kwargs(
-    kwargs: dict[str, Any],
-    prompt: Optional[Union[BasePrompt, str]],
-    tools: Optional[list[Type[OpenAITool]]],
-) -> None:
-    """Sets up the kwargs for an OpenAI API call.
-
-    Kwargs are parsed as such: messages are formatted to have the required `role` and
-    `content` items; tools (if any exist) are parsed into JSON schemas in order to fit
-    the OpenAI API; tool choice, if not provided, is set to "auto". Other kwargs are
-    left unchanged.
-
-    Args:
-        kwargs: The kwargs to patch.
-        prompt: The prompt to use.
-        tools: The tools to use, if any.
-
-    Raises:
-        ValueError: if neither `prompt` nor `messages` are provided.
-    """
-    if prompt is None:
-        if "messages" not in kwargs:
-            raise ValueError("Either `prompt` or `messages` must be provided.")
-    elif isinstance(prompt, str):
-        kwargs["messages"] = [
-            ChatCompletionUserMessageParam(role="user", content=prompt)
-        ]
-    else:
-        kwargs["messages"] = prompt.messages
-        kwargs.update(
-            {
-                key: value
-                for key, value in prompt.call_params.model_dump(
-                    exclude={"tools", "model", "wrapper", "async_wrapper"}
-                ).items()
-                if value is not None
-            }
-        )
-
-    if tools:
-        kwargs["tools"] = [tool.tool_schema() for tool in tools]
-        if "tool_choice" not in kwargs:
-            kwargs["tool_choice"] = "auto"
+    return total_cost

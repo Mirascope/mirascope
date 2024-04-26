@@ -62,7 +62,13 @@ markdown_extensions:
       generic: true
   - footnotes
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.mark
   - attr_list
   - pymdownx.emoji:
@@ -91,40 +97,89 @@ nav:
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
   - Concepts:
-      - Pydantic Prompts: "concepts/pydantic_prompts.md"
-      - LLM Convenience Wrappers: "concepts/llm_convenience_wrappers.md"
-      - Mirascope CLI: "concepts/mirascope_cli.md"
-  - Cookbook:
-      - SQuAD Extraction: "cookbook/squad_extraction.md"
-      - RAG: "cookbook/rag.md"
-      - Integrating LangSmith with Mirascope: "cookbook/langsmith.md"
-      - Weights & Biases Integrated Prompts for Logging: "cookbook/wandb_chain.md"
+      - Philosophy: "concepts/philosophy.md"
+      - Writing Prompts: "concepts/writing_prompts.md"
+      - Generating content: "concepts/generating_content.md"
+      - Streaming generated content: "concepts/streaming_generated_content.md"
+      - Supported LLM providers: "concepts/supported_llm_providers.md"
+      - Chat History: "concepts/chat_history.md"
+      - Tools (Function Calling): "concepts/tools_(function_calling).md"
+      - Defining tools (function calls): "concepts/defining_tools_(function_calls).md"
+      - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
+      - Defining and extracting schemas: "concepts/defining_and_extracting_schemas.md"
+      - Attaching and calling tool functions: "concepts/attaching_and_calling_tool_functions.md"
+      - Streaming tools and structured outputs: "concepts/streaming_tools_and_structured_outputs.md"
+      - Extracting base types: "concepts/extracting_base_types.md"
+      - Validation: "concepts/validation.md"
+      - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
+      - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
+  - Integrations:
+      - Client Wrappers: "integrations/client_wrappers.md"
+      - FastAPI: "integrations/fastapi.md"
+      - Weights & Biases: "integrations/weights_and_biases.md"
+      - LangChain & LangSmith: "integrations/langchain.md"
+      - Llama Index: "integrations/llama_index.md"
+  - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"
+      - anthropic:
+          - "api/anthropic/index.md"
+          - calls: "api/anthropic/calls.md"
+          - extractors: "api/anthropic/extractors.md"
+          - tools: "api/anthropic/tools.md"
+          - types: "api/anthropic/types.md"
       - base:
           - "api/base/index.md"
-          - prompt: "api/base/prompt.md"
+          - calls: "api/base/calls.md"
+          - extractors: "api/base/extractors.md"
+          - prompts: "api/base/prompts.md"
           - tools: "api/base/tools.md"
           - types: "api/base/types.md"
-      - cli:
-          - "api/cli/index.md"
-          - commands: "api/cli/commands.md"
-          - constants: "api/cli/constants.md"
-          - generic: "api/cli/generic.md"
-          - schemas: "api/cli/schemas.md"
-          - utils: "api/cli/utils.md"
+          - utils: "api/base/utils.md"
+      - chroma:
+          - "api/chroma/index.md"
+          - types: "api/chroma/types.md"
+          - vectorstores: "api/chroma/vectorstores.md"
+      - cohere:
+          - "api/cohere/index.md"
+          - calls: "api/cohere/calls.md"
+          - embedders: "api/cohere/embedders.md"
+          - extractors: "api/cohere/extractors.md"
+          - tools: "api/cohere/tools.md"
+          - types: "api/cohere/types.md"
       - enums: "api/enums.md"
+      - gemini:
+          - "api/gemini/index.md"
+          - calls: "api/gemini/calls.md"
+          - extractors: "api/gemini/extractors.md"
+          - tools: "api/gemini/tools.md"
+          - types: "api/gemini/types.md"
+      - mistral:
+          - "api/mistral/index.md"
+          - calls: "api/mistral/calls.md"
+          - extractors: "api/mistral/extractors.md"
+          - tools: "api/mistral/tools.md"
+          - types: "api/mistral/types.md"
       - openai:
           - "api/openai/index.md"
-          - models:
-              - "api/openai/models/index.md"
-              - OpenAIChat: "api/openai/models/openai_chat.md"
-              - AsyncOpenAIChat: "api/openai/models/openai_chat_async.md"
-          - parsers:
-              - "api/openai/parsers/index.md"
-              - OpenAIParser: "api/openai/parsers/openai_tool_stream_parser.md"
-              - AsyncOpenAIParser: "api/openai/parsers/openai_tool_stream_parser_async.md"
+          - calls: "api/openai/calls.md"
+          - embedders: "api/openai/embedders.md"
+          - extractors: "api/openai/extractors.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
-          - utils: "api/openai/utils.md"
-      - prompts: "api/prompts.md"
+      - pinecone:
+          - "api/pinecone/index.md"
+          - vectorstores: "api/pinecone/vectorstores.md"
+          - types: "api/pinecone/types.md"
+      - rag:
+          - "api/rag/index.md"
+          - embedders: "api/rag/embedders.md"
+          - chunkers:
+              - "api/rag/chunkers/index.md"
+              - base_chunker: "api/rag/chunkers/base_chunker.md"
+              - text_chunker: "api/rag/chunkers/text_chunker.md"
+          - vectorstores: "api/rag/vectorstores.md"
+      - wandb:
+          - "api/wandb/index.md"
+          - wandb: "api/wandb/wandb.md"
+          - weave: "api/wandb/weave.md"

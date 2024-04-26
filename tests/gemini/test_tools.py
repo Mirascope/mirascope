@@ -1,8 +1,9 @@
 """Tests for the `mirascope.gemini.tools` module."""
 import pytest
 from google.ai.generativelanguage import FunctionCall
-from pydantic import Field
+from pydantic import BaseModel, Field
 
+from mirascope.base.tools import DEFAULT_TOOL_DOCSTRING
 from mirascope.gemini.tools import GeminiTool
 
 
@@ -10,16 +11,23 @@ class NoDescription(GeminiTool):
     param: str
 
 
-def test_gemini_tool_no_description() -> None:
-    """Test the `GeminiTool` class with no description."""
-    with pytest.raises(ValueError):
-        NoDescription.tool_schema()
-
-
 def test_from_tool_call_no_args() -> None:
     """Test the `from_tool_call` method with no args."""
     with pytest.raises(ValueError):
         NoDescription.from_tool_call(FunctionCall(name="NoDescription"))
+
+
+def test_no_nested_tools() -> None:
+    """Tests that a `ValueError` is raised when using nested tools with Gemin."""
+
+    class Book(BaseModel):
+        title: str
+
+    class Books(GeminiTool):
+        books: list[Book]
+
+    with pytest.raises(ValueError):
+        Books.tool_schema()
 
 
 def fake_tool(param: str):
@@ -44,3 +52,26 @@ def test_tool_from_fn() -> None:
         GeminiTool.from_fn(fake_tool).model_json_schema()
         == FakeTool.model_json_schema()
     )
+
+
+def test_tool_from_model() -> None:
+    """Tests creating a `GeminiTool` type from a `BaseModel`."""
+
+    class MyModel(BaseModel):
+        """My model"""
+
+        param: str
+
+    tool_type = GeminiTool.from_model(MyModel)
+    assert tool_type.model_json_schema() == MyModel.model_json_schema()
+
+
+def test_tool_from_base_type() -> None:
+    """Tests creating a `GeminiTool` type from a `BaseModel`."""
+
+    class Str(BaseModel):
+        __doc__ = DEFAULT_TOOL_DOCSTRING
+
+        value: str
+
+    assert GeminiTool.from_base_type(str).model_json_schema() == Str.model_json_schema()
