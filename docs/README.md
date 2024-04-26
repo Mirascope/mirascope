@@ -176,9 +176,9 @@ if tool:
 	  #> It is 10 degrees fahrenheit in Tokyo, Japan
 ```
 
-### Chain of Thought (CoT)
+### Chaining
 
-Chaining multiple calls together for [Chain of Thought (CoT)](./concepts/generating_content.md#chain-of-thought-cot) is as simple as writing a function:
+[Chaining](./concepts/generating_content.md#chaining) multiple calls together is as simple as writing a property:
 
 ```python
 import os
@@ -220,6 +220,8 @@ response = RecipeRecommender(food_type="japanese", ingredient="apples").call()
 print(response.content)
 # > Certainly! Here's a recipe for a delicious and refreshing Japanese Apple Salad: ...
 ```
+
+Of course, you can also chain calls together in sequence rather than through properties and wrap the chain in a function for reusability. You can find an example of this [here](./concepts/generating_content.md#chaining-using-functions).
 
 ### Extracting Structured Information
 
