@@ -12,29 +12,36 @@ class AstraVectorStore(BaseVectorStore):
     """A vector store for AstraDB.
     
     Example:
-        from your_module import AstraSettings, AstraVectorStore
         from mirascope.openai import OpenAIEmbedder
         from mirascope.rag import TextChunker
+        from mirascope.astra import AstraSettings, AstraVectorStore
+        from typing import ClassVar
+        import os
+        from astrapy.db import AstraDB
+
+        os.environ["OPENAI_API_KEY"] = "your openai API key here"
 
         class MyStore(AstraVectorStore):
+            collection_name: ClassVar[str] = "your collection name here"
             embedder = OpenAIEmbedder()
             chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
-            collection_name = "my-store-0001"
             client_settings = AstraSettings()
 
         my_store = MyStore()
-        with open(f"{PATH_TO_FILE}") as file:
+        with open("test_document.txt") as file:
             data = file.read()
             my_store.add(data)
-        documents = my_store.retrieve("my question").documents
+            documents = my_store.retrieve("Ask a question about the document you uploaded here.").documents
         print(documents)
-    """
+            """
 
     client_settings: ClassVar[AstraSettings] = AstraSettings()
+    collection_name: ClassVar[str] = "default_collection"  # Default value, can be overridden
+
 
     def retrieve(self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any) -> AstraQueryResult:
         """Queries the vectorstore for closest match"""
-        embedded_query = self.embedder(text) if text else None
+        embedded_query = self.embedder(text)[0] if text else None
         results = self._collection.vector_find(
             embedded_query,
             limit=kwargs.get('limit', 10),  # Example of additional parameter
@@ -52,7 +59,7 @@ class AstraVectorStore(BaseVectorStore):
         
         documents = self.chunker.chunk(text) if isinstance(text, str) else text
         for document in documents:
-            embeddings = self.embedder(document.text)  # Assuming embeddings are pre-calculated
+            embeddings = self.embedder(document.text)[0]
             document_to_insert = {
                 "text": document.text,
                 "$vector": embeddings,  # Include vector embeddings
