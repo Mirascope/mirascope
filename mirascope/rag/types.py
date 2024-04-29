@@ -7,6 +7,13 @@ from pydantic import BaseModel, ConfigDict
 ResponseT = TypeVar("ResponseT", bound=Any)
 
 
+class LogfireModel(BaseModel):
+    """A base interface for models that support logfire."""
+
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
+
+
 class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
     """A base abstract interface for LLM embedding responses.
 
@@ -34,7 +41,7 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
 T = TypeVar("T")
 
 
-class BaseVectorStoreParams(BaseModel):
+class BaseVectorStoreParams(LogfireModel):
     """The parameters with which to make a vectorstore."""
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
@@ -44,15 +51,16 @@ class BaseVectorStoreParams(BaseModel):
         self,
     ) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
+        exclude = {"weave", "logfire", "logfire_async"}
         kwargs = {
             key: value
-            for key, value in self.model_dump(exclude={"weave"}).items()
+            for key, value in self.model_dump(exclude=exclude).items()
             if value is not None
         }
         return kwargs
 
 
-class BaseEmbeddingParams(BaseModel):
+class BaseEmbeddingParams(LogfireModel):
     """The parameters with which to make an embedding."""
 
     model: str
@@ -60,8 +68,11 @@ class BaseEmbeddingParams(BaseModel):
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the embedder as a keyword arguments dictionary."""
+        exclude = {"weave", "logfire", "logfire_async"}
         kwargs = {
-            key: value for key, value in self.model_dump().items() if value is not None
+            key: value
+            for key, value in self.model_dump(exclude=exclude).items()
+            if value is not None
         }
         return kwargs
 

@@ -64,12 +64,12 @@ class PineconeVectorStore(BaseVectorStore):
     def retrieve(self, text: str, **kwargs: Any) -> PineconeQueryResult:
         """Queries the vectorstore for closest match"""
         embed = self.embedder.embed
-        if self.vectorstore_params.weave is not None and not isinstance(
-            self.chunker, weave.Op
-        ):
+        if self.vectorstore_params.weave and not isinstance(self.chunker, weave.Op):
             embed = self.vectorstore_params.weave(
                 self.embedder.embed
             )  # pragma: no cover
+        if self.vectorstore_params.logfire:
+            embed = self.vectorstore_params.logfire(embed)  # pragma: no cover
         text_embedding = embed([text])
         if "top_k" not in kwargs:
             kwargs["top_k"] = 8
@@ -108,12 +108,12 @@ class PineconeVectorStore(BaseVectorStore):
         documents: list[Document]
         if isinstance(text, str):
             chunk = self.chunker.chunk
-            if self.vectorstore_params.weave is not None and not isinstance(
-                self.chunker, weave.Op
-            ):
+            if self.vectorstore_params.weave and not isinstance(self.chunker, weave.Op):
                 chunk = self.vectorstore_params.weave(
                     self.chunker.chunk
                 )  # pragma: no cover
+            if self.vectorstore_params.logfire:
+                chunk = self.vectorstore_params.logfire(chunk)  # pragma: no cover
             documents = chunk(text)
         else:
             documents = text

@@ -60,12 +60,12 @@ class ChromaVectorStore(BaseVectorStore):
         documents: list[Document]
         if isinstance(text, str):
             chunk = self.chunker.chunk
-            if self.vectorstore_params.weave is not None and not isinstance(
-                self.chunker, weave.Op
-            ):
+            if self.vectorstore_params.weave and not isinstance(self.chunker, weave.Op):
                 chunk = self.vectorstore_params.weave(
                     self.chunker.chunk
                 )  # pragma: no cover
+            if self.vectorstore_params.logfire:
+                chunk = self.vectorstore_params.logfire(chunk)  # pragma: no cover
             documents = chunk(text)
         else:
             documents = text

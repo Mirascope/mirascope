@@ -1,5 +1,4 @@
 """Base types and abstract interfaces for typing LLM calls."""
-
 from abc import ABC, abstractmethod
 from inspect import isclass
 from typing import (
@@ -94,6 +93,8 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
     weave: Optional[Callable[[T], T]] = None
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -103,7 +104,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
-        extra_exclude = {"tools", "weave"}
+        extra_exclude = {"tools", "weave", "logfire", "logfire_async"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
