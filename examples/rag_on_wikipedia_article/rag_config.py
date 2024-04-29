@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
     pinecone_api_key: Optional[str] = None
+    co_api_key: Optional[str] = None
+
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
 

@@ -8,7 +8,7 @@ with suppress(ImportError):
 
 from pinecone import Index, Pinecone, QueryResponse
 
-from ..rag.types import Document
+from ..rag.types import BaseEmbeddingResponse, Document
 from ..rag.vectorstores import BaseVectorStore
 from .types import (
     PineconePodParams,
@@ -70,12 +70,13 @@ class PineconeVectorStore(BaseVectorStore):
             )  # pragma: no cover
         if self.vectorstore_params.logfire:
             embed = self.vectorstore_params.logfire(embed)  # pragma: no cover
-        text_embedding = embed([text])
+        text_embedding: BaseEmbeddingResponse = embed([text])
         if "top_k" not in kwargs:
             kwargs["top_k"] = 8
-
+        if text_embedding.embeddings is None:
+            raise ValueError("Embedding is None")
         query_result: QueryResponse = self._index.query(
-            vector=text_embedding[0].embedding,
+            vector=text_embedding.embeddings[0],
             **{"include_metadata": True, "include_values": True, **kwargs},
         )
         ids: list[str] = []
@@ -125,12 +126,13 @@ class PineconeVectorStore(BaseVectorStore):
             embed = self.vectorstore_params.weave(
                 self.embedder.embed
             )  # pragma: no cover
-        embeddings = embed(inputs)
+        embedding_repsonse: BaseEmbeddingResponse = embed(inputs)
         if self.handle_add_text:
             self.handle_add_text(documents)
-
+        if embedding_repsonse.embeddings is None:
+            raise ValueError("Embedding is None")
         vectors = []
-        for i, embedding in enumerate(embeddings):
+        for i, embedding in enumerate(embedding_repsonse.embeddings):
             if documents[i] is not None:
                 metadata = documents[i].metadata or {}
                 metadata_text = (
@@ -141,7 +143,7 @@ class PineconeVectorStore(BaseVectorStore):
                 vectors.append(
                     {
                         "id": documents[i].id,
-                        "values": embedding.embedding,
+                        "values": embedding,
                         "metadata": {**metadata, **metadata_text},
                     }
                 )
