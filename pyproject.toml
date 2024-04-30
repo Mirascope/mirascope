@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.11.2"
+version = "0.11.3"
 description = "LLM toolkit for lightning-fast, high-quality development"
 license = "MIT"
 authors = [
