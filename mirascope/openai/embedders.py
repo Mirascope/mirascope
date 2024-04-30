@@ -83,6 +83,8 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
     def _embed(self, inputs: list[str]) -> OpenAIEmbeddingResponse:
         """Call the embedder with a single input"""
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.embedding_params.logfire:
+            self.embedding_params.logfire(client)  # pragma: no cover
         kwargs = self.embedding_params.kwargs()
         if self.embedding_params.model != "text-embedding-ada-002":
             kwargs["dimensions"] = self.dimensions
@@ -97,6 +99,8 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
     async def _embed_async(self, inputs: list[str]) -> OpenAIEmbeddingResponse:
         """Asynchronously call the embedder with a single input"""
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.embedding_params.logfire:
+            self.embedding_params.logfire(client)  # pragma: no cover
         kwargs = self.embedding_params.kwargs()
         if self.embedding_params.model != "text-embedding-ada-002":
             kwargs["dimensions"] = self.dimensions

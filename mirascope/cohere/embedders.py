@@ -48,7 +48,10 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
             else None
         )
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = co.embed(texts=inputs, **self.embedding_params.kwargs())
+        embed = co.embed
+        if self.embedding_params.logfire:
+            embed = self.embedding_params.logfire(co.embed)  # pragma: no cover
+        response = embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
             start_time=start_time,
@@ -65,7 +68,10 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
             else None
         )
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = await co.embed(texts=inputs, **self.embedding_params.kwargs())
+        embed = co.embed
+        if self.embedding_params.logfire_async:
+            embed = self.embedding_params.logfire_async(co.embed)  # pragma: no cover
+        response = await embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
             start_time=start_time,

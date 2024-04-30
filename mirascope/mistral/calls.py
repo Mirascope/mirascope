@@ -60,10 +60,11 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
-        if self.call_params.weave is not None:
-            chat = self.call_params.weave(client.chat)  # pragma: no cover
-        else:
-            chat = client.chat
+        chat = client.chat
+        if self.call_params.weave:
+            chat = self.call_params.weave(chat)  # pragma: no cover
+        if self.call_params.logfire:
+            chat = self.call_params.logfire(chat, "mistral")  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
@@ -93,10 +94,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
-        if self.call_params.weave is not None:
-            chat = self.call_params.weave(client.chat)  # pragma: no cover
-        else:
-            chat = client.chat
+        chat = client.chat
+        if self.call_params.weave:
+            chat = self.call_params.weave(chat)  # pragma: no cover
+        elif self.call_params.logfire_async:
+            chat = self.call_params.logfire_async(chat, "mistral")  # pragma: no cover
+
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
@@ -126,7 +129,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
-        stream = client.chat_stream(messages=self.messages(), **kwargs)
+        chat_stream = client.chat_stream
+        if self.call_params.logfire:
+            chat_stream = self.call_params.logfire(
+                chat_stream, "mistral", MistralCallResponseChunk
+            )  # pragma: no cover
+        stream = chat_stream(messages=self.messages(), **kwargs)
+
         for chunk in stream:
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
 
@@ -151,6 +160,11 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             api_key=self.api_key,
             endpoint=self.base_url if self.base_url else ENDPOINT,
         )
-        stream = client.chat_stream(messages=self.messages(), **kwargs)
+        chat_stream = client.chat_stream
+        if self.call_params.logfire_async:
+            chat_stream = self.call_params.logfire_async(
+                chat_stream, "mistral", MistralCallResponseChunk
+            )  # pragma: no cover
+        stream = chat_stream(messages=self.messages(), **kwargs)
         async for chunk in stream:
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)

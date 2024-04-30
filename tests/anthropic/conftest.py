@@ -1,5 +1,4 @@
 """Fixtures for Mirascope's Anthropic module tests."""
-from contextlib import asynccontextmanager, contextmanager
 from typing import Type
 
 import pytest
@@ -91,43 +90,6 @@ def fixture_anthropic_message_with_tools_bad_stop_reason(
     """Returns an Anthropic message with tools XML in the response"""
     fixture_anthropic_message_with_tools.stop_reason = "max_tokens"
     return fixture_anthropic_message_with_tools
-
-
-@pytest.fixture()
-def fixture_anthropic_message_chunk():
-    """Returns an Anthropic message."""
-    return ContentBlockDeltaEvent(
-        delta=TextDelta(text="test", type="text_delta"),
-        index=1,
-        type="content_block_delta",
-    )
-
-
-@pytest.fixture()
-def fixture_anthropic_message_chunks(
-    fixture_anthropic_message_chunk,
-):
-    """Returns a context managed stream."""
-
-    @contextmanager
-    def chunks():
-        yield [fixture_anthropic_message_chunk] * 3
-
-    return chunks()
-
-
-@pytest.fixture()
-def fixture_anthropic_async_message_chunks(fixture_anthropic_message_chunk):
-    """Returns a context managed async stream"""
-
-    async def generator():
-        yield fixture_anthropic_message_chunk
-
-    @asynccontextmanager
-    async def async_chunks():
-        yield generator()
-
-    return async_chunks()
 
 
 class BookTool(AnthropicTool):

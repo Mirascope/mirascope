@@ -154,6 +154,9 @@ nav:
           - extractors: "api/gemini/extractors.md"
           - tools: "api/gemini/tools.md"
           - types: "api/gemini/types.md"
+      - logfire:
+          - "api/logfire/index.md"
+          - logfire: "api/logfire/logfire.md"
       - mistral:
           - "api/mistral/index.md"
           - calls: "api/mistral/calls.md"
