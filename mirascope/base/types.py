@@ -93,7 +93,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
     weave: Optional[Callable[[T], T]] = None
-    logfire: Optional[Callable[..., Callable]] = None
+    logfire: Optional[Callable[..., Callable]] = None  # TODO: Improve typing
     logfire_async: Optional[Callable[..., Callable]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
