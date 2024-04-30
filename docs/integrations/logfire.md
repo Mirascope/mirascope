@@ -19,16 +19,18 @@ This is a basic call example but will work with all our call functions, `call`, 
 ```python
 import logfire
 
-from mirascope.openai import OpenAICall
 from mirascope.logfire import with_logfire
+from mirascope.openai import OpenAICall
 
 logfire.configure()
+
 
 @with_logfire
 class BookRecommender(OpenAICall):
     prompt_template = "Please recommend some {genre} books"
 
     genre: str
+
 
 recommender = BookRecommender(genre="fantasy")
 response = recommender.call()  # this will automatically get logged with logfire
@@ -43,15 +45,17 @@ from typing import Literal, Type
 import logfire
 from pydantic import BaseModel
 
-from mirascope.openai import OpenAIExtractor
 from mirascope.logfire import with_logfire
+from mirascope.openai import OpenAIExtractor
 
 logfire.configure()
+
 
 class TaskDetails(BaseModel):
     description: str
     due_date: str
     priority: Literal["low", "normal", "high"]
+
 
 @with_logfire
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
@@ -63,8 +67,11 @@ class TaskExtractor(OpenAIExtractor[TaskDetails]):
 
     task: str
 
+
 task = "Submit quarterly report by next Friday. Task is high priority."
-task_details = TaskExtractor(task=task).extract()  # this will be logged automatically with logfire
+task_details = TaskExtractor(
+    task=task
+).extract()  # this will be logged automatically with logfire
 assert isinstance(task_details, TaskDetails)
 print(task_details)
 ```
@@ -74,8 +81,6 @@ print(task_details)
 You can take advantage of existing `instruments` from logfire and integrate it with Mirascope.
 
 ```python
-#fast_api_logfire.py
-
 import os
 from typing import Type
 
@@ -92,9 +97,11 @@ app = FastAPI()
 logfire.configure()
 logfire.instrument_fastapi(app)
 
+
 class Book(BaseModel):
     title: str
     author: str
+
 
 @with_logfire
 class BookRecommender(OpenAIExtractor[Book]):
@@ -103,12 +110,11 @@ class BookRecommender(OpenAIExtractor[Book]):
 
     genre: str
 
+
 @app.post("/")
 def root(book_recommender: BookRecommender) -> Book:
     """Generates a book based on provided `genre`."""
     return book_recommender.extract()
-    
-# uvicorn fast_api_logfire:app --reload
 ```
 
 This will generate a well-structured hierarchy. This way, you can view your API calls, Mirascope models, and LLM calls all in one place with just a few lines of code.
