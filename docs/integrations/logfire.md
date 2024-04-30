@@ -12,6 +12,8 @@ from mirascope.logfire import with_logfire
 
 ## Examples
 
+### Call
+
 This is a basic call example but will work with all our call functions, `call`, `stream`, `call_async`, `stream_async`.
 
 ```python
@@ -33,7 +35,7 @@ response = recommender.call()  # this will automatically get logged with logfire
 print(response.content)
 ```
 
-### Extract Example
+### Extract
 
 ```python
 from typing import Literal, Type
@@ -67,7 +69,7 @@ assert isinstance(task_details, TaskDetails)
 print(task_details)
 ```
 
-### FastAPI Example
+### FastAPI
 
 You can take advantage of existing `instruments` from logfire and integrate it with Mirascope.
 
@@ -112,7 +114,7 @@ def root(book_recommender: BookRecommender) -> Book:
 This will generate a well-structured hierarchy. This way, you can view your API calls, Mirascope models, and LLM calls all in one place with just a few lines of code.
 ![logfire-fastapi-mirascope-llm](https://github.com/Mirascope/mirascope/assets/15950811/38c84f22-3512-46cc-a487-4f2f9569eef8)
 
-### RAG Example
+### RAG
 
 ```python
 from mirascope.chroma import ChromaSettings, ChromaVectorStore
@@ -133,9 +135,7 @@ store.add("some data") # this will automatically get logged with logfire
 
 ### Integrations with other providers
 
-At present, Logfire includes `instrument_openai` and `instrument_fastapi`. As the Logfire team introduces more `instruments`, the Mirascope team will also update `with_logfire` to incorporate these instruments. Meanwhile, Mirascope ensures Logfire integration with all of its providers.
-
-#### Anthropic Example
+At present, Logfire includes `instrument_openai` and `instrument_fastapi`. As the Logfire team introduces more `instruments`, the Mirascope team will also update `with_logfire` to incorporate these instruments. Meanwhile, Mirascope ensures Logfire integration with all of its providers. Here is an example using Anthropic:
 
 ```python
 import logfire
