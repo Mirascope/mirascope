@@ -5,7 +5,7 @@ from typing import Callable, Optional, overload
 import logfire
 from pydantic import BaseModel
 
-from mirascope.base.types import BaseCallResponseChunk, ChunkT
+from mirascope.base.types import BaseCallResponse, BaseCallResponseChunk, ChunkT
 
 from ..types import (
     BaseCallT,
@@ -40,30 +40,32 @@ def mirascope_logfire_span(fn: Callable):
 def mirascope_logfire(
     fn: Callable,
     suffix: str,
+    *,
+    response_type: Optional[type[BaseCallResponse]] = None,
     response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
 ) -> Callable:
     """Wraps a function with a Logfire span."""
-    return (
-        mirascope_logfire_stream(fn, suffix, response_chunk_type)
-        if response_chunk_type
-        else mirascope_logfire_create(fn, suffix)
-    )
+    if response_chunk_type is not None:
+        return mirascope_logfire_stream(fn, suffix, response_chunk_type)
+    return mirascope_logfire_create(fn, suffix, response_type)
 
 
 def mirascope_logfire_async(
     fn: Callable,
     suffix: str,
+    *,
+    response_type: Optional[type[BaseCallResponse]] = None,
     response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
 ):
     """Wraps an asynchronous function with a Logfire span."""
-
-    if response_chunk_type:
+    if response_chunk_type is not None:
         return mirascope_logfire_stream_async(fn, suffix, response_chunk_type)
-    else:
-        return mirascope_logfire_create_async(fn, suffix)
+    return mirascope_logfire_create_async(fn, suffix, response_type)
 
 
-def mirascope_logfire_create(fn: Callable, suffix: str) -> Callable:
+def mirascope_logfire_create(
+    fn: Callable, suffix: str, response_type: Optional[type[BaseCallResponse]]
+) -> Callable:
     """Wraps a function with a Logfire span."""
 
     @wraps(fn)
@@ -73,11 +75,17 @@ def mirascope_logfire_create(fn: Callable, suffix: str) -> Callable:
             "request_data": kwargs,
         }
         model = kwargs.get("model", "unknown")
-        with logfire.with_settings(custom_scope_suffix=suffix).span(
+        with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
             f"{suffix}.{fn.__name__} with {model}", **span_data
         ) as logfire_span:
             result = fn(*args, **kwargs)
-            logfire_span.set_attribute("response_data", result)
+            logfire_span.set_attribute("original_response", result)
+            if response_type is not None:
+                response = response_type(response=result, start_time=0, end_time=0)
+                logfire_span.set_attribute(
+                    "response_data",
+                    {"message": {"role": "assistant", "content": response.content}},
+                )
             return result
 
     return wrapper
@@ -102,7 +110,7 @@ def mirascope_logfire_stream(
             "request_data": kwargs,
         }
         model = kwargs.get("model", "unknown")
-        with logfire.with_settings(custom_scope_suffix=suffix).span(
+        with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
             f"{suffix}.{fn.__name__} with {model}", **span_data
         ) as logfire_span:
             content = []
@@ -131,7 +139,9 @@ def mirascope_logfire_stream(
     return wrapper
 
 
-def mirascope_logfire_create_async(fn: Callable, suffix: str) -> Callable:
+def mirascope_logfire_create_async(
+    fn: Callable, suffix: str, response_type: Optional[type[BaseCallResponse]]
+) -> Callable:
     """Wraps a asynchronous function that yields a generator with a Logfire span."""
 
     @wraps(fn)
@@ -141,11 +151,17 @@ def mirascope_logfire_create_async(fn: Callable, suffix: str) -> Callable:
             "request_data": kwargs,
         }
         model = kwargs.get("model", "unknown")
-        with logfire.with_settings(custom_scope_suffix=suffix).span(
+        with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
             f"{suffix}.{fn.__name__} with {model}", **span_data
         ) as logfire_span:
             result = await fn(*args, **kwargs)
-            logfire_span.set_attribute("response_data", result)
+            logfire_span.set_attribute("original_response", result)
+            if response_type is not None:
+                response = response_type(response=result, start_time=0, end_time=0)
+                logfire_span.set_attribute(
+                    "response_data",
+                    {"message": {"role": "assistant", "content": response.content}},
+                )
             return result
 
     return wrapper
@@ -163,7 +179,7 @@ def mirascope_logfire_stream_async(
             "request_data": kwargs,
         }
         model = kwargs.get("model", "unknown")
-        with logfire.with_settings(custom_scope_suffix=suffix).span(
+        with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
             f"{suffix}.{fn.__name__} with {model}", **span_data
         ) as logfire_span:
             content = []

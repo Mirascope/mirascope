@@ -68,7 +68,9 @@ class AnthropicCall(
         if self.call_params.weave is not None:
             create = self.call_params.weave(create)  # pragma: no cover
         if self.call_params.logfire:
-            create = self.call_params.logfire(create, "anthropic")  # pragma: no cover
+            create = self.call_params.logfire(
+                create, "anthropic", response_type=AnthropicCallResponse
+            )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
             messages=messages,
@@ -105,7 +107,7 @@ class AnthropicCall(
             create = self.call_params.weave(create)  # pragma: no cover
         if self.call_params.logfire_async:
             create = self.call_params.logfire_async(
-                create, "anthropic"
+                create, "anthropic", response_type=AnthropicCallResponse
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(
@@ -140,7 +142,9 @@ class AnthropicCall(
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:  # pragma: no cover
             logfire_stream = self.call_params.logfire(
-                client.messages.stream, "anthropic", AnthropicCallResponseChunk
+                client.messages.stream,
+                "anthropic",
+                response_chunk_type=AnthropicCallResponseChunk,
             )
             stream = logfire_stream(  # type: ignore
                 messages=messages,
@@ -179,7 +183,9 @@ class AnthropicCall(
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire_async:  # pragma: no cover
             stream = self.call_params.logfire_async(
-                client.messages.stream, "anthropic", AnthropicCallResponseChunk
+                client.messages.stream,
+                "anthropic",
+                response_chunk_type=AnthropicCallResponseChunk,
             )
             async for chunk in stream(
                 messages=messages,
