@@ -89,7 +89,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:
-            self.call_params.logfire(client)
+            self.call_params.logfire(client)  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = client.chat.completions.create(
@@ -125,7 +125,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire:
-            self.call_params.logfire(client)
+            self.call_params.logfire(client)  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await client.chat.completions.create(
@@ -161,7 +161,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:
-            self.call_params.logfire(client)
+            self.call_params.logfire(client)  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = client.chat.completions.create(
             messages=messages,
@@ -196,7 +196,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire:
-            self.call_params.logfire(client)
+            self.call_params.logfire(client)  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = await client.chat.completions.create(
             messages=messages,

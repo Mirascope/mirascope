@@ -51,17 +51,17 @@ def mirascope_logfire(
     )
 
 
-async def mirascope_logfire_async(
+def mirascope_logfire_async(
     fn: Callable,
     suffix: str,
     response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
-) -> Callable:
+):
     """Wraps an asynchronous function with a Logfire span."""
-    return await (
-        mirascope_stream_async(fn, suffix, response_chunk_type)
-        if response_chunk_type
-        else mirascope_create_async(fn, suffix)
-    )
+
+    if response_chunk_type:
+        return mirascope_stream_async(fn, suffix, response_chunk_type)
+    else:
+        return mirascope_create_async(fn, suffix)
 
 
 def mirascope_create(fn: Callable, suffix: str) -> Callable:
@@ -86,12 +86,9 @@ def mirascope_create(fn: Callable, suffix: str) -> Callable:
 
 def extract_chunk_content(
     chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
-) -> Optional[str]:
+) -> str:
     """Extracts the content from a chunk."""
-    chunk_content = response_chunk_type(chunk=chunk).content
-    if chunk_content is not None:
-        return chunk_content
-    return None
+    return response_chunk_type(chunk=chunk).content
 
 
 def mirascope_stream(
@@ -114,8 +111,7 @@ def mirascope_stream(
             if suffix != "anthropic":
                 for chunk in stream:
                     chunk_content = extract_chunk_content(chunk, response_chunk_type)
-                    if chunk_content:
-                        content.append(chunk_content)
+                    content.append(chunk_content)
                     yield chunk
             else:
                 with stream as s:
@@ -123,8 +119,7 @@ def mirascope_stream(
                         chunk_content = extract_chunk_content(
                             chunk, response_chunk_type
                         )
-                        if chunk_content:
-                            content.append(chunk_content)
+                        content.append(chunk_content)
                         yield chunk
             logfire_span.set_attribute(
                 "response_data",
@@ -137,7 +132,7 @@ def mirascope_stream(
     return wrapper
 
 
-async def mirascope_create_async(fn: Callable, suffix: str) -> Callable:
+def mirascope_create_async(fn: Callable, suffix: str) -> Callable:
     """Wraps a asynchronous function that yields a generator with a Logfire span."""
 
     @wraps(fn)
@@ -157,7 +152,7 @@ async def mirascope_create_async(fn: Callable, suffix: str) -> Callable:
     return wrapper
 
 
-async def mirascope_stream_async(
+def mirascope_stream_async(
     fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
 ) -> Callable:
     """Wraps an asynchronous function with a Logfire span."""
@@ -173,12 +168,14 @@ async def mirascope_stream_async(
             f"{suffix}.{fn.__name__} with {model}", **span_data
         ) as logfire_span:
             content = []
-            stream = await fn(*args, **kwargs)
+            if suffix == "groq":
+                stream = await fn(*args, **kwargs)
+            else:
+                stream = fn(*args, **kwargs)
             if suffix != "anthropic":
                 async for chunk in stream:
                     chunk_content = extract_chunk_content(chunk, response_chunk_type)
-                    if chunk_content:
-                        content.append(chunk_content)
+                    content.append(chunk_content)
                     yield chunk
             else:
                 async with stream as s:
@@ -186,8 +183,7 @@ async def mirascope_stream_async(
                         chunk_content = extract_chunk_content(
                             chunk, response_chunk_type
                         )
-                        if chunk_content:
-                            content.append(chunk_content)
+                        content.append(chunk_content)
                         yield chunk
             logfire_span.set_attribute(
                 "response_data",
@@ -251,16 +247,22 @@ def with_logfire(cls):
         setattr(cls, "extract", mirascope_span(cls.extract))
     if hasattr(cls, "extract_async"):
         setattr(cls, "extract_async", mirascope_span(cls.extract_async))
+
     if get_parent_class_name(cls, "OpenAI"):
         if hasattr(cls, "call_params"):
             cls.call_params.logfire = logfire.instrument_openai
         if hasattr(cls, "embedding_params"):
-            cls.embedding_params.logfire = mirascope_logfire
+            cls.embedding_params.logfire = logfire.instrument_openai
     else:
+        # TODO: Use instrument instead when they are integrated into logfire
         if hasattr(cls, "call_params"):
             cls.call_params.logfire = mirascope_logfire
             cls.call_params.logfire_async = mirascope_logfire_async
         if hasattr(cls, "vectorstore_params"):
+            # Wraps class methods rather than calls directly
             cls.vectorstore_params.logfire = mirascope_span
             cls.vectorstore_params.logfire_async = mirascope_span
+        if hasattr(cls, "embedding_params"):
+            cls.embedding_params.logfire = mirascope_logfire
+            cls.embedding_params.logfire_async = mirascope_logfire_async
     return cls

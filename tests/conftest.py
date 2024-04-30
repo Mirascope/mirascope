@@ -1,7 +1,23 @@
 """Test configuration fixtures used across various modules."""
+from contextlib import asynccontextmanager, contextmanager
 from typing import Type
 
 import pytest
+from anthropic.types import (
+    ContentBlockDeltaEvent,
+    TextDelta,
+)
+from cohere import StreamedChatResponse_TextGeneration
+from cohere.types import (
+    ApiMeta,
+    ApiMetaBilledUnits,
+    ChatCitation,
+    ChatSearchQuery,
+    ChatSearchResult,
+    ChatSearchResultConnector,
+    NonStreamedChatResponse,
+    ToolCall,
+)
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessage,
@@ -132,3 +148,134 @@ def fixture_my_openai_tool_schema() -> Type[BaseModel]:
         optional: int = 0
 
     return MyOpenAITool
+
+
+@pytest.fixture()
+def fixture_chat_search_query() -> ChatSearchQuery:
+    """Returns a Cohere chat search query."""
+    return ChatSearchQuery(text="test query", generation_id="id")
+
+
+@pytest.fixture()
+def fixture_chat_search_result(
+    fixture_chat_search_query: ChatSearchQuery,
+) -> ChatSearchResult:
+    """Returns a Cohere chat search result."""
+    return ChatSearchResult(
+        search_query=fixture_chat_search_query,
+        connector=ChatSearchResultConnector(id="id"),
+        document_ids=["test_id"],
+    )
+
+
+@pytest.fixture()
+def fixture_chat_document() -> dict[str, str]:
+    """Returns a Cohere chat document."""
+    return {"id": "test_doc_id", "text": "test doc"}
+
+
+@pytest.fixture()
+def fixture_chat_citation() -> ChatCitation:
+    """Returns a Cohere chat citation."""
+    return ChatCitation(start=0, end=0, text="", document_ids=["test_cite_id"])
+
+
+@pytest.fixture()
+def fixture_tool_call() -> ToolCall:
+    """Returns a Cohere tool call."""
+    return ToolCall(
+        name="BookTool",
+        parameters={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+    )
+
+
+@pytest.fixture()
+def fixture_non_streamed_response(
+    fixture_chat_search_query: ChatSearchQuery,
+    fixture_chat_search_result: ChatSearchResult,
+    fixture_chat_document: dict[str, str],
+    fixture_chat_citation: ChatCitation,
+    fixture_tool_call: ToolCall,
+) -> NonStreamedChatResponse:
+    """Returns a Cohere chat response."""
+    return NonStreamedChatResponse(
+        text="Test response",
+        search_queries=[fixture_chat_search_query],
+        search_results=[fixture_chat_search_result],
+        documents=[fixture_chat_document],
+        citations=[fixture_chat_citation],
+        tool_calls=[fixture_tool_call],
+        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
+    )
+
+
+@pytest.fixture()
+def fixture_cohere_response_chunk():
+    """Returns a Cohere chat response chunk."""
+    return StreamedChatResponse_TextGeneration(
+        event_type="text-generation",
+        text="test",
+        search_queries=None,
+        search_results=None,
+        documents=None,
+        citations=None,
+        tool_calls=None,
+        response=None,
+    )
+
+
+@pytest.fixture()
+def fixture_cohere_response_chunks(
+    fixture_cohere_response_chunk: StreamedChatResponse_TextGeneration,
+):
+    """Returns a context managed stream."""
+    return [fixture_cohere_response_chunk] * 3
+
+
+@pytest.fixture()
+def fixture_cohere_async_response_chunks(
+    fixture_cohere_response_chunk: StreamedChatResponse_TextGeneration,
+):
+    """Returns a context managed async stream"""
+
+    async def generator():
+        yield fixture_cohere_response_chunk
+
+    return generator()
+
+
+@pytest.fixture()
+def fixture_anthropic_message_chunk():
+    """Returns an Anthropic message."""
+    return ContentBlockDeltaEvent(
+        delta=TextDelta(text="test", type="text_delta"),
+        index=1,
+        type="content_block_delta",
+    )
+
+
+@pytest.fixture()
+def fixture_anthropic_message_chunks(
+    fixture_anthropic_message_chunk,
+):
+    """Returns a context managed stream."""
+
+    @contextmanager
+    def chunks():
+        yield [fixture_anthropic_message_chunk] * 3
+
+    return chunks()
+
+
+@pytest.fixture()
+def fixture_anthropic_async_message_chunks(fixture_anthropic_message_chunk):
+    """Returns a context managed async stream"""
+
+    async def generator():
+        yield fixture_anthropic_message_chunk
+
+    @asynccontextmanager
+    async def async_chunks():
+        yield generator()
+
+    return async_chunks()

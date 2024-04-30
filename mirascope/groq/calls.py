@@ -169,11 +169,13 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             client = self.call_params.wrapper_async(client)
         messages = self._update_messages_if_json(self.messages(), tool_types)
         create = client.chat.completions.create
-        if self.call_params.logfire_async:
+        if self.call_params.logfire_async:  # pragma: no cover
             create = self.call_params.logfire_async(
                 create, "groq", GroqCallResponseChunk
-            )  # pragma: no cover
-        stream = await create(messages=messages, stream=True, **kwargs)
+            )
+            stream = create(messages=messages, stream=True, **kwargs)
+        else:
+            stream = await create(messages=messages, stream=True, **kwargs)
         async for completion in stream:
             yield GroqCallResponseChunk(
                 chunk=completion,

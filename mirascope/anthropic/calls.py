@@ -138,10 +138,10 @@ class AnthropicCall(
         client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        if self.call_params.logfire:
+        if self.call_params.logfire:  # pragma: no cover
             logfire_stream = self.call_params.logfire(
                 client.messages.stream, "anthropic", AnthropicCallResponseChunk
-            )  # pragma: no cover
+            )
             stream = logfire_stream(  # type: ignore
                 messages=messages,
                 **kwargs,
@@ -177,15 +177,14 @@ class AnthropicCall(
         client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
-        if self.call_params.logfire_async:
-            create = self.call_params.logfire_async(
+        if self.call_params.logfire_async:  # pragma: no cover
+            stream = self.call_params.logfire_async(
                 client.messages.stream, "anthropic", AnthropicCallResponseChunk
             )
-            stream = create(  # type: ignore
+            async for chunk in stream(
                 messages=messages,
                 **kwargs,
-            )
-            async for chunk in stream:  # type: ignore
+            ):
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,
                     tool_types=tool_types,
@@ -193,7 +192,7 @@ class AnthropicCall(
                 )
         else:
             async with client.messages.stream(messages=messages, **kwargs) as stream:
-                async for chunk in stream:
+                async for chunk in stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
                         tool_types=tool_types,
