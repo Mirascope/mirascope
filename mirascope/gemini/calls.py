@@ -87,7 +87,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             )  # pragma: no cover
         if self.call_params.logfire:
             generate_content = self.call_params.logfire(
-                generate_content, "gemini"
+                generate_content, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
@@ -124,7 +124,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             )  # pragma: no cover
         if self.call_params.logfire:
             generate_content_async = self.call_params.logfire(
-                generate_content_async, "gemini"
+                generate_content_async, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
@@ -156,7 +156,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         generate_content = gemini_pro_model.generate_content
         if self.call_params.logfire:
             generate_content = self.call_params.logfire(
-                generate_content, "gemini"
+                generate_content, "gemini", response_chunk_type=GeminiCallResponseChunk
             )  # pragma: no cover
         stream = generate_content(
             self.messages(),
@@ -184,7 +184,9 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         generate_content_async = gemini_pro_model.generate_content_async
         if self.call_params.logfire:
             generate_content_async = self.call_params.logfire(
-                generate_content_async, "gemini"
+                generate_content_async,
+                "gemini",
+                response_chunk_type=GeminiCallResponseChunk,
             )  # pragma: no cover
         stream = await generate_content_async(
             self.messages(),

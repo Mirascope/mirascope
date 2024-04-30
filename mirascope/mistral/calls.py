@@ -64,7 +64,9 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         if self.call_params.weave:
             chat = self.call_params.weave(chat)  # pragma: no cover
         if self.call_params.logfire:
-            chat = self.call_params.logfire(chat, "mistral")  # pragma: no cover
+            chat = self.call_params.logfire(
+                chat, "mistral", response_type=MistralCallResponse
+            )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
@@ -98,7 +100,9 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         if self.call_params.weave:
             chat = self.call_params.weave(chat)  # pragma: no cover
         elif self.call_params.logfire_async:
-            chat = self.call_params.logfire_async(chat, "mistral")  # pragma: no cover
+            chat = self.call_params.logfire_async(
+                chat, "mistral", response_type=MistralCallResponse
+            )  # pragma: no cover
 
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await chat(messages=self.messages(), **kwargs)
@@ -132,7 +136,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         chat_stream = client.chat_stream
         if self.call_params.logfire:
             chat_stream = self.call_params.logfire(
-                chat_stream, "mistral", MistralCallResponseChunk
+                chat_stream, "mistral", response_chunk_type=MistralCallResponseChunk
             )  # pragma: no cover
         stream = chat_stream(messages=self.messages(), **kwargs)
 
@@ -163,7 +167,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         chat_stream = client.chat_stream
         if self.call_params.logfire_async:
             chat_stream = self.call_params.logfire_async(
-                chat_stream, "mistral", MistralCallResponseChunk
+                chat_stream, "mistral", response_chunk_type=MistralCallResponseChunk
             )  # pragma: no cover
         stream = chat_stream(messages=self.messages(), **kwargs)
         async for chunk in stream:

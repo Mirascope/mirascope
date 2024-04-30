@@ -50,7 +50,9 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
         start_time = datetime.datetime.now().timestamp() * 1000
         embed = co.embed
         if self.embedding_params.logfire:
-            embed = self.embedding_params.logfire(co.embed)  # pragma: no cover
+            embed = self.embedding_params.logfire(
+                co.embed, "cohere", response_type=CohereEmbeddingResponse
+            )  # pragma: no cover
         response = embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
@@ -70,7 +72,11 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
         start_time = datetime.datetime.now().timestamp() * 1000
         embed = co.embed
         if self.embedding_params.logfire_async:
-            embed = self.embedding_params.logfire_async(co.embed)  # pragma: no cover
+            embed = self.embedding_params.logfire_async(
+                co.embed,
+                "cohere",
+                response_type=None,  # note: no content to extract, so we set to `None`
+            )  # pragma: no cover
         response = await embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,

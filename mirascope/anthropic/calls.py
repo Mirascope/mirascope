@@ -142,7 +142,9 @@ class AnthropicCall(
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:  # pragma: no cover
             logfire_stream = self.call_params.logfire(
-                client.messages.stream, "anthropic", AnthropicCallResponseChunk
+                client.messages.stream,
+                "anthropic",
+                response_chunk_type=AnthropicCallResponseChunk,
             )
             stream = logfire_stream(  # type: ignore
                 messages=messages,
@@ -181,7 +183,9 @@ class AnthropicCall(
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire_async:  # pragma: no cover
             stream = self.call_params.logfire_async(
-                client.messages.stream, "anthropic", AnthropicCallResponseChunk
+                client.messages.stream,
+                "anthropic",
+                response_chunk_type=AnthropicCallResponseChunk,
             )
             async for chunk in stream(
                 messages=messages,
