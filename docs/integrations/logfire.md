@@ -110,8 +110,7 @@ def root(book_recommender: BookRecommender) -> Book:
 ```
 
 This will generate a well-structured hierarchy. This way, you can view your API calls, Mirascope models, and LLM calls all in one place with just a few lines of code.
-
-![logfire-fastapi-mirascope-llm]()
+![logfire-fastapi-mirascope-llm](https://github.com/Mirascope/mirascope/assets/15950811/38c84f22-3512-46cc-a487-4f2f9569eef8)
 
 ### RAG Example
 
