@@ -50,6 +50,45 @@ def test_openai_extractor_extract(
     )
 
 
+@patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
+def test_openai_extractor_extract_with_properties(
+    mock_call: MagicMock,
+    fixture_chat_completion_with_tools: ChatCompletion,
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+    fixture_my_openai_tool_schema_instance: BaseModel,
+) -> None:
+    """Tests the `OpenAIExtractor.extract` standard method."""
+    mock_call.return_value = OpenAICallResponse(
+        response=fixture_chat_completion_with_tools,
+        tool_types=[fixture_my_openai_tool],
+        start_time=0,
+        end_time=0,
+    )
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "{test_prop}"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+        @property
+        def test_prop(self) -> str:
+            return "test"
+
+    extracted_schema = TempExtractor().extract()
+    assert (
+        extracted_schema.model_json_schema()
+        == fixture_my_openai_tool_schema.model_json_schema()
+    )
+    assert (
+        extracted_schema.model_dump()
+        == fixture_my_openai_tool_schema_instance.model_dump()
+    )
+
+
 @patch("mirascope.openai.calls.OpenAICall.call_async", new_callable=AsyncMock)
 @pytest.mark.asyncio
 async def test_openai_extractor_extract_async(

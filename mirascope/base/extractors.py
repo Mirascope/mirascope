@@ -3,7 +3,7 @@
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
-from inspect import isclass
+from inspect import getmembers, isclass
 from typing import (
     Annotated,
     Any,
@@ -132,6 +132,11 @@ class BaseExtractor(
             call_params = self.call_params
 
             model_config = ConfigDict(extra="allow")
+
+        properties = getmembers(self)
+        for name, value in properties:
+            if not hasattr(TempCall, name):
+                setattr(TempCall, name, value)
 
         response = TempCall(**self.model_dump(exclude={"extract_schema"})).call(
             **kwargs
