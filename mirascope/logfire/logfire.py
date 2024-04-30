@@ -28,7 +28,6 @@ def mirascope_logfire_span(fn: Callable):
         with logfire.span(
             f"{self.__class__.__name__}.{fn.__name__}",
             class_vars=class_vars,
-            *args,
             **kwargs,
         ) as logfire_span:
             result = fn(self, *args, **kwargs)
@@ -247,7 +246,10 @@ def with_logfire(cls):
         setattr(cls, "extract", mirascope_logfire_span(cls.extract))
     if hasattr(cls, "extract_async"):
         setattr(cls, "extract_async", mirascope_logfire_span(cls.extract_async))
-
+    if hasattr(cls, "retrieve"):
+        setattr(cls, "retrieve", mirascope_logfire_span(cls.retrieve))
+    if hasattr(cls, "add"):
+        setattr(cls, "add", mirascope_logfire_span(cls.add))
     if get_parent_class_name(cls, "OpenAI"):
         if hasattr(cls, "call_params"):
             cls.call_params.logfire = logfire.instrument_openai

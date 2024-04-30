@@ -2,7 +2,7 @@
 
 [Logfire](https://docs.pydantic.dev/logfire/), a new tool from Pydantic, is built on OpenTelemetry. As Mirascope is also built on Pydantic, it's appropriate for us to ensure seamless integration with them.
 
-## @with_logfire
+## How to use Logfire with Mirascope
 
 ```python
 from mirascope.logfire import with_logfire
@@ -10,7 +10,7 @@ from mirascope.logfire import with_logfire
 
 `with_logfire` is a decorator that can be used on all Mirascope classes to automatically log both Mirascope calls and also all our LLM providers.
 
-### Call Example
+## Examples
 
 This is a basic call example but will work with all our call functions, `call`, `stream`, `call_async`, `stream_async`.
 
@@ -112,6 +112,25 @@ def root(book_recommender: BookRecommender) -> Book:
 This will generate a well-structured hierarchy. This way, you can view your API calls, Mirascope models, and LLM calls all in one place with just a few lines of code.
 
 ![logfire-fastapi-mirascope-llm]()
+
+### RAG Example
+
+```python
+from mirascope.chroma import ChromaSettings, ChromaVectorStore
+from mirascope.logfire import with_logfire
+from mirascope.openai import OpenAIEmbedder
+from mirascope.rag import TextChunker
+
+@with_logfire
+class MyStore(ChromaVectorStore):
+    embedder = OpenAIEmbedder()
+    chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
+    index_name = "wikipedia-0001"
+    client_settings = ChromaSettings()
+
+store = MyStore()
+store.add("some data") # this will automatically get logged with logfire
+```
 
 ### Integrations with other providers
 

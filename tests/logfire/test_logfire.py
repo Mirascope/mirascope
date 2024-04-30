@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.types import AnthropicCallResponseChunk
+from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
 from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
 from mirascope.cohere.embedders import CohereEmbedder
@@ -22,7 +23,8 @@ from mirascope.logfire import with_logfire
 from mirascope.openai import OpenAICall, OpenAIEmbedder, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
-from mirascope.rag.chunkers import TextChunker
+from mirascope.rag.embedders import BaseEmbedder
+from mirascope.rag.types import Document
 
 logfire.configure(send_to_logfire=False)
 
@@ -224,15 +226,46 @@ def test_extractor_with_logfire(
     assert my_extractor.call_params.logfire is not None
 
 
-def test_vectorstore_with_logfire() -> None:
-    @with_logfire
-    class MyStore(ChromaVectorStore):
-        embedder = OpenAIEmbedder()
-        chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
-        index_name = "test-0001"
+class MyEmbedder(BaseEmbedder):
+    def embed(self, input: list[str]) -> list[str]:
+        return input  # pragma: no cover
 
-    my_store = MyStore()
-    assert my_store.vectorstore_params.logfire is not None
+    async def embed_async(self, input: list[str]) -> list[str]:
+        return input  # pragma: no cover
+
+    def __call__(self, input: str) -> list[float]:
+        return [1, 2, 3]  # pragma: no cover
+
+
+@with_logfire
+class VectorStore(ChromaVectorStore):
+    index_name = "test"
+    client_settings = ChromaSettings(mode="ephemeral")
+    embedder = MyEmbedder()
+
+
+@patch("chromadb.api.models.Collection.Collection.upsert")
+def test_chroma_vectorstore_add_document(
+    mock_upsert: MagicMock,
+):
+    """Test the add method of the ChromaVectorStore class with documents as argument"""
+    mock_upsert.return_value = None
+    my_vectorstore = VectorStore()
+    my_vectorstore.add([Document(text="foo", id="1")])
+    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
+    assert my_vectorstore.vectorstore_params.logfire is not None
+
+
+@patch("chromadb.api.models.Collection.Collection.query")
+def test_chroma_vectorstore_retrieve(
+    mock_query: MagicMock,
+):
+    """Test the retrieve method of the ChromaVectorStore class."""
+    mock_query.return_value = ChromaQueryResult(ids=[["1"]])
+    my_vectorstore = VectorStore()
+    my_vectorstore.retrieve("test")
+    mock_query.assert_called_once_with(query_texts=["test"])
+    assert my_vectorstore.vectorstore_params.logfire is not None
 
 
 def test_openai_embedder_with_logfire() -> None:

@@ -113,8 +113,6 @@ class PineconeVectorStore(BaseVectorStore):
                 chunk = self.vectorstore_params.weave(
                     self.chunker.chunk
                 )  # pragma: no cover
-            if self.vectorstore_params.logfire:
-                chunk = self.vectorstore_params.logfire(chunk)  # pragma: no cover
             documents = chunk(text)
         else:
             documents = text
