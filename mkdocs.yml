@@ -116,6 +116,7 @@ nav:
   - Integrations:
       - Client Wrappers: "integrations/client_wrappers.md"
       - FastAPI: "integrations/fastapi.md"
+      - Logfire: "integrations/logfire.md"
       - Weights & Biases: "integrations/weights_and_biases.md"
       - LangChain & LangSmith: "integrations/langchain.md"
       - Llama Index: "integrations/llama_index.md"
