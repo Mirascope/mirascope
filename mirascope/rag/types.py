@@ -7,13 +7,6 @@ from pydantic import BaseModel, ConfigDict
 ResponseT = TypeVar("ResponseT", bound=Any)
 
 
-class LogfireModel(BaseModel):
-    """A base interface for models that support logfire."""
-
-    logfire: Optional[Callable[..., Callable]] = None
-    logfire_async: Optional[Callable[..., Callable]] = None
-
-
 class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
     """A base abstract interface for LLM embedding responses.
 
@@ -41,11 +34,14 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
 T = TypeVar("T")
 
 
-class BaseVectorStoreParams(LogfireModel):
+class BaseVectorStoreParams(BaseModel):
     """The parameters with which to make a vectorstore."""
 
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
     weave: Optional[Callable[[T], T]] = None
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(
         self,
@@ -60,10 +56,13 @@ class BaseVectorStoreParams(LogfireModel):
         return kwargs
 
 
-class BaseEmbeddingParams(LogfireModel):
+class BaseEmbeddingParams(BaseModel):
     """The parameters with which to make an embedding."""
 
     model: str
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
+
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(self) -> dict[str, Any]:

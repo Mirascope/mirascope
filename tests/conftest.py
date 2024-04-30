@@ -18,6 +18,14 @@ from cohere.types import (
     NonStreamedChatResponse,
     ToolCall,
 )
+from groq.lib.chat_completion_chunk import (
+    ChatCompletionChunk,
+    ChoiceDelta,
+)
+from groq.lib.chat_completion_chunk import Choice as ChunkChoice
+from groq.lib.chat_completion_chunk import (
+    ChoiceLogprobs as ChunkChoiceLogprobs,
+)
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessage,
@@ -279,3 +287,42 @@ def fixture_anthropic_async_message_chunks(fixture_anthropic_message_chunk):
         yield generator()
 
     return async_chunks()
+
+
+@pytest.fixture()
+def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
+    """Returns a list of `ChatCompletionChunk` chunks."""
+    return [
+        ChatCompletionChunk(
+            id="test",
+            model="llama2-70b-4096",
+            choices=[
+                ChunkChoice(
+                    index=0,
+                    delta=ChoiceDelta(role="assistant", content="A"),
+                    finish_reason="stop",
+                    logprobs=ChunkChoiceLogprobs(),
+                )
+            ],
+            created=0,
+            object="",
+            system_fingerprint="",
+            x_groq=None,
+        ),
+        ChatCompletionChunk(
+            id="test",
+            model="llama2-70b-4096",
+            choices=[
+                ChunkChoice(
+                    index=0,
+                    delta=ChoiceDelta(role="assistant", content="B"),
+                    finish_reason="stop",
+                    logprobs=ChunkChoiceLogprobs(),
+                )
+            ],
+            created=0,
+            object="",
+            system_fingerprint="",
+            x_groq=None,
+        ),
+    ]

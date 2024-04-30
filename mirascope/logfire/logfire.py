@@ -16,7 +16,7 @@ from ..types import (
 )
 
 
-def mirascope_span(fn: Callable):
+def mirascope_logfire_span(fn: Callable):
     """Wraps a pydantic class method with a Logfire span."""
 
     @wraps(fn)
@@ -45,9 +45,9 @@ def mirascope_logfire(
 ) -> Callable:
     """Wraps a function with a Logfire span."""
     return (
-        mirascope_stream(fn, suffix, response_chunk_type)
+        mirascope_logfire_stream(fn, suffix, response_chunk_type)
         if response_chunk_type
-        else mirascope_create(fn, suffix)
+        else mirascope_logfire_create(fn, suffix)
     )
 
 
@@ -59,12 +59,12 @@ def mirascope_logfire_async(
     """Wraps an asynchronous function with a Logfire span."""
 
     if response_chunk_type:
-        return mirascope_stream_async(fn, suffix, response_chunk_type)
+        return mirascope_logfire_stream_async(fn, suffix, response_chunk_type)
     else:
-        return mirascope_create_async(fn, suffix)
+        return mirascope_logfire_create_async(fn, suffix)
 
 
-def mirascope_create(fn: Callable, suffix: str) -> Callable:
+def mirascope_logfire_create(fn: Callable, suffix: str) -> Callable:
     """Wraps a function with a Logfire span."""
 
     @wraps(fn)
@@ -84,14 +84,14 @@ def mirascope_create(fn: Callable, suffix: str) -> Callable:
     return wrapper
 
 
-def extract_chunk_content(
+def _extract_chunk_content(
     chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
 ) -> str:
     """Extracts the content from a chunk."""
     return response_chunk_type(chunk=chunk).content
 
 
-def mirascope_stream(
+def mirascope_logfire_stream(
     fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
 ) -> Callable:
     """Wraps a function that yields a generator with a Logfire span."""
@@ -110,13 +110,13 @@ def mirascope_stream(
             stream = fn(*args, **kwargs)
             if suffix != "anthropic":
                 for chunk in stream:
-                    chunk_content = extract_chunk_content(chunk, response_chunk_type)
+                    chunk_content = _extract_chunk_content(chunk, response_chunk_type)
                     content.append(chunk_content)
                     yield chunk
             else:
                 with stream as s:
                     for chunk in s:
-                        chunk_content = extract_chunk_content(
+                        chunk_content = _extract_chunk_content(
                             chunk, response_chunk_type
                         )
                         content.append(chunk_content)
@@ -132,7 +132,7 @@ def mirascope_stream(
     return wrapper
 
 
-def mirascope_create_async(fn: Callable, suffix: str) -> Callable:
+def mirascope_logfire_create_async(fn: Callable, suffix: str) -> Callable:
     """Wraps a asynchronous function that yields a generator with a Logfire span."""
 
     @wraps(fn)
@@ -152,7 +152,7 @@ def mirascope_create_async(fn: Callable, suffix: str) -> Callable:
     return wrapper
 
 
-def mirascope_stream_async(
+def mirascope_logfire_stream_async(
     fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
 ) -> Callable:
     """Wraps an asynchronous function with a Logfire span."""
@@ -174,13 +174,13 @@ def mirascope_stream_async(
                 stream = fn(*args, **kwargs)
             if suffix != "anthropic":
                 async for chunk in stream:
-                    chunk_content = extract_chunk_content(chunk, response_chunk_type)
+                    chunk_content = _extract_chunk_content(chunk, response_chunk_type)
                     content.append(chunk_content)
                     yield chunk
             else:
                 async with stream as s:
                     async for chunk in s:
-                        chunk_content = extract_chunk_content(
+                        chunk_content = _extract_chunk_content(
                             chunk, response_chunk_type
                         )
                         content.append(chunk_content)
@@ -236,17 +236,17 @@ def with_logfire(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
     if hasattr(cls, "call"):
-        setattr(cls, "call", mirascope_span(cls.call))
+        setattr(cls, "call", mirascope_logfire_span(cls.call))
     if hasattr(cls, "stream"):
-        setattr(cls, "stream", mirascope_span(cls.stream))
+        setattr(cls, "stream", mirascope_logfire_span(cls.stream))
     if hasattr(cls, "call_async"):
-        setattr(cls, "call_async", mirascope_span(cls.call_async))
+        setattr(cls, "call_async", mirascope_logfire_span(cls.call_async))
     if hasattr(cls, "stream_async"):
-        setattr(cls, "stream_async", mirascope_span(cls.stream_async))
+        setattr(cls, "stream_async", mirascope_logfire_span(cls.stream_async))
     if hasattr(cls, "extract"):
-        setattr(cls, "extract", mirascope_span(cls.extract))
+        setattr(cls, "extract", mirascope_logfire_span(cls.extract))
     if hasattr(cls, "extract_async"):
-        setattr(cls, "extract_async", mirascope_span(cls.extract_async))
+        setattr(cls, "extract_async", mirascope_logfire_span(cls.extract_async))
 
     if get_parent_class_name(cls, "OpenAI"):
         if hasattr(cls, "call_params"):
@@ -260,8 +260,8 @@ def with_logfire(cls):
             cls.call_params.logfire_async = mirascope_logfire_async
         if hasattr(cls, "vectorstore_params"):
             # Wraps class methods rather than calls directly
-            cls.vectorstore_params.logfire = mirascope_span
-            cls.vectorstore_params.logfire_async = mirascope_span
+            cls.vectorstore_params.logfire = mirascope_logfire_span
+            cls.vectorstore_params.logfire_async = mirascope_logfire_span
         if hasattr(cls, "embedding_params"):
             cls.embedding_params.logfire = mirascope_logfire
             cls.embedding_params.logfire_async = mirascope_logfire_async

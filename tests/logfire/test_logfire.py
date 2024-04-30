@@ -1,12 +1,13 @@
 """Tests for the Mirascope + Logfire integration."""
 import os
-from typing import Any, AsyncContextManager, AsyncGenerator, ContextManager
+from typing import AsyncContextManager, ContextManager
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import logfire
 import pytest
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
+from groq.lib.chat_completion_chunk import ChatCompletionChunk
 from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 
@@ -16,6 +17,7 @@ from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
 from mirascope.cohere.embedders import CohereEmbedder
 from mirascope.cohere.types import CohereCallParams
+from mirascope.groq.calls import GroqCall
 from mirascope.logfire import with_logfire
 from mirascope.openai import OpenAICall, OpenAIEmbedder, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
@@ -98,20 +100,24 @@ def test_cohere_call_stream_with_logfire(
     assert my_call.call_params.logfire is not None
 
 
-@patch("cohere.AsyncClient.chat_stream", new_callable=AsyncMock)
+@patch("cohere.AsyncClient.chat_stream", new_callable=MagicMock)
 @pytest.mark.asyncio
 async def test_cohere_call_stream_async_with_logfire(
-    mock_stream: MagicMock,
-    fixture_cohere_async_response_chunks: AsyncGenerator[
-        StreamedChatResponse_TextGeneration, Any
-    ],
+    mock_chat_stream: MagicMock,
+    fixture_cohere_async_response_chunks,
 ):
-    """Tests `AnthropicPrompt.stream` with logfire."""
-    mock_stream.return_value = fixture_cohere_async_response_chunks
-    mock_stream.__name__ = "stream"
+    """Tests `CohereCall.stream_async` returns expected response with logfire."""
 
-    my_call = CohereTempCall()
+    @with_logfire
+    class TempCall(CohereCall):
+        prompt_template = ""
+        api_key = "test"
+
+    mock_chat_stream.return_value = fixture_cohere_async_response_chunks
+    mock_chat_stream.__name__ = "stream"
+    my_call = TempCall()
     stream = my_call.stream_async()
+
     async for chunk in stream:
         assert isinstance(chunk.chunk, StreamedChatResponse_TextGeneration)
     assert my_call.call_params.logfire_async is not None
@@ -144,7 +150,7 @@ def test_anthropic_call_stream(
 
 @patch(
     "anthropic.resources.messages.AsyncMessages.stream",
-    new_callable=AsyncMock,
+    new_callable=MagicMock,
 )
 @pytest.mark.asyncio
 async def test_anthropic_call_stream_async(
@@ -159,6 +165,36 @@ async def test_anthropic_call_stream_async(
     stream = my_call.stream_async()
     async for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
+    assert my_call.call_params.logfire_async is not None
+
+
+@patch(
+    "groq.resources.chat.completions.AsyncCompletions.create", new_callable=AsyncMock
+)
+@pytest.mark.asyncio
+async def test_groq_call_stream_async(
+    mock_create: AsyncMock,
+    fixture_chat_completion_stream_response: list[ChatCompletionChunk],
+):
+    """Tests `GroqCall.stream_async` returns expected response with logfire."""
+
+    @with_logfire
+    class TempCall(GroqCall):
+        prompt_template = ""
+        api_key = "test"
+
+    mock_create.return_value.__aiter__.return_value = (
+        fixture_chat_completion_stream_response
+    )
+    mock_create.__name__ = "stream"
+    my_call = TempCall()
+    stream = my_call.stream_async()
+
+    i = 0
+    async for chunk in stream:
+        assert chunk.chunk == fixture_chat_completion_stream_response[i]
+        i += 1
+
     assert my_call.call_params.logfire_async is not None
 
 

@@ -1,2 +1,2 @@
 """Module for integrations with Pydantic Logfire"""
-from .main import with_logfire
+from .logfire import with_logfire
