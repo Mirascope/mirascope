@@ -28,4 +28,30 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import wandb
 
+with suppress(ImportError):
+    from . import logfire
+
+with suppress(ImportError):
+    from . import pinecone
+
+
 __version__ = importlib.metadata.version("mirascope")
+
+__all__ = [
+    "__version__",
+    "anthropic",
+    "chroma",
+    "cohere",
+    "gemini",
+    "groq",
+    "mistral",
+    "openai",
+    "pinecone",
+    "logfire",
+    "rag",
+    "wandb",
+    "BaseCallParams",
+    "BasePrompt",
+    "Message",
+    "tags",
+]
