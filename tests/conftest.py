@@ -48,7 +48,6 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel, Field
 
 from mirascope.base import tool_fn
-from mirascope.gemini.tools import GeminiTool
 from mirascope.openai import OpenAITool
 
 

@@ -1,12 +1,16 @@
 from typing import Literal, Type
 
 import logfire
+from dotenv import find_dotenv, load_dotenv
 from pydantic import BaseModel
 
+from mirascope.cohere import CohereExtractor
 from mirascope.logfire import with_logfire
 from mirascope.openai import OpenAIExtractor
 
 logfire.configure()
+
+load_dotenv(find_dotenv())
 
 
 class TaskDetails(BaseModel):
@@ -16,7 +20,7 @@ class TaskDetails(BaseModel):
 
 
 @with_logfire
-class TaskExtractor(OpenAIExtractor[TaskDetails]):
+class TaskExtractor(CohereExtractor[TaskDetails]):
     extract_schema: Type[TaskDetails] = TaskDetails
     prompt_template = """
     Extract the task details from the following task:

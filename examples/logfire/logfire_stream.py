@@ -1,6 +1,7 @@
 import logfire
 
 from mirascope.logfire import with_logfire
+from mirascope.mistral import MistralCall
 from mirascope.openai import OpenAICall
 
 logfire.configure()
