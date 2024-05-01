@@ -310,7 +310,7 @@ We are constantly working to further integrate Mirascope as seamlessly as possib
     - [X]  ChromaDB
     - [X]  Pinecone
     - [X]  OpenAI Embeddings
-    - [ ]  Cohere Embeddings
+    - [X]  Cohere Embeddings
     - [ ]  Hugging Face
     - [ ]  Tons of examples...
 - [ ] Mirascope CLI
@@ -334,6 +334,7 @@ We are constantly working to further integrate Mirascope as seamlessly as possib
     - [X]  Gemini
     - [ ]  HuggingFace
 - [ ]  Integrations
+    - [X]  Logfire by Pydantic  
     - [X]  Weights & Biases Trace
     - [X]  Weave by Weights & Biases
     - [X]  LangChain / LangSmith
