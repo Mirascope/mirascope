@@ -79,7 +79,8 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
         generate_content = gemini_pro_model.generate_content
         if self.call_params.weave is not None:
             generate_content = self.call_params.weave(
@@ -89,6 +90,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content = self.call_params.logfire(
                 generate_content, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
+            kwargs["model"] = model_name
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
@@ -116,7 +118,8 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
         generate_content_async = gemini_pro_model.generate_content_async
         if self.call_params.weave is not None:
             generate_content_async = self.call_params.weave(
@@ -126,6 +129,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content_async = self.call_params.logfire(
                 generate_content_async, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
+            kwargs["model"] = model_name
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             self.messages(),
@@ -152,12 +156,14 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
         generate_content = gemini_pro_model.generate_content
         if self.call_params.logfire:
             generate_content = self.call_params.logfire(
                 generate_content, "gemini", response_chunk_type=GeminiCallResponseChunk
             )  # pragma: no cover
+            kwargs["model"] = model_name
         stream = generate_content(
             self.messages(),
             stream=True,
@@ -180,7 +186,8 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
         generate_content_async = gemini_pro_model.generate_content_async
         if self.call_params.logfire:
             generate_content_async = self.call_params.logfire(
@@ -188,6 +195,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
                 "gemini",
                 response_chunk_type=GeminiCallResponseChunk,
             )  # pragma: no cover
+            kwargs["model"] = model_name
         stream = await generate_content_async(
             self.messages(),
             stream=True,

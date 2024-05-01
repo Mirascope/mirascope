@@ -17,22 +17,6 @@ from mirascope.gemini.tools import GeminiTool
 
 
 @pytest.fixture()
-def fixture_generate_content_response():
-    """Returns a `GenerateContentResponse` instance."""
-    return GenerateContentResponseType.from_response(
-        GenerateContentResponse(
-            candidates=[
-                Candidate(
-                    content=Content(
-                        parts=[Part(text="Who is the author?")], role="model"
-                    )
-                )
-            ]
-        )
-    )
-
-
-@pytest.fixture()
 def fixture_generate_content_response_with_tools():
     """Returns a `GenerateContentResponse` with tools."""
     return GenerateContentResponseType.from_response(

@@ -18,6 +18,15 @@ from cohere.types import (
     NonStreamedChatResponse,
     ToolCall,
 )
+from google.ai.generativelanguage import (
+    Candidate,
+    Content,
+    GenerateContentResponse,
+    Part,
+)
+from google.generativeai.types import (  # type: ignore
+    GenerateContentResponse as GenerateContentResponseType,
+)
 from groq.lib.chat_completion_chunk import (
     ChatCompletionChunk,
     ChoiceDelta,
@@ -326,3 +335,19 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
             x_groq=None,
         ),
     ]
+
+
+@pytest.fixture()
+def fixture_generate_content_response():
+    """Returns a `GenerateContentResponse` instance."""
+    return GenerateContentResponseType.from_response(
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    content=Content(
+                        parts=[Part(text="Who is the author?")], role="model"
+                    )
+                )
+            ]
+        )
+    )

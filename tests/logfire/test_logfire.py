@@ -7,7 +7,9 @@ import logfire
 import pytest
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
+from google.ai.generativelanguage import GenerateContentResponse
 from groq.lib.chat_completion_chunk import ChatCompletionChunk
+from logfire.testing import CaptureLogfire
 from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 
@@ -18,6 +20,7 @@ from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
 from mirascope.cohere.embedders import CohereEmbedder
 from mirascope.cohere.types import CohereCallParams
+from mirascope.gemini.calls import GeminiCall
 from mirascope.groq.calls import GroqCall
 from mirascope.logfire import with_logfire
 from mirascope.openai import OpenAICall, OpenAIEmbedder, OpenAIExtractor
@@ -51,6 +54,34 @@ def test_call_with_logfire(
     my_call = MyNestedCall()
     my_call.call()
     my_call.stream()
+    assert my_call.call_params.logfire is not None
+
+
+@patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
+def test_gemini_call_call(
+    mock_generate_content: MagicMock,
+    fixture_generate_content_response: GenerateContentResponse,
+    capfire: CaptureLogfire,
+) -> None:
+    """Tests that `GeminiClass.call` returns the expected response."""
+    mock_generate_content.return_value = fixture_generate_content_response
+    mock_generate_content.__name__ = "call"
+
+    @with_logfire
+    class MyGeminiCall(GeminiCall):
+        ...
+
+    my_call = MyGeminiCall()
+    my_call.call()
+    exporter = capfire.exporter
+    expected_span_names = [
+        "MyGeminiCall.call (pending)",
+        "gemini.call with gemini-1.0-pro (pending)",
+        "gemini.call with gemini-1.0-pro",
+        "MyGeminiCall.call",
+    ]
+    span_names = [span.name for span in exporter.exported_spans]
+    assert span_names == expected_span_names
     assert my_call.call_params.logfire is not None
 
 

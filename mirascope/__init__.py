@@ -48,7 +48,6 @@ __all__ = [
     "openai",
     "pinecone",
     "logfire",
-    "rag",
     "wandb",
     "BaseCallParams",
     "BasePrompt",
