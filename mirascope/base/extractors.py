@@ -1,5 +1,4 @@
 """A base abstract interface for extracting structured information using LLMs."""
-
 import logging
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -124,21 +123,9 @@ class BaseExtractor(
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+        temp_call = self._generate_temp_call(call_type)
 
-            base_url = self.base_url
-            api_key = self.api_key
-            call_params = self.call_params
-
-            model_config = ConfigDict(extra="allow")
-
-        properties = getmembers(self)
-        for name, value in properties:
-            if not hasattr(TempCall, name):
-                setattr(TempCall, name, value)
-
-        response = TempCall(**self.model_dump(exclude={"extract_schema"})).call(
+        response = temp_call(**self.model_dump(exclude={"extract_schema"})).call(
             **kwargs
         )
         try:
@@ -189,16 +176,9 @@ class BaseExtractor(
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+        temp_call = self._generate_temp_call(call_type)
 
-            base_url = self.base_url
-            api_key = self.api_key
-            call_params = self.call_params
-
-            model_config = ConfigDict(extra="allow")
-
-        response = await TempCall(
+        response = await temp_call(
             **self.model_dump(exclude={"extract_schema"})
         ).call_async(**kwargs)
         try:
@@ -257,17 +237,9 @@ class BaseExtractor(
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+        temp_call = self._generate_temp_call(call_type)
 
-            base_url = self.base_url
-            api_key = self.api_key
-            call_params = self.call_params
-
-            model_config = ConfigDict(extra="allow")
-
-        setattr(TempCall, "messages", self.messages)
-        stream = TempCall(**self.model_dump(exclude={"extract_schema"})).stream(
+        stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream(
             **kwargs
         )
         tool_stream = tool_stream_type.from_stream(stream, allow_partial=True)
@@ -333,17 +305,9 @@ class BaseExtractor(
         """
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+        temp_call = self._generate_temp_call(call_type)
 
-            base_url = self.base_url
-            api_key = self.api_key
-            call_params = self.call_params
-
-            model_config = ConfigDict(extra="allow")
-
-        setattr(TempCall, "messages", self.messages)
-        stream = TempCall(**self.model_dump(exclude={"extract_schema"})).stream_async(
+        stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream_async(
             **kwargs
         )
         tool_stream = tool_stream_type.from_async_stream(stream, allow_partial=True)
@@ -369,6 +333,25 @@ class BaseExtractor(
                 ):
                     yield partial_tool
             raise  # re-raise if we have no retries left
+
+    def _generate_temp_call(self, call_type: Type[BaseCallT]) -> Type[BaseCallT]:
+        """Returns a `TempCall` generated using the extractors definition."""
+
+        class TempCall(call_type):  # type: ignore
+            prompt_template = self.prompt_template
+
+            base_url = self.base_url
+            api_key = self.api_key
+            call_params = self.call_params
+
+            model_config = ConfigDict(extra="allow")
+
+        properties = getmembers(self)
+        for name, value in properties:
+            if not hasattr(TempCall, name):
+                setattr(TempCall, name, value)
+
+        return TempCall
 
     def _extract_schema(
         self,
