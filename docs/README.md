@@ -15,7 +15,7 @@
 
 ---
 
-**Mirascope** is an LLM toolkit for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
+**Mirascope** is an intuitive approach to building with LLMs. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
 ## Installation
 
@@ -27,8 +27,8 @@ You can also install additional optional dependencies if you’re using those fe
 
 ```bash
 pip install mirascope[anthropic]  # AnthropicCall, ...
-pip install mirascope[gemini]     # GeminiCall, ...
-pip install mirascope[wandb]      # WandbOpenAICall, ...
+pip install mirascope[groq]       # GroqCall, ...
+pip install mirascope[logfire]    # with_logfire decorator, ...
 pip install mirascope[all]        # all optional dependencies
 ```
 
