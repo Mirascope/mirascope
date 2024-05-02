@@ -1,7 +1,6 @@
 """A base abstract interface for extracting structured information using LLMs."""
 import logging
 from abc import ABC, abstractmethod
-from contextlib import suppress
 from enum import Enum
 from inspect import getmembers, isclass
 from typing import (
