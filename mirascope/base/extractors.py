@@ -169,10 +169,9 @@ class BaseExtractor(
             error_message = (
                 f"Error found: {error_message}\nPlease fix the errors and try again."
             )
-        tempcall = TempCall(
+        response = TempCall(
             **self.model_dump(exclude={"extract_schema"}), error_message=error_message
-        )
-        response = tempcall.call(**kwargs)
+        ).call(**kwargs)
         try:
             extracted_schema = self._extract_schema(
                 response.tool, self.extract_schema, return_tool, response=response

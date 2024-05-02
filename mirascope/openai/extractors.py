@@ -79,7 +79,7 @@ class OpenAIExtractor(
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        return self._extract(OpenAICall, OpenAITool, retries, **kwargs)
+        return self._retry(OpenAICall, OpenAITool, retries, **kwargs)
 
     async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
         """Asynchronously extracts `extract_schema` from the OpenAI call response.
