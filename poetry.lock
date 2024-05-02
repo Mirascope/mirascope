@@ -4007,7 +4007,7 @@ mpmath = ">=0.19"
 name = "tenacity"
 version = "8.2.3"
 description = "Retry code until it succeeds"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "tenacity-8.2.3-py3-none-any.whl", hash = "sha256:ce510e327a630c9e1beaf17d42e6ffacc88185044ad85cf74c0a8887c6a0f88c"},
@@ -4918,4 +4918,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "fb100c7d2b26a766158ac1939c4b48d8ff7f3bfc3a8b007c95eb9a3bc1d13420"
+content-hash = "441de5501c550bed45ad087a8b29a156cadc4d5f35871986fa1ef325e51aaa30"
