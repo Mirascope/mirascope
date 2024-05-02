@@ -90,7 +90,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content = self.call_params.logfire(
                 generate_content, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
-            kwargs["model"] = model_name
+            kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
@@ -129,7 +129,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content_async = self.call_params.logfire(
                 generate_content_async, "gemini", response_type=GeminiCallResponse
             )  # pragma: no cover
-            kwargs["model"] = model_name
+            kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             self.messages(),
@@ -163,7 +163,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content = self.call_params.logfire(
                 generate_content, "gemini", response_chunk_type=GeminiCallResponseChunk
             )  # pragma: no cover
-            kwargs["model"] = model_name
+            kwargs["model"] = model_name  # pragma: no cover
         stream = generate_content(
             self.messages(),
             stream=True,
@@ -195,7 +195,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
                 "gemini",
                 response_chunk_type=GeminiCallResponseChunk,
             )  # pragma: no cover
-            kwargs["model"] = model_name
+            kwargs["model"] = model_name  # pragma: no cover
         stream = await generate_content_async(
             self.messages(),
             stream=True,
