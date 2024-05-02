@@ -21,6 +21,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, ConfigDict, ValidationError
+from tenacity import RetryError, Retrying, stop_after_attempt
 
 from ..partial import partial
 from .calls import BaseCall
@@ -89,12 +90,30 @@ class BaseExtractor(
     #     ...  # pragma: no cover
 
     ############################## PRIVATE METHODS ###################################
+    def _retry(
+        self,
+        call_type: Type[BaseCallT],
+        tool_type: Type[BaseToolT],
+        retries: Union[int, Retrying],
+        **kwargs: Any,
+    ) -> ExtractedTypeT:
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
+        try:
+            for attempt in retries:
+                with attempt:
+                    try:
+                        return self._extract(call_type, tool_type, **kwargs)
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        kwargs["error_message"] = e
+                        raise
+        except RetryError as e:
+            raise e
 
     def _extract(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
-        retries: int,
         **kwargs: Any,
     ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the call response.
@@ -125,22 +144,35 @@ class BaseExtractor(
         kwargs, return_tool = self._setup(tool_type, kwargs)
 
         class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+            prompt_template = """
+            {original_prompt_template}
+
+            {error_message}
+            """
 
             base_url = self.base_url
             api_key = self.api_key
             call_params = self.call_params
-
+            error_message: str = ""
+            original_prompt_template: str = self.prompt_template
             model_config = ConfigDict(extra="allow")
 
         properties = getmembers(self)
         for name, value in properties:
             if not hasattr(TempCall, name):
                 setattr(TempCall, name, value)
-
-        response = TempCall(**self.model_dump(exclude={"extract_schema"})).call(
-            **kwargs
+        error_message = kwargs.pop("error_message", "")
+        if error_message and error_message == "No tool found in the completion":
+            error_message = f"Error found: {error_message}\n \
+                Please try again and use the existing tool."
+        elif error_message:
+            error_message = (
+                f"Error found: {error_message}\nPlease fix the errors and try again."
+            )
+        tempcall = TempCall(
+            **self.model_dump(exclude={"extract_schema"}), error_message=error_message
         )
+        response = tempcall.call(**kwargs)
         try:
             extracted_schema = self._extract_schema(
                 response.tool, self.extract_schema, return_tool, response=response
@@ -149,11 +181,8 @@ class BaseExtractor(
                 raise AttributeError("No tool found in the completion.")
             return extracted_schema
         except (AttributeError, ValueError, ValidationError) as e:
-            if retries > 0:
-                logging.info(f"Retrying due to exception: {e}")
-                # TODO: include failure in retry prompt.
-                return self._extract(call_type, tool_type, retries - 1, **kwargs)
-            raise  # re-raise if we have no retries left
+            logging.info(f"Retrying due to exception: {e}")
+            raise
 
     async def _extract_async(
         self,
