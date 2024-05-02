@@ -1,7 +1,7 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
 site_url: https://docs.mirascope.io/
-site_description: Mirascope is an open-source library for the most pythonic LLM application building experience.
+site_description: Mirascope is an intuitive approach to building with LLMs.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 theme:
