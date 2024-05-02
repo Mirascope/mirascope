@@ -90,30 +90,12 @@ class BaseExtractor(
     #     ...  # pragma: no cover
 
     ############################## PRIVATE METHODS ###################################
-    def _retry(
-        self,
-        call_type: Type[BaseCallT],
-        tool_type: Type[BaseToolT],
-        retries: Union[int, Retrying],
-        **kwargs: Any,
-    ) -> ExtractedTypeT:
-        if isinstance(retries, int):
-            retries = Retrying(stop=stop_after_attempt(retries))
-        try:
-            for attempt in retries:
-                with attempt:
-                    try:
-                        return self._extract(call_type, tool_type, **kwargs)
-                    except (AttributeError, ValueError, ValidationError) as e:
-                        kwargs["error_message"] = e
-                        raise
-        except RetryError as e:
-            raise e
 
     def _extract(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
+        retries: Union[int, Retrying],
         **kwargs: Any,
     ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the call response.
@@ -141,47 +123,63 @@ class BaseExtractor(
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        class TempCall(call_type):  # type: ignore
-            prompt_template = """
-            {original_prompt_template}
+        def _extract_attempt(
+            call_type: Type[BaseCallT],
+            tool_type: Type[BaseToolT],
+            error_message: Optional[str] = None,
+            **kwargs: Any,
+        ) -> ExtractedTypeT:
+            kwargs, return_tool = self._setup(tool_type, kwargs)
+            internal_prompt_template = self.prompt_template
+            if error_message:
+                internal_prompt_template = f"{internal_prompt_template}\n\n \
+                Error found: {error_message}\nPlease fix the errors and try again."
 
-            {error_message}
-            """
+            class TempCall(call_type):  # type: ignore
+                prompt_template = internal_prompt_template
 
-            base_url = self.base_url
-            api_key = self.api_key
-            call_params = self.call_params
-            error_message: str = ""
-            original_prompt_template: str = self.prompt_template
-            model_config = ConfigDict(extra="allow")
+                base_url = self.base_url
+                api_key = self.api_key
+                call_params = self.call_params
 
-        properties = getmembers(self)
-        for name, value in properties:
-            if not hasattr(TempCall, name):
-                setattr(TempCall, name, value)
-        error_message = kwargs.pop("error_message", "")
-        if error_message and error_message == "No tool found in the completion":
-            error_message = f"Error found: {error_message}\n \
-                Please try again and use the existing tool."
-        elif error_message:
-            error_message = (
-                f"Error found: {error_message}\nPlease fix the errors and try again."
-            )
-        response = TempCall(
-            **self.model_dump(exclude={"extract_schema"}), error_message=error_message
-        ).call(**kwargs)
+                model_config = ConfigDict(extra="allow")
+
+            properties = getmembers(self)
+            for name, value in properties:
+                if not hasattr(TempCall, name):
+                    setattr(TempCall, name, value)
+            response = TempCall(
+                **self.model_dump(exclude={"extract_schema"}),
+                error_message=error_message,
+            ).call(**kwargs)
+            try:
+                extracted_schema = self._extract_schema(
+                    response.tool, self.extract_schema, return_tool, response=response
+                )
+                if extracted_schema is None:
+                    raise AttributeError("No tool found in the completion.")
+                return extracted_schema
+            except (AttributeError, ValueError, ValidationError) as e:
+                logging.info(f"Retrying due to exception: {e}")
+                raise
+
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
         try:
-            extracted_schema = self._extract_schema(
-                response.tool, self.extract_schema, return_tool, response=response
-            )
-            if extracted_schema is None:
-                raise AttributeError("No tool found in the completion.")
-            return extracted_schema
-        except (AttributeError, ValueError, ValidationError) as e:
-            logging.info(f"Retrying due to exception: {e}")
-            raise
+            error_message = None
+            for attempt in retries:
+                with attempt:
+                    try:
+                        return _extract_attempt(
+                            call_type, tool_type, error_message, **kwargs
+                        )
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        error_message = e
+                        logging.info(f"Retrying due to exception: {e}")
+                        raise
+        except RetryError as e:
+            raise e
 
     async def _extract_async(
         self,
