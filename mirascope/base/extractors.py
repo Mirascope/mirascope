@@ -1,10 +1,8 @@
 """A base abstract interface for extracting structured information using LLMs."""
-import logging
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from enum import Enum
 from inspect import getmembers, isclass
-from logging import basicConfig
 from typing import (
     Annotated,
     Any,
@@ -32,10 +30,7 @@ from .tools import BaseTool, BaseType
 from .types import BaseCallParams
 
 with suppress(ImportError):
-    from logfire.integrations.logging import LogfireLoggingHandler
-
-    basicConfig(handlers=[LogfireLoggingHandler()])
-logger = logging.getLogger("mirascope")
+    import logfire
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
@@ -132,15 +127,17 @@ class BaseExtractor(
         def _extract_attempt(
             call_type: Type[BaseCallT],
             tool_type: Type[BaseToolT],
-            error_message: Optional[str] = None,
+            error_messages: dict[str, Any],
             **kwargs: Any,
         ) -> ExtractedTypeT:
             kwargs, return_tool = self._setup(tool_type, kwargs)
 
-            temp_call = self._generate_temp_call(call_type, error_message)
-            response = temp_call(
+            temp_call = self._generate_temp_call(call_type, error_messages)
+            obj = temp_call(
                 **self.model_dump(exclude={"extract_schema"}),
-            ).call(**kwargs)
+            )
+            print(obj.messages())
+            response = obj.call(**kwargs)
             try:
                 extracted_schema = self._extract_schema(
                     response.tool, self.extract_schema, return_tool, response=response
@@ -154,16 +151,19 @@ class BaseExtractor(
         if isinstance(retries, int):
             retries = Retrying(stop=stop_after_attempt(retries))
         try:
-            error_message = None
+            error_messages: dict[str, Any] = {}
             for attempt in retries:
                 with attempt:
                     try:
                         extraction = _extract_attempt(
-                            call_type, tool_type, error_message, **kwargs
+                            call_type, tool_type, error_messages, **kwargs
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
-                        error_message = e
-                        logger.error(f"Retrying due to exception: {e}")
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -205,12 +205,12 @@ class BaseExtractor(
         async def _extract_attempt_async(
             call_type: Type[BaseCallT],
             tool_type: Type[BaseToolT],
-            error_message: Optional[str] = None,
+            error_messages: dict[str, Any],
             **kwargs: Any,
         ) -> ExtractedTypeT:
             kwargs, return_tool = self._setup(tool_type, kwargs)
 
-            temp_call = self._generate_temp_call(call_type, error_message)
+            temp_call = self._generate_temp_call(call_type, error_messages)
 
             response = await temp_call(
                 **self.model_dump(exclude={"extract_schema"})
@@ -228,16 +228,19 @@ class BaseExtractor(
         if isinstance(retries, int):
             retries = AsyncRetrying(stop=stop_after_attempt(retries))
         try:
-            error_message = None
+            error_messages: dict[str, Any] = {}
             async for attempt in retries:
                 with attempt:
                     try:
                         extraction = await _extract_attempt_async(
-                            call_type, tool_type, error_message, **kwargs
+                            call_type, tool_type, error_messages, **kwargs
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
-                        error_message = e
-                        logger.error(f"Retrying due to exception: {e}")
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -286,12 +289,12 @@ class BaseExtractor(
             call_type: Type[BaseCallT],
             tool_type: Type[BaseToolT],
             tool_stream_type: Type[BaseToolStreamT],
-            error_message: Optional[str] = None,
+            error_messages: dict[str, Any],
             **kwargs: Any,
         ) -> Generator[ExtractedTypeT, None, None]:
             kwargs, return_tool = self._setup(tool_type, kwargs)
 
-            temp_call = self._generate_temp_call(call_type, error_message)
+            temp_call = self._generate_temp_call(call_type, error_messages)
 
             stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream(
                 **kwargs
@@ -316,7 +319,7 @@ class BaseExtractor(
         if isinstance(retries, int):
             retries = Retrying(stop=stop_after_attempt(retries))
         try:
-            error_message = None
+            error_messages: dict[str, Any] = {}
             for attempt in retries:
                 with attempt:
                     try:
@@ -324,13 +327,16 @@ class BaseExtractor(
                             call_type,
                             tool_type,
                             tool_stream_type,
-                            error_message,
+                            error_messages,
                             **kwargs,
                         ):
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
-                        error_message = e
-                        logger.error(f"Retrying due to exception: {e}")
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -378,12 +384,12 @@ class BaseExtractor(
             call_type: Type[BaseCallT],
             tool_type: Type[BaseToolT],
             tool_stream_type: Type[BaseToolStreamT],
-            error_message: Optional[str] = None,
+            error_messages: dict[str, Any],
             **kwargs: Any,
         ) -> AsyncGenerator[ExtractedTypeT, None]:
             kwargs, return_tool = self._setup(tool_type, kwargs)
 
-            temp_call = self._generate_temp_call(call_type, error_message)
+            temp_call = self._generate_temp_call(call_type, error_messages)
 
             stream = temp_call(
                 **self.model_dump(exclude={"extract_schema"})
@@ -408,7 +414,7 @@ class BaseExtractor(
         if isinstance(retries, int):
             retries = AsyncRetrying(stop=stop_after_attempt(retries))
         try:
-            error_message = None
+            error_messages: dict[str, Any] = {}
             async for attempt in retries:
                 with attempt:
                     try:
@@ -416,25 +422,36 @@ class BaseExtractor(
                             call_type,
                             tool_type,
                             tool_stream_type,
-                            error_message,
+                            error_messages,
                             **kwargs,
                         ):
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
-                        error_message = e
-                        logger.error(f"Retrying due to exception: {e}")
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
 
     def _generate_temp_call(
-        self, call_type: Type[BaseCallT], error_message: Optional[str] = None
+        self, call_type: Type[BaseCallT], error_messages: dict[str, Any]
     ) -> Type[BaseCallT]:
         """Returns a `TempCall` generated using the extractors definition."""
         _prompt_template = self.prompt_template
-        if error_message:
-            _prompt_template = f"{_prompt_template}\n\n \
-            Error found: {error_message}\nPlease fix the errors and try again."
+        if error_messages:
+            formatted_error_messages = [
+                "- " + element for element in error_messages.keys()
+            ]
+            error_messages_list = "\n".join(formatted_error_messages)
+            _prompt_template = (
+                f"{_prompt_template}\n"
+                "Errors found:\n\n"
+                f"{error_messages_list}\n\n"
+                "Please fix the errors and try again."
+            )
 
         class TempCall(call_type):  # type: ignore
             prompt_template = _prompt_template
