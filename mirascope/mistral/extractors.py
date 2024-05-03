@@ -1,6 +1,8 @@
 """A class for extracting structured information using Mistral chat models."""
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar, Union
+
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import MistralCall
@@ -45,7 +47,7 @@ class MistralExtractor(BaseExtractor[MistralCall, MistralTool, Any, T], Generic[
 
     call_params: ClassVar[MistralCallParams] = MistralCallParams()
 
-    def extract(self, retries: int = 0, **kwargs: Any) -> T:
+    def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Mistral call response.
 
         The `extract_schema` is converted into an `MistralTool`, complete with a
@@ -70,7 +72,9 @@ class MistralExtractor(BaseExtractor[MistralCall, MistralTool, Any, T], Generic[
         """
         return self._extract(MistralCall, MistralTool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+    async def extract_async(
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
+    ) -> T:
         """Asynchronously extracts `extract_schema` from the Mistral call response.
 
         The `extract_schema` is converted into an `MistralTool`, complete with a

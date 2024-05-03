@@ -23,19 +23,19 @@ from pydantic import BaseModel
 
 
 class TaskDetails(BaseModel):
-	due_date: str
-	priority: Literal["low", "normal", "high"]
-	description: str
+    due_date: str
+    priority: Literal["low", "normal", "high"]
+    description: str
 
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
-	extract_schema: Type[TaskDetails] = TaskDetails
-	prompt_template = """
-	Extract the task details from the following task:
-	{task}
-	"""
+    extract_schema: Type[TaskDetails] = TaskDetails
+    prompt_template = """
+    Extract the task details from the following task:
+    {task}
+    """
 
-	task: str
+    task: str
 
 
 task = "Submit quarterly report by next Friday. Task is high priority."

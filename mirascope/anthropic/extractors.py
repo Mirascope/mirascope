@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar
+from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar, Union
+
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import AnthropicCall
@@ -63,7 +65,7 @@ class AnthropicExtractor(
 
     call_params: ClassVar[AnthropicCallParams] = AnthropicCallParams()
 
-    def extract(self, retries: int = 0, **kwargs: Any) -> T:
+    def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Anthropic call response.
 
         The `extract_schema` is converted into an `AnthropicTool`, complete with a
@@ -87,7 +89,9 @@ class AnthropicExtractor(
         kwargs["system"] = EXTRACT_SYSTEM_MESSAGE
         return self._extract(AnthropicCall, AnthropicTool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+    async def extract_async(
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
+    ) -> T:
         """Asynchronously extracts `extract_schema` from the Anthropic call response.
 
         The `extract_schema` is converted into an `AnthropicTool`, complete with a
@@ -113,7 +117,9 @@ class AnthropicExtractor(
             AnthropicCall, AnthropicTool, retries, **kwargs
         )
 
-    def stream(self, retries: int = 0, **kwargs: Any) -> Generator[T, None, None]:
+    def stream(
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
+    ) -> Generator[T, None, None]:
         """Streams partial instances of `extract_schema` as the schema is streamed.
 
         The `extract_schema` is converted into a `partial(AnthropicTool)`, which allows
@@ -137,7 +143,7 @@ class AnthropicExtractor(
         )
 
     async def stream_async(
-        self, retries: int = 0, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[T, None]:
         """Asynchronously streams partial instances of `extract_schema` as streamed.
 

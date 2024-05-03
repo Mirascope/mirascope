@@ -152,7 +152,7 @@ class BaseExtractor(
             for attempt in retries:
                 with attempt:
                     try:
-                        return _extract_attempt(
+                        extraction = _extract_attempt(
                             call_type, tool_type, error_message, **kwargs
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
@@ -161,6 +161,7 @@ class BaseExtractor(
                         raise
         except RetryError as e:
             raise e
+        return extraction
 
     async def _extract_async(
         self,
@@ -225,7 +226,7 @@ class BaseExtractor(
             async for attempt in retries:
                 with attempt:
                     try:
-                        return await _extract_attempt_async(
+                        extraction = await _extract_attempt_async(
                             call_type, tool_type, error_message, **kwargs
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
@@ -234,6 +235,7 @@ class BaseExtractor(
                         raise
         except RetryError as e:
             raise e
+        return extraction
 
     def _stream(
         self,
@@ -312,13 +314,14 @@ class BaseExtractor(
             for attempt in retries:
                 with attempt:
                     try:
-                        return _stream_attempt(
+                        for partial_tool in _stream_attempt(
                             call_type,
                             tool_type,
                             tool_stream_type,
                             error_message,
                             **kwargs,
-                        )
+                        ):
+                            yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
                         logging.info(f"Retrying due to exception: {e}")
@@ -403,13 +406,14 @@ class BaseExtractor(
             async for attempt in retries:
                 with attempt:
                     try:
-                        return await _stream_attempt_async(
+                        async for partial_tool in _stream_attempt_async(
                             call_type,
                             tool_type,
                             tool_stream_type,
                             error_message,
                             **kwargs,
-                        )
+                        ):
+                            yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
                         logging.info(f"Retrying due to exception: {e}")

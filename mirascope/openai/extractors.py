@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar
+from typing import Any, AsyncGenerator, ClassVar, Generator, Generic, TypeVar, Union
+
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import OpenAICall
@@ -56,7 +58,7 @@ class OpenAIExtractor(
 
     call_params: ClassVar[OpenAICallParams] = OpenAICallParams()
 
-    def extract(self, retries: int = 0, **kwargs: Any) -> T:
+    def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the OpenAI call response.
 
         The `extract_schema` is converted into an `OpenAITool`, complete with a
@@ -81,7 +83,9 @@ class OpenAIExtractor(
         """
         return self._extract(OpenAICall, OpenAITool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+    async def extract_async(
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
+    ) -> T:
         """Asynchronously extracts `extract_schema` from the OpenAI call response.
 
         The `extract_schema` is converted into an `OpenAITool`, complete with a
@@ -106,7 +110,9 @@ class OpenAIExtractor(
         """
         return await self._extract_async(OpenAICall, OpenAITool, retries, **kwargs)
 
-    def stream(self, retries: int = 0, **kwargs: Any) -> Generator[T, None, None]:
+    def stream(
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
+    ) -> Generator[T, None, None]:
         """Streams partial instances of `extract_schema` as the schema is streamed.
 
         The `extract_schema` is converted into a `partial(OpenAITool)`, which allows for
@@ -132,7 +138,7 @@ class OpenAIExtractor(
         )
 
     async def stream_async(
-        self, retries: int = 0, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[T, None]:
         """Asynchronously streams partial instances of `extract_schema` as streamed.
 
