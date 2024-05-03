@@ -28,6 +28,7 @@ mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
 groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
 pinecone-client = { version = "^3.2.2", optional = true }
+astrapy = {version = "^1.1.0", optional = true}
 
 [tool.poetry.extras]
 astrapy = ["astrapy"]
@@ -42,7 +43,7 @@ mistral = ["mistralai"]
 wandb = ["wandb"]
 weave = ["weave"]
 all = [
-    "astrapy"
+    "astrapy",
     "mirascope-cli",
     "anthropic",
     "chromadb",
