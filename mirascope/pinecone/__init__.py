@@ -7,3 +7,12 @@ from .types import (
     PineconeSettings,
 )
 from .vectorstores import PineconeVectorStore
+
+__all__ = [
+    "PineconeParams",
+    "PineconePodParams",
+    "PineconeQueryResult",
+    "PineconeServerlessParams",
+    "PineconeSettings",
+    "PineconeVectorStore",
+]

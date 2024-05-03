@@ -1,19 +1,16 @@
 """Integration with Weave from Weights & Biases"""
 
-from typing import Type, TypeVar, overload
+from typing import Type, overload
 
 import weave
 
-from ..base import BaseCall, BaseExtractor
-from ..rag.chunkers import BaseChunker
-from ..rag.embedders import BaseEmbedder
-from ..rag.vectorstores import BaseVectorStore
-
-BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
-BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
-BaseVectorStoreT = TypeVar("BaseVectorStoreT", bound=BaseVectorStore)
-BaseChunkerT = TypeVar("BaseChunkerT", bound=BaseChunker)
-BaseEmbedderT = TypeVar("BaseEmbedderT", bound=BaseEmbedder)
+from ..types import (
+    BaseCallT,
+    BaseChunkerT,
+    BaseEmbedderT,
+    BaseExtractorT,
+    BaseVectorStoreT,
+)
 
 
 @overload

@@ -1,6 +1,6 @@
 """Base types and abstract interfaces for typing Mirascope RAG."""
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generic, Optional, TypeVar
+from typing import Any, Callable, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -22,7 +22,7 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
 
     @property
     @abstractmethod
-    def embedding(self) -> list[float]:
+    def embeddings(self) -> Optional[Union[list[list[float]], list[list[int]]]]:
         """Should return the embedding of the response.
 
         If there are multiple choices in a response, this method should select the 0th
@@ -37,16 +37,20 @@ T = TypeVar("T")
 class BaseVectorStoreParams(BaseModel):
     """The parameters with which to make a vectorstore."""
 
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
     weave: Optional[Callable[[T], T]] = None
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
+
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(
         self,
     ) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
+        exclude = {"weave", "logfire", "logfire_async"}
         kwargs = {
             key: value
-            for key, value in self.model_dump(exclude={"weave"}).items()
+            for key, value in self.model_dump(exclude=exclude).items()
             if value is not None
         }
         return kwargs
@@ -56,12 +60,18 @@ class BaseEmbeddingParams(BaseModel):
     """The parameters with which to make an embedding."""
 
     model: str
+    logfire: Optional[Callable[..., Callable]] = None
+    logfire_async: Optional[Callable[..., Callable]] = None
+
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the embedder as a keyword arguments dictionary."""
+        exclude = {"weave", "logfire", "logfire_async"}
         kwargs = {
-            key: value for key, value in self.model_dump().items() if value is not None
+            key: value
+            for key, value in self.model_dump(exclude=exclude).items()
+            if value is not None
         }
         return kwargs
 

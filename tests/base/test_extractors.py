@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from mirascope.base.calls import BaseCall
 from mirascope.base.extractors import BaseExtractor
 from mirascope.base.prompts import BasePrompt
+from mirascope.base.tool_streams import BaseToolStream
 from mirascope.base.tools import BaseTool
 from mirascope.base.types import BaseCallParams
-from mirascope.base.tool_streams import BaseToolStream
 
 
 @patch.multiple(BaseExtractor, __abstractmethods__=set())

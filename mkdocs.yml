@@ -1,7 +1,7 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
 site_url: https://docs.mirascope.io/
-site_description: Mirascope is an open-source library for the most pythonic LLM application building experience.
+site_description: Mirascope is an intuitive approach to building with LLMs.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 theme:
@@ -116,6 +116,7 @@ nav:
   - Integrations:
       - Client Wrappers: "integrations/client_wrappers.md"
       - FastAPI: "integrations/fastapi.md"
+      - Logfire: "integrations/logfire.md"
       - Weights & Biases: "integrations/weights_and_biases.md"
       - LangChain & LangSmith: "integrations/langchain.md"
       - Llama Index: "integrations/llama_index.md"
@@ -140,6 +141,13 @@ nav:
           - "api/chroma/index.md"
           - types: "api/chroma/types.md"
           - vectorstores: "api/chroma/vectorstores.md"
+      - cohere:
+          - "api/cohere/index.md"
+          - calls: "api/cohere/calls.md"
+          - embedders: "api/cohere/embedders.md"
+          - extractors: "api/cohere/extractors.md"
+          - tools: "api/cohere/tools.md"
+          - types: "api/cohere/types.md"
       - enums: "api/enums.md"
       - gemini:
           - "api/gemini/index.md"
@@ -147,6 +155,9 @@ nav:
           - extractors: "api/gemini/extractors.md"
           - tools: "api/gemini/tools.md"
           - types: "api/gemini/types.md"
+      - logfire:
+          - "api/logfire/index.md"
+          - logfire: "api/logfire/logfire.md"
       - mistral:
           - "api/mistral/index.md"
           - calls: "api/mistral/calls.md"

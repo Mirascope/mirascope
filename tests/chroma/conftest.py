@@ -20,6 +20,18 @@ class MyEmbedder(BaseEmbedder):
 
 
 @pytest.fixture
+def fixture_ephemeral_client() -> ChromaVectorStore:
+    """Fixture for an ephemeral ChromaVectorStore."""
+
+    class VectorStore(ChromaVectorStore):
+        index_name = "test"
+        client_settings = ChromaSettings(mode="ephemeral")
+        embedder = MyEmbedder()
+
+    return VectorStore()
+
+
+@pytest.fixture
 def fixture_persistent_client() -> ChromaVectorStore:
     """Fixture for a persistent ChromaVectorStore."""
 
@@ -42,17 +54,5 @@ def fixture_http_client() -> ChromaVectorStore:
         index_name = "test"
         embedder = MyEmbedder()
         client_settings = ChromaSettings(mode="http")
-
-    return VectorStore()
-
-
-@pytest.fixture
-def fixture_ephemeral_client() -> ChromaVectorStore:
-    """Fixture for an ephemeral ChromaVectorStore."""
-
-    class VectorStore(ChromaVectorStore):
-        index_name = "test"
-        client_settings = ChromaSettings(mode="ephemeral")
-        embedder = MyEmbedder()
 
     return VectorStore()

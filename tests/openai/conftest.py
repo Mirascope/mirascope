@@ -382,3 +382,14 @@ def fixture_openai_test_embedder():
         embedding_params = OpenAIEmbeddingParams(model="test_model")
 
     return TestEmbedder()
+
+
+@pytest.fixture()
+def fixture_openai_test_embedder_no_batch():
+    """Returns an `OpenAIEmbedding` instance with no batching."""
+
+    class TestEmbedder(OpenAIEmbedder):
+        api_key = "test"
+        embedding_params = OpenAIEmbeddingParams(model="test_model")
+
+    return TestEmbedder(embed_batch_size=None)

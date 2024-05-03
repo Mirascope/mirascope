@@ -32,12 +32,12 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     ```python
     from google.generativeai import configure  # type: ignore
-    from mirascope.gemini import GeminiPrompt
+    from mirascope.gemini import GeminiCall
 
     configure(api_key="YOUR_API_KEY")
 
 
-    class BookRecommender(GeminiPrompt):
+    class BookRecommender(GeminiCall):
         prompt_template = """
         USER: You're the world's greatest librarian.
         MODEL: Ok, I understand I'm the world's greatest librarian. How can I help?
@@ -47,7 +47,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
 
     response = BookRecommender(genre="fantasy").call()
-    print(response.call())
+    print(response.content)
     #> As the world's greatest librarian, I am delighted to recommend...
     ```
     '''
@@ -79,13 +79,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
+        generate_content = gemini_pro_model.generate_content
         if self.call_params.weave is not None:
             generate_content = self.call_params.weave(
-                gemini_pro_model.generate_content
+                generate_content
             )  # pragma: no cover
-        else:
-            generate_content = gemini_pro_model.generate_content
+        if self.call_params.logfire:
+            generate_content = self.call_params.logfire(
+                generate_content, "gemini", response_type=GeminiCallResponse
+            )  # pragma: no cover
+            kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
@@ -113,13 +118,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponse` instance.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
+        generate_content_async = gemini_pro_model.generate_content_async
         if self.call_params.weave is not None:
             generate_content_async = self.call_params.weave(
-                gemini_pro_model.generate_content_async
+                generate_content_async
             )  # pragma: no cover
-        else:
-            generate_content_async = gemini_pro_model.generate_content_async
+        if self.call_params.logfire:
+            generate_content_async = self.call_params.logfire(
+                generate_content_async, "gemini", response_type=GeminiCallResponse
+            )  # pragma: no cover
+            kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             self.messages(),
@@ -146,8 +156,15 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
-        stream = gemini_pro_model.generate_content(
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
+        generate_content = gemini_pro_model.generate_content
+        if self.call_params.logfire:
+            generate_content = self.call_params.logfire(
+                generate_content, "gemini", response_chunk_type=GeminiCallResponseChunk
+            )  # pragma: no cover
+            kwargs["model"] = model_name  # pragma: no cover
+        stream = generate_content(
             self.messages(),
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
@@ -169,8 +186,17 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             A `GeminiCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
-        gemini_pro_model = GenerativeModel(model_name=kwargs.pop("model"))
-        stream = await gemini_pro_model.generate_content_async(
+        model_name = kwargs.pop("model")
+        gemini_pro_model = GenerativeModel(model_name=model_name)
+        generate_content_async = gemini_pro_model.generate_content_async
+        if self.call_params.logfire:
+            generate_content_async = self.call_params.logfire(
+                generate_content_async,
+                "gemini",
+                response_chunk_type=GeminiCallResponseChunk,
+            )  # pragma: no cover
+            kwargs["model"] = model_name  # pragma: no cover
+        stream = await generate_content_async(
             self.messages(),
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,

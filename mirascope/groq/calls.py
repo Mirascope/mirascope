@@ -76,6 +76,10 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             create = self.call_params.weave(
                 client.chat.completions.create
             )  # pragma: no cover
+        if self.call_params.logfire:
+            create = self.call_params.logfire(
+                create, "groq", response_type=GroqCallResponse
+            )  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
@@ -107,6 +111,10 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             create = self.call_params.weave(
                 client.chat.completions.create
             )  # pragma: no cover
+        if self.call_params.logfire_async:
+            create = self.call_params.logfire_async(
+                create, "groq", response_type=GroqCallResponse
+            )  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
@@ -134,9 +142,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        stream = client.chat.completions.create(
-            messages=messages, stream=True, **kwargs
-        )
+        create = client.chat.completions.create
+        if self.call_params.logfire:
+            create = self.call_params.logfire(
+                create, "groq", response_chunk_type=GroqCallResponseChunk
+            )  # pragma: no cover
+        stream = create(messages=messages, stream=True, **kwargs)
         for completion in stream:
             yield GroqCallResponseChunk(
                 chunk=completion,
@@ -161,9 +172,14 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        stream = await client.chat.completions.create(
-            messages=messages, stream=True, **kwargs
-        )
+        create = client.chat.completions.create
+        if self.call_params.logfire_async:  # pragma: no cover
+            create = self.call_params.logfire_async(
+                create, "groq", response_chunk_type=GroqCallResponseChunk
+            )
+            stream = create(messages=messages, stream=True, **kwargs)
+        else:
+            stream = await create(messages=messages, stream=True, **kwargs)
         async for completion in stream:
             yield GroqCallResponseChunk(
                 chunk=completion,

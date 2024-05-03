@@ -5,6 +5,7 @@ from typing import Any, Callable, Literal, Optional, Type, Union
 from httpx import Timeout
 from openai import AsyncOpenAI, OpenAI
 from openai._types import Body, Headers, Query
+from openai.types import Embedding
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionChunk,
@@ -27,19 +28,6 @@ from ..base import (
 )
 from ..rag import BaseEmbeddingParams, BaseEmbeddingResponse
 from .tools import OpenAITool
-
-
-class OpenAIEmbeddingParams(BaseEmbeddingParams):
-    input: str = ""
-    model: str = "text-embedding-ada-002"
-    encoding_format: Optional[Literal["float", "base64"]] = None
-    user: Optional[str] = None
-    # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
-    # The extra values given here take precedence over values defined on the client or passed to this method.
-    extra_headers: Optional[Headers] = None
-    extra_query: Optional[Query] = None
-    extra_body: Optional[Body] = None
-    timeout: Optional[Union[float, Timeout]] = None
 
 
 class OpenAICallParams(BaseCallParams[OpenAITool]):
@@ -280,10 +268,25 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         return self.delta.tool_calls
 
 
-class EmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
+class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
     """A convenience wrapper around the OpenAI `CreateEmbeddingResponse` response."""
 
     @property
-    def embedding(self) -> list[float]:
-        """Returns the embedding for the 0th choice."""
-        return self.response.data[0].embedding
+    def embeddings(self) -> list[list[float]]:
+        """Returns the raw embeddings."""
+        embeddings_model: list[Embedding] = [
+            embedding for embedding in self.response.data
+        ]
+        return [embedding.embedding for embedding in embeddings_model]
+
+
+class OpenAIEmbeddingParams(BaseEmbeddingParams):
+    model: str = "text-embedding-3-small"
+    encoding_format: Optional[Literal["float", "base64"]] = None
+    user: Optional[str] = None
+    # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+    # The extra values given here take precedence over values defined on the client or passed to this method.
+    extra_headers: Optional[Headers] = None
+    extra_query: Optional[Query] = None
+    extra_body: Optional[Body] = None
+    timeout: Optional[Union[float, Timeout]] = None
