@@ -162,7 +162,7 @@ def get_current_weather(
     elif "paris" in location.lower():
         print(f"It is 22 degress {unit} in Paris, France")
     else:
-        print("I'm not sure what the weather is like in {location}")
+        print(f"I'm not sure what the weather is like in {location}")
 
 
 class Forecast(OpenAICall):
