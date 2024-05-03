@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar, Union
+
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import CohereCall
@@ -53,7 +55,7 @@ class CohereExtractor(BaseExtractor[CohereCall, CohereTool, Any, T], Generic[T])
 
     call_params: ClassVar[CohereCallParams] = CohereCallParams()
 
-    def extract(self, retries: int = 0, **kwargs: Any) -> T:
+    def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Cohere call response.
 
         The `extract_schema` is converted into an `CohereTool`, complete with a
@@ -76,7 +78,9 @@ class CohereExtractor(BaseExtractor[CohereCall, CohereTool, Any, T], Generic[T])
         """
         return self._extract(CohereCall, CohereTool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+    async def extract_async(
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
+    ) -> T:
         """Asynchronously extracts `extract_schema` from the Cohere call response.
 
         The `extract_schema` is converted into an `CohereTool`, complete with a

@@ -16,6 +16,7 @@ python = ">=3.9,<4.0"
 pydantic = "^2.0.2"
 openai = "^1.6.0"
 docstring-parser = "^0.15"
+tenacity = "^8.2.3"
 
 # A list of optional dependencies that are required for certain features
 mirascope-cli = { version = ">=0.1.2,<1.0.0", optional = true }

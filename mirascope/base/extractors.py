@@ -1,6 +1,6 @@
 """A base abstract interface for extracting structured information using LLMs."""
-import logging
 from abc import ABC, abstractmethod
+from contextlib import suppress
 from enum import Enum
 from inspect import getmembers, isclass
 from typing import (
@@ -20,6 +20,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, ConfigDict, ValidationError
+from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from ..partial import partial
 from .calls import BaseCall
@@ -28,7 +29,8 @@ from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import BaseCallParams
 
-logger = logging.getLogger("mirascope")
+with suppress(ImportError):
+    import logfire
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
@@ -93,7 +95,7 @@ class BaseExtractor(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
-        retries: int,
+        retries: Union[int, Retrying],
         **kwargs: Any,
     ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the call response.
@@ -121,32 +123,57 @@ class BaseExtractor(
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        temp_call = self._generate_temp_call(call_type)
+        def _extract_attempt(
+            call_type: Type[BaseCallT],
+            tool_type: Type[BaseToolT],
+            error_messages: dict[str, Any],
+            **kwargs: Any,
+        ) -> ExtractedTypeT:
+            kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        response = temp_call(**self.model_dump(exclude={"extract_schema"})).call(
-            **kwargs
-        )
-        try:
-            extracted_schema = self._extract_schema(
-                response.tool, self.extract_schema, return_tool, response=response
+            temp_call = self._generate_temp_call(call_type, error_messages)
+            obj = temp_call(
+                **self.model_dump(exclude={"extract_schema"}),
             )
-            if extracted_schema is None:
-                raise AttributeError("No tool found in the completion.")
-            return extracted_schema
-        except (AttributeError, ValueError, ValidationError) as e:
-            if retries > 0:
-                logging.info(f"Retrying due to exception: {e}")
-                # TODO: include failure in retry prompt.
-                return self._extract(call_type, tool_type, retries - 1, **kwargs)
-            raise  # re-raise if we have no retries left
+            print(obj.messages())
+            response = obj.call(**kwargs)
+            try:
+                extracted_schema = self._extract_schema(
+                    response.tool, self.extract_schema, return_tool, response=response
+                )
+                if extracted_schema is None:
+                    raise AttributeError("No tool found in the completion.")
+                return extracted_schema
+            except (AttributeError, ValueError, ValidationError):
+                raise
+
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
+        try:
+            error_messages: dict[str, Any] = {}
+            for attempt in retries:
+                with attempt:
+                    try:
+                        extraction = _extract_attempt(
+                            call_type, tool_type, error_messages, **kwargs
+                        )
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
+                        raise
+        except RetryError as e:
+            raise e
+        return extraction
 
     async def _extract_async(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
-        retries: int,
+        retries: Union[int, AsyncRetrying],
         **kwargs: Any,
     ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the asynchronous call response.
@@ -174,35 +201,57 @@ class BaseExtractor(
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        temp_call = self._generate_temp_call(call_type)
+        async def _extract_attempt_async(
+            call_type: Type[BaseCallT],
+            tool_type: Type[BaseToolT],
+            error_messages: dict[str, Any],
+            **kwargs: Any,
+        ) -> ExtractedTypeT:
+            kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        response = await temp_call(
-            **self.model_dump(exclude={"extract_schema"})
-        ).call_async(**kwargs)
-        try:
-            extracted_schema = self._extract_schema(
-                response.tool, self.extract_schema, return_tool, response=response
-            )
-            if extracted_schema is None:
-                raise AttributeError("No tool found in the completion.")
-            return extracted_schema
-        except (AttributeError, ValueError, ValidationError) as e:
-            if retries > 0:
-                logging.info(f"Retrying due to exception: {e}")
-                # TODO: include failure in retry prompt.
-                return await self._extract_async(
-                    call_type, tool_type, retries - 1, **kwargs
+            temp_call = self._generate_temp_call(call_type, error_messages)
+
+            response = await temp_call(
+                **self.model_dump(exclude={"extract_schema"})
+            ).call_async(**kwargs)
+            try:
+                extracted_schema = self._extract_schema(
+                    response.tool, self.extract_schema, return_tool, response=response
                 )
-            raise  # re-raise if we have no retries left
+                if extracted_schema is None:
+                    raise AttributeError("No tool found in the completion.")
+                return extracted_schema
+            except (AttributeError, ValueError, ValidationError):
+                raise
+
+        if isinstance(retries, int):
+            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+        try:
+            error_messages: dict[str, Any] = {}
+            async for attempt in retries:
+                with attempt:
+                    try:
+                        extraction = await _extract_attempt_async(
+                            call_type, tool_type, error_messages, **kwargs
+                        )
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
+                        raise
+        except RetryError as e:
+            raise e
+        return extraction
 
     def _stream(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
         tool_stream_type: Type[BaseToolStreamT],
-        retries: int,
+        retries: Union[int, Retrying],
         **kwargs: Any,
     ) -> Generator[ExtractedTypeT, None, None]:
         """Streams partial `extract_schema` instances from the streamed chunks.
@@ -235,42 +284,69 @@ class BaseExtractor(
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        temp_call = self._generate_temp_call(call_type)
+        def _stream_attempt(
+            call_type: Type[BaseCallT],
+            tool_type: Type[BaseToolT],
+            tool_stream_type: Type[BaseToolStreamT],
+            error_messages: dict[str, Any],
+            **kwargs: Any,
+        ) -> Generator[ExtractedTypeT, None, None]:
+            kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream(
-            **kwargs
-        )
-        tool_stream = tool_stream_type.from_stream(stream, allow_partial=True)
+            temp_call = self._generate_temp_call(call_type, error_messages)
+
+            stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream(
+                **kwargs
+            )
+            tool_stream = tool_stream_type.from_stream(stream, allow_partial=True)
+            try:
+                yielded = False
+                for partial_tool in tool_stream:
+                    extracted_schema = self._extract_schema(
+                        partial_tool, self.extract_schema, return_tool, response=None
+                    )
+                    if extracted_schema is None:
+                        break
+                    yielded = True
+                    yield extracted_schema
+
+                if not yielded:
+                    raise AttributeError("No tool found in the completion.")
+            except (AttributeError, ValueError, ValidationError):
+                raise
+
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
         try:
-            yielded = False
-            for partial_tool in tool_stream:
-                extracted_schema = self._extract_schema(
-                    partial_tool, self.extract_schema, return_tool, response=None
-                )
-                if extracted_schema is None:
-                    break
-                yielded = True
-                yield extracted_schema
-
-            if not yielded:
-                raise AttributeError("No tool found in the completion.")
-        except (AttributeError, ValueError, ValidationError) as e:
-            if retries > 0:
-                logging.info(f"Retrying due to exception: {e}")
-                # TODO: include failure in retry prompt.
-                yield from self._stream(
-                    call_type, tool_type, tool_stream_type, retries - 1, **kwargs
-                )
-            raise  # re-raise if we have no retries left
+            error_messages: dict[str, Any] = {}
+            for attempt in retries:
+                with attempt:
+                    try:
+                        for partial_tool in _stream_attempt(
+                            call_type,
+                            tool_type,
+                            tool_stream_type,
+                            error_messages,
+                            **kwargs,
+                        ):
+                            yield partial_tool
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
+                        raise
+        except RetryError as e:
+            raise e
 
     async def _stream_async(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
         tool_stream_type: Type[BaseToolStreamT],
-        retries: int,
+        retries: Union[int, AsyncRetrying],
         **kwargs: Any,
     ) -> AsyncGenerator[ExtractedTypeT, None]:
         """Asynchronously streams partial `extract_schema`s from streamed chunks.
@@ -303,42 +379,82 @@ class BaseExtractor(
             AttributeError: if there is no tool in the call creation.
             ValidationError: if the schema cannot be instantiated from the completion.
         """
-        kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        temp_call = self._generate_temp_call(call_type)
+        async def _stream_attempt_async(
+            call_type: Type[BaseCallT],
+            tool_type: Type[BaseToolT],
+            tool_stream_type: Type[BaseToolStreamT],
+            error_messages: dict[str, Any],
+            **kwargs: Any,
+        ) -> AsyncGenerator[ExtractedTypeT, None]:
+            kwargs, return_tool = self._setup(tool_type, kwargs)
 
-        stream = temp_call(**self.model_dump(exclude={"extract_schema"})).stream_async(
-            **kwargs
-        )
-        tool_stream = tool_stream_type.from_async_stream(stream, allow_partial=True)
+            temp_call = self._generate_temp_call(call_type, error_messages)
+
+            stream = temp_call(
+                **self.model_dump(exclude={"extract_schema"})
+            ).stream_async(**kwargs)
+            tool_stream = tool_stream_type.from_async_stream(stream, allow_partial=True)
+            try:
+                yielded = False
+                async for partial_tool in tool_stream:
+                    extracted_schema = self._extract_schema(
+                        partial_tool, self.extract_schema, return_tool, response=None
+                    )
+                    if extracted_schema is None:
+                        break
+                    yielded = True
+                    yield extracted_schema
+
+                if not yielded:
+                    raise AttributeError("No tool found in the completion.")
+            except (AttributeError, ValueError, ValidationError):
+                raise
+
+        if isinstance(retries, int):
+            retries = AsyncRetrying(stop=stop_after_attempt(retries))
         try:
-            yielded = False
-            async for partial_tool in tool_stream:
-                extracted_schema = self._extract_schema(
-                    partial_tool, self.extract_schema, return_tool, response=None
-                )
-                if extracted_schema is None:
-                    break
-                yielded = True
-                yield extracted_schema
+            error_messages: dict[str, Any] = {}
+            async for attempt in retries:
+                with attempt:
+                    try:
+                        async for partial_tool in _stream_attempt_async(
+                            call_type,
+                            tool_type,
+                            tool_stream_type,
+                            error_messages,
+                            **kwargs,
+                        ):
+                            yield partial_tool
+                    except (AttributeError, ValueError, ValidationError) as e:
+                        error_messages[str(e)] = None
+                        if (
+                            self.call_params.logfire or self.call_params.logfire_async
+                        ):  # pragma: no cover
+                            logfire.error(f"Retrying due to exception: {e}")
+                        raise
+        except RetryError as e:
+            raise e
 
-            if not yielded:
-                raise AttributeError("No tool found in the completion.")
-        except (AttributeError, ValueError, ValidationError) as e:
-            if retries > 0:
-                logging.info(f"Retrying due to exception: {e}")
-                # TODO: include failure in retry prompt.
-                async for partial_tool in self._stream_async(
-                    call_type, tool_type, tool_stream_type, retries - 1, **kwargs
-                ):
-                    yield partial_tool
-            raise  # re-raise if we have no retries left
-
-    def _generate_temp_call(self, call_type: Type[BaseCallT]) -> Type[BaseCallT]:
+    def _generate_temp_call(
+        self, call_type: Type[BaseCallT], error_messages: dict[str, Any]
+    ) -> Type[BaseCallT]:
         """Returns a `TempCall` generated using the extractors definition."""
+        _prompt_template = self.prompt_template
+        if error_messages:
+            formatted_error_messages = [
+                "- " + element for element in error_messages.keys()
+            ]
+            error_messages_list = "\n".join(formatted_error_messages)
+            _prompt_template = (
+                f"{_prompt_template}\n"
+                "Errors found:\n\n"
+                f"{error_messages_list}\n\n"
+                "Please fix the errors and try again."
+            )
 
         class TempCall(call_type):  # type: ignore
-            prompt_template = self.prompt_template
+            prompt_template = _prompt_template
 
             base_url = self.base_url
             api_key = self.api_key

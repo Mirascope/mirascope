@@ -23,26 +23,39 @@ from pydantic import BaseModel
 
 
 class TaskDetails(BaseModel):
-	due_date: str
-	priority: Literal["low", "normal", "high"]
-	description: str
+    due_date: str
+    priority: Literal["low", "normal", "high"]
+    description: str
 
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
-	extract_schema: Type[TaskDetails] = TaskDetails
-	prompt_template = """
-	Extract the task details from the following task:
-	{task}
-	"""
+    extract_schema: Type[TaskDetails] = TaskDetails
+    prompt_template = """
+    Extract the task details from the following task:
+    {task}
+    """
 
-	task: str
+    task: str
 
 
 task = "Submit quarterly report by next Friday. Task is high priority."
-task_details = TaskExtractor(task=task).extract(TaskDetails)
+task_details = TaskExtractor(task=task).extract()
 assert isinstance(task_details, TaskDetails)
 print(TaskDetails)
 #> due_date='next Friday' priority='high' description='Submit quarterly report'
 ```
 
-As you can see, Mirascope makes this extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](validation.md) for more details).
+### Retry
+
+Extraction can fail due to a wide variety of reasons. When this happens, the simpliest approach is to introduce retries. Mirascope uses [Tenacity](https://tenacity.readthedocs.io/en/latest/) so that you can customize the behavior of retries or pass in an integer. With the same example above add:
+
+```python
+from tenacity import Retrying, stop_after_attempt
+
+retries = Retrying(
+    stop=stop_after_attempt(3),
+)
+task_details = TaskExtractor(task=task).extract(retries=retries)
+```
+
+As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](validation.md) for more details).

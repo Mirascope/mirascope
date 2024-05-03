@@ -1,6 +1,8 @@
 """A module for extracting structured information using Groq's Cloud API."""
 import logging
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar, Union
+
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import GroqCall
@@ -45,7 +47,7 @@ class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
 
     call_params: ClassVar[GroqCallParams] = GroqCallParams()
 
-    def extract(self, retries: int = 0, **kwargs: Any) -> T:
+    def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Groq call response.
 
         The `extract_schema` is converted into an `GroqTool`, complete with a
@@ -68,7 +70,9 @@ class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
         """
         return self._extract(GroqCall, GroqTool, retries, **kwargs)
 
-    async def extract_async(self, retries: int = 0, **kwargs: Any) -> T:
+    async def extract_async(
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
+    ) -> T:
         """Asynchronously extracts `extract_schema` from the Groq call response.
 
         The `extract_schema` is converted into an `GroqTool`, complete with a
