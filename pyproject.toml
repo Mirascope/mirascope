@@ -29,9 +29,9 @@ groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
 pinecone-client = { version = "^3.2.2", optional = true }
 logfire = { version = ">=0.26.0,<1.0.0", optional = true }
-astrapy = "^1.1.0"
 
 [tool.poetry.extras]
+astrapy = ["astrapy"]
 cli = ["mirascope-cli"]
 anthropic = ["anthropic"]
 chromadb = ["chromadb"]
@@ -44,6 +44,7 @@ wandb = ["wandb"]
 weave = ["weave"]
 logfire = ["logfire"]
 all = [
+    "astrapy"
     "mirascope-cli",
     "anthropic",
     "chromadb",
