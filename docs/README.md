@@ -178,7 +178,7 @@ if tool:
 
 ### Chaining
 
-[Chaining](./concepts/generating_content.md#chaining) multiple calls together is as simple as writing a property:
+[Chaining](./concepts/generating_content.md#chaining-calls) multiple calls together is as simple as writing a property:
 
 ```python
 import os

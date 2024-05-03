@@ -69,7 +69,7 @@ class GetCurrentWeather(OpenAITool):
     unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
 ```
 
-Using the [tool_fn](../api/base/tools.md#mirascope.base.tools.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
+Using the [tool_fn](../api/base/utils.md#mirascope.base.utils.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly.
 
 ## Tools with OpenAI API only
 

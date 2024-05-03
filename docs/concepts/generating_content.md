@@ -67,7 +67,7 @@ print(asyncio.run(recommend_recipes()))
 
 ### CallResponse
 
-The `call` method returns an [`OpenAICallResponse`](../api/openai/types.md#mirascope.openai.types.OpenAIChatCompletion) class instance, which is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai` that extends [`BaseCallResponse`](../api/base/types.md#mirascope.base.types.BaseCallResponse). In fact, you can access everything from the original response as desired. The primary purpose of the class is to provide convenience.
+The `call` method returns an [`OpenAICallResponse`](../api/openai/types.md#mirascope.openai.types.OpenAICallResponse) class instance, which is a simple wrapper around the [`ChatCompletion`](https://platform.openai.com/docs/api-reference/chat/object) class in `openai` that extends [`BaseCallResponse`](../api/base/types.md#mirascope.base.types.BaseCallResponse). In fact, you can access everything from the original response as desired. The primary purpose of the class is to provide convenience.
 
 ```python
 from mirascope.openai.types import OpenAICallResponse

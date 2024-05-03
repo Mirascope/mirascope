@@ -343,7 +343,7 @@ For the majority of cases, switching providers when using Mirascope requires jus
 
 !!! note
 
-    If you are accessing features that are specific to a particular provider, switching can require a little more work. For example, Gemini has a different structure for messages from other providers, so if you're writing your own `messages` function, you'll need to make sure you update to conform to the new provider's messages structure. See the [example section](./supported_llm_providers.md#more-detailed-walkthrough-of-swapping-providers-openai---gemini) below for more details.
+    If you are accessing features that are specific to a particular provider, switching can require a little more work. For example, Gemini has a different structure for messages from other providers, so if you're writing your own `messages` function, you'll need to make sure you update to conform to the new provider's messages structure. See the [example section](./supported_llm_providers.md#more-detailed-walkthrough-of-swapping-providers-openai-gemini) below for more details.
 
 ## Settings `base_url` and `api_key`
 
