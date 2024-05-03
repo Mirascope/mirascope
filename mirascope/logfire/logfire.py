@@ -7,7 +7,12 @@ from typing import Any, Callable, Optional, overload
 import logfire
 from pydantic import BaseModel
 
-from mirascope.base.types import BaseCallResponse, BaseCallResponseChunk, ChunkT
+from mirascope.base.types import (
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseTool,
+    ChunkT,
+)
 
 from ..types import (
     BaseCallT,
@@ -84,11 +89,12 @@ def mirascope_logfire(
     *,
     response_type: Optional[type[BaseCallResponse]] = None,
     response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
+    tool_types: Optional[list[type[BaseTool]]] = None,
 ) -> Callable:
     """Wraps a function with a Logfire span."""
     if response_chunk_type is not None:
         return mirascope_logfire_stream(fn, suffix, response_chunk_type)
-    return mirascope_logfire_create(fn, suffix, response_type)
+    return mirascope_logfire_create(fn, suffix, response_type, tool_types)
 
 
 def mirascope_logfire_async(
@@ -97,11 +103,12 @@ def mirascope_logfire_async(
     *,
     response_type: Optional[type[BaseCallResponse]] = None,
     response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
+    tool_types: Optional[list[type[BaseTool]]] = None,
 ):
     """Wraps an asynchronous function with a Logfire span."""
     if response_chunk_type is not None:
         return mirascope_logfire_stream_async(fn, suffix, response_chunk_type)
-    return mirascope_logfire_create_async(fn, suffix, response_type)
+    return mirascope_logfire_create_async(fn, suffix, response_type, tool_types)
 
 
 def _extract_chunk_content(
@@ -137,7 +144,10 @@ def _mirascope_llm_span(
 
 
 def mirascope_logfire_create(
-    fn: Callable, suffix: str, response_type: Optional[type[BaseCallResponse]]
+    fn: Callable,
+    suffix: str,
+    response_type: Optional[type[BaseCallResponse]],
+    tool_types: Optional[list[type[BaseTool]]] = None,
 ) -> Callable:
     """Wraps a function with a Logfire span."""
 
@@ -147,11 +157,25 @@ def mirascope_logfire_create(
             result = fn(*args, **kwargs)
             logfire_span.set_attribute("original_response", result)
             if response_type is not None:
-                response = response_type(response=result, start_time=0, end_time=0)
-                logfire_span.set_attribute(
-                    "response_data",
-                    {"message": {"role": "assistant", "content": response.content}},
+                response = response_type(
+                    response=result, start_time=0, end_time=0, tool_types=tool_types
                 )
+                message = {"role": "assistant", "content": response.content}
+                if tools := response.tools:
+                    tool_calls = [
+                        {
+                            "function": {
+                                "arguments": tool.model_dump_json(
+                                    exclude={"tool_call"}
+                                ),
+                                "name": tool.__class__.__name__,
+                            }
+                        }
+                        for tool in tools
+                    ]
+                    message["tool_calls"] = tool_calls
+                    message.pop("content")
+                logfire_span.set_attribute("response_data", {"message": message})
             return result
 
     return wrapper
@@ -192,7 +216,10 @@ def mirascope_logfire_stream(
 
 
 def mirascope_logfire_create_async(
-    fn: Callable, suffix: str, response_type: Optional[type[BaseCallResponse]]
+    fn: Callable,
+    suffix: str,
+    response_type: Optional[type[BaseCallResponse]],
+    tool_types: Optional[list[type[BaseTool]]] = None,
 ) -> Callable:
     """Wraps a asynchronous function that yields a generator with a Logfire span."""
 
@@ -202,11 +229,25 @@ def mirascope_logfire_create_async(
             result = await fn(*args, **kwargs)
             logfire_span.set_attribute("original_response", result)
             if response_type is not None:
-                response = response_type(response=result, start_time=0, end_time=0)
-                logfire_span.set_attribute(
-                    "response_data",
-                    {"message": {"role": "assistant", "content": response.content}},
+                response = response_type(
+                    response=result, start_time=0, end_time=0, tool_types=tool_types
                 )
+                message = {"role": "assistant", "content": response.content}
+                if tools := response.tools:
+                    tool_calls = [
+                        {
+                            "function": {
+                                "arguments": tool.model_dump_json(
+                                    exclude={"tool_call"}
+                                ),
+                                "name": tool.__class__.__name__,
+                            }
+                        }
+                        for tool in tools
+                    ]
+                    message["tool_calls"] = tool_calls
+                    message.pop("content")
+                logfire_span.set_attribute("response_data", {"message": message})
             return result
 
     return wrapper

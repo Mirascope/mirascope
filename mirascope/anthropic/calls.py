@@ -69,7 +69,10 @@ class AnthropicCall(
             create = self.call_params.weave(create)  # pragma: no cover
         if self.call_params.logfire:
             create = self.call_params.logfire(
-                create, "anthropic", response_type=AnthropicCallResponse
+                create,
+                "anthropic",
+                response_type=AnthropicCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
@@ -107,7 +110,10 @@ class AnthropicCall(
             create = self.call_params.weave(create)  # pragma: no cover
         if self.call_params.logfire_async:
             create = self.call_params.logfire_async(
-                create, "anthropic", response_type=AnthropicCallResponse
+                create,
+                "anthropic",
+                response_type=AnthropicCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(

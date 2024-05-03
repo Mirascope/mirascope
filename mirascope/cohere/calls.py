@@ -62,7 +62,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat = self.call_params.weave(chat)  # pragma: no cover
         if self.call_params.logfire:
             chat = self.call_params.logfire(
-                chat, "cohere", response_type=CohereCallResponse
+                chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = chat(message=message, **kwargs)
@@ -98,7 +98,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat = self.call_params.weave(chat)  # pragma: no cover
         if self.call_params.logfire_async:
             chat = self.call_params.logfire_async(
-                chat, "cohere", response_type=CohereCallResponse
+                chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await chat(message=message, **kwargs)

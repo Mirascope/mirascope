@@ -136,7 +136,6 @@ class BaseExtractor(
             obj = temp_call(
                 **self.model_dump(exclude={"extract_schema"}),
             )
-            print(obj.messages())
             response = obj.call(**kwargs)
             try:
                 extracted_schema = self._extract_schema(
