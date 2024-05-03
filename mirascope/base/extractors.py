@@ -1,8 +1,10 @@
 """A base abstract interface for extracting structured information using LLMs."""
 import logging
 from abc import ABC, abstractmethod
+from contextlib import suppress
 from enum import Enum
 from inspect import getmembers, isclass
+from logging import basicConfig
 from typing import (
     Annotated,
     Any,
@@ -29,6 +31,10 @@ from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import BaseCallParams
 
+with suppress(ImportError):
+    from logfire.integrations.logging import LogfireLoggingHandler
+
+    basicConfig(handlers=[LogfireLoggingHandler()])
 logger = logging.getLogger("mirascope")
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
@@ -157,7 +163,7 @@ class BaseExtractor(
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
-                        logging.info(f"Retrying due to exception: {e}")
+                        logger.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -231,7 +237,7 @@ class BaseExtractor(
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
-                        logging.info(f"Retrying due to exception: {e}")
+                        logger.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -324,7 +330,7 @@ class BaseExtractor(
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
-                        logging.info(f"Retrying due to exception: {e}")
+                        logger.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
@@ -416,7 +422,7 @@ class BaseExtractor(
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_message = e
-                        logging.info(f"Retrying due to exception: {e}")
+                        logger.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
             raise e
