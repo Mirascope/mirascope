@@ -44,7 +44,7 @@ wandb = ["wandb"]
 weave = ["weave"]
 logfire = ["logfire"]
 all = [
-    "astrapy"
+    "astrapy",
     "mirascope-cli",
     "anthropic",
     "chromadb",

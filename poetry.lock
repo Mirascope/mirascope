@@ -240,7 +240,7 @@ tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 name = "astrapy"
 version = "1.1.0"
 description = "AstraPy is a Pythonic SDK for DataStax Astra and its Data API"
-optional = false
+optional = true
 python-versions = "<4.0.0,>=3.8.0"
 files = [
     {file = "astrapy-1.1.0-py3-none-any.whl", hash = "sha256:577151c3a9f8ed9c389402fad0b43ec17af9386974731622e2462908ca0e81a6"},
@@ -354,7 +354,7 @@ typecheck = ["mypy"]
 name = "bson"
 version = "0.5.10"
 description = "BSON codec for Python"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "bson-0.5.10.tar.gz", hash = "sha256:d6511b2ab051139a9123c184de1a04227262173ad593429d21e443d6462d6590"},
@@ -404,7 +404,7 @@ files = [
 name = "cassandra-driver"
 version = "3.29.1"
 description = "DataStax Driver for Apache Cassandra"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "cassandra-driver-3.29.1.tar.gz", hash = "sha256:38e9c2a2f2a9664bb03f1f852d5fccaeff2163942b5db35dffcf8bf32a51cfe5"},
@@ -451,7 +451,7 @@ graph = ["gremlinpython (==3.4.6)"]
 name = "cassio"
 version = "0.1.7"
 description = "A framework-agnostic Python library to seamlessly integrate Apache Cassandra(R) with ML/LLM/genAI workloads."
-optional = false
+optional = true
 python-versions = "<4.0,>=3.8"
 files = [
     {file = "cassio-0.1.7-py3-none-any.whl", hash = "sha256:08d1028a20d09bd207de0e17eaf7ae821b3c8e4788555e2d337aa440e0846d87"},
@@ -802,7 +802,7 @@ dev = ["PyTest", "PyTest-Cov", "bump2version (<1)", "sphinx (<2)", "tox"]
 name = "deprecation"
 version = "2.1.0"
 description = "A library to handle automated deprecations"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a"},
@@ -1093,7 +1093,7 @@ tqdm = ["tqdm"]
 name = "geomet"
 version = "0.2.1.post1"
 description = "GeoJSON <-> WKT/WKB conversion utilities"
-optional = false
+optional = true
 python-versions = ">2.6, !=3.3.*, <4"
 files = [
     {file = "geomet-0.2.1.post1-py3-none-any.whl", hash = "sha256:a41a1e336b381416d6cbed7f1745c848e91defaa4d4c1bdc1312732e46ffad2b"},
@@ -1496,7 +1496,7 @@ files = [
 name = "h2"
 version = "4.1.0"
 description = "HTTP/2 State-Machine based protocol implementation"
-optional = false
+optional = true
 python-versions = ">=3.6.1"
 files = [
     {file = "h2-4.1.0-py3-none-any.whl", hash = "sha256:03a46bcf682256c95b5fd9e9a99c1323584c3eec6440d379b9903d709476bc6d"},
@@ -1511,7 +1511,7 @@ hyperframe = ">=6.0,<7"
 name = "hpack"
 version = "4.0.0"
 description = "Pure-Python HPACK header compression"
-optional = false
+optional = true
 python-versions = ">=3.6.1"
 files = [
     {file = "hpack-4.0.0-py3-none-any.whl", hash = "sha256:84a076fad3dc9a9f8063ccb8041ef100867b1878b25ef0ee63847a5d53818a6c"},
@@ -1675,7 +1675,7 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 name = "hyperframe"
 version = "6.0.1"
 description = "HTTP/2 framing layer for Python"
-optional = false
+optional = true
 python-versions = ">=3.6.1"
 files = [
     {file = "hyperframe-6.0.1-py3-none-any.whl", hash = "sha256:0ec6bafd80d8ad2195c4f03aacba3a8265e57bc4cff261e802bf39970ed02a15"},
@@ -4320,8 +4320,19 @@ huggingface-hub = ">=0.16.4,<1.0"
 
 [package.extras]
 dev = ["tokenizers[testing]"]
-docs = ["setuptools-rust", "sphinx", "sphinx-rtd-theme"]
-testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests", "ruff"]
+docs = ["setuptools_rust", "sphinx", "sphinx_rtd_theme"]
+testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests"]
+
+[[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+optional = true
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
 
 [[package]]
 name = "tomli"
@@ -4439,7 +4450,7 @@ zstd = ["zstandard (>=0.18.0)"]
 name = "uuid6"
 version = "2024.1.12"
 description = "New time-based UUID formats which are suited for use as a database key"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "uuid6-2024.1.12-py3-none-any.whl", hash = "sha256:8150093c8d05a331bc0535bc5ef6cf57ac6eceb2404fd319bc10caee2e02c065"},
@@ -5052,6 +5063,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [extras]
 all = ["anthropic", "chromadb", "chromadb", "cohere", "google-generativeai", "groq", "logfire", "mirascope-cli", "mistralai", "wandb", "weave"]
 anthropic = ["anthropic"]
+astrapy = []
 chromadb = ["chromadb"]
 cli = ["mirascope-cli"]
 cohere = ["cohere"]
@@ -5066,4 +5078,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "b18f6402eb77e9133241afedde76fbe76f3d016468bc7021c2f9c61266218b60"
+content-hash = "dc3c2958e0566b8670e2b185af4bc3e1f8e24979292dbb8800a7b05a115fce95"
