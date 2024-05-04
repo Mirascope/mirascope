@@ -133,10 +133,9 @@ class BaseExtractor(
             kwargs, return_tool = self._setup(tool_type, kwargs)
 
             temp_call = self._generate_temp_call(call_type, error_messages)
-            obj = temp_call(
+            response = temp_call(
                 **self.model_dump(exclude={"extract_schema"}),
-            )
-            response = obj.call(**kwargs)
+            ).call(**kwargs)
             try:
                 extracted_schema = self._extract_schema(
                     response.tool, self.extract_schema, return_tool, response=response
