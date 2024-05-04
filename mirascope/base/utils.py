@@ -6,6 +6,7 @@ from typing import (
     Callable,
     Type,
     TypeVar,
+    Union,
     cast,
     get_args,
     get_origin,
@@ -15,6 +16,7 @@ from typing import (
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
+from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool, BaseType
 
@@ -164,3 +166,23 @@ def convert_base_type_to_tool(
         __doc__=DEFAULT_TOOL_DOCSTRING,
         value=(schema, ...),
     )
+
+
+def retry(retries: Union[int, Retrying]):
+    if isinstance(retries, int):
+        retries = Retrying(stop=stop_after_attempt(retries))
+    try:
+        for attempt in retries:
+            yield attempt
+    except RetryError:
+        raise
+
+
+async def retry_async(retries: Union[int, AsyncRetrying]):
+    if isinstance(retries, int):
+        retries = AsyncRetrying(stop=stop_after_attempt(retries))
+    try:
+        async for attempt in retries:
+            yield attempt
+    except RetryError:
+        raise
