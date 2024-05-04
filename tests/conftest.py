@@ -4,9 +4,12 @@ from typing import Type
 
 import pytest
 from anthropic.types import (
+    ContentBlock,
     ContentBlockDeltaEvent,
     TextDelta,
+    Usage,
 )
+from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import (
     ApiMeta,
@@ -47,6 +50,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel, Field
 
+from mirascope.anthropic import AnthropicTool
 from mirascope.base import tool_fn
 from mirascope.openai import OpenAITool
 
@@ -351,3 +355,37 @@ def fixture_generate_content_response():
             ]
         )
     )
+
+
+@pytest.fixture()
+def fixture_anthropic_message_with_tools() -> ToolsBetaMessage:
+    """Returns an Anthropic message with tools XML in the response"""
+    return ToolsBetaMessage(
+        id="0",
+        content=[
+            ContentBlock(type="text", text="test"),
+            ToolUseBlock(
+                id="test",
+                name="AnthropicBookTool",
+                input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+                type="tool_use",
+            ),
+        ],
+        model="test",
+        role="assistant",
+        type="message",
+        usage=Usage(input_tokens=0, output_tokens=0),
+        stop_reason="tool_use",
+    )
+
+
+class AnthropicBookTool(AnthropicTool):
+    title: str
+    author: str
+
+
+@pytest.fixture()
+def fixture_anthropic_book_tool() -> Type[AnthropicBookTool]:
+    """Returns the `AnthropicBookTool` type definition."""
+
+    return AnthropicBookTool

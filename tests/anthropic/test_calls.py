@@ -71,7 +71,7 @@ def test_anthropic_call_call_json_tools_setup(
             "required": ["title", "author"],
             "type": "object",
         },
-        "name": "BookTool",
+        "name": "AnthropicBookTool",
         "description": "Correctly formatted and typed parameters extracted from the completion. Must include required parameters and may exclude optional parameters unless present in the text.",
     }
     mock_create.assert_called_once_with(

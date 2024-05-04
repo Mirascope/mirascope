@@ -65,7 +65,10 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             chat = self.call_params.weave(chat)  # pragma: no cover
         if self.call_params.logfire:
             chat = self.call_params.logfire(
-                chat, "mistral", response_type=MistralCallResponse
+                chat,
+                "mistral",
+                response_type=MistralCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=self.messages(), **kwargs)
@@ -101,7 +104,10 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             chat = self.call_params.weave(chat)  # pragma: no cover
         elif self.call_params.logfire_async:
             chat = self.call_params.logfire_async(
-                chat, "mistral", response_type=MistralCallResponse
+                chat,
+                "mistral",
+                response_type=MistralCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
 
         start_time = datetime.datetime.now().timestamp() * 1000
