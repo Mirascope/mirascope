@@ -11,7 +11,6 @@ from anthropic.types import (
     TextDelta,
     Usage,
 )
-from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.tools import AnthropicTool
@@ -62,46 +61,12 @@ def fixture_anthropic_message() -> Message:
 
 
 @pytest.fixture()
-def fixture_anthropic_message_with_tools() -> ToolsBetaMessage:
-    """Returns an Anthropic message with tools XML in the response"""
-    return ToolsBetaMessage(
-        id="0",
-        content=[
-            ContentBlock(type="text", text="test"),
-            ToolUseBlock(
-                id="test",
-                name="BookTool",
-                input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
-                type="tool_use",
-            ),
-        ],
-        model="test",
-        role="assistant",
-        type="message",
-        usage=Usage(input_tokens=0, output_tokens=0),
-        stop_reason="tool_use",
-    )
-
-
-@pytest.fixture()
 def fixture_anthropic_message_with_tools_bad_stop_reason(
     fixture_anthropic_message_with_tools: Message,
 ) -> Message:
     """Returns an Anthropic message with tools XML in the response"""
     fixture_anthropic_message_with_tools.stop_reason = "max_tokens"
     return fixture_anthropic_message_with_tools
-
-
-class BookTool(AnthropicTool):
-    title: str
-    author: str
-
-
-@pytest.fixture()
-def fixture_anthropic_book_tool() -> Type[BookTool]:
-    """Returns the `BookTool` type definition."""
-
-    return BookTool
 
 
 @pytest.fixture()
@@ -123,7 +88,7 @@ def fixture_anthropic_call_response_chunks_with_tools(
         ),
         ContentBlockDeltaEvent(
             delta=TextDelta(
-                text='"tool_name": "BookTool", "title": "The Name of the Wind"',
+                text='"tool_name": "AnthropicBookTool", "title": "The Name of the Wind"',
                 type="text_delta",
             ),
             index=0,
@@ -136,7 +101,7 @@ def fixture_anthropic_call_response_chunks_with_tools(
         ),
         ContentBlockDeltaEvent(
             delta=TextDelta(
-                text='{"tool_name": "BookTool", "title": "The Name of the Wind"',
+                text='{"tool_name": "AnthropicBookTool", "title": "The Name of the Wind"',
                 type="text_delta",
             ),
             index=2,

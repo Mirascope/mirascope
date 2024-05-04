@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import logfire
 import pytest
+from anthropic.types import Message
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
@@ -14,7 +15,8 @@ from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
-from mirascope.anthropic.types import AnthropicCallResponseChunk
+from mirascope.anthropic.tools import AnthropicTool
+from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponseChunk
 from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
 from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
@@ -54,6 +56,39 @@ def test_call_with_logfire(
     my_call = MyNestedCall()
     my_call.call()
     my_call.stream()
+    assert my_call.call_params.logfire is not None
+
+
+@patch(
+    "anthropic.resources.beta.tools.messages.AsyncMessages.create",
+    new_callable=AsyncMock,
+)
+@patch(
+    "anthropic.resources.beta.tools.messages.Messages.create",
+    new_callable=MagicMock,
+)
+@pytest.mark.asyncio
+async def test_tool_call_with_logfire(
+    mock_create: MagicMock,
+    mock_create_async: AsyncMock,
+    fixture_anthropic_book_tool: type[AnthropicTool],
+    fixture_anthropic_message_with_tools: Message,
+) -> None:
+    mock_create.return_value = fixture_anthropic_message_with_tools
+    mock_create.__name__ = "mock_create"
+    mock_create_async.return_value = fixture_anthropic_message_with_tools
+    mock_create_async.__name__ = "mock_create_async"
+
+    @with_logfire
+    class MyAnthropicCall(AnthropicCall):
+        prompt_template = "test"
+        api_key = "test"
+
+        call_params = AnthropicCallParams(tools=[fixture_anthropic_book_tool])
+
+    my_call = MyAnthropicCall()
+    my_call.call()
+    await my_call.call_async()
     assert my_call.call_params.logfire is not None
 
 
