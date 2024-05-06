@@ -23,10 +23,9 @@ from openai.types.create_embedding_response import CreateEmbeddingResponse, Usag
 from openai.types.embedding import Embedding
 from pydantic import BaseModel, Field
 
-from mirascope.openai.calls import OpenAICall
 from mirascope.openai.embedders import OpenAIEmbedder
 from mirascope.openai.tools import OpenAITool
-from mirascope.openai.types import OpenAICallParams, OpenAIEmbeddingParams
+from mirascope.openai.types import OpenAIEmbeddingParams
 
 
 @pytest.fixture()

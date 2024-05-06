@@ -1,6 +1,5 @@
 """Tests for the base utility functions."""
-import inspect
-from typing import Annotated, Callable, Generator, Union
+from typing import Annotated, Callable, Union
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
