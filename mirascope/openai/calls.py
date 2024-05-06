@@ -1,11 +1,9 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
 import json
-from contextlib import contextmanager
 from typing import (
     Any,
     AsyncGenerator,
-    Callable,
     ClassVar,
     Generator,
     Optional,
@@ -25,7 +23,7 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall
-from ..base.utils import retry, retry_async
+from ..base.utils import retry
 from ..enums import MessageRole
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
@@ -82,12 +80,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 
+    @retry
     def call(
         self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> OpenAICallResponse:
         """Makes a call to the model using this `OpenAICall` instance.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.Retrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -98,36 +99,37 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        for attempt in retry(retries):
-            with attempt:
-                kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-                client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-                if self.call_params.wrapper is not None:
-                    client = self.call_params.wrapper(client)
-                if self.call_params.logfire:
-                    self.call_params.logfire(client)  # pragma: no cover
-                messages = self._update_messages_if_json(self.messages(), tool_types)
-                start_time = datetime.datetime.now().timestamp() * 1000
-                completion = client.chat.completions.create(
-                    messages=messages,
-                    stream=False,
-                    **kwargs,
-                )
-                return OpenAICallResponse(
-                    response=completion,
-                    tool_types=tool_types,
-                    start_time=start_time,
-                    end_time=datetime.datetime.now().timestamp() * 1000,
-                    cost=openai_api_calculate_cost(completion.usage, completion.model),
-                    response_format=self.call_params.response_format,
-                )
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
+        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
+        if self.call_params.logfire:
+            self.call_params.logfire(client)  # pragma: no cover
+        messages = self._update_messages_if_json(self.messages(), tool_types)
+        start_time = datetime.datetime.now().timestamp() * 1000
+        completion = client.chat.completions.create(
+            messages=messages,
+            stream=False,
+            **kwargs,
+        )
+        return OpenAICallResponse(
+            response=completion,
+            tool_types=tool_types,
+            start_time=start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=openai_api_calculate_cost(completion.usage, completion.model),
+            response_format=self.call_params.response_format,
+        )
 
+    @retry
     async def call_async(
         self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> OpenAICallResponse:
         """Makes an asynchronous call to the model using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.AsyncRetrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -138,36 +140,37 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        async for attempt in retry_async(retries):
-            with attempt:
-                kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-                client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-                if self.call_params.wrapper_async is not None:
-                    client = self.call_params.wrapper_async(client)
-                if self.call_params.logfire:
-                    self.call_params.logfire(client)  # pragma: no cover
-                messages = self._update_messages_if_json(self.messages(), tool_types)
-                start_time = datetime.datetime.now().timestamp() * 1000
-                completion = await client.chat.completions.create(
-                    messages=messages,
-                    stream=False,
-                    **kwargs,
-                )
-                return OpenAICallResponse(
-                    response=completion,
-                    tool_types=tool_types,
-                    start_time=start_time,
-                    end_time=datetime.datetime.now().timestamp() * 1000,
-                    cost=openai_api_calculate_cost(completion.usage, completion.model),
-                    response_format=self.call_params.response_format,
-                )
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
+        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
+        if self.call_params.logfire:
+            self.call_params.logfire(client)  # pragma: no cover
+        messages = self._update_messages_if_json(self.messages(), tool_types)
+        start_time = datetime.datetime.now().timestamp() * 1000
+        completion = await client.chat.completions.create(
+            messages=messages,
+            stream=False,
+            **kwargs,
+        )
+        return OpenAICallResponse(
+            response=completion,
+            tool_types=tool_types,
+            start_time=start_time,
+            end_time=datetime.datetime.now().timestamp() * 1000,
+            cost=openai_api_calculate_cost(completion.usage, completion.model),
+            response_format=self.call_params.response_format,
+        )
 
+    @retry
     def stream(
         self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> Generator[OpenAICallResponseChunk, None, None]:
         """Streams the response for a call using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.Retrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -178,33 +181,34 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        for attempt in retry(retries):
-            with attempt:
-                kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-                client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-                if self.call_params.wrapper is not None:
-                    client = self.call_params.wrapper(client)
-                if self.call_params.logfire:
-                    self.call_params.logfire(client)  # pragma: no cover
-                messages = self._update_messages_if_json(self.messages(), tool_types)
-                stream = client.chat.completions.create(
-                    messages=messages,
-                    stream=True,
-                    **kwargs,
-                )
-                for chunk in stream:
-                    yield OpenAICallResponseChunk(
-                        chunk=chunk,
-                        tool_types=tool_types,
-                        response_format=self.call_params.response_format,
-                    )
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
+        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper is not None:
+            client = self.call_params.wrapper(client)
+        if self.call_params.logfire:
+            self.call_params.logfire(client)  # pragma: no cover
+        messages = self._update_messages_if_json(self.messages(), tool_types)
+        stream = client.chat.completions.create(
+            messages=messages,
+            stream=True,
+            **kwargs,
+        )
+        for chunk in stream:
+            yield OpenAICallResponseChunk(
+                chunk=chunk,
+                tool_types=tool_types,
+                response_format=self.call_params.response_format,
+            )
 
+    @retry
     async def stream_async(
         self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[OpenAICallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.AsyncRetrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -215,26 +219,24 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             OpenAIError: raises any OpenAI errors, see:
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
-        async for attempt in retry_async(retries):
-            with attempt:
-                kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-                client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-                if self.call_params.wrapper_async is not None:
-                    client = self.call_params.wrapper_async(client)
-                if self.call_params.logfire:
-                    self.call_params.logfire(client)  # pragma: no cover
-                messages = self._update_messages_if_json(self.messages(), tool_types)
-                stream = await client.chat.completions.create(
-                    messages=messages,
-                    stream=True,
-                    **kwargs,
-                )
-                async for chunk in stream:
-                    yield OpenAICallResponseChunk(
-                        chunk=chunk,
-                        tool_types=tool_types,
-                        response_format=self.call_params.response_format,
-                    )
+        kwargs, tool_types = self._setup_openai_kwargs(kwargs)
+        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.wrapper_async is not None:
+            client = self.call_params.wrapper_async(client)
+        if self.call_params.logfire:
+            self.call_params.logfire(client)  # pragma: no cover
+        messages = self._update_messages_if_json(self.messages(), tool_types)
+        stream = await client.chat.completions.create(
+            messages=messages,
+            stream=True,
+            **kwargs,
+        )
+        async for chunk in stream:
+            yield OpenAICallResponseChunk(
+                chunk=chunk,
+                tool_types=tool_types,
+                response_format=self.call_params.response_format,
+            )
 
     ############################## PRIVATE METHODS ###################################
 

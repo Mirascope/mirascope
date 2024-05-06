@@ -15,7 +15,6 @@ from .utils import (
     convert_base_type_to_tool,
     convert_function_to_tool,
     retry,
-    retry_async,
     tool_fn,
 )
 
@@ -37,5 +36,4 @@ __all__ = [
     "convert_function_to_tool",
     "tool_fn",
     "retry",
-    "retry_async",
 ]
