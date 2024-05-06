@@ -71,7 +71,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = None, **kwargs: Any
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> GeminiCallResponse:
         """Makes an call to the model using this `GeminiCall` instance.
 
@@ -116,7 +116,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> GeminiCallResponse:
         """Makes an asynchronous call to the model using this `GeminiCall` instance.
 
@@ -161,7 +161,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = None, **kwargs: Any
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> Generator[GeminiCallResponseChunk, None, None]:
         """Streams the response for a call using this `GeminiCall`.
 
@@ -192,7 +192,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[GeminiCallResponseChunk, None]:
         """Streams the response asynchronously for a call using this `GeminiCall`.
 

@@ -46,7 +46,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = None, **kwargs: Any
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> CohereCallResponse:
         """Makes a call to the model using this `CohereCall` instance.
 
@@ -85,7 +85,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> CohereCallResponse:
         """Makes an asynchronous call to the model using this `CohereCall`.
 
@@ -124,7 +124,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = None, **kwargs: Any
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
     ) -> Generator[CohereCallResponseChunk, None, None]:
         """Streams the response for a call using this `CohereCall`.
 
@@ -151,7 +151,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[CohereCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `CohereCall`.
 
