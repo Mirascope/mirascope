@@ -6,12 +6,14 @@ from typing import (
     AsyncGenerator,
     ClassVar,
     Generator,
+    Union,
 )
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentsType  # type: ignore
+from tenacity import AsyncRetrying, Retrying
 
-from ..base import BaseCall
+from ..base import BaseCall, retry
 from ..enums import MessageRole
 from .tools import GeminiTool
 from .types import (
@@ -67,7 +69,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             )
         ]
 
-    def call(self, **kwargs: Any) -> GeminiCallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> GeminiCallResponse:
         """Makes an call to the model using this `GeminiCall` instance.
 
         Args:
@@ -109,7 +114,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             cost=None,
         )
 
-    async def call_async(self, **kwargs: Any) -> GeminiCallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+    ) -> GeminiCallResponse:
         """Makes an asynchronous call to the model using this `GeminiCall` instance.
 
         Args:
@@ -151,7 +159,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             cost=None,
         )
 
-    def stream(self, **kwargs: Any) -> Generator[GeminiCallResponseChunk, None, None]:
+    @retry
+    def stream(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> Generator[GeminiCallResponseChunk, None, None]:
         """Streams the response for a call using this `GeminiCall`.
 
         Args:
@@ -179,8 +190,9 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         for chunk in stream:
             yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[GeminiCallResponseChunk, None]:
         """Streams the response asynchronously for a call using this `GeminiCall`.
 

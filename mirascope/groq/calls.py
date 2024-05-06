@@ -1,12 +1,13 @@
 """A module for calling Groq's Cloud API."""
 import datetime
 import json
-from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
+from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from groq import AsyncGroq, Groq
 from groq.types.chat.completion_create_params import Message, ResponseFormat
+from tenacity import AsyncRetrying, Retrying
 
-from ..base import BaseCall
+from ..base import BaseCall, retry
 from ..enums import MessageRole
 from .tools import GroqTool
 from .types import GroqCallParams, GroqCallResponse, GroqCallResponseChunk
@@ -57,7 +58,10 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             )
         ]
 
-    def call(self, **kwargs: Any) -> GroqCallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> GroqCallResponse:
         """Makes a call to the model using this `GroqCall` instance.
 
         Args:
@@ -92,7 +96,10 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             cost=groq_api_calculate_cost(completion.usage, completion.model),
         )
 
-    async def call_async(self, **kwargs: Any) -> GroqCallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+    ) -> GroqCallResponse:
         """Makes an asynchronous call to the model using this `GroqCall`.
 
         Args:
@@ -127,7 +134,10 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             cost=groq_api_calculate_cost(completion.usage, completion.model),
         )
 
-    def stream(self, **kwargs: Any) -> Generator[GroqCallResponseChunk, None, None]:
+    @retry
+    def stream(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> Generator[GroqCallResponseChunk, None, None]:
         """Streams the response for a call using this `GroqCall`.
 
         Args:
@@ -155,8 +165,9 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
                 response_format=self.call_params.response_format,
             )
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[GroqCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `GroqCall`.
 

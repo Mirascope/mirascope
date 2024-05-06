@@ -1,17 +1,20 @@
 """Tests for the base utility functions."""
-from typing import Annotated, Callable
-from unittest.mock import patch
+from typing import Annotated, Callable, Union
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import BaseModel, Field
+from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from mirascope.base.tools import DEFAULT_TOOL_DOCSTRING, BaseTool
 from mirascope.base.utils import (
     convert_base_model_to_tool,
     convert_base_type_to_tool,
     convert_function_to_tool,
+    retry,
     tool_fn,
 )
+from mirascope.openai.calls import OpenAICall
 
 
 @patch.multiple(BaseTool, __abstractmethods__=set())
@@ -233,3 +236,57 @@ def test_convert_base_type_to_tool(type_, expected_tool: BaseTool) -> None:
     """Tests that `convert_base_type_to_tool` returns the expected tool."""
     tool = convert_base_type_to_tool(type_, BaseTool)  # type: ignore
     assert tool.model_json_schema() == expected_tool.model_json_schema()
+
+
+def test_retry_decorator() -> None:
+    @retry
+    def dummy(retries: Union[int, Retrying]) -> None:
+        """Dummy function"""
+        raise Exception
+
+    with pytest.raises(RetryError):
+        test = dummy(2)
+        print(test)
+
+
+@pytest.mark.asyncio
+async def test_retry_decorator_async() -> None:
+    @retry
+    async def dummy_async(retries: Union[int, AsyncRetrying]) -> None:
+        """Dummy function"""
+        raise Exception
+
+    with pytest.raises(RetryError):
+        retries = AsyncRetrying(stop=stop_after_attempt(2))
+        await dummy_async(retries)
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+    side_effect=Exception,
+)
+def test_retry_decorator_generator(
+    mock_create: MagicMock,
+    fixture_openai_test_call: OpenAICall,
+) -> None:
+    with pytest.raises(RetryError):
+        value = fixture_openai_test_call.stream()
+        for chunk in value:
+            print(chunk)
+
+
+@patch(
+    "openai.resources.chat.completions.AsyncCompletions.create",
+    new_callable=AsyncMock,
+    side_effect=Exception,
+)
+@pytest.mark.asyncio
+async def test_retry_decorator_generator_async(
+    mock_create: MagicMock,
+    fixture_openai_test_call: OpenAICall,
+) -> None:
+    with pytest.raises(RetryError):
+        value = fixture_openai_test_call.stream_async()
+        async for chunk in value:
+            print(chunk)

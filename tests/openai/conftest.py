@@ -23,10 +23,9 @@ from openai.types.create_embedding_response import CreateEmbeddingResponse, Usag
 from openai.types.embedding import Embedding
 from pydantic import BaseModel, Field
 
-from mirascope.openai.calls import OpenAICall
 from mirascope.openai.embedders import OpenAIEmbedder
 from mirascope.openai.tools import OpenAITool
-from mirascope.openai.types import OpenAICallParams, OpenAIEmbeddingParams
+from mirascope.openai.types import OpenAIEmbeddingParams
 
 
 @pytest.fixture()
@@ -293,22 +292,6 @@ def fixture_chat_completion_chunk_with_bad_tools(
         0
     ].function.arguments = '{\n  "param": 0,\n  "optional": 0}'  # type: ignore
     return chunk
-
-
-@pytest.fixture()
-def fixture_openai_test_call():
-    """Returns an `OpenAICall` instance."""
-
-    class OpenAITestCall(OpenAICall):
-        prompt_template = """\
-            SYSTEM: This is a test.
-            USER: You are being tested.
-        """
-        api_key = "test"
-
-        call_params = OpenAICallParams(model="gpt-4")
-
-    return OpenAITestCall()
 
 
 class Str(OpenAITool):

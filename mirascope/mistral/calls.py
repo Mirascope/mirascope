@@ -1,12 +1,13 @@
 """A module for prompting Mistral API."""
 import datetime
-from typing import Any, AsyncGenerator, ClassVar, Generator
+from typing import Any, AsyncGenerator, ClassVar, Generator, Union
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
 from mistralai.constants import ENDPOINT
+from tenacity import AsyncRetrying, Retrying
 
-from ..base import BaseCall
+from ..base import BaseCall, retry
 from ..base.types import Message
 from ..enums import MessageRole
 from .tools import MistralTool
@@ -41,7 +42,10 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
         )
 
-    def call(self, **kwargs: Any) -> MistralCallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> MistralCallResponse:
         """Makes a call to the model using this `MistralCall` instance.
 
         Args:
@@ -80,7 +84,10 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             end_time=datetime.datetime.now().timestamp() * 1000,
         )
 
-    async def call_async(self, **kwargs: Any) -> MistralCallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+    ) -> MistralCallResponse:
         """Makes an asynchronous call to the model using this `MistralCall` instance.
 
         Args:
@@ -120,7 +127,10 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             cost=mistral_api_calculate_cost(completion.usage, completion.model),
         )
 
-    def stream(self, **kwargs: Any) -> Generator[MistralCallResponseChunk, None, None]:
+    @retry
+    def stream(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> Generator[MistralCallResponseChunk, None, None]:
         """Streams the response for a call using this `MistralCall` instance.
 
         Args:
@@ -149,8 +159,9 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         for chunk in stream:
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[MistralCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `MistralCall`.
 

@@ -1,7 +1,15 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
 import json
-from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
+from typing import (
+    Any,
+    AsyncGenerator,
+    ClassVar,
+    Generator,
+    Optional,
+    Type,
+    Union,
+)
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import (
@@ -12,8 +20,10 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 from openai.types.chat.completion_create_params import ResponseFormat
+from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall
+from ..base.utils import retry
 from ..enums import MessageRole
 from .tools import OpenAITool
 from .types import OpenAICallParams, OpenAICallResponse, OpenAICallResponseChunk
@@ -70,10 +80,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 
-    def call(self, **kwargs: Any) -> OpenAICallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> OpenAICallResponse:
         """Makes a call to the model using this `OpenAICall` instance.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.Retrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -106,10 +121,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             response_format=self.call_params.response_format,
         )
 
-    async def call_async(self, **kwargs: Any) -> OpenAICallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+    ) -> OpenAICallResponse:
         """Makes an asynchronous call to the model using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.AsyncRetrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -142,10 +162,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             response_format=self.call_params.response_format,
         )
 
-    def stream(self, **kwargs: Any) -> Generator[OpenAICallResponseChunk, None, None]:
+    @retry
+    def stream(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> Generator[OpenAICallResponseChunk, None, None]:
         """Streams the response for a call using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.Retrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 
@@ -175,12 +200,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 response_format=self.call_params.response_format,
             )
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[OpenAICallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `OpenAICall`.
 
         Args:
+            retries: An integer for the number of times to retry the call or
+                a `tenacity.AsyncRetrying` instance.
             **kwargs: Additional keyword arguments parameters to pass to the call. These
                 will override any existing arguments in `call_params`.
 

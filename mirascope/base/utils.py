@@ -1,4 +1,6 @@
 """Base utility functions."""
+import inspect
+from functools import wraps
 from inspect import Parameter, signature
 from typing import (
     Annotated,
@@ -15,6 +17,7 @@ from typing import (
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
+from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool, BaseType
 
@@ -164,3 +167,85 @@ def convert_base_type_to_tool(
         __doc__=DEFAULT_TOOL_DOCSTRING,
         value=(schema, ...),
     )
+
+
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def retry(fn: F) -> F:
+    """Decorator for retrying a function."""
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        """Wrapper for retrying a function."""
+        retries = kwargs.pop("retries", 1)
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
+        try:
+            for attempt in retries:
+                with attempt:
+                    result = fn(*args, **kwargs)
+                if (
+                    attempt.retry_state.outcome
+                    and not attempt.retry_state.outcome.failed
+                ):
+                    attempt.retry_state.set_result(result)
+            return result
+        except RetryError:
+            raise
+
+    @wraps(fn)
+    async def wrapper_async(*args, **kwargs):
+        """Wrapper for retrying an async function."""
+        retries = kwargs.pop("retries", 1)
+        if isinstance(retries, int):
+            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+        try:
+            async for attempt in retries:
+                with attempt:
+                    result = await fn(*args, **kwargs)
+                if (
+                    attempt.retry_state.outcome
+                    and not attempt.retry_state.outcome.failed
+                ):
+                    attempt.retry_state.set_result(result)
+            return result
+        except RetryError:
+            raise
+
+    @wraps(fn)
+    def wrapper_generator(*args, **kwargs):
+        """Wrapper for retrying a generator function."""
+        retries = kwargs.pop("retries", 1)
+        if isinstance(retries, int):
+            retries = Retrying(stop=stop_after_attempt(retries))
+        try:
+            for attempt in retries:
+                with attempt:
+                    for value in fn(*args, **kwargs):
+                        yield value
+        except RetryError:
+            raise
+
+    @wraps(fn)
+    async def wrapper_generator_async(*args, **kwargs):
+        """Wrapper for retrying an async generator function."""
+        retries = kwargs.pop("retries", 1)
+        if isinstance(retries, int):
+            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+        try:
+            async for attempt in retries:
+                with attempt:
+                    async for value in fn(*args, **kwargs):
+                        yield value
+        except RetryError:
+            raise
+
+    if inspect.iscoroutinefunction(fn):
+        return cast(F, wrapper_async)
+    elif inspect.isgeneratorfunction(fn):
+        return cast(F, wrapper_generator)
+    elif inspect.isasyncgenfunction(fn):
+        return cast(F, wrapper_generator_async)
+    else:
+        return cast(F, wrapper)
