@@ -1,11 +1,12 @@
 """A module for calling Cohere's chat models."""
 import datetime
-from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
+from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from cohere import AsyncClient, Client
 from cohere.types import ChatMessage
+from tenacity import AsyncRetrying, Retrying
 
-from ..base import BaseCall
+from ..base import BaseCall, retry
 from ..enums import MessageRole
 from .tools import CohereTool
 from .types import CohereCallParams, CohereCallResponse, CohereCallResponseChunk
@@ -43,7 +44,10 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             )
         ]
 
-    def call(self, **kwargs: Any) -> CohereCallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = None, **kwargs: Any
+    ) -> CohereCallResponse:
         """Makes a call to the model using this `CohereCall` instance.
 
         Args:
@@ -79,7 +83,10 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             cost=cost,
         )
 
-    async def call_async(self, **kwargs: Any) -> CohereCallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+    ) -> CohereCallResponse:
         """Makes an asynchronous call to the model using this `CohereCall`.
 
         Args:
@@ -115,7 +122,10 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             cost=cost,
         )
 
-    def stream(self, **kwargs: Any) -> Generator[CohereCallResponseChunk, None, None]:
+    @retry
+    def stream(
+        self, retries: Union[int, Retrying] = None, **kwargs: Any
+    ) -> Generator[CohereCallResponseChunk, None, None]:
         """Streams the response for a call using this `CohereCall`.
 
         Args:
@@ -139,8 +149,9 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
     ) -> AsyncGenerator[CohereCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `CohereCall`.
 

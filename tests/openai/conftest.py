@@ -295,22 +295,6 @@ def fixture_chat_completion_chunk_with_bad_tools(
     return chunk
 
 
-@pytest.fixture()
-def fixture_openai_test_call():
-    """Returns an `OpenAICall` instance."""
-
-    class OpenAITestCall(OpenAICall):
-        prompt_template = """\
-            SYSTEM: This is a test.
-            USER: You are being tested.
-        """
-        api_key = "test"
-
-        call_params = OpenAICallParams(model="gpt-4")
-
-    return OpenAITestCall()
-
-
 class Str(OpenAITool):
     """A wrapper tool for the base string type."""
 

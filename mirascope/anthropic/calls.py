@@ -1,11 +1,12 @@
 """A module for calling Anthropic's Claude API."""
 import datetime
-from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type
+from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
+from tenacity import AsyncRetrying, Retrying
 
-from ..base import BaseCall
+from ..base import BaseCall, retry
 from ..enums import MessageRole
 from .tools import AnthropicTool
 from .types import (
@@ -47,7 +48,10 @@ class AnthropicCall(
             [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
         )  # type: ignore
 
-    def call(self, **kwargs: Any) -> AnthropicCallResponse:
+    @retry
+    def call(
+        self, retries: Union[int, Retrying] = None, **kwargs: Any
+    ) -> AnthropicCallResponse:
         """Makes a call to the model using this `AnthropicCall` instance.
 
         Args:
@@ -86,7 +90,10 @@ class AnthropicCall(
             response_format=self.call_params.response_format,
         )
 
-    async def call_async(self, **kwargs: Any) -> AnthropicCallResponse:
+    @retry
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
+    ) -> AnthropicCallResponse:
         """Makes an asynchronous call to the model using this `AnthropicCall` instance.
 
         Args:
@@ -124,8 +131,9 @@ class AnthropicCall(
             response_format=self.call_params.response_format,
         )
 
+    @retry
     def stream(
-        self, **kwargs: Any
+        self, retries: Union[int, Retrying] = None, **kwargs: Any
     ) -> Generator[AnthropicCallResponseChunk, None, None]:
         """Streams the response for a call using this `AnthropicCall`.
 
@@ -165,8 +173,9 @@ class AnthropicCall(
                         response_format=self.call_params.response_format,
                     )
 
+    @retry
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = None, **kwargs: Any
     ) -> AsyncGenerator[AnthropicCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `AnthropicCall`.
 
