@@ -22,7 +22,7 @@ from mirascope import OpenAICall, OpenAICallParams
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
-class RecipeRecommender(OpenAIPrompt):
+class RecipeRecommender(OpenAICall):
     prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
     
     ingredient: str
@@ -49,7 +49,7 @@ from mirascope import OpenAICall, OpenAICallParams
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
-class RecipeRecommender(OpenAIPrompt):
+class RecipeRecommender(OpenAICall):
     prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
     
     ingredient: str
@@ -176,4 +176,35 @@ def recommend_recipe(food_type: str, ingredient: str) -> str:
 recipe = recommend_recipe(food_type="japanese", ingredient="apples")
 print(recipe)
 # > Certainly! Here's a recipe for a delicious and refreshing Wagyu Beef and Apple roll: ...
+```
+
+### Retrying
+
+Calls to LLM providers can fail due to various reasons, such as network issues, API rate limits, or service outages. To provide a resilient user experience and handle unexpected failures gracefully, Mirascope directly integrates with [Tenacity](https://tenacity.readthedocs.io/en/latest/).
+By passing the `retries` parameter to any Mirascope class that extends `BaseCall`, you can easily enable automatic retry functionality out of the box.  Using the same basic `RecipeRecommender` we can take advantage of tenacity to retry as many times as we need to generate a response that does not have certain words.
+
+```python
+import os
+
+from mirascope import OpenAICall, OpenAICallParams
+from tenacity import Retrying, retry_if_result
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+
+retries = Retrying(
+    before=lambda details: print(details),
+    after=lambda details: print(details),
+    retry=retry_if_result(lambda result: "Cheese" in result.content),
+)
+
+class RecipeRecommender(OpenAICall):
+    prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
+    
+    ingredient: str
+    
+    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
+
+
+response = RecipeRecommender(ingredient="apples").call(retries=retries)
+print(response.content)  # Content will not contain "Cheese"
 ```

@@ -11,7 +11,10 @@ from typing import (
     Optional,
     Type,
     TypeVar,
+    Union,
 )
+
+from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt
 from .tools import BaseTool
@@ -36,7 +39,9 @@ class BaseCall(
     )
 
     @abstractmethod
-    def call(self, **kwargs: Any) -> BaseCallResponseT:
+    def call(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> BaseCallResponseT:
         """A call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -46,7 +51,9 @@ class BaseCall(
         ...  # pragma: no cover
 
     @abstractmethod
-    async def call_async(self, **kwargs: Any) -> BaseCallResponseT:
+    async def call_async(
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+    ) -> BaseCallResponseT:
         """An asynchronous call to an LLM.
 
         An implementation of this function must return a response that extends
@@ -56,7 +63,9 @@ class BaseCall(
         ...  # pragma: no cover
 
     @abstractmethod
-    def stream(self, **kwargs: Any) -> Generator[BaseCallResponseChunkT, None, None]:
+    def stream(
+        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+    ) -> Generator[BaseCallResponseChunkT, None, None]:
         """A call to an LLM that streams the response in chunks.
 
         An implementation of this function must yield response chunks that extend
@@ -67,7 +76,7 @@ class BaseCall(
 
     @abstractmethod
     async def stream_async(
-        self, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
     ) -> AsyncGenerator[BaseCallResponseChunkT, None]:
         """A asynchronous call to an LLM that streams the response in chunks.
 
