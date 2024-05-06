@@ -82,7 +82,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             )  # pragma: no cover
         if self.call_params.logfire:
             create = self.call_params.logfire(
-                create, "groq", response_type=GroqCallResponse
+                create, "groq", response_type=GroqCallResponse, tool_types=tool_types
             )  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
@@ -120,7 +120,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             )  # pragma: no cover
         if self.call_params.logfire_async:
             create = self.call_params.logfire_async(
-                create, "groq", response_type=GroqCallResponse
+                create, "groq", response_type=GroqCallResponse, tool_types=tool_types
             )  # pragma: no cover
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000

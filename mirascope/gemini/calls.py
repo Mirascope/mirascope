@@ -93,7 +93,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             )  # pragma: no cover
         if self.call_params.logfire:
             generate_content = self.call_params.logfire(
-                generate_content, "gemini", response_type=GeminiCallResponse
+                generate_content,
+                "gemini",
+                response_type=GeminiCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
             kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
@@ -135,7 +138,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             )  # pragma: no cover
         if self.call_params.logfire:
             generate_content_async = self.call_params.logfire(
-                generate_content_async, "gemini", response_type=GeminiCallResponse
+                generate_content_async,
+                "gemini",
+                response_type=GeminiCallResponse,
+                tool_types=tool_types,
             )  # pragma: no cover
             kwargs["model"] = model_name  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
