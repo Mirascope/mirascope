@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+contact_links:
+
+- name: ❓ Question
+  url: 'https://github.com/Mirascope/mirascope/discussions'
+  about: Ask a question about anything Mirascope
