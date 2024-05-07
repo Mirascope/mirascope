@@ -44,18 +44,3 @@ assert isinstance(task_details, TaskDetails)
 print(TaskDetails)
 #> due_date='next Friday' priority='high' description='Submit quarterly report'
 ```
-
-### Retry
-
-Extraction can fail due to a wide variety of reasons. When this happens, the simpliest approach is to introduce retries. Mirascope uses [Tenacity](https://tenacity.readthedocs.io/en/latest/) so that you can customize the behavior of retries or pass in an integer. With the same example above add:
-
-```python
-from tenacity import Retrying, stop_after_attempt
-
-retries = Retrying(
-    stop=stop_after_attempt(3),
-)
-task_details = TaskExtractor(task=task).extract(retries=retries)
-```
-
-As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](validation.md) for more details).
