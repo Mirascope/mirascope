@@ -62,7 +62,18 @@ Notice how instead of “Patrick Rothfuss” the extracted author is “Rothfuss
 
 ## Retries
 
-Sometimes the model will fail to extract the schema. This can often be a result of the prompt; however, sometimes it’s simply a failure of the model. If you want to retry the extraction some number of times, you can set `retries` equal to however many retries you want to run (defaults to 0).
+Sometimes the model will fail to extract the schema. This can often be a result of the prompt; however, sometimes it’s simply a failure of the model. If you want to retry the extraction some number of times, you can set `retries` equal to the number of runs (defaults to 1). Alternatively, you can pass in [tenacity.Retrying](https://tenacity.readthedocs.io/en/latest/) so that you can customize the behavior of retries. Mirascope will automatically pass in the error to the next call to give context.
+
+```python
+from tenacity import Retrying, stop_after_attempt
+
+retries = Retrying(
+    stop=stop_after_attempt(3),
+)
+task_details = TaskExtractor(task=task).extract(retries=retries)
+```
+
+As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](validation.md) for more details).
 
 ```python
 book = BookExtractor().extract(retries=3)  # will retry up to 3 times 
