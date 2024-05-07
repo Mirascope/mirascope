@@ -2,10 +2,11 @@
 import inspect
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Callable, Optional, overload
+from typing import Any, Callable, Optional, Union, overload
 
 import logfire
 from pydantic import BaseModel
+from typing_extensions import LiteralString
 
 from mirascope.base.types import (
     BaseCallResponse,
@@ -20,6 +21,11 @@ from ..types import (
     BaseEmbedderT,
     BaseExtractorT,
     BaseVectorStoreT,
+)
+
+ONE_SECOND_IN_NANOSECONDS = 1_000_000_000
+STEAMING_MSG_TEMPLATE: LiteralString = (
+    "streaming response from {request_data[model]!r} took {duration:.2f}s"
 )
 
 
@@ -118,13 +124,10 @@ def _extract_chunk_content(
     return response_chunk_type(chunk=chunk).content
 
 
-@contextmanager
-def _mirascope_llm_span(
-    fn: Callable, suffix: str, is_async: bool, args: tuple[Any], kwargs: dict[str, Any]
-):
-    """Wraps a pydantic class method with a Logfire span."""
+def _get_span_data(
+    suffix: str, is_async: bool, args: tuple[Any], kwargs: dict[str, Any]
+) -> dict[str, Any]:
     additional_request_data = {}
-    model = kwargs.get("model", "unknown")
     if suffix == "gemini":
         gemini_messages = args[0]
         additional_request_data["messages"] = [
@@ -133,10 +136,19 @@ def _mirascope_llm_span(
         ]
         model = kwargs.pop("model")
         additional_request_data["model"] = model
-    span_data: dict[str, Any] = {
+    return {
         "async": is_async,
         "request_data": kwargs | additional_request_data,
     }
+
+
+@contextmanager
+def _mirascope_llm_span(
+    fn: Callable, suffix: str, is_async: bool, args: tuple[Any], kwargs: dict[str, Any]
+):
+    """Wraps a pydantic class method with a Logfire span."""
+    model = kwargs.get("model", "unknown")
+    span_data = _get_span_data(suffix, is_async, args, kwargs)
     with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
         f"{suffix}.{fn.__name__} with {model}", **span_data
     ) as logfire_span:
@@ -181,6 +193,42 @@ def mirascope_logfire_create(
     return wrapper
 
 
+@contextmanager
+def record_streaming(
+    logfire_span: logfire.Logfire,
+    span_data: dict[str, Any],
+    content_from_stream: Callable[
+        [ChunkT, type[BaseCallResponseChunk]], Union[str, None]
+    ],
+):
+    """Logfire record_streaming with Mirascope providers"""
+    content: list[str] = []
+
+    def record_chunk(
+        chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
+    ) -> Any:
+        """Handles all provider chunk_types instead of only OpenAI"""
+        chunk_content = content_from_stream(chunk, response_chunk_type)
+        if chunk_content is not None:
+            content.append(chunk_content)
+
+    timer = logfire_span._config.ns_timestamp_generator  # type: ignore
+    start = timer()
+    try:
+        yield record_chunk
+    finally:
+        duration = (timer() - start) / ONE_SECOND_IN_NANOSECONDS
+        logfire_span.info(
+            STEAMING_MSG_TEMPLATE,
+            **span_data,
+            duration=duration,
+            response_data={
+                "combined_chunk_content": "".join(content),
+                "chunk_count": len(content),
+            },
+        )
+
+
 def mirascope_logfire_stream(
     fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
 ) -> Callable:
@@ -188,29 +236,21 @@ def mirascope_logfire_stream(
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        with _mirascope_llm_span(fn, suffix, False, args, kwargs) as logfire_span:
-            content = []
+        logfire_span = logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"])
+        span_data = _get_span_data(suffix, False, args, kwargs)
+        with record_streaming(
+            logfire_span, span_data, _extract_chunk_content
+        ) as record_chunk:
             stream = fn(*args, **kwargs)
             if suffix != "anthropic":
                 for chunk in stream:
-                    chunk_content = _extract_chunk_content(chunk, response_chunk_type)
-                    content.append(chunk_content)
+                    record_chunk(chunk, response_chunk_type)
                     yield chunk
             else:
                 with stream as s:
                     for chunk in s:
-                        chunk_content = _extract_chunk_content(
-                            chunk, response_chunk_type
-                        )
-                        content.append(chunk_content)
+                        record_chunk(chunk, response_chunk_type)
                         yield chunk
-            logfire_span.set_attribute(
-                "response_data",
-                {
-                    "combined_chunk_content": "".join(content),
-                    "chunk_count": len(content),
-                },
-            )
 
     return wrapper
 
@@ -260,32 +300,24 @@ def mirascope_logfire_stream_async(
 
     @wraps(fn)
     async def wrapper(*args, **kwargs):
-        with _mirascope_llm_span(fn, suffix, True, args, kwargs) as logfire_span:
-            content = []
+        logfire_span = logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"])
+        span_data = _get_span_data(suffix, True, args, kwargs)
+        with record_streaming(
+            logfire_span, span_data, _extract_chunk_content
+        ) as record_chunk:
             if suffix == "groq":
                 stream = await fn(*args, **kwargs)
             else:
                 stream = fn(*args, **kwargs)
             if suffix != "anthropic":
                 async for chunk in stream:
-                    chunk_content = _extract_chunk_content(chunk, response_chunk_type)
-                    content.append(chunk_content)
+                    record_chunk(chunk, response_chunk_type)
                     yield chunk
             else:
                 async with stream as s:
                     async for chunk in s:
-                        chunk_content = _extract_chunk_content(
-                            chunk, response_chunk_type
-                        )
-                        content.append(chunk_content)
+                        record_chunk(chunk, response_chunk_type)
                         yield chunk
-            logfire_span.set_attribute(
-                "response_data",
-                {
-                    "combined_chunk_content": "".join(content),
-                    "chunk_count": len(content),
-                },
-            )
 
     return wrapper
 
