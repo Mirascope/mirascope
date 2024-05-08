@@ -1,5 +1,5 @@
 ---
-name: Feature Request
+name: 💡 Feature Request
 about: Functionality you want that is not yet supported
 title: "[FEATURE REQUEST]"
 labels: enhancement

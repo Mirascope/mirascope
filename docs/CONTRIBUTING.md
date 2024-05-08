@@ -16,11 +16,11 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
 
 ## Development Workflow
 
-1.  Search through existing [GitHub Issues](https://github.com/Mirascope/mirascope/issues) to see if what you want to work on has already been added.
+1. Search through existing [GitHub Issues](https://github.com/Mirascope/mirascope/issues) to see if what you want to work on has already been added.
 
     - If not, please create a new issue. This will help to reduce duplicated work.
 
-2.  For first-time contributors, visit [https://github.com/mirascope/mirascope](https://github.com/Mirascope/mirascope) and "Fork" the repository (see the button in the top right corner).
+2. For first-time contributors, visit [https://github.com/mirascope/mirascope](https://github.com/Mirascope/mirascope) and "Fork" the repository (see the button in the top right corner).
 
     - You'll need to set up [SSH authentication](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 
@@ -31,7 +31,7 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     git remote add upstream https://github.com/Mirascope/mirascope.git
     ```
 
-3.  Development.
+3. Development.
 
     - Make sure you are in sync with the main repo:
 
@@ -66,7 +66,31 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     poetry run mypy .
     ```
 
-4.  Contributions are submitted through [GitHub Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
+4. Test!
+    - Add tests. Tests should be mirrored based on structure of the source.
+
+    ```bash
+    | - mirascope
+    |  | - openai
+    |  |  | - calls.py
+    | - tests
+    |  | - openai
+    |  |  | - test_calls.py
+    ```
+  
+    - Run tests to make sure nothing broke
+
+    ```shell
+    poetry run pytest tests/
+    ```
+
+    - Check coverage report
+
+    ```shell
+    poetry run pytest tests/ --cov=./ --cov-report=html
+    ```
+
+5. Contributions are submitted through [GitHub Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
 
     - When you are ready to submit your contribution for review, push your branch:
 
@@ -74,7 +98,13 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     git push origin meaningful-branch-name
     ```
 
-    - Open the printed URL to open a PR. Make sure to fill in a detailed title and description. Submit your PR for review.
+    - Open the printed URL to open a PR.
+
+    - Fill in a detailed title and description.
+
+    - Check box to allow edits from maintainers
+
+    - Submit your PR for review. You can do this via Contribute in your fork repo.
 
     - Link the issue you selected or created under "Development"
 
