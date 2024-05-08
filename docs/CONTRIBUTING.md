@@ -67,11 +67,21 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     ```
 
 4. Test!
+    - Add tests. Tests should be mirrored based on structure of the source.
 
+    ```bash
+    | - mirascope
+    |  | - openai
+    |  |  | - calls.py
+    | - tests
+    |  | - openai
+    |  |  | - test_calls.py
+    ```
+  
     - Run tests to make sure nothing broke
 
     ```shell
-    poetry run pytest
+    poetry run pytest tests/
     ```
 
     - Check coverage report
@@ -82,13 +92,19 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
 
 5. Contributions are submitted through [GitHub Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
 
-    - When you are  ready to submit your contribution for review, push your branch:
+    - When you are ready to submit your contribution for review, push your branch:
 
     ```shell
     git push origin meaningful-branch-name
     ```
 
-    - Open the printed URL to open a PR. Make sure to fill in a detailed title and description. Submit your PR for review.
+    - Open the printed URL to open a PR.
+
+    - Fill in a detailed title and description.
+
+    - Check box to allow edits from maintainers
+
+    - Submit your PR for review. You can do this via Contribute in your fork repo.
 
     - Link the issue you selected or created under "Development"
 
