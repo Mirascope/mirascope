@@ -1,49 +1,69 @@
 """Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
-from typing import Any, Callable, Type, Union
+import dataclasses
+from typing import Any, Callable, Type
 
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
-    FunctionDeclaration,
     Tool,
+    content_types,
+)
+from google.generativeai.types.content_types import (  # type: ignore
+    CallableFunctionDeclaration,
 )
 from pydantic import BaseModel, ConfigDict
+from pydantic_core import PydanticUndefined
 
 from ..base import (
     BaseTool,
     BaseType,
     convert_base_model_to_tool,
-    convert_base_type_to_tool,
-    convert_function_to_tool,
+    convert_base_type_to_tool,  # type: ignore
+    convert_function_to_tool,  # type: ignore
 )
 
 
-class NoDefsFunctionDeclaration(FunctionDeclaration):
-    def __init__(self, **kwargs):
-        self._defs = kwargs.pop("$defs", None)  # Store $defs separately
-        super().__init__(**kwargs)
+def pydantic_to_dataclass(
+    klass: Type[BaseModel],
+    classname: str | None = None,
+) -> Any:
+    """
+    Dataclass from Pydantic model
 
+    Transferred entities:
+        * Field names
+        * Type annotations, except of Annotated etc
+        * Default factory or default value
 
-def resolve_refs(
-    schema: Union[dict[str, Any], list[Any]], defs: dict[str, Any]
-) -> Union[dict[str, Any], list[Any]]:
-    """Recursively resolves $ref references within a schema."""
-    if isinstance(schema, dict):
-        if "$ref" in schema:
-            ref_path = schema["$ref"].lstrip("#/")
-            if ref_path.startswith("$defs/"):
-                ref_name = ref_path.split("/")[1]
-                ref_schema = defs.get(ref_name)
-                if ref_schema is None:
-                    raise ValueError(f"Invalid reference: {schema['$ref']}")
-                return resolve_refs(ref_schema, defs)
+    Validators are not transferred.
+
+    Order of fields may change due to dataclass's positional arguments.
+
+    """
+    dataclass_args = []
+    for name, info in klass.model_fields.items():
+        if info.default_factory is not None:
+            dataclass_field = dataclasses.field(
+                default_factory=info.default_factory,
+            )
+            dataclass_arg = (name, info.annotation, dataclass_field)
+        elif info.default is not PydanticUndefined:
+            dataclass_field = dataclasses.field(
+                default=info.get_default(),
+            )
+            dataclass_arg = (name, info.annotation, dataclass_field)
         else:
-            return {k: resolve_refs(v, defs) for k, v in schema.items() if k != "title"}
-    elif isinstance(schema, list):
-        return [resolve_refs(item, defs) for item in schema]
-    else:
-        return schema
+            dataclass_arg = (name, info.annotation)
+
+        dataclass_args.append(dataclass_arg)
+
+    dataclass_args.sort(key=lambda arg: len(arg) > 2)
+
+    return dataclasses.make_dataclass(
+        classname or f"__{klass.__name__}Dataclass",
+        dataclass_args,
+    )
 
 
 class GeminiTool(BaseTool[FunctionCall]):
@@ -95,30 +115,16 @@ class GeminiTool(BaseTool[FunctionCall]):
         Returns:
             The constructed `Tool` schema.
         """
-        tool_schema = super().tool_schema()
-        if "parameters" in tool_schema:
-            # Handle nested structures with $defs
-            if "$defs" in tool_schema["parameters"]:
-                defs = tool_schema["parameters"]["$defs"]
-                # Resolve references in properties
-                for key, prop_schema in tool_schema["parameters"]["properties"].items():
-                    tool_schema["parameters"]["properties"][key] = resolve_refs(
-                        prop_schema, defs
-                    )
 
-                # Remove $defs after resolving references
-                del tool_schema["parameters"]["$defs"]
+        dc_cls = pydantic_to_dataclass(cls)
 
-            # Remove title from properties
-            tool_schema["parameters"]["properties"] = {
-                prop: {
-                    key: value for key, value in prop_schema.items() if key != "title"
-                }
-                for prop, prop_schema in tool_schema["parameters"]["properties"].items()
-            }
+        def fun(a: Type[dc_cls]):
+            pass
 
-        # Use CustomFunctionDeclaration to handle $defs
-        return Tool(function_declarations=[NoDefsFunctionDeclaration(**tool_schema)])
+        cfd: CallableFunctionDeclaration = (
+            content_types.FunctionDeclaration.from_function(fun)
+        )
+        return Tool(function_declarations=[cfd])
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
