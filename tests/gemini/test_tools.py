@@ -20,14 +20,30 @@ def test_from_tool_call_no_args() -> None:
 def test_no_nested_tools() -> None:
     """Tests that a `ValueError` is raised when using nested tools with Gemin."""
 
-    class Book(BaseModel):
-        title: str
+    class Author(BaseModel):
+        given_name: str
+        family_name: str
 
-    class Books(GeminiTool):
+    class Book(BaseModel):
+        # Note: title cannot be a field name
+        author: Author
+        description: str
+        year: int
+
+    class Books(BaseModel):
         books: list[Book]
 
-    with pytest.raises(ValueError):
-        Books.tool_schema()
+    class BooksGeminiTool(GeminiTool):
+        books: list[Book]
+
+    # with pytest.raises(ValueError):
+    # Books.tool_schema()
+
+    print(f"{Books.model_json_schema()=}")
+
+    s = BooksGeminiTool.tool_schema()
+    print(f"{s.to_proto()=}")
+    raise ValueError("uh oh")
 
 
 def fake_tool(param: str):

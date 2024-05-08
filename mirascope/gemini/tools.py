@@ -1,7 +1,7 @@
 """Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
-from typing import Callable, Type
+from typing import Any, Callable, Type, Union
 
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
@@ -17,6 +17,33 @@ from ..base import (
     convert_base_type_to_tool,
     convert_function_to_tool,
 )
+
+
+class NoDefsFunctionDeclaration(FunctionDeclaration):
+    def __init__(self, **kwargs):
+        self._defs = kwargs.pop("$defs", None)  # Store $defs separately
+        super().__init__(**kwargs)
+
+
+def resolve_refs(
+    schema: Union[dict[str, Any], list[Any]], defs: dict[str, Any]
+) -> Union[dict[str, Any], list[Any]]:
+    """Recursively resolves $ref references within a schema."""
+    if isinstance(schema, dict):
+        if "$ref" in schema:
+            ref_path = schema["$ref"].lstrip("#/")
+            if ref_path.startswith("$defs/"):
+                ref_name = ref_path.split("/")[1]
+                ref_schema = defs.get(ref_name)
+                if ref_schema is None:
+                    raise ValueError(f"Invalid reference: {schema['$ref']}")
+                return resolve_refs(ref_schema, defs)
+        else:
+            return {k: resolve_refs(v, defs) for k, v in schema.items() if k != "title"}
+    elif isinstance(schema, list):
+        return [resolve_refs(item, defs) for item in schema]
+    else:
+        return schema
 
 
 class GeminiTool(BaseTool[FunctionCall]):
@@ -70,18 +97,28 @@ class GeminiTool(BaseTool[FunctionCall]):
         """
         tool_schema = super().tool_schema()
         if "parameters" in tool_schema:
+            # Handle nested structures with $defs
             if "$defs" in tool_schema["parameters"]:
-                raise ValueError(
-                    "Unfortunately Google's Gemini API cannot handle nested structures "
-                    "with $defs."
-                )
+                defs = tool_schema["parameters"]["$defs"]
+                # Resolve references in properties
+                for key, prop_schema in tool_schema["parameters"]["properties"].items():
+                    tool_schema["parameters"]["properties"][key] = resolve_refs(
+                        prop_schema, defs
+                    )
+
+                # Remove $defs after resolving references
+                del tool_schema["parameters"]["$defs"]
+
+            # Remove title from properties
             tool_schema["parameters"]["properties"] = {
                 prop: {
                     key: value for key, value in prop_schema.items() if key != "title"
                 }
                 for prop, prop_schema in tool_schema["parameters"]["properties"].items()
             }
-        return Tool(function_declarations=[FunctionDeclaration(**tool_schema)])
+
+        # Use CustomFunctionDeclaration to handle $defs
+        return Tool(function_declarations=[NoDefsFunctionDeclaration(**tool_schema)])
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
