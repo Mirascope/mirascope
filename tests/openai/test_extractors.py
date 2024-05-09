@@ -90,6 +90,38 @@ def test_openai_extractor_extract_with_properties(
     )
 
 
+@patch("openai.resources.chat.completions.Completions.create", new_callable=MagicMock)
+def test_openai_extractor_extract_with_custom_messages(
+    mock_call: MagicMock,
+    fixture_chat_completion_with_tools: ChatCompletion,
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_schema: Type[BaseModel],
+) -> None:
+    """Tests that writing custom messages with an OpenAI extractor works."""
+    mock_call.return_value = fixture_chat_completion_with_tools
+
+    messages = [{"role": "user", "content": "ensure this is the message"}]
+
+    class TempExtractor(OpenAIExtractor[BaseModel]):
+        prompt_template = "{test_prop}"
+        api_key = "test"
+
+        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+
+        call_params = OpenAICallParams(model="gpt-4")
+
+        def messages(self):
+            return messages
+
+    TempExtractor().extract()
+    mock_call.assert_called_once_with(
+        model="gpt-4",
+        stream=False,
+        messages=messages,
+        tools=[fixture_my_openai_tool.tool_schema()],
+    )
+
+
 @patch("mirascope.openai.calls.OpenAICall.call_async", new_callable=AsyncMock)
 @pytest.mark.asyncio
 async def test_openai_extractor_extract_async(
