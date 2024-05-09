@@ -144,8 +144,29 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if not self.tool_types:
             return None
 
+        def reconstruct_tools_from_content() -> list[OpenAITool]:
+            # Note: we only handle single tool calls in this case
+            tool_type = self.tool_types[0]  # type: ignore
+            return [
+                tool_type.from_tool_call(
+                    ChatCompletionMessageToolCall(
+                        id="id",
+                        function=Function(
+                            name=tool_type.__name__, arguments=self.content
+                        ),
+                        type="function",
+                    )
+                )
+            ]
+
         if self.response_format != ResponseFormat(type="json_object"):
             if not self.tool_calls:
+                # Let's see if we got an assistant message back instead and try to
+                # reconstruct a tool call in this case. We'll assume if it starts with
+                # an open curly bracket that we got a tool call assistant message.
+                if "{" == self.content[0]:
+                    # Note: we only handle single tool calls in JSON mode.
+                    return reconstruct_tools_from_content()
                 return None
 
             if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
@@ -158,19 +179,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                     f"Finish Reason: {self.choices[0].finish_reason}"
                 )
         else:
-            # Note: we only handle single tool calls in JSON mode.
-            tool_type = self.tool_types[0]
-            return [
-                tool_type.from_tool_call(
-                    ChatCompletionMessageToolCall(
-                        id="id",
-                        function=Function(
-                            name=tool_type.__name__, arguments=self.content
-                        ),
-                        type="function",
-                    )
-                )
-            ]
+            return reconstruct_tools_from_content()
 
         extracted_tools = []
         for tool_call in self.tool_calls:

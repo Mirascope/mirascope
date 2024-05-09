@@ -58,6 +58,22 @@ def test_openai_chat_completion_with_tools(
     assert response.tools[0].tool_call == fixture_my_openai_tool_instance.tool_call
 
 
+def test_openai_chat_completion_with_assistant_message_tool(
+    fixture_chat_completion_with_assistant_message_tool: ChatCompletion,
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_my_openai_tool_instance: OpenAITool,
+):
+    """Tests that `OpenAICallResponse` returns a tool when it's an assistant message."""
+    response = OpenAICallResponse(
+        response=fixture_chat_completion_with_assistant_message_tool,
+        tool_types=[fixture_my_openai_tool],
+        start_time=0,
+        end_time=0,
+    )
+    assert response.tools is not None
+    assert response.tools[0].tool_call == fixture_my_openai_tool_instance.tool_call
+
+
 def test_openai_call_response_dump(fixture_chat_completion: ChatCompletion):
     """Tests that `OpenAICallResponse.dump` returns the expected dictionary."""
     response = OpenAICallResponse(
