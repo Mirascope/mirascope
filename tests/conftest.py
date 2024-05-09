@@ -119,6 +119,18 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
     )
 
 
+@pytest.fixture()
+def fixture_chat_completion_with_assistant_message_tool(
+    fixture_chat_completion: ChatCompletion,
+) -> ChatCompletion:
+    """Returns a chat completion with an assistant message tool response."""
+    fixture_chat_completion_copy = fixture_chat_completion.model_copy()
+    fixture_chat_completion_copy.choices[
+        0
+    ].message.content = '{\n  "param": "param",\n  "optional": 0}'
+    return fixture_chat_completion_copy
+
+
 @tool_fn(lambda param, optional: "test")
 class MyOpenAITool(OpenAITool):
     """A test tool."""

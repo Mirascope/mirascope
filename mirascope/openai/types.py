@@ -144,21 +144,8 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if not self.tool_types:
             return None
 
-        if self.response_format != ResponseFormat(type="json_object"):
-            if not self.tool_calls:
-                return None
-
-            if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
-                raise RuntimeError(
-                    "Finish reason was not `tool_calls` or `function_call`, indicating "
-                    "no or failed tool use. This is likely due to a limit on output "
-                    "tokens that is too low. Note that this could also indicate no "
-                    "tool is beind called, so we recommend that you check the output "
-                    "of the call to confirm. "
-                    f"Finish Reason: {self.choices[0].finish_reason}"
-                )
-        else:
-            # Note: we only handle single tool calls in JSON mode.
+        def reconstruct_tools() -> list[OpenAITool]:
+            # Note: we only handle single tool calls in this case
             tool_type = self.tool_types[0]
             return [
                 tool_type.from_tool_call(
@@ -171,6 +158,28 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                     )
                 )
             ]
+
+        if self.response_format != ResponseFormat(type="json_object"):
+            if not self.tool_calls:
+                # Let's see if we got an assistant message back instead and try to
+                # reconstruct a tool call in this case. We'll assume if it starts with
+                # an open curly bracket that we got a tool call assistant message.
+                if "{" == self.content[0]:
+                    # Note: we only handle single tool calls in JSON mode.
+                    return reconstruct_tools()
+                return None
+
+            if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
+                raise RuntimeError(
+                    "Finish reason was not `tool_calls` or `function_call`, indicating "
+                    "no or failed tool use. This is likely due to a limit on output "
+                    "tokens that is too low. Note that this could also indicate no "
+                    "tool is beind called, so we recommend that you check the output "
+                    "of the call to confirm. "
+                    f"Finish Reason: {self.choices[0].finish_reason}"
+                )
+        else:
+            return reconstruct_tools()
 
         extracted_tools = []
         for tool_call in self.tool_calls:
