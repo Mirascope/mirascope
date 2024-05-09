@@ -146,7 +146,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
 
         def reconstruct_tools_from_content() -> list[OpenAITool]:
             # Note: we only handle single tool calls in this case
-            tool_type = self.tool_types[0]
+            tool_type = self.tool_types[0]  # type: ignore
             return [
                 tool_type.from_tool_call(
                     ChatCompletionMessageToolCall(
