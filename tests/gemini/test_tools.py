@@ -1,4 +1,8 @@
 """Tests for the `mirascope.gemini.tools` module."""
+
+from enum import StrEnum, auto
+from typing import Annotated
+
 import pytest
 from google.ai.generativelanguage import FunctionCall
 from pydantic import BaseModel, Field
@@ -17,33 +21,113 @@ def test_from_tool_call_no_args() -> None:
         NoDescription.from_tool_call(FunctionCall(name="NoDescription"))
 
 
-def test_no_nested_tools() -> None:
+"""
+{
+    "properties": {
+        "books": {
+            "items": {
+                "properties": {
+                    "author_name": {
+                        "description": "The formal name of the author.",
+                        "type": "string",
+                    },
+                    "title": {
+                        "description": "The title of the book.",
+                        "type": "string",
+                    },
+                    "published_at": {
+                        "anyOf": [
+                            {
+                                "properties": {
+                                    "year": {
+                                        "default": None,
+                                        "title": "Year",
+                                        "type": "integer",
+                                    },
+                                    "month": {
+                                        "anyOf": [
+                                            {"type": "integer"},
+                                            {"type": "null"},
+                                        ],
+                                        "default": None,
+                                        "title": "Month",
+                                    },
+                                    "day": {
+                                        "anyOf": [
+                                            {"type": "integer"},
+                                            {"type": "null"},
+                                        ],
+                                        "default": None,
+                                        "title": "Day",
+                                    },
+                                },
+                                "title": "Date",
+                                "type": "object",
+                            },
+                            {"type": "null"},
+                        ],
+                        "default": None,
+                        "description": "When the book was published.",
+                    },
+                    "category": {
+                        "allOf": [
+                            {
+                                "enum": ["fiction", "non_fiction"],
+                                "title": "BookCategory",
+                                "type": "string",
+                            }
+                        ],
+                        "description": "The category of the book.",
+                    },
+                },
+                "required": ["author_name", "title", "category"],
+                "type": "object",
+            },
+            "type": "array",
+        }
+    },
+    "required": ["books"],
+    "type": "object",
+}
+"""
+
+
+def test_nested_tools() -> None:
     """Tests that a `ValueError` is raised when using nested tools with Gemin."""
 
-    class Author(BaseModel):
-        given_name: str
-        family_name: str
+    class BookCategory(StrEnum):
+        FICTION = auto()
+        NON_FICTION = auto()
+
+    class Date(BaseModel):
+        year: int = Field(default=None)
+        month: int | None = Field(default=None)
+        day: int | None = Field(default=None)
 
     class Book(BaseModel):
-        # Note: title cannot be a field name
-        author: Author
-        description: str
-        year: int
+        author_name: Annotated[
+            str,
+            Field(..., description="The formal name of the author."),
+        ]
+        title: Annotated[
+            str,
+            Field(..., description="The title of the book."),
+        ]
+        published_at: Annotated[
+            Date | None,
+            Field(default=None, description="When the book was published."),
+        ]
 
-    class Books(BaseModel):
+        category: Annotated[
+            BookCategory, Field(..., description="The category of the book.")
+        ]
+
+    class Books(GeminiTool):
         books: list[Book]
 
-    class BooksGeminiTool(GeminiTool):
-        books: list[Book]
+    Books.tool_schema()
 
-    # with pytest.raises(ValueError):
-    # Books.tool_schema()
-
-    print(f"{Books.model_json_schema()=}")
-
-    s = BooksGeminiTool.tool_schema()
-    print(f"{s.to_proto()=}")
-    raise ValueError("uh oh")
+    raise ValueError("Raising to get print")
 
 
 def fake_tool(param: str):

@@ -1,69 +1,27 @@
 """Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
-import dataclasses
+import pprint
 from typing import Any, Callable, Type
 
+import jsonref
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
+    FunctionDeclaration,
     Tool,
-    content_types,
-)
-from google.generativeai.types.content_types import (  # type: ignore
-    CallableFunctionDeclaration,
 )
 from pydantic import BaseModel, ConfigDict
-from pydantic_core import PydanticUndefined
+
+from mirascope.base.tools import DEFAULT_TOOL_DOCSTRING
+from mirascope.gemini.utils import remove_invalid_title_keys_from_parameters
 
 from ..base import (
     BaseTool,
     BaseType,
     convert_base_model_to_tool,
-    convert_base_type_to_tool,  # type: ignore
-    convert_function_to_tool,  # type: ignore
+    convert_base_type_to_tool,
+    convert_function_to_tool,
 )
-
-
-def pydantic_to_dataclass(
-    klass: Type[BaseModel],
-    classname: str | None = None,
-) -> Any:
-    """
-    Dataclass from Pydantic model
-
-    Transferred entities:
-        * Field names
-        * Type annotations, except of Annotated etc
-        * Default factory or default value
-
-    Validators are not transferred.
-
-    Order of fields may change due to dataclass's positional arguments.
-
-    """
-    dataclass_args = []
-    for name, info in klass.model_fields.items():
-        if info.default_factory is not None:
-            dataclass_field = dataclasses.field(
-                default_factory=info.default_factory,
-            )
-            dataclass_arg = (name, info.annotation, dataclass_field)
-        elif info.default is not PydanticUndefined:
-            dataclass_field = dataclasses.field(
-                default=info.get_default(),
-            )
-            dataclass_arg = (name, info.annotation, dataclass_field)
-        else:
-            dataclass_arg = (name, info.annotation)
-
-        dataclass_args.append(dataclass_arg)
-
-    dataclass_args.sort(key=lambda arg: len(arg) > 2)
-
-    return dataclasses.make_dataclass(
-        classname or f"__{klass.__name__}Dataclass",
-        dataclass_args,
-    )
 
 
 class GeminiTool(BaseTool[FunctionCall]):
@@ -115,16 +73,42 @@ class GeminiTool(BaseTool[FunctionCall]):
         Returns:
             The constructed `Tool` schema.
         """
+        super().tool_schema()
+        model_schema: dict[str, Any] = cls.model_json_schema()
+        pprint.pprint(model_schema)
 
-        dc_cls = pydantic_to_dataclass(cls)
+        # Replace all references with their values
+        without_refs: dict[str, Any] = jsonref.replace_refs(model_schema)  # type: ignore
+        pprint.pprint(without_refs)
 
-        def fun(a: Type[dc_cls]):
-            pass
+        # Remove all Defs
+        without_refs.pop("$defs")
+        pprint.pprint(without_refs)
 
-        cfd: CallableFunctionDeclaration = (
-            content_types.FunctionDeclaration.from_function(fun)
+        # Get the name and description, and remove them from the schema
+        name: str = without_refs.pop("title")  # type: ignore
+        description: str = (  # type: ignore
+            without_refs.pop("description", None) or DEFAULT_TOOL_DOCSTRING
         )
-        return Tool(function_declarations=[cfd])
+        parameters: dict[str, Any] = without_refs
+
+        # Remove all instances of title key in each param definition
+        # This is careful not to delete keys that represent a field with the name title
+        remove_invalid_title_keys_from_parameters(parameters)
+
+        print(f"{name=}")
+        print(f"{description=}")
+        print(f"{parameters=}")
+
+        return Tool(
+            function_declarations=[
+                FunctionDeclaration(
+                    name=name,
+                    description=description,
+                    parameters=parameters,
+                )
+            ]
+        )
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
