@@ -462,7 +462,9 @@ class BaseExtractor(
 
         properties = getmembers(self)
         for name, value in properties:
-            if not hasattr(TempCall, name):
+            if not hasattr(TempCall, name) or (
+                name == "messages" and "messages" in self.__class__.__dict__
+            ):
                 setattr(TempCall, name, value)
 
         return TempCall
