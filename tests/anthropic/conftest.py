@@ -61,6 +61,24 @@ def fixture_anthropic_message() -> Message:
 
 
 @pytest.fixture()
+def fixture_anthropic_message_with_json_tool() -> Message:
+    """Returns an Anthropic message."""
+    return Message(
+        id="0",
+        content=[
+            ContentBlock(
+                text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+                type="text",
+            )
+        ],
+        model="claude-3-haiku-20240307",
+        role="assistant",
+        type="message",
+        usage=Usage(input_tokens=0, output_tokens=0),
+    )
+
+
+@pytest.fixture()
 def fixture_anthropic_message_with_tools_bad_stop_reason(
     fixture_anthropic_message_with_tools: Message,
 ) -> Message:
