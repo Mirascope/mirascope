@@ -117,6 +117,7 @@ nav:
       - Client Wrappers: "integrations/client_wrappers.md"
       - FastAPI: "integrations/fastapi.md"
       - Logfire: "integrations/logfire.md"
+      - Langfuse: "integrations/langfuse.md"
       - Weights & Biases: "integrations/weights_and_biases.md"
       - LangChain & LangSmith: "integrations/langchain.md"
       - Llama Index: "integrations/llama_index.md"
@@ -155,6 +156,9 @@ nav:
           - extractors: "api/gemini/extractors.md"
           - tools: "api/gemini/tools.md"
           - types: "api/gemini/types.md"
+      - langfuse:
+          - "api/langfuse/index.md"
+          - langfuse: "api/langfuse/langfuse.md"
       - logfire:
           - "api/logfire/index.md"
           - logfire: "api/logfire/logfire.md"

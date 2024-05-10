@@ -1,6 +1,6 @@
 # Weights & Biases
 
-If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered
+If you want to seamlessly use Weights & Biases’ logging functionality, we’ve got you covered.
 
 ## Weave
 
