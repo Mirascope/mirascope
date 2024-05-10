@@ -1,14 +1,19 @@
 """Classes for using tools with Google's Gemini API."""
 from __future__ import annotations
 
-from typing import Callable, Type
+import pprint
+from typing import Any, Callable, Type
 
+import jsonref
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
     FunctionDeclaration,
     Tool,
 )
 from pydantic import BaseModel, ConfigDict
+
+from mirascope.base.tools import DEFAULT_TOOL_DOCSTRING
+from mirascope.gemini.utils import remove_invalid_title_keys_from_parameters
 
 from ..base import (
     BaseTool,
@@ -68,20 +73,42 @@ class GeminiTool(BaseTool[FunctionCall]):
         Returns:
             The constructed `Tool` schema.
         """
-        tool_schema = super().tool_schema()
-        if "parameters" in tool_schema:
-            if "$defs" in tool_schema["parameters"]:
-                raise ValueError(
-                    "Unfortunately Google's Gemini API cannot handle nested structures "
-                    "with $defs."
+        super().tool_schema()
+        model_schema: dict[str, Any] = cls.model_json_schema()
+        pprint.pprint(model_schema)
+
+        # Replace all references with their values
+        without_refs: dict[str, Any] = jsonref.replace_refs(model_schema)  # type: ignore
+        pprint.pprint(without_refs)
+
+        # Remove all Defs
+        without_refs.pop("$defs")
+        pprint.pprint(without_refs)
+
+        # Get the name and description, and remove them from the schema
+        name: str = without_refs.pop("title")  # type: ignore
+        description: str = (  # type: ignore
+            without_refs.pop("description", None) or DEFAULT_TOOL_DOCSTRING
+        )
+        parameters: dict[str, Any] = without_refs
+
+        # Remove all instances of title key in each param definition
+        # This is careful not to delete keys that represent a field with the name title
+        remove_invalid_title_keys_from_parameters(parameters)
+
+        print(f"{name=}")
+        print(f"{description=}")
+        print(f"{parameters=}")
+
+        return Tool(
+            function_declarations=[
+                FunctionDeclaration(
+                    name=name,
+                    description=description,
+                    parameters=parameters,
                 )
-            tool_schema["parameters"]["properties"] = {
-                prop: {
-                    key: value for key, value in prop_schema.items() if key != "title"
-                }
-                for prop, prop_schema in tool_schema["parameters"]["properties"].items()
-            }
-        return Tool(function_declarations=[FunctionDeclaration(**tool_schema)])
+            ]
+        )
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
