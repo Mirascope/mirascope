@@ -82,9 +82,9 @@ def mirascope_logfire_span(fn: Callable):
 
     if inspect.isasyncgenfunction(fn):
         return wrapper_generator_async
-    if inspect.iscoroutinefunction(fn):
+    elif inspect.iscoroutinefunction(fn):
         return wrapper_async
-    if inspect.isgeneratorfunction(fn):
+    elif inspect.isgeneratorfunction(fn):
         return wrapper_generator
     return wrapper
 

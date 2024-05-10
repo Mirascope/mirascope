@@ -8,6 +8,7 @@ from anthropic.types import (
     ContentBlockStartEvent,
     Message,
     MessageStreamEvent,
+    Usage,
 )
 from anthropic.types.beta.tools import ToolsBetaMessage
 from anthropic.types.completion_create_params import Metadata
@@ -133,6 +134,21 @@ class AnthropicCallResponse(
         """Returns the string text of the 0th text block."""
         block = self.response.content[0]
         return block.text if block.type == "text" else ""
+
+    @property
+    def usage(self) -> Usage:
+        """Returns the usage of the message."""
+        return self.response.usage
+
+    @property
+    def input_tokens(self) -> int:
+        """Returns the number of input tokens."""
+        return self.usage.input_tokens
+
+    @property
+    def output_tokens(self) -> int:
+        """Returns the number of output tokens."""
+        return self.usage.output_tokens
 
     def dump(self) -> dict[str, Any]:
         """Dumps the response to a dictionary."""

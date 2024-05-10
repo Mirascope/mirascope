@@ -18,6 +18,7 @@ from openai.types.chat.chat_completion_chunk import ChoiceDelta, ChoiceDeltaTool
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.chat.completion_create_params import ResponseFormat
+from openai.types.completion_usage import CompletionUsage
 from openai.types.create_embedding_response import CreateEmbeddingResponse
 from pydantic import ConfigDict
 
@@ -191,6 +192,27 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         tools = self.tools
         if tools:
             return tools[0]
+        return None
+
+    @property
+    def usage(self) -> Optional[CompletionUsage]:
+        """Returns the usage of the chat completion."""
+        if self.response.usage:
+            return self.response.usage
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[int]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.prompt_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.completion_tokens
         return None
 
     def dump(self) -> dict[str, Any]:

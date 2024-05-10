@@ -93,6 +93,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
     weave: Optional[Callable[[T], T]] = None
+    langfuse: Optional[Callable[..., Callable]] = None
     # TODO: Improve typing for logfire params
     logfire: Optional[Callable[..., Callable]] = None
     logfire_async: Optional[Callable[..., Callable]] = None
@@ -105,7 +106,13 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
-        extra_exclude = {"tools", "weave", "logfire", "logfire_async"}
+        extra_exclude = {
+            "tools",
+            "weave",
+            "logfire",
+            "logfire_async",
+            "langfuse",
+        }
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
@@ -158,6 +165,33 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
 
         If there is no string content (e.g. when using tools), this method must return
         the empty string.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def usage(self) -> Any:
+        """Should return the usage of the response.
+
+        If there is no usage, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def input_tokens(self) -> Optional[Union[int, float]]:
+        """Should return the number of input tokens.
+
+        If there is no input_tokens, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def output_tokens(self) -> Optional[Union[int, float]]:
+        """Should return the number of output tokens.
+
+        If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
 

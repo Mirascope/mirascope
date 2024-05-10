@@ -29,6 +29,36 @@ from mirascope.openai.types import OpenAIEmbeddingParams
 
 
 @pytest.fixture()
+def fixture_chat_completion_no_usage() -> ChatCompletion:
+    """Returns a chat completion."""
+    return ChatCompletion(
+        id="test_id",
+        choices=[
+            Choice(
+                finish_reason="stop",
+                index=0,
+                message=ChatCompletionMessage(
+                    content="test content 0", role="assistant"
+                ),
+                **{"logprobs": None},
+            ),
+            Choice(
+                finish_reason="stop",
+                index=1,
+                message=ChatCompletionMessage(
+                    content="test content 1", role="assistant"
+                ),
+                **{"logprobs": None},
+            ),
+        ],
+        created=0,
+        model="gpt-4",
+        object="chat.completion",
+        usage=None,
+    )
+
+
+@pytest.fixture()
 def fixture_chat_completion_with_tools_json_mode(
     fixture_chat_completion: ChatCompletion,
 ) -> ChatCompletion:
@@ -73,7 +103,7 @@ def fixture_my_openai_tool_function() -> Callable:
 
 
 @pytest.fixture()
-def fixture_chat_compmletion_with_tools_bad_stop_sequence(
+def fixture_chat_completion_with_tools_bad_stop_sequence(
     fixture_chat_completion_with_tools: ChatCompletion,
 ) -> ChatCompletion:
     """Returns a chat completion with tool calls but a bad stop sequence."""

@@ -10,6 +10,7 @@ from mistralai.models.chat_completion import (
     DeltaMessage,
     ToolCall,
     ToolChoice,
+    UsageInfo,
 )
 from pydantic import ConfigDict
 
@@ -133,6 +134,21 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         if tools:
             return tools[0]
         return None
+
+    @property
+    def usage(self) -> UsageInfo:
+        """Returns the usage of the chat completion."""
+        return self.response.usage
+
+    @property
+    def input_tokens(self) -> int:
+        """Returns the number of input tokens."""
+        return self.usage.prompt_tokens
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        return self.usage.completion_tokens
 
     def dump(self) -> dict[str, Any]:
         """Dumps the response to a dictionary."""

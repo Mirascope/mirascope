@@ -222,7 +222,8 @@ def retry(fn: F) -> F:
         try:
             for attempt in retries:
                 with attempt:
-                    for value in fn(*args, **kwargs):
+                    generator = fn(*args, **kwargs)
+                    for value in generator:
                         yield value
         except RetryError:
             raise

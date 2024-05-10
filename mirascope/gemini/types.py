@@ -119,6 +119,24 @@ class GeminiCallResponse(
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text
 
+    @property
+    def usage(self) -> None:
+        """Returns the usage of the chat completion.
+
+        google.generativeai does not have Usage, so we return None
+        """
+        return None
+
+    @property
+    def input_tokens(self) -> None:
+        """Returns the number of input tokens."""
+        return None
+
+    @property
+    def output_tokens(self) -> None:
+        """Returns the number of output tokens."""
+        return None
+
     def dump(self) -> dict[str, Any]:
         """Dumps the response to a dictionary."""
         return {

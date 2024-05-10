@@ -15,6 +15,7 @@ from groq.types.chat.chat_completion import (
     ChoiceMessage,
     ChoiceMessageToolCall,
     ChoiceMessageToolCallFunction,
+    Usage,
 )
 from groq.types.chat.completion_create_params import ResponseFormat, ToolChoice
 from httpx import Timeout
@@ -185,6 +186,25 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         tools = self.tools
         if tools:
             return tools[0]
+        return None
+
+    @property
+    def usage(self) -> Optional[Usage]:
+        """Returns the usage of the chat completion."""
+        return self.response.usage
+
+    @property
+    def input_tokens(self) -> Optional[int]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.prompt_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.completion_tokens
         return None
 
     def dump(self) -> dict[str, Any]:

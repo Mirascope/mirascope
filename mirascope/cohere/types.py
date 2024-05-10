@@ -11,6 +11,7 @@ from cohere import (
     StreamedChatResponse_ToolCallsGeneration,
 )
 from cohere.types import (
+    ApiMetaBilledUnits,
     ChatCitation,
     ChatConnector,
     ChatDocument,
@@ -184,6 +185,27 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         tools = self.tools
         if tools:
             return tools[0]
+        return None
+
+    @property
+    def usage(self) -> Optional[ApiMetaBilledUnits]:
+        """Returns the usage of the response."""
+        if self.response.meta:
+            return self.response.meta.billed_units
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[float]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.input_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[float]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.output_tokens
         return None
 
     def dump(self) -> dict[str, Any]:

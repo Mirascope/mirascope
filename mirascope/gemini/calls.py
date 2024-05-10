@@ -91,14 +91,21 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             generate_content = self.call_params.weave(
                 generate_content
             )  # pragma: no cover
-        if self.call_params.logfire:
+        if self.call_params.logfire:  # pragma: no cover
             generate_content = self.call_params.logfire(
                 generate_content,
                 "gemini",
                 response_type=GeminiCallResponse,
                 tool_types=tool_types,
+            )
+            kwargs["model"] = model_name
+        if self.call_params.langfuse:  # pragma: no cover
+            generate_content = self.call_params.langfuse(
+                generate_content,
+                "gemini",
+                response_type=GeminiCallResponse,
             )  # pragma: no cover
-            kwargs["model"] = model_name  # pragma: no cover
+            kwargs["model"] = model_name
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
