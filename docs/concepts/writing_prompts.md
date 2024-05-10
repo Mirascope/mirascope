@@ -98,11 +98,8 @@ from mirascope import BasePrompt
 
 class BookRecommendationPrompt(BasePrompt):
     prompt_template = """
-    SYSTEM:
-    You are the world's greatest librarian.
-
-    USER:
-    Can you recommend some books on {topic}?
+    SYSTEM: You are the world's greatest librarian.
+    USER: Can you recommend some books on {topic}?
     """
 
     topic: str
@@ -117,11 +114,38 @@ print(prompt.messages())
 ```
 
 !!! note
-    This example is using Mirascope base `Message. If you are using a different provider, refer to the provider's documentation on their message roles.
 
-## Magic is optional
+    This example is using Mirascope base ``Message`. If you are using a different provider, refer to the provider's documentation on their message roles.
 
-We understand that there are users that do not want to use template string magic. Mirascope allows the user to write the messages array manually, which has the added benefit of accessing functionality that is not yet supported by the template parser (such as Vision support).
+!!! warning
+
+    Note that the parser will only parse expected keyword roles available to thee provider. This ensures that keywords like `KEYWORD:` will not accidentally get parsed as a role; however, this also means that typos such as `USERS:` will also not get parsed.
+
+    We are working on a VSCode extension to help identify these common typos and avoid potentially annoying silent bugs.
+
+### Multi-Line Messages
+
+When writing longer, multi-line prompts, the prompt template parser expects the content for each role to start on a new line below the role keyword so that e.g. tabs can be properly dedented. The newline between each role is optional but provides additional readability.
+
+```python
+from mirascope import BasePrompt
+
+
+class BookRecommendationPrompt(BasePrompt):
+    prompt_template = """
+    SYSTEM:
+    When writing longer, multi-line prompts, start content on a new line.
+    This will ensure the content gets properly parsed and dedented.
+
+    USER:
+    The additional new line above between the roles is optional.
+    However, we find this provides additional readability.
+    """
+```
+
+## Prompt template "magic" is optional
+
+We understand that there are users that do not want to use prompt template string parsing "magic". Mirascope allows the user to write the messages array manually, which has the added benefit of accessing functionality that is not yet supported by the template parser (such as Vision support).
 
 ```python
 from mirascope import BasePrompt
