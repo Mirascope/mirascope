@@ -111,12 +111,12 @@ nav:
       - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
   - Integrations:
-      - Client Wrappers: "integrations/client_wrappers.md"
-      - FastAPI: "integrations/fastapi.md"
       - Logfire: "integrations/logfire.md"
+      - FastAPI: "integrations/fastapi.md"
       - Weights & Biases: "integrations/weights_and_biases.md"
       - LangChain & LangSmith: "integrations/langchain.md"
       - Llama Index: "integrations/llama_index.md"
+      - Client Wrappers: "integrations/client_wrappers.md"
   - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"

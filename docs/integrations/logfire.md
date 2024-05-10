@@ -47,7 +47,7 @@ This will give you:
 
 ### Extract
 
-Since Mirascope is built on top of [Pydantic](https://docs.pydantic.dev/latest/), you can use the [Pydantic plugin](https://docs.pydantic.dev/latest/concepts/plugins/) to track additional logs and metrics about model validation, which you can enable using the [`pydantic_plugin`][logfire.configure(pydantic_plugin)] configuration.
+Since Mirascope is built on top of [Pydantic](https://docs.pydantic.dev/latest/), you can use the [Pydantic plugin](https://docs.pydantic.dev/latest/concepts/plugins/) to track additional logs and metrics about model validation, which you can enable using the [`pydantic_plugin`](https://docs.pydantic.dev/logfire/integrations/pydantic/) configuration.
 
 This can be particularly useful when [extracting structured information](../concepts/extracting_structured_information_using_llms.md) using LLMs:
 
