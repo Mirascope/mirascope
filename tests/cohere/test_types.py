@@ -58,6 +58,22 @@ def test_cohere_call_response_properties(
     }
 
 
+def test_cohere_call_response_properties_no_usage(
+    fixture_non_streamed_response_no_usage: NonStreamedChatResponse,
+):
+    """Test that when meta is None, usage is None."""
+    call_response = CohereCallResponse(
+        response=fixture_non_streamed_response_no_usage,
+        start_time=0,
+        end_time=0,
+        cost=1,
+    )
+
+    assert call_response.usage is None
+    assert call_response.input_tokens is None
+    assert call_response.output_tokens is None
+
+
 def test_cohere_call_response_tools(
     fixture_non_streamed_response: NonStreamedChatResponse,
     fixture_book_tool: Type[CohereTool],

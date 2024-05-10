@@ -126,15 +126,11 @@ def langfuse_generation_end(
 ):
     if response_type is not None:
         response = response_type(response=result, start_time=0, end_time=0)
-        usage = None
-        try:
-            usage = ModelUsage(
-                input=response.input_tokens,
-                output=response.output_tokens,
-                unit="TOKENS",
-            )
-        except AttributeError:
-            usage = None
+        usage = ModelUsage(
+            input=response.input_tokens,
+            output=response.output_tokens,
+            unit="TOKENS",
+        )
         generation.end(output=response.content, usage=usage)
 
 
@@ -277,10 +273,6 @@ def with_langfuse(cls):
     if hasattr(cls, "add"):
         setattr(cls, "add", mirascope_langfuse_observe(cls.add, trace))
 
-    # Chunker
-    if hasattr(cls, "chunk"):
-        setattr(cls, "chunk", mirascope_langfuse_observe(cls.chunk, trace))
-
     # Embedder
     if hasattr(cls, "embed"):
         setattr(cls, "embed", mirascope_langfuse_observe(cls.embed, trace))
@@ -302,7 +294,33 @@ def with_langfuse(cls):
         )
 
     if hasattr(cls, "call_params"):
-        cls.call_params.langfuse = mirascope_langfuse_generation(trace)
+        setattr(
+            cls,
+            "call_params",
+            cls.call_params.model_copy(
+                update={
+                    "langfuse": mirascope_langfuse_generation(trace),
+                }
+            ),
+        )
     if hasattr(cls, "vectorstore_params"):
-        cls.vectorstore_params.langfuse = mirascope_langfuse_generation(trace)
+        setattr(
+            cls,
+            "vectorstore_params",
+            cls.vectorstore_params.model_copy(
+                update={
+                    "langfuse": mirascope_langfuse_generation(trace),
+                }
+            ),
+        )
+    if hasattr(cls, "embedding_params"):
+        setattr(
+            cls,
+            "embedding_params",
+            cls.embedding_params.model_copy(
+                update={
+                    "langfuse": mirascope_langfuse_generation(trace),
+                }
+            ),
+        )
     return cls

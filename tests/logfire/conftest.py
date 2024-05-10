@@ -6,6 +6,21 @@ from openai.types.chat import (
 from openai.types.chat.chat_completion import Choice
 from openai.types.completion_usage import CompletionUsage
 
+from mirascope.anthropic.calls import AnthropicCall
+from mirascope.anthropic.types import AnthropicCallParams
+from mirascope.logfire.logfire import with_logfire
+
+
+@pytest.fixture()
+def fixture_anthropic_test_call_with_logfire() -> type[AnthropicCall]:
+    @with_logfire
+    class AnthropicLogfireCall(AnthropicCall):
+        prompt_template = ""
+        api_key = "test"
+        call_params = AnthropicCallParams()
+
+    return AnthropicLogfireCall
+
 
 @pytest.fixture()
 def fixture_chat_completion() -> ChatCompletion:

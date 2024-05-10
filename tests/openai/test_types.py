@@ -1,10 +1,12 @@
 """Tests for types for working with OpenAI with Mirascope."""
 from typing import Type
+from unittest.mock import MagicMock, patch
 
 import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from pydantic import ValidationError
 
+from mirascope.openai.calls import OpenAICall
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
     OpenAICallParams,
@@ -146,3 +148,20 @@ def test_openai_chat_completion_tools_wrong_stop_sequence(
     )
     with pytest.raises(RuntimeError):
         response.tool
+
+
+@patch(
+    "openai.resources.chat.completions.Completions.create",
+    new_callable=MagicMock,
+)
+def test_openai_call_call_no_usage(
+    mock_create: MagicMock,
+    fixture_openai_test_call: OpenAICall,
+    fixture_chat_completion_no_usage: ChatCompletion,
+) -> None:
+    """Tests `OpenAIPrompt.create` with no usage returns None for tokens and usage."""
+    mock_create.return_value = fixture_chat_completion_no_usage
+    response = fixture_openai_test_call.call(retries=1)
+    assert response.usage is None
+    assert response.input_tokens is None
+    assert response.output_tokens is None

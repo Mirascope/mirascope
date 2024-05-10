@@ -267,21 +267,3 @@ async def test_openai_call_stream_async_with_wrapper(
     async for _ in stream:
         pass
     wrapper.assert_called_once()
-
-
-@patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
-)
-def test_openai_call_call_no_usage(
-    mock_create: MagicMock,
-    fixture_openai_test_call: OpenAICall,
-    fixture_chat_completion_no_usage: ChatCompletion,
-) -> None:
-    """Tests `OpenAIPrompt.create` returns the expected response when called."""
-    mock_create.return_value = fixture_chat_completion_no_usage
-    kwargs = {"temperature": 0.8}
-    response = fixture_openai_test_call.call(retries=1, **kwargs)
-    assert response.usage is None
-    assert response.input_tokens is None
-    assert response.output_tokens is None

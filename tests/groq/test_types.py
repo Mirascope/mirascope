@@ -24,6 +24,23 @@ def test_groq_call_response(
     assert response.content == "test content"
     assert response.tools is None
     assert response.tool is None
+    assert response.usage is not None
+    assert response.input_tokens is not None
+    assert response.output_tokens is not None
+
+
+def test_groq_call_response_no_usageq(
+    fixture_chat_completion_response_no_usage: ChatCompletion,
+) -> None:
+    """Tests the `GroqCallResponse` class."""
+    response = GroqCallResponse(
+        response=fixture_chat_completion_response_no_usage,
+        start_time=0,
+        end_time=0,
+    )
+    assert response.usage is None
+    assert response.input_tokens is None
+    assert response.output_tokens is None
 
 
 def test_groq_call_response_dump(

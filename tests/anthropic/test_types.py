@@ -22,6 +22,9 @@ def test_anthropic_call_response(fixture_anthropic_message: Message):
     assert response.content == "test"
     assert response.tools is None
     assert response.tool is None
+    assert response.usage is not None
+    assert response.output_tokens is not None
+    assert response.input_tokens is not None
     assert response.dump() == {
         "start_time": 0,
         "end_time": 1,

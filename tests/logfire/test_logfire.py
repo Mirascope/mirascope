@@ -191,12 +191,6 @@ async def test_cohere_call_stream_async_with_logfire(
     assert my_call.call_params.logfire_async is not None
 
 
-@with_logfire
-class AnthropicTestCall(AnthropicCall):
-    prompt_template = ""
-    api_key = "test"
-
-
 @patch(
     "anthropic.resources.messages.Messages.stream",
     new_callable=MagicMock,
@@ -204,12 +198,13 @@ class AnthropicTestCall(AnthropicCall):
 def test_anthropic_call_stream(
     mock_stream: MagicMock,
     fixture_anthropic_message_chunks: ContextManager[list],
+    fixture_anthropic_test_call_with_logfire: type[AnthropicCall],
 ):
     """Tests `AnthropicPrompt.stream` returns the expected response when called."""
     mock_stream.return_value = fixture_anthropic_message_chunks
     mock_stream.__name__ = "stream"
 
-    my_call = AnthropicTestCall()
+    my_call = fixture_anthropic_test_call_with_logfire()
     stream = my_call.stream()
     for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
@@ -224,12 +219,13 @@ def test_anthropic_call_stream(
 async def test_anthropic_call_stream_async(
     mock_stream: MagicMock,
     fixture_anthropic_async_message_chunks: AsyncContextManager[list],
+    fixture_anthropic_test_call_with_logfire: type[AnthropicCall],
 ):
-    """Tests `AnthropicPrompt.stream` returns the expected response when called."""
+    """Tests `AnthropicPrompt.stream_async` returns the expected response when called."""
     mock_stream.return_value = fixture_anthropic_async_message_chunks
     mock_stream.__name__ = "stream"
 
-    my_call = AnthropicTestCall()
+    my_call = fixture_anthropic_test_call_with_logfire()
     stream = my_call.stream_async()
     async for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)

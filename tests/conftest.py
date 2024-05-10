@@ -233,6 +233,26 @@ def fixture_non_streamed_response(
 
 
 @pytest.fixture()
+def fixture_non_streamed_response_no_usage(
+    fixture_chat_search_query: ChatSearchQuery,
+    fixture_chat_search_result: ChatSearchResult,
+    fixture_chat_document: dict[str, str],
+    fixture_chat_citation: ChatCitation,
+    fixture_tool_call: ToolCall,
+) -> NonStreamedChatResponse:
+    """Returns a Cohere chat response."""
+    return NonStreamedChatResponse(
+        text="Test response",
+        search_queries=[fixture_chat_search_query],
+        search_results=[fixture_chat_search_result],
+        documents=[fixture_chat_document],
+        citations=[fixture_chat_citation],
+        tool_calls=[fixture_tool_call],
+        meta=None,
+    )
+
+
+@pytest.fixture()
 def fixture_cohere_response_chunk():
     """Returns a Cohere chat response chunk."""
     return StreamedChatResponse_TextGeneration(
