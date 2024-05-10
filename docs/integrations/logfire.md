@@ -8,7 +8,7 @@
 from mirascope.logfire import with_logfire
 ```
 
-`with_logfire` is a decorator that can be used on all Mirascope classes to automatically log both Mirascope calls and also all our LLM providers.
+`with_logfire` is a decorator that can be used on all Mirascope classes to automatically log both Mirascope calls and also all our [supported LLM providers](../concepts/supported_llm_providers.md).
 
 ## Examples
 
@@ -16,17 +16,16 @@ from mirascope.logfire import with_logfire
 
 This is a basic call example but will work with all our call functions, `call`, `stream`, `call_async`, `stream_async`.
 
-```python
+```py hl_lines="1 2 5 8"
 import logfire
-
 from mirascope.logfire import with_logfire
-from mirascope.openai import OpenAICall
+from mirascope.anthropic import AnthropicCall
 
 logfire.configure()
 
 
 @with_logfire
-class BookRecommender(OpenAICall):
+class BookRecommender(AnthropicCall):
     prompt_template = "Please recommend some {genre} books"
 
     genre: str
@@ -35,20 +34,32 @@ class BookRecommender(OpenAICall):
 recommender = BookRecommender(genre="fantasy")
 response = recommender.call()  # this will automatically get logged with logfire
 print(response.content)
+#> Here are some recommendations for great fantasy book series: ...
 ```
+
+This will give you:
+
+* A span around the `AnthropicCall.call()` that captures items like the prompt template, templating properties and fields, and input/output attributes
+* Human-readable display of the conversation with the agent
+* Details of the response, including the number of tokens used
+
+![logfire-screenshot-mirascope-anthropic-call](../images/logfire-screenshot-mirascope-anthropic-call.png)
 
 ### Extract
 
-```python
+Since Mirascope is built on top of [Pydantic](https://docs.pydantic.dev/latest/), you can use the [Pydantic plugin](https://docs.pydantic.dev/latest/concepts/plugins/) to track additional logs and metrics about model validation, which you can enable using the [`pydantic_plugin`](https://docs.pydantic.dev/logfire/integrations/pydantic/) configuration.
+
+This can be particularly useful when [extracting structured information](../concepts/extracting_structured_information_using_llms.md) using LLMs:
+
+```py hl_lines="3 4 8 17"
 from typing import Literal, Type
 
 import logfire
-from pydantic import BaseModel
-
 from mirascope.logfire import with_logfire
 from mirascope.openai import OpenAIExtractor
+from pydantic import BaseModel
 
-logfire.configure()
+logfire.configure(pydantic_plugin=logfire.PydanticPlugin(record="all"))
 
 
 class TaskDetails(BaseModel):
@@ -74,7 +85,17 @@ task_details = TaskExtractor(
 ).extract()  # this will be logged automatically with logfire
 assert isinstance(task_details, TaskDetails)
 print(task_details)
+#> description='Submit quarterly report' due_date='next Friday' priority='high'
 ```
+
+This will give you:
+
+* Tracking for validation of Pydantic models
+* A span around the `OpenAIExtractor.extract()` that captures items like the prompt template, templating properties and fields, and input/output attributes
+* Human-readable display of the conversation with the agent including the function call
+* Details of the response, including the number of tokens used
+
+![logfire-screenshot-mirascope-openai-extractor](../images/logfire-screenshot-mirascope-openai-extractor.png)
 
 ### FastAPI
 

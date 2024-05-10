@@ -1,4 +1,5 @@
 """Type classes for interacting with Anthropics's Claude API."""
+import json
 from typing import Any, Callable, Literal, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -10,7 +11,7 @@ from anthropic.types import (
     MessageStreamEvent,
     Usage,
 )
-from anthropic.types.beta.tools import ToolsBetaMessage
+from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
@@ -99,6 +100,20 @@ class AnthropicCallResponse(
         """Returns the tools for the 0th choice message."""
         if not self.tool_types:
             return None
+
+        if self.response_format == "json":
+            # Note: we only handle single tool calls in JSON mode.
+            tool_type = self.tool_types[0]
+            return [
+                tool_type.from_tool_call(
+                    ToolUseBlock(
+                        id="id",
+                        input=json.loads(self.content),
+                        name=tool_type.__name__,
+                        type="tool_use",
+                    )
+                )
+            ]
 
         if self.response.stop_reason != "tool_use":
             raise RuntimeError(

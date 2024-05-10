@@ -1,0 +1,21 @@
+name: 🐛 Bug
+description: Report any issue with Mirascope
+labels: [Bug]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please explain what you're seeing and what you would expect to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: version
+    attributes:
+      label: Python, Mirascope & OS Versions, related packages (not required)
+      description: |
+        Which version of Python and Mirascope are you using? Which Operating System?
+
+      render: TOML
