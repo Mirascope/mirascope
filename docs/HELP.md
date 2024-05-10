@@ -1,3 +1,37 @@
+---
+hide:
+- navigation
+- toc
+---
+
+# Getting help with Mirascope
+
+If you need help getting started with **Mirascope** or with advanced usage, the following sources may be useful.
+
+## :simple-slack: Slack
+
+The [Mirascope Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) is a great place to ask questions, and get help and chat about Mirascope.
+
+## :simple-github: GitHub Issues
+
+The [Mirascope GitHub Issues](https://github.com/Mirascope/mirascope/issues) are a great place to ask questions, and give us feedback.
+
+## :material-help: Usage Documentation
+
+The [usage documentation](concepts/philosophy.md) is the most complete guide on how to get started with **Mirascope**.
+
+## :material-api: SDK API Documentation
+
+The [API Reference](api/index.md) give reference docs for the **Mirascope** library, auto-generated directly from the code so it's always up-to-date.
+
+## :material-email: Email
+
+You can also email us at [support@mirascope.io](mailto:support@mirascope.io) or [feedback@mirascope.io](mailto:feedback@mirascope.io).
+
+[slack]: https://join.slack.com/t/pydanticlogfire/shared_invite/zt-2b57ljub4-936siSpHANKxoY4dna7qng
+[github-issues]: https://github.com/pydantic/logfire/issues
+
+
 # How to help Mirascope
 
 ## Star Mirascope on GitHub
@@ -27,7 +61,7 @@
 
 ## Help Others
 
-We are a kind and welcoming community that encourages you to help others with their questions on GitHub Issues / Discussions.
+We are a kind and welcoming community that encourages you to help others with their questions on GitHub Issues or in our Slack Community.
 
 -   Guide for asking questions
     -   First, search through issues and discussions to see if others have faced similar issues
