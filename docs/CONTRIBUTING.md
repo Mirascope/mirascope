@@ -1,3 +1,9 @@
+---
+hide:
+- navigation
+- toc
+---
+
 # Contributing
 
 ## Setting Up Development Environment

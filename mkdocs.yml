@@ -92,10 +92,7 @@ plugins:
             docstring_style: google
 
 nav:
-  - Get Started:
-      - Mirascope: "README.md"
-      - Contributing: "CONTRIBUTING.md"
-      - How to help: "HELP.md"
+  - Get Started: "README.md"
   - Concepts:
       - Philosophy: "concepts/philosophy.md"
       - Writing Prompts: "concepts/writing_prompts.md"
@@ -187,3 +184,5 @@ nav:
           - "api/wandb/index.md"
           - wandb: "api/wandb/wandb.md"
           - weave: "api/wandb/weave.md"
+  - Help: "HELP.md"
+  - Contributing: "CONTRIBUTING.md"
