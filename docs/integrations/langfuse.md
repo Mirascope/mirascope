@@ -41,9 +41,11 @@ print(response.content)
 
 This will give you:
 
-A trace around the AnthropicCall.call() that captures items like the prompt template, and input/output attributes and more.
-Human-readable display of the conversation with the agent
-Details of the response, including the number of tokens used
+* A trace around the AnthropicCall.call() that captures items like the prompt template, and input/output attributes and more.
+* Human-readable display of the conversation with the agent
+* Details of the response, including the number of tokens used
+
+![langfuse-screenshot-mirascope-anthropic-call](../images/langfuse-screenshot-mirascope-anthropic-call.png)
 
 ## Extract
 
@@ -82,6 +84,6 @@ print(task_details)
 # > description='Submit quarterly report' due_date='next Friday' priority='high'
 ```
 
-This will give you:
+This will give you the same view as you would get from using `langfuse.openai`. We will be adding more extraction support for other providers soon.
 
-Same view as you would get from using `langfuse.openai`. We will be adding more extraction support for other providers soon.
+![langfuse-screenshot-mirascope-openai-extractor](../images/langfuse-screenshot-mirascope-openai-extractor.png)
