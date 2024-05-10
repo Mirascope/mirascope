@@ -79,14 +79,19 @@ def test_base_prompt(
     assert prompt.dump() == expected_dump
 
 
-def test_base_prompt_bad_message_role() -> None:
-    """Tests that a bad message role throws an error."""
-    with pytest.raises(ValueError):
+def test_base_prompt_allow_any_keyword() -> None:
+    """Tests that a any non-role keyword is parsed correctly."""
 
-        class Prompt(BasePrompt):
-            prompt_template = "BAD: Bad role should throw error"
+    class Prompt(BasePrompt):
+        prompt_template = """
+        USER:
+        KEYWORD: allow this
+        """
 
-        Prompt().messages()
+    messages = Prompt().messages()
+
+    assert len(messages) == 1
+    assert messages[0] == {"role": "user", "content": "KEYWORD: allow this"}
 
 
 def test_base_prompt_messages_injection() -> None:
