@@ -28,9 +28,6 @@ The [API Reference](api/index.md) give reference docs for the **Mirascope** libr
 
 You can also email us at [support@mirascope.io](mailto:support@mirascope.io) or [feedback@mirascope.io](mailto:feedback@mirascope.io).
 
-[slack]: https://join.slack.com/t/pydanticlogfire/shared_invite/zt-2b57ljub4-936siSpHANKxoY4dna7qng
-[github-issues]: https://github.com/pydantic/logfire/issues
-
 
 # How to help Mirascope
 
