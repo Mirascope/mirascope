@@ -68,6 +68,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat = self.call_params.logfire(
                 chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
             )  # pragma: no cover
+        if self.call_params.langfuse:
+            chat = self.call_params.langfuse(
+                chat,
+                "cohere",
+                is_async=False,
+                response_type=CohereCallResponse,
+            )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = chat(message=message, **kwargs)
         cost = None
@@ -106,6 +113,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         if self.call_params.logfire_async:
             chat = self.call_params.logfire_async(
                 chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
+            )  # pragma: no cover
+        if self.call_params.langfuse:
+            chat = self.call_params.langfuse(
+                chat,
+                "cohere",
+                is_async=True,
+                response_type=CohereCallResponse,
             )  # pragma: no cover
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await chat(message=message, **kwargs)
@@ -146,6 +160,10 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             chat_stream = self.call_params.logfire(
                 chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
             )  # pragma: no cover
+        if self.call_params.langfuse:
+            chat_stream = self.call_params.langfuse(
+                chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
+            )  # pragma: no cover
         for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
@@ -172,6 +190,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         if self.call_params.logfire_async:
             chat_stream = self.call_params.logfire_async(
                 chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
+            )  # pragma: no cover
+        if self.call_params.langfuse:
+            chat_stream = self.call_params.langfuse(
+                chat_stream,
+                "cohere",
+                is_async=True,
+                response_chunk_type=CohereCallResponseChunk,
             )  # pragma: no cover
         async for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)

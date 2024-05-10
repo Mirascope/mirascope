@@ -53,6 +53,28 @@ def fixture_chat_completion_response(
     )
 
 
+@pytest.fixture()
+def fixture_chat_completion_response_no_usage(
+    fixture_chat_message: ChoiceMessage,
+) -> ChatCompletion:
+    """Returns a `ChatCompletion` instance with no usage."""
+    return ChatCompletion(
+        id="test",
+        object="chat.completion",
+        created=0,
+        model="llama2-70b-4096",
+        choices=[
+            Choice(
+                index=0,
+                message=fixture_chat_message,
+                finish_reason="stop",
+                logprobs=ChoiceLogprobs(),
+            )
+        ],
+        usage=None,
+    )
+
+
 class BookTool(GroqTool):
     title: str
     author: str

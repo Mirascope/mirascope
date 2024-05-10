@@ -40,6 +40,7 @@ class BaseVectorStoreParams(BaseModel):
     weave: Optional[Callable[[T], T]] = None
     logfire: Optional[Callable[..., Callable]] = None
     logfire_async: Optional[Callable[..., Callable]] = None
+    langfuse: Optional[Callable[..., Callable]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -47,7 +48,7 @@ class BaseVectorStoreParams(BaseModel):
         self,
     ) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
-        exclude = {"weave", "logfire", "logfire_async"}
+        exclude = {"weave", "logfire", "logfire_async", "langfuse"}
         kwargs = {
             key: value
             for key, value in self.model_dump(exclude=exclude).items()
@@ -62,12 +63,13 @@ class BaseEmbeddingParams(BaseModel):
     model: str
     logfire: Optional[Callable[..., Callable]] = None
     logfire_async: Optional[Callable[..., Callable]] = None
+    langfuse: Optional[Callable[..., Callable]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the embedder as a keyword arguments dictionary."""
-        exclude = {"weave", "logfire", "logfire_async"}
+        exclude = {"weave", "logfire", "logfire_async", "langfuse"}
         kwargs = {
             key: value
             for key, value in self.model_dump(exclude=exclude).items()

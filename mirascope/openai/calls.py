@@ -1,6 +1,7 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
 import json
+from contextlib import suppress
 from typing import (
     Any,
     AsyncGenerator,
@@ -11,6 +12,9 @@ from typing import (
     Union,
 )
 
+with suppress(ImportError):
+    from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
+    from langfuse.openai import OpenAI as LangfuseOpenAI
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -101,13 +105,16 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.langfuse:  # pragma: no cover
+            client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:
             self.call_params.logfire(client)  # pragma: no cover
+        create = client.chat.completions.create
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = client.chat.completions.create(
+        completion = create(
             messages=messages,
             stream=False,
             **kwargs,
@@ -142,6 +149,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.langfuse:  # pragma: no cover
+            client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire:
@@ -183,6 +192,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.langfuse:  # pragma: no cover
+            client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
         if self.call_params.logfire:
@@ -221,6 +232,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        if self.call_params.langfuse:  # pragma: no cover
+            client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
         if self.call_params.logfire:

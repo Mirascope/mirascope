@@ -153,7 +153,7 @@ from mirascope.rag import TextChunker
 class MyStore(ChromaVectorStore):
     embedder = OpenAIEmbedder()
     chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
-    index_name = "wikipedia-0001"
+    index_name = "index-0001"
     client_settings = ChromaSettings()
 
 store = MyStore()

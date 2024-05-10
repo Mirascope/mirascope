@@ -82,9 +82,9 @@ def mirascope_logfire_span(fn: Callable):
 
     if inspect.isasyncgenfunction(fn):
         return wrapper_generator_async
-    if inspect.iscoroutinefunction(fn):
+    elif inspect.iscoroutinefunction(fn):
         return wrapper_async
-    if inspect.isgeneratorfunction(fn):
+    elif inspect.isgeneratorfunction(fn):
         return wrapper_generator
     return wrapper
 
@@ -379,19 +379,57 @@ def with_logfire(cls):
         setattr(cls, "add", mirascope_logfire_span(cls.add))
     if get_parent_class_name(cls, "OpenAI"):
         if hasattr(cls, "call_params"):
-            cls.call_params.logfire = logfire.instrument_openai
+            setattr(
+                cls,
+                "call_params",
+                cls.call_params.model_copy(
+                    update={
+                        "logfire": logfire.instrument_openai,
+                    }
+                ),
+            )
         if hasattr(cls, "embedding_params"):
-            cls.embedding_params.logfire = logfire.instrument_openai
+            setattr(
+                cls,
+                "embedding_params",
+                cls.embedding_params.model_copy(
+                    update={"logfire": logfire.instrument_openai}
+                ),
+            )
     else:
         # TODO: Use instrument instead when they are integrated into logfire
         if hasattr(cls, "call_params"):
-            cls.call_params.logfire = mirascope_logfire
-            cls.call_params.logfire_async = mirascope_logfire_async
+            setattr(
+                cls,
+                "call_params",
+                cls.call_params.model_copy(
+                    update={
+                        "logfire": mirascope_logfire,
+                        "logfire_async": mirascope_logfire_async,
+                    }
+                ),
+            )
         if hasattr(cls, "vectorstore_params"):
             # Wraps class methods rather than calls directly
-            cls.vectorstore_params.logfire = mirascope_logfire_span
-            cls.vectorstore_params.logfire_async = mirascope_logfire_span
+            setattr(
+                cls,
+                "vectorstore_params",
+                cls.vectorstore_params.model_copy(
+                    update={
+                        "logfire": mirascope_logfire_span,
+                        "logfire_async": mirascope_logfire_async,
+                    }
+                ),
+            )
         if hasattr(cls, "embedding_params"):
-            cls.embedding_params.logfire = mirascope_logfire
-            cls.embedding_params.logfire_async = mirascope_logfire_async
+            setattr(
+                cls,
+                "embedding_params",
+                cls.embedding_params.model_copy(
+                    update={
+                        "logfire": mirascope_logfire,
+                        "logfire_async": mirascope_logfire_async,
+                    }
+                ),
+            )
     return cls

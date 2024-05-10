@@ -33,6 +33,9 @@ def test_openai_call_call(
     mock_create.return_value = fixture_chat_completion
     kwargs = {"temperature": 0.8}
     response = fixture_openai_test_call.call(retries=1, **kwargs)
+    assert response.input_tokens is not None
+    assert response.output_tokens is not None
+    assert response.usage is not None
     assert isinstance(response, OpenAICallResponse)
     mock_create.assert_called_once_with(
         model=fixture_openai_test_call.call_params.model,

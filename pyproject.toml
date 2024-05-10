@@ -30,6 +30,7 @@ groq = { version = ">=0.4.2,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
 pinecone-client = { version = "^3.2.2", optional = true }
 logfire = { version = ">=0.26.0,<1.0.0", optional = true }
+langfuse = { version = "^2.29.3", optional = true }
 
 [tool.poetry.extras]
 cli = ["mirascope-cli"]
@@ -43,6 +44,7 @@ mistral = ["mistralai"]
 wandb = ["wandb"]
 weave = ["weave"]
 logfire = ["logfire"]
+langfuse = ["langfuse"]
 all = [
     "mirascope-cli",
     "anthropic",
@@ -56,6 +58,7 @@ all = [
     "groq",
     "cohere",
     "logfire",
+    "langfuse",
 ]
 
 [tool.poetry.group.dev.dependencies]
@@ -138,6 +141,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "weave"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module =["langfuse.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

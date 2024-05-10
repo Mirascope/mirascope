@@ -112,6 +112,7 @@ nav:
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
   - Integrations:
       - Logfire: "integrations/logfire.md"
+      - Langfuse: "integrations/langfuse.md"
       - FastAPI: "integrations/fastapi.md"
       - Weights & Biases: "integrations/weights_and_biases.md"
       - LangChain & LangSmith: "integrations/langchain.md"
@@ -152,6 +153,9 @@ nav:
           - extractors: "api/gemini/extractors.md"
           - tools: "api/gemini/tools.md"
           - types: "api/gemini/types.md"
+      - langfuse:
+          - "api/langfuse/index.md"
+          - langfuse: "api/langfuse/langfuse.md"
       - logfire:
           - "api/logfire/index.md"
           - logfire: "api/logfire/logfire.md"

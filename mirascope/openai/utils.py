@@ -5,7 +5,7 @@ from openai.types.completion_usage import CompletionUsage
 
 
 def openai_api_calculate_cost(
-    usage: CompletionUsage, model="gpt-3.5-turbo-16k"
+    usage: Optional[CompletionUsage], model="gpt-3.5-turbo-16k"
 ) -> Optional[float]:
     """Calculate the cost of a completion using the OpenAI API.
 
@@ -66,7 +66,8 @@ def openai_api_calculate_cost(
             "completion": 0.000_000_13,
         },
     }
-
+    if usage is None:
+        return None
     try:
         model_pricing = pricing[model]
     except KeyError:

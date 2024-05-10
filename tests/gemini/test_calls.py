@@ -23,6 +23,7 @@ def test_gemini_call_call(
 
     response = TempCall().call()
     assert isinstance(response, GeminiCallResponse)
+    assert response.usage is None
     assert response.content == "Who is the author?"
 
 

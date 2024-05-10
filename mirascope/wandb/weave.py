@@ -104,7 +104,13 @@ def with_weave(cls):
         setattr(cls, "extract_async", weave.op()(cls.extract_async))
 
     if hasattr(cls, "call_params"):
-        cls.call_params.weave = weave.op()
+        setattr(
+            cls, "call_params", cls.call_params.model_copy(update={"weave": weave.op()})
+        )
     if hasattr(cls, "vectorstore_params"):
-        cls.vectorstore_params.weave = weave.op()
+        setattr(
+            cls,
+            "vectorstore_params",
+            cls.vectorstore_params.model_copy(update={"weave": weave.op()}),
+        )
     return cls
