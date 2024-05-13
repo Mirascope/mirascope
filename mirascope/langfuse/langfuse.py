@@ -57,7 +57,7 @@ def mirascope_langfuse_observe(fn: Callable, trace: StatefulTraceClient):
         """Wraps a pydantic class method that returns a generator."""
         collect_trace_data(self, **kwargs)
         result = fn(self, *args, **kwargs)
-        trace.update(output=result)
+
         output = []
         for value in result:
             output.append(value)
