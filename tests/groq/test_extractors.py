@@ -77,5 +77,5 @@ def test_groq_extractor_extract_with_no_tools(
 
         call_params = GroqCallParams(model="llama2-70b-4096")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         TempExtractor().extract()

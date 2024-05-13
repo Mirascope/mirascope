@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from tenacity import RetryError
 
 from mirascope.openai.extractors import OpenAIExtractor
@@ -113,7 +113,7 @@ def test_openai_extractor_extract_with_custom_messages(
         def messages(self):
             return messages
 
-    TempExtractor().extract()
+    TempExtractor().extract(retries=2)
     mock_call.assert_called_once_with(
         model="gpt-4",
         stream=False,
@@ -147,7 +147,7 @@ async def test_openai_extractor_extract_async(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    extracted_schema = await TempExtractor().extract_async()
+    extracted_schema = await TempExtractor().extract_async(retries=2)
     assert (
         extracted_schema.model_json_schema()
         == fixture_my_openai_tool_schema.model_json_schema()
@@ -243,7 +243,7 @@ def test_openai_extractor_extract_with_no_tools(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         TempExtractor().extract()
 
 
@@ -271,7 +271,7 @@ async def test_openai_extractor_extract_async_with_no_tools(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         await TempExtractor().extract_async()
 
 
@@ -285,7 +285,7 @@ def test_openai_extractor_extract_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_with_bad_tools: ChatCompletion,
 ):
-    """Tests that `OpenAIChat` raises a `RetryError` when extraction fails."""
+    """Tests that `OpenAIChat` raises a `AttributeError` when extraction fails."""
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_bad_tools,
@@ -302,8 +302,12 @@ def test_openai_extractor_extract_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
-        TempExtractor().extract(retries=retries)
+    if retries > 1:
+        with pytest.raises(RetryError):
+            TempExtractor().extract(retries=retries)
+    else:
+        with pytest.raises(ValidationError):
+            TempExtractor().extract(retries=retries)
 
     assert mock_call.call_count == call_count
 
@@ -319,7 +323,7 @@ async def test_openai_extractor_extract_async_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_with_bad_tools: ChatCompletion,
 ):
-    """Tests that `OpenAIChat` raises a `RetryError` when extraction fails."""
+    """Tests that `OpenAIChat` raises a `AttributeError` when extraction fails."""
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_bad_tools,
@@ -335,8 +339,12 @@ async def test_openai_extractor_extract_async_with_validation_error(
         api_key = "test"
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
-        await TempExtractor().extract_async(retries=retries)
+    if retries > 1:
+        with pytest.raises(RetryError):
+            await TempExtractor().extract_async(retries=retries)
+    else:
+        with pytest.raises(ValidationError):
+            await TempExtractor().extract_async(retries=retries)
     assert mock_call.call_count == call_count
 
 
@@ -420,7 +428,7 @@ def test_openai_extractor_stream(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    partial_schemas = list(TempExtractor().stream())
+    partial_schemas = list(TempExtractor().stream(retries=2))
     assert len(partial_schemas) == 3
     assert partial_schemas[0].model_dump() == {"param": "param", "optional": None}
     assert partial_schemas[1].model_dump() == {"param": "param", "optional": 0}
@@ -449,7 +457,9 @@ async def test_openai_extractor_stream_async(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    partial_schemas = [schema async for schema in TempExtractor().stream_async()]
+    partial_schemas = [
+        schema async for schema in TempExtractor().stream_async(retries=2)
+    ]
     assert len(partial_schemas) == 3
     assert partial_schemas[0].model_dump() == {"param": "param", "optional": None}
     assert partial_schemas[1].model_dump() == {"param": "param", "optional": 0}
@@ -466,7 +476,7 @@ def test_openai_extractor_stream_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
 ):
-    """Tests that `OpenAIExtractor` raises a `RetryError` when extraction fails."""
+    """Tests that `OpenAIExtractor` raises a `AttributeError` when extraction fails."""
     mock_stream.return_value = [
         OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_bad_tools,
@@ -482,9 +492,14 @@ def test_openai_extractor_stream_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
-        for _ in TempExtractor().stream(retries=retries):
-            pass  # pragma: no cover
+    if retries > 1:
+        with pytest.raises(RetryError):
+            for _ in TempExtractor().stream(retries=retries):
+                pass  # pragma: no cover
+    else:
+        with pytest.raises(ValidationError):
+            for _ in TempExtractor().stream(retries=retries):
+                pass  # pragma: no cover
 
     assert mock_stream.call_count == call_count
 
@@ -500,7 +515,7 @@ async def test_openai_extractor_stream_async_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
 ):
-    """Tests that `OpenAIExtractor` raises a `RetryError` when extraction fails."""
+    """Tests that `OpenAIExtractor` raises a `AttributeError` when extraction fails."""
     mock_stream.return_value.__aiter__.return_value = [
         OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_bad_tools,
@@ -516,9 +531,14 @@ async def test_openai_extractor_stream_async_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
-        async for _ in TempExtractor().stream_async(retries=retries):
-            pass  # pragma: no cover
+    if retries > 1:
+        with pytest.raises(RetryError):
+            async for _ in TempExtractor().stream_async(retries=retries):
+                pass  # pragma: no cover
+    else:
+        with pytest.raises(ValidationError):
+            async for _ in TempExtractor().stream_async(retries=retries):
+                pass  # pragma: no cover
 
     assert mock_stream.call_count == call_count
 
@@ -529,7 +549,7 @@ def test_openai_extractor_stream_no_tool(
     fixture_chat_completion_chunks: list[ChatCompletionChunk],
     fixture_my_openai_tool_schema: Type[BaseModel],
 ):
-    """Tests `OpenAIExtractor` raises a `RetryError` when no tools is present."""
+    """Tests `OpenAIExtractor` raises a `AttributeError` when no tools is present."""
     mock_stream.return_value = [
         OpenAICallResponseChunk(chunk=chunk) for chunk in fixture_chat_completion_chunks
     ]
@@ -542,7 +562,7 @@ def test_openai_extractor_stream_no_tool(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         for _ in TempExtractor().stream():
             pass  # pragma: no cover
 
@@ -554,7 +574,7 @@ async def test_openai_extractor_stream_async_no_tool(
     fixture_chat_completion_chunks: list[ChatCompletionChunk],
     fixture_my_openai_tool_schema: Type[BaseModel],
 ):
-    """Tests `OpenAIExtractor` raises a `RetryError` when no tools is present."""
+    """Tests `OpenAIExtractor` raises a `AttributeError` when no tools is present."""
     mock_stream.return_value.__aiter__.return_value = [
         OpenAICallResponseChunk(chunk=chunk) for chunk in fixture_chat_completion_chunks
     ]
@@ -567,7 +587,7 @@ async def test_openai_extractor_stream_async_no_tool(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         async for _ in TempExtractor().stream_async():
             pass  # pragma: no cover
 

@@ -44,7 +44,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> MistralCallResponse:
         """Makes a call to the model using this `MistralCall` instance.
 
@@ -86,7 +86,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> MistralCallResponse:
         """Makes an asynchronous call to the model using this `MistralCall` instance.
 
@@ -129,7 +129,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> Generator[MistralCallResponseChunk, None, None]:
         """Streams the response for a call using this `MistralCall` instance.
 
@@ -161,7 +161,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[MistralCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `MistralCall`.
 
