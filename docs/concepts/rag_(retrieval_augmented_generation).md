@@ -46,7 +46,7 @@ This is a simple example. You can use pre-existing chunkers like `TextChunker` o
 
 The next step would be to take the text chunks and embed them into vectors.
 
-We currently only support [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings) but will soon support more.
+We currently only support [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings) and [Cohere Embeddings](https://docs.cohere.com/docs/embeddings) but will soon support more.
 
 ```python
 import os
