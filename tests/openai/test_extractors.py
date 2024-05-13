@@ -227,7 +227,7 @@ def test_openai_extractor_extract_with_no_tools(
     fixture_my_openai_tool_schema: Type[BaseModel],
     fixture_my_openai_tool: Type[OpenAITool],
 ):
-    """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
+    """Tests that `OpenAIChat` raises a `AttributeError` when no tools are provided."""
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion,
         tool_types=[fixture_my_openai_tool],
@@ -255,7 +255,7 @@ async def test_openai_extractor_extract_async_with_no_tools(
     fixture_my_openai_tool_schema: Type[BaseModel],
     fixture_my_openai_tool: Type[OpenAITool],
 ):
-    """Tests that `OpenAIChat` raises a `ValueError` when no tools are provided."""
+    """Tests that `OpenAIChat` raises a `AttributeError` when no tools are provided."""
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion,
         tool_types=[fixture_my_openai_tool],
@@ -285,7 +285,10 @@ def test_openai_extractor_extract_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_with_bad_tools: ChatCompletion,
 ):
-    """Tests that `OpenAIChat` raises a `AttributeError` when extraction fails."""
+    """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails.
+
+    This will raise a RetryError when retries > 1.
+    """
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_bad_tools,
@@ -323,7 +326,10 @@ async def test_openai_extractor_extract_async_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_with_bad_tools: ChatCompletion,
 ):
-    """Tests that `OpenAIChat` raises a `AttributeError` when extraction fails."""
+    """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails.
+
+    This will raise a RetryError when retries > 1.
+    """
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_bad_tools,
@@ -476,7 +482,10 @@ def test_openai_extractor_stream_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
 ):
-    """Tests that `OpenAIExtractor` raises a `AttributeError` when extraction fails."""
+    """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails.
+
+    This will raise a RetryError when retries > 1.
+    """
     mock_stream.return_value = [
         OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_bad_tools,
@@ -515,7 +524,10 @@ async def test_openai_extractor_stream_async_with_validation_error(
     fixture_my_openai_tool: Type[OpenAITool],
     fixture_chat_completion_chunk_with_bad_tools: ChatCompletionChunk,
 ):
-    """Tests that `OpenAIExtractor` raises a `AttributeError` when extraction fails."""
+    """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails.
+
+    This will raise a RetryError when retries > 1.
+    """
     mock_stream.return_value.__aiter__.return_value = [
         OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_bad_tools,
