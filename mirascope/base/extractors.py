@@ -95,7 +95,7 @@ class BaseExtractor(
         self,
         call_type: Type[BaseCallT],
         tool_type: Type[BaseToolT],
-        retries: Union[int, Retrying],
+        retries: Union[int, Retrying] = 0,
         **kwargs: Any,
     ) -> ExtractedTypeT:
         """Extracts `extract_schema` from the call response.
@@ -147,7 +147,10 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            retries = Retrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = Retrying(stop=stop_after_attempt(retries))
+            else:
+                return _extract_attempt(call_type, tool_type, {}, **kwargs)
         try:
             error_messages: dict[str, Any] = {}
             for attempt in retries:
@@ -224,7 +227,10 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            else:
+                return await _extract_attempt_async(call_type, tool_type, {}, **kwargs)
         try:
             error_messages: dict[str, Any] = {}
             async for attempt in retries:
@@ -315,7 +321,18 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            retries = Retrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = Retrying(stop=stop_after_attempt(retries))
+            else:
+                for partial_tool in _stream_attempt(
+                    call_type,
+                    tool_type,
+                    tool_stream_type,
+                    {},
+                    **kwargs,
+                ):
+                    yield partial_tool
+                return
         try:
             error_messages: dict[str, Any] = {}
             for attempt in retries:
@@ -410,7 +427,14 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            else:
+                async for partial_tool in _stream_attempt_async(
+                    call_type, tool_type, tool_stream_type, {}, **kwargs
+                ):
+                    yield partial_tool
+                return
         try:
             error_messages: dict[str, Any] = {}
             async for attempt in retries:

@@ -1685,13 +1685,13 @@ adal = ["adal (>=1.0.2)"]
 
 [[package]]
 name = "langfuse"
-version = "2.29.3"
+version = "2.30.0"
 description = "A client library for accessing langfuse"
 optional = true
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langfuse-2.29.3-py3-none-any.whl", hash = "sha256:7471365dc19677eecbc82319c7785f6b8c41437eabe5716c9f262e2f0a2fc43c"},
-    {file = "langfuse-2.29.3.tar.gz", hash = "sha256:408873adc3e77725b94e2105be8e1c395f7b8a604f43aa28a772df02e49be088"},
+    {file = "langfuse-2.30.0-py3-none-any.whl", hash = "sha256:f5bb91f6fc8f16d99a0f685e57e2d2b2c00edc51c4238f499916a2e7f6810fb5"},
+    {file = "langfuse-2.30.0.tar.gz", hash = "sha256:22b2612ba1a78f6bbf173a287e7d77ba9ad9a640d440949a3a7f9c249a777278"},
 ]
 
 [package.dependencies]
@@ -4929,4 +4929,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "dee6f1ab71a09e26044a92081fd21db33c18627d108a5a15f0cc07c73ed393b4"
+content-hash = "0eb363bd567d11779dd7d307e3f06515adfc7e6d4b03b943aa76914f2a5dc33e"

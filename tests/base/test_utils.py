@@ -240,25 +240,25 @@ def test_convert_base_type_to_tool(type_, expected_tool: BaseTool) -> None:
 
 def test_retry_decorator() -> None:
     @retry
-    def dummy(retries: Union[int, Retrying]) -> None:
+    def dummy(retries: Union[int, Retrying] = 0) -> None:
         """Dummy function"""
         raise Exception
 
     with pytest.raises(RetryError):
-        test = dummy(2)
+        test = dummy(retries=2)
         print(test)
 
 
 @pytest.mark.asyncio
 async def test_retry_decorator_async() -> None:
     @retry
-    async def dummy_async(retries: Union[int, AsyncRetrying]) -> None:
+    async def dummy_async(retries: Union[int, AsyncRetrying] = 0) -> None:
         """Dummy function"""
         raise Exception
 
     with pytest.raises(RetryError):
         retries = AsyncRetrying(stop=stop_after_attempt(2))
-        await dummy_async(retries)
+        await dummy_async(retries=retries)
 
 
 @patch(
@@ -271,7 +271,7 @@ def test_retry_decorator_generator(
     fixture_openai_test_call: OpenAICall,
 ) -> None:
     with pytest.raises(RetryError):
-        value = fixture_openai_test_call.stream()
+        value = fixture_openai_test_call.stream(retries=2)
         for chunk in value:
             print(chunk)
 
@@ -287,6 +287,6 @@ async def test_retry_decorator_generator_async(
     fixture_openai_test_call: OpenAICall,
 ) -> None:
     with pytest.raises(RetryError):
-        value = fixture_openai_test_call.stream_async()
+        value = fixture_openai_test_call.stream_async(retries=2)
         async for chunk in value:
             print(chunk)

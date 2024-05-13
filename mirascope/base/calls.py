@@ -40,7 +40,7 @@ class BaseCall(
 
     @abstractmethod
     def call(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> BaseCallResponseT:
         """A call to an LLM.
 
@@ -52,7 +52,7 @@ class BaseCall(
 
     @abstractmethod
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> BaseCallResponseT:
         """An asynchronous call to an LLM.
 
@@ -64,7 +64,7 @@ class BaseCall(
 
     @abstractmethod
     def stream(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> Generator[BaseCallResponseChunkT, None, None]:
         """A call to an LLM that streams the response in chunks.
 
@@ -76,7 +76,7 @@ class BaseCall(
 
     @abstractmethod
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[BaseCallResponseChunkT, None]:
         """A asynchronous call to an LLM that streams the response in chunks.
 

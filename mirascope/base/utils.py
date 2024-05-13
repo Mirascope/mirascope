@@ -178,9 +178,12 @@ def retry(fn: F) -> F:
     @wraps(fn)
     def wrapper(*args, **kwargs):
         """Wrapper for retrying a function."""
-        retries = kwargs.pop("retries", 1)
+        retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            retries = Retrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = Retrying(stop=stop_after_attempt(retries))
+            else:
+                return fn(*args, **kwargs)
         try:
             for attempt in retries:
                 with attempt:
@@ -197,9 +200,12 @@ def retry(fn: F) -> F:
     @wraps(fn)
     async def wrapper_async(*args, **kwargs):
         """Wrapper for retrying an async function."""
-        retries = kwargs.pop("retries", 1)
+        retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            else:
+                return await fn(*args, **kwargs)
         try:
             async for attempt in retries:
                 with attempt:
@@ -216,9 +222,14 @@ def retry(fn: F) -> F:
     @wraps(fn)
     def wrapper_generator(*args, **kwargs):
         """Wrapper for retrying a generator function."""
-        retries = kwargs.pop("retries", 1)
+        retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            retries = Retrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = Retrying(stop=stop_after_attempt(retries))
+            else:
+                for value in fn(*args, **kwargs):
+                    yield value
+                return
         try:
             for attempt in retries:
                 with attempt:
@@ -230,9 +241,14 @@ def retry(fn: F) -> F:
     @wraps(fn)
     async def wrapper_generator_async(*args, **kwargs):
         """Wrapper for retrying an async generator function."""
-        retries = kwargs.pop("retries", 1)
+        retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            if retries > 0:
+                retries = AsyncRetrying(stop=stop_after_attempt(retries))
+            else:
+                async for value in fn(*args, **kwargs):
+                    yield value
+                return
         try:
             async for attempt in retries:
                 with attempt:

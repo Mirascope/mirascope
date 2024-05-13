@@ -1,7 +1,6 @@
 """A module for calling OpenAI's Chat Completion models."""
 import datetime
 import json
-from contextlib import suppress
 from typing import (
     Any,
     AsyncGenerator,
@@ -12,9 +11,6 @@ from typing import (
     Union,
 )
 
-with suppress(ImportError):
-    from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
-    from langfuse.openai import OpenAI as LangfuseOpenAI
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -86,7 +82,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> OpenAICallResponse:
         """Makes a call to the model using this `OpenAICall` instance.
 
@@ -106,6 +102,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.langfuse:  # pragma: no cover
+            from langfuse.openai import OpenAI as LangfuseOpenAI
+
             client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -130,7 +128,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> OpenAICallResponse:
         """Makes an asynchronous call to the model using this `OpenAICall`.
 
@@ -150,6 +148,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.langfuse:  # pragma: no cover
+            from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
+
             client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
@@ -173,7 +173,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> Generator[OpenAICallResponseChunk, None, None]:
         """Streams the response for a call using this `OpenAICall`.
 
@@ -193,6 +193,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.langfuse:  # pragma: no cover
+            from langfuse.openai import OpenAI as LangfuseOpenAI
+
             client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
@@ -213,7 +215,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[OpenAICallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `OpenAICall`.
 
@@ -233,6 +235,8 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
         client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.langfuse:  # pragma: no cover
+            from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
+
             client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)

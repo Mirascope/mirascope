@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from groq.types.chat.chat_completion import ChatCompletion
 from pydantic import BaseModel
-from tenacity import RetryError
 
 from mirascope.groq.extractors import GroqExtractor
 from mirascope.groq.tools import GroqTool
@@ -77,5 +76,5 @@ def test_groq_extractor_extract_with_no_tools(
 
         call_params = GroqCallParams(model="llama2-70b-4096")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         TempExtractor().extract()

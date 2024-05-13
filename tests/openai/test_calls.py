@@ -32,7 +32,7 @@ def test_openai_call_call(
     """Tests `OpenAIPrompt.create` returns the expected response when called."""
     mock_create.return_value = fixture_chat_completion
     kwargs = {"temperature": 0.8}
-    response = fixture_openai_test_call.call(retries=1, **kwargs)
+    response = fixture_openai_test_call.call(retries=2, **kwargs)
     assert response.input_tokens is not None
     assert response.output_tokens is not None
     assert response.usage is not None
@@ -143,7 +143,7 @@ async def test_openai_call_call_async(
     """Tests `OpenAIPrompt.create` returns the expected response when called."""
     mock_create.return_value = fixture_chat_completion
     kwargs = {"temperature": 0.8}
-    response = await fixture_openai_test_call.call_async(retries=1, **kwargs)
+    response = await fixture_openai_test_call.call_async(retries=2, **kwargs)
     assert isinstance(response, OpenAICallResponse)
     mock_create.assert_called_once_with(
         model=fixture_openai_test_call.call_params.model,

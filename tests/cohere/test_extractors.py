@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from cohere.types import NonStreamedChatResponse
 from pydantic import BaseModel
-from tenacity import RetryError
 
 from mirascope.cohere.extractors import CohereExtractor
 from mirascope.cohere.tools import CohereTool
@@ -75,5 +74,5 @@ def test_cohere_extractor_extract_with_no_tools(
 
         call_params = CohereCallParams(model="command-r")
 
-    with pytest.raises(RetryError):
+    with pytest.raises(AttributeError):
         TempExtractor().extract()

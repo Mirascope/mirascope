@@ -60,7 +60,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> GroqCallResponse:
         """Makes a call to the model using this `GroqCall` instance.
 
@@ -102,7 +102,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> GroqCallResponse:
         """Makes an asynchronous call to the model using this `GroqCall`.
 
@@ -144,7 +144,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> Generator[GroqCallResponseChunk, None, None]:
         """Streams the response for a call using this `GroqCall`.
 
@@ -179,7 +179,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[GroqCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `GroqCall`.
 

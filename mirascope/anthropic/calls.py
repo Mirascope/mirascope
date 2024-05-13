@@ -50,7 +50,7 @@ class AnthropicCall(
 
     @retry
     def call(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> AnthropicCallResponse:
         """Makes a call to the model using this `AnthropicCall` instance.
 
@@ -99,7 +99,7 @@ class AnthropicCall(
 
     @retry
     async def call_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AnthropicCallResponse:
         """Makes an asynchronous call to the model using this `AnthropicCall` instance.
 
@@ -147,7 +147,7 @@ class AnthropicCall(
 
     @retry
     def stream(
-        self, retries: Union[int, Retrying] = 1, **kwargs: Any
+        self, retries: Union[int, Retrying] = 0, **kwargs: Any
     ) -> Generator[AnthropicCallResponseChunk, None, None]:
         """Streams the response for a call using this `AnthropicCall`.
 
@@ -194,7 +194,7 @@ class AnthropicCall(
 
     @retry
     async def stream_async(
-        self, retries: Union[int, AsyncRetrying] = 1, **kwargs: Any
+        self, retries: Union[int, AsyncRetrying] = 0, **kwargs: Any
     ) -> AsyncGenerator[AnthropicCallResponseChunk, None]:
         """Streams the response for an asynchronous call using this `AnthropicCall`.
 
