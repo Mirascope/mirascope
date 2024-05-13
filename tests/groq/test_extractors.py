@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from groq.types.chat.chat_completion import ChatCompletion
 from pydantic import BaseModel
-from tenacity import RetryError
 
 from mirascope.groq.extractors import GroqExtractor
 from mirascope.groq.tools import GroqTool
