@@ -147,7 +147,7 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = Retrying(stop=stop_after_attempt(retries))
             else:
                 return _extract_attempt(call_type, tool_type, {}, **kwargs)
@@ -227,7 +227,7 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = AsyncRetrying(stop=stop_after_attempt(retries))
             else:
                 return await _extract_attempt_async(call_type, tool_type, {}, **kwargs)
@@ -321,7 +321,7 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = Retrying(stop=stop_after_attempt(retries))
             else:
                 for partial_tool in _stream_attempt(
@@ -427,7 +427,7 @@ class BaseExtractor(
                 raise
 
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = AsyncRetrying(stop=stop_after_attempt(retries))
             else:
                 async for partial_tool in _stream_attempt_async(

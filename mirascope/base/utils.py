@@ -180,7 +180,7 @@ def retry(fn: F) -> F:
         """Wrapper for retrying a function."""
         retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = Retrying(stop=stop_after_attempt(retries))
             else:
                 return fn(*args, **kwargs)
@@ -202,7 +202,7 @@ def retry(fn: F) -> F:
         """Wrapper for retrying an async function."""
         retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = AsyncRetrying(stop=stop_after_attempt(retries))
             else:
                 return await fn(*args, **kwargs)
@@ -224,7 +224,7 @@ def retry(fn: F) -> F:
         """Wrapper for retrying a generator function."""
         retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = Retrying(stop=stop_after_attempt(retries))
             else:
                 for value in fn(*args, **kwargs):
@@ -243,7 +243,7 @@ def retry(fn: F) -> F:
         """Wrapper for retrying an async generator function."""
         retries = kwargs.pop("retries", 0)
         if isinstance(retries, int):
-            if retries > 1:
+            if retries > 0:
                 retries = AsyncRetrying(stop=stop_after_attempt(retries))
             else:
                 async for value in fn(*args, **kwargs):

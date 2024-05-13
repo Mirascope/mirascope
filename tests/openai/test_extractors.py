@@ -287,7 +287,7 @@ def test_openai_extractor_extract_with_validation_error(
 ):
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails.
 
-    This will raise a RetryError when retries > 1.
+    This will raise a RetryError when retries > 0.
     """
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
@@ -305,7 +305,7 @@ def test_openai_extractor_extract_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    if retries > 1:
+    if retries > 0:
         with pytest.raises(RetryError):
             TempExtractor().extract(retries=retries)
     else:
@@ -328,7 +328,7 @@ async def test_openai_extractor_extract_async_with_validation_error(
 ):
     """Tests that `OpenAIChat` raises a `ValidationError` when extraction fails.
 
-    This will raise a RetryError when retries > 1.
+    This will raise a RetryError when retries > 0.
     """
     tools = [fixture_my_openai_tool]
     mock_call.return_value = OpenAICallResponse(
@@ -345,7 +345,7 @@ async def test_openai_extractor_extract_async_with_validation_error(
         api_key = "test"
         call_params = OpenAICallParams(model="gpt-4")
 
-    if retries > 1:
+    if retries > 0:
         with pytest.raises(RetryError):
             await TempExtractor().extract_async(retries=retries)
     else:
@@ -484,7 +484,7 @@ def test_openai_extractor_stream_with_validation_error(
 ):
     """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails.
 
-    This will raise a RetryError when retries > 1.
+    This will raise a RetryError when retries > 0.
     """
     mock_stream.return_value = [
         OpenAICallResponseChunk(
@@ -501,7 +501,7 @@ def test_openai_extractor_stream_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    if retries > 1:
+    if retries > 0:
         with pytest.raises(RetryError):
             for _ in TempExtractor().stream(retries=retries):
                 pass  # pragma: no cover
@@ -526,7 +526,7 @@ async def test_openai_extractor_stream_async_with_validation_error(
 ):
     """Tests that `OpenAIExtractor` raises a `ValidationError` when extraction fails.
 
-    This will raise a RetryError when retries > 1.
+    This will raise a RetryError when retries > 0.
     """
     mock_stream.return_value.__aiter__.return_value = [
         OpenAICallResponseChunk(
@@ -543,7 +543,7 @@ async def test_openai_extractor_stream_async_with_validation_error(
 
         call_params = OpenAICallParams(model="gpt-4")
 
-    if retries > 1:
+    if retries > 0:
         with pytest.raises(RetryError):
             async for _ in TempExtractor().stream_async(retries=retries):
                 pass  # pragma: no cover
