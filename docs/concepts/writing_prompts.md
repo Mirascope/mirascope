@@ -109,9 +109,11 @@ prompt = BookRecommendationPrompt(topic="coding")
 print(prompt.messages())
 ```
 
-```
+```python
 [{"role": "system", "content": "You are the world's greatest librarian"}, {"role": "user", "content": "Can you recommend some books on coding?"}]
 ```
+
+Notice how all the surrounding white space is stripped so you can have a human-readable template without using more input tokens for the call.
 
 !!! note
 
