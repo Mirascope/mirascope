@@ -204,6 +204,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         stream = client.chat.completions.create(
             messages=messages,
             stream=True,
+            stream_options={"include_usage": True},
             **kwargs,
         )
         for chunk in stream:
@@ -246,6 +247,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         stream = await client.chat.completions.create(
             messages=messages,
             stream=True,
+            stream_options={"include_usage": True},
             **kwargs,
         )
         async for chunk in stream:

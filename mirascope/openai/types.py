@@ -279,12 +279,16 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
     @property
     def delta(self) -> ChoiceDelta:
         """Returns the delta for the 0th choice."""
-        return self.choices[0].delta
+        if self.chunk.choices:
+            return self.chunk.choices[0].delta
+        return None
 
     @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        return self.delta.content if self.delta.content is not None else ""
+        return (
+            self.delta.content if self.delta is not None and self.delta.content else ""
+        )
 
     @property
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:

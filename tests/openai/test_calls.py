@@ -186,15 +186,17 @@ def test_openai_call_stream(
     mock_create.return_value = fixture_chat_completion_chunks
 
     stream = fixture_openai_test_call.stream()
-
+    last_chunk = None
     for i, chunk in enumerate(stream):
         assert isinstance(chunk, OpenAICallResponseChunk)
         assert chunk.chunk == fixture_chat_completion_chunks[i]
-
+        last_chunk = chunk
+    assert last_chunk and last_chunk.delta is None
     mock_create.assert_called_once_with(
         model=fixture_openai_test_call.call_params.model,
         messages=fixture_openai_test_call.messages(),
         stream=True,
+        stream_options={"include_usage": True},
     )
 
 
@@ -244,6 +246,7 @@ async def test_openai_prompt_stream_async(
         model=fixture_openai_test_call.call_params.model,
         messages=fixture_openai_test_call.messages(),
         stream=True,
+        stream_options={"include_usage": True},
     )
 
 
