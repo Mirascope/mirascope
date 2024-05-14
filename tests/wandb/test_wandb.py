@@ -34,7 +34,7 @@ def test__init(span_type):
     """Test initialization."""
     prompt = MyCall(span_type=span_type)
     assert prompt.span_type == span_type
-    assert prompt.call_params.model == "gpt-3.5-turbo-0125"
+    assert prompt.call_params.model == "gpt-4o-2024-05-13"
 
 
 def test_init_invalid_span_type():
@@ -171,7 +171,7 @@ def test_trace_response(mock_Trace: MagicMock, fixture_chat_completion: ChatComp
     assert span.status_code == "SUCCESS"
     assert span.status_message is None
     assert span.metadata is not None
-    assert span.metadata["call_params"] == {"model": "gpt-3.5-turbo-0125"}
+    assert span.metadata["call_params"] == {"model": "gpt-4o-2024-05-13"}
     assert span.inputs == {"user": "test"}
     assert span.outputs == {"assistant": "test content 0"}
 
@@ -200,7 +200,7 @@ def test_trace_response_tool(
     assert span.status_code == "SUCCESS"
     assert span.status_message is None
     assert span.metadata is not None
-    assert span.metadata["call_params"] == {"model": "gpt-3.5-turbo-0125"}
+    assert span.metadata["call_params"] == {"model": "gpt-4o-2024-05-13"}
     assert span.inputs == {"user": "test"}
     assert span.outputs == {
         "assistant": {
@@ -230,7 +230,7 @@ def test_trace_error():
     assert span.status_code == "ERROR"
     assert span.status_message == "Test error"
     assert span.metadata is not None
-    assert span.metadata["call_params"] == {"model": "gpt-3.5-turbo-0125"}
+    assert span.metadata["call_params"] == {"model": "gpt-4o-2024-05-13"}
     assert span.inputs == {"user": "test"}
     assert span.outputs is None
 

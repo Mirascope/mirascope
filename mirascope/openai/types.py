@@ -34,7 +34,7 @@ from .tools import OpenAITool
 class OpenAICallParams(BaseCallParams[OpenAITool]):
     """The parameters to use when calling the OpenAI API."""
 
-    model: str = "gpt-3.5-turbo-0125"
+    model: str = "gpt-4o-2024-05-13"
     frequency_penalty: Optional[float] = None
     logit_bias: Optional[dict[str, int]] = None
     logprobs: Optional[bool] = None
@@ -277,14 +277,18 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         return self.chunk.choices[0]
 
     @property
-    def delta(self) -> ChoiceDelta:
+    def delta(self) -> Optional[ChoiceDelta]:
         """Returns the delta for the 0th choice."""
-        return self.choices[0].delta
+        if self.chunk.choices:
+            return self.chunk.choices[0].delta
+        return None
 
     @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        return self.delta.content if self.delta.content is not None else ""
+        return (
+            self.delta.content if self.delta is not None and self.delta.content else ""
+        )
 
     @property
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:
@@ -296,7 +300,9 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         `list[ChoiceDeltaToolCall]`s to form a complete JSON tool calls. The last
         `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
         """
-        return self.delta.tool_calls
+        if self.delta:
+            return self.delta.tool_calls
+        return None
 
 
 class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):

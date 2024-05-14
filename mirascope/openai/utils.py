@@ -11,7 +11,11 @@ def openai_api_calculate_cost(
 
     https://openai.com/pricing
 
-    Model                     Input               Output
+    Model                   Input               Output
+    gpt-4o                  $5.00 / 1M tokens   $15.00 / 1M tokens
+    gpt-4o-2024-05-13       $5.00 / 1M tokens   $15.00 / 1M tokens
+    gpt-4-turbo             $10.00 / 1M tokens  $30.00 / 1M tokens
+    gpt-4-turbo-2024-04-09  $10.00 / 1M tokens  $30.00 / 1M tokens
     gpt-3.5-turbo-0125	    $0.50 / 1M tokens	$1.50 / 1M tokens
     gpt-3.5-turbo-1106	    $1.00 / 1M tokens	$2.00 / 1M tokens
     gpt-4-1106-preview	    $10.00 / 1M tokens 	$30.00 / 1M tokens
@@ -21,6 +25,22 @@ def openai_api_calculate_cost(
     text-embedding-ada-0002	$0.10 / 1M tokens
     """
     pricing = {
+        "gpt-4o": {
+            "prompt": 0.000_005,
+            "completion": 0.000_015,
+        },
+        "gpt-4o-2024-05-13": {
+            "prompt": 0.000_005,
+            "completion": 0.000_015,
+        },
+        "gpt-4-turbo": {
+            "prompt": 0.000_01,
+            "completion": 0.000_03,
+        },
+        "gpt-4-turbo-2024-04-09": {
+            "prompt": 0.000_01,
+            "completion": 0.000_03,
+        },
         "gpt-3.5-turbo-0125": {
             "prompt": 0.000_000_5,
             "completion": 0.000_001_5,
