@@ -189,3 +189,9 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
         stream = chat_stream(messages=self.messages(), **kwargs)
         async for chunk in stream:
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
+
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "mistral"

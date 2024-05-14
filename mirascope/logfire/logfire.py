@@ -14,6 +14,7 @@ from mirascope.base.types import (
     BaseTool,
     ChunkT,
 )
+from mirascope.base.utils import wrap_mirascope_class_functions
 
 from ..types import (
     BaseCallT,
@@ -89,32 +90,122 @@ def mirascope_logfire_span(fn: Callable):
     return wrapper
 
 
-def mirascope_logfire(
-    fn: Callable,
-    suffix: str,
-    *,
-    response_type: Optional[type[BaseCallResponse]] = None,
-    response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
-    tool_types: Optional[list[type[BaseTool]]] = None,
-) -> Callable:
-    """Wraps a function with a Logfire span."""
-    if response_chunk_type is not None:
-        return mirascope_logfire_stream(fn, suffix, response_chunk_type)
-    return mirascope_logfire_create(fn, suffix, response_type, tool_types)
+def mirascope_logfire() -> Callable:
+    def decorator(
+        fn: Callable,
+        suffix: str,
+        *,
+        is_async: bool = False,
+        response_type: Optional[type[BaseCallResponse]] = None,
+        response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
+        tool_types: Optional[list[type[BaseTool]]] = None,
+    ) -> Callable:
+        """Wraps a LLM call with Pydantic Logfire"""
 
+        def wrapper(*args, **kwargs):
+            with _mirascope_llm_span(fn, suffix, False, args, kwargs) as logfire_span:
+                result = fn(*args, **kwargs)
+                logfire_span.set_attribute("original_response", result)
+                if response_type is not None:
+                    response = response_type(
+                        response=result, start_time=0, end_time=0, tool_types=tool_types
+                    )
+                    message = {"role": "assistant", "content": response.content}
+                    if tools := response.tools:
+                        tool_calls = [
+                            {
+                                "function": {
+                                    "arguments": tool.model_dump_json(
+                                        exclude={"tool_call"}
+                                    ),
+                                    "name": tool.__class__.__name__,
+                                }
+                            }
+                            for tool in tools
+                        ]
+                        message["tool_calls"] = tool_calls
+                        message.pop("content")
+                    logfire_span.set_attribute("response_data", {"message": message})
+                return result
 
-def mirascope_logfire_async(
-    fn: Callable,
-    suffix: str,
-    *,
-    response_type: Optional[type[BaseCallResponse]] = None,
-    response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
-    tool_types: Optional[list[type[BaseTool]]] = None,
-):
-    """Wraps an asynchronous function with a Logfire span."""
-    if response_chunk_type is not None:
-        return mirascope_logfire_stream_async(fn, suffix, response_chunk_type)
-    return mirascope_logfire_create_async(fn, suffix, response_type, tool_types)
+        async def wrapper_async(*args, **kwargs):
+            with _mirascope_llm_span(fn, suffix, True, args, kwargs) as logfire_span:
+                result = await fn(*args, **kwargs)
+                logfire_span.set_attribute("original_response", result)
+                if response_type is not None:
+                    response = response_type(
+                        response=result, start_time=0, end_time=0, tool_types=tool_types
+                    )
+                    message = {"role": "assistant", "content": response.content}
+                    if tools := response.tools:
+                        tool_calls = [
+                            {
+                                "function": {
+                                    "arguments": tool.model_dump_json(
+                                        exclude={"tool_call"}
+                                    ),
+                                    "name": tool.__class__.__name__,
+                                }
+                            }
+                            for tool in tools
+                        ]
+                        message["tool_calls"] = tool_calls
+                        message.pop("content")
+                    logfire_span.set_attribute("response_data", {"message": message})
+                return result
+
+        def wrapper_generator(*args, **kwargs):
+            logfire_span = logfire.with_settings(
+                custom_scope_suffix=suffix, tags=["llm"]
+            )
+            span_data = _get_span_data(suffix, False, args, kwargs)
+            with record_streaming(
+                logfire_span, span_data, _extract_chunk_content
+            ) as record_chunk:
+                stream = fn(*args, **kwargs)
+                if suffix != "anthropic":
+                    for chunk in stream:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
+                else:
+                    with stream as s:
+                        for chunk in s:
+                            record_chunk(chunk, response_chunk_type)
+                            yield chunk
+
+        async def wrapper_generator_async(*args, **kwargs):
+            logfire_span = logfire.with_settings(
+                custom_scope_suffix=suffix, tags=["llm"]
+            )
+            span_data = _get_span_data(suffix, True, args, kwargs)
+            with record_streaming(
+                logfire_span, span_data, _extract_chunk_content
+            ) as record_chunk:
+                if suffix == "groq":
+                    stream = await fn(*args, **kwargs)
+                else:
+                    stream = fn(*args, **kwargs)
+                if suffix != "anthropic":
+                    async for chunk in stream:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
+                else:
+                    async with stream as s:
+                        async for chunk in s:
+                            record_chunk(chunk, response_chunk_type)
+                            yield chunk
+
+        if response_chunk_type and is_async:
+            return wrapper_generator_async
+        elif response_type and is_async:
+            return wrapper_async
+        elif response_chunk_type:
+            return wrapper_generator
+        elif response_type:
+            return wrapper
+        raise ValueError("No response type or chunk type provided")
+
+    return decorator
 
 
 def _extract_chunk_content(
@@ -155,44 +246,6 @@ def _mirascope_llm_span(
         yield logfire_span
 
 
-def mirascope_logfire_create(
-    fn: Callable,
-    suffix: str,
-    response_type: Optional[type[BaseCallResponse]],
-    tool_types: Optional[list[type[BaseTool]]] = None,
-) -> Callable:
-    """Wraps a function with a Logfire span."""
-
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        with _mirascope_llm_span(fn, suffix, False, args, kwargs) as logfire_span:
-            result = fn(*args, **kwargs)
-            logfire_span.set_attribute("original_response", result)
-            if response_type is not None:
-                response = response_type(
-                    response=result, start_time=0, end_time=0, tool_types=tool_types
-                )
-                message = {"role": "assistant", "content": response.content}
-                if tools := response.tools:
-                    tool_calls = [
-                        {
-                            "function": {
-                                "arguments": tool.model_dump_json(
-                                    exclude={"tool_call"}
-                                ),
-                                "name": tool.__class__.__name__,
-                            }
-                        }
-                        for tool in tools
-                    ]
-                    message["tool_calls"] = tool_calls
-                    message.pop("content")
-                logfire_span.set_attribute("response_data", {"message": message})
-            return result
-
-    return wrapper
-
-
 @contextmanager
 def record_streaming(
     logfire_span: logfire.Logfire,
@@ -229,111 +282,6 @@ def record_streaming(
         )
 
 
-def mirascope_logfire_stream(
-    fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
-) -> Callable:
-    """Wraps a function that yields a generator with a Logfire span."""
-
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        logfire_span = logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"])
-        span_data = _get_span_data(suffix, False, args, kwargs)
-        with record_streaming(
-            logfire_span, span_data, _extract_chunk_content
-        ) as record_chunk:
-            stream = fn(*args, **kwargs)
-            if suffix != "anthropic":
-                for chunk in stream:
-                    record_chunk(chunk, response_chunk_type)
-                    yield chunk
-            else:
-                with stream as s:
-                    for chunk in s:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-
-    return wrapper
-
-
-def mirascope_logfire_create_async(
-    fn: Callable,
-    suffix: str,
-    response_type: Optional[type[BaseCallResponse]],
-    tool_types: Optional[list[type[BaseTool]]] = None,
-) -> Callable:
-    """Wraps a asynchronous function that yields a generator with a Logfire span."""
-
-    @wraps(fn)
-    async def wrapper(*args, **kwargs):
-        with _mirascope_llm_span(fn, suffix, True, args, kwargs) as logfire_span:
-            result = await fn(*args, **kwargs)
-            logfire_span.set_attribute("original_response", result)
-            if response_type is not None:
-                response = response_type(
-                    response=result, start_time=0, end_time=0, tool_types=tool_types
-                )
-                message = {"role": "assistant", "content": response.content}
-                if tools := response.tools:
-                    tool_calls = [
-                        {
-                            "function": {
-                                "arguments": tool.model_dump_json(
-                                    exclude={"tool_call"}
-                                ),
-                                "name": tool.__class__.__name__,
-                            }
-                        }
-                        for tool in tools
-                    ]
-                    message["tool_calls"] = tool_calls
-                    message.pop("content")
-                logfire_span.set_attribute("response_data", {"message": message})
-            return result
-
-    return wrapper
-
-
-def mirascope_logfire_stream_async(
-    fn: Callable, suffix: str, response_chunk_type: type[BaseCallResponseChunk]
-) -> Callable:
-    """Wraps an asynchronous function with a Logfire span."""
-
-    @wraps(fn)
-    async def wrapper(*args, **kwargs):
-        logfire_span = logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"])
-        span_data = _get_span_data(suffix, True, args, kwargs)
-        with record_streaming(
-            logfire_span, span_data, _extract_chunk_content
-        ) as record_chunk:
-            if suffix == "groq":
-                stream = await fn(*args, **kwargs)
-            else:
-                stream = fn(*args, **kwargs)
-            if suffix != "anthropic":
-                async for chunk in stream:
-                    record_chunk(chunk, response_chunk_type)
-                    yield chunk
-            else:
-                async with stream as s:
-                    async for chunk in s:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-
-    return wrapper
-
-
-def get_parent_class_name(cls: type[BaseModel], target_name: str) -> Optional[str]:
-    """Recursively searches for a parent class with a given name."""
-    for base in cls.__bases__:
-        if base.__name__.startswith(target_name):
-            return base.__name__
-        else:
-            parent_name = get_parent_class_name(base, target_name)
-            if parent_name:
-                return parent_name
-    return None
-
-
 @overload
 def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]:
     ...  # pragma: no cover
@@ -361,75 +309,13 @@ def with_logfire(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
 
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
-    if hasattr(cls, "call"):
-        setattr(cls, "call", mirascope_logfire_span(cls.call))
-    if hasattr(cls, "stream"):
-        setattr(cls, "stream", mirascope_logfire_span(cls.stream))
-    if hasattr(cls, "call_async"):
-        setattr(cls, "call_async", mirascope_logfire_span(cls.call_async))
-    if hasattr(cls, "stream_async"):
-        setattr(cls, "stream_async", mirascope_logfire_span(cls.stream_async))
-    if hasattr(cls, "extract"):
-        setattr(cls, "extract", mirascope_logfire_span(cls.extract))
-    if hasattr(cls, "extract_async"):
-        setattr(cls, "extract_async", mirascope_logfire_span(cls.extract_async))
-    if hasattr(cls, "retrieve"):
-        setattr(cls, "retrieve", mirascope_logfire_span(cls.retrieve))
-    if hasattr(cls, "add"):
-        setattr(cls, "add", mirascope_logfire_span(cls.add))
-    if get_parent_class_name(cls, "OpenAI"):
-        if hasattr(cls, "call_params"):
-            setattr(
-                cls,
-                "call_params",
-                cls.call_params.model_copy(
-                    update={
-                        "logfire": logfire.instrument_openai,
-                    }
-                ),
-            )
-        if hasattr(cls, "embedding_params"):
-            setattr(
-                cls,
-                "embedding_params",
-                cls.embedding_params.model_copy(
-                    update={"logfire": logfire.instrument_openai}
-                ),
-            )
+    wrap_mirascope_class_functions(cls, mirascope_logfire_span)
+    if cls._provider and cls._provider == "openai":
+        if hasattr(cls, "configuration"):
+            cls.configuration.llm_ops.append(logfire.instrument_openai)
     else:
         # TODO: Use instrument instead when they are integrated into logfire
-        if hasattr(cls, "call_params"):
-            setattr(
-                cls,
-                "call_params",
-                cls.call_params.model_copy(
-                    update={
-                        "logfire": mirascope_logfire,
-                        "logfire_async": mirascope_logfire_async,
-                    }
-                ),
-            )
-        if hasattr(cls, "vectorstore_params"):
-            # Wraps class methods rather than calls directly
-            setattr(
-                cls,
-                "vectorstore_params",
-                cls.vectorstore_params.model_copy(
-                    update={
-                        "logfire": mirascope_logfire_span,
-                        "logfire_async": mirascope_logfire_async,
-                    }
-                ),
-            )
-        if hasattr(cls, "embedding_params"):
-            setattr(
-                cls,
-                "embedding_params",
-                cls.embedding_params.model_copy(
-                    update={
-                        "logfire": mirascope_logfire,
-                        "logfire_async": mirascope_logfire_async,
-                    }
-                ),
-            )
+        if hasattr(cls, "configuration"):
+            llm_ops = cls.configuration.llm_ops
+            llm_ops.append(mirascope_logfire())
     return cls

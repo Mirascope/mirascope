@@ -1,7 +1,7 @@
 """A base abstract interface for calling LLMs."""
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from typing import (
     Any,
     AsyncGenerator,
@@ -18,7 +18,7 @@ from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt
 from .tools import BaseTool
-from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseConfig
 
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
@@ -37,6 +37,7 @@ class BaseCall(
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](
         model="gpt-3.5-turbo-0125"
     )
+    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[])
 
     @abstractmethod
     def call(
@@ -84,6 +85,13 @@ class BaseCall(
         `BaseCallResponseChunk`. This ensures a consistent API and convenience across
         e.g. different model providers."""
         yield ...  # type: ignore # pragma: no cover
+
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @abstractproperty
+    def _provider(self) -> str:
+        """The provider of the LLM."""
+        ...
 
     ############################## PRIVATE METHODS ###################################
 

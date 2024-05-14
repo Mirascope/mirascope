@@ -217,6 +217,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
                 response_format=self.call_params.response_format,
             )
 
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "groq"
+
     ############################## PRIVATE METHODS ###################################
 
     def _setup_groq_kwargs(

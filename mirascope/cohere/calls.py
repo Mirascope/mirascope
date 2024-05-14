@@ -201,6 +201,12 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         async for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "cohere"
+
     ############################## PRIVATE METHODS ###################################
 
     def _setup_cohere_kwargs(

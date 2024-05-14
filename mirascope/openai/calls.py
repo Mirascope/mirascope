@@ -257,6 +257,12 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 response_format=self.call_params.response_format,
             )
 
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "openai"
+
     ############################## PRIVATE METHODS ###################################
 
     def _setup_openai_kwargs(

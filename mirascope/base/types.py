@@ -87,6 +87,10 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 T = TypeVar("T")
 
 
+class BaseConfig(BaseModel):
+    llm_ops: Optional[list[Callable[..., Callable]]] = None
+
+
 class BaseCallParams(BaseModel, Generic[BaseToolT]):
     """The parameters with which to make a call."""
 

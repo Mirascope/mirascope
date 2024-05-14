@@ -6,6 +6,8 @@ from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
 from tenacity import AsyncRetrying, Retrying
 
+from mirascope.base.utils import get_wrapped_call
+
 from ..base import BaseCall, retry
 from ..enums import MessageRole
 from .tools import AnthropicTool
@@ -69,19 +71,13 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(create)  # pragma: no cover
-        if self.call_params.logfire:
-            create = self.call_params.logfire(
+        if self.configuration.llm_ops is not None:
+            create = get_wrapped_call(
                 create,
-                "anthropic",
+                self,
                 response_type=AnthropicCallResponse,
                 tool_types=tool_types,
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "anthropic", response_type=AnthropicCallResponse
-            )  # pragma: no cover
+            )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
             messages=messages,
@@ -117,19 +113,14 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(create)  # pragma: no cover
-        if self.call_params.logfire_async:
-            create = self.call_params.logfire_async(
+        if self.configuration.llm_ops is not None:
+            create = get_wrapped_call(
                 create,
-                "anthropic",
+                self,
+                is_async=True,
                 response_type=AnthropicCallResponse,
                 tool_types=tool_types,
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "anthropic", is_async=True, response_type=AnthropicCallResponse
-            )  # pragma: no cover
+            )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(
             messages=messages,
@@ -162,20 +153,14 @@ class AnthropicCall(
         client = Anthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper is not None:
             client = self.call_params.wrapper(client)
-        if self.call_params.logfire or self.call_params.langfuse:  # pragma: no cover
-            stream = client.messages.stream
-            if self.call_params.logfire:
-                stream = self.call_params.logfire(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            if self.call_params.langfuse:
-                stream = self.call_params.langfuse(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
+        stream = client.messages.stream
+        if self.configuration.llm_ops is not None:
+            stream = get_wrapped_call(
+                stream,
+                self,
+                response_chunk_type=AnthropicCallResponseChunk,
+                tool_types=tool_types,
+            )
             for chunk in stream(messages=messages, **kwargs):  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,
@@ -183,7 +168,6 @@ class AnthropicCall(
                     response_format=self.call_params.response_format,
                 )
         else:
-            stream = client.messages.stream
             with stream(messages=messages, **kwargs) as message_stream:
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
@@ -209,23 +193,15 @@ class AnthropicCall(
         client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
         if self.call_params.wrapper_async is not None:
             client = self.call_params.wrapper_async(client)
-        if (
-            self.call_params.logfire_async or self.call_params.langfuse
-        ):  # pragma: no cover
-            stream = client.messages.stream
-            if self.call_params.logfire_async:
-                stream = self.call_params.logfire_async(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            if self.call_params.langfuse:
-                stream = self.call_params.langfuse(
-                    stream,
-                    "anthropic",
-                    is_async=True,
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
+        stream = client.messages.stream
+        if self.configuration.llm_ops is not None:
+            stream = get_wrapped_call(
+                stream,
+                self,
+                is_async=True,
+                response_chunk_type=AnthropicCallResponseChunk,
+                tool_types=tool_types,
+            )
             async for chunk in stream(messages=messages, **kwargs):  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,
@@ -233,9 +209,7 @@ class AnthropicCall(
                     response_format=self.call_params.response_format,
                 )
         else:
-            async with client.messages.stream(
-                messages=messages, **kwargs
-            ) as message_stream:
+            async with stream(messages=messages, **kwargs) as message_stream:
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
@@ -289,3 +263,9 @@ class AnthropicCall(
             kwargs["system"] = system_message
 
         return messages, kwargs, tool_types
+
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "anthropic"

@@ -229,3 +229,9 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         )
         async for chunk in stream:
             yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+
+    ############################# PRIVATE ATTRIBUTES #################################
+
+    @property
+    def _provider(self) -> str:
+        return "gemini"
