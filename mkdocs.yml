@@ -98,6 +98,8 @@ nav:
       - Writing Prompts: "concepts/writing_prompts.md"
       - Generating content: "concepts/generating_content.md"
       - Streaming generated content: "concepts/streaming_generated_content.md"
+      - Chaining calls: "concepts/chaining_calls.md"
+      - Retries: "concepts/retries.md"
       - Supported LLM providers: "concepts/supported_llm_providers.md"
       - Chat History: "concepts/chat_history.md"
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
