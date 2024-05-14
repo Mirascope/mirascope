@@ -185,7 +185,7 @@ if tool:
 
 ### Chaining
 
-[Chaining](./concepts/generating_content.md#chaining-calls) multiple calls together is as simple as writing a property:
+[Chaining](./concepts/chaining_calls.md) multiple calls together is as simple as writing a property:
 
 ```python
 import os
@@ -228,7 +228,7 @@ print(response.content)
 # > Certainly! Here's a recipe for a delicious and refreshing Japanese Apple Salad: ...
 ```
 
-Of course, you can also chain calls together in sequence rather than through properties and wrap the chain in a function for reusability. You can find an example of this [here](./concepts/generating_content.md#chaining-using-functions).
+Of course, you can also chain calls together in sequence rather than through properties and wrap the chain in a function for reusability. You can find an example of this [here](./concepts/chaining_calls.md#chaining-using-functions).
 
 ### Extracting Structured Information
 
