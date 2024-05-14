@@ -73,7 +73,7 @@ class Editor(OpenAICall):
 storyline = "..."
 editor = Editor(storyline=storyline)
 
-print(editor.messages())
+print(editor.messages()) # white-space is automatically stripped
 # > [{'role': 'system', 'content': 'You are a top class manga editor.'}, {'role': 'user', 'content': "I'm working on a new storyline. What do you think?\n..."}]
 
 critique = editor.call()
