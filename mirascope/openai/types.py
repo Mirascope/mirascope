@@ -277,7 +277,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         return self.chunk.choices[0]
 
     @property
-    def delta(self) -> ChoiceDelta:
+    def delta(self) -> Optional[ChoiceDelta]:
         """Returns the delta for the 0th choice."""
         if self.chunk.choices:
             return self.chunk.choices[0].delta
@@ -300,7 +300,9 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         `list[ChoiceDeltaToolCall]`s to form a complete JSON tool calls. The last
         `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
         """
-        return self.delta.tool_calls
+        if self.delta:
+            return self.delta.tool_calls
+        return None
 
 
 class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
