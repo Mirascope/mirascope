@@ -34,7 +34,7 @@ from .tools import OpenAITool
 class OpenAICallParams(BaseCallParams[OpenAITool]):
     """The parameters to use when calling the OpenAI API."""
 
-    model: str = "gpt-3.5-turbo-0125"
+    model: str = "gpt-4o-2024-05-13"
     frequency_penalty: Optional[float] = None
     logit_bias: Optional[dict[str, int]] = None
     logprobs: Optional[bool] = None
