@@ -10,6 +10,8 @@ from langfuse.client import StatefulGenerationClient, StatefulTraceClient
 from langfuse.types import ModelUsage
 from pydantic import BaseModel
 
+from mirascope.base.ops_utils import get_class_vars, wrap_mirascope_class_functions
+from mirascope.base.tools import BaseTool
 from mirascope.base.types import BaseCallResponse, BaseCallResponseChunk, ChunkT
 
 from ..types import (
@@ -123,9 +125,12 @@ def langfuse_generation_end(
     generation: StatefulGenerationClient,
     response_type: Optional[type[BaseCallResponse]] = None,
     result: Any = None,
+    tool_types: Optional[list[type[BaseTool]]] = None,
 ):
     if response_type is not None:
-        response = response_type(response=result, start_time=0, end_time=0)
+        response = response_type(
+            response=result, start_time=0, end_time=0, tool_types=tool_types
+        )
         usage = ModelUsage(
             input=response.input_tokens,
             output=response.output_tokens,
@@ -144,6 +149,7 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
         is_async: bool = False,
         response_type: Optional[type[BaseCallResponse]] = None,
         response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
+        tool_types: Optional[list[type[BaseTool]]] = None,
     ):
         """Wraps a LLM call with Langfuse."""
 
@@ -151,7 +157,7 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
             """Wraps a function that makes a call to an LLM with Langfuse."""
             generation = langfuse_generation(trace, fn, suffix, **kwargs)
             result = fn(*args, **kwargs)
-            langfuse_generation_end(generation, response_type, result)
+            langfuse_generation_end(generation, response_type, result, tool_types)
             return result
 
         def wrapper_generator(*args, **kwargs):
@@ -173,7 +179,7 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
             """Wraps a function that makes an async call to an LLM with Langfuse."""
             generation = langfuse_generation(trace, fn, suffix, **kwargs)
             result = await fn(*args, **kwargs)
-            langfuse_generation_end(generation, response_type, result)
+            langfuse_generation_end(generation, response_type, result, tool_types)
             return result
 
         async def wrapper_generator_async(*args, **kwargs):
@@ -205,6 +211,22 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
         raise ValueError("No response type or chunk type provided")
 
     return decorator
+
+
+def handle_before_call(self: BaseModel, fn, *args, trace=StatefulTraceClient, **kwargs):
+    class_vars = get_class_vars(self)
+    trace.update(
+        input=class_vars.pop("prompt_template", None),
+        metadata=class_vars,
+        tags=class_vars.pop("tags", []),
+    )
+    return trace
+
+
+def handle_after_call(
+    cls, fn, result, before_call, trace=StatefulTraceClient, **kwargs
+):
+    trace.update(output=result)
 
 
 @overload
@@ -262,65 +284,9 @@ def with_langfuse(cls):
     """
     langfuse = Langfuse()
     trace = langfuse.trace(name=cls.__name__)
-    if hasattr(cls, "call"):
-        setattr(cls, "call", mirascope_langfuse_observe(cls.call, trace))
-    if hasattr(cls, "call_async"):
-        setattr(cls, "call_async", mirascope_langfuse_observe(cls.call_async, trace))
-
-    # VectorStore
-    if hasattr(cls, "retrieve"):
-        setattr(cls, "retrieve", mirascope_langfuse_observe(cls.retrieve, trace))
-    if hasattr(cls, "add"):
-        setattr(cls, "add", mirascope_langfuse_observe(cls.add, trace))
-
-    # Embedder
-    if hasattr(cls, "embed"):
-        setattr(cls, "embed", mirascope_langfuse_observe(cls.embed, trace))
-    if hasattr(cls, "embed_async"):
-        setattr(cls, "embed_async", mirascope_langfuse_observe(cls.embed_async, trace))
-
-    if hasattr(cls, "stream"):
-        setattr(cls, "stream", mirascope_langfuse_observe(cls.stream, trace))
-    if hasattr(cls, "stream_async"):
-        setattr(
-            cls, "stream_async", mirascope_langfuse_observe(cls.stream_async, trace)
-        )
-
-    if hasattr(cls, "extract"):
-        setattr(cls, "extract", mirascope_langfuse_observe(cls.extract, trace))
-    if hasattr(cls, "extract_async"):
-        setattr(
-            cls, "extract_async", mirascope_langfuse_observe(cls.extract_async, trace)
-        )
-
-    if hasattr(cls, "call_params"):
-        setattr(
-            cls,
-            "call_params",
-            cls.call_params.model_copy(
-                update={
-                    "langfuse": mirascope_langfuse_generation(trace),
-                }
-            ),
-        )
-    if hasattr(cls, "vectorstore_params"):
-        setattr(
-            cls,
-            "vectorstore_params",
-            cls.vectorstore_params.model_copy(
-                update={
-                    "langfuse": mirascope_langfuse_generation(trace),
-                }
-            ),
-        )
-    if hasattr(cls, "embedding_params"):
-        setattr(
-            cls,
-            "embedding_params",
-            cls.embedding_params.model_copy(
-                update={
-                    "langfuse": mirascope_langfuse_generation(trace),
-                }
-            ),
-        )
+    wrap_mirascope_class_functions(
+        cls, handle_before_call, handle_after_call, trace=trace
+    )
+    if hasattr(cls, "configuration"):
+        cls.configuration.llm_ops.append(mirascope_langfuse_generation(trace))
     return cls

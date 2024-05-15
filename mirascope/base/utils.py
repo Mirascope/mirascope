@@ -1,6 +1,4 @@
 """Base utility functions."""
-from __future__ import annotations
-
 import inspect
 from functools import wraps
 from inspect import Parameter, signature
@@ -21,7 +19,6 @@ from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
-from .calls import BaseCall
 from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool, BaseType
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
@@ -268,45 +265,3 @@ def retry(fn: F) -> F:
         return cast(F, wrapper_generator_async)
     else:
         return cast(F, wrapper)
-
-
-def get_class_vars(cls: type[BaseModel]) -> dict[str, Any]:
-    """Get the class variables of a `BaseModel` removing any dangerous variables."""
-    class_vars = {}
-    for classvars in cls.__class_vars__:
-        if not classvars == "api_key":
-            class_vars[classvars] = getattr(cls.__class__, classvars)
-    return class_vars
-
-
-def get_wrapped_call(call: Callable, cls: BaseCall, **kwargs) -> Callable:
-    """Wrap a call to add the `llm_ops` parameter if it exists."""
-
-    if cls.configuration.llm_ops:
-        wrapped_call = call
-        for op in cls.configuration.llm_ops:
-            wrapped_call = op(
-                wrapped_call,
-                cls._provider,
-                **kwargs,
-            )
-        return wrapped_call
-    return call
-
-
-def wrap_mirascope_class_functions(cls, wrapper: Callable):
-    """Wraps Mirascope class functions with a decorator."""
-    ignore_functions = [
-        "copy",
-        "dict",
-        "dump",
-        "json",
-        "messages",
-        "model_copy",
-        "model_dump",
-        "model_dump_json",
-        "model_post_init",
-    ]
-    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
-        if not name.startswith("_") and name not in ignore_functions:
-            setattr(cls, name, wrapper(getattr(cls, name)))

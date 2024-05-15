@@ -6,9 +6,8 @@ from anthropic import Anthropic, AsyncAnthropic
 from anthropic.types import MessageParam
 from tenacity import AsyncRetrying, Retrying
 
-from mirascope.base.utils import get_wrapped_call
-
 from ..base import BaseCall, retry
+from ..base.ops_utils import get_wrapped_call
 from ..enums import MessageRole
 from .tools import AnthropicTool
 from .types import (

@@ -1,20 +1,19 @@
 """Integration with Logfire from Pydantic"""
-import inspect
 from contextlib import contextmanager
-from functools import wraps
 from typing import Any, Callable, Optional, Union, overload
 
 import logfire
+from logfire import LogfireSpan
 from pydantic import BaseModel
 from typing_extensions import LiteralString
 
+from mirascope.base.ops_utils import get_class_vars, wrap_mirascope_class_functions
 from mirascope.base.types import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseTool,
     ChunkT,
 )
-from mirascope.base.utils import wrap_mirascope_class_functions
 
 from ..types import (
     BaseCallT,
@@ -28,66 +27,6 @@ ONE_SECOND_IN_NANOSECONDS = 1_000_000_000
 STEAMING_MSG_TEMPLATE: LiteralString = (
     "streaming response from {request_data[model]!r} took {duration:.2f}s"
 )
-
-
-def mirascope_logfire_span(fn: Callable):
-    """Wraps a pydantic class method with a Logfire span."""
-
-    @contextmanager
-    def mirascope_span(self: BaseModel, **kwargs):
-        """Wraps a pydantic class method with a Logfire span."""
-        class_vars = {}
-        for classvars in self.__class_vars__:
-            if not classvars == "api_key":
-                class_vars[classvars] = getattr(self.__class__, classvars)
-        with logfire.span(
-            f"{self.__class__.__name__}.{fn.__name__}",
-            class_vars=class_vars,
-            **kwargs,
-        ) as logfire_span:
-            yield logfire_span
-
-    @wraps(fn)
-    def wrapper(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic class method that returns a value."""
-        with mirascope_span(self, **kwargs) as logfire_span:
-            result = fn(self, *args, **kwargs)
-            logfire_span.set_attribute("response", result)
-            return result
-
-    @wraps(fn)
-    async def wrapper_async(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic async class method that returns a value."""
-        with mirascope_span(self, **kwargs) as logfire_span:
-            result = await fn(self, *args, **kwargs)
-            logfire_span.set_attribute("response", result)
-            return result
-
-    @wraps(fn)
-    def wrapper_generator(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic class method that returns a generator."""
-        with mirascope_span(self, **kwargs) as logfire_span:
-            result = fn(self, *args, **kwargs)
-            logfire_span.set_attribute("response", result)
-            for value in result:
-                yield value
-
-    @wraps(fn)
-    async def wrapper_generator_async(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic async class method that returns a generator."""
-        with mirascope_span(self, **kwargs) as logfire_span:
-            result = fn(self, *args, **kwargs)
-            logfire_span.set_attribute("response", result)
-            async for value in result:
-                yield value
-
-    if inspect.isasyncgenfunction(fn):
-        return wrapper_generator_async
-    elif inspect.iscoroutinefunction(fn):
-        return wrapper_async
-    elif inspect.isgeneratorfunction(fn):
-        return wrapper_generator
-    return wrapper
 
 
 def mirascope_logfire() -> Callable:
@@ -282,6 +221,23 @@ def record_streaming(
         )
 
 
+@contextmanager
+def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
+    """Handles before call"""
+    class_vars = get_class_vars(self)
+    with logfire.span(
+        f"{self.__class__.__name__}.{fn.__name__}",
+        class_vars=class_vars,
+        **kwargs,
+    ) as logfire_span:
+        yield logfire_span
+
+
+def handle_after_call(self: BaseModel, fn, result, logfire_span: LogfireSpan, **kwargs):
+    """Handles after call"""
+    logfire_span.set_attribute("response", result)
+
+
 @overload
 def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]:
     ...  # pragma: no cover
@@ -309,7 +265,7 @@ def with_logfire(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
 
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
-    wrap_mirascope_class_functions(cls, mirascope_logfire_span)
+    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
     if cls._provider and cls._provider == "openai":
         if hasattr(cls, "configuration"):
             cls.configuration.llm_ops.append(logfire.instrument_openai)
