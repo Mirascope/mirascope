@@ -127,14 +127,13 @@ class BasePrompt(BaseModel):
                     for _, var, _, _ in Formatter().parse(match.group(2))
                     if var is not None
                 ][0]
-                if not hasattr(self, template_var) or not isinstance(
-                    getattr(self, template_var), list
-                ):
+                attribute = getattr(self, template_var)
+                if not attribute or not isinstance(attribute, list):
                     raise ValueError(
                         f"MESSAGES keyword used with attribute `{template_var}`, which "
                         "is not a `list` of messages."
                     )
-                messages += getattr(self, template_var)
+                messages += attribute
             else:
                 content = self._format_template(match.group(2))
                 messages.append({"role": role, "content": content})
