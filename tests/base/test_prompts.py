@@ -155,3 +155,23 @@ def test_base_prompt_list_attribute() -> None:
     my_list_of_lists = [my_list, my_list]
     prompt = MyPrompt(my_list=my_list, my_list_of_lists=my_list_of_lists)
     assert str(prompt) == "my\nlist\nmy\nlist\n\nmy\nlist"
+
+
+def test_messages_property_called_once() -> None:
+    """Tests that the messages property is called once."""
+
+    class MyPrompt(BasePrompt):
+        prompt_template = """
+        MESSAGES: 
+        {history}
+        """
+        count: int = 0
+
+        @property
+        def history(self) -> list[Message]:
+            self.count += 1
+            return [{"role": "user", "content": "foo"}]
+
+    my_prompt = MyPrompt()
+    my_prompt.messages()
+    assert my_prompt.count == 1
