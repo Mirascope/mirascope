@@ -49,7 +49,7 @@ retries = Retrying(
 task_details = TaskExtractor(task=task).extract(retries=retries)
 ```
 
-As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](validation.md) for more details).
+As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](./extracting_structured_information_using_llms.md#validation) for more details).
 
 ```python
 book = BookExtractor().extract(retries=3)  # will retry up to 3 times 
