@@ -23,69 +23,6 @@ from ..types import (
 )
 
 
-def mirascope_langfuse_observe(fn: Callable, trace: StatefulTraceClient):
-    """Wraps a pydantic class method with a Langfuse trace."""
-
-    def collect_trace_data(self: BaseModel, **kwargs):
-        """Wraps a pydantic class method with a Langfuse trace."""
-        class_vars = {}
-        for classvars in self.__class_vars__:
-            if not classvars == "api_key":
-                class_vars[classvars] = getattr(self.__class__, classvars)
-        trace.update(
-            input=class_vars.pop("prompt_template", None),
-            metadata=class_vars,
-            tags=class_vars.pop("tags", []),
-        )
-
-    @wraps(fn)
-    def wrapper(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic class method that returns a value."""
-        collect_trace_data(self, **kwargs)
-        result = fn(self, *args, **kwargs)
-        trace.update(output=result)
-        return result
-
-    @wraps(fn)
-    async def wrapper_async(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic async class method that returns a value."""
-        collect_trace_data(self, **kwargs)
-        result = await fn(self, *args, **kwargs)
-        trace.update(output=result)
-        return result
-
-    @wraps(fn)
-    def wrapper_generator(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic class method that returns a generator."""
-        collect_trace_data(self, **kwargs)
-        result = fn(self, *args, **kwargs)
-
-        output = []
-        for value in result:
-            output.append(value)
-            yield value
-        trace.update(output=output)
-
-    @wraps(fn)
-    async def wrapper_generator_async(self: BaseModel, *args, **kwargs):
-        """Wraps a pydantic async class method that returns a generator."""
-        collect_trace_data(self, **kwargs)
-        result = fn(self, *args, **kwargs)
-        output = []
-        async for value in result:
-            output.append(value)
-            yield value
-        trace.update(output=output)
-
-    if inspect.isasyncgenfunction(fn):
-        return wrapper_generator_async
-    elif inspect.iscoroutinefunction(fn):
-        return wrapper_async
-    elif inspect.isgeneratorfunction(fn):
-        return wrapper_generator
-    return wrapper
-
-
 @contextmanager
 def record_streaming(generation: StatefulGenerationClient):
     """Langfuse record_streaming with Mirascope providers"""
