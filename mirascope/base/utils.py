@@ -1,9 +1,10 @@
 """Base utility functions."""
+from __future__ import annotations
+
 import inspect
 from functools import wraps
 from inspect import Parameter, signature
 from typing import (
-    TYPE_CHECKING,
     Annotated,
     Any,
     Callable,
@@ -20,10 +21,9 @@ from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
+from .calls import BaseCall
 from .tools import DEFAULT_TOOL_DOCSTRING, BaseTool, BaseType
 
-if TYPE_CHECKING:
-    from .calls import BaseCall
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 
 
@@ -279,7 +279,7 @@ def get_class_vars(cls: type[BaseModel]) -> dict[str, Any]:
     return class_vars
 
 
-def get_wrapped_call(call: Callable, cls: "BaseCall", **kwargs) -> Callable:
+def get_wrapped_call(call: Callable, cls: BaseCall, **kwargs) -> Callable:
     """Wrap a call to add the `llm_ops` parameter if it exists."""
 
     if cls.configuration.llm_ops:
