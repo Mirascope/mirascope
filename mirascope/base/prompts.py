@@ -128,7 +128,7 @@ class BasePrompt(BaseModel):
                     if var is not None
                 ][0]
                 attribute = getattr(self, template_var)
-                if not attribute or not isinstance(attribute, list):
+                if attribute is None or not isinstance(attribute, list):
                     raise ValueError(
                         f"MESSAGES keyword used with attribute `{template_var}`, which "
                         "is not a `list` of messages."

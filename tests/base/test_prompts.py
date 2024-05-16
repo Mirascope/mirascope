@@ -125,6 +125,23 @@ def test_base_prompt_messages_injection() -> None:
     ]
 
 
+def test_base_prompt_messages_injection_empty_list() -> None:
+    """Tests that an empty messages array works properly."""
+
+    class MyPrompt(BasePrompt):
+        prompt_template = """
+        MESSAGES: {history}
+
+        USER:
+        user message
+        """
+
+        history: list[Message]
+
+    messages = MyPrompt(history=[]).messages()
+    assert messages == [{"role": "user", "content": "user message"}]
+
+
 def test_base_prompt_messages_injection_wrong_type() -> None:
     """Tests that an error is raised if trying to inject a non-list type."""
 
