@@ -34,7 +34,6 @@ def get_weather(location: str) -> str:
     Args:
         location: The "City, State" or "City, Country" for which to get the weather.
     """
-    print(location)
     if location == "Tokyo, Japan":
         return f"The weather in {location} is 72 degrees and sunny."
     elif location == "San Francisco, CA":
@@ -62,31 +61,29 @@ print(weather_tool.fn(**weather_tool.args))
 You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
 
 ```python
-from typing import Literal
-
 from mirascope.base import tool_fn
-from mirascope.openai import OpenAITool
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAITool
 from pydantic import Field
 
 
-def get_weather(location, unit="fahrenheit"):
-	# Assume this function does not have a docstring
-    if "tokyo" in location.lower():
-        return json.dumps({"location": "Tokyo", "temperature": "10", "unit": unit})
-    elif "san francisco" in location.lower():
-        return json.dumps({"location": "San Francisco", "temperature": "72", "unit": unit})
-    elif "paris" in location.lower():
-        return json.dumps({"location": "Paris", "temperature": "22", "unit": unit})
+def get_weather(location: str) -> str:
+    # Assume this function does not have a docstring
+    if location == "Tokyo, Japan":
+        return f"The weather in {location} is 72 degrees and sunny."
+    elif location == "San Francisco, CA":
+        return f"The weather in {location} is 45 degrees and cloudy."
     else:
-        return json.dumps({"location": location, "temperature": "unknown"})
+        return f"I'm sorry, I don't have the weather for {location}."
 
 
 @tool_fn(get_weather)
 class GetWeather(OpenAITool):
     """Get the current weather in a given location."""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
-    unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+    location: str = Field(
+        ...,
+        description="The 'City, State' or 'City, Country' for which to get the weather.",
+    )
 
 
 class Forecast(OpenAICall):
@@ -114,19 +111,13 @@ For classes, simply replace `OpenAITool` with your provider of choice e.g. `Gemi
 Using the same OpenAI docs, the function call is defined as such:
 
 ```python
-import json
-
-
-def get_current_weather(location, unit="fahrenheit"):
-    """Get the current weather in a given location"""
-    if "tokyo" in location.lower():
-        return json.dumps({"location": "Tokyo", "temperature": "10", "unit": unit})
-    elif "san francisco" in location.lower():
-        return json.dumps({"location": "San Francisco", "temperature": "72", "unit": unit})
-    elif "paris" in location.lower():
-        return json.dumps({"location": "Paris", "temperature": "22", "unit": unit})
+def get_weather(location: str) -> str:
+    if location == "Tokyo, Japan":
+        return f"The weather in {location} is 72 degrees and sunny."
+    elif location == "San Francisco, CA":
+        return f"The weather in {location} is 45 degrees and cloudy."
     else:
-        return json.dumps({"location": location, "temperature": "unknown"})
+        return f"I'm sorry, I don't have the weather for {location}."
 ```
 
 OpenAI uses JSON Schema to define the tool call:
@@ -136,16 +127,15 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
+            "name": "get_weather",
             "description": "Get the current weather in a given location",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "location": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
+                        "description": "The 'City, State' or 'City, Country' for which to get the weather.",
                     },
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
                 },
                 "required": ["location"],
             },
@@ -161,24 +151,19 @@ tools = [
     {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
+            "name": "get_weather",
             "description": "Get the current weather",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "location": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "format": {
-                        "type": "string",
-                        "enum": ["celsius", "fahrenheit"],
-                        "description": "The temperature unit to use. Infer this from the users location.",
+                        "description": "The 'City, State' or 'City, Country' for which to get the weather.",
                     },
                 },
-                "required": ["location", "format"],
+                "required": ["location"],
             },
-        }
+        },
     },
     {
         "type": "function",
@@ -190,21 +175,16 @@ tools = [
                 "properties": {
                     "location": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "format": {
-                        "type": "string",
-                        "enum": ["celsius", "fahrenheit"],
-                        "description": "The temperature unit to use. Infer this from the users location.",
+                        "description": "The 'City, State' or 'City, Country' for which to get the weather.",
                     },
                     "num_days": {
                         "type": "integer",
                         "description": "The number of days to forecast",
-                    }
+                    },
                 },
-                "required": ["location", "format", "num_days"]
+                "required": ["location", "num_days"],
             },
-        }
+        },
     },
 ]
 ```
@@ -215,8 +195,10 @@ With Mirascope, it will look like this:
 class GetCurrentWeather(OpenAITool):
     """Get the current weather in a given location."""
 
-    location: str = Field(..., description="The city and state, e.g. San Francisco, CA")
-    unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+    location: str = Field(
+        ...,
+        description="The 'City, State' or 'City, Country' for which to get the weather.",
+    )
 
 
 class GetNDayWeatherForecast(GetCurrentWeather):
