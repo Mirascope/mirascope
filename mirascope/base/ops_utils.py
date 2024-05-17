@@ -27,13 +27,13 @@ def get_wrapped_async_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> 
     """Get a wrapped async client."""
     if self.configuration.client_wrappers:
         for op in self.configuration.client_wrappers:
-            if op == "langfuse":
+            if op == "langfuse":  # pragma: no cover
                 from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
 
                 client = LangfuseAsyncOpenAI(
                     api_key=self.api_key, base_url=self.base_url
                 )
-            elif op == "logfire":
+            elif op == "logfire":  # pragma: no cover
                 import logfire
 
                 logfire.instrument_openai(client)  # type: ignore
@@ -45,12 +45,12 @@ def get_wrapped_async_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> 
 def get_wrapped_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> T:
     """Get a wrapped client."""
     if self.configuration.client_wrappers:
-        for op in self.configuration.client_wrappers:
+        for op in self.configuration.client_wrappers:  # pragma: no cover
             if op == "langfuse":
                 from langfuse.openai import OpenAI as LangfuseOpenAI
 
                 client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
-            elif op == "logfire":
+            elif op == "logfire":  # pragma: no cover
                 import logfire
 
                 logfire.instrument_openai(client)  # type: ignore
@@ -68,7 +68,7 @@ def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> 
     if self.configuration.llm_ops:
         wrapped_call = call
         for op in self.configuration.llm_ops:
-            if op == "weave":
+            if op == "weave":  # pragma: no cover
                 import weave
 
                 wrapped_call = weave.op()(wrapped_call)
