@@ -468,7 +468,6 @@ class BaseExtractor(
                 "Please fix the errors and try again."
             )
 
-        # TODO: Copy all ClassVar dynamically
         class TempCall(call_type):  # type: ignore
             prompt_template = _prompt_template
 
