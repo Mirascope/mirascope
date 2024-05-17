@@ -153,9 +153,7 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
 
 
 def handle_before_call(self: BaseModel, fn, *args, trace=StatefulTraceClient, **kwargs):
-    print("HTRIHJR")
     class_vars = get_class_vars(self)
-    print(class_vars)
     trace.update(
         input=class_vars.pop("prompt_template", None),
         metadata=class_vars,
