@@ -1,5 +1,6 @@
 """A module for calling Anthropic's Claude API."""
 import datetime
+import inspect
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -74,13 +75,12 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                response_type=AnthropicCallResponse,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            create,
+            self,
+            response_type=AnthropicCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
             messages=messages,
@@ -116,14 +116,13 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                is_async=True,
-                response_type=AnthropicCallResponse,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            create,
+            self,
+            is_async=True,
+            response_type=AnthropicCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(
             messages=messages,
@@ -156,14 +155,13 @@ class AnthropicCall(
         client = get_wrapped_client(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        stream = client.messages.stream
-        if self.configuration.llm_ops:  # pragma: no cover
-            stream = get_wrapped_call(
-                stream,
-                self,
-                response_chunk_type=AnthropicCallResponseChunk,
-                tool_types=tool_types,
-            )
+        stream = get_wrapped_call(
+            client.messages.stream,
+            self,
+            response_chunk_type=AnthropicCallResponseChunk,
+            tool_types=tool_types,
+        )
+        if inspect.isgeneratorfunction(stream):
             for chunk in stream(messages=messages, **kwargs):  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,
@@ -196,15 +194,14 @@ class AnthropicCall(
         client = get_wrapped_async_client(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        stream = client.messages.stream
-        if self.configuration.llm_ops:  # pragma: no cover
-            stream = get_wrapped_call(
-                stream,
-                self,
-                is_async=True,
-                response_chunk_type=AnthropicCallResponseChunk,
-                tool_types=tool_types,
-            )
+        stream = get_wrapped_call(
+            client.messages.stream,
+            self,
+            is_async=True,
+            response_chunk_type=AnthropicCallResponseChunk,
+            tool_types=tool_types,
+        )
+        if inspect.isasyncgenfunction(stream):
             async for chunk in stream(messages=messages, **kwargs):  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,

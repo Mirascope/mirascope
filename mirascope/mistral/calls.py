@@ -73,14 +73,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             ),
             self,
         )
-        chat = client.chat
-        if self.configuration.llm_ops:  # pragma: no cover
-            chat = get_wrapped_call(
-                chat,
-                self,
-                response_type=MistralCallResponse,
-                tool_types=tool_types,
-            )
+        chat = get_wrapped_call(
+            client.chat,
+            self,
+            response_type=MistralCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
@@ -116,15 +114,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             ),
             self,
         )
-        chat = client.chat
-        if self.configuration.llm_ops:  # pragma: no cover
-            chat = get_wrapped_call(
-                chat,
-                self,
-                is_async=True,
-                response_type=MistralCallResponse,
-                tool_types=tool_types,
-            )
+        chat = get_wrapped_call(
+            client.chat,
+            self,
+            is_async=True,
+            response_type=MistralCallResponse,
+            tool_types=tool_types,
+        )
 
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await chat(messages=self.messages(), **kwargs)
@@ -161,14 +157,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             ),
             self,
         )
-        chat_stream = client.chat_stream
-        if self.configuration.llm_ops:  # pragma: no cover
-            chat_stream = get_wrapped_call(
-                chat_stream,
-                self,
-                response_type=MistralCallResponseChunk,
-                tool_types=tool_types,
-            )
+        chat_stream = get_wrapped_call(
+            client.chat_stream,
+            self,
+            response_chunk_type=MistralCallResponseChunk,
+            tool_types=tool_types,
+        )
 
         for chunk in chat_stream(messages=self.messages(), **kwargs):
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
@@ -198,14 +192,12 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             ),
             self,
         )
-        chat_stream = client.chat_stream
-        if self.configuration.llm_ops:  # pragma: no cover
-            chat_stream = get_wrapped_call(
-                chat_stream,
-                self,
-                is_async=True,
-                response_type=MistralCallResponseChunk,
-                tool_types=tool_types,
-            )
+        chat_stream = get_wrapped_call(
+            client.chat_stream,
+            self,
+            is_async=True,
+            response_chunk_type=MistralCallResponseChunk,
+            tool_types=tool_types,
+        )
         async for chunk in chat_stream(messages=self.messages(), **kwargs):
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)

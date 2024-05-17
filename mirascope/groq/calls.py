@@ -1,5 +1,6 @@
 """A module for calling Groq's Cloud API."""
 import datetime
+import inspect
 import json
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
@@ -81,11 +82,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         client = get_wrapped_client(
             Groq(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create, self, response_type=GroqCallResponse, tool_types=tool_types
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_type=GroqCallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
@@ -115,15 +117,13 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         client = get_wrapped_async_client(
             AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                is_async=True,
-                response_type=GroqCallResponse,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_type=GroqCallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
@@ -154,14 +154,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             Groq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                response_chunk_type=GroqCallResponseChunk,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_chunk_type=GroqCallResponseChunk,
+            tool_types=tool_types,
+        )
         stream = create(messages=messages, stream=True, **kwargs)
         for completion in stream:
             yield GroqCallResponseChunk(
@@ -188,18 +186,16 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                is_async=True,
-                response_chunk_type=GroqCallResponseChunk,
-                tool_types=tool_types,
-            )
-            stream = create(messages=messages, stream=True, **kwargs)
-        else:
-            stream = await create(messages=messages, stream=True, **kwargs)
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_chunk_type=GroqCallResponseChunk,
+            tool_types=tool_types,
+        )
+        stream = create(messages=messages, stream=True, **kwargs)
+        if inspect.iscoroutine(stream):
+            stream = await stream
         async for completion in stream:  # type: ignore
             yield GroqCallResponseChunk(
                 chunk=completion,

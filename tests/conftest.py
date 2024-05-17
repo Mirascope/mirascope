@@ -140,7 +140,7 @@ def fixture_chat_completion_with_assistant_message_tool(
 
 
 @pytest.fixture()
-def fixture_chat_completion_chunks() -> list[ChatCompletionChunk]:
+def fixture_chat_completion_chunks() -> list[OpenAIChatCompletionChunk]:
     """Returns chat completion chunks."""
     return [
         OpenAIChatCompletionChunk(

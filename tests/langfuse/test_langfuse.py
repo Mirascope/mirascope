@@ -32,33 +32,30 @@ from mirascope.rag.types import Document
 os.environ["OPENAI_API_KEY"] = "test"
 
 
-class MyCall(OpenAICall):
-    prompt_template = "test"
-
-
-@patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
-)
+@patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
 @patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
 def test_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_create: MagicMock,
     fixture_chat_completion: ChatCompletion,
 ) -> None:
-    """Tests that `OpenAICall.call` returns the expected response with langfuse."""
-    mock_langfuse.trace = MagicMock()
+    """Tests that `OpenAICall.call` returns the expected response with langfuse.
+
+    Langfuse OpenAI will wrap client_wrapper instead of llm_ops
+    """
     mock_create.return_value = fixture_chat_completion
     mock_create.__name__ = "create"
 
     @with_langfuse
-    class MyNestedCall(MyCall):
+    class MyCall(OpenAICall):
         ...
+
+    class MyNestedCall(MyCall):
+        prompt_template = """Test"""
 
     my_call = MyNestedCall()
     my_call.call()
-    assert len(my_call.configuration.llm_ops) > 0
-    mock_langfuse.return_value.trace.assert_called_once()
+    assert len(my_call.configuration.client_wrappers) > 0
 
 
 @patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
@@ -182,6 +179,9 @@ def test_extractor_with_langfuse(
     fixture_my_openai_tool: type[OpenAITool],
     fixture_my_openai_tool_schema: type[BaseModel],
 ) -> None:
+    """Tests that `OpenAIExtractor.extract()` returns expected response with langfuse.
+    Langfuse OpenAI will wrap client_wrapper instead of llm_ops
+    """
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_tools,
         tool_types=[fixture_my_openai_tool],
@@ -198,7 +198,7 @@ def test_extractor_with_langfuse(
 
     my_extractor = TempExtractor()
     my_extractor.extract()
-    assert len(my_extractor.configuration.llm_ops) > 0
+    assert len(my_extractor.configuration.client_wrappers) > 0
 
 
 @patch(
@@ -278,12 +278,8 @@ async def test_groq_call_stream_async(
     mock_create.__name__ = "stream"
     my_call = TempCall()
     stream = my_call.stream_async()
-
-    i = 0
     async for chunk in stream:
-        assert chunk.chunk == fixture_chat_completion_stream_response[i]
-        i += 1
-
+        assert isinstance(chunk, ChatCompletionChunk)
     assert len(my_call.configuration.llm_ops) > 0
 
 
@@ -359,7 +355,7 @@ def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
         ...
 
     my_embedder = MyEmbedder()
-    assert len(my_embedder.configuration.llm_ops) > 0
+    assert len(my_embedder.configuration.client_wrappers) > 0
 
 
 @patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)

@@ -5,17 +5,14 @@ If you want to use Mirascope in conjunction with another library which implement
 ```python
 from some_library import some_wrapper
 from mirascope.openai import OpenAICall
-
+from mirascope.base import BaseConfig
 
 class BookRecommender(OpenAICall):
     prompt_template = "Can you recommend some books on {topic}?"
 
     topic: str
 
-    call_params = OpenAICallParams(
-		model="gpt-3.5-turbo",
-		wrapper=some_wrapper
-	)
+    configuration = BaseConfig(client_wrappers=[some_wrapper])
 ```
 
 Now, every call to `call`, `call_async`, `stream`, and `stream_async` will be executed on top of the wrapped `OpenAI` client.

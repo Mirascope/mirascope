@@ -110,14 +110,12 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = get_wrapped_client(
             OpenAI(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                response_type=OpenAICallResponse,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_type=OpenAICallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(
@@ -157,15 +155,13 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = get_wrapped_async_client(
             AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                is_async=True,
-                response_type=OpenAICallResponse,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_type=OpenAICallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(
@@ -205,14 +201,12 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = get_wrapped_client(
             OpenAI(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                response_chunk_type=OpenAICallResponseChunk,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_chunk_type=OpenAICallResponseChunk,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = create(
             messages=messages,
@@ -250,15 +244,13 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         client = get_wrapped_async_client(
             AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.chat.completions.create
-        if self.configuration.llm_ops:  # pragma: no cover
-            create = get_wrapped_call(
-                create,
-                self,
-                is_async=True,
-                response_chunk_type=OpenAICallResponseChunk,
-                tool_types=tool_types,
-            )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_chunk_type=OpenAICallResponseChunk,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         stream = await create(
             messages=messages,

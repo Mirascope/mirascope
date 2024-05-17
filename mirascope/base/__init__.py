@@ -8,6 +8,7 @@ from .types import (
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
+    BaseConfig,
     Message,
 )
 from .utils import (
@@ -30,6 +31,7 @@ __all__ = [
     "BaseCallParams",
     "BaseCallResponse",
     "BaseCallResponseChunk",
+    "BaseConfig",
     "Message",
     "convert_base_model_to_tool",
     "convert_base_type_to_tool",

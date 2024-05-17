@@ -1,6 +1,5 @@
 """Integration with Weave from Weights & Biases"""
 
-import inspect
 from typing import Type, overload
 
 import weave

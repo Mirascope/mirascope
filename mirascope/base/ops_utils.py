@@ -1,8 +1,7 @@
 import inspect
-from collections.abc import Callable
 from contextlib import AbstractContextManager
 from functools import wraps
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, Callable, Generator, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -64,7 +63,6 @@ C = TypeVar("C")
 
 def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> C:
     """Wrap a call to add the `llm_ops` parameter if it exists."""
-
     if self.configuration.llm_ops:
         wrapped_call = call
         for op in self.configuration.llm_ops:
@@ -84,12 +82,8 @@ def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> 
 
 def mirascope_span(
     fn: Callable,
-    handle_before_call: Optional[
-        Callable[[BaseModel, Callable[..., Any], dict[str, Any]], Any]
-    ] = None,
-    handle_after_call: Optional[
-        Callable[[BaseModel, Callable[..., Any], Any, Any, dict[str, Any]], Any]
-    ] = None,
+    handle_before_call: Optional[Callable[..., Any]] = None,
+    handle_after_call: Optional[Callable[..., Any]] = None,
     **custom_kwargs: Any,
 ):
     """Wraps a pydantic class method."""
@@ -210,12 +204,8 @@ def mirascope_span(
 
 def wrap_mirascope_class_functions(
     cls: type[BaseModel],
-    handle_before_call: Optional[
-        Callable[[BaseModel, Callable[..., Any], dict[str, Any]], Any]
-    ] = None,
-    handle_after_call: Optional[
-        Callable[[BaseModel, Callable[..., Any], Any, Any, dict[str, Any]], Any]
-    ] = None,
+    handle_before_call: Optional[Callable[..., Any]] = None,
+    handle_after_call: Optional[Callable[..., Any]] = None,
     **custom_kwargs: Any,
 ):
     """Wraps Mirascope class functions with a decorator.
@@ -241,7 +231,7 @@ def wrap_mirascope_class_functions(
     return cls
 
 
-def get_class_functions(cls: type[BaseModel]) -> list[Callable]:
+def get_class_functions(cls: type[BaseModel]) -> Generator[str, None, None]:
     """Get the class functions of a `BaseModel`."""
     ignore_functions = [
         "copy",

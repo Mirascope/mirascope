@@ -1,5 +1,10 @@
 """Integration with Logfire from Pydantic"""
-from contextlib import contextmanager
+import inspect
+from contextlib import (
+    AbstractAsyncContextManager,
+    AbstractContextManager,
+    contextmanager,
+)
 from typing import Any, Callable, Optional, Union, overload
 
 import logfire
@@ -107,15 +112,15 @@ def mirascope_logfire() -> Callable:
                 logfire_span, span_data, _extract_chunk_content
             ) as record_chunk:
                 stream = fn(*args, **kwargs)
-                if suffix != "anthropic":
-                    for chunk in stream:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-                else:
+                if isinstance(stream, AbstractContextManager):
                     with stream as s:
                         for chunk in s:
                             record_chunk(chunk, response_chunk_type)
                             yield chunk
+                else:
+                    for chunk in stream:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
 
         async def wrapper_generator_async(*args, **kwargs):
             logfire_span = logfire.with_settings(
@@ -125,19 +130,18 @@ def mirascope_logfire() -> Callable:
             with record_streaming(
                 logfire_span, span_data, _extract_chunk_content
             ) as record_chunk:
-                if suffix == "groq":
-                    stream = await fn(*args, **kwargs)
-                else:
-                    stream = fn(*args, **kwargs)
-                if suffix != "anthropic":
-                    async for chunk in stream:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-                else:
+                stream = fn(*args, **kwargs)
+                if inspect.iscoroutine(stream):
+                    stream = await stream
+                if isinstance(stream, AbstractAsyncContextManager):
                     async with stream as s:
                         async for chunk in s:
                             record_chunk(chunk, response_chunk_type)
                             yield chunk
+                else:
+                    async for chunk in stream:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
 
         if response_chunk_type and is_async:
             return wrapper_generator_async

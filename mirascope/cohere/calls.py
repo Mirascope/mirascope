@@ -67,11 +67,10 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         co = get_wrapped_client(
             Client(api_key=self.api_key, base_url=self.base_url), self
         )
-        chat = co.chat
-        if self.configuration.llm_ops:
-            chat = get_wrapped_call(
-                chat, self, response_type=CohereCallResponse, tool_types=tool_types
-            )
+
+        chat = get_wrapped_call(
+            co.chat, self, response_type=CohereCallResponse, tool_types=tool_types
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = chat(message=message, **kwargs)
         cost = None
@@ -104,15 +103,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         co = get_wrapped_async_client(
             AsyncClient(api_key=self.api_key, base_url=self.base_url), self
         )
-        chat = co.chat
-        if self.configuration.llm_ops:
-            chat = get_wrapped_call(
-                chat,
-                self,
-                is_async=True,
-                response_type=CohereCallResponse,
-                tool_types=tool_types,
-            )
+        chat = get_wrapped_call(
+            co.chat,
+            self,
+            is_async=True,
+            response_type=CohereCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await chat(message=message, **kwargs)
         cost = None
@@ -145,14 +142,12 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         co = get_wrapped_client(
             Client(api_key=self.api_key, base_url=self.base_url), self
         )
-        chat_stream = co.chat_stream
-        if self.configuration.llm_ops:
-            chat_stream = get_wrapped_call(
-                chat_stream,
-                self,
-                response_chunk_type=CohereCallResponseChunk,
-                tool_types=tool_types,
-            )
+        chat_stream = get_wrapped_call(
+            co.chat_stream,
+            self,
+            response_chunk_type=CohereCallResponseChunk,
+            tool_types=tool_types,
+        )
         for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
@@ -173,15 +168,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         co = get_wrapped_async_client(
             AsyncClient(api_key=self.api_key, base_url=self.base_url), self
         )
-        chat_stream = co.chat_stream
-        if self.configuration.llm_ops:
-            chat_stream = get_wrapped_call(
-                chat_stream,
-                self,
-                is_async=True,
-                response_chunk_type=CohereCallResponseChunk,
-                tool_types=tool_types,
-            )
+        chat_stream = get_wrapped_call(
+            co.chat_stream,
+            self,
+            is_async=True,
+            response_chunk_type=CohereCallResponseChunk,
+            tool_types=tool_types,
+        )
         async for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 

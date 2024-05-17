@@ -1,6 +1,11 @@
 """Integration with Langfuse"""
 
-from contextlib import contextmanager
+import inspect
+from contextlib import (
+    AbstractAsyncContextManager,
+    AbstractContextManager,
+    contextmanager,
+)
 from typing import Any, Callable, Optional, Type, overload
 
 from langfuse import Langfuse
@@ -100,15 +105,15 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
             generation = langfuse_generation(trace, fn, model_name, **kwargs)
             with record_streaming(generation) as record_chunk:
                 generator = fn(*args, **kwargs)
-                if suffix != "anthropic":
-                    for chunk in generator:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-                else:
+                if isinstance(generator, AbstractContextManager):
                     with generator as s:
                         for chunk in s:
                             record_chunk(chunk, response_chunk_type)
                             yield chunk
+                else:
+                    for chunk in generator:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
 
         async def wrapper_async(*args, **kwargs):
             """Wraps a function that makes an async call to an LLM with Langfuse."""
@@ -121,19 +126,18 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
             """Wraps a function that yields an async call to an LLM with Langfuse."""
             generation = langfuse_generation(trace, fn, model_name, **kwargs)
             with record_streaming(generation) as record_chunk:
-                if suffix == "groq":
-                    generator = await fn(*args, **kwargs)
-                else:
-                    generator = fn(*args, **kwargs)
-                if suffix != "anthropic":
-                    async for chunk in generator:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
-                else:
-                    async with generator as s:
+                stream = fn(*args, **kwargs)
+                if inspect.iscoroutine(stream):
+                    stream = await stream
+                if isinstance(stream, AbstractAsyncContextManager):
+                    async with stream as s:
                         async for chunk in s:
                             record_chunk(chunk, response_chunk_type)
                             yield chunk
+                else:
+                    async for chunk in stream:
+                        record_chunk(chunk, response_chunk_type)
+                        yield chunk
 
         if response_chunk_type and is_async:
             return wrapper_generator_async
@@ -149,7 +153,9 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
 
 
 def handle_before_call(self: BaseModel, fn, *args, trace=StatefulTraceClient, **kwargs):
+    print("HTRIHJR")
     class_vars = get_class_vars(self)
+    print(class_vars)
     trace.update(
         input=class_vars.pop("prompt_template", None),
         metadata=class_vars,
@@ -223,12 +229,19 @@ def with_langfuse(cls):
         cls, handle_before_call, handle_after_call, trace=trace
     )
     if hasattr(cls, "configuration"):
-        cls.configuration = cls.configuration.model_copy(
-            update={
-                "llm_ops": [
-                    *cls.configuration.llm_ops,
-                    mirascope_langfuse_generation(trace),
-                ]
-            }
-        )
+        if cls._provider and cls._provider == "openai":
+            cls.configuration = cls.configuration.model_copy(
+                update={
+                    "client_wrappers": [*cls.configuration.client_wrappers, "langfuse"]
+                }
+            )
+        else:
+            cls.configuration = cls.configuration.model_copy(
+                update={
+                    "llm_ops": [
+                        *cls.configuration.llm_ops,
+                        mirascope_langfuse_generation(trace),
+                    ]
+                }
+            )
     return cls

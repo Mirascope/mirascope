@@ -46,9 +46,8 @@ You can use client wrappers (as mentioned in [client wrappers](./client_wrappers
 ```python
 import os
 from langsmith import wrappers
-
+from mirascope.base import BaseConfig
 from mirascope.openai import OpenAICall
-
 os.environ["LANGCHAIN_API_KEY"] = "YOUR_LANGCHAIN_API_KEY"
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
@@ -59,10 +58,8 @@ class BookRecommender(OpenAICall):
 
     topic: str
 
-    call_params = OpenAICallParams(
-	    model="gpt-3.5-turbo",
-		wrapper=wrappers.wrap_openai
-	)
+    configuration = BaseConfig(client_wrappers[wrappers.wrap_openai])
+
 
 response = BookRecommender(topic="sci-fi").call()
 ```

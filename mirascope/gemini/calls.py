@@ -1,5 +1,6 @@
 """A module for calling Google's Gemini Chat API."""
 import datetime
+import inspect
 import logging
 from typing import (
     Any,
@@ -94,15 +95,13 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = get_wrapped_client(
             GenerativeModel(model_name=model_name), self
         )
-        generate_content = gemini_pro_model.generate_content
-        if self.configuration.llm_ops:  # pragma: no cover
-            generate_content = get_wrapped_call(
-                generate_content,
-                self,
-                response_type=GeminiCallResponse,
-                tool_types=tool_types,
-                model_name=model_name,
-            )
+        generate_content = get_wrapped_call(
+            gemini_pro_model.generate_content,
+            self,
+            response_type=GeminiCallResponse,
+            tool_types=tool_types,
+            model_name=model_name,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
@@ -137,16 +136,14 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = get_wrapped_async_client(
             GenerativeModel(model_name=model_name), self
         )
-        generate_content_async = gemini_pro_model.generate_content_async
-        if self.configuration.llm_ops:  # pragma: no cover
-            generate_content_async = get_wrapped_call(
-                generate_content_async,
-                self,
-                is_async=True,
-                response_type=GeminiCallResponse,
-                tool_types=tool_types,
-                model_name=model_name,
-            )
+        generate_content_async = get_wrapped_call(
+            gemini_pro_model.generate_content_async,
+            self,
+            is_async=True,
+            response_type=GeminiCallResponse,
+            tool_types=tool_types,
+            model_name=model_name,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             self.messages(),
@@ -180,15 +177,13 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = get_wrapped_client(
             GenerativeModel(model_name=model_name), self
         )
-        generate_content = gemini_pro_model.generate_content
-        if self.configuration.llm_ops:  # pragma: no cover
-            generate_content = get_wrapped_call(
-                generate_content,
-                self,
-                response_type=GeminiCallResponse,
-                tool_types=tool_types,
-                model_name=model_name,
-            )
+        generate_content = get_wrapped_call(
+            gemini_pro_model.generate_content,
+            self,
+            response_chunk_type=GeminiCallResponseChunk,
+            tool_types=tool_types,
+            model_name=model_name,
+        )
         stream = generate_content(
             self.messages(),
             stream=True,
@@ -216,21 +211,21 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         gemini_pro_model = get_wrapped_async_client(
             GenerativeModel(model_name=model_name), self
         )
-        generate_content_async = gemini_pro_model.generate_content_async
-        if self.configuration.llm_ops:  # pragma: no cover
-            generate_content_async = get_wrapped_call(
-                generate_content_async,
-                self,
-                is_async=True,
-                response_type=GeminiCallResponse,
-                tool_types=tool_types,
-                model_name=model_name,
-            )
-        stream = await generate_content_async(
+        generate_content_async = get_wrapped_call(
+            gemini_pro_model.generate_content_async,
+            self,
+            is_async=True,
+            response_chunk_type=GeminiCallResponseChunk,
+            tool_types=tool_types,
+            model_name=model_name,
+        )
+        stream = generate_content_async(
             self.messages(),
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
+        if inspect.iscoroutine(stream):
+            stream = await stream
         async for chunk in stream:
             yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
