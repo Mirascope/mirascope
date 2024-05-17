@@ -7,7 +7,11 @@ from anthropic.types import MessageParam
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
-from ..base.ops_utils import get_wrapped_call
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..enums import MessageRole
 from .tools import AnthropicTool
 from .types import (
@@ -42,6 +46,7 @@ class AnthropicCall(
     """
 
     call_params: ClassVar[AnthropicCallParams] = AnthropicCallParams()
+    _provider: ClassVar[str] = "anthropic"
 
     def messages(self) -> list[MessageParam]:
         """Returns the template as a formatted list of messages."""
@@ -63,14 +68,13 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-
+        client = get_wrapped_client(
+            Anthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.configuration.llm_ops is not None:
+        if len(self.configuration.llm_ops) > 0:
             create = get_wrapped_call(
                 create,
                 self,
@@ -106,13 +110,13 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
+        client = get_wrapped_async_client(
+            AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.configuration.llm_ops is not None:
+        if len(self.configuration.llm_ops) > 0:
             create = get_wrapped_call(
                 create,
                 self,
@@ -149,11 +153,11 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
+        client = get_wrapped_client(
+            Anthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         stream = client.messages.stream
-        if self.configuration.llm_ops is not None:
+        if len(self.configuration.llm_ops) > 0:
             stream = get_wrapped_call(
                 stream,
                 self,
@@ -189,11 +193,11 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
+        client = get_wrapped_async_client(
+            AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         stream = client.messages.stream
-        if self.configuration.llm_ops is not None:
+        if len(self.configuration.llm_ops) > 0:
             stream = get_wrapped_call(
                 stream,
                 self,
@@ -262,9 +266,3 @@ class AnthropicCall(
             kwargs["system"] = system_message
 
         return messages, kwargs, tool_types
-
-    ############################# PRIVATE ATTRIBUTES #################################
-
-    @property
-    def _provider(self) -> str:
-        return "anthropic"

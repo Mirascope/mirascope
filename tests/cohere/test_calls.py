@@ -12,6 +12,7 @@ from cohere.types import (
 )
 
 from mirascope.base import Message
+from mirascope.base.types import BaseConfig
 from mirascope.cohere import (
     CohereCall,
     CohereCallParams,
@@ -45,7 +46,8 @@ def test_cohere_call_call(
         api_key = "test"
         history: list[Message] = [{"role": "user", "content": "text"}]
         documents: list[ChatDocument] = [fixture_chat_document]
-        call_params = CohereCallParams(preamble="test", wrapper=wrapper)
+        call_params = CohereCallParams(preamble="test")
+        configuration = BaseConfig(client_wrappers=[wrapper])
 
     response = TempCall().call()
     assert isinstance(response, CohereCallResponse)
@@ -91,7 +93,7 @@ async def test_cohere_call_call_async(
         prompt_template = ""
         api_key = "test"
 
-        call_params = CohereCallParams(wrapper_async=wrapper_async)
+        configuration = BaseConfig(client_wrappers=[wrapper_async])
 
     response = await TempCall().call_async()
     assert isinstance(response, CohereCallResponse)
@@ -113,7 +115,7 @@ def test_cohere_call_stream(
         prompt_template = ""
         api_key = "test"
 
-        call_params = CohereCallParams(wrapper=wrapper)
+        configuration = BaseConfig(client_wrappers=[wrapper])
 
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 3
@@ -135,7 +137,7 @@ async def test_cohere_call_stream_async(
         prompt_template = ""
         api_key = "test"
 
-        call_params = CohereCallParams(wrapper_async=wrapper_async)
+        configuration = BaseConfig(client_wrappers=[wrapper_async])
 
     mock_chat_stream.return_value = fixture_cohere_async_response_chunks
     temp_call = TempCall()

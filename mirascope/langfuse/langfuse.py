@@ -1,8 +1,6 @@
 """Integration with Langfuse"""
 
-import inspect
 from contextlib import contextmanager
-from functools import wraps
 from typing import Any, Callable, Optional, Type, overload
 
 from langfuse import Langfuse
@@ -44,17 +42,16 @@ def record_streaming(generation: StatefulGenerationClient):
 
 
 def langfuse_generation(
-    trace: StatefulTraceClient, fn: Callable, suffix: str, **kwargs
+    trace: StatefulTraceClient, fn: Callable, model_name: str, **kwargs
 ):
     """Instantiates a Langfuse generation object with some data."""
-    model = kwargs.get("model", "unknown")
-    if suffix == "gemini":
-        model = kwargs.pop("model")
+    model = kwargs.get("model", None) or model_name
     return trace.generation(
         name=f"{fn.__name__} with {model}",
         input=kwargs.get("messages", []),
         metadata=kwargs,
         tags=kwargs.pop("tags", []),
+        model=model,
     )
 
 
@@ -87,19 +84,20 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
         response_type: Optional[type[BaseCallResponse]] = None,
         response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
         tool_types: Optional[list[type[BaseTool]]] = None,
+        model_name: Optional[str] = None,
     ):
         """Wraps a LLM call with Langfuse."""
 
         def wrapper(*args, **kwargs):
             """Wraps a function that makes a call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, suffix, **kwargs)
+            generation = langfuse_generation(trace, fn, model_name, **kwargs)
             result = fn(*args, **kwargs)
             langfuse_generation_end(generation, response_type, result, tool_types)
             return result
 
         def wrapper_generator(*args, **kwargs):
             """Wraps a function that yields a call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, suffix, **kwargs)
+            generation = langfuse_generation(trace, fn, model_name, **kwargs)
             with record_streaming(generation) as record_chunk:
                 generator = fn(*args, **kwargs)
                 if suffix != "anthropic":
@@ -114,14 +112,14 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
 
         async def wrapper_async(*args, **kwargs):
             """Wraps a function that makes an async call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, suffix, **kwargs)
+            generation = langfuse_generation(trace, fn, model_name, **kwargs)
             result = await fn(*args, **kwargs)
             langfuse_generation_end(generation, response_type, result, tool_types)
             return result
 
         async def wrapper_generator_async(*args, **kwargs):
             """Wraps a function that yields an async call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, suffix, **kwargs)
+            generation = langfuse_generation(trace, fn, model_name, **kwargs)
             with record_streaming(generation) as record_chunk:
                 if suffix == "groq":
                     generator = await fn(*args, **kwargs)
@@ -225,5 +223,12 @@ def with_langfuse(cls):
         cls, handle_before_call, handle_after_call, trace=trace
     )
     if hasattr(cls, "configuration"):
-        cls.configuration.llm_ops.append(mirascope_langfuse_generation(trace))
+        cls.configuration = cls.configuration.model_copy(
+            update={
+                "llm_ops": [
+                    *cls.configuration.llm_ops,
+                    mirascope_langfuse_generation(trace),
+                ]
+            }
+        )
     return cls

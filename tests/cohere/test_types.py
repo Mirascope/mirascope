@@ -28,8 +28,6 @@ def test_cohere_call_params_kwargs():
     params = CohereCallParams(temperature=0.5)
     kwargs = params.kwargs()
     assert kwargs["temperature"] == 0.5
-    assert "wrapper" not in kwargs
-    assert "wrapper_async" not in kwargs
 
 
 def test_cohere_call_response_properties(

@@ -46,6 +46,7 @@ class GroqExtractor(BaseExtractor[GroqCall, GroqTool, Any, T], Generic[T]):
     '''
 
     call_params: ClassVar[GroqCallParams] = GroqCallParams()
+    _provider: ClassVar[str] = "groq"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Groq call response.

@@ -52,6 +52,7 @@ from pydantic import BaseModel, Field
 
 from mirascope.anthropic import AnthropicTool
 from mirascope.base import tool_fn
+from mirascope.base.types import BaseConfig
 from mirascope.openai import OpenAITool
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.types import OpenAICallParams
@@ -425,7 +426,7 @@ def fixture_anthropic_book_tool() -> Type[AnthropicBookTool]:
     return AnthropicBookTool
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def fixture_openai_test_call():
     """Returns an `OpenAICall` instance."""
 
@@ -437,5 +438,6 @@ def fixture_openai_test_call():
         api_key = "test"
 
         call_params = OpenAICallParams(model="gpt-4")
+        configuration = BaseConfig(client_wrappers=[], llm_ops=[])
 
     return OpenAITestCall()

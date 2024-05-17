@@ -155,14 +155,16 @@ async def test_anthropic_call_call_async(
     new_callable=MagicMock,
 )
 def test_anthropic_call_call_with_wrapper(
-    mock_create: MagicMock, fixture_anthropic_test_call, fixture_anthropic_message
+    mock_create: MagicMock,
+    fixture_anthropic_test_call: AnthropicCall,
+    fixture_anthropic_message: Message,
 ):
     """Tests `OpenAI` is created with a wrapper in `AnthropicPrompt.create`."""
     mock_create.return_value = fixture_anthropic_message
     wrapper = MagicMock()
     wrapper.return_value = Anthropic()
 
-    fixture_anthropic_test_call.call_params.wrapper = wrapper
+    fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
     fixture_anthropic_test_call.call()
     wrapper.assert_called_once()
 
@@ -178,11 +180,12 @@ async def test_anthropic_call_call_async_with_wrapper(
     fixture_anthropic_message: Message,
 ):
     """Tests `OpenAI` is created with a wrapper in `AnthropicPrompt.create`."""
+
     mock_create.return_value = fixture_anthropic_message
     wrapper = MagicMock()
     wrapper.return_value = AsyncAnthropic()
 
-    fixture_anthropic_test_call.call_params.wrapper_async = wrapper
+    fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
     await fixture_anthropic_test_call.call_async()
     wrapper.assert_called_once()
 
@@ -202,7 +205,7 @@ def test_anthropic_call_stream(
 
     wrapper = MagicMock()
     wrapper.return_value = Anthropic()
-    fixture_anthropic_test_call.call_params.wrapper = wrapper
+    fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
 
     stream = fixture_anthropic_test_call.stream()
     for chunk in stream:
@@ -234,7 +237,7 @@ async def test_anthropic_call_stream_async(
 
     wrapper = MagicMock()
     wrapper.return_value = AsyncAnthropic()
-    fixture_anthropic_test_call.call_params.wrapper_async = wrapper
+    fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
 
     stream = fixture_anthropic_test_call.stream_async()
     async for chunk in stream:

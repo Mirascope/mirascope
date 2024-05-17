@@ -4,6 +4,7 @@ from typing import ClassVar, Generic, Optional, TypeVar
 
 from pydantic import BaseModel
 
+from ..base.types import BaseConfig
 from .types import BaseEmbeddingParams, BaseEmbeddingResponse
 
 BaseEmbeddingT = TypeVar("BaseEmbeddingT", bound=BaseEmbeddingResponse)
@@ -18,6 +19,8 @@ class BaseEmbedder(BaseModel, Generic[BaseEmbeddingT], ABC):
         model="text-embedding-ada-002"
     )
     dimensions: Optional[int] = None
+    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[], client_wrappers=[])
+    _provider: ClassVar[str] = "base"
 
     @abstractmethod
     def embed(self, input: list[str]) -> BaseEmbeddingT:

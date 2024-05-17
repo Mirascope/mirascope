@@ -1,7 +1,6 @@
 """Types for interacting with Groq's Cloud API using Mirascope."""
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Optional, Type, Union
 
-from groq import AsyncGroq, Groq
 from groq._types import Body, Headers, Query
 from groq.lib.chat_completion_chunk import (
     ChatCompletionChunk,
@@ -51,9 +50,6 @@ class GroqCallParams(BaseCallParams[GroqTool]):
     extra_body: Optional[Body] = None
     timeout: Optional[Union[float, Timeout]] = None
 
-    wrapper: Optional[Callable[[Groq], Groq]] = None
-    wrapper_async: Optional[Callable[[AsyncGroq], AsyncGroq]] = None
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def kwargs(
@@ -62,8 +58,6 @@ class GroqCallParams(BaseCallParams[GroqTool]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
-        extra_exclude = {"wrapper", "wrapper_async"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         return super().kwargs(tool_type, exclude)
 
 

@@ -1,10 +1,7 @@
 """A module for calling Chroma's Client and Collection."""
-from contextlib import suppress
 from functools import cached_property
 from typing import Any, ClassVar, Optional, Union
 
-with suppress(ImportError):
-    import weave
 from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
 from chromadb.api import ClientAPI
 
@@ -41,6 +38,7 @@ class ChromaVectorStore(BaseVectorStore):
 
     vectorstore_params = ChromaParams(get_or_create=True)
     client_settings: ClassVar[ChromaSettings] = ChromaSettings(mode="persistent")
+    _provider: ClassVar[str] = "chroma"
 
     def retrieve(
         self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
@@ -60,10 +58,6 @@ class ChromaVectorStore(BaseVectorStore):
         documents: list[Document]
         if isinstance(text, str):
             chunk = self.chunker.chunk
-            if self.vectorstore_params.weave and not isinstance(self.chunker, weave.Op):
-                chunk = self.vectorstore_params.weave(
-                    self.chunker.chunk
-                )  # pragma: no cover
             documents = chunk(text)
         else:
             documents = text
@@ -92,13 +86,8 @@ class ChromaVectorStore(BaseVectorStore):
             vectorstore_params = self.vectorstore_params.model_copy(
                 update={"name": self.index_name}
             )
-        create_collection = self._client.create_collection
-        if self.vectorstore_params.weave is not None:
-            create_collection = self.vectorstore_params.weave(
-                self._client.create_collection
-            )  # pragma: no cover
 
-        return create_collection(
+        return self._client.create_collection(
             **vectorstore_params.kwargs(),
             embedding_function=self.embedder,  # type: ignore
         )

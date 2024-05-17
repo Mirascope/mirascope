@@ -14,6 +14,11 @@ from google.generativeai.types import ContentsType  # type: ignore
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..enums import MessageRole
 from .tools import GeminiTool
 from .types import (
@@ -55,6 +60,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
     '''
 
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams()
+    _provider: ClassVar[str] = "gemini"
 
     def messages(self) -> ContentsType:
         """Returns the `ContentsType` messages for Gemini `generate_content`.
@@ -85,27 +91,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         model_name = kwargs.pop("model")
-        gemini_pro_model = GenerativeModel(model_name=model_name)
+        gemini_pro_model = get_wrapped_client(
+            GenerativeModel(model_name=model_name), self
+        )
         generate_content = gemini_pro_model.generate_content
-        if self.call_params.weave is not None:
-            generate_content = self.call_params.weave(
-                generate_content
-            )  # pragma: no cover
-        if self.call_params.logfire:  # pragma: no cover
-            generate_content = self.call_params.logfire(
+        if len(self.configuration.llm_ops) > 0:
+            generate_content = get_wrapped_call(
                 generate_content,
-                "gemini",
+                self,
                 response_type=GeminiCallResponse,
                 tool_types=tool_types,
+                model_name=model_name,
             )
-            kwargs["model"] = model_name
-        if self.call_params.langfuse:  # pragma: no cover
-            generate_content = self.call_params.langfuse(
-                generate_content,
-                "gemini",
-                response_type=GeminiCallResponse,
-            )  # pragma: no cover
-            kwargs["model"] = model_name
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             self.messages(),
@@ -137,20 +134,19 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         model_name = kwargs.pop("model")
-        gemini_pro_model = GenerativeModel(model_name=model_name)
+        gemini_pro_model = get_wrapped_async_client(
+            GenerativeModel(model_name=model_name), self
+        )
         generate_content_async = gemini_pro_model.generate_content_async
-        if self.call_params.weave is not None:
-            generate_content_async = self.call_params.weave(
-                generate_content_async
-            )  # pragma: no cover
-        if self.call_params.logfire:
-            generate_content_async = self.call_params.logfire(
+        if len(self.configuration.llm_ops) > 0:
+            generate_content_async = get_wrapped_call(
                 generate_content_async,
-                "gemini",
+                self,
+                is_async=True,
                 response_type=GeminiCallResponse,
                 tool_types=tool_types,
-            )  # pragma: no cover
-            kwargs["model"] = model_name  # pragma: no cover
+                model_name=model_name,
+            )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             self.messages(),
@@ -181,13 +177,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         model_name = kwargs.pop("model")
-        gemini_pro_model = GenerativeModel(model_name=model_name)
+        gemini_pro_model = get_wrapped_client(
+            GenerativeModel(model_name=model_name), self
+        )
         generate_content = gemini_pro_model.generate_content
-        if self.call_params.logfire:
-            generate_content = self.call_params.logfire(
-                generate_content, "gemini", response_chunk_type=GeminiCallResponseChunk
-            )  # pragma: no cover
-            kwargs["model"] = model_name  # pragma: no cover
+        if len(self.configuration.llm_ops) > 0:
+            generate_content = get_wrapped_call(
+                generate_content,
+                self,
+                response_type=GeminiCallResponse,
+                tool_types=tool_types,
+                model_name=model_name,
+            )
         stream = generate_content(
             self.messages(),
             stream=True,
@@ -212,15 +213,19 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         """
         kwargs, tool_types = self._setup(kwargs, GeminiTool)
         model_name = kwargs.pop("model")
-        gemini_pro_model = GenerativeModel(model_name=model_name)
+        gemini_pro_model = get_wrapped_async_client(
+            GenerativeModel(model_name=model_name), self
+        )
         generate_content_async = gemini_pro_model.generate_content_async
-        if self.call_params.logfire:
-            generate_content_async = self.call_params.logfire(
+        if len(self.configuration.llm_ops) > 0:
+            generate_content_async = get_wrapped_call(
                 generate_content_async,
-                "gemini",
-                response_chunk_type=GeminiCallResponseChunk,
-            )  # pragma: no cover
-            kwargs["model"] = model_name  # pragma: no cover
+                self,
+                is_async=True,
+                response_type=GeminiCallResponse,
+                tool_types=tool_types,
+                model_name=model_name,
+            )
         stream = await generate_content_async(
             self.messages(),
             stream=True,
@@ -229,9 +234,3 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         )
         async for chunk in stream:
             yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
-
-    ############################# PRIVATE ATTRIBUTES #################################
-
-    @property
-    def _provider(self) -> str:
-        return "gemini"

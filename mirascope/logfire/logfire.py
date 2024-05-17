@@ -38,11 +38,14 @@ def mirascope_logfire() -> Callable:
         response_type: Optional[type[BaseCallResponse]] = None,
         response_chunk_type: Optional[type[BaseCallResponseChunk]] = None,
         tool_types: Optional[list[type[BaseTool]]] = None,
+        model_name: Optional[str] = None,
     ) -> Callable:
         """Wraps a LLM call with Pydantic Logfire"""
 
         def wrapper(*args, **kwargs):
-            with _mirascope_llm_span(fn, suffix, False, args, kwargs) as logfire_span:
+            with _mirascope_llm_span(
+                fn, suffix, is_async, model_name, args, kwargs
+            ) as logfire_span:
                 result = fn(*args, **kwargs)
                 logfire_span.set_attribute("original_response", result)
                 if response_type is not None:
@@ -68,7 +71,9 @@ def mirascope_logfire() -> Callable:
                 return result
 
         async def wrapper_async(*args, **kwargs):
-            with _mirascope_llm_span(fn, suffix, True, args, kwargs) as logfire_span:
+            with _mirascope_llm_span(
+                fn, suffix, is_async, model_name, args, kwargs
+            ) as logfire_span:
                 result = await fn(*args, **kwargs)
                 logfire_span.set_attribute("original_response", result)
                 if response_type is not None:
@@ -97,7 +102,7 @@ def mirascope_logfire() -> Callable:
             logfire_span = logfire.with_settings(
                 custom_scope_suffix=suffix, tags=["llm"]
             )
-            span_data = _get_span_data(suffix, False, args, kwargs)
+            span_data = _get_span_data(suffix, is_async, model_name, args, kwargs)
             with record_streaming(
                 logfire_span, span_data, _extract_chunk_content
             ) as record_chunk:
@@ -116,7 +121,7 @@ def mirascope_logfire() -> Callable:
             logfire_span = logfire.with_settings(
                 custom_scope_suffix=suffix, tags=["llm"]
             )
-            span_data = _get_span_data(suffix, True, args, kwargs)
+            span_data = _get_span_data(suffix, is_async, model_name, args, kwargs)
             with record_streaming(
                 logfire_span, span_data, _extract_chunk_content
             ) as record_chunk:
@@ -155,17 +160,22 @@ def _extract_chunk_content(
 
 
 def _get_span_data(
-    suffix: str, is_async: bool, args: tuple[Any], kwargs: dict[str, Any]
+    suffix: str,
+    is_async: bool,
+    model_name: Optional[str],
+    args: tuple[Any],
+    kwargs: dict[str, Any],
 ) -> dict[str, Any]:
     additional_request_data = {}
     if suffix == "gemini":
         gemini_messages = args[0]
-        additional_request_data["messages"] = [
-            {"role": message["role"], "content": message["parts"][0]}
-            for message in gemini_messages
-        ]
-        model = kwargs.pop("model")
-        additional_request_data["model"] = model
+        additional_request_data = {
+            "messages": [
+                {"role": message["role"], "content": message["parts"][0]}
+                for message in gemini_messages
+            ],
+            "model": model_name,
+        }
     return {
         "async": is_async,
         "request_data": kwargs | additional_request_data,
@@ -174,11 +184,16 @@ def _get_span_data(
 
 @contextmanager
 def _mirascope_llm_span(
-    fn: Callable, suffix: str, is_async: bool, args: tuple[Any], kwargs: dict[str, Any]
+    fn: Callable,
+    suffix: str,
+    is_async: bool,
+    model_name: Optional[str],
+    args: tuple[Any],
+    kwargs: dict[str, Any],
 ):
     """Wraps a pydantic class method with a Logfire span."""
-    model = kwargs.get("model", "unknown")
-    span_data = _get_span_data(suffix, is_async, args, kwargs)
+    model = kwargs.get("model", "") or model_name
+    span_data = _get_span_data(suffix, is_async, model, args, kwargs)
     with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
         f"{suffix}.{fn.__name__} with {model}", **span_data
     ) as logfire_span:
@@ -233,7 +248,9 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
         yield logfire_span
 
 
-def handle_after_call(self: BaseModel, fn, result, logfire_span: LogfireSpan, **kwargs):
+def handle_after_call(
+    self: BaseModel, fn, result, logfire_span: LogfireSpan, **kwargs
+) -> None:
     """Handles after call"""
     logfire_span.set_attribute("response", result)
 
@@ -268,10 +285,16 @@ def with_logfire(cls):
     wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
     if cls._provider and cls._provider == "openai":
         if hasattr(cls, "configuration"):
-            cls.configuration.llm_ops.append(logfire.instrument_openai)
+            print("EWGREWGHR")
+            cls.configuration = cls.configuration.model_copy(
+                update={
+                    "client_wrappers": [*cls.configuration.client_wrappers, "logfire"]
+                }
+            )
     else:
         # TODO: Use instrument instead when they are integrated into logfire
         if hasattr(cls, "configuration"):
-            llm_ops = cls.configuration.llm_ops
-            llm_ops.append(mirascope_logfire())
+            cls.configuration = cls.configuration.model_copy(
+                update={"llm_ops": [*cls.configuration.llm_ops, mirascope_logfire()]}
+            )
     return cls

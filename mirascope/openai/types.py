@@ -1,9 +1,8 @@
 """Types for interacting with OpenAI models using Mirascope."""
 
-from typing import Any, Callable, Literal, Optional, Type, Union
+from typing import Any, Literal, Optional, Type, Union
 
 from httpx import Timeout
-from openai import AsyncOpenAI, OpenAI
 from openai._types import Body, Headers, Query
 from openai.types import Embedding
 from openai.types.chat import (
@@ -57,9 +56,6 @@ class OpenAICallParams(BaseCallParams[OpenAITool]):
     extra_body: Optional[Body] = None
     timeout: Optional[Union[float, Timeout]] = None
 
-    wrapper: Optional[Callable[[OpenAI], OpenAI]] = None
-    wrapper_async: Optional[Callable[[AsyncOpenAI], AsyncOpenAI]] = None
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def kwargs(
@@ -68,8 +64,6 @@ class OpenAICallParams(BaseCallParams[OpenAITool]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
-        extra_exclude = {"wrapper", "wrapper_async"}
-        exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         return super().kwargs(tool_type, exclude)
 
 

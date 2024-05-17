@@ -8,6 +8,7 @@ from groq.lib.chat_completion_chunk import ChatCompletionChunk
 from groq.types.chat.chat_completion import ChatCompletion
 from groq.types.chat.completion_create_params import Message, ResponseFormat
 
+from mirascope.base.types import BaseConfig
 from mirascope.groq import (
     GroqCall,
     GroqCallParams,
@@ -32,7 +33,7 @@ def test_groq_call_call(
         prompt_template = ""
         api_key = "test"
 
-        call_params = GroqCallParams(wrapper=wrapper)
+        configuration = BaseConfig(client_wrappers=[wrapper])
 
     response = TempCall().call()
     assert isinstance(response, GroqCallResponse)
@@ -77,7 +78,7 @@ async def test_groq_call_call_async(
         prompt_template = ""
         api_key = "test"
 
-        call_params = GroqCallParams(wrapper_async=wrapper_async)
+        configuration = BaseConfig(client_wrappers=[wrapper_async])
 
     response = await TempCall().call_async()
     assert isinstance(response, GroqCallResponse)
@@ -98,7 +99,7 @@ def test_groq_call_stream(
         prompt_template = ""
         api_key = "test"
 
-        call_params = GroqCallParams(wrapper=wrapper)
+        configuration = BaseConfig(client_wrappers=[wrapper])
 
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 2
@@ -123,7 +124,7 @@ async def test_groq_call_stream_async(
         prompt_template = ""
         api_key = "test"
 
-        call_params = GroqCallParams(wrapper_async=wrapper_async)
+        configuration = BaseConfig(client_wrappers=[wrapper_async])
 
     mock_create.return_value.__aiter__.return_value = (
         fixture_chat_completion_stream_response

@@ -4,6 +4,11 @@ from typing import ClassVar, Optional, Union
 
 from cohere import AsyncClient, Client
 
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..rag import BaseEmbedder
 from .types import CohereEmbeddingParams, CohereEmbeddingResponse
 
@@ -38,10 +43,14 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
     embedding_params: ClassVar[CohereEmbeddingParams] = CohereEmbeddingParams(
         model="embed-english-v3.0"
     )
+    _provider: ClassVar[str] = "cohere"
 
     def embed(self, inputs: list[str]) -> CohereEmbeddingResponse:
         """Call the embedder with multiple inputs"""
-        co = Client(api_key=self.api_key, base_url=self.base_url)
+
+        co = get_wrapped_client(
+            Client(api_key=self.api_key, base_url=self.base_url), self
+        )
         embedding_type = (
             self.embedding_params.embedding_types[0]
             if self.embedding_params.embedding_types
@@ -49,14 +58,8 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
         )
         start_time = datetime.datetime.now().timestamp() * 1000
         embed = co.embed
-        if self.embedding_params.logfire:
-            embed = self.embedding_params.logfire(
-                embed, "cohere", response_type=CohereEmbeddingResponse
-            )  # pragma: no cover
-        if self.embedding_params.langfuse:  # pragma: no cover
-            embed = self.embedding_params.langfuse(
-                embed, "cohere", response_type=CohereEmbeddingResponse
-            )
+        if len(self.configuration.llm_ops) > 0:
+            embed = get_wrapped_call(embed, self, response_type=CohereEmbeddingResponse)
         response = embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
@@ -67,7 +70,9 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
 
     async def embed_async(self, inputs: list[str]) -> CohereEmbeddingResponse:
         """Asynchronously call the embedder with multiple inputs"""
-        co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
+        co = get_wrapped_async_client(
+            AsyncClient(api_key=self.api_key, base_url=self.base_url), self
+        )
         embedding_type = (
             self.embedding_params.embedding_types[0]
             if self.embedding_params.embedding_types
@@ -75,15 +80,9 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
         )
         start_time = datetime.datetime.now().timestamp() * 1000
         embed = co.embed
-        if self.embedding_params.logfire_async:
-            embed = self.embedding_params.logfire_async(
-                embed,
-                "cohere",
-                response_type=None,  # note: no content to extract, so we set to `None`
-            )  # pragma: no cover
-        if self.embedding_params.langfuse:  # pragma: no cover
-            embed = self.embedding_params.langfuse(
-                embed, "cohere", is_async=True, response_type=None
+        if len(self.configuration.llm_ops) > 0:
+            embed = get_wrapped_call(
+                embed, self, is_async=True, response_type=CohereEmbeddingResponse
             )
         response = await embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(

@@ -1,8 +1,7 @@
 """Type classes for interacting with Anthropics's Claude API."""
 import json
-from typing import Any, Callable, Literal, Optional, Type, Union
+from typing import Any, Literal, Optional, Type, Union
 
-from anthropic import Anthropic, AsyncAnthropic
 from anthropic._types import Body, Headers, Query
 from anthropic.types import (
     ContentBlockDeltaEvent,
@@ -53,9 +52,6 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
 
     response_format: Optional[Literal["json"]] = None
 
-    wrapper: Optional[Callable[[Anthropic], Anthropic]] = None
-    wrapper_async: Optional[Callable[[AsyncAnthropic], AsyncAnthropic]] = None
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def kwargs(
@@ -64,7 +60,7 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns the keyword argument call parameters."""
-        extra_exclude = {"response_format", "wrapper", "wrapper_async"}
+        extra_exclude = {"response_format"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         return super().kwargs(tool_type, exclude)
 

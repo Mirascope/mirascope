@@ -27,7 +27,7 @@ from .calls import BaseCall
 from .prompts import BasePrompt
 from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
-from .types import BaseCallParams
+from .types import BaseCallParams, BaseConfig
 
 with suppress(ImportError):
     import logfire
@@ -63,6 +63,7 @@ class BaseExtractor(
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](
         model="gpt-3.5-turbo-0125"
     )
+    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[])
 
     @abstractmethod
     def extract(self, retries: int = 0) -> ExtractedTypeT:
@@ -161,9 +162,7 @@ class BaseExtractor(
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_messages[str(e)] = None
-                        if (
-                            self.call_params.logfire or self.call_params.logfire_async
-                        ):  # pragma: no cover
+                        if "logfire" in self.configuration.llm_ops:  # pragma: no cover
                             logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
@@ -241,9 +240,7 @@ class BaseExtractor(
                         )
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_messages[str(e)] = None
-                        if (
-                            self.call_params.logfire or self.call_params.logfire_async
-                        ):  # pragma: no cover
+                        if "logfire" in self.configuration.llm_ops:  # pragma: no cover
                             logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
@@ -348,9 +345,7 @@ class BaseExtractor(
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_messages[str(e)] = None
-                        if (
-                            self.call_params.logfire or self.call_params.logfire_async
-                        ):  # pragma: no cover
+                        if "logfire" in self.configuration.llm_ops:  # pragma: no cover
                             logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
@@ -450,9 +445,7 @@ class BaseExtractor(
                             yield partial_tool
                     except (AttributeError, ValueError, ValidationError) as e:
                         error_messages[str(e)] = None
-                        if (
-                            self.call_params.logfire or self.call_params.logfire_async
-                        ):  # pragma: no cover
+                        if "logfire" in self.configuration.llm_ops:  # pragma: no cover
                             logfire.error(f"Retrying due to exception: {e}")
                         raise
         except RetryError as e:
@@ -481,6 +474,7 @@ class BaseExtractor(
             base_url = self.base_url
             api_key = self.api_key
             call_params = self.call_params
+            configuration = self.configuration
 
             model_config = ConfigDict(extra="allow")
 

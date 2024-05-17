@@ -17,7 +17,7 @@ from mirascope.openai.types import (
 
 def test_openai_call_params_kwargs():
     """Tests the `kwargs` function of `OpenAICallParams`."""
-    call_params = OpenAICallParams(model="model", wrapper=lambda x: x)
+    call_params = OpenAICallParams(model="model")
     assert call_params.kwargs() == {"model": "model"}
 
 

@@ -88,7 +88,8 @@ T = TypeVar("T")
 
 
 class BaseConfig(BaseModel):
-    llm_ops: Optional[list[Callable[..., Callable]]] = None
+    llm_ops: list[Union[Callable, str]] = []
+    client_wrappers: list[Union[Callable, str]] = []
 
 
 class BaseCallParams(BaseModel, Generic[BaseToolT]):
@@ -96,11 +97,6 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
 
     model: str
     tools: Optional[list[Union[Callable, Type[BaseToolT]]]] = None
-    weave: Optional[Callable[[T], T]] = None
-    langfuse: Optional[Callable[..., Callable]] = None
-    # TODO: Improve typing for logfire params
-    logfire: Optional[Callable[..., Callable]] = None
-    logfire_async: Optional[Callable[..., Callable]] = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -110,13 +106,7 @@ class BaseCallParams(BaseModel, Generic[BaseToolT]):
         exclude: Optional[set[str]] = None,
     ) -> dict[str, Any]:
         """Returns all parameters for the call as a keyword arguments dictionary."""
-        extra_exclude = {
-            "tools",
-            "weave",
-            "logfire",
-            "logfire_async",
-            "langfuse",
-        }
+        extra_exclude = {"tools"}
         exclude = extra_exclude if exclude is None else exclude.union(extra_exclude)
         kwargs = {
             key: value
