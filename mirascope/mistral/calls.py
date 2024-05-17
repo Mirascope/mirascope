@@ -74,7 +74,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             self,
         )
         chat = client.chat
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             chat = get_wrapped_call(
                 chat,
                 self,
@@ -117,7 +117,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             self,
         )
         chat = client.chat
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             chat = get_wrapped_call(
                 chat,
                 self,
@@ -162,7 +162,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             self,
         )
         chat_stream = client.chat_stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             chat_stream = get_wrapped_call(
                 chat_stream,
                 self,
@@ -199,7 +199,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             self,
         )
         chat_stream = client.chat_stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             chat_stream = get_wrapped_call(
                 chat_stream,
                 self,

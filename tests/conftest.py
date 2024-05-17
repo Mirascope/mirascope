@@ -43,6 +43,13 @@ from openai.types.chat import (
     ChatCompletionMessage,
 )
 from openai.types.chat.chat_completion import Choice
+from openai.types.chat.chat_completion_chunk import (
+    ChatCompletionChunk as OpenAIChatCompletionChunk,
+)
+from openai.types.chat.chat_completion_chunk import Choice as OpenAIChoice
+from openai.types.chat.chat_completion_chunk import (
+    ChoiceDelta as OpenAIChoiceDelta,
+)
 from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
@@ -130,6 +137,49 @@ def fixture_chat_completion_with_assistant_message_tool(
         0
     ].message.content = '{\n  "param": "param",\n  "optional": 0}'
     return fixture_chat_completion_copy
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunks() -> list[ChatCompletionChunk]:
+    """Returns chat completion chunks."""
+    return [
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[
+                OpenAIChoice(
+                    **{"logprobs": None},
+                    delta=OpenAIChoiceDelta(content="I'm"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[
+                OpenAIChoice(
+                    **{"logprobs": None},
+                    delta=OpenAIChoiceDelta(content="testing"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[],
+            usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+    ]
 
 
 @tool_fn(lambda param, optional: "test")

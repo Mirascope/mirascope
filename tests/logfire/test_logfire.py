@@ -24,6 +24,7 @@ from mirascope.cohere.types import CohereCallParams
 from mirascope.gemini.calls import GeminiCall
 from mirascope.groq.calls import GroqCall
 from mirascope.logfire import with_logfire
+from mirascope.logfire.logfire import mirascope_logfire
 from mirascope.openai import OpenAICall, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams, OpenAICallResponse
@@ -115,7 +116,6 @@ async def test_tool_call_with_logfire(
         "MyAnthropicCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
-    print(span_names)
     assert span_names == expected_span_names
 
 
@@ -378,7 +378,6 @@ def test_extractor_with_logfire(
         "TempExtractor.extract",
     ]
     span_names = [span.name for span in exporter.exported_spans]
-    print(span_names)
     assert span_names == expected_span_names
 
 
@@ -436,3 +435,15 @@ def test_chroma_vectorstore_retrieve(
     ]
     span_names = [span.name for span in exporter.exported_spans]
     assert span_names == expected_span_names
+
+
+def test_value_error_on_mirascope_logfire():
+    """Tests that `mirascope_logfire` raises a `ValueError`.
+    One of response_type or response_chunk_type is required.
+    """
+    with pytest.raises(ValueError):
+
+        def foo():
+            ...  # pragma: no cover
+
+        mirascope_logfire()(foo, "test")

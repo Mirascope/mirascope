@@ -82,7 +82,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             Groq(api_key=self.api_key, base_url=self.base_url), self
         )
         create = client.chat.completions.create
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create, self, response_type=GroqCallResponse, tool_types=tool_types
             )
@@ -116,7 +116,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
         )
         create = client.chat.completions.create
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create,
                 self,
@@ -155,7 +155,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         create = client.chat.completions.create
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create,
                 self,
@@ -189,7 +189,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         create = client.chat.completions.create
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create,
                 self,

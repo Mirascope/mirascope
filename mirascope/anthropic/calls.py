@@ -74,7 +74,7 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create,
                 self,
@@ -116,7 +116,7 @@ class AnthropicCall(
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             create = get_wrapped_call(
                 create,
                 self,
@@ -157,7 +157,7 @@ class AnthropicCall(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
         stream = client.messages.stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             stream = get_wrapped_call(
                 stream,
                 self,
@@ -197,7 +197,7 @@ class AnthropicCall(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
         stream = client.messages.stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             stream = get_wrapped_call(
                 stream,
                 self,

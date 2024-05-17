@@ -95,7 +95,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             GenerativeModel(model_name=model_name), self
         )
         generate_content = gemini_pro_model.generate_content
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             generate_content = get_wrapped_call(
                 generate_content,
                 self,
@@ -138,7 +138,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             GenerativeModel(model_name=model_name), self
         )
         generate_content_async = gemini_pro_model.generate_content_async
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             generate_content_async = get_wrapped_call(
                 generate_content_async,
                 self,
@@ -181,7 +181,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             GenerativeModel(model_name=model_name), self
         )
         generate_content = gemini_pro_model.generate_content
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             generate_content = get_wrapped_call(
                 generate_content,
                 self,
@@ -217,7 +217,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             GenerativeModel(model_name=model_name), self
         )
         generate_content_async = gemini_pro_model.generate_content_async
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:  # pragma: no cover
             generate_content_async = get_wrapped_call(
                 generate_content_async,
                 self,

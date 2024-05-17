@@ -285,7 +285,6 @@ def with_logfire(cls):
     wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
     if cls._provider and cls._provider == "openai":
         if hasattr(cls, "configuration"):
-            print("EWGREWGHR")
             cls.configuration = cls.configuration.model_copy(
                 update={
                     "client_wrappers": [*cls.configuration.client_wrappers, "logfire"]

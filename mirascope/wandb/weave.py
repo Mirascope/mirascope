@@ -5,6 +5,7 @@ from typing import Type, overload
 
 import weave
 
+from ..base.ops_utils import get_class_functions
 from ..types import (
     BaseCallT,
     BaseChunkerT,
@@ -70,20 +71,8 @@ def with_weave(cls):
     print(response.content)
     ```
     """
-    ignore_functions = [
-        "copy",
-        "dict",
-        "dump",
-        "json",
-        "messages",
-        "model_copy",
-        "model_dump",
-        "model_dump_json",
-        "model_post_init",
-    ]
-    for name, _ in inspect.getmembers(cls, predicate=inspect.isfunction):
-        if not name.startswith("_") and name not in ignore_functions:
-            setattr(cls, name, weave.op()(getattr(cls, name)))
+    for name in get_class_functions(cls):
+        setattr(cls, name, weave.op()(getattr(cls, name)))
     if hasattr(cls, "_provider") is False or cls._provider != "openai":
         if hasattr(cls, "configuration"):
             cls.configuration = cls.configuration.model_copy(

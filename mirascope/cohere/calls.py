@@ -68,7 +68,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             Client(api_key=self.api_key, base_url=self.base_url), self
         )
         chat = co.chat
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:
             chat = get_wrapped_call(
                 chat, self, response_type=CohereCallResponse, tool_types=tool_types
             )
@@ -105,7 +105,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             AsyncClient(api_key=self.api_key, base_url=self.base_url), self
         )
         chat = co.chat
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:
             chat = get_wrapped_call(
                 chat,
                 self,
@@ -146,7 +146,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             Client(api_key=self.api_key, base_url=self.base_url), self
         )
         chat_stream = co.chat_stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:
             chat_stream = get_wrapped_call(
                 chat_stream,
                 self,
@@ -174,7 +174,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             AsyncClient(api_key=self.api_key, base_url=self.base_url), self
         )
         chat_stream = co.chat_stream
-        if len(self.configuration.llm_ops) > 0:
+        if self.configuration.llm_ops:
             chat_stream = get_wrapped_call(
                 chat_stream,
                 self,
