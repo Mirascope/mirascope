@@ -426,7 +426,7 @@ def fixture_anthropic_book_tool() -> Type[AnthropicBookTool]:
     return AnthropicBookTool
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def fixture_openai_test_call():
     """Returns an `OpenAICall` instance."""
 

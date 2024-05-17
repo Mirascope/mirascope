@@ -18,7 +18,7 @@ from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponse
 from mirascope.base.types import BaseConfig
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def fixture_anthropic_test_call():
     """Returns an Anthropic test prompt."""
 
