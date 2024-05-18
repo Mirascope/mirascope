@@ -163,7 +163,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         if self.response.finish_reason == "MAX_TOKENS":
             raise RuntimeError(
                 "Generation stopped with MAX_TOKENS finish reason. This means that the "
-                "response hit the token limit before completion, "
+                "response hit the token limit before completion."
             )
 
         extracted_tools = []

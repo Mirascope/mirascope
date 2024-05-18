@@ -29,7 +29,7 @@ def test_groq_call_response(
     assert response.output_tokens is not None
 
 
-def test_groq_call_response_no_usageq(
+def test_groq_call_response_no_usage(
     fixture_chat_completion_response_no_usage: ChatCompletion,
 ) -> None:
     """Tests the `GroqCallResponse` class."""
@@ -78,6 +78,22 @@ def test_groq_call_response_with_tools(
     assert response.tool == expected_tool
     assert len(tools) == 1
     assert tools[0] == expected_tool
+
+
+def test_groq_call_response_with_assistant_message_tool(
+    fixture_chat_completion_response_with_assistant_message_tool: ChatCompletion,
+    fixture_book_tool: Type[GroqTool],
+    fixture_expected_book_tool_instance: GroqTool,
+):
+    """Tests that `OpenAICallResponse` returns a tool when it's an assistant message."""
+    response = GroqCallResponse(
+        response=fixture_chat_completion_response_with_assistant_message_tool,
+        tool_types=[fixture_book_tool],
+        start_time=0,
+        end_time=0,
+    )
+    assert response.tools is not None
+    assert response.tools[0].tool_call == fixture_expected_book_tool_instance.tool_call
 
 
 def test_groq_call_response_with_tools_bad_stop_sequence(

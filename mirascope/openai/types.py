@@ -148,7 +148,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if self.choice.finish_reason == "length":
             raise RuntimeError(
                 "Finish reason was `length`, indicating the model ran out of tokens "
-                "(and likely could not complete the tool call if trying to)"
+                "(and could not complete the tool call if trying to)"
             )
 
         def reconstruct_tools_from_content() -> list[OpenAITool]:

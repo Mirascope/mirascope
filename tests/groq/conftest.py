@@ -111,11 +111,12 @@ def fixture_expected_book_tool_instance() -> BookTool:
         title="The Name of the Wind",
         author="Patrick Rothfuss",
         tool_call=ChoiceMessageToolCall(
-            id="null",
+            id="id",
             function=ChoiceMessageToolCallFunction(
                 name="BookTool",
                 arguments='{"title": "The Name of the Wind","author": "Patrick Rothfuss"}',
             ),
+            type="function",
         ),
     )
 
@@ -136,11 +137,12 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
                     content="",
                     tool_calls=[
                         ChoiceMessageToolCall(
-                            id="null",
+                            id="id",
                             function=ChoiceMessageToolCallFunction(
                                 name="BookTool",
                                 arguments='{"title": "The Name of the Wind","author": "Patrick Rothfuss"}',
                             ),
+                            type="function",
                         )
                     ],
                 ),
@@ -153,11 +155,23 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
+def fixture_chat_completion_response_with_assistant_message_tool(
+    fixture_chat_completion_response: ChatCompletion,
+) -> ChatCompletion:
+    """Returns a `ChatCompletion` with an assistant message tool call (just in case)."""
+    fixture_chat_completion_copy = fixture_chat_completion_response.model_copy()
+    fixture_chat_completion_copy.choices[
+        0
+    ].message.content = '{"title": "The Name of the Wind","author": "Patrick Rothfuss"}'
+    return fixture_chat_completion_copy
+
+
+@pytest.fixture()
 def fixture_chat_completion_response_with_tools_bad_stop_sequence(
     fixture_chat_completion_response_with_tools: ChatCompletion,
 ) -> ChatCompletion:
     """Returns a `ChatCompletion` with tools."""
-    fixture_chat_completion_response_with_tools.choices[0].finish_reason = "stop"  # type: ignore
+    fixture_chat_completion_response_with_tools.choices[0].finish_reason = "length"  # type: ignore
     return fixture_chat_completion_response_with_tools
 
 
