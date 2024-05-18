@@ -145,6 +145,12 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if not self.tool_types:
             return None
 
+        if self.choice.finish_reason == "length":
+            raise RuntimeError(
+                "Finish reason was `length`, indicating the model ran out of tokens "
+                "(and likely could not complete the tool call if trying to)"
+            )
+
         def reconstruct_tools_from_content() -> list[OpenAITool]:
             # Note: we only handle single tool calls in this case
             tool_type = self.tool_types[0]  # type: ignore
@@ -160,27 +166,17 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                 )
             ]
 
-        if self.response_format != ResponseFormat(type="json_object"):
-            if not self.tool_calls:
-                # Let's see if we got an assistant message back instead and try to
-                # reconstruct a tool call in this case. We'll assume if it starts with
-                # an open curly bracket that we got a tool call assistant message.
-                if "{" == self.content[0]:
-                    # Note: we only handle single tool calls in JSON mode.
-                    return reconstruct_tools_from_content()
-                return None
-
-            if self.choices[0].finish_reason not in ["tool_calls", "function_call"]:
-                raise RuntimeError(
-                    "Finish reason was not `tool_calls` or `function_call`, indicating "
-                    "no or failed tool use. This is likely due to a limit on output "
-                    "tokens that is too low. Note that this could also indicate no "
-                    "tool is beind called, so we recommend that you check the output "
-                    "of the call to confirm. "
-                    f"Finish Reason: {self.choices[0].finish_reason}"
-                )
-        else:
+        if self.response_format == ResponseFormat(type="json_object"):
             return reconstruct_tools_from_content()
+
+        if not self.tool_calls:
+            # Let's see if we got an assistant message back instead and try to
+            # reconstruct a tool call in this case. We'll assume if it starts with
+            # an open curly bracket that we got a tool call assistant message.
+            if "{" == self.content[0]:
+                # Note: we only handle single tool calls in JSON mode.
+                return reconstruct_tools_from_content()
+            return None
 
         extracted_tools = []
         for tool_call in self.tool_calls:
