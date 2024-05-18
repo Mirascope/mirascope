@@ -107,7 +107,7 @@ def fixture_chat_completion_with_tools_bad_stop_sequence(
     fixture_chat_completion_with_tools: ChatCompletion,
 ) -> ChatCompletion:
     """Returns a chat completion with tool calls but a bad stop sequence."""
-    fixture_chat_completion_with_tools.choices[0].finish_reason = "stop"
+    fixture_chat_completion_with_tools.choices[0].finish_reason = "length"
     return fixture_chat_completion_with_tools
 
 
