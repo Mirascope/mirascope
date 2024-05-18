@@ -13,8 +13,6 @@ from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.types import AnthropicCallResponseChunk
-from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
-from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
 from mirascope.cohere.embedders import CohereEmbedder
 from mirascope.cohere.types import CohereCallParams
@@ -27,13 +25,14 @@ from mirascope.openai.extractors import OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
 from mirascope.rag.embedders import BaseEmbedder
-from mirascope.rag.types import Document
 
 os.environ["OPENAI_API_KEY"] = "test"
 
 
 @patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_create: MagicMock,
@@ -59,7 +58,9 @@ def test_call_with_langfuse(
 
 
 @patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_gemini_call_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_generate_content: MagicMock,
@@ -79,7 +80,9 @@ def test_gemini_call_call_with_langfuse(
 
 
 @patch("cohere.Client.chat", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_call_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_chat: MagicMock,
@@ -100,7 +103,9 @@ def test_cohere_call_call_with_langfuse(
 
 
 @patch("cohere.Client.chat_stream", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_call_stream_with_langfuse(
     mock_langfuse: MagicMock,
     mock_chat_stream: MagicMock,
@@ -124,10 +129,12 @@ def test_cohere_call_stream_with_langfuse(
 
 
 @patch("cohere.AsyncClient.chat", new_callable=AsyncMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_cohere_call_call_async_with_langfuse(
-    mock_langfuse: MagicMock,
+    mock_langfuse: AsyncMock,
     mock_chat: AsyncMock,
     fixture_non_streamed_response: NonStreamedChatResponse,
 ) -> None:
@@ -146,7 +153,9 @@ async def test_cohere_call_call_async_with_langfuse(
 
 
 @patch("cohere.AsyncClient.chat_stream", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_cohere_call_stream_async_with_langfuse(
     mock_langfuse: MagicMock,
@@ -171,7 +180,9 @@ async def test_cohere_call_stream_async_with_langfuse(
 
 
 @patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_extractor_with_langfuse(
     mock_langfuse: MagicMock,
     mock_call: MagicMock,
@@ -205,7 +216,9 @@ def test_extractor_with_langfuse(
     "anthropic.resources.messages.Messages.stream",
     new_callable=MagicMock,
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_anthropic_call_stream_with_langfuse(
     mock_langfuse: MagicMock,
     mock_stream: MagicMock,
@@ -232,7 +245,9 @@ def test_anthropic_call_stream_with_langfuse(
     "anthropic.resources.messages.AsyncMessages.stream",
     new_callable=MagicMock,
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_anthropic_call_stream_async(
     mock_langfuse: MagicMock,
@@ -258,7 +273,9 @@ async def test_anthropic_call_stream_async(
 @patch(
     "groq.resources.chat.completions.AsyncCompletions.create", new_callable=AsyncMock
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_groq_call_stream_async(
     mock_langfuse: MagicMock,
@@ -292,7 +309,7 @@ def test_value_error_on_mirascope_langfuse_generation():
         def foo():
             ...  # pragma: no cover
 
-        mirascope_langfuse_generation(None)(foo, "test")
+        mirascope_langfuse_generation()(foo, "test")
 
 
 class MyEmbedder(BaseEmbedder):
@@ -306,49 +323,9 @@ class MyEmbedder(BaseEmbedder):
         return [1, 2, 3]  # pragma: no cover
 
 
-@patch("chromadb.api.models.Collection.Collection.upsert")
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
-def test_chroma_vectorstore_add_document_with_langfuse(
-    mock_langfuse: MagicMock,
-    mock_upsert: MagicMock,
-):
-    """Test the add method of the ChromaVectorStore class with documents as argument"""
-    mock_upsert.return_value = None
-
-    @with_langfuse
-    class VectorStore(ChromaVectorStore):
-        index_name = "test"
-        client_settings = ChromaSettings(mode="ephemeral")
-        embedder = MyEmbedder()
-
-    my_vectorstore = VectorStore()
-    my_vectorstore.add([Document(text="foo", id="1")])
-    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
-    assert len(my_vectorstore.configuration.llm_ops) > 0
-
-
-@patch("chromadb.api.models.Collection.Collection.query")
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
-def test_chroma_vectorstore_retrieve_with_langfuse(
-    mock_langfuse: MagicMock,
-    mock_query: MagicMock,
-):
-    """Test the retrieve method of the ChromaVectorStore class."""
-    mock_query.return_value = ChromaQueryResult(ids=[["1"]])
-
-    @with_langfuse
-    class VectorStore(ChromaVectorStore):
-        index_name = "test"
-        client_settings = ChromaSettings(mode="ephemeral")
-        embedder = MyEmbedder()
-
-    my_vectorstore = VectorStore()
-    my_vectorstore.retrieve("test")
-    mock_query.assert_called_once_with(query_texts=["test"])
-    assert len(my_vectorstore.configuration.llm_ops) > 0
-
-
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
     class MyEmbedder(OpenAIEmbedder):
@@ -358,7 +335,9 @@ def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     assert len(my_embedder.configuration.client_wrappers) > 0
 
 
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
     class MyOtherEmbedder(CohereEmbedder):

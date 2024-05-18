@@ -1,6 +1,6 @@
 """A module for calling Anthropic's Claude API."""
 import datetime
-import inspect
+from contextlib import AbstractAsyncContextManager, AbstractContextManager
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -155,27 +155,28 @@ class AnthropicCall(
         client = get_wrapped_client(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        stream = get_wrapped_call(
+        stream_fn = get_wrapped_call(
             client.messages.stream,
             self,
             response_chunk_type=AnthropicCallResponseChunk,
             tool_types=tool_types,
         )
-        if inspect.isgeneratorfunction(stream):
-            for chunk in stream(messages=messages, **kwargs):  # type: ignore
-                yield AnthropicCallResponseChunk(
-                    chunk=chunk,
-                    tool_types=tool_types,
-                    response_format=self.call_params.response_format,
-                )
-        else:
-            with stream(messages=messages, **kwargs) as message_stream:
+        stream = stream_fn(messages=messages, **kwargs)
+        if isinstance(stream, AbstractContextManager):
+            with stream as message_stream:
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
+        else:
+            for chunk in stream:  # type: ignore
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     @retry
     async def stream_async(
@@ -194,28 +195,29 @@ class AnthropicCall(
         client = get_wrapped_async_client(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        stream = get_wrapped_call(
+        stream_fn = get_wrapped_call(
             client.messages.stream,
             self,
             is_async=True,
             response_chunk_type=AnthropicCallResponseChunk,
             tool_types=tool_types,
         )
-        if inspect.isasyncgenfunction(stream):
-            async for chunk in stream(messages=messages, **kwargs):  # type: ignore
-                yield AnthropicCallResponseChunk(
-                    chunk=chunk,
-                    tool_types=tool_types,
-                    response_format=self.call_params.response_format,
-                )
-        else:
-            async with stream(messages=messages, **kwargs) as message_stream:
+        stream = stream_fn(messages=messages, **kwargs)
+        if isinstance(stream, AbstractAsyncContextManager):
+            async with stream as message_stream:
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
+        else:
+            async for chunk in stream:  # type: ignore
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     ############################## PRIVATE METHODS ###################################
 

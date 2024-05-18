@@ -35,7 +35,7 @@ STEAMING_MSG_TEMPLATE: LiteralString = (
 
 
 def mirascope_logfire() -> Callable:
-    def decorator(
+    def mirascope_logfire_decorator(
         fn: Callable,
         suffix: str,
         *,
@@ -153,7 +153,7 @@ def mirascope_logfire() -> Callable:
             return wrapper
         raise ValueError("No response type or chunk type provided")
 
-    return decorator
+    return mirascope_logfire_decorator
 
 
 def _extract_chunk_content(

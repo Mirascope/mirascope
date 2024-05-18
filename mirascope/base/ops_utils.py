@@ -59,6 +59,8 @@ def get_wrapped_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> T:
 
 
 C = TypeVar("C")
+F = TypeVar("F", bound=Callable[..., Any])
+DecoratorType = Callable[[F], F]
 
 
 def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> C:
@@ -84,6 +86,7 @@ def mirascope_span(
     fn: Callable,
     handle_before_call: Optional[Callable[..., Any]] = None,
     handle_after_call: Optional[Callable[..., Any]] = None,
+    decorator: Optional[DecoratorType] = None,
     **custom_kwargs: Any,
 ):
     """Wraps a pydantic class method."""
@@ -193,19 +196,23 @@ def mirascope_span(
             if handle_after_call is not None:
                 handle_after_call(self, fn, output, before_call, **joined_kwargs)
 
+    wrapper_function = wrapper
     if inspect.isasyncgenfunction(fn):
-        return wrapper_generator_async
+        wrapper_function = wrapper_generator_async
     elif inspect.iscoroutinefunction(fn):
-        return wrapper_async
+        wrapper_function = wrapper_async
     elif inspect.isgeneratorfunction(fn):
-        return wrapper_generator
-    return wrapper
+        wrapper_function = wrapper_generator
+    if decorator is not None:
+        wrapper_function = decorator(wrapper_function)
+    return wrapper_function
 
 
 def wrap_mirascope_class_functions(
     cls: type[BaseModel],
     handle_before_call: Optional[Callable[..., Any]] = None,
     handle_after_call: Optional[Callable[..., Any]] = None,
+    decorator: Optional[DecoratorType] = None,
     **custom_kwargs: Any,
 ):
     """Wraps Mirascope class functions with a decorator.
@@ -225,6 +232,7 @@ def wrap_mirascope_class_functions(
                 getattr(cls, name),
                 handle_before_call,
                 handle_after_call,
+                decorator,
                 **custom_kwargs,
             ),
         )

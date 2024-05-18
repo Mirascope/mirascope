@@ -6,14 +6,16 @@ from contextlib import (
     AbstractContextManager,
     contextmanager,
 )
-from typing import Any, Callable, Optional, Type, overload
+from typing import Any, Callable, Generator, Optional, Type, overload
 
-from langfuse import Langfuse
-from langfuse.client import StatefulGenerationClient, StatefulTraceClient
+from langfuse.decorators import LangfuseDecorator, langfuse_context, observe
 from langfuse.types import ModelUsage
 from pydantic import BaseModel
 
-from mirascope.base.ops_utils import get_class_vars, wrap_mirascope_class_functions
+from mirascope.base.ops_utils import (
+    get_class_vars,
+    wrap_mirascope_class_functions,
+)
 from mirascope.base.tools import BaseTool
 from mirascope.base.types import BaseCallResponse, BaseCallResponseChunk, ChunkT
 
@@ -27,7 +29,7 @@ from ..types import (
 
 
 @contextmanager
-def record_streaming(generation: StatefulGenerationClient):
+def record_streaming() -> Generator:
     """Langfuse record_streaming with Mirascope providers"""
     content: list[str] = []
 
@@ -43,15 +45,13 @@ def record_streaming(generation: StatefulGenerationClient):
         yield record_chunk
     finally:
         # TODO: Add usage for providers that support usage in streaming
-        generation.end(output="".join(content), usage=None)
+        langfuse_context.update_current_observation(output="".join(content), usage=None)
 
 
-def langfuse_generation(
-    trace: StatefulTraceClient, fn: Callable, model_name: str, **kwargs
-):
-    """Instantiates a Langfuse generation object with some data."""
+def langfuse_generation(fn: Callable, model_name: str, **kwargs) -> None:
+    """Adds metadata to the Langfuse observation."""
     model = kwargs.get("model", None) or model_name
-    return trace.generation(
+    langfuse_context.update_current_observation(
         name=f"{fn.__name__} with {model}",
         input=kwargs.get("messages", []),
         metadata=kwargs,
@@ -61,11 +61,11 @@ def langfuse_generation(
 
 
 def langfuse_generation_end(
-    generation: StatefulGenerationClient,
     response_type: Optional[type[BaseCallResponse]] = None,
     result: Any = None,
     tool_types: Optional[list[type[BaseTool]]] = None,
-):
+) -> None:
+    """Adds the response to the Langfuse observation."""
     if response_type is not None:
         response = response_type(
             response=result, start_time=0, end_time=0, tool_types=tool_types
@@ -75,13 +75,15 @@ def langfuse_generation_end(
             output=response.output_tokens,
             unit="TOKENS",
         )
-        generation.end(output=response.content, usage=usage)
+        langfuse_context.update_current_observation(
+            output=response.content, usage=usage
+        )
 
 
-def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
+def mirascope_langfuse_generation() -> Callable:
     """Wraps a function with a Langfuse generation."""
 
-    def decorator(
+    def mirascope_langfuse_decorator(
         fn,
         suffix,
         *,
@@ -95,15 +97,15 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
 
         def wrapper(*args, **kwargs):
             """Wraps a function that makes a call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, model_name, **kwargs)
+            langfuse_generation(fn, model_name, **kwargs)
             result = fn(*args, **kwargs)
-            langfuse_generation_end(generation, response_type, result, tool_types)
+            langfuse_generation_end(response_type, result, tool_types)
             return result
 
         def wrapper_generator(*args, **kwargs):
             """Wraps a function that yields a call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, model_name, **kwargs)
-            with record_streaming(generation) as record_chunk:
+            langfuse_generation(fn, model_name, **kwargs)
+            with record_streaming() as record_chunk:
                 generator = fn(*args, **kwargs)
                 if isinstance(generator, AbstractContextManager):
                     with generator as s:
@@ -117,15 +119,15 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
 
         async def wrapper_async(*args, **kwargs):
             """Wraps a function that makes an async call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, model_name, **kwargs)
+            langfuse_generation(fn, model_name, **kwargs)
             result = await fn(*args, **kwargs)
-            langfuse_generation_end(generation, response_type, result, tool_types)
+            langfuse_generation_end(response_type, result, tool_types)
             return result
 
         async def wrapper_generator_async(*args, **kwargs):
             """Wraps a function that yields an async call to an LLM with Langfuse."""
-            generation = langfuse_generation(trace, fn, model_name, **kwargs)
-            with record_streaming(generation) as record_chunk:
+            langfuse_generation(fn, model_name, **kwargs)
+            with record_streaming() as record_chunk:
                 stream = fn(*args, **kwargs)
                 if inspect.iscoroutine(stream):
                     stream = await stream
@@ -139,33 +141,38 @@ def mirascope_langfuse_generation(trace: StatefulTraceClient) -> Callable:
                         record_chunk(chunk, response_chunk_type)
                         yield chunk
 
+        wrapper_function = wrapper
         if response_chunk_type and is_async:
-            return wrapper_generator_async
+            wrapper_function = wrapper_generator_async
         elif response_type and is_async:
-            return wrapper_async
+            wrapper_function = wrapper_async
         elif response_chunk_type:
-            return wrapper_generator
+            wrapper_function = wrapper_generator
         elif response_type:
-            return wrapper
-        raise ValueError("No response type or chunk type provided")
+            wrapper_function = wrapper
+        else:
+            raise ValueError("No response type or chunk type provided")
 
-    return decorator
+        return observe(name=fn.__name__)(wrapper_function)
+
+    return mirascope_langfuse_decorator
 
 
-def handle_before_call(self: BaseModel, fn, *args, trace=StatefulTraceClient, **kwargs):
+def handle_before_call(self: BaseModel, fn, *args, **kwargs):
+    """Adds metadata to the Mirascope Langfuse observation."""
     class_vars = get_class_vars(self)
-    trace.update(
+    langfuse_context.update_current_observation(
+        name=self.__class__.__name__,
         input=class_vars.pop("prompt_template", None),
         metadata=class_vars,
         tags=class_vars.pop("tags", []),
     )
-    return trace
+    return langfuse_context
 
 
-def handle_after_call(
-    cls, fn, result, before_call, trace=StatefulTraceClient, **kwargs
-):
-    trace.update(output=result)
+def handle_after_call(cls, fn, result, before_call: LangfuseDecorator, **kwargs):
+    """Adds the response to the Mirascope Langfuse observation."""
+    before_call.update_current_observation(output=result)
 
 
 @overload
@@ -196,7 +203,7 @@ def with_langfuse(cls: Type[BaseEmbedderT]) -> Type[BaseEmbedderT]:
 
 
 def with_langfuse(cls):
-    """Wraps base classes to automatically use weave.
+    """Wraps base classes to automatically use langfuse.
 
     Supported base classes: `BaseCall`, `BaseExtractor`, `BaseVectorStore`,
     `BaseChunker`, `BaseEmbedder`
@@ -221,25 +228,25 @@ def with_langfuse(cls):
     print(response.content)
     ```
     """
-    langfuse = Langfuse()
-    trace = langfuse.trace(name=cls.__name__)
     wrap_mirascope_class_functions(
-        cls, handle_before_call, handle_after_call, trace=trace
+        cls, handle_before_call, handle_after_call, observe()
     )
-    if hasattr(cls, "configuration"):
-        if cls._provider and cls._provider == "openai":
-            cls.configuration = cls.configuration.model_copy(
-                update={
-                    "client_wrappers": [*cls.configuration.client_wrappers, "langfuse"]
-                }
-            )
-        else:
-            cls.configuration = cls.configuration.model_copy(
-                update={
-                    "llm_ops": [
-                        *cls.configuration.llm_ops,
-                        mirascope_langfuse_generation(trace),
-                    ]
-                }
-            )
+    if cls._provider and cls._provider == "openai":
+        cls.configuration = cls.configuration.model_copy(
+            update={
+                "client_wrappers": [
+                    *cls.configuration.client_wrappers,
+                    "langfuse",
+                ]
+            }
+        )
+    else:
+        cls.configuration = cls.configuration.model_copy(
+            update={
+                "llm_ops": [
+                    *cls.configuration.llm_ops,
+                    mirascope_langfuse_generation(),
+                ]
+            }
+        )
     return cls
