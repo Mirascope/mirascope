@@ -57,9 +57,7 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
             else None
         )
         start_time = datetime.datetime.now().timestamp() * 1000
-        embed = co.embed
-        if self.configuration.llm_ops:  # pragma: no cover
-            embed = get_wrapped_call(embed, self, response_type=CohereEmbeddingResponse)
+        embed = get_wrapped_call(co.embed, self, response_type=CohereEmbeddingResponse)
         response = embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,
@@ -79,11 +77,9 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
             else None
         )
         start_time = datetime.datetime.now().timestamp() * 1000
-        embed = co.embed
-        if self.configuration.llm_ops:  # pragma: no cover
-            embed = get_wrapped_call(
-                embed, self, is_async=True, response_type=CohereEmbeddingResponse
-            )
+        embed = get_wrapped_call(
+            co.embed, self, is_async=True, response_type=CohereEmbeddingResponse
+        )
         response = await embed(texts=inputs, **self.embedding_params.kwargs())
         return CohereEmbeddingResponse(
             response=response,

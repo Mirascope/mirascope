@@ -59,8 +59,6 @@ def get_wrapped_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> T:
 
 
 C = TypeVar("C")
-F = TypeVar("F", bound=Callable[..., Any])
-DecoratorType = Callable[[F], F]
 
 
 def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> C:
@@ -80,6 +78,10 @@ def get_wrapped_call(call: C, self: Union[BaseCall, BaseEmbedder], **kwargs) -> 
                 )
         return wrapped_call
     return call
+
+
+F = TypeVar("F", bound=Callable[..., Any])
+DecoratorType = Callable[[F], F]
 
 
 def mirascope_span(
