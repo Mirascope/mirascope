@@ -1,6 +1,4 @@
 """Fixtures for Mirascope's Cohere module tests."""
-from typing import Type
-
 import pytest
 from cohere.types import (
     ApiMeta,
@@ -8,12 +6,9 @@ from cohere.types import (
     EmbedByTypeResponseEmbeddings,
     EmbedResponse_EmbeddingsByType,
     EmbedResponse_EmbeddingsFloats,
-    NonStreamedChatResponse,
-    ToolCall,
 )
 
 from mirascope.cohere.embedders import CohereEmbedder
-from mirascope.cohere.tools import CohereTool
 from mirascope.cohere.types import CohereEmbeddingParams
 
 

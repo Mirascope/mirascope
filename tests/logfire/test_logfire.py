@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import logfire
 import pytest
-from anthropic.types import Message
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
@@ -15,8 +14,7 @@ from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
-from mirascope.anthropic.tools import AnthropicTool
-from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponseChunk
+from mirascope.anthropic.types import AnthropicCallResponseChunk
 from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
 from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
