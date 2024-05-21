@@ -165,11 +165,12 @@ if tool:
             "name": tool.__class__.__name__,
         },
     ]
+    # Set no question so there isn't a user message
+    forecast.question = ""
 else:
     print(response.content)  # if no tool, print the content of the response
 
 # Call the LLM again with the history including the tool call
-forecast.question = "Is that cold or hot?"
 response = forecast.call()
 print("After Tools Response:", response.content)
 ```

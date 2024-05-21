@@ -135,7 +135,8 @@ class BasePrompt(BaseModel):
                 messages += attribute
             else:
                 content = self._format_template(match.group(2))
-                messages.append({"role": role, "content": content})
+                if content:
+                    messages.append({"role": role, "content": content})
         if len(messages) == 0:
             messages.append(
                 {
