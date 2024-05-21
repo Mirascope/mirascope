@@ -100,6 +100,80 @@ print(weather_tool.fn(**weather_tool.args))
 
 Using the [tool_fn](../api/base/utils.md#mirascope.base.utils.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly as mentioned above.
 
+## Inserting Tools Back Into The Chat Messages
+
+Often you will want to reinsert the tool call into the messages for a future call so that the LLM can respond given the actual output of the tool call. This is necessary for agentic behavior.
+
+We are currently working on improving this flow with additional convenience, but for now you can do the following:
+
+```python
+from typing import Literal
+
+from openai.types.chat import ChatCompletionMessageParam
+
+from mirascope.openai import OpenAICall, OpenAICallParams
+
+
+def get_current_weather(
+    location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+):
+    """Get the current weather in a given location."""
+    if "tokyo" in location.lower():
+        return f"It is 10 degrees {unit} in Tokyo, Japan"
+    elif "san francisco" in location.lower():
+        return f"It is 72 degrees {unit} in San Francisco, CA"
+    elif "paris" in location.lower():
+        return f"It is 22 degress {unit} in Paris, France"
+    else:
+        return f"I'm not sure what the weather is like in {location}"
+
+
+class Forecast(OpenAICall):
+    prompt_template = """
+    MESSAGES: {history}
+    USER: {question}
+    """
+
+    question: str
+    history: list[ChatCompletionMessageParam] = []
+    call_params = OpenAICallParams(model="gpt-4-turbo", tools=[get_current_weather])
+
+
+# Make the first call to the LLM
+forecast = Forecast(question="What's the weather in Tokyo Japan?")
+response = forecast.call()
+forecast.history += [
+    {"role": "user", "content": forecast.question},
+    response.message.model_dump(),
+]
+
+tool = response.tool
+if tool:
+    print("Tool arguments:", tool.args)
+    # > {'location': 'Tokyo, Japan', 'unit': 'fahrenheit'}
+    output = tool.fn(**tool.args)
+    print("Tool output:", output)
+    # > It is 10 degrees fahrenheit in Tokyo, Japan
+
+    # reinsert the tool call into the chat messages through history
+    # NOTE: this should be more convenient, e.g. `tool.message_param`
+    forecast.history += [
+        {
+            "role": "tool",
+            "content": output,
+            "tool_call_id": tool.tool_call.id,
+            "name": tool.__class__.__name__,
+        },
+    ]
+else:
+    print(response.content)  # if no tool, print the content of the response
+
+# Call the LLM again with the history including the tool call
+forecast.question = "Is that cold or hot?"
+response = forecast.call()
+print("After Tools Response:", response.content)
+```
+
 ## Using Tools with Supported Providers
 
 If you are using a function property documented with a docstring, **you do not need to make any code changes** when using other [supported providers](./supported_llm_providers.md). Mirascope will automatically convert these functions to their proper format for you under the hood.

@@ -1,4 +1,5 @@
 """A module for calling OpenAI's Chat Completion models."""
+
 import datetime
 import json
 from typing import (
@@ -74,9 +75,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             MessageRole.TOOL: ChatCompletionToolMessageParam,
         }
         return [
-            message_type_by_role[MessageRole(message["role"])](
-                role=message["role"], content=message["content"]
-            )
+            message_type_by_role[MessageRole(message["role"])](**message)
             for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 

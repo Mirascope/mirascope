@@ -1,4 +1,5 @@
 """A base class for writing prompts."""
+
 import re
 from string import Formatter
 from textwrap import dedent
@@ -66,9 +67,7 @@ class BasePrompt(BaseModel):
             MessageRole.TOOL: ToolMessage,
         }
         return [
-            message_type_by_role[MessageRole(message["role"])](
-                role=message["role"], content=message["content"]
-            )
+            message_type_by_role[MessageRole(message["role"])](**message)
             for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 
