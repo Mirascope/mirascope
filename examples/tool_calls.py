@@ -30,7 +30,7 @@ class Forecast(OpenAICall):
     call_params = OpenAICallParams(model="gpt-4-turbo", tools=[get_current_weather])
 
 
-# do the first call to get assistant to call the tool
+# Make the first call to the LLM
 forecast = Forecast(question="What's the weather in Tokyo Japan?")
 response = forecast.call()
 forecast.history += [
@@ -46,7 +46,8 @@ if tool:
     print("Tool output:", output)
     # > It is 10 degrees fahrenheit in Tokyo, Japan
 
-    # this should just be `tool.message_param` or something, need to implement
+    # reinsert the tool call into the chat messages through history
+    # NOTE: this should be more convenient, e.g. `tool.message_param`
     forecast.history += [
         {
             "role": "tool",
@@ -55,8 +56,11 @@ if tool:
             "name": tool.__class__.__name__,
         },  # type: ignore
     ]
+    # Set no question so there isn't a user message
+    forecast.question = ""
+else:
+    print(response.content)  # if no tool, print the content of the response
 
-# do the second call to get assistant response
-forecast.question = "Is that cold or hot?"
+# Call the LLM again with the history including the tool call
 response = forecast.call()
 print("After Tools Response:", response.content)
