@@ -35,7 +35,7 @@ forecast = Forecast(question="What's the weather in Tokyo Japan?")
 response = forecast.call()
 forecast.history += [
     {"role": "user", "content": forecast.question},
-    response.message.model_dump(),
+    response.message.model_dump(),  # type: ignore
 ]
 
 tool = response.tool
@@ -54,7 +54,7 @@ if tool:
             "content": output,
             "tool_call_id": tool.tool_call.id,
             "name": tool.__class__.__name__,
-        },
+        },  # type: ignore
     ]
     # Set no question so there isn't a user message
     forecast.question = ""
