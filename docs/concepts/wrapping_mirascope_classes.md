@@ -40,27 +40,41 @@ There are two optional callback functions that we provide: `handle_before_call` 
 
 For more specific cases, you should fill out all the handle before/after methods as you see fit.
 
-#### `handle_before_call`
+### `handle_before_call`
 
-For manual approaches to logging, it starts at `handle_before_call` . We pass a few arguments to the user, namely the Pydantic model itself, the function that is about to be called, and the kwargs of the Mirascope class function, in addition to any custom kwargs you pass in to `wrap_mirascope_class_functions` .
+For manual approaches to logging, it starts at `handle_before_call` . We pass a few arguments to the user, namely the Pydantic model itself, the function that is about to be called, and the kwargs of the Mirascope class function, in addition to any custom kwargs you pass in to `wrap_mirascope_class_functions` . The below example showcases how one would use the arguments in addition to using `handle_before_call` as a `contextmanager` :
 
 ```python
 from typing import Any
 from mirascope.base.ops_utils import get_class_vars
 
+@contextmanager
 def handle_before_call(
     self: BaseModel,
     fn: Callable[..., Any],
     **kwargs: dict[str, Any],
 ) -> Any:
+    """Do stuff before the LLM call
+    
+    Args:
+	    self: The instance of the Call or Embedder, contains things such as dump, properties, call_params, etc. Check what the type is then handle appropriately
+	    fn: The function that was called. Typically used to grab function name for ops logging. It is not recommended to call this function, unless you know what you are doing
+	    kwargs: Any custom kwargs that was passed to `wrap_mirascope_class_functions`
+    """
+    
     class_vars = get_class_vars(self)
-    function_name = fn.__name__
-    # log inputs (kwargs) to your ops tool of choice
-    return "anything you want"
-
+    inputs = self.model_dump()
+    # In this example, tracer is an opentelemetry trace.get_tracer(...)
+    tracer: Tracer = kwargs["tracer"]
+    with tracer.start_as_current_span(
+        f"{self.__class__.__name__}.{fn.__name__}"
+    ) as span:
+        for k, v in {**kwargs, **class_vars, **inputs}.items():
+            span.set_attribute(k, v)
+        yield span
 ```
 
-#### `handle_after_call`
+### `handle_after_call`
 
 After the call to the LLM, you have access to a Mirascope `CallResponse` Pydantic Model that you can use to log your results and any additional information you might have sent over from `handle_before_call`. This callback has the same arguments as `handle_before_call` with a few extras, such as result which is the result of the Mirascope class function and also the return of `handle_before_call` . Here’s how it looks like in action:
 
@@ -73,10 +87,19 @@ def handle_after_call(
     result: Any,
     before_result: Any,
     **kwargs: dict[str, Any],
-):
-    # log outputs (results) to your ops tool of choice
-    print(before_result)
-    # > "anything you want"
+) -> None:
+    """Do stuff after the LLM call
+    
+    Args:
+	    self: The instance of the Call or Embedder, contains things such as dump, properties, call_params, etc. Check what the type is then handle appropriately
+	    fn: The function that was called. Typically used to grab function name for ops logging. It is not recommended to call this function, unless you know what you are doing
+	    result: The result of the function, which will be an instance of BaseCallResponse
+	    before_result: The return of handle_before_call
+	    kwargs: Any custom kwargs that was passed to `wrap_mirascope_class_functions`
+    """
+    
+    # In this example `handle_before_result` yields a span so we can set attributes on that span
+    before_result.set_attribute("response", result)
 ```
 
 and...that's it! Now you're ready to use your decorator.
