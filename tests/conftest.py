@@ -43,6 +43,13 @@ from openai.types.chat import (
     ChatCompletionMessage,
 )
 from openai.types.chat.chat_completion import Choice
+from openai.types.chat.chat_completion_chunk import (
+    ChatCompletionChunk as OpenAIChatCompletionChunk,
+)
+from openai.types.chat.chat_completion_chunk import Choice as OpenAIChoice
+from openai.types.chat.chat_completion_chunk import (
+    ChoiceDelta as OpenAIChoiceDelta,
+)
 from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
@@ -52,6 +59,8 @@ from pydantic import BaseModel, Field
 
 from mirascope.anthropic import AnthropicTool
 from mirascope.base import tool_fn
+from mirascope.base.types import BaseConfig
+from mirascope.cohere.tools import CohereTool
 from mirascope.openai import OpenAITool
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.types import OpenAICallParams
@@ -129,6 +138,49 @@ def fixture_chat_completion_with_assistant_message_tool(
         0
     ].message.content = '{\n  "param": "param",\n  "optional": 0}'
     return fixture_chat_completion_copy
+
+
+@pytest.fixture()
+def fixture_chat_completion_chunks() -> list[OpenAIChatCompletionChunk]:
+    """Returns chat completion chunks."""
+    return [
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[
+                OpenAIChoice(
+                    **{"logprobs": None},
+                    delta=OpenAIChoiceDelta(content="I'm"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[
+                OpenAIChoice(
+                    **{"logprobs": None},
+                    delta=OpenAIChoiceDelta(content="testing"),
+                    finish_reason="stop",
+                    index=0,
+                ),
+            ],
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+        OpenAIChatCompletionChunk(
+            id="test_id",
+            choices=[],
+            usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
+            created=0,
+            model="test_model",
+            object="chat.completion.chunk",
+        ),
+    ]
 
 
 @tool_fn(lambda param, optional: "test")
@@ -437,5 +489,39 @@ def fixture_openai_test_call():
         api_key = "test"
 
         call_params = OpenAICallParams(model="gpt-4")
+        configuration = BaseConfig(client_wrappers=[], llm_ops=[])
 
     return OpenAITestCall()
+
+
+@pytest.fixture()
+def fixture_cohere_response_with_tools() -> NonStreamedChatResponse:
+    """Returns a Cohere chat response with tools in the response"""
+    return NonStreamedChatResponse(
+        text="test",
+        search_queries=None,
+        search_results=None,
+        documents=None,
+        citations=None,
+        tool_calls=[
+            ToolCall(
+                name="BookTool",
+                parameters={
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            )
+        ],
+        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
+    )
+
+
+class BookTool(CohereTool):
+    title: str
+    author: str
+
+
+@pytest.fixture()
+def fixture_book_tool() -> Type[BookTool]:
+    """Returns the `BookTool` type definition."""
+    return BookTool

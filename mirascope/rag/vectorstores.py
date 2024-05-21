@@ -4,6 +4,7 @@ from typing import Any, ClassVar, Generic, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
+from ..base.types import BaseConfig
 from .chunkers import BaseChunker, TextChunker
 from .embedders import BaseEmbedder
 from .types import BaseQueryResults, BaseVectorStoreParams, Document
@@ -19,6 +20,8 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     chunker: ClassVar[BaseChunker] = TextChunker(chunk_size=1000, chunk_overlap=200)
     embedder: ClassVar[BaseEmbedder]
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
+    configuration: ClassVar[BaseConfig] = BaseConfig()
+    _provider: ClassVar[str] = "base"
 
     @abstractmethod
     def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:

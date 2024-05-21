@@ -57,6 +57,7 @@ class OpenAIExtractor(
     '''
 
     call_params: ClassVar[OpenAICallParams] = OpenAICallParams()
+    _provider: ClassVar[str] = "openai"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the OpenAI call response.

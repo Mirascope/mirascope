@@ -23,6 +23,12 @@ from openai.types.chat import (
 from openai.types.chat.completion_create_params import ResponseFormat
 from tenacity import AsyncRetrying, Retrying
 
+from mirascope.base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
+
 from ..base import BaseCall
 from ..base.utils import retry
 from ..enums import MessageRole
@@ -65,6 +71,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
     """
 
     call_params: ClassVar[OpenAICallParams] = OpenAICallParams()
+    _provider: ClassVar[str] = "openai"
 
     def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the template as a formatted list of messages."""
@@ -99,16 +106,15 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.langfuse:  # pragma: no cover
-            from langfuse.openai import OpenAI as LangfuseOpenAI
-
-            client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-        if self.call_params.logfire:
-            self.call_params.logfire(client)  # pragma: no cover
-        create = client.chat.completions.create
+        client = get_wrapped_client(
+            OpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_type=OpenAICallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(
@@ -145,18 +151,19 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.langfuse:  # pragma: no cover
-            from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
-
-            client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
-        if self.call_params.logfire:
-            self.call_params.logfire(client)  # pragma: no cover
+        client = get_wrapped_async_client(
+            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_type=OpenAICallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = await client.chat.completions.create(
+        completion = await create(
             messages=messages,
             stream=False,
             **kwargs,
@@ -190,17 +197,17 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.langfuse:  # pragma: no cover
-            from langfuse.openai import OpenAI as LangfuseOpenAI
-
-            client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-        if self.call_params.logfire:
-            self.call_params.logfire(client)  # pragma: no cover
+        client = get_wrapped_client(
+            OpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_chunk_type=OpenAICallResponseChunk,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        stream = client.chat.completions.create(
+        stream = create(
             messages=messages,
             stream=True,
             stream_options={"include_usage": True},
@@ -233,17 +240,18 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.langfuse:  # pragma: no cover
-            from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
-
-            client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
-        if self.call_params.logfire:
-            self.call_params.logfire(client)  # pragma: no cover
+        client = get_wrapped_async_client(
+            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_chunk_type=OpenAICallResponseChunk,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        stream = await client.chat.completions.create(
+        stream = await create(
             messages=messages,
             stream=True,
             stream_options={"include_usage": True},

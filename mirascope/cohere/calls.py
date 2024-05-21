@@ -7,6 +7,11 @@ from cohere.types import ChatMessage
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..enums import MessageRole
 from .tools import CohereTool
 from .types import CohereCallParams, CohereCallResponse, CohereCallResponseChunk
@@ -34,6 +39,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
     """
 
     call_params: ClassVar[CohereCallParams] = CohereCallParams()
+    _provider: ClassVar[str] = "cohere"
 
     def messages(self) -> list[ChatMessage]:
         """Returns the template as a formatted list of messages."""
@@ -58,23 +64,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             A `CohereCallResponse` instance.
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
-        co = Client(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            co = self.call_params.wrapper(co)
-        chat = co.chat
-        if self.call_params.weave is not None:
-            chat = self.call_params.weave(chat)  # pragma: no cover
-        if self.call_params.logfire:
-            chat = self.call_params.logfire(
-                chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            chat = self.call_params.langfuse(
-                chat,
-                "cohere",
-                is_async=False,
-                response_type=CohereCallResponse,
-            )  # pragma: no cover
+        co = get_wrapped_client(
+            Client(api_key=self.api_key, base_url=self.base_url), self
+        )
+
+        chat = get_wrapped_call(
+            co.chat, self, response_type=CohereCallResponse, tool_types=tool_types
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = chat(message=message, **kwargs)
         cost = None
@@ -104,23 +100,16 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             An `CohereCallResponse` instance.
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
-        co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            co = self.call_params.wrapper_async(co)
-        chat = co.chat
-        if self.call_params.weave is not None:
-            chat = self.call_params.weave(chat)  # pragma: no cover
-        if self.call_params.logfire_async:
-            chat = self.call_params.logfire_async(
-                chat, "cohere", response_type=CohereCallResponse, tool_types=tool_types
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            chat = self.call_params.langfuse(
-                chat,
-                "cohere",
-                is_async=True,
-                response_type=CohereCallResponse,
-            )  # pragma: no cover
+        co = get_wrapped_async_client(
+            AsyncClient(api_key=self.api_key, base_url=self.base_url), self
+        )
+        chat = get_wrapped_call(
+            co.chat,
+            self,
+            is_async=True,
+            response_type=CohereCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await chat(message=message, **kwargs)
         cost = None
@@ -150,20 +139,15 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             A `CohereCallResponseChunk` for each chunk of the response.
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
-        co = Client(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            co = self.call_params.wrapper(co)
-        chat_stream = co.chat_stream
-        if self.call_params.weave is not None:
-            chat_stream = self.call_params.weave(chat_stream)  # pragma: no cover
-        if self.call_params.logfire:
-            chat_stream = self.call_params.logfire(
-                chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            chat_stream = self.call_params.langfuse(
-                chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
-            )  # pragma: no cover
+        co = get_wrapped_client(
+            Client(api_key=self.api_key, base_url=self.base_url), self
+        )
+        chat_stream = get_wrapped_call(
+            co.chat_stream,
+            self,
+            response_chunk_type=CohereCallResponseChunk,
+            tool_types=tool_types,
+        )
         for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 
@@ -181,23 +165,16 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             A `CohereCallResponseChunk` for each chunk of the response.
         """
         message, kwargs, tool_types = self._setup_cohere_kwargs(kwargs)
-        co = AsyncClient(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            co = self.call_params.wrapper_async(co)
-        chat_stream = co.chat_stream
-        if self.call_params.weave is not None:
-            chat_stream = self.call_params.weave(chat_stream)  # pragma: no cover
-        if self.call_params.logfire_async:
-            chat_stream = self.call_params.logfire_async(
-                chat_stream, "cohere", response_chunk_type=CohereCallResponseChunk
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            chat_stream = self.call_params.langfuse(
-                chat_stream,
-                "cohere",
-                is_async=True,
-                response_chunk_type=CohereCallResponseChunk,
-            )  # pragma: no cover
+        co = get_wrapped_async_client(
+            AsyncClient(api_key=self.api_key, base_url=self.base_url), self
+        )
+        chat_stream = get_wrapped_call(
+            co.chat_stream,
+            self,
+            is_async=True,
+            response_chunk_type=CohereCallResponseChunk,
+            tool_types=tool_types,
+        )
         async for event in chat_stream(message=message, **kwargs):
             yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
 

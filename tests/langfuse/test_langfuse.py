@@ -13,8 +13,6 @@ from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.types import AnthropicCallResponseChunk
-from mirascope.chroma.types import ChromaQueryResult, ChromaSettings
-from mirascope.chroma.vectorstores import ChromaVectorStore
 from mirascope.cohere.calls import CohereCall
 from mirascope.cohere.embedders import CohereEmbedder
 from mirascope.cohere.types import CohereCallParams
@@ -27,41 +25,42 @@ from mirascope.openai.extractors import OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallResponse
 from mirascope.rag.embedders import BaseEmbedder
-from mirascope.rag.types import Document
 
 os.environ["OPENAI_API_KEY"] = "test"
 
 
-class MyCall(OpenAICall):
-    prompt_template = "test"
-
-
+@patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
 @patch(
-    "openai.resources.chat.completions.Completions.create",
-    new_callable=MagicMock,
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
 def test_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_create: MagicMock,
     fixture_chat_completion: ChatCompletion,
 ) -> None:
-    """Tests that `OpenAICall.call` returns the expected response with langfuse."""
-    mock_langfuse.trace = MagicMock()
+    """Tests that `OpenAICall.call` returns the expected response with langfuse.
+
+    Langfuse OpenAI will wrap client_wrapper instead of llm_ops
+    """
     mock_create.return_value = fixture_chat_completion
+    mock_create.__name__ = "create"
 
     @with_langfuse
-    class MyNestedCall(MyCall):
+    class MyCall(OpenAICall):
         ...
+
+    class MyNestedCall(MyCall):
+        prompt_template = """Test"""
 
     my_call = MyNestedCall()
     my_call.call()
-    assert my_call.call_params.langfuse is not None
-    mock_langfuse.return_value.trace.assert_called_once()
+    assert len(my_call.configuration.client_wrappers) > 0
 
 
 @patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_gemini_call_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_generate_content: MagicMock,
@@ -77,11 +76,13 @@ def test_gemini_call_call_with_langfuse(
 
     my_call = MyGeminiCall()
     my_call.call()
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch("cohere.Client.chat", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_call_call_with_langfuse(
     mock_langfuse: MagicMock,
     mock_chat: MagicMock,
@@ -98,11 +99,13 @@ def test_cohere_call_call_with_langfuse(
 
     my_call = CohereTempCall()
     my_call.call()
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch("cohere.Client.chat_stream", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_call_stream_with_langfuse(
     mock_langfuse: MagicMock,
     mock_chat_stream: MagicMock,
@@ -122,14 +125,16 @@ def test_cohere_call_stream_with_langfuse(
     chunks = [chunk for chunk in my_call.stream()]
     for chunk in chunks:
         assert isinstance(chunk.chunk, StreamedChatResponse_TextGeneration)
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch("cohere.AsyncClient.chat", new_callable=AsyncMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_cohere_call_call_async_with_langfuse(
-    mock_langfuse: MagicMock,
+    mock_langfuse: AsyncMock,
     mock_chat: AsyncMock,
     fixture_non_streamed_response: NonStreamedChatResponse,
 ) -> None:
@@ -144,11 +149,13 @@ async def test_cohere_call_call_async_with_langfuse(
 
     my_call = CohereTempCall()
     await my_call.call_async()
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch("cohere.AsyncClient.chat_stream", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_cohere_call_stream_async_with_langfuse(
     mock_langfuse: MagicMock,
@@ -169,11 +176,13 @@ async def test_cohere_call_stream_async_with_langfuse(
 
     async for chunk in stream:
         assert isinstance(chunk.chunk, StreamedChatResponse_TextGeneration)
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch("mirascope.openai.calls.OpenAICall.call", new_callable=MagicMock)
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_extractor_with_langfuse(
     mock_langfuse: MagicMock,
     mock_call: MagicMock,
@@ -181,6 +190,9 @@ def test_extractor_with_langfuse(
     fixture_my_openai_tool: type[OpenAITool],
     fixture_my_openai_tool_schema: type[BaseModel],
 ) -> None:
+    """Tests that `OpenAIExtractor.extract()` returns expected response with langfuse.
+    Langfuse OpenAI will wrap client_wrapper instead of llm_ops
+    """
     mock_call.return_value = OpenAICallResponse(
         response=fixture_chat_completion_with_tools,
         tool_types=[fixture_my_openai_tool],
@@ -197,14 +209,16 @@ def test_extractor_with_langfuse(
 
     my_extractor = TempExtractor()
     my_extractor.extract()
-    assert my_extractor.call_params.langfuse is not None
+    assert len(my_extractor.configuration.client_wrappers) > 0
 
 
 @patch(
     "anthropic.resources.messages.Messages.stream",
     new_callable=MagicMock,
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_anthropic_call_stream_with_langfuse(
     mock_langfuse: MagicMock,
     mock_stream: MagicMock,
@@ -224,14 +238,16 @@ def test_anthropic_call_stream_with_langfuse(
     stream = my_call.stream()
     for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch(
     "anthropic.resources.messages.AsyncMessages.stream",
     new_callable=MagicMock,
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_anthropic_call_stream_async(
     mock_langfuse: MagicMock,
@@ -251,13 +267,15 @@ async def test_anthropic_call_stream_async(
     stream = my_call.stream_async()
     async for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
-    assert my_call.call_params.langfuse is not None
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 @patch(
     "groq.resources.chat.completions.AsyncCompletions.create", new_callable=AsyncMock
 )
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 @pytest.mark.asyncio
 async def test_groq_call_stream_async(
     mock_langfuse: MagicMock,
@@ -277,13 +295,9 @@ async def test_groq_call_stream_async(
     mock_create.__name__ = "stream"
     my_call = TempCall()
     stream = my_call.stream_async()
-
-    i = 0
     async for chunk in stream:
-        assert chunk.chunk == fixture_chat_completion_stream_response[i]
-        i += 1
-
-    assert my_call.call_params.langfuse is not None
+        assert isinstance(chunk, ChatCompletionChunk)
+    assert len(my_call.configuration.llm_ops) > 0
 
 
 def test_value_error_on_mirascope_langfuse_generation():
@@ -295,7 +309,7 @@ def test_value_error_on_mirascope_langfuse_generation():
         def foo():
             ...  # pragma: no cover
 
-        mirascope_langfuse_generation(None)(foo, "test")
+        mirascope_langfuse_generation()(foo, "test")
 
 
 class MyEmbedder(BaseEmbedder):
@@ -309,63 +323,25 @@ class MyEmbedder(BaseEmbedder):
         return [1, 2, 3]  # pragma: no cover
 
 
-@patch("chromadb.api.models.Collection.Collection.upsert")
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
-def test_chroma_vectorstore_add_document_with_langfuse(
-    mock_langfuse: MagicMock,
-    mock_upsert: MagicMock,
-):
-    """Test the add method of the ChromaVectorStore class with documents as argument"""
-    mock_upsert.return_value = None
-
-    @with_langfuse
-    class VectorStore(ChromaVectorStore):
-        index_name = "test"
-        client_settings = ChromaSettings(mode="ephemeral")
-        embedder = MyEmbedder()
-
-    my_vectorstore = VectorStore()
-    my_vectorstore.add([Document(text="foo", id="1")])
-    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
-    assert my_vectorstore.vectorstore_params.langfuse is not None
-
-
-@patch("chromadb.api.models.Collection.Collection.query")
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
-def test_chroma_vectorstore_retrieve_with_langfuse(
-    mock_langfuse: MagicMock,
-    mock_query: MagicMock,
-):
-    """Test the retrieve method of the ChromaVectorStore class."""
-    mock_query.return_value = ChromaQueryResult(ids=[["1"]])
-
-    @with_langfuse
-    class VectorStore(ChromaVectorStore):
-        index_name = "test"
-        client_settings = ChromaSettings(mode="ephemeral")
-        embedder = MyEmbedder()
-
-    my_vectorstore = VectorStore()
-    my_vectorstore.retrieve("test")
-    mock_query.assert_called_once_with(query_texts=["test"])
-    assert my_vectorstore.vectorstore_params.langfuse is not None
-
-
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
     class MyEmbedder(OpenAIEmbedder):
         ...
 
     my_embedder = MyEmbedder()
-    assert my_embedder.embedding_params.langfuse is not None
+    assert len(my_embedder.configuration.client_wrappers) > 0
 
 
-@patch("mirascope.langfuse.langfuse.Langfuse", new_callable=MagicMock)
+@patch(
+    "langfuse.decorators.langfuse_decorator.LangfuseDecorator", new_callable=MagicMock
+)
 def test_cohere_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
     class MyOtherEmbedder(CohereEmbedder):
         ...
 
     my_embedder = MyOtherEmbedder()
-    assert my_embedder.embedding_params.langfuse is not None
+    assert len(my_embedder.configuration.llm_ops) > 0

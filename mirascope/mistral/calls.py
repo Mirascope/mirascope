@@ -8,6 +8,11 @@ from mistralai.constants import ENDPOINT
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..base.types import Message
 from ..enums import MessageRole
 from .tools import MistralTool
@@ -35,6 +40,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
     """
 
     call_params: ClassVar[MistralCallParams] = MistralCallParams()
+    _provider: ClassVar[str] = "mistral"
 
     def messages(self) -> list[Message]:
         """Returns the template as a formatted list of messages."""
@@ -60,20 +66,19 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
-        client = MistralClient(
-            api_key=self.api_key,
-            endpoint=self.base_url if self.base_url else ENDPOINT,
+        client = get_wrapped_client(
+            MistralClient(
+                api_key=self.api_key,
+                endpoint=self.base_url if self.base_url else ENDPOINT,
+            ),
+            self,
         )
-        chat = client.chat
-        if self.call_params.weave:
-            chat = self.call_params.weave(chat)  # pragma: no cover
-        if self.call_params.logfire:
-            chat = self.call_params.logfire(
-                chat,
-                "mistral",
-                response_type=MistralCallResponse,
-                tool_types=tool_types,
-            )  # pragma: no cover
+        chat = get_wrapped_call(
+            client.chat,
+            self,
+            response_type=MistralCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=self.messages(), **kwargs)
         return MistralCallResponse(
@@ -102,20 +107,20 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
-        client = MistralAsyncClient(
-            api_key=self.api_key,
-            endpoint=self.base_url if self.base_url else ENDPOINT,
+        client = get_wrapped_async_client(
+            MistralAsyncClient(
+                api_key=self.api_key,
+                endpoint=self.base_url if self.base_url else ENDPOINT,
+            ),
+            self,
         )
-        chat = client.chat
-        if self.call_params.weave:
-            chat = self.call_params.weave(chat)  # pragma: no cover
-        elif self.call_params.logfire_async:
-            chat = self.call_params.logfire_async(
-                chat,
-                "mistral",
-                response_type=MistralCallResponse,
-                tool_types=tool_types,
-            )  # pragma: no cover
+        chat = get_wrapped_call(
+            client.chat,
+            self,
+            is_async=True,
+            response_type=MistralCallResponse,
+            tool_types=tool_types,
+        )
 
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await chat(messages=self.messages(), **kwargs)
@@ -145,18 +150,21 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
-        client = MistralClient(
-            api_key=self.api_key,
-            endpoint=self.base_url if self.base_url else ENDPOINT,
+        client = get_wrapped_client(
+            MistralClient(
+                api_key=self.api_key,
+                endpoint=self.base_url if self.base_url else ENDPOINT,
+            ),
+            self,
         )
-        chat_stream = client.chat_stream
-        if self.call_params.logfire:
-            chat_stream = self.call_params.logfire(
-                chat_stream, "mistral", response_chunk_type=MistralCallResponseChunk
-            )  # pragma: no cover
-        stream = chat_stream(messages=self.messages(), **kwargs)
+        chat_stream = get_wrapped_call(
+            client.chat_stream,
+            self,
+            response_chunk_type=MistralCallResponseChunk,
+            tool_types=tool_types,
+        )
 
-        for chunk in stream:
+        for chunk in chat_stream(messages=self.messages(), **kwargs):
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
 
     @retry
@@ -177,15 +185,19 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
                 https://github.com/mistralai/client-python/blob/main/src/mistralai/exceptions.py
         """
         kwargs, tool_types = self._setup(kwargs, MistralTool)
-        client = MistralAsyncClient(
-            api_key=self.api_key,
-            endpoint=self.base_url if self.base_url else ENDPOINT,
+        client = get_wrapped_async_client(
+            MistralAsyncClient(
+                api_key=self.api_key,
+                endpoint=self.base_url if self.base_url else ENDPOINT,
+            ),
+            self,
         )
-        chat_stream = client.chat_stream
-        if self.call_params.logfire_async:
-            chat_stream = self.call_params.logfire_async(
-                chat_stream, "mistral", response_chunk_type=MistralCallResponseChunk
-            )  # pragma: no cover
-        stream = chat_stream(messages=self.messages(), **kwargs)
-        async for chunk in stream:
+        chat_stream = get_wrapped_call(
+            client.chat_stream,
+            self,
+            is_async=True,
+            response_chunk_type=MistralCallResponseChunk,
+            tool_types=tool_types,
+        )
+        async for chunk in chat_stream(messages=self.messages(), **kwargs):
             yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)

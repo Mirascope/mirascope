@@ -144,49 +144,6 @@ def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
 
 
 @pytest.fixture()
-def fixture_chat_completion_chunks() -> list[ChatCompletionChunk]:
-    """Returns chat completion chunks."""
-    return [
-        ChatCompletionChunk(
-            id="test_id",
-            choices=[
-                ChunkChoice(
-                    **{"logprobs": None},
-                    delta=ChoiceDelta(content="I'm"),
-                    finish_reason="stop",
-                    index=0,
-                ),
-            ],
-            created=0,
-            model="test_model",
-            object="chat.completion.chunk",
-        ),
-        ChatCompletionChunk(
-            id="test_id",
-            choices=[
-                ChunkChoice(
-                    **{"logprobs": None},
-                    delta=ChoiceDelta(content="testing"),
-                    finish_reason="stop",
-                    index=0,
-                ),
-            ],
-            created=0,
-            model="test_model",
-            object="chat.completion.chunk",
-        ),
-        ChatCompletionChunk(
-            id="test_id",
-            choices=[],
-            usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
-            created=0,
-            model="test_model",
-            object="chat.completion.chunk",
-        ),
-    ]
-
-
-@pytest.fixture()
 def fixture_chat_completion_chunk(
     fixture_chat_completion_chunks,
 ) -> ChatCompletionChunk:

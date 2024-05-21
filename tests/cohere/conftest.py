@@ -1,6 +1,4 @@
 """Fixtures for Mirascope's Cohere module tests."""
-from typing import Type
-
 import pytest
 from cohere.types import (
     ApiMeta,
@@ -8,53 +6,10 @@ from cohere.types import (
     EmbedByTypeResponseEmbeddings,
     EmbedResponse_EmbeddingsByType,
     EmbedResponse_EmbeddingsFloats,
-    NonStreamedChatResponse,
-    ToolCall,
 )
 
 from mirascope.cohere.embedders import CohereEmbedder
-from mirascope.cohere.tools import CohereTool
 from mirascope.cohere.types import CohereEmbeddingParams
-
-
-class BookTool(CohereTool):
-    title: str
-    author: str
-
-
-@pytest.fixture()
-def fixture_book_tool() -> Type[BookTool]:
-    """Returns the `BookTool` type definition."""
-    return BookTool
-
-
-@pytest.fixture()
-def fixture_cohere_response_with_tools() -> NonStreamedChatResponse:
-    """Returns a Cohere chat response with tools in the response"""
-    return NonStreamedChatResponse(
-        text="test",
-        search_queries=None,
-        search_results=None,
-        documents=None,
-        citations=None,
-        tool_calls=[
-            ToolCall(
-                name="BookTool",
-                parameters={
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                },
-            )
-        ],
-        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
-    )
-
-
-@pytest.fixture()
-def fixture_cohere_book_tool() -> Type[BookTool]:
-    """Returns the `BookTool` type definition."""
-
-    return BookTool
 
 
 @pytest.fixture()

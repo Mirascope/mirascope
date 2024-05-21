@@ -1,9 +1,7 @@
 """Types for interacting with Cohere chat models using Mirascope."""
-from typing import Any, Callable, Literal, Optional, Sequence, Type, Union
+from typing import Any, Literal, Optional, Sequence, Type, Union
 
 from cohere import (
-    AsyncClient,
-    Client,
     StreamedChatResponse_CitationGeneration,
     StreamedChatResponse_SearchQueriesGeneration,
     StreamedChatResponse_SearchResults,
@@ -68,9 +66,6 @@ class CohereCallParams(BaseCallParams[CohereTool]):
     raw_prompting: Optional[bool] = None
     tool_results: Optional[Sequence[ChatRequestToolResultsItem]] = None
     request_options: Optional[RequestOptions] = None
-
-    wrapper: Optional[Callable[[Client], Client]] = None
-    wrapper_async: Optional[Callable[[AsyncClient], AsyncClient]] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

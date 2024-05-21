@@ -341,7 +341,8 @@ We are constantly working to further integrate Mirascope as seamlessly as possib
     - [X]  Gemini
     - [ ]  HuggingFace
 - [ ]  Integrations
-    - [X]  Logfire by Pydantic  
+    - [X]  Logfire by Pydantic
+    - [X]  Langfuse
     - [X]  Weights & Biases Trace
     - [X]  Weave by Weights & Biases
     - [X]  LangChain / LangSmith

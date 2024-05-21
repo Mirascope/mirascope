@@ -4,6 +4,7 @@ from typing import Type, overload
 
 import weave
 
+from ..base.ops_utils import get_class_functions
 from ..types import (
     BaseCallT,
     BaseChunkerT,
@@ -69,48 +70,11 @@ def with_weave(cls):
     print(response.content)
     ```
     """
-    if hasattr(cls, "call"):
-        setattr(cls, "call", weave.op()(cls.call))
-    if hasattr(cls, "call_async"):
-        setattr(cls, "call_async", weave.op()(cls.call_async))
-
-    # VectorStore
-    if hasattr(cls, "retrieve"):
-        setattr(cls, "retrieve", weave.op()(cls.retrieve))
-    if hasattr(cls, "add"):
-        setattr(cls, "add", weave.op()(cls.add))
-
-    # Chunker
-    if hasattr(cls, "chunk"):
-        setattr(cls, "chunk", weave.op()(cls.chunk))
-
-    # Embedder
-    if hasattr(cls, "embed"):
-        setattr(cls, "embed", weave.op()(cls.embed))
-    if hasattr(cls, "embed_async"):
-        setattr(cls, "embed_async", weave.op()(cls.embed_async))
-
-    # It appears Weave does not yet support streaming or does it in a different way? :(
-    # Our calls will be tracked, but the sub-calls don't since the streaming happens
-    # when iterating through the generator after the call.
-    if hasattr(cls, "stream"):
-        setattr(cls, "stream", weave.op()(cls.stream))
-    if hasattr(cls, "stream_async"):
-        setattr(cls, "stream_async", weave.op()(cls.stream_async))
-
-    if hasattr(cls, "extract"):
-        setattr(cls, "extract", weave.op()(cls.extract))
-    if hasattr(cls, "extract_async"):
-        setattr(cls, "extract_async", weave.op()(cls.extract_async))
-
-    if hasattr(cls, "call_params"):
-        setattr(
-            cls, "call_params", cls.call_params.model_copy(update={"weave": weave.op()})
-        )
-    if hasattr(cls, "vectorstore_params"):
-        setattr(
-            cls,
-            "vectorstore_params",
-            cls.vectorstore_params.model_copy(update={"weave": weave.op()}),
-        )
+    for name in get_class_functions(cls):
+        setattr(cls, name, weave.op()(getattr(cls, name)))
+    if hasattr(cls, "_provider") is False or cls._provider != "openai":
+        if hasattr(cls, "configuration"):
+            cls.configuration = cls.configuration.model_copy(
+                update={"llm_ops": [*cls.configuration.llm_ops, "weave"]}
+            )
     return cls

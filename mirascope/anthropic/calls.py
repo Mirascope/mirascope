@@ -1,5 +1,6 @@
 """A module for calling Anthropic's Claude API."""
 import datetime
+from contextlib import AbstractAsyncContextManager, AbstractContextManager
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -7,6 +8,11 @@ from anthropic.types import MessageParam
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..enums import MessageRole
 from .tools import AnthropicTool
 from .types import (
@@ -41,6 +47,7 @@ class AnthropicCall(
     """
 
     call_params: ClassVar[AnthropicCallParams] = AnthropicCallParams()
+    _provider: ClassVar[str] = "anthropic"
 
     def messages(self) -> list[MessageParam]:
         """Returns the template as a formatted list of messages."""
@@ -62,26 +69,18 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-
+        client = get_wrapped_client(
+            Anthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(create)  # pragma: no cover
-        if self.call_params.logfire:
-            create = self.call_params.logfire(
-                create,
-                "anthropic",
-                response_type=AnthropicCallResponse,
-                tool_types=tool_types,
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "anthropic", response_type=AnthropicCallResponse
-            )  # pragma: no cover
+        create = get_wrapped_call(
+            create,
+            self,
+            response_type=AnthropicCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = create(
             messages=messages,
@@ -111,25 +110,19 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
+        client = get_wrapped_async_client(
+            AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
         create = client.messages.create
         if tool_types:
             create = client.beta.tools.messages.create  # type: ignore
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(create)  # pragma: no cover
-        if self.call_params.logfire_async:
-            create = self.call_params.logfire_async(
-                create,
-                "anthropic",
-                response_type=AnthropicCallResponse,
-                tool_types=tool_types,
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "anthropic", is_async=True, response_type=AnthropicCallResponse
-            )  # pragma: no cover
+        create = get_wrapped_call(
+            create,
+            self,
+            is_async=True,
+            response_type=AnthropicCallResponse,
+            tool_types=tool_types,
+        )
         start_time = datetime.datetime.now().timestamp() * 1000
         message = await create(
             messages=messages,
@@ -159,38 +152,31 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = Anthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-        if self.call_params.logfire or self.call_params.langfuse:  # pragma: no cover
-            stream = client.messages.stream
-            if self.call_params.logfire:
-                stream = self.call_params.logfire(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            if self.call_params.langfuse:
-                stream = self.call_params.langfuse(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            for chunk in stream(messages=messages, **kwargs):  # type: ignore
-                yield AnthropicCallResponseChunk(
-                    chunk=chunk,
-                    tool_types=tool_types,
-                    response_format=self.call_params.response_format,
-                )
-        else:
-            stream = client.messages.stream
-            with stream(messages=messages, **kwargs) as message_stream:
+        client = get_wrapped_client(
+            Anthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
+        stream_fn = get_wrapped_call(
+            client.messages.stream,
+            self,
+            response_chunk_type=AnthropicCallResponseChunk,
+            tool_types=tool_types,
+        )
+        stream = stream_fn(messages=messages, **kwargs)
+        if isinstance(stream, AbstractContextManager):
+            with stream as message_stream:
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
+        else:
+            for chunk in stream:  # type: ignore
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     @retry
     async def stream_async(
@@ -206,42 +192,32 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
-        client = AsyncAnthropic(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
-        if (
-            self.call_params.logfire_async or self.call_params.langfuse
-        ):  # pragma: no cover
-            stream = client.messages.stream
-            if self.call_params.logfire_async:
-                stream = self.call_params.logfire_async(
-                    stream,
-                    "anthropic",
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            if self.call_params.langfuse:
-                stream = self.call_params.langfuse(
-                    stream,
-                    "anthropic",
-                    is_async=True,
-                    response_chunk_type=AnthropicCallResponseChunk,
-                )
-            async for chunk in stream(messages=messages, **kwargs):  # type: ignore
-                yield AnthropicCallResponseChunk(
-                    chunk=chunk,
-                    tool_types=tool_types,
-                    response_format=self.call_params.response_format,
-                )
-        else:
-            async with client.messages.stream(
-                messages=messages, **kwargs
-            ) as message_stream:
+        client = get_wrapped_async_client(
+            AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
+        )
+        stream_fn = get_wrapped_call(
+            client.messages.stream,
+            self,
+            is_async=True,
+            response_chunk_type=AnthropicCallResponseChunk,
+            tool_types=tool_types,
+        )
+        stream = stream_fn(messages=messages, **kwargs)
+        if isinstance(stream, AbstractAsyncContextManager):
+            async with stream as message_stream:
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
+        else:
+            async for chunk in stream:  # type: ignore
+                yield AnthropicCallResponseChunk(
+                    chunk=chunk,
+                    tool_types=tool_types,
+                    response_format=self.call_params.response_format,
+                )
 
     ############################## PRIVATE METHODS ###################################
 

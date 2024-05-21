@@ -54,6 +54,7 @@ class CohereExtractor(BaseExtractor[CohereCall, CohereTool, Any, T], Generic[T])
     '''
 
     call_params: ClassVar[CohereCallParams] = CohereCallParams()
+    _provider: ClassVar[str] = "cohere"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Cohere call response.

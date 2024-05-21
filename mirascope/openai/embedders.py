@@ -2,15 +2,13 @@
 import asyncio
 import datetime
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import suppress
 from typing import ClassVar, Optional
 
-with suppress(ImportError):
-    from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
-    from langfuse.openai import OpenAI as LangfuseOpenAI
 from openai import AsyncOpenAI, OpenAI
 from openai.types import Embedding
 from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
+
+from mirascope.base.ops_utils import get_wrapped_async_client, get_wrapped_client
 
 from ..rag import BaseEmbedder
 from .types import OpenAIEmbeddingParams, OpenAIEmbeddingResponse
@@ -39,6 +37,7 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
     embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams(
         model="text-embedding-3-small"
     )
+    _provider: ClassVar[str] = "openai"
 
     def embed(self, inputs: list[str]) -> OpenAIEmbeddingResponse:
         """Call the embedder with multiple inputs"""
@@ -86,11 +85,9 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
 
     def _embed(self, inputs: list[str]) -> OpenAIEmbeddingResponse:
         """Call the embedder with a single input"""
-        client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.embedding_params.langfuse:  # pragma: no cover
-            client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.embedding_params.logfire:
-            self.embedding_params.logfire(client)  # pragma: no cover
+        client = get_wrapped_client(
+            OpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
         kwargs = self.embedding_params.kwargs()
         if self.embedding_params.model != "text-embedding-ada-002":
             kwargs["dimensions"] = self.dimensions
@@ -104,11 +101,9 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
 
     async def _embed_async(self, inputs: list[str]) -> OpenAIEmbeddingResponse:
         """Asynchronously call the embedder with a single input"""
-        client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.embedding_params.langfuse:  # pragma: no cover
-            client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-        if self.embedding_params.logfire:
-            self.embedding_params.logfire(client)  # pragma: no cover
+        client = get_wrapped_async_client(
+            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
+        )
         kwargs = self.embedding_params.kwargs()
         if self.embedding_params.model != "text-embedding-ada-002":
             kwargs["dimensions"] = self.dimensions

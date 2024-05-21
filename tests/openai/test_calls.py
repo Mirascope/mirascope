@@ -125,7 +125,7 @@ def test_openai_call_call_with_wrapper(
     wrapper = MagicMock()
     wrapper.return_value = OpenAI(api_key="test")
 
-    fixture_openai_test_call.call_params.wrapper = wrapper
+    fixture_openai_test_call.configuration.client_wrappers = [wrapper]
     fixture_openai_test_call.call()
     wrapper.assert_called_once()
 
@@ -168,7 +168,7 @@ async def test_openai_call_call_async_with_wrapper(
     wrapper = MagicMock()
     wrapper.return_value = AsyncOpenAI(api_key="test")
 
-    fixture_openai_test_call.call_params.wrapper_async = wrapper
+    fixture_openai_test_call.configuration.client_wrappers = [wrapper]
     await fixture_openai_test_call.call_async()
     wrapper.assert_called_once()
 
@@ -215,7 +215,7 @@ def test_openai_call_stream_with_wrapper(
     wrapper = MagicMock()
     wrapper.return_value = OpenAI(api_key="test")
 
-    fixture_openai_test_call.call_params.wrapper = wrapper
+    fixture_openai_test_call.configuration.client_wrappers = [wrapper]
     stream = fixture_openai_test_call.stream()
     for _ in stream:
         pass
@@ -266,7 +266,7 @@ async def test_openai_call_stream_async_with_wrapper(
     wrapper = MagicMock()
     wrapper.return_value = AsyncOpenAI(api_key="test")
 
-    fixture_openai_test_call.call_params.wrapper_async = wrapper
+    fixture_openai_test_call.configuration.client_wrappers = [wrapper]
     stream = fixture_openai_test_call.stream_async()
     async for _ in stream:
         pass

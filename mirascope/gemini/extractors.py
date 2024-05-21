@@ -48,6 +48,7 @@ class GeminiExtractor(BaseExtractor[GeminiCall, GeminiTool, Any, T], Generic[T])
     '''
 
     call_params: ClassVar[GeminiCallParams] = GeminiCallParams()
+    _provider: ClassVar[str] = "gemini"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Gemini call response.

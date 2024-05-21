@@ -1,6 +1,7 @@
 """A module for calling Groq's Cloud API."""
 
 import datetime
+import inspect
 import json
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
@@ -9,6 +10,11 @@ from groq.types.chat.completion_create_params import Message, ResponseFormat
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
+from ..base.ops_utils import (
+    get_wrapped_async_client,
+    get_wrapped_call,
+    get_wrapped_client,
+)
 from ..enums import MessageRole
 from .tools import GroqTool
 from .types import GroqCallParams, GroqCallResponse, GroqCallResponseChunk
@@ -49,6 +55,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
     """
 
     call_params: ClassVar[GroqCallParams] = GroqCallParams()
+    _provider: ClassVar[str] = "groq"
 
     def messages(self) -> list[Message]:
         """Returns the template as a formatted list of messages."""
@@ -70,22 +77,15 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             A `GroqCallResponse` instance.
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
-        client = Groq(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
-        create = client.chat.completions.create
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(
-                client.chat.completions.create
-            )  # pragma: no cover
-        if self.call_params.logfire:
-            create = self.call_params.logfire(
-                create, "groq", response_type=GroqCallResponse, tool_types=tool_types
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "groq", response_type=GroqCallResponse
-            )  # pragma: no cover
+        client = get_wrapped_client(
+            Groq(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_type=GroqCallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
@@ -112,22 +112,16 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             An `GroqCallResponse` instance.
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
-        client = AsyncGroq(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
-        create = client.chat.completions.create
-        if self.call_params.weave is not None:
-            create = self.call_params.weave(
-                client.chat.completions.create
-            )  # pragma: no cover
-        if self.call_params.logfire_async:
-            create = self.call_params.logfire_async(
-                create, "groq", response_type=GroqCallResponse, tool_types=tool_types
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "groq", is_async=True, response_type=GroqCallResponse
-            )  # pragma: no cover
+        client = get_wrapped_async_client(
+            AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
+        )
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_type=GroqCallResponse,
+            tool_types=tool_types,
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
@@ -154,19 +148,16 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             A `GroqCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
-        client = Groq(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper is not None:
-            client = self.call_params.wrapper(client)
+        client = get_wrapped_client(
+            Groq(api_key=self.api_key, base_url=self.base_url), self
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        create = client.chat.completions.create
-        if self.call_params.logfire:
-            create = self.call_params.logfire(
-                create, "groq", response_chunk_type=GroqCallResponseChunk
-            )  # pragma: no cover
-        if self.call_params.langfuse:
-            create = self.call_params.langfuse(
-                create, "groq", response_chunk_type=GroqCallResponseChunk
-            )  # pragma: no cover
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            response_chunk_type=GroqCallResponseChunk,
+            tool_types=tool_types,
+        )
         stream = create(messages=messages, stream=True, **kwargs)
         for completion in stream:
             yield GroqCallResponseChunk(
@@ -189,26 +180,21 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             A `GroqCallResponseChunk` for each chunk of the response.
         """
         kwargs, tool_types = self._setup_groq_kwargs(kwargs)
-        client = AsyncGroq(api_key=self.api_key, base_url=self.base_url)
-        if self.call_params.wrapper_async is not None:
-            client = self.call_params.wrapper_async(client)
+        client = get_wrapped_async_client(
+            AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
+        )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        create = client.chat.completions.create
-        if self.call_params.logfire_async:  # pragma: no cover
-            create = self.call_params.logfire_async(
-                create, "groq", response_chunk_type=GroqCallResponseChunk
-            )
-            stream = create(
-                messages=messages, stream=True, **kwargs
-            )  # pragma: no cover
-        if self.call_params.langfuse:  # pragma: no cover
-            create = self.call_params.langfuse(
-                create, "groq", is_async=True, response_chunk_type=GroqCallResponseChunk
-            )
-            stream = create(messages=messages, stream=True, **kwargs)
-        if self.call_params.langfuse is None and self.call_params.logfire_async is None:
-            stream = await create(messages=messages, stream=True, **kwargs)
-        async for completion in stream:
+        create = get_wrapped_call(
+            client.chat.completions.create,
+            self,
+            is_async=True,
+            response_chunk_type=GroqCallResponseChunk,
+            tool_types=tool_types,
+        )
+        stream = create(messages=messages, stream=True, **kwargs)
+        if inspect.iscoroutine(stream):
+            stream = await stream
+        async for completion in stream:  # type: ignore
             yield GroqCallResponseChunk(
                 chunk=completion,
                 tool_types=tool_types,

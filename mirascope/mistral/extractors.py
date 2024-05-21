@@ -46,6 +46,7 @@ class MistralExtractor(BaseExtractor[MistralCall, MistralTool, Any, T], Generic[
     '''
 
     call_params: ClassVar[MistralCallParams] = MistralCallParams()
+    _provider: ClassVar[str] = "mistral"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Mistral call response.

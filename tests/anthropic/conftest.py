@@ -15,6 +15,7 @@ from anthropic.types import (
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.tools import AnthropicTool
 from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponseChunk
+from mirascope.base.types import BaseConfig
 
 
 @pytest.fixture()
@@ -25,6 +26,7 @@ def fixture_anthropic_test_call():
         prompt_template = "This is a test prompt for Anthropic."
 
         call_params = AnthropicCallParams(temperature=0.3)
+        configuration = BaseConfig(client_wrappers=[], llm_ops=[])
 
     return AnthropicTestCall(api_key="test")
 

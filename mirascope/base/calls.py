@@ -18,7 +18,7 @@ from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt
 from .tools import BaseTool
-from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseConfig
 
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
@@ -37,6 +37,8 @@ class BaseCall(
     call_params: ClassVar[BaseCallParams] = BaseCallParams[BaseToolT](
         model="gpt-3.5-turbo-0125"
     )
+    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[], client_wrappers=[])
+    _provider: ClassVar[str] = "base"
 
     @abstractmethod
     def call(

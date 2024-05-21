@@ -766,6 +766,20 @@ files = [
 test = ["pytest (>=6)"]
 
 [[package]]
+name = "executing"
+version = "2.0.1"
+description = "Get the currently executing AST node of a frame, and other information"
+optional = true
+python-versions = ">=3.5"
+files = [
+    {file = "executing-2.0.1-py2.py3-none-any.whl", hash = "sha256:eac49ca94516ccc753f9fb5ce82603156e590b27525a8bc32cce8ae302eb61bc"},
+    {file = "executing-2.0.1.tar.gz", hash = "sha256:35afe2ce3affba8ee97f2d69927fa823b08b472b7b994e36a52a964b93d16147"},
+]
+
+[package.extras]
+tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich"]
+
+[[package]]
 name = "fastapi"
 version = "0.109.2"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -1709,16 +1723,17 @@ openai = ["openai (>=0.27.8)"]
 
 [[package]]
 name = "logfire"
-version = "0.30.0"
+version = "0.33.0"
 description = "The best Python observability tool! 🪵🔥"
 optional = true
 python-versions = "*"
 files = [
-    {file = "logfire-0.30.0-py2.py3-none-any.whl", hash = "sha256:c83c8df8d97ee918932e3ce6e040012def3b8b184504439857e26b6d8510507e"},
-    {file = "logfire-0.30.0.tar.gz", hash = "sha256:5c802bf633fa56f44f23bcdb22ea1f2b7968cc5a0c29eee7b58d91dc4a66c6e1"},
+    {file = "logfire-0.33.0-py2.py3-none-any.whl", hash = "sha256:d42a68df865c239d7d073f26c41e68478db4cbebf605234128ae7a07d397211f"},
+    {file = "logfire-0.33.0.tar.gz", hash = "sha256:9ee28908d6356eb01eaf20c97667f828c450e585a0a145d828c6f9cf411ec170"},
 ]
 
 [package.dependencies]
+executing = ">=2.0.1"
 opentelemetry-exporter-otlp-proto-http = ">=1.21.0"
 opentelemetry-instrumentation = ">=0.41b0"
 opentelemetry-sdk = ">=1.21.0"
@@ -4929,4 +4944,4 @@ weave = ["weave"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "0eb363bd567d11779dd7d307e3f06515adfc7e6d4b03b943aa76914f2a5dc33e"
+content-hash = "27b13a9aa75fc9f1f8f1b417f7f8d41835593ee29182c9247a8d46411e0cffe5"

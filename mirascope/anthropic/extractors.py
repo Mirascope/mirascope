@@ -64,6 +64,7 @@ class AnthropicExtractor(
     '''
 
     call_params: ClassVar[AnthropicCallParams] = AnthropicCallParams()
+    _provider: ClassVar[str] = "anthropic"
 
     def extract(self, retries: Union[int, Retrying] = 0, **kwargs: Any) -> T:
         """Extracts `extract_schema` from the Anthropic call response.
