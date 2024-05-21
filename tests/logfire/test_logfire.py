@@ -107,12 +107,8 @@ async def test_tool_call_with_logfire(
     exporter = capfire.exporter
     expected_span_names = [
         "MyAnthropicCall.call (pending)",
-        "anthropic.mock_create with claude-3-haiku-20240307 (pending)",
-        "anthropic.mock_create with claude-3-haiku-20240307",
         "MyAnthropicCall.call",
         "MyAnthropicCall.call_async (pending)",
-        "anthropic.mock_create_async with claude-3-haiku-20240307 (pending)",
-        "anthropic.mock_create_async with claude-3-haiku-20240307",
         "MyAnthropicCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
@@ -272,7 +268,6 @@ def test_anthropic_call_stream(
     exporter = capfire.exporter
     expected_span_names = [
         "AnthropicLogfireCall.stream (pending)",
-        "streaming response from {request_data[model]!r} took {duration:.2f}s",
         "AnthropicLogfireCall.stream",
     ]
     span_names = [span.name for span in exporter.exported_spans]
@@ -301,7 +296,6 @@ async def test_anthropic_call_stream_async(
     exporter = capfire.exporter
     expected_span_names = [
         "AnthropicLogfireCall.stream_async (pending)",
-        "streaming response from {request_data[model]!r} took {duration:.2f}s",
         "AnthropicLogfireCall.stream_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
