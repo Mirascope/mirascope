@@ -10,12 +10,12 @@ from mirascope.rag.embedders import BaseEmbedder
 from .calls import BaseCall
 
 
-def get_class_vars(cls: BaseModel) -> dict[str, Any]:
+def get_class_vars(self: BaseModel) -> dict[str, Any]:
     """Get the class variables of a `BaseModel` removing any dangerous variables."""
     class_vars = {}
-    for classvars in cls.__class_vars__:
+    for classvars in self.__class_vars__:
         if not classvars == "api_key":
-            class_vars[classvars] = getattr(cls.__class__, classvars)
+            class_vars[classvars] = getattr(self.__class__, classvars)
     return class_vars
 
 
@@ -35,7 +35,10 @@ def get_wrapped_async_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> 
             elif op == "logfire":  # pragma: no cover
                 import logfire
 
-                logfire.instrument_openai(client)  # type: ignore
+                if self._provider == "openai":
+                    logfire.instrument_openai(client)  # type: ignore
+                elif self._provider == "anthropic":
+                    logfire.instrument_anthropic(client)  # type: ignore
             elif callable(op):
                 client = op(client)
     return client
@@ -52,7 +55,10 @@ def get_wrapped_client(client: T, self: Union[BaseCall, BaseEmbedder]) -> T:
             elif op == "logfire":  # pragma: no cover
                 import logfire
 
-                logfire.instrument_openai(client)  # type: ignore
+                if self._provider == "openai":
+                    logfire.instrument_openai(client)  # type: ignore
+                elif self._provider == "anthropic":
+                    logfire.instrument_anthropic(client)  # type: ignore
             elif callable(op):
                 client = op(client)
     return client

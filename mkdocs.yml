@@ -113,6 +113,7 @@ nav:
       - Validation: "concepts/validation.md"
       - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
+      - Wrapping Mirascope classes: "concepts/wrapping_mirascope_classes.md"
   - Integrations:
       - Logfire: "integrations/logfire.md"
       - Langfuse: "integrations/langfuse.md"
@@ -138,6 +139,7 @@ nav:
           - tools: "api/base/tools.md"
           - types: "api/base/types.md"
           - utils: "api/base/utils.md"
+          - ops_utils: "api/base/ops_utils.md"
       - chroma:
           - "api/chroma/index.md"
           - types: "api/chroma/types.md"
