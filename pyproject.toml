@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.13.5"
+version = "0.14.0"
 description = "An intuitive approach to building with LLMs"
 license = "MIT"
 authors = [
