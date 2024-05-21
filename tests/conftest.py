@@ -60,6 +60,7 @@ from pydantic import BaseModel, Field
 from mirascope.anthropic import AnthropicTool
 from mirascope.base import tool_fn
 from mirascope.base.types import BaseConfig
+from mirascope.cohere.tools import CohereTool
 from mirascope.openai import OpenAITool
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.types import OpenAICallParams
@@ -491,3 +492,36 @@ def fixture_openai_test_call():
         configuration = BaseConfig(client_wrappers=[], llm_ops=[])
 
     return OpenAITestCall()
+
+
+@pytest.fixture()
+def fixture_cohere_response_with_tools() -> NonStreamedChatResponse:
+    """Returns a Cohere chat response with tools in the response"""
+    return NonStreamedChatResponse(
+        text="test",
+        search_queries=None,
+        search_results=None,
+        documents=None,
+        citations=None,
+        tool_calls=[
+            ToolCall(
+                name="BookTool",
+                parameters={
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            )
+        ],
+        meta=ApiMeta(billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)),
+    )
+
+
+class BookTool(CohereTool):
+    title: str
+    author: str
+
+
+@pytest.fixture()
+def fixture_book_tool() -> Type[BookTool]:
+    """Returns the `BookTool` type definition."""
+    return BookTool

@@ -30,6 +30,7 @@ from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams, OpenAICallResponse
 from mirascope.rag.embedders import BaseEmbedder
 from mirascope.rag.types import Document
+from tests.conftest import BookTool
 
 logfire.configure(send_to_logfire=False)
 
@@ -73,45 +74,44 @@ def test_openai_call_with_logfire(
     assert span_names == expected_span_names
 
 
-@patch(
-    "anthropic.resources.beta.tools.messages.AsyncMessages.create",
-    new_callable=AsyncMock,
-)
-@patch(
-    "anthropic.resources.beta.tools.messages.Messages.create",
-    new_callable=MagicMock,
-)
+@patch("cohere.Client.chat", new_callable=MagicMock)
+@patch("cohere.AsyncClient.chat", new_callable=AsyncMock)
 @pytest.mark.asyncio
 async def test_tool_call_with_logfire(
     mock_create: MagicMock,
     mock_create_async: AsyncMock,
-    fixture_anthropic_book_tool: type[AnthropicTool],
-    fixture_anthropic_message_with_tools: Message,
+    fixture_book_tool: type[BookTool],
+    fixture_cohere_response_with_tools: NonStreamedChatResponse,
     capfire: CaptureLogfire,
 ) -> None:
-    mock_create.return_value = fixture_anthropic_message_with_tools
+    mock_create.return_value = fixture_cohere_response_with_tools
     mock_create.__name__ = "mock_create"
-    mock_create_async.return_value = fixture_anthropic_message_with_tools
+    mock_create_async.return_value = fixture_cohere_response_with_tools
     mock_create_async.__name__ = "mock_create_async"
 
     @with_logfire
-    class MyAnthropicCall(AnthropicCall):
+    class MyCohereCall(CohereCall):
         prompt_template = "test"
         api_key = "test"
 
-        call_params = AnthropicCallParams(tools=[fixture_anthropic_book_tool])
+        call_params = CohereCallParams(tools=[fixture_book_tool])
 
-    my_call = MyAnthropicCall()
+    my_call = MyCohereCall()
     my_call.call()
     await my_call.call_async()
     exporter = capfire.exporter
     expected_span_names = [
-        "MyAnthropicCall.call (pending)",
-        "MyAnthropicCall.call",
-        "MyAnthropicCall.call_async (pending)",
-        "MyAnthropicCall.call_async",
+        "MyCohereCall.call (pending)",
+        "cohere.wrapped with command-r-plus (pending)",
+        "cohere.wrapped with command-r-plus",
+        "MyCohereCall.call",
+        "MyCohereCall.call_async (pending)",
+        "cohere.wrapped with command-r-plus (pending)",
+        "cohere.wrapped with command-r-plus",
+        "MyCohereCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
+    print(span_names)
     assert span_names == expected_span_names
 
 

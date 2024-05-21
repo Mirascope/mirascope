@@ -1,8 +1,6 @@
 """Integration with Logfire from Pydantic"""
 import inspect
 from contextlib import (
-    AbstractAsyncContextManager,
-    AbstractContextManager,
     contextmanager,
 )
 from typing import Any, Callable, Optional, Union, overload
@@ -112,15 +110,9 @@ def mirascope_logfire() -> Callable:
                 logfire_span, span_data, _extract_chunk_content
             ) as record_chunk:
                 stream = fn(*args, **kwargs)
-                if isinstance(stream, AbstractContextManager):
-                    with stream as s:
-                        for chunk in s:
-                            record_chunk(chunk, response_chunk_type)
-                            yield chunk
-                else:
-                    for chunk in stream:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
+                for chunk in stream:
+                    record_chunk(chunk, response_chunk_type)
+                    yield chunk
 
         async def wrapper_generator_async(*args, **kwargs):
             logfire_span = logfire.with_settings(
@@ -133,15 +125,9 @@ def mirascope_logfire() -> Callable:
                 stream = fn(*args, **kwargs)
                 if inspect.iscoroutine(stream):
                     stream = await stream
-                if isinstance(stream, AbstractAsyncContextManager):
-                    async with stream as s:
-                        async for chunk in s:
-                            record_chunk(chunk, response_chunk_type)
-                            yield chunk
-                else:
-                    async for chunk in stream:
-                        record_chunk(chunk, response_chunk_type)
-                        yield chunk
+                async for chunk in stream:
+                    record_chunk(chunk, response_chunk_type)
+                    yield chunk
 
         if response_chunk_type and is_async:
             return wrapper_generator_async
