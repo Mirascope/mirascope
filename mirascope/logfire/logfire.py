@@ -184,8 +184,9 @@ def _mirascope_llm_span(
     """Wraps a pydantic class method with a Logfire span."""
     model = kwargs.get("model", "") or model_name
     span_data = _get_span_data(suffix, is_async, model, args, kwargs)
+    name = f"{suffix}.{fn.__name__} with {model}"
     with logfire.with_settings(custom_scope_suffix=suffix, tags=["llm"]).span(
-        f"{suffix}.{fn.__name__} with {model}", **span_data
+        name, **span_data
     ) as logfire_span:
         yield logfire_span
 
@@ -230,8 +231,9 @@ def record_streaming(
 def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     """Handles before call"""
     class_vars = get_class_vars(self)
+    name = f"{self.__class__.__name__}.{fn.__name__}"
     with logfire.span(
-        f"{self.__class__.__name__}.{fn.__name__}",
+        name,
         class_vars=class_vars,
         **kwargs,
     ) as logfire_span:
