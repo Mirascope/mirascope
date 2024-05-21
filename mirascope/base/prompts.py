@@ -1,4 +1,5 @@
 """A base class for writing prompts."""
+
 import re
 from string import Formatter
 from textwrap import dedent
@@ -66,9 +67,7 @@ class BasePrompt(BaseModel):
             MessageRole.TOOL: ToolMessage,
         }
         return [
-            message_type_by_role[MessageRole(message["role"])](
-                role=message["role"], content=message["content"]
-            )
+            message_type_by_role[MessageRole(message["role"])](**message)
             for message in self._parse_messages(list(message_type_by_role.keys()))
         ]
 
@@ -128,7 +127,7 @@ class BasePrompt(BaseModel):
                     if var is not None
                 ][0]
                 attribute = getattr(self, template_var)
-                if not attribute or not isinstance(attribute, list):
+                if attribute is None or not isinstance(attribute, list):
                     raise ValueError(
                         f"MESSAGES keyword used with attribute `{template_var}`, which "
                         "is not a `list` of messages."

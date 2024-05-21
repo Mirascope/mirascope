@@ -1,4 +1,5 @@
 """A module for calling Groq's Cloud API."""
+
 import datetime
 import inspect
 import json
@@ -58,12 +59,9 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     def messages(self) -> list[Message]:
         """Returns the template as a formatted list of messages."""
-        return [
-            Message(role=message["role"], content=message["content"])
-            for message in self._parse_messages(
-                [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
-            )
-        ]
+        return self._parse_messages(
+            [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
+        )  # type: ignore
 
     @retry
     def call(

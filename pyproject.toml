@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.13.1"
+version = "0.13.3"
 description = "An intuitive approach to building with LLMs"
 license = "MIT"
 authors = [
@@ -144,7 +144,7 @@ module = "weave"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module =["langfuse.*"]
+module = ["langfuse.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

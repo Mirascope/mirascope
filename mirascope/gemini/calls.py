@@ -1,4 +1,5 @@
 """A module for calling Google's Gemini Chat API."""
+
 import datetime
 import inspect
 import logging
