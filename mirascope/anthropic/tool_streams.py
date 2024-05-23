@@ -3,6 +3,7 @@
 NOTE: this feature is not officially supported by Anthropic. We're forcing it to output
 JSON so that we can stream tools.
 """
+
 from typing import AsyncGenerator, Generator, Literal, Optional, Type, overload
 
 from anthropic.types.beta.tools import ToolUseBlock

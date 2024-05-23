@@ -1,4 +1,5 @@
 """A module for utility functions for working with Mistral."""
+
 from typing import Optional
 
 from mistralai.models.chat_completion import UsageInfo

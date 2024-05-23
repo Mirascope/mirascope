@@ -1,4 +1,5 @@
 """Fixtures for groq module tests."""
+
 from typing import Type
 
 import pytest

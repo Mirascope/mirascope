@@ -1,4 +1,5 @@
 """Tests for the `mirascope.mistral.tools` module."""
+
 import pytest
 from mistralai.models.chat_completion import FunctionCall, ToolCall
 from pydantic import BaseModel, Field

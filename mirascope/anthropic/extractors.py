@@ -1,4 +1,5 @@
 """A class for extracting structured information using Anthropic Claude models."""
+
 from __future__ import annotations
 
 import logging

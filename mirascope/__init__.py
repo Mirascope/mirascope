@@ -1,4 +1,5 @@
 """mirascope package."""
+
 import importlib.metadata
 from contextlib import suppress
 

@@ -1,4 +1,5 @@
 """A module for extracting structured information using Groq's Cloud API."""
+
 import logging
 from typing import Any, ClassVar, Generic, TypeVar, Union
 

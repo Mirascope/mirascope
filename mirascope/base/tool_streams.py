@@ -1,4 +1,5 @@
 """A base module for convenience around streaming tools."""
+
 from abc import ABC, abstractmethod
 from typing import (
     AsyncGenerator,

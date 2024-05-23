@@ -1,4 +1,5 @@
 """A class for extracting structured information using Mistral chat models."""
+
 import logging
 from typing import Any, ClassVar, Generic, TypeVar, Union
 

@@ -1,4 +1,5 @@
 """Types for interacting with Google's Gemini models using Mirascope."""
+
 from typing import Any, Optional, TypeVar, Union
 
 from google.generativeai.types import (  # type: ignore

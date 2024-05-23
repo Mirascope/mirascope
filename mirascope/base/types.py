@@ -1,4 +1,5 @@
 """Base types and abstract interfaces for typing LLM calls."""
+
 from abc import ABC, abstractmethod
 from inspect import isclass
 from typing import (

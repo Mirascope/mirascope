@@ -1,4 +1,5 @@
 """Base types and abstract interfaces for typing Mirascope RAG."""
+
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Optional, TypeVar, Union
 

@@ -1,4 +1,5 @@
 """Fixtures for Mirascope's Cohere module tests."""
+
 import pytest
 from cohere.types import (
     ApiMeta,

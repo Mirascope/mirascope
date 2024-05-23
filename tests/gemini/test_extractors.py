@@ -1,4 +1,5 @@
 """Tests for the `GeminiExtractor` class."""
+
 from typing import Type
 from unittest.mock import AsyncMock, MagicMock, patch
 

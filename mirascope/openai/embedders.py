@@ -1,4 +1,5 @@
 """A module for calling OpenAI's Embeddings models."""
+
 import asyncio
 import datetime
 from concurrent.futures import ThreadPoolExecutor

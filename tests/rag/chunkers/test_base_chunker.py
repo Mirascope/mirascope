@@ -1,4 +1,5 @@
 """Tests for the `BaseChunker` class."""
+
 from unittest.mock import patch
 
 from mirascope.rag.chunkers import BaseChunker

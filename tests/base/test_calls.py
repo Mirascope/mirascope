@@ -1,4 +1,5 @@
 """Tests for the `BaseCall` class."""
+
 from typing import ClassVar
 from unittest.mock import patch
 

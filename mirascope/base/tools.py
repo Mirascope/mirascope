@@ -1,4 +1,5 @@
 """A base interface for using tools (function calling) when calling LLMs."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

@@ -1,4 +1,5 @@
 """Tests for the `BasePrompt` class."""
+
 from textwrap import dedent
 from typing import Any
 

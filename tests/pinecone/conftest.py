@@ -1,6 +1,5 @@
 """Configurations for Mirascope PineconeVectorStore module tests"""
 
-
 from typing import Optional, Union
 
 import pytest

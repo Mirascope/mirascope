@@ -1,4 +1,5 @@
 """Add documents to the Chroma vector store."""
+
 import os
 
 from rag_config import settings

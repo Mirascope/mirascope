@@ -1,6 +1,7 @@
 """
 Basic example using an OpenAICall to stream a call
 """
+
 import os
 
 from mirascope.openai import OpenAICall

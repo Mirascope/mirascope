@@ -1,6 +1,7 @@
 """
 Convenience built on top of tools that makes extracting structured information reliable:
 """
+
 from typing import Literal, Type
 
 from pydantic import BaseModel

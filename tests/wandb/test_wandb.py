@@ -1,4 +1,5 @@
 """Tests for the wandb.openai module."""
+
 from typing import Type
 from unittest.mock import MagicMock, patch
 

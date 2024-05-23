@@ -1,4 +1,5 @@
 """Tests for the `mirascope.gemini.tools` module."""
+
 import pytest
 from google.ai.generativelanguage import FunctionCall
 from pydantic import BaseModel, Field

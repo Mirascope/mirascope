@@ -1,4 +1,5 @@
 """Chunkers for the RAG module."""
+
 from abc import ABC, abstractmethod
 
 from pydantic import BaseModel

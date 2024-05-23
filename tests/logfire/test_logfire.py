@@ -1,4 +1,5 @@
 """Tests for the Mirascope + Logfire integration."""
+
 import os
 from typing import AsyncContextManager, ContextManager
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -37,8 +38,7 @@ os.environ["OPENAI_API_KEY"] = "test"
 openai_model = "gpt-3.5-turbo"
 
 
-class MyCall(OpenAICall):
-    ...
+class MyCall(OpenAICall): ...
 
 
 @with_logfire
@@ -124,8 +124,7 @@ def test_gemini_call_call(
     mock_generate_content.__name__ = "call"
 
     @with_logfire
-    class MyGeminiCall(GeminiCall):
-        ...
+    class MyGeminiCall(GeminiCall): ...
 
     my_call = MyGeminiCall()
     my_call.call()
@@ -432,7 +431,6 @@ def test_value_error_on_mirascope_logfire():
     """
     with pytest.raises(ValueError):
 
-        def foo():
-            ...  # pragma: no cover
+        def foo(): ...  # pragma: no cover
 
         mirascope_logfire()(foo, "test")
