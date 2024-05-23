@@ -1,4 +1,5 @@
 """A module for interacting with Cohere chat models."""
+
 from .calls import CohereCall
 from .embedders import CohereEmbedder
 from .extractors import CohereExtractor

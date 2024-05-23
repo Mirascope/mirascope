@@ -1,4 +1,5 @@
 """Tests for the `mirascope.gemini.tools` module."""
+
 from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field

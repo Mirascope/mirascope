@@ -1,4 +1,5 @@
 """A module for utility functions for working with Groq."""
+
 from typing import Optional
 
 from groq.types.chat.chat_completion import Usage

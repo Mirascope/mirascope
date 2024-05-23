@@ -1,4 +1,5 @@
 """Tests for the `BaseExtractor` class."""
+
 from typing import Type
 from unittest.mock import patch
 

@@ -1,4 +1,5 @@
 """Types for interacting with Pinecone using Mirascope."""
+
 from typing import Any, Literal, Optional
 
 from pinecone.config import Config

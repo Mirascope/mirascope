@@ -1,4 +1,5 @@
 """Types for interacting with Cohere chat models using Mirascope."""
+
 from typing import Any, Literal, Optional, Sequence, Type, Union
 
 from cohere import (
@@ -313,9 +314,9 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):
     """A convenience wrapper around the Cohere `EmbedResponse` response."""
 
-    embedding_type: Optional[
-        Literal["float", "int8", "uint8", "binary", "ubinary"]
-    ] = None
+    embedding_type: Optional[Literal["float", "int8", "uint8", "binary", "ubinary"]] = (
+        None
+    )
 
     @property
     def embeddings(

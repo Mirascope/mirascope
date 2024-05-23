@@ -1,4 +1,5 @@
 """Tests for the `mirascope.groq.types` module."""
+
 from typing import Type
 
 import pytest

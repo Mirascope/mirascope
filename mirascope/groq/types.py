@@ -1,4 +1,5 @@
 """Types for interacting with Groq's Cloud API using Mirascope."""
+
 from typing import Any, Optional, Type, Union
 
 from groq._types import Body, Headers, Query

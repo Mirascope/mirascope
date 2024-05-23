@@ -1,4 +1,5 @@
 """Retrieve documents from the Chroma vector store."""
+
 import os
 
 from rag_config import settings

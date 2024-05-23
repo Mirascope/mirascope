@@ -1,6 +1,5 @@
 """Configuration for the Mirascope chroma module tests."""
 
-
 import pytest
 
 from mirascope.chroma.types import ChromaSettings

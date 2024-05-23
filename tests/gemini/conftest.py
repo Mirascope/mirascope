@@ -1,4 +1,5 @@
 """Fixtures for gemini module tests."""
+
 from typing import Type
 
 import pytest

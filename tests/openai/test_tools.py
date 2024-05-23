@@ -1,4 +1,5 @@
 """Tests for the `OpenAITool` class."""
+
 from typing import Any, Type
 
 import pytest

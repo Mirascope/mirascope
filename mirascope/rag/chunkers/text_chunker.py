@@ -1,4 +1,5 @@
 """Text chunker for the RAG module"""
+
 import uuid
 
 from ..types import Document

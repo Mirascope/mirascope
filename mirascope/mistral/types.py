@@ -1,4 +1,5 @@
 """Types for working with Mistral prompts."""
+
 from typing import Any, Optional
 
 from mistralai.models.chat_completion import (

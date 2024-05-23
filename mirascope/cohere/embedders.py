@@ -1,4 +1,5 @@
 """A module for calling OpenAI's Embeddings models."""
+
 import datetime
 from typing import ClassVar, Optional, Union
 

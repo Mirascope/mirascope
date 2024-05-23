@@ -1,4 +1,5 @@
 """Classes for using tools with OpenAI Chat APIs."""
+
 from __future__ import annotations
 
 import json

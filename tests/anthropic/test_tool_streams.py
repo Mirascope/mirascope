@@ -1,4 +1,5 @@
 """Tests for Anthropic tool streaming classes."""
+
 import pytest
 
 from mirascope.anthropic.tool_streams import AnthropicToolStream

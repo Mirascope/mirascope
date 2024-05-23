@@ -5,6 +5,7 @@ cases we can define a model provider specific tool, such as `OpenAITool` or `Gem
 for use with that specific model provider. This example uses `OpenAITool`, but you can
 just as easily use `GeminiTool` with no additional change.
 """
+
 from typing import Literal
 
 from pydantic import Field

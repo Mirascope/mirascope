@@ -1,4 +1,5 @@
 """Base utility functions."""
+
 import inspect
 from functools import wraps
 from inspect import Parameter, signature

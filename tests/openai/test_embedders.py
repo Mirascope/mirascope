@@ -1,4 +1,5 @@
 """Tests for the `OpenAIEmbedder` class."""
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest

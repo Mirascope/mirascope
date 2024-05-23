@@ -1,4 +1,5 @@
 """Vectorstores for the RAG module."""
+
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Generic, Optional, TypeVar, Union
 

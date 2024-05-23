@@ -1,4 +1,5 @@
 """A module for utility functions for working with Cohere."""
+
 from typing import Optional
 
 from cohere.types.api_meta_billed_units import ApiMetaBilledUnits

@@ -1,4 +1,5 @@
 """Classes for using tools with Google's Gemini API."""
+
 from __future__ import annotations
 
 from typing import Callable, Type

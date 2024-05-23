@@ -1,4 +1,5 @@
 """Tests for the `mirascope.groq.tools` module."""
+
 import pytest
 from groq.types.chat.chat_completion import (
     ChoiceMessageToolCall,

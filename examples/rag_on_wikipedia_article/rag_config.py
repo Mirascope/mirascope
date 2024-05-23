@@ -1,4 +1,5 @@
 """Config for RAG on Wikipedia Article."""
+
 from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict

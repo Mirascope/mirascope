@@ -2,6 +2,7 @@
 Since we’ve built our BasePrompt on top of Pydantic, we integrate with tools like
 FastAPI out-of-the-box (async):
 """
+
 import os
 from typing import Type
 

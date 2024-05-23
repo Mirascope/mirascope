@@ -4,6 +4,7 @@ FastAPI and Logfire out-of-the-box:
 
 uvicorn fast_api_logfire:app --reload
 """
+
 import os
 from typing import Type
 
