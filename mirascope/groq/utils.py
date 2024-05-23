@@ -16,6 +16,8 @@ def groq_api_calculate_cost(
     llama2-7b-2048          $0.10 / 1M tokens   $0.10 / 1M tokens
     mixtral-8x7b-32768      $0.27 / 1M tokens   $0.27 / 1M tokens
     gemma-7b-it             $0.10 / 1M tokens   $0.10 / 1M tokens
+    llama3-70b-8192         $0.59 / 1M tokens   $0.79 / 1M tokens
+    llama3-8b-8192          $0.05 / 1M tokens   $0.10 / 1M tokens
     """
     pricing = {
         "llama2-70b-4096": {
@@ -34,6 +36,14 @@ def groq_api_calculate_cost(
             "prompt": 0.000_000_1,
             "completion": 0.000_000_1,
         },
+        "llama3-70b-8192": {
+            "prompt": 0.000_000_59,
+            "completion": 0.000_000_79,
+        },
+        "llama3-8b-8192": {
+            "prompt": 0.000_000_05,
+            "completion": 0.000_000_10,
+        },
     }
 
     try:
@@ -48,3 +58,4 @@ def groq_api_calculate_cost(
     total_cost = prompt_cost + completion_cost
 
     return total_cost
+
