@@ -58,4 +58,3 @@ def groq_api_calculate_cost(
     total_cost = prompt_cost + completion_cost
 
     return total_cost
-
