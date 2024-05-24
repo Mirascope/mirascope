@@ -6,13 +6,11 @@ Mirascope provides out-of-the-box integration with [OpenTelemetry](https://opent
 
 Due to the detailed about of data Mirascope needs to collect about calls, we use manual instrumentation. Thankfully, it is low-code on the user-end so Mirascope still offers convenience.
 
-First thing to do is install mirascope[opentelemetry]
+First thing to do is install mirascope opentelemetry:
 
 ```bash
 pip install mirascope[opentelemetry]
 ```
-
-### The Setup
 
 This code will look pretty familiar with users who already use OpenTelemetry. Here's a refresher:
 
@@ -32,7 +30,9 @@ provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 ```
 
-### With Mirascope
+## With Mirascope
+
+Calling the `configure()` function will call the code above. This is a one time setup that should be done when your app loads for the first time. Afterwards, you can add the `@with_otel` decorator to any of your Mirascope classes to get instrumentation.
 
 ```python
 import os
@@ -97,7 +97,7 @@ assert isinstance(task_details, TaskDetails)
 print(task_details)
 ```
 
-You will get back something similar to this:
+Since we setup the span processor to use a `ConsoleSpanExporter`, our output will be sent to the console. This is useful for dev work and we will later take a look at more production workflows. Here is what a sample export would look like:
 
 ```bash
 {
@@ -167,7 +167,9 @@ You will get back something similar to this:
 description='Submit quarterly report' due_date='next Friday' priority='high'
 ```
 
-`configure()` creates the provider, and sets a default processor already. You can pass in `processors` as an argument of `configure()` so that you can send to an observability tool:
+### Sending to an observability tool
+
+Now, we want to send to an actual observability tool so that we can monitor our traces. There are many observability tools out there, but the majority of them can collect OpenTelemetry data. You can pass in `processors` as an argument of `configure()` so that you can send to an observability tool:
 
 ```python
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -188,8 +190,8 @@ configure(
 )
 ```
 
-Remember that you will only need to call `configure` once in your entire project. Then you can add `@with_otel` as necessary.
+You should refer to your observability tool's documentation to find the endpoint.
 
 ## Integrations
 
-[Let us know](https://github.com/Mirascope/mirascope/issues) what observability backends you would like for us to integrate out-of-the-box.
+But of course if there is an integration that you would like [let us know](https://github.com/Mirascope/mirascope/issues) what observability backends you would like for us to integrate out-of-the-box.
