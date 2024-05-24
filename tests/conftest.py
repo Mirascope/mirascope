@@ -1,7 +1,9 @@
 """Test configuration fixtures used across various modules."""
 from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass
 from typing import Type
 
+import logfire
 import pytest
 from anthropic.types import (
     ContentBlock,
@@ -38,6 +40,8 @@ from groq.lib.chat_completion_chunk import Choice as ChunkChoice
 from groq.lib.chat_completion_chunk import (
     ChoiceLogprobs as ChunkChoiceLogprobs,
 )
+from logfire._internal.config import GLOBAL_CONFIG
+from logfire.testing import CaptureLogfire, TestExporter, capfire
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessage,
@@ -55,12 +59,18 @@ from openai.types.chat.chat_completion_message_tool_call import (
     Function,
 )
 from openai.types.completion_usage import CompletionUsage
+from opentelemetry.sdk.metrics.export import InMemoryMetricReader
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from pydantic import BaseModel, Field
 
 from mirascope.anthropic import AnthropicTool
+from mirascope.anthropic.calls import AnthropicCall
+from mirascope.anthropic.types import AnthropicCallParams
 from mirascope.base import tool_fn
 from mirascope.base.types import BaseConfig
 from mirascope.cohere.tools import CohereTool
+from mirascope.logfire.logfire import with_logfire
 from mirascope.openai import OpenAITool
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.types import OpenAICallParams
