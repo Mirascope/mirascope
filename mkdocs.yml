@@ -116,6 +116,9 @@ nav:
       - LangChain & LangSmith: "integrations/langchain.md"
       - Llama Index: "integrations/llama_index.md"
       - Client Wrappers: "integrations/client_wrappers.md"
+      - OpenTelemetry:
+          - "integrations/open_telemetry/index.md"
+          - HyperDX: "integrations/open_telemetry/hyperdx.md"
   - Cookbook: "cookbook/index.md"
   - API Reference:
       - "api/index.md"
@@ -171,6 +174,12 @@ nav:
           - extractors: "api/openai/extractors.md"
           - tools: "api/openai/tools.md"
           - types: "api/openai/types.md"
+      - otel:
+          - "api/otel/index.md"
+          - otel: "api/otel/otel.md"
+          - hyperdx:
+              - "api/otel/hyperdx/index.md"
+              - hyperdx: "api/otel/hyperdx/hyperdx.md"
       - pinecone:
           - "api/pinecone/index.md"
           - vectorstores: "api/pinecone/vectorstores.md"

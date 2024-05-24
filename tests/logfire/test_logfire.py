@@ -1,17 +1,17 @@
 """Tests for the Mirascope + Logfire integration."""
 
-import os
 from typing import AsyncContextManager, ContextManager
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import logfire
 import pytest
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
 from groq.lib.chat_completion_chunk import ChatCompletionChunk
-from logfire.testing import CaptureLogfire
+from logfire import configure
+from logfire.testing import CaptureLogfire, TestExporter
 from openai.types.chat import ChatCompletion
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
@@ -24,28 +24,13 @@ from mirascope.gemini.calls import GeminiCall
 from mirascope.groq.calls import GroqCall
 from mirascope.logfire import with_logfire
 from mirascope.logfire.logfire import mirascope_logfire
-from mirascope.openai import OpenAICall, OpenAIExtractor
+from mirascope.openai import OpenAIExtractor
+from mirascope.openai.calls import OpenAICall
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams, OpenAICallResponse
 from mirascope.rag.embedders import BaseEmbedder
 from mirascope.rag.types import Document
 from tests.conftest import BookTool
-
-logfire.configure(send_to_logfire=False)
-
-os.environ["OPENAI_API_KEY"] = "test"
-
-openai_model = "gpt-3.5-turbo"
-
-
-class MyCall(OpenAICall): ...
-
-
-@with_logfire
-class MyNestedCall(MyCall):
-    prompt_template = "test"
-
-    call_params = OpenAICallParams(model=openai_model)
 
 
 @patch(
@@ -55,14 +40,18 @@ class MyNestedCall(MyCall):
 def test_openai_call_with_logfire(
     mock_create: MagicMock,
     fixture_chat_completion: ChatCompletion,
-    capfire: CaptureLogfire,
+    fixture_openai_nested_call: OpenAICall,
 ) -> None:
+    exporter = TestExporter()
+    configure(
+        send_to_logfire=False,
+        console=False,
+        processors=[SimpleSpanProcessor(exporter)],
+    )
     mock_create.return_value = fixture_chat_completion
     mock_create.__name__ = "call"
-    my_call = MyNestedCall()
-    my_call.call()
-    my_call.stream()
-    exporter = capfire.exporter
+    fixture_openai_nested_call.call()
+    fixture_openai_nested_call.stream()
     # TODO: Figure out why instrument_openai doesn't show up in CaptureLogfire
     expected_span_names = [
         "MyNestedCall.call (pending)",
@@ -109,7 +98,6 @@ async def test_tool_call_with_logfire(
         "MyCohereCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
-    print(span_names)
     assert span_names == expected_span_names
 
 
@@ -124,7 +112,8 @@ def test_gemini_call_call(
     mock_generate_content.__name__ = "call"
 
     @with_logfire
-    class MyGeminiCall(GeminiCall): ...
+    class MyGeminiCall(GeminiCall):
+        ...
 
     my_call = MyGeminiCall()
     my_call.call()
@@ -353,7 +342,7 @@ def test_extractor_with_logfire(
     class TempExtractor(OpenAIExtractor[BaseModel]):
         prompt_template = "test"
         api_key = "test"
-        call_params = OpenAICallParams(model=openai_model)
+        call_params = OpenAICallParams(model="gpt-3.5-turbo")
         extract_schema: type[BaseModel] = fixture_my_openai_tool_schema
 
     my_extractor = TempExtractor()
@@ -431,6 +420,7 @@ def test_value_error_on_mirascope_logfire():
     """
     with pytest.raises(ValueError):
 
-        def foo(): ...  # pragma: no cover
+        def foo():
+            ...  # pragma: no cover
 
         mirascope_logfire()(foo, "test")

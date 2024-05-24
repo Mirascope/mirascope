@@ -47,7 +47,8 @@ def test_call_with_langfuse(
     mock_create.__name__ = "create"
 
     @with_langfuse
-    class MyCall(OpenAICall): ...
+    class MyCall(OpenAICall):
+        ...
 
     class MyNestedCall(MyCall):
         prompt_template = """Test"""
@@ -71,7 +72,8 @@ def test_gemini_call_call_with_langfuse(
     mock_generate_content.__name__ = "call"
 
     @with_langfuse
-    class MyGeminiCall(GeminiCall): ...
+    class MyGeminiCall(GeminiCall):
+        ...
 
     my_call = MyGeminiCall()
     my_call.call()
@@ -295,7 +297,7 @@ async def test_groq_call_stream_async(
     my_call = TempCall()
     stream = my_call.stream_async()
     async for chunk in stream:
-        assert isinstance(chunk, ChatCompletionChunk)
+        assert isinstance(chunk, ChatCompletionChunk)  # pragma: no cover
     assert len(my_call.configuration.llm_ops) > 0
 
 
@@ -305,7 +307,8 @@ def test_value_error_on_mirascope_langfuse_generation():
     """
     with pytest.raises(ValueError):
 
-        def foo(): ...  # pragma: no cover
+        def foo():
+            ...  # pragma: no cover
 
         mirascope_langfuse_generation()(foo, "test")
 
@@ -326,7 +329,8 @@ class MyEmbedder(BaseEmbedder):
 )
 def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
-    class MyEmbedder(OpenAIEmbedder): ...
+    class MyEmbedder(OpenAIEmbedder):
+        ...
 
     my_embedder = MyEmbedder()
     assert len(my_embedder.configuration.client_wrappers) > 0
@@ -337,7 +341,8 @@ def test_openai_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
 )
 def test_cohere_embedder_with_langfuse(mock_langfuse: MagicMock) -> None:
     @with_langfuse
-    class MyOtherEmbedder(CohereEmbedder): ...
+    class MyOtherEmbedder(CohereEmbedder):
+        ...
 
     my_embedder = MyOtherEmbedder()
     assert len(my_embedder.configuration.llm_ops) > 0

@@ -246,8 +246,7 @@ def test_retry_decorator() -> None:
         raise Exception
 
     with pytest.raises(RetryError):
-        test = dummy(retries=2)
-        print(test)
+        dummy(retries=2)
 
 
 @pytest.mark.asyncio
@@ -274,7 +273,7 @@ def test_retry_decorator_generator(
     with pytest.raises(RetryError):
         value = fixture_openai_test_call.stream(retries=2)
         for chunk in value:
-            print(chunk)
+            ...  # pragma: no cover
 
 
 @patch(
@@ -290,4 +289,4 @@ async def test_retry_decorator_generator_async(
     with pytest.raises(RetryError):
         value = fixture_openai_test_call.stream_async(retries=2)
         async for chunk in value:
-            print(chunk)
+            ...  # pragma: no cover

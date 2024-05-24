@@ -1,14 +1,36 @@
+"""Configuration for the Mirascope logfire module tests."""
+import logfire
 import pytest
+from logfire.testing import CaptureLogfire, TestExporter
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessage,
 )
 from openai.types.chat.chat_completion import Choice
 from openai.types.completion_usage import CompletionUsage
+from opentelemetry.sdk.metrics.export import InMemoryMetricReader
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.types import AnthropicCallParams
 from mirascope.logfire.logfire import with_logfire
+from mirascope.openai.calls import OpenAICall
+from mirascope.openai.types import OpenAICallParams
+
+
+@pytest.fixture(scope="function", autouse=True)
+def fixture_capfire() -> CaptureLogfire:
+    """A fixture that returns a CaptureLogfire instance."""
+    exporter = TestExporter()
+    metrics_reader = InMemoryMetricReader()
+    logfire.configure(
+        send_to_logfire=False,
+        console=False,
+        processors=[SimpleSpanProcessor(exporter)],
+        metric_readers=[metrics_reader],
+    )
+
+    return CaptureLogfire(exporter=exporter, metrics_reader=metrics_reader)
 
 
 @pytest.fixture()
@@ -50,3 +72,19 @@ def fixture_chat_completion() -> ChatCompletion:
         object="chat.completion",
         usage=CompletionUsage(completion_tokens=0, prompt_tokens=0, total_tokens=0),
     )
+
+
+@pytest.fixture()
+def fixture_openai_nested_call() -> OpenAICall:
+    openai_model = "gpt-3.5-turbo"
+
+    class MyCall(OpenAICall):
+        ...
+
+    @with_logfire
+    class MyNestedCall(MyCall):
+        prompt_template = "test"
+        api_key = "test"
+        call_params = OpenAICallParams(model=openai_model)
+
+    return MyNestedCall()
