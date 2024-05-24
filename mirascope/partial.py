@@ -7,6 +7,7 @@ This code is used in accordance with the repository's license, and this referenc
 serves as an acknowledgment of the original author's contribution to this project.
 --------------------------------------------------------------------------------
 """
+
 from copy import deepcopy
 from typing import Optional, TypeVar
 

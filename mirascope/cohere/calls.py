@@ -1,4 +1,5 @@
 """A module for calling Cohere's chat models."""
+
 import datetime
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 

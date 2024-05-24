@@ -1,4 +1,5 @@
 """Tests for the `mirascope.groq.calls` module"""
+
 from typing import Type
 from unittest.mock import AsyncMock, MagicMock, patch
 

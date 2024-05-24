@@ -1,4 +1,5 @@
 """A base abstract interface for extracting structured information using LLMs."""
+
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from enum import Enum

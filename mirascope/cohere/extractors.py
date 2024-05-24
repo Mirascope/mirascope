@@ -1,4 +1,5 @@
 """A class for extracting structured information using Cohere chat models."""
+
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,5 @@
 """Tests for the `mirascope.cohere.tools` module."""
+
 import pytest
 from pydantic import BaseModel, Field
 

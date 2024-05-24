@@ -1,4 +1,5 @@
 """Classes for using tools with Mistral Chat APIs"""
+
 from __future__ import annotations
 
 import json

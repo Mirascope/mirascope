@@ -1,4 +1,5 @@
 """Tests for the `CohereEmbedder` class."""
+
 from typing import Literal, Optional
 from unittest.mock import AsyncMock, MagicMock, patch
 

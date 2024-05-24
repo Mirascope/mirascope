@@ -1,4 +1,5 @@
 """Tests for OpenAI tool streaming classes."""
+
 from typing import Generator, Type
 
 import pytest

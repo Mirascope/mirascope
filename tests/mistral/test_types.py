@@ -1,4 +1,5 @@
 """Tests for the `mirascope.mistral.types` module."""
+
 from typing import Type
 
 import pytest

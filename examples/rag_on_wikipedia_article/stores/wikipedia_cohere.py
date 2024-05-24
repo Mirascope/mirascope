@@ -1,4 +1,5 @@
 """Chroma store for Wikipedia articles."""
+
 from mirascope.cohere import CohereEmbedder
 from mirascope.pinecone import (
     PineconeServerlessParams,

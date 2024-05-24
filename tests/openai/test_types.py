@@ -1,4 +1,5 @@
 """Tests for types for working with OpenAI with Mirascope."""
+
 from typing import Type
 from unittest.mock import MagicMock, patch
 

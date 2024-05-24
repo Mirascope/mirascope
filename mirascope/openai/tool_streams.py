@@ -1,4 +1,5 @@
 """A module for convenience around streaming tools with OpenAI."""
+
 from typing import AsyncGenerator, Generator, Literal, Optional, Type, overload
 
 from openai.types.chat.chat_completion_message_tool_call import (

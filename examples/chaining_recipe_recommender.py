@@ -2,6 +2,7 @@
 Chaining multiple calls together for Chain of Thought (CoT) is as simple as writing a
 function:
 """
+
 import os
 from functools import cached_property
 

@@ -1,4 +1,5 @@
 """A module for utility functions for working with OpenAI."""
+
 from typing import Optional
 
 from openai.types.completion_usage import CompletionUsage

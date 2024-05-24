@@ -1,4 +1,5 @@
 """Tests for the `BaseTool` interface."""
+
 from unittest.mock import patch
 
 import pytest

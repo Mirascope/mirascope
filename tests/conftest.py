@@ -1,4 +1,5 @@
 """Test configuration fixtures used across various modules."""
+
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from typing import Type

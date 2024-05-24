@@ -1,4 +1,5 @@
 """A module for calling Chroma's Client and Collection."""
+
 from functools import cached_property
 from typing import Any, Callable, ClassVar, Optional, Union
 
@@ -52,9 +53,9 @@ class PineconeVectorStore(BaseVectorStore):
     handle_add_text: Optional[Callable[[list[Document]], None]] = None
     handle_retrieve_text: Optional[Callable[[list[float]], list[str]]] = None
 
-    vectorstore_params: ClassVar[
-        Union[PineconePodParams, PineconeServerlessParams]
-    ] = PineconeServerlessParams(cloud="aws", region="us-east-1")
+    vectorstore_params: ClassVar[Union[PineconePodParams, PineconeServerlessParams]] = (
+        PineconeServerlessParams(cloud="aws", region="us-east-1")
+    )
     client_settings: ClassVar[PineconeSettings] = PineconeSettings()
     _provider: ClassVar[str] = "pinecone"
 

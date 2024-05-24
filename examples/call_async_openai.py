@@ -1,6 +1,7 @@
 """
 Basic example using an OpenAICall to make an async call
 """
+
 import asyncio
 import os
 

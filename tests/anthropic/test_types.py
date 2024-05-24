@@ -1,4 +1,5 @@
 """Tests for Mirascope's Anthropic types module."""
+
 from typing import Type
 
 import pytest

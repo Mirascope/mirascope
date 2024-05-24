@@ -1,4 +1,5 @@
 """Configuration for the Mirascope openai module tests."""
+
 from typing import Callable, Type
 
 import pytest

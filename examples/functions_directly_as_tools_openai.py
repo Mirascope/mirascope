@@ -1,6 +1,7 @@
 """
 We’ve made implementing and using tools (function calling) intuitive:
 """
+
 from typing import Literal
 
 from mirascope.openai import OpenAICall, OpenAICallParams

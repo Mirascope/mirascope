@@ -1,4 +1,5 @@
 """A module for prompting Mistral API."""
+
 import datetime
 from typing import Any, AsyncGenerator, ClassVar, Generator, Union
 

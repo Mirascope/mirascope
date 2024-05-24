@@ -1,4 +1,5 @@
 """Fixtures for Mirascope's base module tests."""
+
 from typing import Any, Callable
 from unittest.mock import MagicMock
 

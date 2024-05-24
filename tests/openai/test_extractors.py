@@ -1,4 +1,5 @@
 """Tests for the `OpenAIExtractor` class."""
+
 from typing import Callable, Type
 from unittest.mock import AsyncMock, MagicMock, patch
 

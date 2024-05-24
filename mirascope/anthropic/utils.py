@@ -1,4 +1,5 @@
 """A module for utility functions for working with Anthropic."""
+
 from typing import Optional
 
 from anthropic.types import Usage

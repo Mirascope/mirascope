@@ -1,4 +1,5 @@
 """Base modules for the Mirascope library."""
+
 from .calls import BaseCall
 from .extractors import BaseExtractor, ExtractedType, ExtractionType
 from .prompts import BasePrompt, tags

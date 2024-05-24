@@ -191,17 +191,19 @@ if tool:
 import os
 from functools import cached_property
 
-from mirascope.openai import OpenAICall, OpenAICallParams
+from mirascope.openai import OpenAICall
+from pydantic import computed_field
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
 
 class ChefSelector(OpenAICall):
-    prompt_template = "Name a chef who is really good at cooking {food_type} food"
+    prompt_template = """
+    Name a chef who is really good at cooking {food_type} food.
+    Give me just the name.
+    """
 
     food_type: str
-
-    call_params = OpenAICallParams(model="gpt-3.5-turbo-0125")
 
 
 class RecipeRecommender(ChefSelector):
@@ -211,24 +213,25 @@ class RecipeRecommender(ChefSelector):
     Your task is to recommend recipes that you, {chef}, would be excited to serve.
 
     USER:
-    Recommend a {food_type} recipe using {ingredient}.
+    Recommend a recipe using {ingredient}.
     """
 
     ingredient: str
-    
-    call_params = OpenAICallParams(model="gpt-4")
 
-    @cached_property  # !!! so multiple access doesn't make multiple calls
+    @computed_field
+    @cached_property
     def chef(self) -> str:
         """Uses `ChefSelector` to select the chef based on the food type."""
         return ChefSelector(food_type=self.food_type).call().content
 
-response = RecipeRecommender(food_type="japanese", ingredient="apples").call()
-print(response.content)
+
+recommender = RecipeRecommender(food_type="japanese", ingredient="apples")
+recipe = recommender.call()
+print(recipe.content)
 # > Certainly! Here's a recipe for a delicious and refreshing Japanese Apple Salad: ...
 ```
 
-Of course, you can also chain calls together in sequence rather than through properties and wrap the chain in a function for reusability. You can find an example of this [here](./concepts/chaining_calls.md#chaining-using-functions).
+Of course, you can also chain calls together in sequence rather than through properties and wrap the chain in a function for reusability. You can find an example of this [here](./concepts/chaining_calls.md#chaining-directly-function-chaining).
 
 ### Extracting Structured Information
 

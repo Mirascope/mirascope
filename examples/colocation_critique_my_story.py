@@ -5,6 +5,7 @@ so that we can properly version and test the quality of our calls over time. Thi
 useful since we have all of the information including metadata that we could want for
 analysis, which is particularly important during rapid development.
 """
+
 import os
 
 from mirascope import tags

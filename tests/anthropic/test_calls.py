@@ -1,4 +1,5 @@
 """Tests for `AnthropicCall`."""
+
 from textwrap import dedent
 from typing import AsyncContextManager, ContextManager, Type
 from unittest.mock import AsyncMock, MagicMock, patch
