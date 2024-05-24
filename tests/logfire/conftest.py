@@ -10,7 +10,6 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.completion_usage import CompletionUsage
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.trace import set_tracer_provider
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.types import AnthropicCallParams
