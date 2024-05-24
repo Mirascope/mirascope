@@ -14,7 +14,6 @@ def with_hyperdx(cls):
     """Decorator to wrap a function with hyperdx."""
     provider = trace.get_tracer_provider()
     if not isinstance(provider, TracerProvider):
-        print("HITHITIHTI")
         motel.configure(
             processors=[
                 BatchSpanProcessor(

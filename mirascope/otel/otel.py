@@ -8,14 +8,10 @@ from contextlib import (
 )
 from typing import Any, Callable, Optional, Sequence, Union, overload
 
-from opentelemetry.exporter.otlp.proto.http import Compression
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.trace import Span, SpanProcessor, TracerProvider
 from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
     ConsoleSpanExporter,
     SimpleSpanProcessor,
-    SpanExporter,
 )
 from opentelemetry.trace import (
     Tracer,
@@ -24,7 +20,6 @@ from opentelemetry.trace import (
     set_tracer_provider,
 )
 from pydantic import BaseModel
-from requests import Session
 from typing_extensions import LiteralString
 
 from mirascope.base.ops_utils import get_class_vars, wrap_mirascope_class_functions

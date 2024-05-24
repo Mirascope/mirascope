@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import cast
 
 import pytest
-from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
@@ -26,8 +25,8 @@ class CapOtel:
 def fixture_capotel() -> CapOtel:
     exporter = InMemorySpanExporter()
     tracer_provider = get_tracer_provider()
-    if isinstance(tracer_provider, ProxyTracerProvider):
-        tracer_provider = TracerProvider()
+    if isinstance(tracer_provider, ProxyTracerProvider):  # pragma: no cover
+        tracer_provider = TracerProvider()  # Runs when otel tests are run in insolation
     cast(TracerProvider, tracer_provider).add_span_processor(
         SimpleSpanProcessor(exporter)
     )

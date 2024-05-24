@@ -8,12 +8,14 @@ from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
 from groq.lib.chat_completion_chunk import ChatCompletionChunk
-from logfire.testing import CaptureLogfire
 from openai.types.chat import ChatCompletion
 from openai.types.chat.chat_completion_chunk import (
     ChatCompletionChunk as OpenAIChatCompletionChunk,
 )
-from opentelemetry.sdk.trace.export import ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import (
+    ConsoleSpanExporter,
+    SimpleSpanProcessor,
+)
 from pydantic import BaseModel
 
 from mirascope.anthropic.calls import AnthropicCall
@@ -28,12 +30,17 @@ from mirascope.openai import OpenAICall, OpenAIExtractor
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import OpenAICallParams
 from mirascope.otel import with_otel
-from mirascope.otel.otel import mirascope_otel
+from mirascope.otel.otel import configure, mirascope_otel
 from tests.otel.conftest import CapOtel
 
 os.environ["OPENAI_API_KEY"] = "test"
 
 openai_model = "gpt-3.5-turbo"
+
+
+def test_configure():
+    """Tests that `configure` works."""
+    configure(processors=[SimpleSpanProcessor(ConsoleSpanExporter())])
 
 
 @patch(
@@ -253,7 +260,7 @@ async def test_groq_call_stream_async_with_otel(
     my_call = TempCall()
     stream = my_call.stream_async()
     async for chunk in stream:
-        pass
+        pass  # pragma: no cover
 
     span_list = fixture_capotel.exporter.get_finished_spans()
     assert span_list[0].name == "groq.stream with llama3-8b-8192"

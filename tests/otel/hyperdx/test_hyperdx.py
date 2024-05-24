@@ -1,10 +1,6 @@
 import os
 from unittest.mock import MagicMock, patch
 
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-)
 
 from mirascope.otel.hyperdx.hyperdx import with_hyperdx
 

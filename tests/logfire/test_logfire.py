@@ -1,6 +1,5 @@
 """Tests for the Mirascope + Logfire integration."""
 
-import os
 from typing import AsyncContextManager, ContextManager
 from unittest.mock import AsyncMock, MagicMock, patch
 
