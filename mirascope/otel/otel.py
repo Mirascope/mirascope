@@ -305,27 +305,27 @@ def configure(
 
 
 @overload
-def wrapper(cls: type[BaseCallT]) -> type[BaseCallT]:
+def with_otel(cls: type[BaseCallT]) -> type[BaseCallT]:
     ...  # pragma: no cover
 
 
 @overload
-def wrapper(cls: type[BaseExtractorT]) -> type[BaseExtractorT]:
+def with_otel(cls: type[BaseExtractorT]) -> type[BaseExtractorT]:
     ...  # pragma: no cover
 
 
 @overload
-def wrapper(cls: type[BaseVectorStoreT]) -> type[BaseVectorStoreT]:
+def with_otel(cls: type[BaseVectorStoreT]) -> type[BaseVectorStoreT]:
     ...  # pragma: no cover
 
 
 @overload
-def wrapper(cls: type[BaseChunkerT]) -> type[BaseChunkerT]:
+def with_otel(cls: type[BaseChunkerT]) -> type[BaseChunkerT]:
     ...  # pragma: no cover
 
 
 @overload
-def wrapper(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
+def with_otel(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
     ...  # pragma: no cover
 
 

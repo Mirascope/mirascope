@@ -31,9 +31,7 @@ def fixture_capfire() -> CaptureLogfire:
         metric_readers=[metrics_reader],
     )
 
-    yield CaptureLogfire(exporter=exporter, metrics_reader=metrics_reader)
-
-    set_tracer_provider(None)
+    return CaptureLogfire(exporter=exporter, metrics_reader=metrics_reader)
 
 
 @pytest.fixture()
