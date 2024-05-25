@@ -176,31 +176,36 @@ def handle_after_call(cls, fn, result, before_call: LangfuseDecorator, **kwargs)
 
 
 @overload
-def with_langfuse(cls: Type[BaseCallT]) -> Type[BaseCallT]: ...  # pragma: no cover
+def with_langfuse(cls: Type[BaseCallT]) -> Type[BaseCallT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_langfuse(
     cls: Type[BaseExtractorT],
-) -> Type[BaseExtractorT]: ...  # pragma: no cover
+) -> Type[BaseExtractorT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_langfuse(
     cls: Type[BaseVectorStoreT],
-) -> Type[BaseVectorStoreT]: ...  # pragma: no cover
+) -> Type[BaseVectorStoreT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_langfuse(
     cls: Type[BaseChunkerT],
-) -> Type[BaseChunkerT]: ...  # pragma: no cover
+) -> Type[BaseChunkerT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_langfuse(
     cls: Type[BaseEmbedderT],
-) -> Type[BaseEmbedderT]: ...  # pragma: no cover
+) -> Type[BaseEmbedderT]:
+    ...  # pragma: no cover
 
 
 def with_langfuse(cls):

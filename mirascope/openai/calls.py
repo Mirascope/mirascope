@@ -218,6 +218,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
+                cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
             )
 
@@ -263,6 +264,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
+                cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
             )
 

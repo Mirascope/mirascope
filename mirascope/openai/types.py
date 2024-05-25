@@ -296,6 +296,27 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
             return self.delta.tool_calls
         return None
 
+    @property
+    def usage(self) -> Optional[CompletionUsage]:
+        """Returns the usage of the chat completion."""
+        if self.chunk.usage:
+            return self.chunk.usage
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[int]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.prompt_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.completion_tokens
+        return None
+
 
 class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
     """A convenience wrapper around the OpenAI `CreateEmbeddingResponse` response."""

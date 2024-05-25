@@ -83,8 +83,10 @@ async def test_handle_after_call_stream_async(
 def test_get_wrapped_call():
     """Tests that get wrapped call properly returns the class if no provided llm_ops"""
 
-    def wrap_me(): ...  # pragma: no cover
+    def wrap_me():
+        ...  # pragma: no cover
 
-    class Foo(BaseCall): ...
+    class Foo(BaseCall):
+        ...
 
     assert get_wrapped_call(wrap_me, Foo) == wrap_me

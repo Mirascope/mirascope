@@ -203,7 +203,7 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
 
     chunk: ChunkT
     tool_types: Optional[list[Type[BaseToolT]]] = None
-
+    cost: Optional[float] = None  # The cost of the completion in dollars
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     @property
