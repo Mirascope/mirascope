@@ -32,6 +32,8 @@ pip install mirascope[logfire]    # with_logfire decorator, ...
 pip install mirascope[all]        # all optional dependencies
 ```
 
+> Note: if you're using zsh, the formatting needs to include backslash, e.g. `pip install mirascope\[anthropic\]`
+
 ## Getting Started
 
 <div align="center">
