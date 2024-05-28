@@ -249,7 +249,7 @@ class HappyStory(BaseModel):
 
 
 class StoryTeller(OpenAIExtractor[HappyStory]):
-    extract_template: Type[HappyStory] = HappyStory
+    extract_schema: Type[HappyStory] = HappyStory
     prompt_template = "Please tell me a story that's really sad."
 
 

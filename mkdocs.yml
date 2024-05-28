@@ -103,6 +103,10 @@ nav:
       - Chat History: "concepts/chat_history.md"
       - Tools (Function Calling): "concepts/tools_(function_calling).md"
       - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
+      - Evaluations: 
+          - "concepts/evaluations/index.md"
+          - Basic Evaluation: "concepts/evaluations/llm_basic_evaluation.md"
+          - Jury for Evaluations: "concepts/evaluations/llm_jury_for_evaluations.md"
       - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
       - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
       - Supported LLM providers: "concepts/supported_llm_providers.md"
