@@ -28,11 +28,10 @@ def bedrock_client_wrapper(
             "base_url": base_url,
         }
         if isinstance(client, Anthropic):
-            return AnthropicBedrock(**kwargs)
+            client = AnthropicBedrock(**kwargs)  # type: ignore
         elif isinstance(client, AsyncAnthropic):
-            return AsyncAnthropicBedrock(**kwargs)
-        else:
-            raise ValueError(f"Unknown Anthropic client: {client}")
+            client = AsyncAnthropicBedrock(**kwargs)  # type: ignore
+        return client
 
     return inner_wrapper
 

@@ -20,4 +20,5 @@ __all__ = [
     "AnthropicCallResponse",
     "AnthropicCallResponseChunk",
     "anthropic_api_calculate_cost",
+    "bedrock_client_wrapper",
 ]

@@ -12,9 +12,10 @@ from .types import (
     OpenAIEmbeddingParams,
     OpenAIEmbeddingResponse,
 )
-from .utils import openai_api_calculate_cost
+from .utils import azure_client_wrapper, openai_api_calculate_cost
 
 __all__ = [
+    "azure_client_wrapper",
     "OpenAICall",
     "OpenAIEmbedder",
     "OpenAIExtractor",
