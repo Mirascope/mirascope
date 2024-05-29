@@ -567,7 +567,7 @@ def create_extractor(
     }
 
     if extract_schema is not None:
-        fields["extract_schema"] = (type[extract_schema], extract_schema)
+        fields["extract_schema"] = (type[extract_schema], extract_schema)  # type: ignore
     else:
         extract_schema = fields["extract_schema"][1]
 
