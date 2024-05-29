@@ -367,6 +367,40 @@ class RecipeRecommender(OpenAICall):
     call_params = OpenAICallParams(model="mistral")
 ```
 
+## Using Anthropic models on AWS Bedrock
+
+You can use Anthropic models through AWS Bedrock, which is supported in Mirascope through a client wrapper. Simply import the wrapper, provide the correct configuration, and add the wrapper to your call:
+
+```python
+from mirascope.anthropic import (
+    AnthropicCall,
+    AnthropicCallParams,
+    bedrock_client_wrapper,
+)
+from mirascope.base import BaseConfig
+
+
+class BookRecommender(AnthropicCall):
+    prompt_template = "Please recommend a fantasy book."
+
+    call_params = AnthropicCallParams(model="anthropic.claude-3-haiku-20240307-v1:0")
+    configuration = BaseConfig(
+        client_wrappers=[
+            bedrock_client_wrapper(
+                # both of these keys can be configured in your environment
+                aws_secret_key="YOUR_SECRET_KEY",
+                aws_access_key="YOUR_ACCESS_KEY",
+                aws_region="us-west-2",
+            )
+        ]
+    )
+
+
+recommender = BookRecommender()
+response = recommender.call()
+print(response.content)
+```
+
 ## More detailed walkthrough of swapping providers (OpenAI -> Gemini)
 
 The [generative-ai library](https://github.com/GoogleCloudPlatform/generative-ai?tab=readme-ov-file) and [openai-python library](https://github.com/openai/openai-python) are vastly different from each other, so swapping between them to attempt to gain better prompt responses is not worth the engineering effort and maintenance. 
