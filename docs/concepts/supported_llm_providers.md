@@ -367,39 +367,75 @@ class RecipeRecommender(OpenAICall):
     call_params = OpenAICallParams(model="mistral")
 ```
 
-## Using Anthropic models on AWS Bedrock
+## Using models hosted on major cloud providers
 
-You can use Anthropic models through AWS Bedrock, which is supported in Mirascope through a client wrapper. Simply import the wrapper, provide the correct configuration, and add the wrapper to your call:
+Some model providers have their models hosted on major cloud providers such as AWS Bedricj and Microsoft Azure. You can use provided client wrappers to access these models by providing the proper configuration:
 
-```python
-from mirascope.anthropic import (
-    AnthropicCall,
-    AnthropicCallParams,
-    bedrock_client_wrapper,
-)
-from mirascope.base import BaseConfig
+=== "Anthropic (AWS Bedrock)"
+
+    ```python
+    import os
+
+    from mirascope.anthropic import (
+        AnthropicCall,
+        AnthropicCallParams,
+        bedrock_client_wrapper,
+    )
+    from mirascope.base import BaseConfig
 
 
-class BookRecommender(AnthropicCall):
-    prompt_template = "Please recommend a fantasy book."
+    class BookRecommender(AnthropicCall):
+        prompt_template = "Please recommend a fantasy book."
 
-    call_params = AnthropicCallParams(model="anthropic.claude-3-haiku-20240307-v1:0")
-    configuration = BaseConfig(
-        client_wrappers=[
-            bedrock_client_wrapper(
-                # both of these keys can be configured in your environment
-                aws_secret_key="YOUR_SECRET_KEY",
-                aws_access_key="YOUR_ACCESS_KEY",
-                aws_region="us-west-2",
-            )
-        ]
+        call_params = AnthropicCallParams(model="anthropic.claude-3-haiku-20240307-v1:0")
+        configuration = BaseConfig(
+            client_wrappers=[
+                bedrock_client_wrapper(
+                    aws_secret_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+                    aws_access_key=os.getenv("AWS_ACCESS_KEY_ID"),
+                    aws_region="us-west-2",
+                )
+            ]
+        )
+
+
+    recommender = BookRecommender()
+    response = recommender.call()
+    print(response.content)
+    ```
+
+=== "OpenAI (Microsoft Azure)"
+
+    ```python
+    import os
+
+    from mirascope.base import BaseConfig
+    from mirascope.openai import (
+        OpenAICall,
+        OpenAICallParams,
+        azure_client_wrapper,
     )
 
 
-recommender = BookRecommender()
-response = recommender.call()
-print(response.content)
-```
+    class BookRecommender(OpenAICall):
+        prompt_template = "Please recommend a fantasy book."
+
+        call_params = OpenAICallParams(model="NEEDS MODEL NAME ONCE FIGURED OUT")
+        configuration = BaseConfig(
+            client_wrappers=[
+                azure_client_wrapper(
+                    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+                    api_version="2024-02-01",
+                    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+                )
+            ]
+        )
+
+
+    recommender = BookRecommender()
+    response = recommender.call()
+    print(response.content)
+    ```
 
 ## More detailed walkthrough of swapping providers (OpenAI -> Gemini)
 
