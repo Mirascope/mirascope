@@ -367,6 +367,76 @@ class RecipeRecommender(OpenAICall):
     call_params = OpenAICallParams(model="mistral")
 ```
 
+## Using models hosted on major cloud providers
+
+Some model providers have their models hosted on major cloud providers such as AWS Bedrock and Microsoft Azure. You can use provided client wrappers to access these models by providing the proper configuration:
+
+=== "Anthropic (AWS Bedrock)"
+
+    ```python
+    import os
+
+    from mirascope.anthropic import (
+        AnthropicCall,
+        AnthropicCallParams,
+        bedrock_client_wrapper,
+    )
+    from mirascope.base import BaseConfig
+
+
+    class BookRecommender(AnthropicCall):
+        prompt_template = "Please recommend a fantasy book."
+
+        call_params = AnthropicCallParams(model="anthropic.claude-3-haiku-20240307-v1:0")
+        configuration = BaseConfig(
+            client_wrappers=[
+                bedrock_client_wrapper(
+                    aws_secret_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+                    aws_access_key=os.getenv("AWS_ACCESS_KEY_ID"),
+                    aws_region="us-west-2",
+                )
+            ]
+        )
+
+
+    recommender = BookRecommender()
+    response = recommender.call()
+    print(response.content)
+    ```
+
+=== "OpenAI (Microsoft Azure)"
+
+    ```python
+    import os
+
+    from mirascope.base import BaseConfig
+    from mirascope.openai import (
+        OpenAICall,
+        OpenAICallParams,
+        azure_client_wrapper,
+    )
+
+
+    class BookRecommender(OpenAICall):
+        prompt_template = "Please recommend a fantasy book."
+
+        call_params = OpenAICallParams(model="NEEDS MODEL NAME ONCE FIGURED OUT")
+        configuration = BaseConfig(
+            client_wrappers=[
+                azure_client_wrapper(
+                    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+                    api_version="2024-02-01",
+                    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+                )
+            ]
+        )
+
+
+    recommender = BookRecommender()
+    response = recommender.call()
+    print(response.content)
+    ```
+
 ## More detailed walkthrough of swapping providers (OpenAI -> Gemini)
 
 The [generative-ai library](https://github.com/GoogleCloudPlatform/generative-ai?tab=readme-ov-file) and [openai-python library](https://github.com/openai/openai-python) are vastly different from each other, so swapping between them to attempt to gain better prompt responses is not worth the engineering effort and maintenance. 
