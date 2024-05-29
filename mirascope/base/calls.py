@@ -15,6 +15,7 @@ from typing import (
     Union,
 )
 
+from pydantic import BaseModel, create_model
 from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt
@@ -109,3 +110,42 @@ class BaseCall(
             tool_types = kwargs.pop("tools")
             kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
         return kwargs, tool_types
+
+
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
+BaseCallT = TypeVar("BaseCallT", bound=BaseCall)
+
+
+def create_call(
+    base_model: type[BaseModelT],
+    call: type[BaseCallT],
+    call_params: BaseCallParams,
+) -> type[BaseModelT]:
+    """Dynamically creates a new call class from a base model and a call.
+
+    Args:
+        base_model: The base model to use for the call. The new call will
+            inherit all the fields and class variables from this model.
+        call: The call to use for the base model.
+        call_params: The call params to use for the call.
+
+    Returns:
+        A new call class.
+    """
+    fields: dict[str, Any] = {
+        name: (field.annotation, field.default)
+        for name, field in base_model.model_fields.items()
+    }
+
+    class_vars = {
+        name: value
+        for name, value in base_model.__dict__.items()
+        if name not in base_model.model_fields
+    }
+    new_model = create_model(base_model.__name__, __base__=call, **fields)
+
+    for var_name, var_value in class_vars.items():
+        setattr(new_model, var_name, var_value)
+    setattr(new_model, "call_params", call_params)
+
+    return new_model  # type: ignore

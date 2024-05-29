@@ -1,7 +1,7 @@
 """Base modules for the Mirascope library."""
 
-from .calls import BaseCall
-from .extractors import BaseExtractor, ExtractedType, ExtractionType
+from .calls import BaseCall, create_call
+from .extractors import BaseExtractor, ExtractedType, ExtractionType, create_extractor
 from .prompts import BasePrompt, tags
 from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
@@ -37,6 +37,8 @@ __all__ = [
     "convert_base_model_to_tool",
     "convert_base_type_to_tool",
     "convert_function_to_tool",
+    "create_call",
+    "create_extractor",
     "tool_fn",
     "retry",
 ]

@@ -20,7 +20,7 @@ from typing import (
     get_origin,
 )
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from ..partial import partial
@@ -536,3 +536,56 @@ class BaseExtractor(
             return_tool = True
         kwargs["tools"] = [tool]
         return kwargs, return_tool
+
+
+BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
+
+
+def create_extractor(
+    base_model: type[BaseModelT],
+    extractor: type[BaseExtractorT],
+    call_params: BaseCallParams,
+    *,
+    extract_schema: Optional[ExtractedType] = None,
+) -> type[BaseModelT]:
+    """Dynamically creates a new extractor model from a base model and an extractor.
+
+    Args:
+        base_model: The base model to use for the extractor. The new extractor will
+            inherit all the fields and class variables from this model.
+        extractor: The extractor to use for the base model.
+        call_params: The call params to use for the extractor.
+        extract_schema: The extract schema to use for the extractor. If none, the
+            extractor will use the base model's extract_schema.
+
+    Returns:
+        A new extractor class.
+    """
+    fields: dict[str, Any] = {
+        name: (field.annotation, field.default)
+        for name, field in base_model.model_fields.items()
+    }
+
+    if extract_schema is not None:
+        fields["extract_schema"] = (type[extract_schema], extract_schema)
+    else:
+        extract_schema = fields["extract_schema"][1]
+
+    class_vars = {
+        name: value
+        for name, value in base_model.__dict__.items()
+        if name not in base_model.model_fields
+    }
+
+    new_model = create_model(
+        base_model.__name__,
+        __base__=extractor[extract_schema],  # type: ignore
+        **fields,
+    )
+
+    # Add class variables to the new model
+    for var_name, var_value in class_vars.items():
+        setattr(new_model, var_name, var_value)
+    setattr(new_model, "call_params", call_params)
+
+    return new_model  # type: ignore
