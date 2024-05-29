@@ -9,7 +9,7 @@ from .types import (
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
 )
-from .utils import anthropic_api_calculate_cost
+from .utils import anthropic_api_calculate_cost, bedrock_client_wrapper
 
 __all__ = [
     "AnthropicCall",

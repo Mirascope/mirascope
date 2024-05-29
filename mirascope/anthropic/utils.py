@@ -1,8 +1,40 @@
 """A module for utility functions for working with Anthropic."""
 
-from typing import Optional
+from typing import Callable, Optional, Union
 
+from anthropic import Anthropic, AnthropicBedrock, AsyncAnthropic, AsyncAnthropicBedrock
+from anthropic._types import URL
 from anthropic.types import Usage
+
+
+def bedrock_client_wrapper(
+    aws_secret_key: Optional[str] = None,
+    aws_access_key: Optional[str] = None,
+    aws_region: Optional[str] = None,
+    aws_session_token: Optional[str] = None,
+    base_url: Optional[Union[str, URL]] = None,
+) -> Callable[
+    [Union[Anthropic, AsyncAnthropic]], Union[AnthropicBedrock, AsyncAnthropicBedrock]
+]:
+    """Returns a client wrapper for using Anthropic models on AWS Bedrock."""
+
+    def inner_wrapper(client: Union[Anthropic, AsyncAnthropic]):
+        """Returns matching `AnthropicBedrock` or `AsyncAnthropicBedrock` client."""
+        kwargs = {
+            "aws_secret_key": aws_secret_key,
+            "aws_access_key": aws_access_key,
+            "aws_region": aws_region,
+            "aws_session_token": aws_session_token,
+            "base_url": base_url,
+        }
+        if isinstance(client, Anthropic):
+            return AnthropicBedrock(**kwargs)
+        elif isinstance(client, AsyncAnthropic):
+            return AsyncAnthropicBedrock(**kwargs)
+        else:
+            raise ValueError(f"Unknown Anthropic client: {client}")
+
+    return inner_wrapper
 
 
 def anthropic_api_calculate_cost(
