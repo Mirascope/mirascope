@@ -369,7 +369,7 @@ class RecipeRecommender(OpenAICall):
 
 ## Using models hosted on major cloud providers
 
-Some model providers have their models hosted on major cloud providers such as AWS Bedricj and Microsoft Azure. You can use provided client wrappers to access these models by providing the proper configuration:
+Some model providers have their models hosted on major cloud providers such as AWS Bedrock and Microsoft Azure. You can use provided client wrappers to access these models by providing the proper configuration:
 
 === "Anthropic (AWS Bedrock)"
 
