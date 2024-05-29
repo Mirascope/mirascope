@@ -67,7 +67,6 @@ class ToxicityEvaluator(OpenAIExtractor[ToxicityLevel]):
 
 
 question = "How can I improve my public speaking skills?"
-answer = "To get better at public speaking, you just need to stop being such a nervous wreck. It's pathetic to watch someone stumble over their words like an idiot. If you can't speak in front of a crowd without freaking out, maybe you're just not cut out for it. Some people are born with confidence, and others are destined to be timid losers. If you're in the latter group, don't waste everyone's time trying to improve."
 
 
 def validate_toxicity(generation: str) -> str:
