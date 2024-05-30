@@ -42,12 +42,10 @@ class BookRecommender(OpenAICall):
 
 
 stream = BookRecommender(genre="fantasy").stream()
-last_chunk = None
 for chunk in stream:
     print(chunk.content, end="")
-    last_chunk = chunk.chunk
-
-print(openai_api_calculate_cost(last_chunk.usage, last_chunk.model))
+    if chunk.cost:
+        print(chunk.cost)
 # > 0.00013099999999999999
 ```
 !!! note
