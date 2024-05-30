@@ -25,7 +25,7 @@ configure(
     processors=[
         BatchSpanProcessor(
             OTLPSpanExporter(
-                endpoint=f"https://{OBSERVABILITY_TOOL_ENDPOINT}/v1/traces",
+                endpoint=f"{OBSERVABILITY_TOOL_ENDPOINT}/v1/traces",
                 headers={"authorization": os.getenv("HYPERDX_API_KEY")},
             )
         )
