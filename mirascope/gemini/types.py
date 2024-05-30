@@ -164,25 +164,21 @@ class GeminiCallResponseChunk(
     from mirascope.gemini import GeminiCall
 
 
-    class BookRecommender(GeminiCall):
-        prompt_template = "Please recommend a {genre} book"
-
-        genre: str
+    class Math(GeminiCall):
+        prompt_template = "What is 1 + 2?"
 
 
-    for chunk in BookRecommender(genre="science fiction").stream():
-        print(chunk)
-
-    #> D
-    #  u
-    #
-    #  ne
-    #
-    #  by F
-    #  r
-    #  an
-    #  k
-    #  .
+    content = ""
+    for chunk in Math().stream():
+        content += chunk.content
+        print(content)
+    #> 1
+    #  1 +
+    #  1 + 2
+    #  1 + 2 equals
+    #  1 + 2 equals
+    #  1 + 2 equals 3
+    #  1 + 2 equals 3.
     ```
     """
 

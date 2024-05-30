@@ -187,12 +187,21 @@ class AnthropicCallResponseChunk(
     from mirascope.anthropic import AnthropicCall
 
 
-    class BookRecommender(AnthropicCall):
-        prompt_template = "Please recommend some books."
+    class Math(AnthropicCall):
+        prompt_template = "What is 1 + 2?"
 
 
-    for chunk in BookRecommender().stream():
-        print(chunk, end="")
+    content = ""
+    for chunk in Math().stream():
+        content += chunk.content
+        print(content)
+    #> 1
+    #  1 +
+    #  1 + 2
+    #  1 + 2 equals
+    #  1 + 2 equals
+    #  1 + 2 equals 3
+    #  1 + 2 equals 3.
     ```
     """
 
