@@ -12,7 +12,7 @@ from mirascope.anthropic.types import AnthropicCallParams, AnthropicCallResponse
 
 
 @patch(
-    "anthropic.resources.beta.tools.messages.Messages.create",
+    "anthropic.resources.messages.Messages.create",
     new_callable=MagicMock,
 )
 def test_anthropic_extractor_extract_tool(
@@ -35,7 +35,7 @@ def test_anthropic_extractor_extract_tool(
 
 
 @patch(
-    "anthropic.resources.beta.tools.messages.AsyncMessages.create",
+    "anthropic.resources.messages.AsyncMessages.create",
     new_callable=AsyncMock,
 )
 @pytest.mark.asyncio

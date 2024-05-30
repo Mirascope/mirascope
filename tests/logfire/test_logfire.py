@@ -7,7 +7,7 @@ import pytest
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
-from groq.lib.chat_completion_chunk import ChatCompletionChunk
+from groq.types.chat.chat_completion_chunk import ChatCompletionChunk
 from logfire import configure
 from logfire.testing import CaptureLogfire, TestExporter
 from openai.types.chat import ChatCompletion

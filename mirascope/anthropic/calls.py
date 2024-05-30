@@ -73,11 +73,8 @@ class AnthropicCall(
         client = get_wrapped_client(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.messages.create
-        if tool_types:
-            create = client.beta.tools.messages.create  # type: ignore
         create = get_wrapped_call(
-            create,
+            client.messages.create,
             self,
             response_type=AnthropicCallResponse,
             tool_types=tool_types,
@@ -114,11 +111,8 @@ class AnthropicCall(
         client = get_wrapped_async_client(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
-        create = client.messages.create
-        if tool_types:
-            create = client.beta.tools.messages.create  # type: ignore
         create = get_wrapped_call(
-            create,
+            client.messages.create,
             self,
             is_async=True,
             response_type=AnthropicCallResponse,

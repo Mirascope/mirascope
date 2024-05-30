@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from groq import AsyncGroq, Groq
-from groq.lib.chat_completion_chunk import ChatCompletionChunk
-from groq.types.chat.chat_completion import ChatCompletion
-from groq.types.chat.completion_create_params import Message, ResponseFormat
+from groq.types.chat.chat_completion import ChatCompletion, ChatCompletionMessage
+from groq.types.chat.chat_completion_chunk import ChatCompletionChunk
+from groq.types.chat.completion_create_params import ResponseFormat
 
 from mirascope.base.types import BaseConfig
 from mirascope.groq import (
@@ -171,7 +171,7 @@ def test_groq_call_call_with_tools_json_mode(
         model="llama2-70b-4096",
         messages=call_with_tools.messages()
         + [
-            Message(
+            ChatCompletionMessage(
                 role="user",
                 content=_json_mode_content(tool_type=fixture_book_tool),
             )

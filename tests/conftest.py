@@ -7,10 +7,12 @@ import pytest
 from anthropic.types import (
     ContentBlock,
     ContentBlockDeltaEvent,
+    Message,
+    TextBlock,
     TextDelta,
+    ToolUseBlock,
     Usage,
 )
-from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import (
     ApiMeta,
@@ -31,12 +33,12 @@ from google.ai.generativelanguage import (
 from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
-from groq.lib.chat_completion_chunk import (
+from groq.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
     ChoiceDelta,
 )
-from groq.lib.chat_completion_chunk import Choice as ChunkChoice
-from groq.lib.chat_completion_chunk import (
+from groq.types.chat.chat_completion_chunk import Choice as ChunkChoice
+from groq.types.chat.chat_completion_chunk import (
     ChoiceLogprobs as ChunkChoiceLogprobs,
 )
 from openai.types.chat import (
@@ -445,12 +447,12 @@ def fixture_generate_content_response():
 
 
 @pytest.fixture()
-def fixture_anthropic_message_with_tools() -> ToolsBetaMessage:
+def fixture_anthropic_message_with_tools() -> Message:
     """Returns an Anthropic message with tools XML in the response"""
-    return ToolsBetaMessage(
+    return Message(
         id="0",
         content=[
-            ContentBlock(type="text", text="test"),
+            TextBlock(type="text", text="test"),
             ToolUseBlock(
                 id="test",
                 name="AnthropicBookTool",
