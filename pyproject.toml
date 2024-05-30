@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.15.0"
+version = "0.15.1"
 description = "An intuitive approach to building with LLMs"
 license = "MIT"
 authors = [
@@ -19,51 +19,53 @@ docstring-parser = "^0.15"
 tenacity = "^8.2.3"
 
 # A list of optional dependencies that are required for certain features
-mirascope-cli = { version = ">=0.1.3,<1.0.0", optional = true }
-wandb = { version = ">=0.16.4,<1.0.0", optional = true }
-weave = { version = ">=0.50.2,<1.0.0", optional = true }
-google-generativeai = { version = ">=0.4.0,<1.0.0", optional = true }
-chromadb = { version = ">=0.4.24,<1.0.0", optional = true }
 anthropic = { version = ">=0.23.1,<1.0.0", optional = true }
-mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
-groq = { version = ">=0.4.2,<1.0.0", optional = true }
+chromadb = { version = ">=0.4.24,<1.0.0", optional = true }
+mirascope-cli = { version = ">=0.1.3,<1.0.0", optional = true }
 cohere = { version = "^5.2.5", optional = true }
-pinecone-client = { version = "^3.2.2", optional = true }
-logfire = { version = ">=0.33.0,<1.0.0", optional = true }
+google-generativeai = { version = ">=0.4.0,<1.0.0", optional = true }
+groq = { version = ">=0.4.2,<1.0.0", optional = true }
+hyperdx-opentelemetry = { version = "^0.1.0", optional = true }
 langfuse = { version = "^2.30.0", optional = true }
+logfire = { version = ">=0.33.0,<1.0.0", optional = true }
+mistralai = { version = ">=0.1.6,<1.0.0", optional = true }
 opentelemetry-api = { version = "^1.22.0", optional = true }
 opentelemetry-sdk = { version = "^1.22.0", optional = true }
-hyperdx-opentelemetry = { version = "^0.1.0", optional = true }
+pinecone-client = { version = "^3.2.2", optional = true }
+wandb = { version = ">=0.16.4,<1.0.0", optional = true }
+weave = { version = ">=0.50.2,<1.0.0", optional = true }
 
 [tool.poetry.extras]
-cli = ["mirascope-cli"]
 anthropic = ["anthropic"]
 chromadb = ["chromadb"]
-pinecone = ["pinecone-client"]
+cli = ["mirascope-cli"]
 cohere = ["cohere"]
 gemini = ["google-generativeai"]
 groq = ["groq"]
+hyperdx = ["hyperdx-opentelemetry"]
+langfuse = ["langfuse"]
+logfire = ["logfire"]
 mistral = ["mistralai"]
+opentelemetry = ["opentelemetry-api", "opentelemetry-sdk"]
+pinecone = ["pinecone-client"]
 wandb = ["wandb"]
 weave = ["weave"]
-logfire = ["logfire"]
-langfuse = ["langfuse"]
-opentelemetry = ["opentelemetry-api", "opentelemetry-sdk"]
 all = [
-    "mirascope-cli",
     "anthropic",
     "chromadb",
+    "mirascope-cli",
+    "cohere",
+    "google-generativeai",
+    "groq",
+    "hyperdx-opentelemetry",
+    "langfuse",
+    "logfire",
+    "mistralai",
+    "opentelemetry-api",
+    "opentelemetry-sdk",
+    "pinecone-client",
     "wandb",
     "weave",
-    "google-generativeai",
-    "mistralai",
-    "chromadb",
-    "pinecone",
-    "groq",
-    "cohere",
-    "logfire",
-    "langfuse",
-    "opentelemetry",
 ]
 
 [tool.poetry.group.dev.dependencies]
