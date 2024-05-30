@@ -22,6 +22,8 @@ def test_mistral_extractor_extract_tool(
     class TempExtractor(MistralExtractor[Type[MistralTool]]):
         extract_schema: Type[MistralTool] = fixture_book_tool
 
+        api_key = "test"
+
     tool = TempExtractor().extract()
 
     assert isinstance(tool, fixture_book_tool)
@@ -41,6 +43,8 @@ async def test_mistral_extractor_extract_async_tool(
 
     class TempExtractor(MistralExtractor[Type[MistralTool]]):
         extract_schema: Type[MistralTool] = fixture_book_tool
+
+        api_key = "test"
 
     tool = await TempExtractor().extract_async()
 
