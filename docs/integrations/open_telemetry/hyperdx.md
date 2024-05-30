@@ -4,7 +4,7 @@ Mirascope provides out-of-the-box integration with [HyperDX](https://www.hyperdx
 
 ## The Setup
 
-The setup is largely the same as our [OpenTelemetry integration](https://docs.mirascope.io/latest/integrations/opentelemetry/hyperdx), so check that out if you have not already.
+The setup is largely the same as our [OpenTelemetry integration](https://docs.mirascope.io/latest/integrations/open_telemetry/), so check that out if you have not already.
 
 ```python
 import os
