@@ -29,6 +29,8 @@ def test_mistral_call_call(
     class TempCall(MistralCall):
         prompt_template = ""
 
+        api_key = "test"
+
     response = TempCall().call()
     assert isinstance(response, MistralCallResponse)
     assert response.content == "test content"
@@ -49,6 +51,8 @@ def test_mistral_call_call_with_tools(
 
         call_params = MistralCallParams(tools=[fixture_book_tool])
 
+        api_key = "test"
+
     response = TempCall().call()
     assert response.tool == fixture_expected_book_tool_instance
 
@@ -64,6 +68,8 @@ async def test_mistral_call_call_async(
 
     class TempCall(MistralCall):
         prompt_template = ""
+
+        api_key = "test"
 
     response = await TempCall().call_async()
     assert isinstance(response, MistralCallResponse)
@@ -81,6 +87,8 @@ def test_mistral_call_stream(
     class TempCall(MistralCall):
         prompt_template = ""
 
+        api_key = "test"
+
     chunks = [chunk for chunk in TempCall().stream()]
     assert len(chunks) == 2
     assert chunks[0].content == "A"
@@ -97,6 +105,8 @@ async def test_mistral_stream_async(
 
     class TempCall(MistralCall):
         prompt_template = ""
+
+        api_key = "test"
 
     mock_chat_stream.return_value.__aiter__.return_value = (
         fixture_chat_completion_stream_response
