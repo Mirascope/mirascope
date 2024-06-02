@@ -27,7 +27,13 @@ def with_saving(cls):
     ):
         # do some work after the call
 
-    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call, decorator, custom_kwarg="anything")
+    wrap_mirascope_class_functions(
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+        decorator=decorator,
+        custom_kwarg="anything"
+    )
     return cls
 
 ```
@@ -36,9 +42,13 @@ Now let’s look at how to implement the before and after callback functions.
 
 ### Deeper dive on callback functions
 
-There are two optional callback functions that we provide: `handle_before_call` and `handle_after_call`. One of the most important parts of a production LLM-based application is to have all your calls logged. Check out our existing [integrations](https://docs.mirascope.io/latest/integrations/logfire/) for out-of-the-box solutions.
+There are four optional callback functions that we provide: `handle_before_call`, `handle_before_call_async`, `handle_after_call`, and `handle_after_call_async`. One of the most important parts of a production LLM-based application is to have all your calls logged. Check out our existing [integrations](https://docs.mirascope.io/latest/integrations/logfire/) for out-of-the-box solutions.
 
 For more specific cases, you should fill out all the handle before/after methods as you see fit.
+
+!!! note
+
+    The `handle_before_call_async` and `handle_after_call_async` methods should generally only be used if you are calling e.g. `call_async` or `stream_async` and need to await an async method in your handler as a result. If not, you can simply define and provide the `handle_before_call` and `handle_after_call` methods. Note that the async and sync methods are functionally equivalent and should have the same signatures beyond the async difference.
 
 ### `handle_before_call`
 
@@ -110,13 +120,14 @@ Add the decorator to your Mirascope classes and make your call:
 
 ```python
 from mirascope.anthropic import AnthropicCall
-from mirascope.base.ops_utils import wrap_mirascope_class_functions
 
-@with_saving
+
+@with_saving  # function defined in previous block above
 class BookRecommender(AnthropicCall):
     prompt_template = "Please recommend a {genre} book."
 
     genre: str
+
 
 response = BookRecommender(genre="fantasy").call()
 print(response.content)
@@ -234,6 +245,7 @@ def wrap_llm(): # add any args as necessary
 
     return decorator
 
+
 class BookRecommender(AnthropicCall):
     prompt_template = "Please recommend a {genre} book."
 
@@ -241,9 +253,9 @@ class BookRecommender(AnthropicCall):
 
     configuration = BaseConfig(llm_ops=[wrap_llm()])
 
+
 response = BookRecommender(genre="fantasy").call()
 print(response.content)
-
 ```
 
 ### Combine with Wrapping Mirascope Class Functions
@@ -259,15 +271,14 @@ class BookRecommender(AnthropicCall):
 
     configuration = BaseConfig(llm_ops=[wrap_llm()])
 
+
 response = BookRecommender(genre="fantasy").call()
 print(response.content)
-
 ```
 
 or alternatively:
 
 ```python
-
 def with_saving(cls):
     # same code as above
     ...
@@ -282,11 +293,13 @@ def with_saving(cls):
     )
     return cls
 
+
 @with_saving
 class BookRecommender(AnthropicCall):
     prompt_template = "Please recommend a {genre} book."
 
     genre: str
+
 
 response = BookRecommender(genre="fantasy").call()
 print(response.content)
