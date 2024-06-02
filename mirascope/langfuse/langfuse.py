@@ -230,7 +230,10 @@ def with_langfuse(cls):
     ```
     """
     wrap_mirascope_class_functions(
-        cls, handle_before_call, handle_after_call, observe()
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+        decorator=observe(),
     )
     if cls._provider and cls._provider == "openai":
         cls.configuration = cls.configuration.model_copy(
