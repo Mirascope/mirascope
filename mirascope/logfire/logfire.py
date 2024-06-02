@@ -276,7 +276,11 @@ def with_logfire(
 
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
-    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
+    wrap_mirascope_class_functions(
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+    )
     instrumented_providers = ["openai", "anthropic"]
     if cls._provider and cls._provider in instrumented_providers:
         if hasattr(cls, "configuration"):
