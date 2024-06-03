@@ -15,27 +15,32 @@ from ..types import (
 
 
 @overload
-def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]: ...  # pragma: no cover
+def with_weave(cls: Type[BaseCallT]) -> Type[BaseCallT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_weave(
     cls: Type[BaseExtractorT],
-) -> Type[BaseExtractorT]: ...  # pragma: no cover
+) -> Type[BaseExtractorT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_weave(
     cls: Type[BaseVectorStoreT],
-) -> Type[BaseVectorStoreT]: ...  # pragma: no cover
+) -> Type[BaseVectorStoreT]:
+    ...  # pragma: no cover
 
 
 @overload
-def with_weave(cls: Type[BaseChunkerT]) -> Type[BaseChunkerT]: ...  # pragma: no cover
+def with_weave(cls: Type[BaseChunkerT]) -> Type[BaseChunkerT]:
+    ...  # pragma: no cover
 
 
 @overload
-def with_weave(cls: Type[BaseEmbedderT]) -> Type[BaseEmbedderT]: ...  # pragma: no cover
+def with_weave(cls: Type[BaseEmbedderT]) -> Type[BaseEmbedderT]:
+    ...  # pragma: no cover
 
 
 def with_weave(cls):

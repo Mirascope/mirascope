@@ -335,7 +335,11 @@ def with_otel(cls):
     provider = get_tracer_provider()
     if not isinstance(provider, TracerProvider):
         configure()
-    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
+    wrap_mirascope_class_functions(
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+    )
     if hasattr(cls, "configuration"):
         cls.configuration = cls.configuration.model_copy(
             update={"llm_ops": [*cls.configuration.llm_ops, mirascope_otel()]}

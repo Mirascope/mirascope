@@ -83,7 +83,8 @@ def test_vectorstore_with_weave() -> None:
 
 
 @with_weave
-class MyEmbedder(OpenAIEmbedder): ...
+class MyEmbedder(OpenAIEmbedder):
+    ...
 
 
 def test_embedder_with_weave() -> None:
