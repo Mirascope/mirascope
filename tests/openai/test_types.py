@@ -136,6 +136,23 @@ def test_openai_chat_completion_chunk(
     assert openai_chat_completion_chunk.content == choices[0].delta.content
 
 
+def test_openai_chat_completion_last_chunk(
+    fixture_chat_completion_last_chunk: ChatCompletionChunk,
+):
+    """Tests that `OpenAICallResponseChunk` can be initialized properly."""
+    openai_chat_completion_chunk = OpenAICallResponseChunk(
+        chunk=fixture_chat_completion_last_chunk
+    )
+    usage = fixture_chat_completion_last_chunk.usage
+    assert openai_chat_completion_chunk.usage == usage
+    assert openai_chat_completion_chunk.input_tokens == (
+        usage.prompt_tokens if usage else None
+    )
+    assert openai_chat_completion_chunk.output_tokens == (
+        usage.completion_tokens if usage else None
+    )
+
+
 def test_openai_chat_completion_chunk_with_tools(
     fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
     fixture_my_openai_tool: Type[OpenAITool],
@@ -150,6 +167,25 @@ def test_openai_chat_completion_chunk_with_tools(
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == ""
     assert openai_chat_completion_chunk.tool_calls == choices[0].delta.tool_calls
+
+
+def test_openai_chat_completion_last_chunk_with_tools(
+    fixture_chat_completion_last_chunk_with_tools: ChatCompletionChunk,
+    fixture_my_openai_tool: Type[OpenAITool],
+):
+    """Tests that `OpenAICallResponseChunk` can be initialized properly with tools."""
+    openai_chat_completion_chunk = OpenAICallResponseChunk(
+        chunk=fixture_chat_completion_last_chunk_with_tools,
+        tool_types=[fixture_my_openai_tool],
+    )
+    usage = fixture_chat_completion_last_chunk_with_tools.usage
+    assert openai_chat_completion_chunk.usage == usage
+    assert openai_chat_completion_chunk.input_tokens == (
+        usage.prompt_tokens if usage else None
+    )
+    assert openai_chat_completion_chunk.output_tokens == (
+        usage.completion_tokens if usage else None
+    )
 
 
 def test_openai_chat_completion_tools_wrong_stop_sequence(
