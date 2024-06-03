@@ -44,7 +44,7 @@ async def test_handle_call_async(
     await test_model.call_async()
     test_model.handle_before_call_async.assert_called_once()
     test_model.handle_after_call_async.assert_called_once()
-    
+
     test_model_no_async = fixture_with_saving_without_async()
     await test_model_no_async.call_async()
     test_model_no_async.handle_before_call.assert_called_once()
@@ -55,7 +55,7 @@ async def test_handle_call_async(
     "openai.resources.chat.completions.Completions.create",
     new_callable=MagicMock,
 )
-def test_handle_after_call_stream(
+def test_handle_call_stream(
     mock_create,
     fixture_chat_completion_chunks: list[ChatCompletionChunk],
     fixture_with_saving,
@@ -75,7 +75,7 @@ def test_handle_after_call_stream(
     new_callable=AsyncMock,
 )
 @pytest.mark.asyncio
-async def test_handle_after_call_stream_async(
+async def test_handle_call_stream_async(
     mock_create,
     fixture_chat_completion_chunks: list[ChatCompletionChunk],
     fixture_with_saving,
@@ -89,7 +89,7 @@ async def test_handle_after_call_stream_async(
         pass
     test_model.handle_before_call_async.assert_called_once()
     test_model.handle_after_call_async.assert_called_once()
-    
+
     test_model_no_async = fixture_with_saving_without_async()
     async for chunk in test_model_no_async.stream_async():
         pass
@@ -100,8 +100,10 @@ async def test_handle_after_call_stream_async(
 def test_get_wrapped_call():
     """Tests that get wrapped call properly returns the class if no provided llm_ops"""
 
-    def wrap_me(): ...  # pragma: no cover
+    def wrap_me():
+        ...  # pragma: no cover
 
-    class Foo(BaseCall): ...
+    class Foo(BaseCall):
+        ...
 
     assert get_wrapped_call(wrap_me, Foo) == wrap_me

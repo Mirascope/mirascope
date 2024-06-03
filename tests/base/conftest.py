@@ -13,21 +13,21 @@ from mirascope.openai.calls import OpenAICall
 def with_saving(include_async: bool):
     def inner_with_saving(cls):
         """Test decorator for saving."""
-    
+
         def handle_before_call(
             self: BaseModel,
             fn: Callable[..., Any],
             **kwargs: dict[str, Any],
         ):
             pass
-    
+
         async def handle_before_call_async(
             self: BaseModel,
             fn: Callable[..., Any],
             **kwargs: dict[str, Any],
         ):
             pass
-    
+
         def handle_after_call(
             self: BaseModel,
             fn: Callable[..., Any],
@@ -36,7 +36,7 @@ def with_saving(include_async: bool):
             **kwargs: dict[str, Any],
         ):
             pass
-    
+
         async def handle_after_call_async(
             self: BaseModel,
             fn: Callable[..., Any],
@@ -45,7 +45,7 @@ def with_saving(include_async: bool):
             **kwargs: dict[str, Any],
         ):
             pass
-    
+
         handle_before_call_mock = MagicMock(wraps=handle_before_call)
         handle_before_call_async_mock = AsyncMock(wraps=handle_before_call_async)
         handle_after_call_mock = MagicMock(wraps=handle_after_call)
@@ -55,10 +55,12 @@ def with_saving(include_async: bool):
             "handle_after_call": handle_after_call_mock,
         }
         if include_async:
-            kwargs.update({
-                "handle_before_call_async": handle_before_call_async_mock,
-                "handle_after_call_async": handle_after_call_async_mock,
-            })
+            kwargs.update(
+                {
+                    "handle_before_call_async": handle_before_call_async_mock,
+                    "handle_after_call_async": handle_after_call_async_mock,
+                }
+            )
         wrap_mirascope_class_functions(cls, **kwargs)
         cls.handle_before_call = handle_before_call_mock
         cls.handle_before_call_async = handle_before_call_async_mock
@@ -77,13 +79,19 @@ def fixture_with_saving() -> type[OpenAICall]:
         Test
         """
         api_key = "Test"
-        model_config = ConfigDict(ignored_types=(MagicMock, AsyncMock,))
+        model_config = ConfigDict(
+            ignored_types=(
+                MagicMock,
+                AsyncMock,
+            )
+        )
         handle_before_call = MagicMock()
         handle_before_call_async = AsyncMock()
         handle_after_call = MagicMock()
         handle_after_call_async = AsyncMock()
 
     return TestModel
+
 
 @pytest.fixture()
 def fixture_with_saving_without_async() -> type[OpenAICall]:

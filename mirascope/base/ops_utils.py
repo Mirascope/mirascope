@@ -1,7 +1,7 @@
 import inspect
 from contextlib import AbstractContextManager
 from functools import wraps
-from typing import Any, Callable, Generator, Optional, TypeVar, Union
+from typing import Any, Awaitable, Callable, Generator, Optional, TypeVar, Union
 
 from pydantic import BaseModel
 
@@ -94,13 +94,21 @@ def mirascope_span(
     fn: Callable,
     *,
     handle_before_call: Optional[Callable[..., Any]] = None,
-    handle_before_call_async: Optional[Callable[..., Any]] = None,
+    handle_before_call_async: Optional[Callable[..., Awaitable[Any]]] = None,
     handle_after_call: Optional[Callable[..., Any]] = None,
-    handle_after_call_async: Optional[Callable[..., Any]] = None,
+    handle_after_call_async: Optional[Callable[..., Awaitable[Any]]] = None,
     decorator: Optional[DecoratorType] = None,
     **custom_kwargs: Any,
 ):
     """Wraps a pydantic class method."""
+
+    async def run_after_call_handler(self, result, result_before_call, joined_kwargs):
+        if handle_after_call_async is not None:
+            await handle_after_call_async(
+                self, fn, result, result_before_call, **joined_kwargs
+            )
+        elif handle_after_call is not None:
+            handle_after_call(self, fn, result, result_before_call, **joined_kwargs)
 
     @wraps(fn)
     def wrapper(self: BaseModel, *args, **kwargs):
@@ -134,26 +142,17 @@ def mirascope_span(
             before_call = await handle_before_call_async(self, fn, **joined_kwargs)
         elif handle_before_call is not None:
             before_call = handle_before_call(self, fn, **joined_kwargs)
+
         if isinstance(before_call, AbstractContextManager):
             with before_call as result_before_call:
                 result = await fn(self, *args, **kwargs)
-                if handle_after_call_async is not None:
-                    await handle_after_call_async(
-                        self, fn, result, result_before_call, **joined_kwargs
-                    )
-                elif handle_after_call is not None:
-                    handle_after_call(
-                        self, fn, result, result_before_call, **joined_kwargs
-                    )
+                await run_after_call_handler(
+                    self, result, result_before_call, joined_kwargs
+                )
                 return result
         else:
             result = await fn(self, *args, **kwargs)
-            if handle_after_call_async is not None:
-                await handle_after_call_async(
-                    self, fn, result, before_call, **joined_kwargs
-                )
-            elif handle_after_call is not None:
-                handle_after_call(self, fn, result, before_call, **joined_kwargs)
+            await run_after_call_handler(self, result, before_call, joined_kwargs)
             return result
 
     @wraps(fn)
@@ -178,7 +177,6 @@ def mirascope_span(
                     )
         else:
             result = fn(self, *args, **kwargs)
-
             output = []
             for value in result:
                 output.append(value)
@@ -202,26 +200,16 @@ def mirascope_span(
                 async for value in result:
                     output.append(value)
                     yield value
-                if handle_after_call_async is not None:
-                    await handle_after_call_async(
-                        self, fn, output, result_before_call, **joined_kwargs
-                    )
-                elif handle_after_call is not None:
-                    handle_after_call(
-                        self, fn, output, result_before_call, **joined_kwargs
-                    )
+                await run_after_call_handler(
+                    self, output, result_before_call, joined_kwargs
+                )
         else:
             result = fn(self, *args, **kwargs)
             output = []
             async for value in result:
                 output.append(value)
                 yield value
-            if handle_after_call_async is not None:
-                await handle_after_call_async(
-                    self, fn, output, result_before_call, **joined_kwargs
-                )
-            elif handle_after_call is not None:
-                handle_after_call(self, fn, output, before_call, **joined_kwargs)
+            await run_after_call_handler(self, output, before_call, joined_kwargs)
 
     wrapper_function = wrapper
     if inspect.isasyncgenfunction(fn):
@@ -239,7 +227,9 @@ def wrap_mirascope_class_functions(
     cls: type[BaseModel],
     *,
     handle_before_call: Optional[Callable[..., Any]] = None,
+    handle_before_call_async: Optional[Callable[..., Awaitable[Any]]] = None,
     handle_after_call: Optional[Callable[..., Any]] = None,
+    handle_after_call_async: Optional[Callable[..., Awaitable[Any]]] = None,
     decorator: Optional[DecoratorType] = None,
     **custom_kwargs: Any,
 ):

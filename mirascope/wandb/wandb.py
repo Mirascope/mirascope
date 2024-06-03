@@ -42,15 +42,16 @@ class _WandbBaseCall(BasePrompt):
     call_params: ClassVar[Any]
 
     @abstractmethod
-    def call(self, **kwargs: Any) -> Any: ...  # pragma: no cover
+    def call(self, **kwargs: Any) -> Any:
+        ...  # pragma: no cover
 
     @abstractmethod
-    async def call_async(self, **kwargs: Any) -> Any: ...  # pragma: no cover
+    async def call_async(self, **kwargs: Any) -> Any:
+        ...  # pragma: no cover
 
     @abstractmethod
-    def stream(
-        self, **kwargs: Any
-    ) -> Generator[Any, None, None]: ...  # pragma: no cover
+    def stream(self, **kwargs: Any) -> Generator[Any, None, None]:
+        ...  # pragma: no cover
 
     @abstractmethod
     async def stream_async(self, **kwargs: Any) -> AsyncGenerator[Any, None]:
