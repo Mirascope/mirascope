@@ -232,16 +232,18 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         prompt_template = "What is 1 + 2?"
 
 
-    for chunk in CohereCall().stream():
-        print(chunk.content)
-
+    content = ""
+    for chunk in Math().stream():
+        content += chunk.content
+        print(content)
     #> 1
-    #  +
-    #  2
-    #   equals
-    #
-    #  3
-    #  .
+    #  1 +
+    #  1 + 2
+    #  1 + 2 equals
+    #  1 + 2 equals
+    #  1 + 2 equals 3
+    #  1 + 2 equals 3.
+    ```
     """
 
     chunk: SkipValidation[StreamedChatResponse]
@@ -314,9 +316,9 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):
     """A convenience wrapper around the Cohere `EmbedResponse` response."""
 
-    embedding_type: Optional[Literal["float", "int8", "uint8", "binary", "ubinary"]] = (
-        None
-    )
+    embedding_type: Optional[
+        Literal["float", "int8", "uint8", "binary", "ubinary"]
+    ] = None
 
     @property
     def embeddings(

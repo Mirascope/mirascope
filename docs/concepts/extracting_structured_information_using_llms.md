@@ -180,7 +180,6 @@ We recommend you check out their [thorough documentation](https://docs.pydantic.
 When we extract information — for base types, `BaseModel`, or any of our tools — everything is powered by Pydantic. This means that we automatically get type validation and can handle it gracefully:
 
 ```python
-from typing import Type
 
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel, ValidationError
@@ -192,7 +191,7 @@ class Book(BaseModel):
 
 
 class BookRecommender(OpenAIExtractor[Book]):
-    extract_schema: Type[Book] = Book
+    extract_schema: type[Book] = Book
 	prompt_template = "Please recommend a book."
 
 
@@ -219,7 +218,7 @@ We can use an LLM to make the determination by adding an [`AfterValidator`](http
 
 ```python
 from enum import Enum
-from typing import Annotated, Type
+from typing import Annotated
 
 from mirascope.openai import OpenAIExtractor
 from pydantic import AfterValidator, BaseModel, ValidationError
@@ -231,7 +230,7 @@ class Label(Enum):
 
 
 class Sentiment(OpenAIExtractor[Label]):
-    extract_schema: Type[Label] = Label
+    extract_schema: type[Label] = Label
     prompt_template = "Is the following happy or sad? {text}."
 
     text: str
@@ -249,7 +248,7 @@ class HappyStory(BaseModel):
 
 
 class StoryTeller(OpenAIExtractor[HappyStory]):
-    extract_template: Type[HappyStory] = HappyStory
+    extract_schema: type[HappyStory] = HappyStory
     prompt_template = "Please tell me a story that's really sad."
 
 
@@ -356,7 +355,7 @@ You can also stream structured outputs when using an extractor. Simply call the 
 
 ```python
 import os
-from typing import Literal, Type
+from typing import Literal
 
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
@@ -371,7 +370,7 @@ class TaskDetails(BaseModel):
 
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
-    extract_schema: Type[TaskDetails] = TaskDetails
+    extract_schema: type[TaskDetails] = TaskDetails
 
     prompt_template = """
     Please extract the task details:
@@ -407,7 +406,7 @@ class Book(BaseModel):
 
 
 class BookRecommender(OpenAIPrompt[Book]):
-	extract_schema: Type[Book] = Book
+	extract_schema: type[Book] = Book
 	prompt_template = "Please recommend a book."
 
 book = BookRecommender().extract()

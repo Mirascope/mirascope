@@ -12,7 +12,7 @@ from typing import (
     Union,
 )
 
-from openai import AsyncOpenAI, OpenAI
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
@@ -207,16 +207,18 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        if not isinstance(client, AzureOpenAI):
+            kwargs["stream_options"] = {"include_usage": True}
         stream = create(
             messages=messages,
             stream=True,
-            stream_options={"include_usage": True},
             **kwargs,
         )
         for chunk in stream:
             yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
+                cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
             )
 
@@ -251,16 +253,18 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        if not isinstance(client, AsyncAzureOpenAI):
+            kwargs["stream_options"] = {"include_usage": True}
         stream = await create(
             messages=messages,
             stream=True,
-            stream_options={"include_usage": True},
             **kwargs,
         )
         async for chunk in stream:
             yield OpenAICallResponseChunk(
                 chunk=chunk,
                 tool_types=tool_types,
+                cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
             )
 

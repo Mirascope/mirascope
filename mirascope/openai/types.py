@@ -242,16 +242,18 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         prompt_template = "What is 1 + 2?"
 
 
-    for chunk in OpenAICall().stream():
-        print(chunk.content)
-
+    content = ""
+    for chunk in Math().stream():
+        content += chunk.content
+        print(content)
     #> 1
-    #  +
-    #  2
-    #   equals
-    #
-    #  3
-    #  .
+    #  1 +
+    #  1 + 2
+    #  1 + 2 equals
+    #  1 + 2 equals
+    #  1 + 2 equals 3
+    #  1 + 2 equals 3.
+    ```
     """
 
     response_format: Optional[ResponseFormat] = None
@@ -292,6 +294,27 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         """
         if self.delta:
             return self.delta.tool_calls
+        return None
+
+    @property
+    def usage(self) -> Optional[CompletionUsage]:
+        """Returns the usage of the chat completion."""
+        if self.chunk.usage:
+            return self.chunk.usage
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[int]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.prompt_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.completion_tokens
         return None
 
 

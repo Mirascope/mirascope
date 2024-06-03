@@ -235,16 +235,18 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, GroqTool]
         prompt_template = "What is 1 + 2?"
 
 
+    content = ""
     for chunk in Math().stream():
-        print(chunk.content)
-
+        content += chunk.content
+        print(content)
     #> 1
-    #  +
-    #  2
-    #   equals
-    #
-    #  3
-    #  .
+    #  1 +
+    #  1 + 2
+    #  1 + 2 equals
+    #  1 + 2 equals
+    #  1 + 2 equals 3
+    #  1 + 2 equals 3.
+    ```
     """
 
     response_format: Optional[ResponseFormat] = None

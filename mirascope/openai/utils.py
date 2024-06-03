@@ -1,8 +1,43 @@
 """A module for utility functions for working with OpenAI."""
 
-from typing import Optional
+from typing import Callable, Optional, Union
 
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
+from openai.lib.azure import AsyncAzureADTokenProvider, AzureADTokenProvider
 from openai.types.completion_usage import CompletionUsage
+
+
+def azure_client_wrapper(
+    azure_endpoint: str,
+    azure_deployment: Optional[str] = None,
+    api_version: Optional[str] = None,
+    api_key: Optional[str] = None,
+    azure_ad_token: Optional[str] = None,
+    azure_ad_token_provider: Optional[
+        Union[AzureADTokenProvider, AsyncAzureADTokenProvider]
+    ] = None,
+    organization: Optional[str] = None,
+) -> Callable[[Union[OpenAI, AsyncOpenAI]], Union[AzureOpenAI, AsyncAzureOpenAI]]:
+    """Returns a client wrapper for using OpenAI models on Microsoft Azure."""
+
+    def inner_wrapper(client: Union[OpenAI, AsyncOpenAI]):
+        """Returns matching `AzureOpenAI` or `AsyncAzureOpenAI` client."""
+        kwargs = {
+            "azure_endpoint": azure_endpoint,
+            "azure_deployment": azure_deployment,
+            "api_version": api_version,
+            "api_key": api_key,
+            "azure_ad_token": azure_ad_token,
+            "azure_ad_token_provider": azure_ad_token_provider,
+            "organization": organization,
+        }
+        if isinstance(client, OpenAI):
+            client = AzureOpenAI(**kwargs)  # type: ignore
+        elif isinstance(client, AsyncOpenAI):
+            client = AsyncAzureOpenAI(**kwargs)  # type: ignore
+        return client
+
+    return inner_wrapper
 
 
 def openai_api_calculate_cost(

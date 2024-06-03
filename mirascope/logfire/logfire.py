@@ -249,34 +249,43 @@ def handle_after_call(
 
 
 @overload
-def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]: ...  # pragma: no cover
+def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseExtractorT],
-) -> type[BaseExtractorT]: ...  # pragma: no cover
+) -> type[BaseExtractorT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseVectorStoreT],
-) -> type[BaseVectorStoreT]: ...  # pragma: no cover
+) -> type[BaseVectorStoreT]:
+    ...  # pragma: no cover
 
 
 @overload
-def with_logfire(cls: type[BaseChunkerT]) -> type[BaseChunkerT]: ...  # pragma: no cover
+def with_logfire(cls: type[BaseChunkerT]) -> type[BaseChunkerT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseEmbedderT],
-) -> type[BaseEmbedderT]: ...  # pragma: no cover
+) -> type[BaseEmbedderT]:
+    ...  # pragma: no cover
 
 
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
-    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
+    wrap_mirascope_class_functions(
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+    )
     instrumented_providers = ["openai", "anthropic"]
     if cls._provider and cls._provider in instrumented_providers:
         if hasattr(cls, "configuration"):
