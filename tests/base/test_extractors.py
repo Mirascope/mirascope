@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from mirascope.anthropic.extractors import AnthropicExtractor
 from mirascope.anthropic.types import AnthropicCallParams
 from mirascope.base.calls import BaseCall
-from mirascope.base.extractors import BaseExtractor, create_extractor
+from mirascope.base.extractors import BaseExtractor
 from mirascope.base.prompts import BasePrompt
 from mirascope.base.tool_streams import BaseToolStream
 from mirascope.base.tools import BaseTool
@@ -55,9 +55,8 @@ def test_create_extractor() -> None:
 
         task: str
 
-    new_task_extractor = create_extractor(
+    new_task_extractor = AnthropicExtractor.from_extractor(
         TaskExtractor,
-        AnthropicExtractor,
         AnthropicCallParams(model="claude-3-haiku-20240307"),
     )
     anthropic_task_extractor = new_task_extractor(
@@ -66,9 +65,8 @@ def test_create_extractor() -> None:
     assert isinstance(anthropic_task_extractor, AnthropicExtractor[TaskDetails])  # type: ignore
     assert anthropic_task_extractor.call_params.model == "claude-3-haiku-20240307"
 
-    new_task_extractor_with_extract_schema = create_extractor(
+    new_task_extractor_with_extract_schema = AnthropicExtractor.from_extractor(
         TaskExtractor,
-        AnthropicExtractor,
         AnthropicCallParams(model="claude-3-haiku-20240307"),
         extract_schema=NewTaskDetails,
     )

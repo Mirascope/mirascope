@@ -4,7 +4,7 @@ from typing import ClassVar
 from unittest.mock import patch
 
 from mirascope.anthropic.calls import AnthropicCall, AnthropicCallParams
-from mirascope.base.calls import BaseCall, create_call
+from mirascope.base.calls import BaseCall
 from mirascope.base.prompts import BasePrompt
 from mirascope.base.types import BaseCallParams
 from mirascope.openai.calls import OpenAICall
@@ -53,8 +53,8 @@ def test_create_call() -> None:
 
         genre: str
 
-    new_book_recommender = create_call(
-        BookRecommender, AnthropicCall, AnthropicCallParams(model="claude-3-haiku")
+    new_book_recommender = AnthropicCall.from_call(
+        BookRecommender, AnthropicCallParams(model="claude-3-haiku")
     )
     book_recommender = new_book_recommender(genre="fantasy")
     assert isinstance(book_recommender, AnthropicCall)
