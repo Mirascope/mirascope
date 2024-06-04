@@ -270,14 +270,11 @@ To work with various LLM providers, you might consider using a generic prompt te
 
 ```python
 from mirascope.anthropic import AnthropicExtractor, AnthropicCallParams
+from mirascope.base import BaseCallParams, BaseExtractor
+
 def validate_toxicity(generation: str) -> str:
     """Check if the generated content language is toxic."""
-    jury: list[
-        tuple[
-            type[Union[OpenAIExtractor, AnthropicExtractor]],
-            Union[OpenAICallParams, AnthropicCallParams],
-        ]
-    ] = [
+    jury: list[tuple[type[BaseExtractor], BaseCallParams]] = [
         (
             OpenAIExtractor,
             OpenAICallParams(model="gpt-3.5-turbo", tool_choice="required"),

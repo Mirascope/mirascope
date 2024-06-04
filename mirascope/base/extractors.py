@@ -96,7 +96,7 @@ class BaseExtractor(
     @classmethod
     def from_prompt(
         cls,
-        prompt_cls: type[BasePromptT],
+        prompt_type: type[BasePromptT],
         call_params: BaseCallParams,
         *,
         extract_schema: Optional[ExtractedType] = None,
@@ -104,7 +104,7 @@ class BaseExtractor(
         """Returns an extractor_type generated dynamically from this base extractor.
 
         Args:
-            prompt_cls: The prompt class to use for the extractor. Properties and class
+            prompt_type: The prompt class to use for the extractor. Properties and class
                 variables of this class will be used to create the new extractor class.
                 Must be a class that can be instantiated.
             call_params: The call params to use for the extractor.
@@ -117,7 +117,7 @@ class BaseExtractor(
 
         fields: dict[str, Any] = {
             name: (field.annotation, field.default)
-            for name, field in prompt_cls.model_fields.items()
+            for name, field in prompt_type.model_fields.items()
         }
 
         if extract_schema is not None:
@@ -127,11 +127,11 @@ class BaseExtractor(
 
         class_vars = {
             name: value
-            for name, value in prompt_cls.__dict__.items()
-            if name not in prompt_cls.model_fields
+            for name, value in prompt_type.__dict__.items()
+            if name not in prompt_type.model_fields
         }
         new_extractor = create_model(
-            prompt_cls.__name__,
+            prompt_type.__name__,
             __base__=cls[extract_schema],  # type: ignore
             **fields,
         )

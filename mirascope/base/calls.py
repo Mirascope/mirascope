@@ -92,12 +92,12 @@ class BaseCall(
 
     @classmethod
     def from_prompt(
-        cls, prompt_cls: type[BasePromptT], call_params: BaseCallParams
+        cls, prompt_type: type[BasePromptT], call_params: BaseCallParams
     ) -> type[BasePromptT]:
         """Returns a call_type generated dynamically from this base call.
 
         Args:
-            prompt_cls: The prompt class to use for the call. Properties and class
+            prompt_type: The prompt class to use for the call. Properties and class
                 variables of this class will be used to create the new call class. Must
                 be a class that can be instantiated.
             call_params: The call params to use for the call.
@@ -108,15 +108,15 @@ class BaseCall(
 
         fields: dict[str, Any] = {
             name: (field.annotation, field.default)
-            for name, field in prompt_cls.model_fields.items()
+            for name, field in prompt_type.model_fields.items()
         }
 
         class_vars = {
             name: value
-            for name, value in prompt_cls.__dict__.items()
-            if name not in prompt_cls.model_fields
+            for name, value in prompt_type.__dict__.items()
+            if name not in prompt_type.model_fields
         }
-        new_call = create_model(prompt_cls.__name__, __base__=cls, **fields)
+        new_call = create_model(prompt_type.__name__, __base__=cls, **fields)
 
         for var_name, var_value in class_vars.items():
             setattr(new_call, var_name, var_value)

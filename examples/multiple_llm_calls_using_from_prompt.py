@@ -23,7 +23,6 @@ from mirascope.groq.extractors import GroqExtractor
 from mirascope.openai import OpenAIExtractor
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.types import OpenAICallParams
-from mirascope.types import BaseCallT
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
