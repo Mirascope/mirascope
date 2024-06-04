@@ -8,12 +8,13 @@ import asyncio
 import os
 from typing import Literal
 
-from google.generativeai import configure
+from google.generativeai import configure  # type: ignore
 from pydantic import BaseModel, Field
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.extractors import AnthropicExtractor
 from mirascope.anthropic.types import AnthropicCallParams
+from mirascope.base.calls import BaseCall
 from mirascope.base.extractors import BaseExtractor
 from mirascope.base.types import BaseCallParams
 from mirascope.gemini import GeminiCall, GeminiCallParams
@@ -36,7 +37,7 @@ class PoemPrompt(OpenAICall):
     topic: str
 
 
-contestants: list[tuple[type[BaseCallT], BaseCallParams]] = [
+contestants: list[tuple[type[BaseCall], BaseCallParams]] = [
     (GeminiCall, GeminiCallParams(model="gemini-1.0-pro")),
     (OpenAICall, OpenAICallParams(model="gpt-4o-2024-05-13")),
     (AnthropicCall, AnthropicCallParams(model="claude-3-opus-20240229")),
@@ -83,18 +84,18 @@ topic = "memories"
 async def evaluate_poem(topic: str) -> None:
     winner: tuple[str, str, int, list[str]] = ("", "", 0, [])
     for call_type, call_params in contestants:
-        poem: type[BaseCallT] = call_type.from_prompt(PoemPrompt, call_params)
+        poem = call_type.from_prompt(PoemPrompt, call_params)
         response = await poem(topic=topic).call_async()
         content = response.content
         scores = 0
         reasoning: list[str] = []
         for extractor_type, extractor_params in judges:
             extractor = extractor_type.from_prompt(PoemEvaluator, extractor_params)
-            response = await extractor(topic=topic, poem=content).extract_async()
-            scores += response.score
-            reasoning.append(response.reasoning)
-            if response.score > winner[2]:
-                winner = (extractor_params.model, content, response.score, reasoning)
+            evaluation = await extractor(topic=topic, poem=content).extract_async()
+            scores += evaluation.score
+            reasoning.append(evaluation.reasoning)
+            if evaluation.score > winner[2]:
+                winner = (extractor_params.model, content, evaluation.score, reasoning)
 
     print(f"The winner is {winner[0]} with a score of {winner[2]}")
     print("Poem:", winner[1])
