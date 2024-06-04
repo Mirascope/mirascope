@@ -10,6 +10,7 @@ from typing import (
     Optional,
     Type,
     Union,
+    overload,
 )
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
@@ -106,9 +107,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = get_wrapped_client(
-            OpenAI(api_key=self.api_key, base_url=self.base_url), self
-        )
+        client = self._setup_openai_client(OpenAI)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -151,9 +150,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = get_wrapped_async_client(
-            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
-        )
+        client = self._setup_openai_client(AsyncOpenAI)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -197,9 +194,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = get_wrapped_client(
-            OpenAI(api_key=self.api_key, base_url=self.base_url), self
-        )
+        client = self._setup_openai_client(OpenAI)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -242,9 +237,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
-        client = get_wrapped_async_client(
-            AsyncOpenAI(api_key=self.api_key, base_url=self.base_url), self
-        )
+        client = self._setup_openai_client(AsyncOpenAI)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -285,6 +278,32 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         ):
             kwargs.pop("tools")
         return kwargs, tool_types
+
+    @overload
+    def _setup_openai_client(self, client_type: type[OpenAI]) -> OpenAI:
+        ...  # pragma: no cover
+
+    @overload
+    def _setup_openai_client(self, client_type: type[AsyncOpenAI]) -> AsyncOpenAI:
+        ...  # pragma: no cover
+
+    def _setup_openai_client(
+        self, client_type: Union[type[OpenAI], type[AsyncOpenAI]]
+    ) -> Union[OpenAI, AsyncOpenAI]:
+        """Returns the proper OpenAI/AsyncOpenAI client, including wrapping it."""
+        using_azure = "inner_azure_client_wrapper" in [
+            getattr(wrapper, __name__, None)
+            for wrapper in self.configuration.client_wrappers
+        ]
+        client = client_type(
+            api_key=self.api_key if not using_azure else "make-azure-not-fail",
+            base_url=self.base_url,
+        )
+        if client_type == OpenAI:
+            client = get_wrapped_client(client, self)
+        elif client_type == AsyncOpenAI:
+            client = get_wrapped_async_client(client, self)
+        return client
 
     def _update_messages_if_json(
         self,

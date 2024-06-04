@@ -20,7 +20,7 @@ def azure_client_wrapper(
 ) -> Callable[[Union[OpenAI, AsyncOpenAI]], Union[AzureOpenAI, AsyncAzureOpenAI]]:
     """Returns a client wrapper for using OpenAI models on Microsoft Azure."""
 
-    def inner_wrapper(client: Union[OpenAI, AsyncOpenAI]):
+    def inner_azure_client_wrapper(client: Union[OpenAI, AsyncOpenAI]):
         """Returns matching `AzureOpenAI` or `AsyncAzureOpenAI` client."""
         kwargs = {
             "azure_endpoint": azure_endpoint,
@@ -37,7 +37,7 @@ def azure_client_wrapper(
             client = AsyncAzureOpenAI(**kwargs)  # type: ignore
         return client
 
-    return inner_wrapper
+    return inner_azure_client_wrapper
 
 
 def openai_api_calculate_cost(
