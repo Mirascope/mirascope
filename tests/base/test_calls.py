@@ -53,7 +53,7 @@ def test_create_call() -> None:
 
         genre: str
 
-    new_book_recommender = AnthropicCall.from_call(
+    new_book_recommender = AnthropicCall.from_prompt(
         BookRecommender, AnthropicCallParams(model="claude-3-haiku")
     )
     book_recommender = new_book_recommender(genre="fantasy")

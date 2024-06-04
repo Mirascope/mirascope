@@ -55,7 +55,7 @@ def test_create_extractor() -> None:
 
         task: str
 
-    new_task_extractor = AnthropicExtractor.from_extractor(
+    new_task_extractor = AnthropicExtractor.from_prompt(
         TaskExtractor,
         AnthropicCallParams(model="claude-3-haiku-20240307"),
     )
@@ -65,7 +65,7 @@ def test_create_extractor() -> None:
     assert isinstance(anthropic_task_extractor, AnthropicExtractor[TaskDetails])  # type: ignore
     assert anthropic_task_extractor.call_params.model == "claude-3-haiku-20240307"
 
-    new_task_extractor_with_extract_schema = AnthropicExtractor.from_extractor(
+    new_task_extractor_with_extract_schema = AnthropicExtractor.from_prompt(
         TaskExtractor,
         AnthropicCallParams(model="claude-3-haiku-20240307"),
         extract_schema=NewTaskDetails,

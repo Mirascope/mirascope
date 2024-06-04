@@ -27,7 +27,7 @@ from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
 from ..partial import partial
 from .calls import BaseCall
-from .prompts import BasePrompt
+from .prompts import BasePrompt, BasePromptT
 from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import BaseCallParams, BaseConfig
@@ -92,6 +92,55 @@ class BaseExtractor(
     # ) -> AsyncGenerator[ExtractedTypeT, None]:
     #     """Asynchronously streams extracted partial `extraction_schema` instances."""
     #     ...  # pragma: no cover
+
+    @classmethod
+    def from_prompt(
+        cls,
+        prompt_cls: type[BasePromptT],
+        call_params: BaseCallParams,
+        *,
+        extract_schema: Optional[ExtractedType] = None,
+    ) -> type[BasePromptT]:
+        """Returns an extractor_type generated dynamically from this base extractor.
+
+        Args:
+            prompt_cls: The prompt class to use for the extractor. Properties and class
+                variables of this class will be used to create the new extractor class.
+                Must be a class that can be instantiated.
+            call_params: The call params to use for the extractor.
+            extract_schema: The extract schema to use for the extractor. If none, the
+                extractor will use the class' extract_schema.
+
+        Returns:
+            A new extractor class with new extractor type.
+        """
+
+        fields: dict[str, Any] = {
+            name: (field.annotation, field.default)
+            for name, field in prompt_cls.model_fields.items()
+        }
+
+        if extract_schema is not None:
+            fields["extract_schema"] = (type[extract_schema], extract_schema)  # type: ignore
+        else:
+            extract_schema = fields["extract_schema"][1]
+
+        class_vars = {
+            name: value
+            for name, value in prompt_cls.__dict__.items()
+            if name not in prompt_cls.model_fields
+        }
+        new_extractor = create_model(
+            prompt_cls.__name__,
+            __base__=cls[extract_schema],  # type: ignore
+            **fields,
+        )
+
+        for var_name, var_value in class_vars.items():
+            setattr(new_extractor, var_name, var_value)
+        setattr(new_extractor, "call_params", call_params)
+
+        return cast(type[BasePromptT], new_extractor)
 
     ############################## PRIVATE METHODS ###################################
 
@@ -538,55 +587,6 @@ class BaseExtractor(
             return_tool = True
         kwargs["tools"] = [tool]
         return kwargs, return_tool
-
-    @classmethod
-    def from_extractor(
-        cls,
-        base_extractor_type: type[BaseExtractorT],
-        call_params: BaseCallParams,
-        *,
-        extract_schema: Optional[ExtractedType] = None,
-    ) -> type[BaseExtractorT]:
-        """Dynamically creates a new extractor class from a base model and an extractor.
-
-        Args:
-            cls: The extractor to use for the base model.
-            base_extractor_type: The base model to use for the extractor. The new extractor will
-                inherit all the fields and class variables from this model.
-            call_params: The call params to use for the extractor.
-            extract_schema: The extract schema to use for the extractor. If none, the
-                extractor will use the base model's extract_schema.
-
-        Returns:
-            A new extractor class.
-        """
-
-        fields: dict[str, Any] = {
-            name: (field.annotation, field.default)
-            for name, field in base_extractor_type.model_fields.items()
-        }
-
-        if extract_schema is not None:
-            fields["extract_schema"] = (type[extract_schema], extract_schema)  # type: ignore
-        else:
-            extract_schema = fields["extract_schema"][1]
-
-        class_vars = {
-            name: value
-            for name, value in base_extractor_type.__dict__.items()
-            if name not in base_extractor_type.model_fields
-        }
-        new_extractor = create_model(
-            base_extractor_type.__name__,
-            __base__=cls[extract_schema],  # type: ignore
-            **fields,
-        )
-
-        for var_name, var_value in class_vars.items():
-            setattr(new_extractor, var_name, var_value)
-        setattr(new_extractor, "call_params", call_params)
-
-        return cast(type[BaseExtractorT], new_extractor)
 
 
 BaseExtractorT = TypeVar("BaseExtractorT", bound=BaseExtractor)
