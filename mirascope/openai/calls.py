@@ -106,8 +106,17 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
                 https://platform.openai.com/docs/guides/error-codes/api-errors
         """
         kwargs, tool_types = self._setup_openai_kwargs(kwargs)
+
+        using_azure = "inner_azure_client_wrapper" in [
+            getattr(wrapper, __name__, None)
+            for wrapper in self.configuration.client_wrappers
+        ]
         client = get_wrapped_client(
-            OpenAI(api_key=self.api_key, base_url=self.base_url), self
+            OpenAI(
+                api_key=self.api_key if not using_azure else "make-azure-not-fail",
+                base_url=self.base_url,
+            ),
+            self,
         )
         create = get_wrapped_call(
             client.chat.completions.create,

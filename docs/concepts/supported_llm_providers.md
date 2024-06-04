@@ -420,7 +420,7 @@ Some model providers have their models hosted on major cloud providers such as A
     class BookRecommender(OpenAICall):
         prompt_template = "Please recommend a fantasy book."
 
-        call_params = OpenAICallParams(model="NEEDS MODEL NAME ONCE FIGURED OUT")
+        call_params = OpenAICallParams(model="AZURE_DEPLOYMENT_NAME")
         configuration = BaseConfig(
             client_wrappers=[
                 azure_client_wrapper(
