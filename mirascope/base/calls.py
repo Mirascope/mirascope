@@ -13,11 +13,13 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
+from pydantic import create_model
 from tenacity import AsyncRetrying, Retrying
 
-from .prompts import BasePrompt
+from .prompts import BasePrompt, BasePromptT
 from .tools import BaseTool
 from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseConfig
 
@@ -88,6 +90,40 @@ class BaseCall(
         e.g. different model providers."""
         yield ...  # type: ignore # pragma: no cover
 
+    @classmethod
+    def from_prompt(
+        cls, prompt_type: type[BasePromptT], call_params: BaseCallParams
+    ) -> type[BasePromptT]:
+        """Returns a call_type generated dynamically from this base call.
+
+        Args:
+            prompt_type: The prompt class to use for the call. Properties and class
+                variables of this class will be used to create the new call class. Must
+                be a class that can be instantiated.
+            call_params: The call params to use for the call.
+
+        Returns:
+            A new call class with new call_type.
+        """
+
+        fields: dict[str, Any] = {
+            name: (field.annotation, field.default)
+            for name, field in prompt_type.model_fields.items()
+        }
+
+        class_vars = {
+            name: value
+            for name, value in prompt_type.__dict__.items()
+            if name not in prompt_type.model_fields
+        }
+        new_call = create_model(prompt_type.__name__, __base__=cls, **fields)
+
+        for var_name, var_value in class_vars.items():
+            setattr(new_call, var_name, var_value)
+        setattr(new_call, "call_params", call_params)
+
+        return cast(type[BasePromptT], new_call)
+
     ############################## PRIVATE METHODS ###################################
 
     def _setup(
@@ -109,3 +145,6 @@ class BaseCall(
             tool_types = kwargs.pop("tools")
             kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
         return kwargs, tool_types
+
+
+BaseCallT = TypeVar("BaseCallT", bound=BaseCall)

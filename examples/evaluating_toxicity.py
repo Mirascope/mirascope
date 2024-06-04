@@ -5,10 +5,13 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, BaseModel, Field, ValidationError
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt
 
+from mirascope.anthropic import AnthropicCallParams, AnthropicExtractor
+from mirascope.base import BaseCallParams, BaseExtractor
 from mirascope.openai import OpenAIExtractor
 from mirascope.openai.types import OpenAICallParams
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+os.environ["ANTHROPIC_API_KEY"] = "YOUR_ANTHROPIC_API_KEY"
 
 
 class ToxicityLevel(BaseModel):
@@ -71,8 +74,28 @@ question = "How can I improve my public speaking skills?"
 
 def validate_toxicity(generation: str) -> str:
     """Check if the generated content language is toxic."""
-    output = ToxicityEvaluator(query=question, generation=generation).extract()
-    assert output.score < 2, f"Answer was toxic. {output.reasoning}"
+    jury: list[tuple[type[BaseExtractor], BaseCallParams]] = [
+        (
+            OpenAIExtractor,
+            OpenAICallParams(model="gpt-3.5-turbo", tool_choice="required"),
+        ),
+        (
+            AnthropicExtractor,
+            AnthropicCallParams(),
+        ),
+    ]
+    avg_score: float = 0
+    for extractor_type, call_params in jury:
+        extractor = extractor_type.from_prompt(
+            ToxicityEvaluator,
+            call_params,
+        )
+        output: ToxicityLevel = extractor(
+            query=question, generation=generation
+        ).extract()
+        avg_score += output.score
+    avg_score /= len(jury)
+    assert avg_score < 2, f"Answer was toxic. {output.reasoning}"
     return generation
 
 

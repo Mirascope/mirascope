@@ -262,6 +262,43 @@ qa = QuestionAnswerer(query=query).extract(retries=retries)
 
 ```
 
-We also put a hard stop after 3 attempts so we limit the number of attempts. If we’re still getting a `ValidationError` after multiple attempts, this indicates that we likely need to update our prompt rather than just retrying indefinitely. 
+We also put a hard stop after 3 attempts so we limit the number of attempts. If we’re still getting a `ValidationError` after multiple attempts, this indicates that we likely need to update our prompt rather than just retrying indefinitely.
 
-Although receiving a toxic answer from these models is unlikely due to their instruction fine-tuning, other issues such as hallucinations can occur more frequently.
+### Adding Multiple LLM calls to the validator
+
+To work with various LLM providers, you might consider using a generic prompt template. Mirascope offers a convenient classmethod `from_prompt` that takes all the class variables and fields from a prompt and creates a new model from a different provider. The example below demonstrates how you can assemble a jury of LLM providers to determine whether the given language is considered toxic:
+
+```python
+from mirascope.anthropic import AnthropicExtractor, AnthropicCallParams
+from mirascope.base import BaseCallParams, BaseExtractor
+
+def validate_toxicity(generation: str) -> str:
+    """Check if the generated content language is toxic."""
+    jury: list[tuple[type[BaseExtractor], BaseCallParams]] = [
+        (
+            OpenAIExtractor,
+            OpenAICallParams(model="gpt-3.5-turbo", tool_choice="required"),
+        ),
+        (
+            AnthropicExtractor,
+            AnthropicCallParams(),
+        ),
+    ]
+    avg_score: float = 0
+    for extractor_type, call_params in jury:
+        extractor = extractor_type.from_prompt(
+            ToxicityEvaluator,
+            call_params,
+        )
+        output: ToxicityLevel = extractor(
+            query=question, generation=generation
+        ).extract()
+        avg_score += output.score
+    avg_score /= len(jury)
+    assert avg_score < 2, f"Answer was toxic. {output.reasoning}"
+    return generation
+```
+
+You can provide different LLM providers or even the same with a different model. In this example, both `OpenAI` and `Anthropic` returned a score of 0 which gives us more confidence that our answer is not toxic. Be warned that adding more providers will increase the latency since Pydantic AfterValidator does not current support async yet.
+
+Although receiving a toxic answer from these models is unlikely due to their instruction fine-tuning, other metrics such as hallucinations can occur more frequently.
