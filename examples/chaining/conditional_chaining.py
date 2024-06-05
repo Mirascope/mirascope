@@ -1,8 +1,9 @@
 from enum import Enum
 from functools import cached_property
 
-from mirascope.openai import OpenAICall, OpenAIExtractor
 from pydantic import computed_field
+
+from mirascope.openai import OpenAICall, OpenAIExtractor
 
 
 class Sentiment(str, Enum):
@@ -36,7 +37,7 @@ class ReviewResponder(OpenAICall):
         else:
             return "reponse addressing the review."
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @cached_property
     def sentiment(self) -> Sentiment:
         classifier = SentimentClassifier(review=self.review)

@@ -34,13 +34,13 @@ class RecipeRecommender(ChefSelector):
     {ingredients}
     """
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @cached_property
     def chef(self) -> str:
         response = ChefSelector(ingredient=self.ingredient).call()
         return response.content
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @cached_property
     def ingredients(self) -> list[str]:
         identifier = IngredientIdentifier(ingredient=self.ingredient)

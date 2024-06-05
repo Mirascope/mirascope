@@ -21,7 +21,7 @@ class RecipeRecommender(ChefSelector):
 
     ingredient: str
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @cached_property
     def chef(self) -> str:
         """Uses `ChefSelector` to select the chef based on the food type."""
