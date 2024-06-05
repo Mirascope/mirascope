@@ -255,7 +255,7 @@ def handle_after_call(
 ) -> None:
     """Handles after call"""
     logfire_span.set_attribute("response_data", result)
-    output = {}
+    output: dict[str, Any] = {}
     response = None
     if isinstance(result, list):
         output["content"] = "\n".join([chunk.content for chunk in result])
