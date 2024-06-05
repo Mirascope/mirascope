@@ -239,7 +239,7 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     template_variables = {**self.model_dump()}
     if hasattr(self, "prompt_template"):
         template_variables |= {
-            var: getattr(self, var)
+            var: getattr(self, var, None)
             for _, var, _, _ in Formatter().parse(self.prompt_template)
             if var is not None
         }
