@@ -16,4 +16,4 @@ class BookRecommender(OpenAICall):
 recommender = BookRecommender(genre="fantasy")
 stream = recommender.stream()  # this will automatically get logged with logfire
 for chunk in stream:
-    print(chunk, end="", flush=True)
+    print(chunk.content, end="", flush=True)
