@@ -1,9 +1,9 @@
 """Integration with Logfire from Pydantic"""
-
 import inspect
 from contextlib import (
     contextmanager,
 )
+from string import Formatter
 from typing import Any, Callable, Optional, Union, overload
 
 import logfire
@@ -236,9 +236,16 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     class_vars = get_class_vars(self)
     name = f"{self.__class__.__name__}.{fn.__name__}"
     tags = class_vars.pop("tags", [])
+    template_variables = {**self.model_dump()}
+    if hasattr(self, "prompt_template"):
+        template_variables |= {
+            var: getattr(self, var)
+            for _, var, _, _ in Formatter().parse(self.prompt_template)
+            if var is not None
+        }
     span_data = {
         "class_vars": class_vars,
-        "template_variables": self.model_dump(),
+        "template_variables": template_variables,
         "tags": tags,
         **kwargs,
     }
