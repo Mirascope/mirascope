@@ -260,3 +260,30 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         If there is no finish reason, this method must return None.
         """
         ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def usage(self) -> Any:
+        """Should return the usage of the response.
+
+        If there is no usage, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def input_tokens(self) -> Optional[Union[int, float]]:
+        """Should return the number of input tokens.
+
+        If there is no input_tokens, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def output_tokens(self) -> Optional[Union[int, float]]:
+        """Should return the number of output tokens.
+
+        If there is no output_tokens, this method must return None.
+        """
+        ...  # pragma: no cover

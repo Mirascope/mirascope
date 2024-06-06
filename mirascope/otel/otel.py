@@ -137,7 +137,7 @@ def mirascope_otel(cls) -> Callable:
     def record_streaming(
         span: Span,
         content_from_stream: Callable[
-            [ChunkT, type[BaseCallResponseChunk]], Union[str, None]
+            [ChunkT, type[BaseCallResponseChunk]], BaseCallResponseChunk
         ],
     ):
         """OTel record_streaming with Mirascope providers"""
@@ -148,7 +148,9 @@ def mirascope_otel(cls) -> Callable:
             raw_chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
         ) -> Any:
             """Handles all provider chunk_types instead of only OpenAI"""
-            chunk = content_from_stream(raw_chunk, response_chunk_type)
+            chunk: BaseCallResponseChunk = content_from_stream(
+                raw_chunk, response_chunk_type
+            )
             if model := chunk.model:
                 response_attributes["gen_ai.response.model"] = model
             if id := chunk.id:
@@ -179,7 +181,7 @@ def mirascope_otel(cls) -> Callable:
 
     def _extract_chunk(
         chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
-    ) -> str:
+    ) -> BaseCallResponseChunk:
         """Extracts the content from a chunk."""
         return response_chunk_type(chunk=chunk)
 
@@ -300,6 +302,11 @@ def mirascope_otel(cls) -> Callable:
     return mirascope_otel_decorator
 
 
+def custom_encoder(obj) -> str:
+    """Custom encoder for the OpenTelemetry span"""
+    return obj.__name__
+
+
 @contextmanager
 def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     """Handles before call"""
@@ -307,10 +314,24 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     class_vars = get_class_vars(self)
     inputs = self.model_dump()
     tracer = get_tracer("otel")
+    attributes: dict[str, AttributeValue] = {**kwargs, **class_vars, **inputs}
+    if hasattr(self, "call_params"):
+        attributes["call_params"] = json.dumps(
+            self.call_params.model_dump(), default=custom_encoder
+        )
+    if hasattr(self, "configuration"):
+        configuration = self.configuration.model_dump()
+        attributes["configuration"] = json.dumps(configuration, default=custom_encoder)
+
+    if hasattr(self, "base_url"):
+        attributes["base_url"] = self.base_url if self.base_url else ""
+
+    if hasattr(self, "extract_schema"):
+        attributes["extract_schema"] = self.extract_schema.__name__
     with tracer.start_as_current_span(
         f"{self.__class__.__name__}.{fn.__name__}"
     ) as span:
-        span.set_attributes({**kwargs, **class_vars, **inputs})
+        span.set_attributes(attributes)
         yield span
 
 

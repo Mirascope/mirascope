@@ -150,3 +150,12 @@ def test_mistral_stream_response_with_tools(
     assert response.usage is not None
     assert response.input_tokens is not None
     assert response.output_tokens is not None
+
+    response = MistralCallResponseChunk(
+        chunk=fixture_chat_completion_stream_response_with_tools[1],
+        tool_types=[fixture_book_tool],
+    )
+
+    assert response.usage is None
+    assert response.input_tokens is None
+    assert response.output_tokens is None

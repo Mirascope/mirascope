@@ -191,6 +191,6 @@ def fixture_chat_completion_stream_response_with_tools() -> (
                     finish_reason=FinishReason.tool_calls,
                 )
             ],
-            usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
+            usage=None,
         ),
     ]

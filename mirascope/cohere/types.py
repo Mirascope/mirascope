@@ -123,7 +123,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         return self.response.text
 
     @property
-    def model(self) -> str:
+    def model(self) -> Optional[str]:
         """Returns the name of the response model.
 
         Cohere does not return model, so we return None
@@ -318,7 +318,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         return None
 
     @property
-    def model(self) -> str:
+    def model(self) -> Optional[str]:
         """Returns the name of the response model.
 
         Cohere does not return model, so we return None

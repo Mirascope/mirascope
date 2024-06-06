@@ -255,16 +255,20 @@ class MistralCallResponseChunk(
         return self.delta.tool_calls
 
     @property
-    def usage(self) -> UsageInfo:
+    def usage(self) -> Optional[UsageInfo]:
         """Returns the usage of the chat completion."""
         return self.chunk.usage
 
     @property
-    def input_tokens(self) -> int:
+    def input_tokens(self) -> Optional[int]:
         """Returns the number of input tokens."""
-        return self.usage.prompt_tokens
+        if self.usage:
+            return self.usage.prompt_tokens
+        return None
 
     @property
     def output_tokens(self) -> Optional[int]:
         """Returns the number of output tokens."""
-        return self.usage.completion_tokens
+        if self.usage:
+            return self.usage.completion_tokens
+        return None

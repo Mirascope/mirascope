@@ -253,7 +253,7 @@ class AnthropicCallResponseChunk(
         return ""
 
     @property
-    def model(self) -> str:
+    def model(self) -> Optional[str]:
         """Returns the name of the response model."""
         if isinstance(self.chunk, MessageStartEvent):
             return self.chunk.message.model
@@ -270,7 +270,7 @@ class AnthropicCallResponseChunk(
     def finish_reasons(self) -> Optional[list[str]]:
         """Returns the finish reason of the response."""
         if isinstance(self.chunk, MessageStartEvent):
-            return [self.chunk.message.stop_reason]
+            return [str(self.chunk.message.stop_reason)]
         return None
 
     @property

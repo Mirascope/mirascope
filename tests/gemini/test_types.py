@@ -109,9 +109,7 @@ def test_gemini_call_response_chunk(
 ) -> None:
     """Tests the `GeminiCallResponseChunk` class."""
     response = GeminiCallResponseChunk(
-        chunk=fixture_generate_content_response_with_tools,
-        start_time=0,
-        end_time=0,
+        chunk=fixture_generate_content_response_with_tools
     )
     assert response.chunk is not None
     assert response.id is None
