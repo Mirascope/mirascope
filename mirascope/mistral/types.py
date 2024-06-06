@@ -15,7 +15,7 @@ from mistralai.models.chat_completion import (
 )
 from pydantic import ConfigDict
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, Message
 from .tools import MistralTool
 
 
@@ -67,6 +67,11 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
     ```
 
     """
+
+    @property
+    def message_param(self) -> Optional[Message]:
+        """Returns the assistants's response as a message parameter."""
+        return self.message.model_dump()
 
     @property
     def choices(self) -> list[ChatCompletionResponseChoice]:

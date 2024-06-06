@@ -28,6 +28,11 @@ def test_openai_call_response(fixture_chat_completion: ChatCompletion):
         response=fixture_chat_completion, start_time=0, end_time=0
     )
     choices = fixture_chat_completion.choices
+    assert response.message_param == {
+        "role": "assistant",
+        "content": choices[0].message.content,
+        "tool_calls": None,
+    }
     assert response.choices == choices
     assert response.choice == choices[0]
     assert response.message == choices[0].message

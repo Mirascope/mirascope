@@ -8,6 +8,7 @@ from anthropic.types import (
     ContentBlockDeltaEvent,
     ContentBlockStartEvent,
     Message,
+    MessageParam,
     MessageStreamEvent,
     TextBlock,
     TextDelta,
@@ -17,6 +18,7 @@ from anthropic.types import (
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
+from typing_extensions import TypedDict
 
 from ..base.types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
 from .tools import AnthropicTool
@@ -91,6 +93,11 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     """
 
     response_format: Optional[Literal["json"]] = None
+
+    @property
+    def message_param(self) -> Optional[MessageParam]:
+        """Returns the assistant's response as a message parameter."""
+        return self.response.model_dump(include={"content", "role"})
 
     @property
     def tools(self) -> Optional[list[AnthropicTool]]:

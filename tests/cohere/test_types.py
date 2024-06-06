@@ -4,6 +4,7 @@ import pytest
 from cohere.types import (
     ChatCitation,
     ChatDocument,
+    ChatMessage,
     ChatSearchQuery,
     ChatSearchResult,
     NonStreamedChatResponse,
@@ -40,6 +41,11 @@ def test_cohere_call_response_properties(
 ):
     call_response = CohereCallResponse(
         response=fixture_non_streamed_response, start_time=0, end_time=0, cost=1
+    )
+
+    assert isinstance(call_response.message_param, ChatMessage)
+    assert call_response.message_param == ChatMessage(
+        message="Test response", tool_calls=[fixture_tool_call], role="assistant"
     )
 
     assert call_response.content == "Test response"

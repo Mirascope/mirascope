@@ -27,7 +27,7 @@ while True:
     librarian.question = input("(User): ")
     response = librarian.call()
     librarian.history.append({"role": "user", "content": librarian.question})
-    librarian.history.append({"role": "assistant", "content": response.content})
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 # > (User): What fantasy book should I read?

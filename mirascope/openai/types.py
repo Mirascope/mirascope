@@ -7,6 +7,7 @@ from openai._types import Body, Headers, Query
 from openai.types import Embedding
 from openai.types.chat import (
     ChatCompletion,
+    ChatCompletionAssistantMessageParam,
     ChatCompletionChunk,
     ChatCompletionMessageToolCall,
     ChatCompletionToolChoiceOptionParam,
@@ -103,6 +104,11 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     """
 
     response_format: Optional[ResponseFormat] = None
+
+    @property
+    def message_param(self) -> ChatCompletionAssistantMessageParam:
+        """Returns the assistants's response as a message parameter."""
+        return self.message.model_dump(exclude={"function_call"})
 
     @property
     def choices(self) -> list[Choice]:

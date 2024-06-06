@@ -21,6 +21,10 @@ def test_anthropic_call_response(fixture_anthropic_message: Message):
         response=fixture_anthropic_message, start_time=0, end_time=1
     )
     assert response.content == "test"
+    assert response.message_param == {
+        "content": [{"text": "test", "type": "text"}],
+        "role": "assistant",
+    }
     assert response.tools is None
     assert response.tool is None
     assert response.usage is not None
