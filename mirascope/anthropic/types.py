@@ -148,6 +148,16 @@ class AnthropicCallResponse(
         return block.text if block.type == "text" else ""
 
     @property
+    def id(self) -> str:
+        """Returns the id of the response."""
+        return self.response.id
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reason of the response."""
+        return [self.response.stop_reason]
+
+    @property
     def usage(self) -> Usage:
         """Returns the usage of the message."""
         return self.response.usage

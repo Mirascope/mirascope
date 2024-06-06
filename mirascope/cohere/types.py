@@ -122,6 +122,16 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         return self.response.text
 
     @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response."""
+        return self.response.generation_id
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reasons of the response."""
+        return [self.response.finish_reason]
+
+    @property
     def search_queries(self) -> Optional[list[ChatSearchQuery]]:
         """Returns the search queries for the 0th choice message."""
         return self.response.search_queries

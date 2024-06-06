@@ -165,6 +165,21 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
 
     @property
     @abstractmethod
+    def finish_reasons(self) -> list[str]:
+        """Should return the finish reasons of the response.
+
+        If there is no finish reason, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def id(self) -> Optional[str]:
+        """Should return the id of the response."""
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
     def usage(self) -> Any:
         """Should return the usage of the response.
 
@@ -217,4 +232,19 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         If there is no string content (e.g. when using tools), this method must return
         the empty string.
         """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def finish_reasons(self) -> list[str]:
+        """Should return the finish reasons of the response.
+
+        If there is no finish reason, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def id(self) -> Optional[str]:
+        """Should return the id of the response."""
         ...  # pragma: no cover

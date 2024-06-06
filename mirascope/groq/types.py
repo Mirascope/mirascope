@@ -189,6 +189,16 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         return None
 
     @property
+    def id(self) -> str:
+        """Returns the id of the response."""
+        return self.response.id
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        return [choice.finish_reason for choice in self.choices]
+
+    @property
     def usage(self) -> Optional[Usage]:
         """Returns the usage of the chat completion."""
         return self.response.usage

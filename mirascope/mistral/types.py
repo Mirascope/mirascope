@@ -92,6 +92,16 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         return content if isinstance(content, str) else content[0]
 
     @property
+    def id(self) -> str:
+        """Returns the id of the response."""
+        return self.response.id
+
+    @property
+    def finish_reasons(self) -> list[Optional[str]]:
+        """Returns the finish reasons of the response."""
+        return [choice.finish_reason for choice in self.choices]
+
+    @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
         """Returns the tool calls for the 0th choice message."""
         return self.message.tool_calls
