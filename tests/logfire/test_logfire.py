@@ -7,7 +7,7 @@ import pytest
 from cohere import StreamedChatResponse_TextGeneration
 from cohere.types import NonStreamedChatResponse, StreamedChatResponse
 from google.ai.generativelanguage import GenerateContentResponse
-from groq.lib.chat_completion_chunk import ChatCompletionChunk
+from groq.types.chat.chat_completion_chunk import ChatCompletionChunk
 from logfire import configure
 from logfire.testing import CaptureLogfire, TestExporter
 from openai.types.chat import ChatCompletion
@@ -46,7 +46,7 @@ def test_openai_call_with_logfire(
     configure(
         send_to_logfire=False,
         console=False,
-        processors=[SimpleSpanProcessor(exporter)],
+        additional_span_processors=[SimpleSpanProcessor(exporter)],
     )
     mock_create.return_value = fixture_chat_completion
     mock_create.__name__ = "call"

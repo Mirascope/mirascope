@@ -9,9 +9,11 @@ from anthropic.types import (
     ContentBlockStartEvent,
     Message,
     MessageStreamEvent,
+    TextBlock,
+    TextDelta,
+    ToolUseBlock,
     Usage,
 )
-from anthropic.types.beta.tools import ToolsBetaMessage, ToolUseBlock
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
@@ -66,9 +68,7 @@ class AnthropicCallParams(BaseCallParams[AnthropicTool]):
         return super().kwargs(tool_type, exclude)
 
 
-class AnthropicCallResponse(
-    BaseCallResponse[Union[Message, ToolsBetaMessage], AnthropicTool]
-):
+class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     """Convenience wrapper around the Anthropic Claude API.
 
     When using Mirascope's convenience wrappers to interact with Anthropic models via
@@ -225,7 +225,13 @@ class AnthropicCallResponseChunk(
     def content(self) -> str:
         """Returns the string content of the 0th message."""
         if isinstance(self.chunk, ContentBlockStartEvent):
-            return self.chunk.content_block.text
+            return (
+                self.chunk.content_block.text
+                if isinstance(self.chunk.content_block, TextBlock)
+                else ""
+            )
         if isinstance(self.chunk, ContentBlockDeltaEvent):
-            return self.chunk.delta.text
+            return (
+                self.chunk.delta.text if isinstance(self.chunk.delta, TextDelta) else ""
+            )
         return ""

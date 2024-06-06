@@ -3,21 +3,26 @@
 from typing import Any, Optional, Type, Union
 
 from groq._types import Body, Headers, Query
-from groq.lib.chat_completion_chunk import (
+from groq.types.chat import ChatCompletion
+from groq.types.chat.chat_completion import (
+    ChatCompletionMessage,
+    Choice,
+    CompletionUsage,
+)
+from groq.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
     ChoiceDelta,
     ChoiceDeltaToolCall,
 )
-from groq.lib.chat_completion_chunk import Choice as ChunkChoice
-from groq.types.chat import ChatCompletion
-from groq.types.chat.chat_completion import (
-    Choice,
-    ChoiceMessage,
-    ChoiceMessageToolCall,
-    ChoiceMessageToolCallFunction,
-    Usage,
+from groq.types.chat.chat_completion_chunk import Choice as ChunkChoice
+from groq.types.chat.chat_completion_message_tool_call import (
+    ChatCompletionMessageToolCall,
+    Function,
 )
-from groq.types.chat.completion_create_params import ResponseFormat, ToolChoice
+from groq.types.chat.completion_create_params import (
+    ChatCompletionToolChoiceOptionParam,
+    ResponseFormat,
+)
 from httpx import Timeout
 from pydantic import ConfigDict
 
@@ -39,7 +44,7 @@ class GroqCallParams(BaseCallParams[GroqTool]):
     seed: Optional[int] = None
     stop: Union[Optional[str], list[str]] = None
     temperature: Optional[float] = None
-    tool_choice: Optional[ToolChoice] = None
+    tool_choice: Optional[ChatCompletionToolChoiceOptionParam] = None
     top_logprobs: Optional[int] = None
     top_p: Optional[float] = None
     user: Optional[str] = None
@@ -110,7 +115,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         return self.choices[0]
 
     @property
-    def message(self) -> ChoiceMessage:
+    def message(self) -> ChatCompletionMessage:
         """Returns the message of the chat completion for the 0th choice."""
         return self.choice.message
 
@@ -120,7 +125,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         return self.message.content if self.message.content is not None else ""
 
     @property
-    def tool_calls(self) -> Optional[list[ChoiceMessageToolCall]]:
+    def tool_calls(self) -> Optional[list[ChatCompletionMessageToolCall]]:
         """Returns the tool calls for the 0th choice message."""
         return self.message.tool_calls
 
@@ -145,9 +150,9 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
             tool_type = self.tool_types[0]  # type: ignore
             return [
                 tool_type.from_tool_call(
-                    ChoiceMessageToolCall(
+                    ChatCompletionMessageToolCall(
                         id="id",
-                        function=ChoiceMessageToolCallFunction(
+                        function=Function(
                             name=tool_type.__name__, arguments=self.content
                         ),
                         type="function",
@@ -189,7 +194,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         return None
 
     @property
-    def usage(self) -> Optional[Usage]:
+    def usage(self) -> Optional[CompletionUsage]:
         """Returns the usage of the chat completion."""
         return self.response.usage
 

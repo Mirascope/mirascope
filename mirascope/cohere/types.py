@@ -16,7 +16,6 @@ from cohere.types import (
     ChatDocument,
     ChatMessage,
     ChatRequestPromptTruncation,
-    ChatRequestToolResultsItem,
     ChatSearchQuery,
     ChatSearchResult,
     EmbedByTypeResponseEmbeddings,
@@ -25,6 +24,7 @@ from cohere.types import (
     StreamedChatResponse,
     StreamedChatResponse_TextGeneration,
     ToolCall,
+    ToolResult,
 )
 from pydantic import ConfigDict, SkipValidation
 from typing_extensions import NotRequired, TypedDict
@@ -65,7 +65,7 @@ class CohereCallParams(BaseCallParams[CohereTool]):
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
     raw_prompting: Optional[bool] = None
-    tool_results: Optional[Sequence[ChatRequestToolResultsItem]] = None
+    tool_results: Optional[Sequence[ToolResult]] = None
     request_options: Optional[RequestOptions] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)

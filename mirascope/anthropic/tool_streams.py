@@ -6,7 +6,7 @@ JSON so that we can stream tools.
 
 from typing import AsyncGenerator, Generator, Literal, Optional, Type, overload
 
-from anthropic.types.beta.tools import ToolUseBlock
+from anthropic.types import ToolUseBlock
 from pydantic_core import from_json
 
 from ..base.tool_streams import BaseToolStream

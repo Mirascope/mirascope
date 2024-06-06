@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Callable, Type
 
-from anthropic.types.beta.tools import ToolParam, ToolUseBlock
+from anthropic.types import ToolParam, ToolUseBlock
 from pydantic import BaseModel
 
 from ..base import BaseTool, BaseType

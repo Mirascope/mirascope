@@ -1,9 +1,9 @@
 """Tests for the `mirascope.groq.tools` module."""
 
 import pytest
-from groq.types.chat.chat_completion import (
-    ChoiceMessageToolCall,
-    ChoiceMessageToolCallFunction,
+from groq.types.chat.chat_completion_message_tool_call import (
+    ChatCompletionMessageToolCall,
+    Function,
 )
 from pydantic import BaseModel, Field
 
@@ -19,10 +19,10 @@ def test_from_tool_call_no_args() -> None:
     """Test the `from_tool_call` method with no args."""
     with pytest.raises(ValueError):
         NoDescription.from_tool_call(
-            ChoiceMessageToolCall(
-                function=ChoiceMessageToolCallFunction(
-                    name="nodescription", arguments=""
-                )
+            ChatCompletionMessageToolCall(
+                id="id",
+                function=Function(name="nodescription", arguments=""),
+                type="function",
             )
         )
 
@@ -75,9 +75,9 @@ def test_tool_from_base_type() -> None:
 
 def test_groq_tool_from_tool_call_json_decode_error():
     """Tests that `GroqTool.from_tool_call` raises a ValueError for bad JSON."""
-    tool_call = ChoiceMessageToolCall(
+    tool_call = ChatCompletionMessageToolCall(
         id="id",
-        function=ChoiceMessageToolCallFunction(
+        function=Function(
             arguments='{\n  "param": "param",\n  "optional": 0', name="FakeTool"
         ),
         type="function",

@@ -2,11 +2,11 @@
 
 from typing import Optional
 
-from groq.types.chat.chat_completion import Usage
+from groq.types.chat.chat_completion import CompletionUsage
 
 
 def groq_api_calculate_cost(
-    usage: Usage, model="mixtral-8x7b-32768"
+    usage: CompletionUsage, model="mixtral-8x7b-32768"
 ) -> Optional[float]:
     """Calculate the cost of a completion using the Groq API.
 
