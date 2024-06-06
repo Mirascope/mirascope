@@ -146,6 +146,14 @@ class GeminiCallResponse(
         ]
 
     @property
+    def model(self) -> None:
+        """Returns the model name.
+
+        google.generativeai does not return model, so we return None
+        """
+        return None
+
+    @property
     def usage(self) -> None:
         """Returns the usage of the chat completion.
 
@@ -211,3 +219,54 @@ class GeminiCallResponseChunk(
     def content(self) -> str:
         """Returns the chunk content for the 0th choice."""
         return self.chunk.candidates[0].content.parts[0].text
+
+    @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response.
+
+        google.generativeai does not return an id
+        """
+        return None
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        finish_reasons = [
+            "FINISH_REASON_UNSPECIFIED",
+            "STOP",
+            "MAX_TOKENS",
+            "SAFETY",
+            "RECITATION",
+            "OTHER",
+        ]
+
+        return [
+            finish_reasons[candidate.finish_reason]
+            for candidate in self.chunk.candidates
+        ]
+
+    @property
+    def model(self) -> None:
+        """Returns the model name.
+
+        google.generativeai does not return model, so we return None
+        """
+        return None
+
+    @property
+    def usage(self) -> None:
+        """Returns the usage of the chat completion.
+
+        google.generativeai does not have Usage, so we return None
+        """
+        return None
+
+    @property
+    def input_tokens(self) -> None:
+        """Returns the number of input tokens."""
+        return None
+
+    @property
+    def output_tokens(self) -> None:
+        """Returns the number of output tokens."""
+        return None

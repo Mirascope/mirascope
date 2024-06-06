@@ -125,6 +125,11 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         return self.message.content if self.message.content is not None else ""
 
     @property
+    def model(self) -> str:
+        """Returns the name of the response model."""
+        return self.response.model
+
+    @property
     def id(self) -> str:
         """Returns the id of the response."""
         return self.response.id
@@ -132,7 +137,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
-        return [choice.finish_reason for choice in self.response.choices]
+        return [str(choice.finish_reason) for choice in self.response.choices]
 
     @property
     def tool_calls(self) -> Optional[list[ChatCompletionMessageToolCall]]:
@@ -293,6 +298,11 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
         )
 
     @property
+    def model(self) -> str:
+        """Returns the name of the response model."""
+        return self.chunk.model
+
+    @property
     def id(self) -> str:
         """Returns the id of the response."""
         return self.chunk.id
@@ -300,7 +310,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
-        return [choice.finish_reason for choice in self.chunk.choices]
+        return [str(choice.finish_reason) for choice in self.chunk.choices]
 
     @property
     def tool_calls(self) -> Optional[list[ChoiceDeltaToolCall]]:

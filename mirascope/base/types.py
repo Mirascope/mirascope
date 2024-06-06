@@ -165,11 +165,17 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
 
     @property
     @abstractmethod
-    def finish_reasons(self) -> list[str]:
+    def finish_reasons(self) -> Union[None, list[str]]:
         """Should return the finish reasons of the response.
 
         If there is no finish reason, this method must return None.
         """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def model(self) -> Optional[str]:
+        """Should return the name of the response model."""
         ...  # pragma: no cover
 
     @property
@@ -236,15 +242,21 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
 
     @property
     @abstractmethod
-    def finish_reasons(self) -> list[str]:
-        """Should return the finish reasons of the response.
-
-        If there is no finish reason, this method must return None.
-        """
+    def model(self) -> Optional[str]:
+        """Should return the name of the response model."""
         ...  # pragma: no cover
 
     @property
     @abstractmethod
     def id(self) -> Optional[str]:
         """Should return the id of the response."""
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def finish_reasons(self) -> Union[None, list[str]]:
+        """Should return the finish reasons of the response.
+
+        If there is no finish reason, this method must return None.
+        """
         ...  # pragma: no cover

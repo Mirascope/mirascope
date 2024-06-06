@@ -8,7 +8,7 @@ from contextlib import (
 )
 from typing import Any, Callable, Optional, Sequence, Union, overload
 
-from opentelemetry.sdk.trace import Span, SpanProcessor, TracerProvider
+from opentelemetry.sdk.trace import SpanProcessor, TracerProvider
 from opentelemetry.sdk.trace.export import (
     ConsoleSpanExporter,
     SimpleSpanProcessor,
@@ -20,6 +20,8 @@ from opentelemetry.trace import (
     get_tracer_provider,
     set_tracer_provider,
 )
+from opentelemetry.trace.span import Span
+from opentelemetry.util.types import Attributes, AttributeValue
 from pydantic import BaseModel
 from typing_extensions import LiteralString
 
@@ -45,27 +47,30 @@ STEAMING_MSG_TEMPLATE: LiteralString = (
 )
 
 
-def _set_response_attributes(
-    span: Span, response: BaseCallResponse, messages: list[dict[str, Any]]
-) -> None:
-    """Sets the response attributes"""
-    response_attributes = {
-        "gen_ai.response.id": response.id,
-        "gen_ai.response.model": response.content,
-        "gen_ai.response.finish_reasons": response.finish_reasons,
-        "gen_ai.usage.completion_tokens": response.output_tokens,
-        "gen_ai.usage.prompt_tokens": response.input_tokens,
-    }
-    span.set_attributes(response_attributes)
-    event_attributes = {"gen_ai.completion": json.dumps(messages)}
-    span.add_event(
-        "gen_ai.content.completion",
-        attributes=event_attributes,
-    )
-
-
 def mirascope_otel(cls) -> Callable:
     tracer = get_tracer("otel")
+
+    def _set_response_attributes(
+        span: Span, response: BaseCallResponse, messages: list[dict[str, Any]]
+    ) -> None:
+        """Sets the response attributes"""
+        response_attributes: dict[str, AttributeValue] = {}
+        if model := response.model:
+            response_attributes["gen_ai.response.model"] = model
+        if id := response.id:
+            response_attributes["gen_ai.response.id"] = id
+        if finish_reasons := response.finish_reasons:
+            response_attributes["gen_ai.response.finish_reasons"] = finish_reasons
+        if output_tokens := response.output_tokens:
+            response_attributes["gen_ai.usage.completion_tokens"] = output_tokens
+        if input_tokens := response.input_tokens:
+            response_attributes["gen_ai.usage.prompt_tokens"] = input_tokens
+        span.set_attributes(response_attributes)
+        event_attributes: Attributes = {"gen_ai.completion": json.dumps(messages)}
+        span.add_event(
+            "gen_ai.content.completion",
+            attributes=event_attributes,
+        )
 
     def _set_span_data(
         span: Span,
@@ -74,8 +79,8 @@ def mirascope_otel(cls) -> Callable:
         model_name: Optional[str],
         args: tuple[Any],
     ) -> None:
-        prompt = args[0]
-        if suffix == "gemini":
+        prompt = args[0] if len(args) > 0 else None
+        if prompt and suffix == "gemini":
             prompt = {
                 "messages": [
                     {"role": message["role"], "content": message["parts"][0]}
@@ -91,15 +96,20 @@ def mirascope_otel(cls) -> Callable:
             max_tokens = getattr(call_params, "max_tokens", None)
             temperature = getattr(call_params, "temperature", None)
             top_p = getattr(call_params, "top_p", None)
-        attributes = {
+        attributes: dict[str, AttributeValue] = {
             "async": is_async,
-            "gen_ai.request.model": model_name,
             "gen_ai.system": suffix,
-            "gen_ai.request.max_tokens": max_tokens,
-            "gen_ai.request.temperature": temperature,
-            "gen_ai.request.top_p": top_p,
         }
-        events = {
+        if model_name:
+            attributes["gen_ai.request.model"] = model_name
+        if max_tokens:
+            attributes["gen_ai.request.max_tokens"] = max_tokens
+        if temperature:
+            attributes["gen_ai.request.temperature"] = temperature
+        if top_p:
+            attributes["gen_ai.request.top_p"] = top_p
+
+        events: Attributes = {
             "gen_ai.prompt": json.dumps(prompt),
         }
         span.set_attributes(attributes)
@@ -132,31 +142,46 @@ def mirascope_otel(cls) -> Callable:
     ):
         """OTel record_streaming with Mirascope providers"""
         content: list[str] = []
+        response_attributes: dict[str, AttributeValue] = {}
 
         def record_chunk(
-            chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
+            raw_chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
         ) -> Any:
             """Handles all provider chunk_types instead of only OpenAI"""
-            chunk_content = content_from_stream(chunk, response_chunk_type)
+            chunk = content_from_stream(raw_chunk, response_chunk_type)
+            if model := chunk.model:
+                response_attributes["gen_ai.response.model"] = model
+            if id := chunk.id:
+                response_attributes["gen_ai.response.id"] = id
+            if finish_reasons := chunk.finish_reasons:
+                response_attributes["gen_ai.response.finish_reasons"] = finish_reasons
+            if output_tokens := chunk.output_tokens:
+                response_attributes["gen_ai.usage.completion_tokens"] = output_tokens
+            if input_tokens := chunk.input_tokens:
+                response_attributes["gen_ai.usage.prompt_tokens"] = input_tokens
+            chunk_content = chunk.content
             if chunk_content is not None:
                 content.append(chunk_content)
 
         try:
             yield record_chunk
         finally:
-            attributes = {
-                "response_data": {
-                    "combined_chunk_content": "".join(content),
-                    "chunk_count": len(content),
-                },
+            span.set_attributes(response_attributes)
+            event_attributes: Attributes = {
+                "gen_ai.completion": json.dumps(
+                    {"role": "assistant", "content": "".join(content)}
+                )
             }
-        span.set_attributes(attributes)
+            span.add_event(
+                "gen_ai.content.completion",
+                attributes=event_attributes,
+            )
 
-    def _extract_chunk_content(
+    def _extract_chunk(
         chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
     ) -> str:
         """Extracts the content from a chunk."""
-        return response_chunk_type(chunk=chunk).content
+        return response_chunk_type(chunk=chunk)
 
     def mirascope_otel_decorator(
         fn: Callable,
@@ -230,7 +255,7 @@ def mirascope_otel(cls) -> Callable:
                 f"{suffix}.{fn.__name__} with {model}"
             ) as span:
                 _set_span_data(span, suffix, is_async, model, args)
-                with record_streaming(span, _extract_chunk_content) as record_chunk:
+                with record_streaming(span, _extract_chunk) as record_chunk:
                     stream = fn(*args, **kwargs)
                     if isinstance(stream, AbstractContextManager):
                         with stream as s:
@@ -248,7 +273,7 @@ def mirascope_otel(cls) -> Callable:
                 f"{suffix}.{fn.__name__} with {model}"
             ) as span:
                 _set_span_data(span, suffix, is_async, model, args)
-                with record_streaming(span, _extract_chunk_content) as record_chunk:
+                with record_streaming(span, _extract_chunk) as record_chunk:
                     stream = fn(*args, **kwargs)
                     if inspect.iscoroutine(stream):
                         stream = await stream

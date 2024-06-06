@@ -11,6 +11,7 @@ from cohere.types import (
     StreamedChatResponse_SearchQueriesGeneration,
     StreamedChatResponse_SearchResults,
     StreamedChatResponse_StreamEnd,
+    StreamedChatResponse_StreamStart,
     StreamedChatResponse_TextGeneration,
     StreamedChatResponse_ToolCallsGeneration,
     ToolCall,
@@ -124,10 +125,16 @@ def test_cohere_call_response_chunk_properties(
     assert call_chunk.event_type == "text-generation"
     assert call_chunk.content == "Test response"
     assert call_chunk.response is None
+    call_chunk.chunk = StreamedChatResponse_StreamStart(
+        generation_id="test_id",
+        event_type="stream-start",
+        **fixture_non_streamed_response.dict(exclude={"event_type"}),
+    )
+    assert call_chunk.id == "test_id"
 
     call_chunk.chunk = StreamedChatResponse_SearchQueriesGeneration(
         event_type="search-queries-generation",
-        **chunk.dict(exclude={"event_type"}),
+        **fixture_non_streamed_response.dict(exclude={"event_type"}),
     )
     assert call_chunk.search_queries == [fixture_chat_search_query]
     assert call_chunk.search_results is None
@@ -178,3 +185,7 @@ def test_cohere_call_response_chunk_properties(
     assert call_chunk.documents is None
     assert call_chunk.citations is None
     assert call_chunk.content == ""
+    assert call_chunk.finish_reasons == ["COMPLETE"]
+    assert call_chunk.usage is not None
+    assert call_chunk.input_tokens is not None
+    assert call_chunk.output_tokens is not None

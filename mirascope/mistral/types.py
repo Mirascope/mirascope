@@ -92,14 +92,22 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         return content if isinstance(content, str) else content[0]
 
     @property
+    def model(self) -> str:
+        """Returns the name of the response model."""
+        return self.response.model
+
+    @property
     def id(self) -> str:
         """Returns the id of the response."""
         return self.response.id
 
     @property
-    def finish_reasons(self) -> list[Optional[str]]:
+    def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
-        return [choice.finish_reason for choice in self.choices]
+        return [
+            choice.finish_reason if choice.finish_reason else ""
+            for choice in self.choices
+        ]
 
     @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
@@ -224,6 +232,39 @@ class MistralCallResponseChunk(
         return self.delta.content if self.delta.content is not None else ""
 
     @property
+    def model(self) -> str:
+        """Returns the name of the response model."""
+        return self.chunk.model
+
+    @property
+    def id(self) -> str:
+        """Returns the id of the response."""
+        return self.chunk.id
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        return [
+            choice.finish_reason if choice.finish_reason else ""
+            for choice in self.choices
+        ]
+
+    @property
     def tool_calls(self) -> Optional[list[ToolCall]]:
         """Returns the partial tool calls for the 0th choice message."""
         return self.delta.tool_calls
+
+    @property
+    def usage(self) -> UsageInfo:
+        """Returns the usage of the chat completion."""
+        return self.chunk.usage
+
+    @property
+    def input_tokens(self) -> int:
+        """Returns the number of input tokens."""
+        return self.usage.prompt_tokens
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        return self.usage.completion_tokens
