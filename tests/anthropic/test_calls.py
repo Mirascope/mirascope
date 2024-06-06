@@ -41,7 +41,7 @@ def test_anthropic_call_messages(call: str, expected_messages, request: FixtureR
 
 
 @patch(
-    "anthropic.resources.beta.tools.messages.Messages.create",
+    "anthropic.resources.messages.Messages.create",
     new_callable=MagicMock,
 )
 def test_anthropic_call_call_json_tools_setup(

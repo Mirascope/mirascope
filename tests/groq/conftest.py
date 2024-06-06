@@ -3,38 +3,42 @@
 from typing import Type
 
 import pytest
-from groq.lib.chat_completion_chunk import (
+from groq.types.chat.chat_completion import (
+    ChatCompletion,
+    ChatCompletionMessage,
+    Choice,
+    ChoiceLogprobs,
+    CompletionUsage,
+)
+from groq.types.chat.chat_completion_chunk import (
     ChatCompletionChunk,
     ChoiceDelta,
     ChoiceDeltaToolCall,
     ChoiceDeltaToolCallFunction,
 )
-from groq.lib.chat_completion_chunk import Choice as ChunkChoice
-from groq.lib.chat_completion_chunk import (
+from groq.types.chat.chat_completion_chunk import Choice as ChunkChoice
+from groq.types.chat.chat_completion_chunk import (
     ChoiceLogprobs as ChunkChoiceLogprobs,
 )
-from groq.types.chat.chat_completion import (
-    ChatCompletion,
-    Choice,
-    ChoiceLogprobs,
-    ChoiceMessage,
-    ChoiceMessageToolCall,
-    ChoiceMessageToolCallFunction,
-    Usage,
+from groq.types.chat.chat_completion_message_tool_call import (
+    ChatCompletionMessageToolCall,
+    Function,
 )
 
 from mirascope.groq.tools import GroqTool
 
 
 @pytest.fixture()
-def fixture_chat_message() -> ChoiceMessage:
+def fixture_chat_message() -> ChatCompletionMessage:
     """Returns a `ChatMessage` instance."""
-    return ChoiceMessage(role="assistant", content="test content", tool_calls=[])
+    return ChatCompletionMessage(
+        role="assistant", content="test content", tool_calls=[]
+    )
 
 
 @pytest.fixture()
 def fixture_chat_completion_response(
-    fixture_chat_message: ChoiceMessage,
+    fixture_chat_message: ChatCompletionMessage,
 ) -> ChatCompletion:
     """Returns a `ChatCompletion` instance."""
     return ChatCompletion(
@@ -50,13 +54,13 @@ def fixture_chat_completion_response(
                 logprobs=ChoiceLogprobs(),
             )
         ],
-        usage=Usage(prompt_tokens=1, completion_tokens=1),
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
 
 
 @pytest.fixture()
 def fixture_chat_completion_response_no_usage(
-    fixture_chat_message: ChoiceMessage,
+    fixture_chat_message: ChatCompletionMessage,
 ) -> ChatCompletion:
     """Returns a `ChatCompletion` instance with no usage."""
     return ChatCompletion(
@@ -92,9 +96,9 @@ def fixture_book_tool() -> Type[BookTool]:
 def fixture_book_tool_instance() -> BookTool:
     """Returns a `BookTool` instance."""
     return BookTool(
-        tool_call=ChoiceMessageToolCall(
+        tool_call=ChatCompletionMessageToolCall(
             id="id",
-            function=ChoiceMessageToolCallFunction(
+            function=Function(
                 name="BookTool",
                 arguments='{\n  "title": "The Name of the Wind",\n  "author": "Patrick Rothfuss"}',
             ),
@@ -111,9 +115,9 @@ def fixture_expected_book_tool_instance() -> BookTool:
     return BookTool(
         title="The Name of the Wind",
         author="Patrick Rothfuss",
-        tool_call=ChoiceMessageToolCall(
+        tool_call=ChatCompletionMessageToolCall(
             id="id",
-            function=ChoiceMessageToolCallFunction(
+            function=Function(
                 name="BookTool",
                 arguments='{"title": "The Name of the Wind","author": "Patrick Rothfuss"}',
             ),
@@ -133,13 +137,13 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
         choices=[
             Choice(
                 index=0,
-                message=ChoiceMessage(
+                message=ChatCompletionMessage(
                     role="assistant",
                     content="",
                     tool_calls=[
-                        ChoiceMessageToolCall(
+                        ChatCompletionMessageToolCall(
                             id="id",
-                            function=ChoiceMessageToolCallFunction(
+                            function=Function(
                                 name="BookTool",
                                 arguments='{"title": "The Name of the Wind","author": "Patrick Rothfuss"}',
                             ),
@@ -151,7 +155,7 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
                 logprobs=ChoiceLogprobs(),
             )
         ],
-        usage=Usage(prompt_tokens=1, completion_tokens=1),
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
 
 
@@ -192,7 +196,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -208,7 +212,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -243,7 +247,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -263,7 +267,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),

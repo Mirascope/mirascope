@@ -3,8 +3,8 @@
 from typing import Type
 
 import pytest
-from groq.lib.chat_completion_chunk import ChatCompletionChunk
 from groq.types.chat.chat_completion import ChatCompletion
+from groq.types.chat.chat_completion_chunk import ChatCompletionChunk
 
 from mirascope.groq import (
     GroqCallResponse,

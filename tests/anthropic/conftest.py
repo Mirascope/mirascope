@@ -4,11 +4,11 @@ from typing import Type
 
 import pytest
 from anthropic.types import (
-    ContentBlock,
     ContentBlockDeltaEvent,
     Message,
     MessageStartEvent,
     MessageStreamEvent,
+    TextBlock,
     TextDelta,
     Usage,
 )
@@ -55,7 +55,7 @@ def fixture_anthropic_message() -> Message:
     """Returns an Anthropic message."""
     return Message(
         id="0",
-        content=[ContentBlock(text="test", type="text")],
+        content=[TextBlock(text="test", type="text")],
         model="claude-3-haiku-20240307",
         role="assistant",
         type="message",
@@ -69,7 +69,7 @@ def fixture_anthropic_message_with_json_tool() -> Message:
     return Message(
         id="0",
         content=[
-            ContentBlock(
+            TextBlock(
                 text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
                 type="text",
             )

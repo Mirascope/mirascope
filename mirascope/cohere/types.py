@@ -16,7 +16,6 @@ from cohere.types import (
     ChatDocument,
     ChatMessage,
     ChatRequestPromptTruncation,
-    ChatRequestToolResultsItem,
     ChatSearchQuery,
     ChatSearchResult,
     EmbedByTypeResponseEmbeddings,
@@ -25,6 +24,7 @@ from cohere.types import (
     StreamedChatResponse,
     StreamedChatResponse_TextGeneration,
     ToolCall,
+    ToolResult,
 )
 from pydantic import ConfigDict, SkipValidation
 from typing_extensions import NotRequired, TypedDict
@@ -65,7 +65,7 @@ class CohereCallParams(BaseCallParams[CohereTool]):
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
     raw_prompting: Optional[bool] = None
-    tool_results: Optional[Sequence[ChatRequestToolResultsItem]] = None
+    tool_results: Optional[Sequence[ToolResult]] = None
     request_options: Optional[RequestOptions] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -296,7 +296,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 
     @property
     def documents(self) -> Optional[list[ChatDocument]]:
-        """Returns the documents for citation-generation event type else None."""
+        """Returns the documents for search-results event type else None."""
         if isinstance(self.chunk, StreamedChatResponse_SearchResults):
             return self.chunk.documents
         return None
@@ -310,7 +310,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 
     @property
     def response(self) -> Optional[NonStreamedChatResponse]:
-        """Returns the response for text-generation event type else None."""
+        """Returns the full response for the stream-end event type else None."""
         if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
             return self.chunk.response
         return None

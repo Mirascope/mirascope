@@ -4,11 +4,11 @@ from typing import Type
 
 import pytest
 from anthropic.types import (
-    ContentBlock,
     ContentBlockDeltaEvent,
     ContentBlockStartEvent,
     ContentBlockStopEvent,
     Message,
+    TextBlock,
 )
 
 from mirascope.anthropic.tools import AnthropicTool
@@ -76,7 +76,7 @@ def test_anthropic_call_response_chunk(
 
     chunk = AnthropicCallResponseChunk(
         chunk=ContentBlockStartEvent(
-            content_block=ContentBlock(text="test_start", type="text"),
+            content_block=TextBlock(text="test_start", type="text"),
             index=0,
             type="content_block_start",
         )

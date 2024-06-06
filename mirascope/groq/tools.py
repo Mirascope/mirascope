@@ -5,7 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any, Callable, Type
 
-from groq.types.chat.chat_completion import ChoiceMessageToolCall
+from groq.types.chat.chat_completion_message_tool_call import (
+    ChatCompletionMessageToolCall,
+)
 from pydantic import BaseModel
 
 from ..base import BaseTool, BaseType
@@ -16,7 +18,7 @@ from ..base.utils import (
 )
 
 
-class GroqTool(BaseTool[ChoiceMessageToolCall]):
+class GroqTool(BaseTool[ChatCompletionMessageToolCall]):
     '''A base class for easy use of tools with the Groq client.
 
     `GroqTool` internally handles the logic that allows you to use tools with simple
@@ -84,7 +86,7 @@ class GroqTool(BaseTool[ChoiceMessageToolCall]):
         return {"type": "function", "function": fn}
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChoiceMessageToolCall) -> GroqTool:
+    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> GroqTool:
         """Extracts an instance of the tool constructed from a tool call response.
 
         Given `ToolCall` from a Groq chat completion response, takes its function
