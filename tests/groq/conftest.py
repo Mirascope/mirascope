@@ -54,7 +54,7 @@ def fixture_chat_completion_response(
                 logprobs=ChoiceLogprobs(),
             )
         ],
-        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1),
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
 
 
@@ -155,7 +155,7 @@ def fixture_chat_completion_response_with_tools() -> ChatCompletion:
                 logprobs=ChoiceLogprobs(),
             )
         ],
-        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1),
+        usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
 
 
@@ -196,7 +196,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -212,7 +212,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -247,7 +247,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -267,7 +267,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),

@@ -20,7 +20,9 @@ def test_from_tool_call_no_args() -> None:
     with pytest.raises(ValueError):
         NoDescription.from_tool_call(
             ChatCompletionMessageToolCall(
-                function=Function(name="nodescription", arguments="")
+                id="id",
+                function=Function(name="nodescription", arguments=""),
+                type="function",
             )
         )
 

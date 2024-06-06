@@ -5,7 +5,6 @@ from typing import Type
 
 import pytest
 from anthropic.types import (
-    ContentBlock,
     ContentBlockDeltaEvent,
     Message,
     TextBlock,
@@ -407,7 +406,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),
@@ -423,7 +422,7 @@ def fixture_chat_completion_stream_response() -> list[ChatCompletionChunk]:
                 )
             ],
             created=0,
-            object="",
+            object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
         ),

@@ -9,6 +9,8 @@ from anthropic.types import (
     ContentBlockStartEvent,
     Message,
     MessageStreamEvent,
+    TextBlock,
+    TextDelta,
     ToolUseBlock,
     Usage,
 )
@@ -223,7 +225,13 @@ class AnthropicCallResponseChunk(
     def content(self) -> str:
         """Returns the string content of the 0th message."""
         if isinstance(self.chunk, ContentBlockStartEvent):
-            return self.chunk.content_block.text
+            return (
+                self.chunk.content_block.text
+                if isinstance(self.chunk.content_block, TextBlock)
+                else ""
+            )
         if isinstance(self.chunk, ContentBlockDeltaEvent):
-            return self.chunk.delta.text
+            return (
+                self.chunk.delta.text if isinstance(self.chunk.delta, TextDelta) else ""
+            )
         return ""

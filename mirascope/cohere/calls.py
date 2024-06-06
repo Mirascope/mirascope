@@ -45,7 +45,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
     def messages(self) -> list[ChatMessage]:
         """Returns the template as a formatted list of messages."""
         return [
-            ChatMessage(role=message["role"].upper(), message=message["content"])
+            ChatMessage(role=message["role"].upper(), message=message["content"])  # type: ignore
             for message in self._parse_messages(
                 [MessageRole.SYSTEM, MessageRole.USER, MessageRole.CHATBOT]
             )
@@ -190,7 +190,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
         preamble = ""
         if "preamble" in kwargs and kwargs["preamble"] is not None:
             preamble += kwargs.pop("preamble")
-        if messages[0].role == "SYSTEM":
+        if messages[0].role == "SYSTEM":  # type: ignore
             preamble += messages.pop(0).message
         if preamble:
             kwargs["preamble"] = preamble

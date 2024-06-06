@@ -46,7 +46,7 @@ def test_openai_call_with_logfire(
     configure(
         send_to_logfire=False,
         console=False,
-        processors=[SimpleSpanProcessor(exporter)],
+        additional_span_processors=[SimpleSpanProcessor(exporter)],
     )
     mock_create.return_value = fixture_chat_completion
     mock_create.__name__ = "call"

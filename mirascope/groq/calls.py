@@ -6,7 +6,7 @@ import json
 from typing import Any, AsyncGenerator, ClassVar, Generator, Optional, Type, Union
 
 from groq import AsyncGroq, Groq
-from groq.types.chat import ChatCompletionMessage
+from groq.types.chat import ChatCompletionMessageParam, ChatCompletionUserMessageParam
 from groq.types.chat.completion_create_params import ResponseFormat
 from tenacity import AsyncRetrying, Retrying
 
@@ -58,7 +58,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
     call_params: ClassVar[GroqCallParams] = GroqCallParams()
     _provider: ClassVar[str] = "groq"
 
-    def messages(self) -> list[ChatCompletionMessage]:
+    def messages(self) -> list[ChatCompletionMessageParam]:
         """Returns the template as a formatted list of messages."""
         return self._parse_messages(
             [MessageRole.SYSTEM, MessageRole.USER, MessageRole.ASSISTANT]
@@ -222,16 +222,17 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
 
     def _update_messages_if_json(
         self,
-        messages: list[ChatCompletionMessage],
+        messages: list[ChatCompletionMessageParam],
         tool_types: Optional[list[type[GroqTool]]],
-    ) -> list[ChatCompletionMessage]:
+    ) -> list[ChatCompletionMessageParam]:
         if (
             self.call_params.response_format == ResponseFormat(type="json_object")
             and tool_types
         ):
             messages.append(
-                ChatCompletionMessage(
-                    role="user", content=_json_mode_content(tool_type=tool_types[0])
+                ChatCompletionUserMessageParam(
+                    role="user",
+                    content=_json_mode_content(tool_type=tool_types[0]),
                 )
             )
         return messages
