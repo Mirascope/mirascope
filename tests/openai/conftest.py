@@ -153,6 +153,14 @@ def fixture_chat_completion_chunk(
 
 
 @pytest.fixture()
+def fixture_chat_completion_last_chunk(
+    fixture_chat_completion_chunks,
+) -> ChatCompletionChunk:
+    """Returns a chat completion last chunk."""
+    return fixture_chat_completion_chunks[-1]
+
+
+@pytest.fixture()
 def fixture_chat_completion_chunks_with_tools() -> list[ChatCompletionChunk]:
     """Returns a list of chat completion chunks with tool calls."""
 
@@ -276,6 +284,14 @@ def fixture_chat_completion_chunk_with_tools(
 ) -> ChatCompletionChunk:
     """Returns a chat completion chunk with tool calls."""
     return fixture_chat_completion_chunks_with_tools[0]
+
+
+@pytest.fixture()
+def fixture_chat_completion_last_chunk_with_tools(
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
+) -> ChatCompletionChunk:
+    """Returns a chat completion last chunk with tool calls."""
+    return fixture_chat_completion_chunks_with_tools[-1]
 
 
 @pytest.fixture()

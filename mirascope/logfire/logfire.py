@@ -1,9 +1,9 @@
 """Integration with Logfire from Pydantic"""
-
 import inspect
 from contextlib import (
     contextmanager,
 )
+from string import Formatter
 from typing import Any, Callable, Optional, Union, overload
 
 import logfire
@@ -11,6 +11,8 @@ from logfire import LogfireSpan
 from pydantic import BaseModel
 from typing_extensions import LiteralString
 
+from mirascope.base.calls import BaseCall
+from mirascope.base.extractors import BaseExtractor
 from mirascope.base.ops_utils import get_class_vars, wrap_mirascope_class_functions
 from mirascope.base.types import (
     BaseCallResponse,
@@ -233,10 +235,24 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     """Handles before call"""
     class_vars = get_class_vars(self)
     name = f"{self.__class__.__name__}.{fn.__name__}"
-    with logfire.span(
-        name,
-        class_vars=class_vars,
+    tags = class_vars.pop("tags", [])
+    template_variables = {**self.model_dump()}
+    if hasattr(self, "prompt_template"):
+        template_variables |= {
+            var: getattr(self, var, None)
+            for _, var, _, _ in Formatter().parse(self.prompt_template)
+            if var is not None
+        }
+    span_data = {
+        "class_vars": class_vars,
+        "template_variables": template_variables,
+        "tags": tags,
         **kwargs,
+    }
+    if hasattr(self, "messages"):
+        span_data["messages"] = self.messages()
+    with logfire.with_settings(custom_scope_suffix="mirascope").span(
+        name, **span_data
     ) as logfire_span:
         yield logfire_span
 
@@ -245,38 +261,76 @@ def handle_after_call(
     self: BaseModel, fn, result, logfire_span: LogfireSpan, **kwargs
 ) -> None:
     """Handles after call"""
-    logfire_span.set_attribute("response", result)
+    logfire_span.set_attribute("response_data", result)
+    output: dict[str, Any] = {}
+    response = None
+    if isinstance(result, list):
+        output["content"] = "\n".join([chunk.content for chunk in result])
+    elif isinstance(self, BaseExtractor):
+        response = result._response
+    elif isinstance(self, BaseCall):
+        response = result
+    if response:
+        if tools := response.tools:
+            tool_calls = [
+                {
+                    "function": {
+                        "arguments": tool.model_dump_json(exclude={"tool_call"}),
+                        "name": tool.__class__.__name__,
+                    }
+                }
+                for tool in tools
+            ]
+            output["tool_calls"] = tool_calls
+        if cost := response.cost:
+            output["cost"] = cost
+        if input_tokens := response.input_tokens:
+            output["input_tokens"] = input_tokens
+        if output_tokens := response.output_tokens:
+            output["output_tokens"] = output_tokens
+        if content := response.content:
+            output["content"] = content
+    logfire_span.set_attribute("output", output)
 
 
 @overload
-def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]: ...  # pragma: no cover
+def with_logfire(cls: type[BaseCallT]) -> type[BaseCallT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseExtractorT],
-) -> type[BaseExtractorT]: ...  # pragma: no cover
+) -> type[BaseExtractorT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseVectorStoreT],
-) -> type[BaseVectorStoreT]: ...  # pragma: no cover
+) -> type[BaseVectorStoreT]:
+    ...  # pragma: no cover
 
 
 @overload
-def with_logfire(cls: type[BaseChunkerT]) -> type[BaseChunkerT]: ...  # pragma: no cover
+def with_logfire(cls: type[BaseChunkerT]) -> type[BaseChunkerT]:
+    ...  # pragma: no cover
 
 
 @overload
 def with_logfire(
     cls: type[BaseEmbedderT],
-) -> type[BaseEmbedderT]: ...  # pragma: no cover
+) -> type[BaseEmbedderT]:
+    ...  # pragma: no cover
 
 
 def with_logfire(cls):
     """Wraps a pydantic class with a Logfire span."""
-    wrap_mirascope_class_functions(cls, handle_before_call, handle_after_call)
+    wrap_mirascope_class_functions(
+        cls,
+        handle_before_call=handle_before_call,
+        handle_after_call=handle_after_call,
+    )
     instrumented_providers = ["openai", "anthropic"]
     if cls._provider and cls._provider in instrumented_providers:
         if hasattr(cls, "configuration"):

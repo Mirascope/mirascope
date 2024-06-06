@@ -286,7 +286,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 
     @property
     def documents(self) -> Optional[list[ChatDocument]]:
-        """Returns the documents for citation-generation event type else None."""
+        """Returns the documents for search-results event type else None."""
         if isinstance(self.chunk, StreamedChatResponse_SearchResults):
             return self.chunk.documents
         return None
@@ -300,7 +300,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
 
     @property
     def response(self) -> Optional[NonStreamedChatResponse]:
-        """Returns the response for text-generation event type else None."""
+        """Returns the full response for the stream-end event type else None."""
         if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
             return self.chunk.response
         return None

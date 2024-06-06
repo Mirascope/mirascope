@@ -420,7 +420,7 @@ Some model providers have their models hosted on major cloud providers such as A
     class BookRecommender(OpenAICall):
         prompt_template = "Please recommend a fantasy book."
 
-        call_params = OpenAICallParams(model="NEEDS MODEL NAME ONCE FIGURED OUT")
+        call_params = OpenAICallParams(model="AZURE_DEPLOYMENT_NAME")
         configuration = BaseConfig(
             client_wrappers=[
                 azure_client_wrapper(
@@ -443,7 +443,40 @@ The [generative-ai library](https://github.com/GoogleCloudPlatform/generative-ai
 
 This leads to people typically sticking with one provider even when providers release new features frequently. Take for example when Google announced [Gemini 1.5](https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#gemini-15), it would be very useful to implement prompts with the new context window. Thankfully, Mirascope makes this swap trivial.
 
-### Assuming you are starting with OpenAICall
+The following examples are using `OpenAI` and `Gemini` so make sure Gemini is installed if you intend to follow along. Of course, the same concepts apply to all providers, so feel free to substitute `Gemini` with any provider:
+
+```python
+pip install mirascope[gemini]
+```
+
+### The simplest case
+
+If you do not have provider-specific syntax (which we will go over later), you can take advantage of the `from_prompt` classmethod to do the heavy lifting for you.
+
+```python hl_lines="14"
+from google.generativeai import configure
+from mirascope.gemini import GeminiCall, GeminiCallParams
+
+configure(api_key="YOUR_GEMINI_API_KEY")
+
+class RecipeRecommender(OpenAICall):
+    prompt_template = "Recommend recipes that use {ingredient} as an ingredient"
+    
+    ingredient: str
+    
+    call_params = OpenAICallParams(model="...")
+
+
+recipe_recommender = GeminiCall.from_prompt(RecipeRecommender, GeminiCallParams(model="gemini-1.0-pro"))
+response = recipe_recommender(ingredient="apples").call()
+print(response.content)
+```
+
+With just 1 line and some imports you can immediately test out other providers. You can also swap the provider class manually.
+
+### The manual case
+
+Assuming you are starting with OpenAICall:
 
 ```python
 import os
@@ -464,13 +497,7 @@ response = RecipeRecommender(ingredient="apples").call()
 print(response.content)
 ```
 
-1. First install Mirascope’s integration with gemini if you haven’t already.
-
-    ```python
-    pip install mirascope[gemini]
-    ```
-
-2. Swap out OpenAI with Gemini:
+Swap out OpenAI with Gemini:
     1. Replace `OpenAICall` and `OpenAICallParams` with `GeminiCall` and `GeminiCallParams` respectively 
     2. Configure your Gemini API Key
     3. Update `GeminiCallParams` with new model and other attributes
@@ -494,7 +521,7 @@ response = RecipeRecommender(ingredient="apples").call()
 print(response.content)
 ```
 
-That’s it for the basic example! Now you can evaluate the quality of your prompt with Gemini.
+That’s it for the manual example! Now you can evaluate the quality of your prompt with Gemini.
 
 ### Something a bit more advanced
 

@@ -37,6 +37,8 @@ __all__ = [
     "convert_base_model_to_tool",
     "convert_base_type_to_tool",
     "convert_function_to_tool",
+    "create_extractor",
+    "tags",
     "tool_fn",
     "retry",
 ]

@@ -44,7 +44,11 @@ class BaseTool(BaseModel, Generic[ToolCallT], ABC):
     @property
     def args(self) -> dict[str, Any]:
         """The arguments of the tool as a dictionary."""
-        return self.model_dump(exclude={"tool_call"})
+        return {
+            field: getattr(self, field)
+            for field in self.model_fields
+            if field != "tool_call"
+        }
 
     @property
     def fn(self) -> Callable:
