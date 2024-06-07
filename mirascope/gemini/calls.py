@@ -12,7 +12,7 @@ from typing import (
 )
 
 from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import ContentsType  # type: ignore
+from google.generativeai.types import ContentDict, ContentsType  # type: ignore
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
@@ -32,7 +32,9 @@ from .types import (
 logger = logging.getLogger("mirascope")
 
 
-class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool]):
+class GeminiCall(
+    BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool, ContentDict]
+):
     '''A class for prompting Google's Gemini Chat API.
 
     This prompt supports the message types: USER, MODEL, TOOL
@@ -104,7 +106,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             model_name=model_name,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
             messages,
@@ -149,7 +151,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             model_name=model_name,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
             messages,
@@ -192,7 +194,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             model_name=model_name,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         stream = generate_content(
             messages,
             stream=True,
@@ -233,7 +235,7 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             model_name=model_name,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         stream = generate_content_async(
             messages,
             stream=True,

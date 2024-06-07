@@ -14,14 +14,16 @@ from ..base.ops_utils import (
     get_wrapped_call,
     get_wrapped_client,
 )
-from ..base.types import Message
+from ..base.types import Message, UserMessage
 from ..enums import MessageRole
 from .tools import MistralTool
 from .types import MistralCallParams, MistralCallResponse, MistralCallResponseChunk
 from .utils import mistral_api_calculate_cost
 
 
-class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, MistralTool]):
+class MistralCall(
+    BaseCall[MistralCallResponse, MistralCallResponseChunk, MistralTool, UserMessage]
+):
     """A class for" prompting Mistral's chat API.
 
     Example:
@@ -81,7 +83,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             tool_types=tool_types,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = chat(messages=messages, **kwargs)
         return MistralCallResponse(
@@ -126,7 +128,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             tool_types=tool_types,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await chat(messages=messages, **kwargs)
         return MistralCallResponse(
@@ -170,7 +172,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             tool_types=tool_types,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         for chunk in chat_stream(messages=messages, **kwargs):
             yield MistralCallResponseChunk(
                 chunk=chunk,
@@ -211,7 +213,7 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             tool_types=tool_types,
         )
         messages = self.messages()
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         async for chunk in chat_stream(messages=messages, **kwargs):
             yield MistralCallResponseChunk(
                 chunk=chunk,

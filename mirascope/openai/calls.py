@@ -51,7 +51,14 @@ def _json_mode_content(tool_type: Type[OpenAITool]) -> str:
     )
 
 
-class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool]):
+class OpenAICall(
+    BaseCall[
+        OpenAICallResponse,
+        OpenAICallResponseChunk,
+        OpenAITool,
+        ChatCompletionUserMessageParam,
+    ]
+):
     """A base class for calling OpenAI's Chat Completion models.
 
     Example:
@@ -115,7 +122,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(
             messages=messages,
@@ -161,7 +168,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(
             messages=messages,
@@ -206,7 +213,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         if not isinstance(client, AzureOpenAI):
             kwargs["stream_options"] = {"include_usage": True}
         stream = create(
@@ -252,7 +259,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         if not isinstance(client, AsyncAzureOpenAI):
             kwargs["stream_options"] = {"include_usage": True}
         stream = await create(

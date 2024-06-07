@@ -35,7 +35,14 @@ def _json_mode_content(tool_type: Type[GroqTool]) -> str:
     )
 
 
-class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
+class GroqCall(
+    BaseCall[
+        GroqCallResponse,
+        GroqCallResponseChunk,
+        GroqTool,
+        ChatCompletionUserMessageParam,
+    ]
+):
     """A base class for calling Groq's Cloud API.
 
     Example:
@@ -88,7 +95,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
@@ -126,7 +133,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
@@ -157,13 +164,13 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             Groq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
             response_chunk_type=GroqCallResponseChunk,
             tool_types=tool_types,
         )
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = create(messages=messages, stream=True, **kwargs)
         for completion in stream:
             yield GroqCallResponseChunk(
@@ -191,6 +198,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -198,7 +206,6 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             response_chunk_type=GroqCallResponseChunk,
             tool_types=tool_types,
         )
-        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = create(messages=messages, stream=True, **kwargs)
         if inspect.iscoroutine(stream):
             stream = await stream

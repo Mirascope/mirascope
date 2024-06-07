@@ -19,7 +19,9 @@ from .types import CohereCallParams, CohereCallResponse, CohereCallResponseChunk
 from .utils import cohere_api_calculate_cost
 
 
-class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereTool]):
+class CohereCall(
+    BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereTool, ChatMessage]
+):
     """A base class for calling Cohere's chat models.
 
     Example:
@@ -81,7 +83,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             )
         return CohereCallResponse(
             response=response,
-            user_message_param=ChatMessage(message=message),  # type: ignore
+            user_message_param=ChatMessage(message=message, role="user"),  # type: ignore
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,

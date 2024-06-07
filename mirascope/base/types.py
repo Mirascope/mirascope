@@ -140,6 +140,7 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     @property
+    @abstractmethod
     def message_param(self) -> Any:
         """Returns the assistant's response as a message parameter."""
         ...  # pragma: no cover
