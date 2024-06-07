@@ -18,7 +18,6 @@ from typing import (
 
 from pydantic import create_model
 from tenacity import AsyncRetrying, Retrying
-from typing_extensions import TypedDict
 
 from .prompts import BasePrompt, BasePromptT
 from .tools import BaseTool
@@ -27,13 +26,12 @@ from .types import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseConfig,
-    Message,
 )
 
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
-MessageParamT = TypeVar("MessageParamT", bound=Message)
+MessageParamT = TypeVar("MessageParamT", bound=Any)
 
 
 class BaseCall(
@@ -155,7 +153,7 @@ class BaseCall(
         return kwargs, tool_types
 
     def _get_possible_user_message(
-        self, messages: list[MessageParamT]
+        self, messages: list[Any]
     ) -> Optional[MessageParamT]:
         """Returns the most recent message if it's a user message, otherwise `None`."""
         return messages[-1] if messages[-1]["role"] == "user" else None
