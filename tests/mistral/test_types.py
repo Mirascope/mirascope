@@ -24,6 +24,13 @@ def test_mistral_call_response(
         start_time=0,
         end_time=0,
     )
+    assert response.message_param == {
+        "role": "assistant",
+        "content": "test content",
+        "name": None,
+        "tool_call_id": None,
+        "tool_calls": None,
+    }
     assert response.content == "test content"
     assert response.tools is None
     assert response.tool is None

@@ -4,6 +4,7 @@ from typing import Any, Optional, TypeVar, Union
 
 from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
+    ContentDict,
     GenerateContentResponse,
 )
 
@@ -74,6 +75,11 @@ class GeminiCallResponse(
     #> The Lord of the Rings
     ```
     """
+
+    @property
+    def message_param(self) -> ContentDict:
+        """Returns the models's response as a message parameter."""
+        return {"role": "model", "parts": self.response.parts}
 
     @property
     def tools(self) -> Optional[list[GeminiTool]]:

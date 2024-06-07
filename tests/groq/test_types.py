@@ -22,6 +22,11 @@ def test_groq_call_response(
         start_time=0,
         end_time=0,
     )
+    assert response.message_param == {
+        "role": "assistant",
+        "content": "test content",
+        "tool_calls": [],
+    }
     assert response.content == "test content"
     assert response.tools is None
     assert response.tool is None

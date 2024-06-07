@@ -3,7 +3,7 @@
 from typing import Any, Optional, Type, Union
 
 from groq._types import Body, Headers, Query
-from groq.types.chat import ChatCompletion
+from groq.types.chat import ChatCompletion, ChatCompletionAssistantMessageParam
 from groq.types.chat.chat_completion import (
     ChatCompletionMessage,
     Choice,
@@ -103,6 +103,11 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
     """
 
     response_format: Optional[ResponseFormat] = None
+
+    @property
+    def message_param(self) -> ChatCompletionAssistantMessageParam:
+        """Returns the assistants's response as a message parameter."""
+        return self.message.model_dump(exclude={"function_call"})  # type: ignore
 
     @property
     def choices(self) -> list[Choice]:

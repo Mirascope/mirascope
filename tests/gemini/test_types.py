@@ -3,6 +3,7 @@
 from typing import Type
 
 import pytest
+from google.ai.generativelanguage_v1beta import Part
 from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from mirascope.gemini.tools import GeminiTool
@@ -19,6 +20,10 @@ def test_gemini_call_response(
         end_time=0,
         cost=None,
     )
+    assert response.message_param == {
+        "role": "model",
+        "parts": [Part(text="Who is the author?")],
+    }
     assert response.content == "Who is the author?"
     assert response.tools is None
     assert response.tool is None
