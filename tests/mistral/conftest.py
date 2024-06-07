@@ -40,7 +40,7 @@ def fixture_chat_completion_response(
         model="open-mixtral-8x7b",
         choices=[
             ChatCompletionResponseChoice(
-                index=0, message=fixture_chat_message, finish_reason=None
+                index=0, message=fixture_chat_message, finish_reason=FinishReason.stop
             )
         ],
         usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
@@ -173,7 +173,7 @@ def fixture_chat_completion_stream_response_with_tools() -> (
                         role="assistant",
                         tool_calls=[tool_call],
                     ),
-                    finish_reason=None,
+                    finish_reason=FinishReason.tool_calls,
                 )
             ],
             usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
@@ -188,9 +188,9 @@ def fixture_chat_completion_stream_response_with_tools() -> (
                         role="assistant",
                         tool_calls=[tool_call],
                     ),
-                    finish_reason=None,
+                    finish_reason=FinishReason.tool_calls,
                 )
             ],
-            usage=UsageInfo(prompt_tokens=1, total_tokens=2, completion_tokens=1),
+            usage=None,
         ),
     ]

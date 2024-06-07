@@ -8,17 +8,20 @@ from contextlib import (
 )
 from typing import Any, Callable, Optional, Sequence, Union, overload
 
-from opentelemetry.sdk.trace import Span, SpanProcessor, TracerProvider
+from opentelemetry.sdk.trace import SpanProcessor, TracerProvider
 from opentelemetry.sdk.trace.export import (
     ConsoleSpanExporter,
     SimpleSpanProcessor,
 )
 from opentelemetry.trace import (
+    SpanKind,
     Tracer,
     get_tracer,
     get_tracer_provider,
     set_tracer_provider,
 )
+from opentelemetry.trace.span import Span
+from opentelemetry.util.types import Attributes, AttributeValue
 from pydantic import BaseModel
 from typing_extensions import LiteralString
 
@@ -44,8 +47,143 @@ STEAMING_MSG_TEMPLATE: LiteralString = (
 )
 
 
-def mirascope_otel() -> Callable:
+def mirascope_otel(cls) -> Callable:
     tracer = get_tracer("otel")
+
+    def _set_response_attributes(
+        span: Span, response: BaseCallResponse, messages: list[dict[str, Any]]
+    ) -> None:
+        """Sets the response attributes"""
+        response_attributes: dict[str, AttributeValue] = {}
+        if model := response.model:
+            response_attributes["gen_ai.response.model"] = model
+        if id := response.id:
+            response_attributes["gen_ai.response.id"] = id
+        if finish_reasons := response.finish_reasons:
+            response_attributes["gen_ai.response.finish_reasons"] = finish_reasons
+        if output_tokens := response.output_tokens:
+            response_attributes["gen_ai.usage.completion_tokens"] = output_tokens
+        if input_tokens := response.input_tokens:
+            response_attributes["gen_ai.usage.prompt_tokens"] = input_tokens
+        span.set_attributes(response_attributes)
+        event_attributes: Attributes = {"gen_ai.completion": json.dumps(messages)}
+        span.add_event(
+            "gen_ai.content.completion",
+            attributes=event_attributes,
+        )
+
+    def _set_span_data(
+        span: Span,
+        suffix: str,
+        is_async: bool,
+        model_name: Optional[str],
+        args: tuple[Any],
+    ) -> None:
+        prompt = args[0] if len(args) > 0 else None
+        if prompt and suffix == "gemini":
+            prompt = {
+                "messages": [
+                    {"role": message["role"], "content": message["parts"][0]}
+                    for message in prompt
+                ]
+            }
+
+        max_tokens = None
+        temperature = None
+        top_p = None
+        if hasattr(cls, "call_params"):
+            call_params = cls.call_params
+            max_tokens = getattr(call_params, "max_tokens", None)
+            temperature = getattr(call_params, "temperature", None)
+            top_p = getattr(call_params, "top_p", None)
+        attributes: dict[str, AttributeValue] = {
+            "async": is_async,
+            "gen_ai.system": suffix,
+        }
+        if model_name:
+            attributes["gen_ai.request.model"] = model_name
+        if max_tokens:
+            attributes["gen_ai.request.max_tokens"] = max_tokens
+        if temperature:
+            attributes["gen_ai.request.temperature"] = temperature
+        if top_p:
+            attributes["gen_ai.request.top_p"] = top_p
+
+        events: Attributes = {
+            "gen_ai.prompt": json.dumps(prompt),
+        }
+        span.set_attributes(attributes)
+        span.add_event("gen_ai.content.prompt", attributes=events)
+
+    @contextmanager
+    def _mirascope_llm_span(
+        fn: Callable,
+        suffix: str,
+        is_async: bool,
+        model_name: Optional[str],
+        args: tuple[Any],
+        kwargs: dict[str, Any],
+    ):
+        """Wraps a pydantic class method with a OTel span."""
+        tracer = get_tracer("otel")
+        model = kwargs.get("model", "") or model_name
+        with tracer.start_as_current_span(
+            f"{suffix}.{fn.__name__} with {model}", kind=SpanKind.CLIENT
+        ) as span:
+            _set_span_data(span, suffix, is_async, model, args)
+            yield span
+
+    @contextmanager
+    def record_streaming(
+        span: Span,
+        content_from_stream: Callable[
+            [ChunkT, type[BaseCallResponseChunk]], BaseCallResponseChunk
+        ],
+    ):
+        """OTel record_streaming with Mirascope providers"""
+        content: list[str] = []
+        response_attributes: dict[str, AttributeValue] = {}
+
+        def record_chunk(
+            raw_chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
+        ) -> Any:
+            """Handles all provider chunk_types instead of only OpenAI"""
+            chunk: BaseCallResponseChunk = content_from_stream(
+                raw_chunk, response_chunk_type
+            )
+            if model := chunk.model:
+                response_attributes["gen_ai.response.model"] = model
+            if id := chunk.id:
+                response_attributes["gen_ai.response.id"] = id
+            if finish_reasons := chunk.finish_reasons:
+                response_attributes["gen_ai.response.finish_reasons"] = finish_reasons
+            if output_tokens := chunk.output_tokens:
+                response_attributes["gen_ai.usage.completion_tokens"] = output_tokens
+            if input_tokens := chunk.input_tokens:
+                response_attributes["gen_ai.usage.prompt_tokens"] = input_tokens
+            chunk_content = chunk.content
+            if chunk_content is not None:
+                content.append(chunk_content)
+
+        try:
+            yield record_chunk
+        finally:
+            span.set_attributes(response_attributes)
+            event_attributes: Attributes = {
+                "gen_ai.completion": json.dumps(
+                    {"role": "assistant", "content": "".join(content)}
+                )
+            }
+            span.add_event(
+                "gen_ai.content.completion",
+                attributes=event_attributes,
+            )
+
+    def _extract_chunk(
+        chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
+    ) -> BaseCallResponseChunk:
+        """Extracts the content from a chunk."""
+        return response_chunk_type(chunk=chunk)
 
     def mirascope_otel_decorator(
         fn: Callable,
@@ -83,9 +221,7 @@ def mirascope_otel() -> Callable:
                         ]
                         message["tool_calls"] = tool_calls
                         message.pop("content")
-                    span.set_attribute(
-                        "response_data", json.dumps({"message": message})
-                    )
+                    _set_response_attributes(span, response, [message])
                 return result
 
         async def wrapper_async(*args, **kwargs):
@@ -112,20 +248,16 @@ def mirascope_otel() -> Callable:
                         ]
                         message["tool_calls"] = tool_calls
                         message.pop("content")
-                    span.set_attribute(
-                        "response_data", json.dumps({"message": message})
-                    )
+                    _set_response_attributes(span, response, [message])
                 return result
 
         def wrapper_generator(*args, **kwargs):
-            span_data = _get_span_data(suffix, is_async, model_name, args, kwargs)
             model = kwargs.get("model", "") or model_name
             with tracer.start_as_current_span(
                 f"{suffix}.{fn.__name__} with {model}"
             ) as span:
-                with record_streaming(
-                    span, span_data, _extract_chunk_content
-                ) as record_chunk:
+                _set_span_data(span, suffix, is_async, model, args)
+                with record_streaming(span, _extract_chunk) as record_chunk:
                     stream = fn(*args, **kwargs)
                     if isinstance(stream, AbstractContextManager):
                         with stream as s:
@@ -138,14 +270,12 @@ def mirascope_otel() -> Callable:
                             yield chunk
 
         async def wrapper_generator_async(*args, **kwargs):
-            span_data = _get_span_data(suffix, is_async, model_name, args, kwargs)
             model = kwargs.get("model", "") or model_name
             with tracer.start_as_current_span(
                 f"{suffix}.{fn.__name__} with {model}"
             ) as span:
-                with record_streaming(
-                    span, span_data, _extract_chunk_content
-                ) as record_chunk:
+                _set_span_data(span, suffix, is_async, model, args)
+                with record_streaming(span, _extract_chunk) as record_chunk:
                     stream = fn(*args, **kwargs)
                     if inspect.iscoroutine(stream):
                         stream = await stream
@@ -172,84 +302,9 @@ def mirascope_otel() -> Callable:
     return mirascope_otel_decorator
 
 
-def _extract_chunk_content(
-    chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
-) -> str:
-    """Extracts the content from a chunk."""
-    return response_chunk_type(chunk=chunk).content
-
-
-def _get_span_data(
-    suffix: str,
-    is_async: bool,
-    model_name: Optional[str],
-    args: tuple[Any],
-    kwargs: dict[str, Any],
-) -> dict[str, Any]:
-    additional_request_data = {}
-    if suffix == "gemini":
-        gemini_messages = args[0]
-        additional_request_data = {
-            "messages": [
-                {"role": message["role"], "content": message["parts"][0]}
-                for message in gemini_messages
-            ],
-            "model": model_name,
-        }
-    return {
-        "async": is_async,
-        "request_data": json.dumps(kwargs | additional_request_data),
-    }
-
-
-@contextmanager
-def _mirascope_llm_span(
-    fn: Callable,
-    suffix: str,
-    is_async: bool,
-    model_name: Optional[str],
-    args: tuple[Any],
-    kwargs: dict[str, Any],
-):
-    """Wraps a pydantic class method with a Logfire span."""
-    tracer = get_tracer("otel")
-    model = kwargs.get("model", "") or model_name
-    span_data = _get_span_data(suffix, is_async, model, args, kwargs)
-    with tracer.start_as_current_span(f"{suffix}.{fn.__name__} with {model}") as span:
-        span.set_attributes(span_data)
-        yield span
-
-
-@contextmanager
-def record_streaming(
-    span: Span,
-    span_data: dict[str, Any],
-    content_from_stream: Callable[
-        [ChunkT, type[BaseCallResponseChunk]], Union[str, None]
-    ],
-):
-    """Logfire record_streaming with Mirascope providers"""
-    content: list[str] = []
-
-    def record_chunk(
-        chunk: ChunkT, response_chunk_type: type[BaseCallResponseChunk]
-    ) -> Any:
-        """Handles all provider chunk_types instead of only OpenAI"""
-        chunk_content = content_from_stream(chunk, response_chunk_type)
-        if chunk_content is not None:
-            content.append(chunk_content)
-
-    try:
-        yield record_chunk
-    finally:
-        attributes = {
-            **span_data,
-            "response_data": {
-                "combined_chunk_content": "".join(content),
-                "chunk_count": len(content),
-            },
-        }
-        span.set_attributes(attributes)
+def custom_encoder(obj) -> str:
+    """Custom encoder for the OpenTelemetry span"""
+    return obj.__name__
 
 
 @contextmanager
@@ -259,10 +314,24 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
     class_vars = get_class_vars(self)
     inputs = self.model_dump()
     tracer = get_tracer("otel")
+    attributes: dict[str, AttributeValue] = {**kwargs, **class_vars, **inputs}
+    if hasattr(self, "call_params"):
+        attributes["call_params"] = json.dumps(
+            self.call_params.model_dump(), default=custom_encoder
+        )
+    if hasattr(self, "configuration"):
+        configuration = self.configuration.model_dump()
+        attributes["configuration"] = json.dumps(configuration, default=custom_encoder)
+
+    if hasattr(self, "base_url"):
+        attributes["base_url"] = self.base_url if self.base_url else ""
+
+    if hasattr(self, "extract_schema"):
+        attributes["extract_schema"] = self.extract_schema.__name__
     with tracer.start_as_current_span(
         f"{self.__class__.__name__}.{fn.__name__}"
     ) as span:
-        span.set_attributes({**kwargs, **class_vars, **inputs})
+        span.set_attributes(attributes)
         yield span
 
 
@@ -330,7 +399,7 @@ def with_otel(cls: type[BaseEmbedderT]) -> type[BaseEmbedderT]:
 
 
 def with_otel(cls):
-    """Wraps a pydantic class with a Logfire span."""
+    """Wraps a pydantic class with a OTel span."""
 
     provider = get_tracer_provider()
     if not isinstance(provider, TracerProvider):
@@ -342,6 +411,6 @@ def with_otel(cls):
     )
     if hasattr(cls, "configuration"):
         cls.configuration = cls.configuration.model_copy(
-            update={"llm_ops": [*cls.configuration.llm_ops, mirascope_otel()]}
+            update={"llm_ops": [*cls.configuration.llm_ops, mirascope_otel(cls)]}
         )
     return cls

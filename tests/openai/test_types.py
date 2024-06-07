@@ -37,6 +37,9 @@ def test_openai_call_response(fixture_chat_completion: ChatCompletion):
     assert response.choice == choices[0]
     assert response.message == choices[0].message
     assert response.content == choices[0].message.content
+    assert response.model == fixture_chat_completion.model
+    assert response.finish_reasons == ["stop", "stop"]
+    assert response.id == fixture_chat_completion.id
     assert response.tools is None
     assert response.tool is None
 
@@ -139,6 +142,9 @@ def test_openai_chat_completion_chunk(
     assert openai_chat_completion_chunk.choice == choices[0]
     assert openai_chat_completion_chunk.delta == choices[0].delta
     assert openai_chat_completion_chunk.content == choices[0].delta.content
+    assert openai_chat_completion_chunk.model == fixture_chat_completion_chunk.model
+    assert openai_chat_completion_chunk.id == fixture_chat_completion_chunk.id
+    assert openai_chat_completion_chunk.finish_reasons == ["stop"]
 
 
 def test_openai_chat_completion_last_chunk(
