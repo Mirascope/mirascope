@@ -8,6 +8,7 @@ from anthropic.types import (
     ContentBlockDeltaEvent,
     ContentBlockStartEvent,
     Message,
+    MessageParam,
     MessageStreamEvent,
     TextBlock,
     TextDelta,
@@ -91,6 +92,11 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     """
 
     response_format: Optional[Literal["json"]] = None
+
+    @property
+    def message_param(self) -> MessageParam:
+        """Returns the assistant's response as a message parameter."""
+        return self.response.model_dump(include={"content", "role"})  # type: ignore
 
     @property
     def tools(self) -> Optional[list[AnthropicTool]]:
