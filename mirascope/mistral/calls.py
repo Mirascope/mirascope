@@ -14,14 +14,16 @@ from ..base.ops_utils import (
     get_wrapped_call,
     get_wrapped_client,
 )
-from ..base.types import Message
+from ..base.types import Message, UserMessage
 from ..enums import MessageRole
 from .tools import MistralTool
 from .types import MistralCallParams, MistralCallResponse, MistralCallResponseChunk
 from .utils import mistral_api_calculate_cost
 
 
-class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, MistralTool]):
+class MistralCall(
+    BaseCall[MistralCallResponse, MistralCallResponseChunk, MistralTool, UserMessage]
+):
     """A class for" prompting Mistral's chat API.
 
     Example:
@@ -80,10 +82,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_type=MistralCallResponse,
             tool_types=tool_types,
         )
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = chat(messages=self.messages(), **kwargs)
+        completion = chat(messages=messages, **kwargs)
         return MistralCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             cost=mistral_api_calculate_cost(completion.usage, completion.model),
@@ -122,11 +127,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_type=MistralCallResponse,
             tool_types=tool_types,
         )
-
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = await chat(messages=self.messages(), **kwargs)
+        completion = await chat(messages=messages, **kwargs)
         return MistralCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -164,9 +171,14 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_chunk_type=MistralCallResponseChunk,
             tool_types=tool_types,
         )
-
-        for chunk in chat_stream(messages=self.messages(), **kwargs):
-            yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
+        for chunk in chat_stream(messages=messages, **kwargs):
+            yield MistralCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     @retry
     async def stream_async(
@@ -200,5 +212,11 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_chunk_type=MistralCallResponseChunk,
             tool_types=tool_types,
         )
-        async for chunk in chat_stream(messages=self.messages(), **kwargs):
-            yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
+        async for chunk in chat_stream(messages=messages, **kwargs):
+            yield MistralCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )

@@ -12,7 +12,7 @@ from typing import (
 )
 
 from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import ContentsType  # type: ignore
+from google.generativeai.types import ContentDict, ContentsType  # type: ignore
 from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseCall, retry
@@ -32,7 +32,9 @@ from .types import (
 logger = logging.getLogger("mirascope")
 
 
-class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool]):
+class GeminiCall(
+    BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiTool, ContentDict]
+):
     '''A class for prompting Google's Gemini Chat API.
 
     This prompt supports the message types: USER, MODEL, TOOL
@@ -103,15 +105,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
-            self.messages(),
+            messages,
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         return GeminiCallResponse(
             response=response,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -145,15 +150,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
-            self.messages(),
+            messages,
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         return GeminiCallResponse(
             response=response,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -185,14 +193,20 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         stream = generate_content(
-            self.messages(),
+            messages,
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         for chunk in stream:
-            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+            yield GeminiCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     @retry
     async def stream_async(
@@ -220,8 +234,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = self._get_possible_user_message(messages)
         stream = generate_content_async(
-            self.messages(),
+            messages,
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
@@ -229,4 +245,8 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         if inspect.iscoroutine(stream):
             stream = await stream
         async for chunk in stream:
-            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+            yield GeminiCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )

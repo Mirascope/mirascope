@@ -19,7 +19,9 @@ from .types import CohereCallParams, CohereCallResponse, CohereCallResponseChunk
 from .utils import cohere_api_calculate_cost
 
 
-class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereTool]):
+class CohereCall(
+    BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereTool, ChatMessage]
+):
     """A base class for calling Cohere's chat models.
 
     Example:
@@ -81,6 +83,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             )
         return CohereCallResponse(
             response=response,
+            user_message_param=ChatMessage(message=message, role="user"),  # type: ignore
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -120,6 +123,7 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             )
         return CohereCallResponse(
             response=response,
+            user_message_param=ChatMessage(message=message, role="user"),  # type: ignore
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -149,8 +153,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             response_chunk_type=CohereCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = ChatMessage(message=message, role="user")  # type: ignore
         for event in chat_stream(message=message, **kwargs):
-            yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
+            yield CohereCallResponseChunk(
+                chunk=event,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     @retry
     async def stream_async(
@@ -176,8 +185,13 @@ class CohereCall(BaseCall[CohereCallResponse, CohereCallResponseChunk, CohereToo
             response_chunk_type=CohereCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = ChatMessage(message=message, role="user")  # type: ignore
         async for event in chat_stream(message=message, **kwargs):
-            yield CohereCallResponseChunk(chunk=event, tool_types=tool_types)
+            yield CohereCallResponseChunk(
+                chunk=event,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     ############################## PRIVATE METHODS ###################################
 

@@ -35,7 +35,14 @@ def _json_mode_content(tool_type: Type[GroqTool]) -> str:
     )
 
 
-class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
+class GroqCall(
+    BaseCall[
+        GroqCallResponse,
+        GroqCallResponseChunk,
+        GroqTool,
+        ChatCompletionUserMessageParam,
+    ]
+):
     """A base class for calling Groq's Cloud API.
 
     Example:
@@ -88,10 +95,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -124,10 +133,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -153,6 +164,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             Groq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -163,6 +175,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         for completion in stream:
             yield GroqCallResponseChunk(
                 chunk=completion,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )
@@ -185,6 +198,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             AsyncGroq(api_key=self.api_key, base_url=self.base_url), self
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         create = get_wrapped_call(
             client.chat.completions.create,
             self,
@@ -198,6 +212,7 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
         async for completion in stream:  # type: ignore
             yield GroqCallResponseChunk(
                 chunk=completion,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )

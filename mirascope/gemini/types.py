@@ -76,6 +76,8 @@ class GeminiCallResponse(
     ```
     """
 
+    user_message_param: Optional[ContentDict] = None
+
     @property
     def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
@@ -220,6 +222,8 @@ class GeminiCallResponseChunk(
     #  1 + 2 equals 3.
     ```
     """
+
+    user_message_param: Optional[ContentDict] = None
 
     @property
     def content(self) -> str:

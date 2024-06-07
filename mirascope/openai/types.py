@@ -11,6 +11,7 @@ from openai.types.chat import (
     ChatCompletionChunk,
     ChatCompletionMessageToolCall,
     ChatCompletionToolChoiceOptionParam,
+    ChatCompletionUserMessageParam,
 )
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
@@ -104,6 +105,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     """
 
     response_format: Optional[ResponseFormat] = None
+    user_message_param: Optional[ChatCompletionUserMessageParam] = None
 
     @property
     def message_param(self) -> ChatCompletionAssistantMessageParam:
@@ -278,6 +280,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, OpenAIT
     """
 
     response_format: Optional[ResponseFormat] = None
+    user_message_param: Optional[ChatCompletionUserMessageParam] = None
 
     @property
     def choices(self) -> list[ChunkChoice]:

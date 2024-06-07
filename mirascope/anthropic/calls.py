@@ -25,7 +25,12 @@ from .utils import anthropic_api_calculate_cost
 
 
 class AnthropicCall(
-    BaseCall[AnthropicCallResponse, AnthropicCallResponseChunk, AnthropicTool]
+    BaseCall[
+        AnthropicCallResponse,
+        AnthropicCallResponseChunk,
+        AnthropicTool,
+        MessageParam,
+    ]
 ):
     """A base class for calling Anthropic's Claude models.
 
@@ -70,6 +75,7 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
+        user_message_param = self._get_possible_user_message(messages)
         client = get_wrapped_client(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
@@ -87,6 +93,7 @@ class AnthropicCall(
         )
         return AnthropicCallResponse(
             response=message,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -108,6 +115,7 @@ class AnthropicCall(
             A `AnthropicCallResponse` instance.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
+        user_message_param = self._get_possible_user_message(messages)
         client = get_wrapped_async_client(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
@@ -126,6 +134,7 @@ class AnthropicCall(
         )
         return AnthropicCallResponse(
             response=message,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -147,6 +156,7 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
+        user_message_param = self._get_possible_user_message(messages)
         client = get_wrapped_client(
             Anthropic(api_key=self.api_key, base_url=self.base_url), self
         )
@@ -162,6 +172,7 @@ class AnthropicCall(
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,  # type: ignore
+                        user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
@@ -169,6 +180,7 @@ class AnthropicCall(
             for chunk in stream:  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,  # type: ignore
+                    user_message_param=user_message_param,
                     tool_types=tool_types,
                     response_format=self.call_params.response_format,
                 )
@@ -187,6 +199,7 @@ class AnthropicCall(
             An `AnthropicCallResponseChunk` for each chunk of the response.
         """
         messages, kwargs, tool_types = self._setup_anthropic_kwargs(kwargs)
+        user_message_param = self._get_possible_user_message(messages)
         client = get_wrapped_async_client(
             AsyncAnthropic(api_key=self.api_key, base_url=self.base_url), self
         )
@@ -203,6 +216,7 @@ class AnthropicCall(
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,  # type: ignore
+                        user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
@@ -210,6 +224,7 @@ class AnthropicCall(
             async for chunk in stream:  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,  # type: ignore
+                    user_message_param=user_message_param,
                     tool_types=tool_types,
                     response_format=self.call_params.response_format,
                 )

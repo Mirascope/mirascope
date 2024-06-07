@@ -21,16 +21,22 @@ from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt, BasePromptT
 from .tools import BaseTool
-from .types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseConfig
+from .types import (
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseConfig,
+)
 
 BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
 BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+MessageParamT = TypeVar("MessageParamT", bound=Any)
 
 
 class BaseCall(
     BasePrompt,
-    Generic[BaseCallResponseT, BaseCallResponseChunkT, BaseToolT],
+    Generic[BaseCallResponseT, BaseCallResponseChunkT, BaseToolT, MessageParamT],
     ABC,
 ):
     """The base class abstract interface for calling LLMs."""
@@ -145,6 +151,12 @@ class BaseCall(
             tool_types = kwargs.pop("tools")
             kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
         return kwargs, tool_types
+
+    def _get_possible_user_message(
+        self, messages: list[Any]
+    ) -> Optional[MessageParamT]:
+        """Returns the most recent message if it's a user message, otherwise `None`."""
+        return messages[-1] if messages[-1]["role"] == "user" else None
 
 
 BaseCallT = TypeVar("BaseCallT", bound=BaseCall)

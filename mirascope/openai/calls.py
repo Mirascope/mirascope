@@ -51,7 +51,14 @@ def _json_mode_content(tool_type: Type[OpenAITool]) -> str:
     )
 
 
-class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAITool]):
+class OpenAICall(
+    BaseCall[
+        OpenAICallResponse,
+        OpenAICallResponseChunk,
+        OpenAITool,
+        ChatCompletionUserMessageParam,
+    ]
+):
     """A base class for calling OpenAI's Chat Completion models.
 
     Example:
@@ -115,6 +122,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(
             messages=messages,
@@ -123,6 +131,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         )
         return OpenAICallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -159,6 +168,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(
             messages=messages,
@@ -167,6 +177,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         )
         return OpenAICallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -202,6 +213,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         if not isinstance(client, AzureOpenAI):
             kwargs["stream_options"] = {"include_usage": True}
         stream = create(
@@ -212,6 +224,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         for chunk in stream:
             yield OpenAICallResponseChunk(
                 chunk=chunk,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
@@ -246,6 +259,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = self._get_possible_user_message(messages)
         if not isinstance(client, AsyncAzureOpenAI):
             kwargs["stream_options"] = {"include_usage": True}
         stream = await create(
@@ -256,6 +270,7 @@ class OpenAICall(BaseCall[OpenAICallResponse, OpenAICallResponseChunk, OpenAIToo
         async for chunk in stream:
             yield OpenAICallResponseChunk(
                 chunk=chunk,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 response_format=self.call_params.response_format,
