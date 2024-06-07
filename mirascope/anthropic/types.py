@@ -92,6 +92,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
     """
 
     response_format: Optional[Literal["json"]] = None
+    user_message_param: Optional[MessageParam] = None
 
     @property
     def message_param(self) -> MessageParam:
@@ -212,6 +213,7 @@ class AnthropicCallResponseChunk(
     """
 
     response_format: Optional[Literal["json"]] = None
+    user_message_param: Optional[MessageParam] = None
 
     @property
     def type(

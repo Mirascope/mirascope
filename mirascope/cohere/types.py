@@ -115,6 +115,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
 
     # We need to skip validation since it's a pydantic_v1 model and breaks validation.
     response: SkipValidation[NonStreamedChatResponse]
+    user_message_param: SkipValidation[Optional[ChatMessage]] = None
 
     @property
     def message_param(self) -> ChatMessage:
@@ -256,6 +257,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
     """
 
     chunk: SkipValidation[StreamedChatResponse]
+    user_message_param: SkipValidation[Optional[ChatMessage]] = None
 
     @property
     def event_type(

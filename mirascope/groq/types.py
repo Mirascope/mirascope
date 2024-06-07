@@ -3,7 +3,11 @@
 from typing import Any, Optional, Type, Union
 
 from groq._types import Body, Headers, Query
-from groq.types.chat import ChatCompletion, ChatCompletionAssistantMessageParam
+from groq.types.chat import (
+    ChatCompletion,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from groq.types.chat.chat_completion import (
     ChatCompletionMessage,
     Choice,
@@ -103,6 +107,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
     """
 
     response_format: Optional[ResponseFormat] = None
+    user_message_param: Optional[ChatCompletionUserMessageParam] = None
 
     @property
     def message_param(self) -> ChatCompletionAssistantMessageParam:
@@ -260,6 +265,7 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, GroqTool]
     """
 
     response_format: Optional[ResponseFormat] = None
+    user_message_param: Optional[ChatCompletionUserMessageParam] = None
 
     @property
     def choices(self) -> list[ChunkChoice]:

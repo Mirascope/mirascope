@@ -87,6 +87,7 @@ class AnthropicCall(
         )
         return AnthropicCallResponse(
             response=message,
+            user_message_param=messages[-1] if messages[-1]["role"] == "user" else None,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -126,6 +127,7 @@ class AnthropicCall(
         )
         return AnthropicCallResponse(
             response=message,
+            user_message_param=messages[-1] if messages[-1]["role"] == "user" else None,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -156,12 +158,14 @@ class AnthropicCall(
             response_chunk_type=AnthropicCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = stream_fn(messages=messages, **kwargs)
         if isinstance(stream, AbstractContextManager):
             with stream as message_stream:
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,  # type: ignore
+                        user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
@@ -169,6 +173,7 @@ class AnthropicCall(
             for chunk in stream:  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,  # type: ignore
+                    user_message_param=user_message_param,
                     tool_types=tool_types,
                     response_format=self.call_params.response_format,
                 )
@@ -197,12 +202,14 @@ class AnthropicCall(
             response_chunk_type=AnthropicCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = stream_fn(messages=messages, **kwargs)
         if isinstance(stream, AbstractAsyncContextManager):
             async with stream as message_stream:
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
                         chunk=chunk,  # type: ignore
+                        user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
                     )
@@ -210,6 +217,7 @@ class AnthropicCall(
             async for chunk in stream:  # type: ignore
                 yield AnthropicCallResponseChunk(
                     chunk=chunk,  # type: ignore
+                    user_message_param=user_message_param,
                     tool_types=tool_types,
                     response_format=self.call_params.response_format,
                 )

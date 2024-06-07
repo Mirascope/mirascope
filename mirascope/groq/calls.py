@@ -88,10 +88,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -124,10 +126,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             tool_types=tool_types,
         )
         messages = self._update_messages_if_json(self.messages(), tool_types)
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
         completion = await create(messages=messages, stream=False, **kwargs)
         return GroqCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -159,10 +163,12 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             response_chunk_type=GroqCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = create(messages=messages, stream=True, **kwargs)
         for completion in stream:
             yield GroqCallResponseChunk(
                 chunk=completion,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )
@@ -192,12 +198,14 @@ class GroqCall(BaseCall[GroqCallResponse, GroqCallResponseChunk, GroqTool]):
             response_chunk_type=GroqCallResponseChunk,
             tool_types=tool_types,
         )
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = create(messages=messages, stream=True, **kwargs)
         if inspect.iscoroutine(stream):
             stream = await stream
         async for completion in stream:  # type: ignore
             yield GroqCallResponseChunk(
                 chunk=completion,
+                user_message_param=user_message_param,
                 tool_types=tool_types,
                 response_format=self.call_params.response_format,
             )

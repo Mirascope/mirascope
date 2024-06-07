@@ -80,10 +80,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_type=MistralCallResponse,
             tool_types=tool_types,
         )
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = chat(messages=self.messages(), **kwargs)
+        completion = chat(messages=messages, **kwargs)
         return MistralCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             cost=mistral_api_calculate_cost(completion.usage, completion.model),
@@ -122,11 +125,13 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_type=MistralCallResponse,
             tool_types=tool_types,
         )
-
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
-        completion = await chat(messages=self.messages(), **kwargs)
+        completion = await chat(messages=messages, **kwargs)
         return MistralCallResponse(
             response=completion,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -164,9 +169,14 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_chunk_type=MistralCallResponseChunk,
             tool_types=tool_types,
         )
-
-        for chunk in chat_stream(messages=self.messages(), **kwargs):
-            yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        for chunk in chat_stream(messages=messages, **kwargs):
+            yield MistralCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     @retry
     async def stream_async(
@@ -200,5 +210,11 @@ class MistralCall(BaseCall[MistralCallResponse, MistralCallResponseChunk, Mistra
             response_chunk_type=MistralCallResponseChunk,
             tool_types=tool_types,
         )
-        async for chunk in chat_stream(messages=self.messages(), **kwargs):
-            yield MistralCallResponseChunk(chunk=chunk, tool_types=tool_types)
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
+        async for chunk in chat_stream(messages=messages, **kwargs):
+            yield MistralCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )

@@ -103,15 +103,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
         response = generate_content(
-            self.messages(),
+            messages,
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         return GeminiCallResponse(
             response=response,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -145,15 +148,18 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         start_time = datetime.datetime.now().timestamp() * 1000
         response = await generate_content_async(
-            self.messages(),
+            messages,
             stream=False,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         return GeminiCallResponse(
             response=response,
+            user_message_param=user_message_param,
             tool_types=tool_types,
             start_time=start_time,
             end_time=datetime.datetime.now().timestamp() * 1000,
@@ -185,14 +191,20 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = generate_content(
-            self.messages(),
+            messages,
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
         )
         for chunk in stream:
-            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+            yield GeminiCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
 
     @retry
     async def stream_async(
@@ -220,8 +232,10 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
             tool_types=tool_types,
             model_name=model_name,
         )
+        messages = self.messages()
+        user_message_param = messages[-1] if messages[-1]["role"] == "user" else None
         stream = generate_content_async(
-            self.messages(),
+            messages,
             stream=True,
             tools=kwargs.pop("tools") if "tools" in kwargs else None,
             **kwargs,
@@ -229,4 +243,8 @@ class GeminiCall(BaseCall[GeminiCallResponse, GeminiCallResponseChunk, GeminiToo
         if inspect.iscoroutine(stream):
             stream = await stream
         async for chunk in stream:
-            yield GeminiCallResponseChunk(chunk=chunk, tool_types=tool_types)
+            yield GeminiCallResponseChunk(
+                chunk=chunk,
+                user_message_param=user_message_param,
+                tool_types=tool_types,
+            )
