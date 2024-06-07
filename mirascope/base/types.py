@@ -131,7 +131,7 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
     """
 
     response: ResponseT
-    user_message_param: Any
+    user_message_param: Optional[Any] = None
     tool_types: Optional[list[Type[BaseToolT]]] = None
     start_time: float  # The start time of the completion in ms
     end_time: float  # The end time of the completion in ms
@@ -208,7 +208,7 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
     """
 
     chunk: ChunkT
-    user_message_param: Optional[Any]
+    user_message_param: Optional[Any] = None
     tool_types: Optional[list[Type[BaseToolT]]] = None
     cost: Optional[float] = None  # The cost of the completion in dollars
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
