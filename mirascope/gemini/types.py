@@ -77,7 +77,7 @@ class GeminiCallResponse(
     """
 
     @property
-    def message_param(self) -> Optional[ContentDict]:
+    def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.parts}
 

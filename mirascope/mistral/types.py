@@ -69,9 +69,9 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
     """
 
     @property
-    def message_param(self) -> Optional[Message]:
+    def message_param(self) -> Message:
         """Returns the assistants's response as a message parameter."""
-        return self.message.model_dump()
+        return self.message.model_dump()  # type: ignore
 
     @property
     def choices(self) -> list[ChatCompletionResponseChoice]:

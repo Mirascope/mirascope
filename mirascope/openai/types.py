@@ -108,7 +108,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
     @property
     def message_param(self) -> ChatCompletionAssistantMessageParam:
         """Returns the assistants's response as a message parameter."""
-        return self.message.model_dump(exclude={"function_call"})
+        return self.message.model_dump(exclude={"function_call"})  # type: ignore
 
     @property
     def choices(self) -> list[Choice]:

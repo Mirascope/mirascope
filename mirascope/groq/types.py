@@ -105,9 +105,9 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
     response_format: Optional[ResponseFormat] = None
 
     @property
-    def message_param(self) -> Optional[ChatCompletionAssistantMessageParam]:
+    def message_param(self) -> ChatCompletionAssistantMessageParam:
         """Returns the assistants's response as a message parameter."""
-        return self.message.model_dump(exclude={"function_call"})
+        return self.message.model_dump(exclude={"function_call"})  # type: ignore
 
     @property
     def choices(self) -> list[Choice]:

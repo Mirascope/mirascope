@@ -117,12 +117,12 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
     response: SkipValidation[NonStreamedChatResponse]
 
     @property
-    def message_param(self) -> Optional[ChatMessage]:
+    def message_param(self) -> ChatMessage:
         """Returns the assistant's response as a message parameter."""
         return ChatMessage(
             message=self.response.text,
             tool_calls=self.response.tool_calls,
-            role="assistant",
+            role="assistant",  # type: ignore
         )
 
     @property
