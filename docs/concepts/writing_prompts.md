@@ -86,7 +86,7 @@ class BookRecommendationPrompt(BasePrompt):
         return [
             f"Topic: {topic}, Genre: {genre}"
             for topic in self.topics
-            for genre in self.genre
+            for genre in self.genres
         ]
 
 
