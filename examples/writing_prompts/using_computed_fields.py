@@ -12,7 +12,7 @@ class AdditionCalculator(BasePrompt):
     first_number: float
     second_number: float
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
     def addition_equation(self) -> str:
         return f"{self.first_number}+{self.second_number}="
