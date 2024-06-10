@@ -25,11 +25,11 @@ The `messages` method parses the `prompt_template` into a list of messages. In t
 
 - Inline Errors
 
-    ![https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c](https://github.com/Mirascope/mirascope/assets/15950811/4a1ebc7f-9f24-4106-a30c-87d68d88bf3c)
+    ![missing-arguments](../images/prompt_missing_arguments.png)
 
 - Autocomplete
 
-    ![https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054](https://github.com/Mirascope/mirascope/assets/15950811/a4c1e45b-d25e-438b-9d6d-b103c05ae054)
+    ![autocomplete](../images/prompt_autocomplete.png)
 
 ## Template Variables
 
@@ -50,6 +50,19 @@ class BasicAddition(BasePrompt):
     @property
     def equation(self) -> str:
         return f"{self.first_number}+{self.second_number}="
+
+addition_prompt = BasicAddition(first_number=6, second_number=10)
+print(addition_prompt.equation)
+#> 6.0+10.0=
+print(addition_prompt)
+#> Can you solve this math problem for me?
+#  6.0+10.0=
+print(addition_prompt.dump())
+#> {
+#       "tags": [],
+#       "template": "Can you solve this math problem for me?\n{addition_equation}",
+#       "inputs": {"first_number": 6.0, "second_number": 10.0},
+#  }
 ```
 
 If the type being returned is a list we will automatically format `list` and `list[list]` fields and properties with `\n` and `\n\n` separators, respectively and stringify.
@@ -90,7 +103,7 @@ print(prompt)
 
 ## Messages
 
-By default, the `BasePrompt` class treats the prompt template as a single user message. If you want to specify a list of messages instead, use the message keywords SYSTEM, USER, ASSISTANT, MODEL, or TOOL (depending on what's supported by your choice of provider):
+By default, the `BasePrompt` class treats the prompt template as a single user message. If you want to specify a list of messages instead, use the message keywords SYSTEM, USER, ASSISTANT, MODEL, TOOL, and more (depending on what's supported by your choice of provider):
 
 ```python
 from mirascope import BasePrompt
@@ -117,11 +130,11 @@ Notice how all the surrounding white space is stripped so you can have a human-r
 
 !!! note
 
-    This example is using Mirascope base ``Message`. If you are using a different provider, refer to the provider's documentation on their message roles.
+    This example is using Mirascope base `Message`. If you are using a different provider, refer to the provider's documentation on their message roles.
 
 !!! warning
 
-    Note that the parser will only parse expected keyword roles available to thee provider. This ensures that keywords like `KEYWORD:` will not accidentally get parsed as a role; however, this also means that typos such as `USERS:` will also not get parsed.
+    Note that the parser will only parse expected keyword roles available to the provider. This ensures that keywords like `KEYWORD:` will not accidentally get parsed as a role; however, this also means that typos such as `USERS:` will also not get parsed.
 
     We are working on a VSCode extension to help identify these common typos and avoid potentially annoying silent bugs.
 
@@ -154,8 +167,7 @@ from mirascope import BasePrompt
 from openai.types.chat import ChatCompletionMessageParam
 
 
-class BookRecommendationPrompt(BasePrompt):
-    topic: str
+class ImageDetection(BasePrompt):
 
     def messages(self) -> list[ChatCompletionMessageParam]:
         return [
