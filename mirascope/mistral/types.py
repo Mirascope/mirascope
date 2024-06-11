@@ -1,5 +1,6 @@
 """Types for working with Mistral prompts."""
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Optional
 
 from mistralai.models.chat_completion import (
@@ -15,7 +16,15 @@ from mistralai.models.chat_completion import (
 )
 from pydantic import ConfigDict
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, Message
+from ..base import (
+    BaseAsyncStream,
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseStream,
+    Message,
+)
+from ..base.types import AssistantMessage, UserMessage
 from .tools import MistralTool
 
 
@@ -226,3 +235,23 @@ class MistralCallResponseChunk(
     def tool_calls(self) -> Optional[list[ToolCall]]:
         """Returns the partial tool calls for the 0th choice message."""
         return self.delta.tool_calls
+
+
+class MistralStream(
+    BaseStream[MistralCallResponseChunk, UserMessage, AssistantMessage]
+):
+    """A class for streaming responses from Mistral's API."""
+
+    def __init__(self, stream: Generator[MistralCallResponseChunk, None, None]):
+        """Initializes an instance of `MistralStream`."""
+        super().__init__(stream, AssistantMessage)
+
+
+class MistralAsyncStream(
+    BaseAsyncStream[MistralCallResponseChunk, UserMessage, AssistantMessage]
+):
+    """A class for streaming responses from Mistral's API."""
+
+    def __init__(self, stream: AsyncGenerator[MistralCallResponseChunk, None]):
+        """Initializes an instance of `MistralAsyncStream`."""
+        super().__init__(stream, AssistantMessage)

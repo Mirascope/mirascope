@@ -1,5 +1,6 @@
 """Types for interacting with OpenAI models using Mirascope."""
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Literal, Optional, Type, Union
 
 from httpx import Timeout
@@ -24,9 +25,11 @@ from openai.types.create_embedding_response import CreateEmbeddingResponse
 from pydantic import ConfigDict
 
 from ..base import (
+    BaseAsyncStream,
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
+    BaseStream,
 )
 from ..rag import BaseEmbeddingParams, BaseEmbeddingResponse
 from .tools import OpenAITool
@@ -349,3 +352,31 @@ class OpenAIEmbeddingParams(BaseEmbeddingParams):
     extra_query: Optional[Query] = None
     extra_body: Optional[Body] = None
     timeout: Optional[Union[float, Timeout]] = None
+
+
+class OpenAIStream(
+    BaseStream[
+        OpenAICallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+    ]
+):
+    """A class for streaming responses from OpenAI's API."""
+
+    def __init__(self, stream: Generator[OpenAICallResponseChunk, None, None]):
+        """Initializes an instance of `OpenAIStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)
+
+
+class OpenAIAsyncStream(
+    BaseAsyncStream[
+        OpenAICallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+    ]
+):
+    """A class for streaming responses from OpenAI's API."""
+
+    def __init__(self, stream: AsyncGenerator[OpenAICallResponseChunk, None]):
+        """Initializes an instance of `OpenAIAsyncStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)

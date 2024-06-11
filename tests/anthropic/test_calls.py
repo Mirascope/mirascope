@@ -12,9 +12,11 @@ from pytest import FixtureRequest
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.anthropic.tools import AnthropicTool
 from mirascope.anthropic.types import (
+    AnthropicAsyncStream,
     AnthropicCallParams,
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
+    AnthropicStream,
 )
 
 
@@ -208,10 +210,17 @@ def test_anthropic_call_stream(
     wrapper.return_value = Anthropic()
     fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
 
-    stream = fixture_anthropic_test_call.stream(retries=2)
+    stream = AnthropicStream(fixture_anthropic_test_call.stream(retries=2))
+    content = ""
     for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
         assert chunk.chunk == fixture_anthropic_message_chunk
+        content += chunk.content
+    assert stream.user_message_param == {
+        "role": "user",
+        "content": "This is a test prompt for Anthropic.",
+    }
+    assert stream.message_param == {"role": "assistant", "content": content}
     wrapper.assert_called_once()
     mock_stream.assert_called_once_with(
         model=fixture_anthropic_test_call.call_params.model,
@@ -240,7 +249,7 @@ async def test_anthropic_call_stream_async(
     wrapper.return_value = AsyncAnthropic()
     fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
 
-    stream = fixture_anthropic_test_call.stream_async(retries=2)
+    stream = AnthropicAsyncStream(fixture_anthropic_test_call.stream_async(retries=2))
     async for chunk in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
         assert chunk.chunk == fixture_anthropic_message_chunk

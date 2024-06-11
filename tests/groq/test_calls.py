@@ -12,10 +12,12 @@ from groq.types.chat.completion_create_params import ResponseFormat
 
 from mirascope.base.types import BaseConfig
 from mirascope.groq import (
+    GroqAsyncStream,
     GroqCall,
     GroqCallParams,
     GroqCallResponse,
     GroqCallResponseChunk,
+    GroqStream,
     GroqTool,
 )
 from mirascope.groq.calls import _json_mode_content
@@ -103,7 +105,7 @@ def test_groq_call_stream(
 
         configuration = BaseConfig(client_wrappers=[wrapper])
 
-    chunks = [chunk for chunk in TempCall().stream()]
+    chunks = [chunk for chunk in GroqStream(TempCall().stream())]
     assert len(chunks) == 2
     assert chunks[0].content == "A"
     assert chunks[1].content == "B"
@@ -132,7 +134,7 @@ async def test_groq_call_stream_async(
         fixture_chat_completion_stream_response
     )
     temp_call = TempCall()
-    stream = temp_call.stream_async()
+    stream = GroqAsyncStream(temp_call.stream_async())
 
     i = 0
     async for chunk in stream:

@@ -1,6 +1,7 @@
 """Type classes for interacting with Anthropics's Claude API."""
 
 import json
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Literal, Optional, Type, Union
 
 from anthropic._types import Body, Headers, Query
@@ -19,7 +20,13 @@ from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
 
-from ..base.types import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..base.types import (
+    BaseAsyncStream,
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseStream,
+)
 from .tools import AnthropicTool
 
 
@@ -243,3 +250,23 @@ class AnthropicCallResponseChunk(
                 self.chunk.delta.text if isinstance(self.chunk.delta, TextDelta) else ""
             )
         return ""
+
+
+class AnthropicStream(
+    BaseStream[AnthropicCallResponseChunk, MessageParam, MessageParam]
+):
+    """A class for streaming responses from Anthropic's Claude API."""
+
+    def __init__(self, stream: Generator[AnthropicCallResponseChunk, None, None]):
+        """Initializes an instance of `AnthropicStream`."""
+        super().__init__(stream, MessageParam)
+
+
+class AnthropicAsyncStream(
+    BaseAsyncStream[AnthropicCallResponseChunk, MessageParam, MessageParam]
+):
+    """A class for streaming responses from Anthropic's Claude API."""
+
+    def __init__(self, stream: AsyncGenerator[AnthropicCallResponseChunk, None]):
+        """Initializes an instance of `AnthropicAsyncStream`."""
+        super().__init__(stream, MessageParam)

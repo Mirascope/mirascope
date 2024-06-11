@@ -6,10 +6,12 @@ from .prompts import BasePrompt, tags
 from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
 from .types import (
+    BaseAsyncStream,
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseConfig,
+    BaseStream,
     Message,
 )
 from .utils import (
@@ -26,6 +28,8 @@ __all__ = [
     "ExtractedType",
     "ExtractionType",
     "BasePrompt",
+    "BaseStream",
+    "BaseAsyncStream",
     "BaseToolStream",
     "BaseTool",
     "BaseType",
