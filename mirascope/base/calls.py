@@ -20,18 +20,14 @@ from pydantic import create_model
 from tenacity import AsyncRetrying, Retrying
 
 from .prompts import BasePrompt, BasePromptT
-from .tools import BaseTool
 from .types import (
     BaseCallParams,
-    BaseCallResponse,
-    BaseCallResponseChunk,
+    BaseCallResponseChunkT,
+    BaseCallResponseT,
     BaseConfig,
+    BaseToolT,
+    MessageParamT,
 )
-
-BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
-BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
-BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
-MessageParamT = TypeVar("MessageParamT", bound=Any)
 
 
 class BaseCall(

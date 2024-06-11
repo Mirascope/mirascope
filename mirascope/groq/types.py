@@ -1,5 +1,6 @@
 """Types for interacting with Groq's Cloud API using Mirascope."""
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Optional, Type, Union
 
 from groq._types import Body, Headers, Query
@@ -30,7 +31,13 @@ from groq.types.chat.completion_create_params import (
 from httpx import Timeout
 from pydantic import ConfigDict
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..base import (
+    BaseAsyncStream,
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseStream,
+)
 from .tools import GroqTool
 
 
@@ -347,3 +354,31 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, GroqTool]
         if self.usage:
             return self.usage.completion_tokens
         return None
+
+
+class GroqStream(
+    BaseStream[
+        GroqCallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+    ]
+):
+    """A class for streaming responses from Groq's API."""
+
+    def __init__(self, stream: Generator[GroqCallResponseChunk, None, None]):
+        """Initializes an instance of `GroqStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)
+
+
+class GroqAsyncStream(
+    BaseAsyncStream[
+        GroqCallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+    ]
+):
+    """A class for streaming responses from Groq's API."""
+
+    def __init__(self, stream: AsyncGenerator[GroqCallResponseChunk, None]):
+        """Initializes an instance of `GroqAsyncStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)

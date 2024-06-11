@@ -1,5 +1,6 @@
 """Types for interacting with Cohere chat models using Mirascope."""
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Literal, Optional, Sequence, Type, Union
 
 from cohere import (
@@ -30,7 +31,13 @@ from cohere.types import (
 from pydantic import ConfigDict, SkipValidation
 from typing_extensions import NotRequired, TypedDict
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk
+from ..base import (
+    BaseAsyncStream,
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseStream,
+)
 from ..rag.types import BaseEmbeddingParams, BaseEmbeddingResponse
 from .tools import CohereTool
 
@@ -423,3 +430,21 @@ class CohereEmbeddingParams(BaseEmbeddingParams):
     truncate: Optional[Literal["none", "end", "start"]] = "end"
     request_options: Optional[RequestOptions] = None
     batching: Optional[bool] = True
+
+
+class CohereStream(BaseStream[CohereCallResponseChunk, ChatMessage, ChatMessage]):
+    """A class for streaming responses from Cohere's API."""
+
+    def __init__(self, stream: Generator[CohereCallResponseChunk, None, None]):
+        """Initializes an instance of `CohereStream`."""
+        super().__init__(stream, ChatMessage)
+
+
+class CohereAsyncStream(
+    BaseAsyncStream[CohereCallResponseChunk, ChatMessage, ChatMessage]
+):
+    """A class for streaming responses from Cohere's API."""
+
+    def __init__(self, stream: AsyncGenerator[CohereCallResponseChunk, None]):
+        """Initializes an instance of `CohereAsyncStream`."""
+        super().__init__(stream, ChatMessage)

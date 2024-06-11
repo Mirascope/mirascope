@@ -1,6 +1,7 @@
 """Base types and abstract interfaces for typing LLM calls."""
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator, Generator
 from inspect import isclass
 from typing import (
     Any,
@@ -295,3 +296,94 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
+
+
+BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
+BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
+MessageParamT = TypeVar("MessageParamT", bound=Any)
+UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
+AssistantMessageParamT = TypeVar("AssistantMessageParamT", bound=Any)
+
+
+class BaseStream(
+    Generic[BaseCallResponseChunkT, UserMessageParamT, AssistantMessageParamT],
+    ABC,
+):
+    """A base class for streaming responses from LLMs."""
+
+    stream: Generator[BaseCallResponseChunkT, None, None]
+    message_param_type: type[AssistantMessageParamT]
+
+    cost: Optional[float] = None
+    user_message_param: Optional[UserMessageParamT] = None
+    message_param: AssistantMessageParamT
+
+    def __init__(
+        self,
+        stream: Generator[BaseCallResponseChunkT, None, None],
+        message_param_type: type[AssistantMessageParamT],
+    ):
+        """Initializes an instance of `BaseStream`."""
+        self.stream = stream
+        self.message_param_type = message_param_type
+
+    def __iter__(self) -> Generator[BaseCallResponseChunkT, None, None]:
+        """Iterator over the stream and stores useful information."""
+        content = ""
+        for chunk in self.stream:
+            content += chunk.content
+            if chunk.cost is not None:
+                self.cost = chunk.cost
+            yield chunk
+        self.user_message_param = chunk.user_message_param
+        kwargs = {"role": "assistant"}
+        if "message" in self.message_param_type.__annotations__:
+            kwargs["message"] = content
+        else:
+            kwargs["content"] = content
+        self.message_param = self.message_param_type(**kwargs)
+
+
+class BaseAsyncStream(
+    Generic[BaseCallResponseChunkT, UserMessageParamT, AssistantMessageParamT],
+    ABC,
+):
+    """A base class for async streaming responses from LLMs."""
+
+    stream: AsyncGenerator[BaseCallResponseChunkT, None]
+    message_param_type: type[AssistantMessageParamT]
+
+    cost: Optional[float] = None
+    user_message_param: Optional[UserMessageParamT] = None
+    message_param: AssistantMessageParamT
+
+    def __init__(
+        self,
+        stream: AsyncGenerator[BaseCallResponseChunkT, None],
+        message_param_type: type[AssistantMessageParamT],
+    ):
+        """Initializes an instance of `BaseAsyncStream`."""
+        self.stream = stream
+        self.message_param_type = message_param_type
+
+    def __aiter__(
+        self,
+    ) -> AsyncGenerator[BaseCallResponseChunkT, None]:
+        """Iterates over the stream and stores useful information."""
+
+        async def generator():
+            content = ""
+            async for chunk in self.stream:
+                content += chunk.content
+                if chunk.cost is not None:
+                    self.cost = chunk.cost
+                yield chunk
+            self.user_message_param = chunk.user_message_param
+            kwargs = {"role": "assistant"}
+            if "message" in self.message_param_type.__annotations__:
+                kwargs["message"] = content
+            else:
+                kwargs["content"] = content
+            self.message_param = self.message_param_type(**kwargs)
+
+        return generator()
