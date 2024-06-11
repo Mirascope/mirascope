@@ -34,6 +34,11 @@ def test_mistral_call_response(
     assert response.content == "test content"
     assert response.tools is None
     assert response.tool is None
+    assert response.model == fixture_chat_completion_response.model
+    assert response.id == fixture_chat_completion_response.id
+    assert response.finish_reasons == [
+        fixture_chat_completion_response.choices[0].finish_reason
+    ]
     assert response.usage is not None
     assert response.input_tokens is not None
     assert response.output_tokens is not None
@@ -144,3 +149,20 @@ def test_mistral_stream_response_with_tools(
         .choices[0]
         .delta.tool_calls
     )
+    assert response.model == fixture_chat_completion_stream_response_with_tools[0].model
+    assert response.id == fixture_chat_completion_stream_response_with_tools[0].id
+    assert response.finish_reasons == [
+        fixture_chat_completion_stream_response_with_tools[0].choices[0].finish_reason
+    ]
+    assert response.usage is not None
+    assert response.input_tokens is not None
+    assert response.output_tokens is not None
+
+    response = MistralCallResponseChunk(
+        chunk=fixture_chat_completion_stream_response_with_tools[1],
+        tool_types=[fixture_book_tool],
+    )
+
+    assert response.usage is None
+    assert response.input_tokens is None
+    assert response.output_tokens is None

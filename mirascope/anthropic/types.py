@@ -10,6 +10,7 @@ from anthropic.types import (
     ContentBlockStartEvent,
     Message,
     MessageParam,
+    MessageStartEvent,
     MessageStreamEvent,
     TextBlock,
     TextDelta,
@@ -162,6 +163,21 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
         return block.text if block.type == "text" else ""
 
     @property
+    def model(self) -> str:
+        """Returns the name of the response model."""
+        return self.response.model
+
+    @property
+    def id(self) -> str:
+        """Returns the id of the response."""
+        return self.response.id
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reason of the response."""
+        return [str(self.response.stop_reason)]
+
+    @property
     def usage(self) -> Usage:
         """Returns the usage of the message."""
         return self.response.usage
@@ -250,6 +266,48 @@ class AnthropicCallResponseChunk(
                 self.chunk.delta.text if isinstance(self.chunk.delta, TextDelta) else ""
             )
         return ""
+
+    @property
+    def model(self) -> Optional[str]:
+        """Returns the name of the response model."""
+        if isinstance(self.chunk, MessageStartEvent):
+            return self.chunk.message.model
+        return None
+
+    @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response."""
+        if isinstance(self.chunk, MessageStartEvent):
+            return self.chunk.message.id
+        return None
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reason of the response."""
+        if isinstance(self.chunk, MessageStartEvent):
+            return [str(self.chunk.message.stop_reason)]
+        return None
+
+    @property
+    def usage(self) -> Optional[Usage]:
+        """Returns the usage of the message."""
+        if isinstance(self.chunk, MessageStartEvent):
+            return self.chunk.message.usage
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[int]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.input_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[int]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.output_tokens
+        return None
 
 
 class AnthropicStream(

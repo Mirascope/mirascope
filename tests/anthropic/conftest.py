@@ -60,6 +60,7 @@ def fixture_anthropic_message() -> Message:
         role="assistant",
         type="message",
         usage=Usage(input_tokens=0, output_tokens=0),
+        stop_reason="end_turn",
     )
 
 

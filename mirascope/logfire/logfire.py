@@ -4,6 +4,7 @@ from contextlib import (
     contextmanager,
 )
 from string import Formatter
+from textwrap import dedent
 from typing import Any, Callable, Optional, Union, overload
 
 import logfire
@@ -243,15 +244,16 @@ def handle_before_call(self: BaseModel, fn: Callable, **kwargs):
             for _, var, _, _ in Formatter().parse(self.prompt_template)
             if var is not None
         }
+        class_vars["prompt_template"] = dedent(self.prompt_template)
     span_data = {
+        "tags": tags,
         "class_vars": class_vars,
         "template_variables": template_variables,
-        "tags": tags,
         **kwargs,
     }
     if hasattr(self, "messages"):
         span_data["messages"] = self.messages()
-    with logfire.with_settings(custom_scope_suffix="mirascope").span(
+    with logfire.with_settings(custom_scope_suffix="mirascope", tags=tags).span(
         name, **span_data
     ) as logfire_span:
         yield logfire_span

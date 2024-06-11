@@ -250,6 +250,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
             object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
+            usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
         ),
         ChatCompletionChunk(
             id="test",
@@ -270,6 +271,7 @@ def fixture_chat_completion_stream_response_with_tools() -> list[ChatCompletionC
             object="chat.completion.chunk",
             system_fingerprint="",
             x_groq=None,
+            usage=None,
         ),
     ]
 

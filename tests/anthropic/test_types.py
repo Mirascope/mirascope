@@ -8,7 +8,9 @@ from anthropic.types import (
     ContentBlockStartEvent,
     ContentBlockStopEvent,
     Message,
+    MessageStartEvent,
     TextBlock,
+    Usage,
 )
 
 from mirascope.anthropic.tools import AnthropicTool
@@ -30,6 +32,9 @@ def test_anthropic_call_response(fixture_anthropic_message: Message):
     assert response.usage is not None
     assert response.output_tokens is not None
     assert response.input_tokens is not None
+    assert response.model == fixture_anthropic_message.model
+    assert response.id == fixture_anthropic_message.id
+    assert response.finish_reasons == [fixture_anthropic_message.stop_reason]
     assert response.dump() == {
         "start_time": 0,
         "end_time": 1,
@@ -93,3 +98,24 @@ def test_anthropic_call_response_chunk(
     )
     assert chunk.content == ""
     assert chunk.type == "content_block_stop"
+
+    chunk = AnthropicCallResponseChunk(
+        chunk=MessageStartEvent(
+            message=Message(
+                id="test_id",
+                model="test_model",
+                role="assistant",
+                type="message",
+                content=[TextBlock(text="test", type="text")],
+                stop_reason="end_turn",
+                usage=Usage(input_tokens=1, output_tokens=1),
+            ),
+            type="message_start",
+        )
+    )
+    assert chunk.usage is not None
+    assert chunk.output_tokens == 1
+    assert chunk.input_tokens == 1
+    assert chunk.model == "test_model"
+    assert chunk.id == "test_id"
+    assert chunk.finish_reasons == ["end_turn"]

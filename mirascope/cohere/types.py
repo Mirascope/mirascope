@@ -8,6 +8,7 @@ from cohere import (
     StreamedChatResponse_SearchQueriesGeneration,
     StreamedChatResponse_SearchResults,
     StreamedChatResponse_StreamEnd,
+    StreamedChatResponse_StreamStart,
     StreamedChatResponse_ToolCallsGeneration,
 )
 from cohere.types import (
@@ -137,6 +138,24 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
     def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
         return self.response.text
+
+    @property
+    def model(self) -> Optional[str]:
+        """Returns the name of the response model.
+
+        Cohere does not return model, so we return None
+        """
+        return None
+
+    @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response."""
+        return self.response.generation_id
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reasons of the response."""
+        return [str(self.response.finish_reason)]
 
     @property
     def search_queries(self) -> Optional[list[ChatSearchQuery]]:
@@ -317,6 +336,28 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         return None
 
     @property
+    def model(self) -> Optional[str]:
+        """Returns the name of the response model.
+
+        Cohere does not return model, so we return None
+        """
+        return None
+
+    @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response."""
+        if isinstance(self.chunk, StreamedChatResponse_StreamStart):
+            return self.chunk.generation_id
+        return None
+
+    @property
+    def finish_reasons(self) -> Optional[list[str]]:
+        """Returns the finish reasons of the response."""
+        if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
+            return [str(self.chunk.finish_reason)]
+        return None
+
+    @property
     def response(self) -> Optional[NonStreamedChatResponse]:
         """Returns the full response for the stream-end event type else None."""
         if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
@@ -328,6 +369,28 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         """Returns the partial tool calls for the 0th choice message."""
         if isinstance(self.chunk, StreamedChatResponse_ToolCallsGeneration):
             return self.chunk.tool_calls
+        return None
+
+    @property
+    def usage(self) -> Optional[ApiMetaBilledUnits]:
+        """Returns the usage of the response."""
+        if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
+            if self.chunk.response.meta:
+                return self.chunk.response.meta.billed_units
+        return None
+
+    @property
+    def input_tokens(self) -> Optional[float]:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.input_tokens
+        return None
+
+    @property
+    def output_tokens(self) -> Optional[float]:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.output_tokens
         return None
 
 

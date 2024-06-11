@@ -62,7 +62,9 @@ def test_openai_call_with_otel(
     class MyNestedCall(MyCall):
         prompt_template = "test"
 
-        call_params = OpenAICallParams(model="gpt-3.5-turbo")
+        call_params = OpenAICallParams(
+            model="gpt-3.5-turbo", temperature=0.1, top_p=0.9
+        )
         configuration = BaseConfig(llm_ops=[], client_wrappers=[])
 
     MyNestedCall().call()
@@ -337,7 +339,7 @@ def test_value_error_on_mirascope_otel():
         def foo():
             ...  # pragma: no cover
 
-        mirascope_otel()(foo, "test")
+        mirascope_otel(BaseModel)(foo, "test")
 
 
 @patch("cohere.Client.chat", new_callable=MagicMock)

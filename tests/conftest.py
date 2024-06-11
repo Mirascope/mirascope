@@ -436,9 +436,10 @@ def fixture_generate_content_response():
         GenerateContentResponse(
             candidates=[
                 Candidate(
+                    finish_reason=1,
                     content=Content(
                         parts=[Part(text="Who is the author?")], role="model"
-                    )
+                    ),
                 )
             ]
         )

@@ -92,18 +92,26 @@ def fixture_expected_book_tool_instance() -> BookTool:
 
 
 @pytest.fixture()
-def fixture_generate_content_chunks():
+def fixture_generate_content_chunks() -> GenerateContentResponse:
     """Returns a list of `GenerateContentResponse` chunks."""
     return GenerateContentResponseType.from_iterator(
         [
             GenerateContentResponse(
                 candidates=[
-                    Candidate(content=Content(parts=[{"text": "first"}], role="model"))
+                    Candidate(
+                        finish_reason=1,
+                        index=0,
+                        content=Content(parts=[{"text": "first"}], role="model"),
+                    )
                 ]
             ),
             GenerateContentResponse(
                 candidates=[
-                    Candidate(content=Content(parts=[{"text": "second"}], role="model"))
+                    Candidate(
+                        finish_reason=1,
+                        index=0,
+                        content=Content(parts=[{"text": "second"}], role="model"),
+                    )
                 ]
             ),
         ]

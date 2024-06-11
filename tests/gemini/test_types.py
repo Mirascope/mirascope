@@ -7,7 +7,7 @@ from google.ai.generativelanguage_v1beta import Part
 from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from mirascope.gemini.tools import GeminiTool
-from mirascope.gemini.types import GeminiCallResponse
+from mirascope.gemini.types import GeminiCallResponse, GeminiCallResponseChunk
 
 
 def test_gemini_call_response(
@@ -107,3 +107,19 @@ def test_gemini_call_response_with_no_tools(
 
     assert response.tools is None
     assert response.tool is None
+
+
+def test_gemini_call_response_chunk(
+    fixture_generate_content_response_with_tools: GenerateContentResponse,
+) -> None:
+    """Tests the `GeminiCallResponseChunk` class."""
+    response = GeminiCallResponseChunk(
+        chunk=fixture_generate_content_response_with_tools
+    )
+    assert response.chunk is not None
+    assert response.id is None
+    assert response.finish_reasons == ["STOP"]
+    assert response.usage is None
+    assert response.model is None
+    assert response.input_tokens is None
+    assert response.output_tokens is None
