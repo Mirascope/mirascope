@@ -296,6 +296,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         "citation-generation",
         "tool-calls-generation",
         "stream-end",
+        "tool-calls-chunk",
     ]:
         """Returns the type of the chunk."""
         return self.chunk.event_type

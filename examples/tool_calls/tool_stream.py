@@ -33,5 +33,6 @@ class Forecast(OpenAICall):
 stream = Forecast().stream()
 tool_stream = OpenAIToolStream.from_stream(stream)
 for tool in tool_stream:
-    tool.fn(**tool.args)
-    # > It is 10 degrees fahrenheit in Tokyo, Japan
+    if tool:
+        tool.fn(**tool.args)
+        # > It is 10 degrees fahrenheit in Tokyo, Japan
