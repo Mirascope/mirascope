@@ -6,6 +6,7 @@ for use with that specific model provider. This example uses `OpenAITool`, but y
 just as easily use `GeminiTool` with no additional change.
 """
 
+import os
 from typing import Literal
 
 from pydantic import Field
@@ -13,7 +14,10 @@ from pydantic import Field
 from mirascope.base import tool_fn
 from mirascope.openai import OpenAICall, OpenAICallParams, OpenAITool
 
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
+
+# A poorly documented function
 def get_current_weather(location, unit):
     if "tokyo" in location.lower():
         print(f"It is 10 degrees {unit} in Tokyo, Japan")

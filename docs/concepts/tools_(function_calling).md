@@ -58,7 +58,7 @@ print(weather_tool.fn(**weather_tool.args))
 
     While it may not be clear from the above example, `tool.fn` is an extremely powerful simplification. When using multiple tools, having the function attached to the tool makes it immediately accessible and callable with a single line of code.
 
-You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
+You can also define your own `OpenAITool` class. This is necessary when the function you want to use as a tool cannot be modified (e.g. another library) and does not have a docstring. Additionally, the `OpenAITool` class makes it easy to further update the descriptions, which is useful when you want to further engineer your prompt:
 
 ```python
 from mirascope.base import tool_fn
@@ -264,7 +264,7 @@ tools = [
 ]
 ```
 
-With Mirascope, it will look like this:
+With Mirascope, we can take advantage of class inheritance to reduce repetition:
 
 ```python
 class GetCurrentWeather(OpenAITool):
@@ -282,4 +282,3 @@ class GetNDayWeatherForecast(GetCurrentWeather):
     num_days: int = Field(..., description="The number of days to forecast")
 ```
 
-We can take advantage of class inheritance and reduce repetition.
