@@ -3,7 +3,7 @@
 Gemini uses a different pattern for system calls. Rather than
 having a SYSTEM, and ASSISTANT, you have MODEL and USER.
 """
-from google.generativeai import configure
+from google.generativeai import configure  # type: ignore
 
 from mirascope.gemini import GeminiCall, GeminiCallParams
 

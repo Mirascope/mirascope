@@ -6,7 +6,7 @@ import os
 
 from mirascope.openai import OpenAICall
 
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class BookRecommender(OpenAICall):
