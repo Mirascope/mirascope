@@ -103,23 +103,45 @@ Since we setup the span processor to use a `ConsoleSpanExporter`, our output wil
 {
     "name": "openai.create with gpt-3.5-turbo",
     "context": {
-        "trace_id": "0x7d3b690ea168b631fa24846f7cfeae71",
-        "span_id": "0x6ad9e80426ec06f4",
+        "trace_id": "0xf27fe6643f5731d4ccb7774c2c14912f",
+        "span_id": "0x6edaeefdac4dc041",
         "trace_state": "[]"
     },
-    "kind": "SpanKind.INTERNAL",
-    "parent_id": "0x8f7cf8f30696ec7f",
-    "start_time": "2024-05-24T00:51:29.123175Z",
-    "end_time": "2024-05-24T00:51:49.712021Z",
+    "kind": "SpanKind.CLIENT",
+    "parent_id": "0xc414affa9131b6a4",
+    "start_time": "2024-06-12T22:00:22.301172Z",
+    "end_time": "2024-06-12T22:00:25.037171Z",
     "status": {
         "status_code": "UNSET"
     },
     "attributes": {
         "async": false,
-        "request_data": "{\"messages\": [{\"role\": \"user\", \"content\": \"Extract the task details from the following task:\\nSubmit quarterly report by next Friday. Task is high priority.\"}], \"stream\": false, \"model\": \"gpt-3.5-turbo\", \"tools\": [{\"type\": \"function\", \"function\": {\"name\": \"TaskDetails\", \"description\": \"Correctly formatted and typed parameters extracted from the completion. Must include required parameters and may exclude optional parameters unless present in the text.\", \"parameters\": {\"properties\": {\"description\": {\"title\": \"Description\", \"type\": \"string\"}, \"due_date\": {\"title\": \"Due Date\", \"type\": \"string\"}, \"priority\": {\"enum\": [\"low\", \"normal\", \"high\"], \"title\": \"Priority\", \"type\": \"string\"}}, \"required\": [\"description\", \"due_date\", \"priority\"], \"type\": \"object\"}}}]}",
-        "response_data": "{\"message\": {\"role\": \"assistant\", \"tool_calls\": [{\"function\": {\"arguments\": \"{\\\"description\\\":\\\"Submit quarterly report\\\",\\\"due_date\\\":\\\"next Friday\\\",\\\"priority\\\":\\\"high\\\"}\", \"name\": \"TaskDetails\"}}]}}"
+        "gen_ai.system": "openai",
+        "gen_ai.request.model": "gpt-3.5-turbo",
+        "gen_ai.response.model": "gpt-3.5-turbo-0125",
+        "gen_ai.response.id": "chatcmpl-9ZQIy7uIDY5FLoFxwxDsJuUzdbRhj",
+        "gen_ai.response.finish_reasons": [
+            "tool_calls"
+        ],
+        "gen_ai.usage.completion_tokens": 26,
+        "gen_ai.usage.prompt_tokens": 114
     },
-    "events": [],
+    "events": [
+        {
+            "name": "gen_ai.content.prompt",
+            "timestamp": "2024-06-12T22:00:22.301195Z",
+            "attributes": {
+                "gen_ai.prompt": "null"
+            }
+        },
+        {
+            "name": "gen_ai.content.completion",
+            "timestamp": "2024-06-12T22:00:25.037129Z",
+            "attributes": {
+                "gen_ai.completion": "[{\"role\": \"assistant\", \"tool_calls\": [{\"function\": {\"arguments\": \"{\\\"description\\\":\\\"Submit quarterly report\\\",\\\"due_date\\\":\\\"next Friday\\\",\\\"priority\\\":\\\"high\\\"}\", \"name\": \"TaskDetails\"}}]}]"
+            }
+        }
+    ],
     "links": [],
     "resource": {
         "attributes": {
@@ -134,21 +156,25 @@ Since we setup the span processor to use a `ConsoleSpanExporter`, our output wil
 {
     "name": "TaskExtractor.extract",
     "context": {
-        "trace_id": "0x7d3b690ea168b631fa24846f7cfeae71",
-        "span_id": "0x8f7cf8f30696ec7f",
+        "trace_id": "0xf27fe6643f5731d4ccb7774c2c14912f",
+        "span_id": "0xc414affa9131b6a4",
         "trace_state": "[]"
     },
     "kind": "SpanKind.INTERNAL",
     "parent_id": null,
-    "start_time": "2024-05-24T00:51:29.113405Z",
-    "end_time": "2024-05-24T00:51:49.712510Z",
+    "start_time": "2024-06-12T22:00:22.292563Z",
+    "end_time": "2024-06-12T22:00:25.037683Z",
     "status": {
         "status_code": "UNSET"
     },
     "attributes": {
         "prompt_template": "\n    Extract the task details from the following task:\n    {task}\n    ",
-        "_provider": "openai",
+        "configuration": "{\"llm_ops\": [\"mirascope_otel_decorator\"], \"client_wrappers\": []}",
         "tags": [],
+        "_provider": "openai",
+        "call_params": "{\"model\": \"gpt-3.5-turbo\", \"tools\": null, \"frequency_penalty\": null, \"logit_bias\": null, \"logprobs\": null, \"max_tokens\": null, \"n\": null, \"presence_penalty\": null, \"response_format\": null, \"seed\": null, \"stop\": null, \"temperature\": null, \"tool_choice\": null, \"top_logprobs\": null, \"top_p\": null, \"user\": null, \"extra_headers\": null, \"extra_query\": null, \"extra_body\": null, \"timeout\": null}",
+        "base_url": "",
+        "extract_schema": "TaskDetails",
         "task": "Submit quarterly report by next Friday. Task is high priority.",
         "response": "{'description': 'Submit quarterly report', 'due_date': 'next Friday', 'priority': 'high'}"
     },
@@ -166,6 +192,8 @@ Since we setup the span processor to use a `ConsoleSpanExporter`, our output wil
 }
 description='Submit quarterly report' due_date='next Friday' priority='high'
 ```
+
+The attributes and events match the specs described by [OpenTelemetry Semantic Conventions for LLM requests](https://opentelemetry.io/docs/specs/semconv/gen-ai/llm-spans/).
 
 ### Sending to an observability tool
 
