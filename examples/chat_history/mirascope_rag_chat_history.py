@@ -7,14 +7,16 @@ from typing import Literal, cast
 from uuid import uuid4
 
 from anthropic.types import MessageParam
+from dotenv import load_dotenv
 
 from mirascope.anthropic.calls import AnthropicCall
 from mirascope.chroma import ChromaSettings, ChromaVectorStore
 from mirascope.openai import OpenAIEmbedder
 from mirascope.rag import Document, TextChunker
 
-os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
-os.environ["ANTHROPIC_API_KEY"] = "YOUR_ANTHROPIC_API_KEY"
+# os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+# os.environ["ANTHROPIC_API_KEY"] = "YOUR_ANTHROPIC_API_KEY"
+load_dotenv()
 
 
 class LibrarianStore(ChromaVectorStore):
