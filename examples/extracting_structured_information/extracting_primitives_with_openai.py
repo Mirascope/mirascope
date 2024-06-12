@@ -1,10 +1,10 @@
 """An example of how to extract primitive data types using OpenAI."""
 
-from dotenv import load_dotenv
+import os
 
 from mirascope.openai import OpenAIExtractor
 
-load_dotenv()
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 class TaskExtractor(OpenAIExtractor[str]):
