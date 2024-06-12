@@ -11,18 +11,11 @@ from typing import Literal
 from google.generativeai import configure  # type: ignore
 from pydantic import BaseModel, Field
 
-from mirascope.anthropic.calls import AnthropicCall
-from mirascope.anthropic.extractors import AnthropicExtractor
-from mirascope.anthropic.types import AnthropicCallParams
-from mirascope.base.calls import BaseCall
-from mirascope.base.extractors import BaseExtractor
-from mirascope.base.types import BaseCallParams
+from mirascope.anthropic import AnthropicCall, AnthropicCallParams, AnthropicExtractor
+from mirascope.base import BaseCall, BaseCallParams, BaseExtractor
 from mirascope.gemini import GeminiCall, GeminiCallParams
-from mirascope.groq import GroqCall, GroqCallParams
-from mirascope.groq.extractors import GroqExtractor
-from mirascope.openai import OpenAIExtractor
-from mirascope.openai.calls import OpenAICall
-from mirascope.openai.types import OpenAICallParams
+from mirascope.groq import GroqCall, GroqCallParams, GroqExtractor
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIExtractor
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"

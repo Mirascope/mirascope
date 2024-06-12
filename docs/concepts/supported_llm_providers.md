@@ -453,9 +453,10 @@ pip install mirascope[gemini]
 
 If you do not have provider-specific syntax (which we will go over later), you can take advantage of the `from_prompt` classmethod to do the heavy lifting for you.
 
-```python hl_lines="14"
+```python hl_lines="15"
 from google.generativeai import configure
 from mirascope.gemini import GeminiCall, GeminiCallParams
+from mirascope.openai import OpenAICall, OpenAICallParams
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 
