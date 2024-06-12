@@ -1,10 +1,8 @@
-"""A multi-role call example for Gemini.
+"""A GeminiCall example.
 
-Gemini uses a different pattern for multi-turn calls. Rather than
+Gemini uses a different pattern for system calls. Rather than
 having a SYSTEM, and ASSISTANT, you have MODEL and USER.
 """
-import os
-
 from google.generativeai import configure
 
 from mirascope.gemini import GeminiCall, GeminiCallParams
