@@ -66,6 +66,7 @@ class ChromaVectorStore(BaseVectorStore):
         return self._index.upsert(
             ids=[document.id for document in documents],
             documents=[document.text for document in documents],
+            metadatas=[document.metadata for document in documents],
             **kwargs,
         )
 

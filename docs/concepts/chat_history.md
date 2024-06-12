@@ -29,10 +29,8 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history += [
-        {"role": "user", "content": librarian.question},
-        {"role": "assistant", "content": response.content},
-    ]
+    librarian.history.append({"role": "user", "content": librarian.question})
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -74,10 +72,8 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history += [
-        {"role": "user", "content": librarian.question},
-        {"role": "assistant", "content": response.content},
-    ]
+    librarian.history.append({"role": "user", "content": librarian.question})
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -133,34 +129,68 @@ When the user makes a call, a search is made to find the most relevant informati
 
 ```python
 import os
-from your_repo.stores import LibrarianKnowledge
-from mirascope import OpenAICall, OpenAICallParams
+from uuid import uuid4
+
+from openai.types.chat import ChatCompletionMessageParam
+
+from mirascope.chroma import ChromaSettings, ChromaVectorStore
+from mirascope.openai import OpenAICall, OpenAIEmbedder
+from mirascope.rag import Document, TextChunker
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+
+
+class LibrarianKnowledge(ChromaVectorStore):
+    embedder = OpenAIEmbedder()
+    chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
+    index_name = "librarian-0001"
+    client_settings = ChromaSettings()
+
+
+store = LibrarianKnowledge()
 
 
 class Librarian(OpenAICall):
     prompt_template = """
     SYSTEM: You are the world's greatest librarian.
-    MESSAGES: {context}
+    MESSAGES: {history}
     USER: {question}
     """
 
-    question: str = ""
-    knowledge: LibrarianKnowledge = LibrarianKnowledge()
+    question: str
 
     @property
-    def context(self):
-        return self.store.retrieve(self.question).documents
-        
+    def history(self) -> list[ChatCompletionMessageParam]:
+        retrieval = store.retrieve(self.question, include=["metadatas", "documents"])
+        documents = retrieval.documents[0]
+        metadatas = retrieval.metadatas[0]
+        return [
+            {
+                "role": metadatas[i]["role"],
+                "content": document,
+            }
+            for i, document in enumerate(documents)
+        ]
 
-librarian = Librarian()
+
+librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
+    if librarian.question == "exit":
+        break
     response = librarian.call()
-    content = f"(Assistant): {response.content}"
-    librarian.knowledge.add([librarian.question, content])
-    print(content)
+
+    store.add(
+        [
+            Document(
+                id=str(uuid4()), text=librarian.question, metadata={"role": "user"}
+            ),
+            Document(
+                id=str(uuid4()), text=response.content, metadata={"role": "assistant"}
+            ),
+        ]
+    )
+    print(f"(Assistant): {response.content}")
 ```
 
 Check out [Mirascope RAG](./rag_(retrieval_augmented_generation).md) for a more in-depth look on creating a RAG application with Mirascope.
