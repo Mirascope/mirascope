@@ -117,12 +117,12 @@ Mirascope also makes it possible to extract base types without defining a `pydan
 from mirascope.openai import OpenAIExtractor
 
 
-class BookRecommender(OpenAIExtractor[list[str]]):
-    extract_schema: Type[list[str]] = list[str]
-	prompt_template = "Please recommend some science fiction books."
+class BookRecommender(OpenAIExtractor[list]):
+    extract_schema: type[list] = list[str]
+    prompt_template = "Please recommend some science fiction books."
 
 
-books = BookRecommendation().extract()
+books = BookRecommender().extract()
 print(books)
 #> ['Dune', 'Neuromancer', "Ender's Game", "The Hitchhiker's Guide to the Galaxy", 'Foundation', 'Snow Crash']
 ```
@@ -393,7 +393,7 @@ for partial_model in stream:
 
 In the above examples, we’re extracting information present in the prompt text into structured form. We can also use `extract` to generate structured information from a prompt:
 
-```python
+```python hl_lines="6"
 from mirascope.openai import OpenAIPrompt
 from pydantic import BaseModel
 
