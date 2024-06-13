@@ -1,8 +1,14 @@
+"""
+This example shows how to use Mirascope to call tools and append the tool call to history.
+"""
+import os
 from typing import Literal
 
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.openai import OpenAICall, OpenAICallParams
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def get_current_weather(
@@ -27,7 +33,7 @@ class Forecast(OpenAICall):
 
     question: str
     history: list[ChatCompletionMessageParam] = []
-    call_params = OpenAICallParams(model="gpt-4-turbo", tools=[get_current_weather])
+    call_params = OpenAICallParams(tools=[get_current_weather])
 
 
 # Make the first call to the LLM

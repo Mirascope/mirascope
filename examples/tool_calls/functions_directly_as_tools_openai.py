@@ -2,9 +2,12 @@
 We’ve made implementing and using tools (function calling) intuitive:
 """
 
+import os
 from typing import Literal
 
 from mirascope.openai import OpenAICall, OpenAICallParams
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def get_current_weather(
@@ -24,7 +27,7 @@ def get_current_weather(
 class Forecast(OpenAICall):
     prompt_template = "What's the weather in Tokyo?"
 
-    call_params = OpenAICallParams(model="gpt-4", tools=[get_current_weather])
+    call_params = OpenAICallParams(tools=[get_current_weather])
 
 
 tool = Forecast().call().tool

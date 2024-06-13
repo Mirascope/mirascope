@@ -4,12 +4,11 @@ FastAPI out-of-the-box (async):
 """
 
 import os
-from typing import Type
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from mirascope.openai import OpenAIExtractor
+from mirascope.openai import OpenAICallParams, OpenAIExtractor
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
@@ -22,10 +21,12 @@ class Book(BaseModel):
 
 
 class BookRecommender(OpenAIExtractor[Book]):
-    extract_schema: Type[Book] = Book
+    extract_schema: type[Book] = Book
     prompt_template = "Please recommend a {genre} book."
 
     genre: str
+
+    call_params = OpenAICallParams(tool_choice="required")
 
 
 @app.post("/")
