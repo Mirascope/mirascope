@@ -5,7 +5,12 @@ from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionMessageToolCall,
+)
+from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import ValidationError
 
@@ -272,8 +277,31 @@ def test_openai_tool_stream_from_stream(
     tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
     tool_assertions(tools)
 
-    tools = [tool for _, tool in OpenAIStream(generator(), allow_partial=True)]
+    stream = OpenAIStream(generator(), allow_partial=True)
+    tools = [tool for _, tool in stream]
     tool_assertions(tools)
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+        ],
+    }
 
 
 def test_openai_tool_stream_bad_tool_name(
@@ -344,9 +372,32 @@ async def test_openai_tool_stream_from_async_stream(
     tool_assertions(tools)
 
     tools = []
-    async for _, tool in OpenAIAsyncStream(async_generator(), allow_partial=True):
+    stream = OpenAIAsyncStream(async_generator(), allow_partial=True)
+    async for _, tool in stream:
         tools.append(tool)
     tool_assertions(tools)
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+        ],
+    }
 
 
 def test_openai_tool_stream_no_tool_types(

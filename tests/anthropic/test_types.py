@@ -177,8 +177,32 @@ def test_anthropic_tool_stream_from_stream(
     tools = [tool for _, tool in AnthropicStream(generator(), allow_partial=True)]
     tool_assertions(tools[1:])
 
-    tools = [tool for _, tool in AnthropicStream(generator())]
+    stream = AnthropicStream(generator())
+    tools = [tool for _, tool in stream]
     assert len(tools[1:]) == 2
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": [
+            {
+                "id": "test_id",
+                "type": "tool_use",
+                "name": "AnthropicBookTool",
+                "input": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            },
+            {
+                "id": "test_id",
+                "type": "tool_use",
+                "name": "AnthropicBookTool",
+                "input": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            },
+        ],
+    }
 
 
 def test_anthropic_tool_stream_bad_tool_name(
@@ -271,7 +295,29 @@ async def test_anthropic_tool_stream_from_async_stream(
     ]
     tool_assertions(tools)
 
-    tools = [
-        tool async for _, tool in AnthropicAsyncStream(generator(), allow_partial=True)
-    ]
+    stream = AnthropicAsyncStream(generator(), allow_partial=True)
+    tools = [tool async for _, tool in stream]
     tool_assertions(tools[1:])
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": [
+            {
+                "id": "test_id",
+                "type": "tool_use",
+                "name": "AnthropicBookTool",
+                "input": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            },
+            {
+                "id": "test_id",
+                "type": "tool_use",
+                "name": "AnthropicBookTool",
+                "input": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                },
+            },
+        ],
+    }

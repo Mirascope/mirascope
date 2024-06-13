@@ -591,11 +591,12 @@ class OpenAIStream(
         current_tool_call = ChatCompletionMessageToolCall(
             id="", function=Function(arguments="", name=""), type="function"
         )
-        current_tool_type = None
+        current_tool_type, tool_calls = None, []
         for chunk, _ in super().__iter__():
             if not chunk.tool_types or not chunk.tool_calls:
                 if current_tool_type:
                     yield chunk, current_tool_type.from_tool_call(current_tool_call)
+                    tool_calls.append(current_tool_call)
                     current_tool_type = None
                 else:
                     yield chunk, None
@@ -604,8 +605,12 @@ class OpenAIStream(
             )
             if tool is not None:
                 yield chunk, tool
+                if starting_new:
+                    tool_calls.append(tool.tool_call)
             if starting_new and self._allow_partial:
                 yield chunk, None
+        if tool_calls:
+            self.message_param["tool_calls"] = tool_calls  # type: ignore
 
 
 class OpenAIAsyncStream(
@@ -638,11 +643,12 @@ class OpenAIAsyncStream(
             current_tool_call = ChatCompletionMessageToolCall(
                 id="", function=Function(arguments="", name=""), type="function"
             )
-            current_tool_type = None
+            current_tool_type, tool_calls = None, []
             async for chunk, _ in stream:
                 if not chunk.tool_types or not chunk.tool_calls:
                     if current_tool_type:
                         yield chunk, current_tool_type.from_tool_call(current_tool_call)
+                        tool_calls.append(current_tool_call)
                         current_tool_type = None
                     else:
                         yield chunk, None
@@ -656,7 +662,11 @@ class OpenAIAsyncStream(
                 )
                 if tool is not None:
                     yield chunk, tool
+                    if starting_new:
+                        tool_calls.append(tool.tool_call)
                 if starting_new and self._allow_partial:
                     yield chunk, None
+            if tool_calls:
+                self.message_param["tool_calls"] = tool_calls  # type: ignore
 
         return generator()

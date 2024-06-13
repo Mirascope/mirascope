@@ -546,7 +546,7 @@ class AnthropicStream(
         """Iterator over the stream and constructs tools as they are streamed."""
         current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
         current_tool_type = None
-        buffer = ""
+        buffer, content = "", []
         for chunk, _ in super().__iter__():
             (
                 buffer,
@@ -567,6 +567,10 @@ class AnthropicStream(
                 yield chunk, None
             if starting_new and self._allow_partial:
                 yield chunk, None
+            if chunk.chunk.type == "content_block_stop":
+                content.append(chunk.chunk.content_block.model_dump())
+        if content:
+            self.message_param["content"] = content  # type: ignore
 
 
 class AnthropicAsyncStream(
@@ -600,7 +604,7 @@ class AnthropicAsyncStream(
         async def generator():
             current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
             current_tool_type = None
-            buffer = ""
+            buffer, content = "", []
             async for chunk, _ in stream:
                 (
                     buffer,
@@ -621,5 +625,9 @@ class AnthropicAsyncStream(
                     yield chunk, None
                 if starting_new and self._allow_partial:
                     yield chunk, None
+                if chunk.chunk.type == "content_block_stop":
+                    content.append(chunk.chunk.content_block.model_dump())
+            if content:
+                self.message_param["content"] = content  # type: ignore
 
         return generator()
