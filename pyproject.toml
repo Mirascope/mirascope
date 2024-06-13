@@ -91,6 +91,7 @@ uvicorn = { extras = ["standard"], version = "^0.27.0" }
 pydantic-settings = "^2.1.0"
 sqlalchemy = "^2.0.25"
 psycopg2 = "^2.9.9"
+llama-index = "^0.10.44"
 
 
 [tool.pytest.ini_options]
