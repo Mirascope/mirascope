@@ -33,7 +33,7 @@ class TaskDetails(BaseModel):
 
 
 class TaskExtractor(OpenAIExtractor[TaskDetails]):
-    extract_schema: Type[TaskDetails] = TaskDetails
+    extract_schema: type[TaskDetails] = TaskDetails
     prompt_template = """
     Extract the task details from the following task:
     {task}
@@ -56,8 +56,6 @@ Let's dive a little deeper into what we're doing here.
 Defining the schema for extraction is done via models, which are classes that inherit from [`pydantic.BaseModel`](https://docs.pydantic.dev/latest/concepts/models/). We can then define an extractor dependent on this schema and use it to extract the schema:
 
 ```python
-from typing import Type
-
 from mirascope.openai import OpenAIExtractor
 from pydantic import BaseModel
 
@@ -68,7 +66,7 @@ class Book(BaseModel):
 
 
 class BookExtractor(OpenAIExtractor[Book]):
-	extract_schema: Type[Book] = Book
+	extract_schema: type[Book] = Book
 	prompt_template = "The Name of the Wind by Patrick Rothfuss."
 
 
@@ -85,8 +83,6 @@ You can use tool classes like [`OpenAITool`](../api/openai/tools.md#mirascope.op
 You can also use [`pydantic.Fields`](https://docs.pydantic.dev/latest/concepts/fields/) to add additional information for each field in your schema. Again, this information will be included in the prompt, and we can take advantage of that:
 
 ```python
-from typing import Type
-
 from mirascope.openai import OpenAIPrompt
 from pydantic import BaseModel, Field
 
@@ -97,7 +93,7 @@ class Book(BaseModel):
 
 
 class BookExtractor(OpenAIExtractor[Book]):
-	extract_schema: Type[Book] = Book
+	extract_schema: type[Book] = Book
 	prompt_template = "The Name of the Wind by Patrick Rothfuss."
 
 
@@ -117,12 +113,12 @@ Mirascope also makes it possible to extract base types without defining a `pydan
 from mirascope.openai import OpenAIExtractor
 
 
-class BookRecommender(OpenAIExtractor[list[str]]):
-    extract_schema: Type[list[str]] = list[str]
-	prompt_template = "Please recommend some science fiction books."
+class BookRecommender(OpenAIExtractor[list]):
+    extract_schema: type[list] = list[str]
+    prompt_template = "Please recommend some science fiction books."
 
 
-books = BookRecommendation().extract()
+books = BookRecommender().extract()
 print(books)
 #> ['Dune', 'Neuromancer', "Ender's Game", "The Hitchhiker's Guide to the Galaxy", 'Foundation', 'Snow Crash']
 ```
@@ -154,12 +150,12 @@ class Label(Enum):
 
 
 class NotSpam(OpenAIExtractor[Label]):
-    extract_schema: Type[Label] = Label
+    extract_schema: type[Label] = Label
     prompt_template = "Your car insurance payment has been processed. Thank you for your business."
 
 
 class Spam(OpenAIExtractor[Label]):
-    extract_schema: Type[Label] = Label
+    extract_schema: type[Label] = Label
     prompt_template = "I can make you $1000 in just an hour. Interested?"
 
 
@@ -393,7 +389,7 @@ for partial_model in stream:
 
 In the above examples, we’re extracting information present in the prompt text into structured form. We can also use `extract` to generate structured information from a prompt:
 
-```python
+```python hl_lines="6"
 from mirascope.openai import OpenAIPrompt
 from pydantic import BaseModel
 
