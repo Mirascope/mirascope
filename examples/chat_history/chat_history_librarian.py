@@ -25,8 +25,11 @@ class Librarian(OpenAICall):
 librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
+    if librarian.question == "exit":
+        break
     response = librarian.call()
-    librarian.history.append({"role": "user", "content": librarian.question})
+    if response.user_message_param:
+        librarian.history.append(response.user_message_param)
     librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 

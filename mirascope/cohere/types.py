@@ -296,6 +296,7 @@ class CohereCallResponseChunk(BaseCallResponseChunk[StreamedChatResponse, Cohere
         "citation-generation",
         "tool-calls-generation",
         "stream-end",
+        "tool-calls-chunk",
     ]:
         """Returns the type of the chunk."""
         return self.chunk.event_type
@@ -432,7 +433,14 @@ class CohereEmbeddingParams(BaseEmbeddingParams):
     batching: Optional[bool] = True
 
 
-class CohereStream(BaseStream[CohereCallResponseChunk, ChatMessage, ChatMessage]):
+class CohereStream(
+    BaseStream[
+        CohereCallResponseChunk,
+        ChatMessage,
+        ChatMessage,
+        CohereTool,
+    ]
+):
     """A class for streaming responses from Cohere's API."""
 
     def __init__(self, stream: Generator[CohereCallResponseChunk, None, None]):
@@ -441,7 +449,12 @@ class CohereStream(BaseStream[CohereCallResponseChunk, ChatMessage, ChatMessage]
 
 
 class CohereAsyncStream(
-    BaseAsyncStream[CohereCallResponseChunk, ChatMessage, ChatMessage]
+    BaseAsyncStream[
+        CohereCallResponseChunk,
+        ChatMessage,
+        ChatMessage,
+        CohereTool,
+    ]
 ):
     """A class for streaming responses from Cohere's API."""
 

@@ -1,18 +1,28 @@
 """Tests for types for working with OpenAI with Mirascope."""
 
+from collections.abc import Generator
 from typing import Type
 from unittest.mock import MagicMock, patch
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionMessageToolCall,
+)
+from openai.types.chat.chat_completion_message_tool_call import Function
+from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import ValidationError
 
 from mirascope.openai.calls import OpenAICall
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
+    OpenAIAsyncStream,
     OpenAICallParams,
     OpenAICallResponse,
     OpenAICallResponseChunk,
+    OpenAIStream,
+    OpenAIToolStream,
 )
 
 
@@ -229,3 +239,178 @@ def test_openai_call_call_no_usage(
     assert response.usage is None
     assert response.input_tokens is None
     assert response.output_tokens is None
+
+
+def test_openai_tool_stream_from_stream(
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
+) -> None:
+    """Tests streaming tools from chunks."""
+
+    def generator():
+        stream = fixture_chat_completion_chunks_with_tools[:-1] * 2
+        stream.append(fixture_chat_completion_chunks_with_tools[-1])
+        for chunk in stream:
+            yield OpenAICallResponseChunk(
+                chunk=chunk, tool_types=[fixture_my_openai_tool]
+            )
+
+    complete_tool = {
+        "param": "param",
+        "optional": 0,
+    }
+    incomplete_tool = {
+        "param": "param",
+        "optional": None,
+    }
+
+    def tool_assertions(tools):
+        assert len(tools) == 7
+        assert tools[0] is not None and tools[0].args == incomplete_tool
+        assert tools[1] is not None and tools[1].args == complete_tool
+        assert tools[2] is not None and tools[2].args == complete_tool
+        assert tools[3] is None
+        assert tools[4] is not None and tools[4].args == incomplete_tool
+        assert tools[5] is not None and tools[5].args == complete_tool
+        assert tools[6] is not None and tools[6].args == complete_tool
+
+    tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
+    tool_assertions(tools)
+
+    stream = OpenAIStream(generator(), allow_partial=True)
+    tools = [tool for _, tool in stream]
+    tool_assertions(tools)
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+        ],
+    }
+
+
+def test_openai_tool_stream_bad_tool_name(
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> None:
+    """Tests that a runtime error is thrown when a tool has a bad name."""
+
+    def generator():
+        chunk_copy = fixture_chat_completion_chunk_with_tools.model_copy()
+        chunk_copy.choices[0].delta.tool_calls[0].function.name = "BadToolName"
+        yield OpenAICallResponseChunk(
+            chunk=chunk_copy, tool_types=[fixture_my_openai_tool]
+        )
+
+    with pytest.raises(RuntimeError):
+        list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
+
+
+@pytest.mark.asyncio
+async def test_openai_tool_stream_from_async_stream(
+    fixture_my_openai_tool: Type[OpenAITool],
+    fixture_chat_completion_chunks_with_tools: list[ChatCompletionChunk],
+) -> None:
+    """Tests streaming tools from chunks."""
+
+    async def async_generator():
+        stream = fixture_chat_completion_chunks_with_tools[:-1] * 2
+        stream.append(fixture_chat_completion_chunks_with_tools[-1])
+        for chunk in stream:
+            yield OpenAICallResponseChunk(
+                chunk=chunk, tool_types=[fixture_my_openai_tool]
+            )
+
+    def tool_assertions(tools):
+        assert len(tools) == 7
+        assert tools[0] is not None and tools[0].args == {
+            "param": "param",
+            "optional": None,
+        }
+        assert tools[1] is not None and tools[1].args == {
+            "param": "param",
+            "optional": 0,
+        }
+        assert tools[2] is not None and tools[2].args == {
+            "param": "param",
+            "optional": 0,
+        }
+        assert tools[3] is None
+        assert tools[4] is not None and tools[4].args == {
+            "param": "param",
+            "optional": None,
+        }
+        assert tools[5] is not None and tools[5].args == {
+            "param": "param",
+            "optional": 0,
+        }
+        assert tools[6] is not None and tools[6].args == {
+            "param": "param",
+            "optional": 0,
+        }
+
+    tools = []
+    async for tool in OpenAIToolStream.from_async_stream(
+        async_generator(), allow_partial=True
+    ):
+        tools.append(tool)
+    tool_assertions(tools)
+
+    tools = []
+    stream = OpenAIAsyncStream(async_generator(), allow_partial=True)
+    async for _, tool in stream:
+        tools.append(tool)
+    tool_assertions(tools)
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+            ChatCompletionMessageToolCall(
+                id="id0",
+                function=Function(
+                    arguments='{\n "param": "param",\n "optional": 0\n}',
+                    name="MyOpenAITool",
+                ),
+                type="function",
+            ),
+        ],
+    }
+
+
+def test_openai_tool_stream_no_tool_types(
+    fixture_chat_completion_chunk_with_tools: ChatCompletionChunk,
+) -> None:
+    """Tests that None is returned when chunk.tool_types is not set."""
+
+    def generator() -> Generator[OpenAICallResponseChunk, None, None]:
+        yield OpenAICallResponseChunk(
+            chunk=fixture_chat_completion_chunk_with_tools,
+            tool_types=None,
+            response_format=ResponseFormat(type="json_object"),
+        )
+
+    tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))
+    assert len(tools) == 0

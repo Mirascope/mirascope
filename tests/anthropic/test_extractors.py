@@ -74,13 +74,17 @@ def test_anthropic_extractor_stream_tool(
         extract_schema: Type[AnthropicTool] = fixture_anthropic_book_tool
         prompt_template = "test"
         api_key = "test"
-        call_params = AnthropicCallParams(response_format="json")
+        call_params = AnthropicCallParams()
 
     tools = list(TempExtractor().stream())
 
-    assert len(tools) == 2
+    assert len(tools) == 3
     assert tools[0].args == {"title": "The Name of the Wind", "author": None}
     assert tools[1].args == {
+        "title": "The Name of the Wind",
+        "author": "Patrick Rothfuss",
+    }
+    assert tools[2].args == {
         "title": "The Name of the Wind",
         "author": "Patrick Rothfuss",
     }
@@ -109,9 +113,13 @@ async def test_anthropic_extractor_stream_async_tool(
 
     tools = [tool async for tool in TempExtractor().stream_async()]
 
-    assert len(tools) == 2
+    assert len(tools) == 3
     assert tools[0].args == {"title": "The Name of the Wind", "author": None}
     assert tools[1].args == {
+        "title": "The Name of the Wind",
+        "author": "Patrick Rothfuss",
+    }
+    assert tools[2].args == {
         "title": "The Name of the Wind",
         "author": "Patrick Rothfuss",
     }

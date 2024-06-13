@@ -18,8 +18,12 @@ def test_chroma_vectorstore_add_document(
 ):
     """Test the add method of the ChromaVectorStore class with documents as argument"""
     mock_upsert.return_value = None
-    fixture_ephemeral_client.add([Document(text="foo", id="1")])
-    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
+    fixture_ephemeral_client.add(
+        [Document(text="foo", id="1", metadata={"foo": "bar"})]
+    )
+    mock_upsert.assert_called_once_with(
+        ids=["1"], documents=["foo"], metadatas=[{"foo": "bar"}]
+    )
 
 
 @patch("chromadb.api.models.Collection.Collection.upsert")
@@ -34,7 +38,9 @@ def test_chroma_vectorstore_add_text(
     mock_upsert.return_value = None
     fixture_ephemeral_client.add("foo")
     mock_upsert.assert_called_once_with(
-        ids=["12345678-1234-5678-1234-567812345678"], documents=["foo"]
+        ids=["12345678-1234-5678-1234-567812345678"],
+        documents=["foo"],
+        metadatas=[None],
     )
 
 

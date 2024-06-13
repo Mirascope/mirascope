@@ -2,16 +2,16 @@
 
 import json
 from collections.abc import AsyncGenerator, Generator
-from typing import Any, Literal, Optional, Type, Union
+from typing import Any, Literal, Optional, Type, Union, overload
 
 from anthropic._types import Body, Headers, Query
+from anthropic.lib.streaming import MessageStreamEvent
 from anthropic.types import (
     ContentBlockDeltaEvent,
     ContentBlockStartEvent,
     Message,
     MessageParam,
     MessageStartEvent,
-    MessageStreamEvent,
     TextBlock,
     TextDelta,
     ToolUseBlock,
@@ -20,6 +20,7 @@ from anthropic.types import (
 from anthropic.types.completion_create_params import Metadata
 from httpx import Timeout
 from pydantic import ConfigDict
+from pydantic_core import from_json
 
 from ..base.types import (
     BaseAsyncStream,
@@ -27,7 +28,9 @@ from ..base.types import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseStream,
+    BaseToolStream,
 )
+from ..partial import partial
 from .tools import AnthropicTool
 
 
@@ -242,6 +245,8 @@ class AnthropicCallResponseChunk(
     def type(
         self,
     ) -> Literal[
+        "text",
+        "input_json",
         "message_start",
         "message_delta",
         "message_stop",
@@ -310,21 +315,319 @@ class AnthropicCallResponseChunk(
         return None
 
 
+def _handle_chunk(
+    buffer: str,
+    chunk: AnthropicCallResponseChunk,
+    current_tool_call: ToolUseBlock,
+    current_tool_type: Optional[Type[AnthropicTool]],
+    allow_partial: bool,
+) -> tuple[
+    str,
+    Optional[AnthropicTool],
+    ToolUseBlock,
+    Optional[Type[AnthropicTool]],
+    bool,
+]:
+    """Handles a chunk of the stream."""
+    if not chunk.tool_types:
+        return (
+            buffer,
+            None,
+            current_tool_call,
+            current_tool_type,
+            False,
+        )
+
+    if chunk.chunk.type == "content_block_stop" and isinstance(
+        chunk.chunk.content_block, ToolUseBlock
+    ):
+        content_block = chunk.chunk.content_block
+        current_tool_call.input = from_json(buffer)
+        return (
+            buffer,
+            current_tool_type.from_tool_call(current_tool_call)
+            if current_tool_type
+            else None,
+            ToolUseBlock(id="", input={}, name="", type="tool_use"),
+            None,
+            False,
+        )
+
+    # Reset on new tool
+    if chunk.chunk.type == "content_block_start" and isinstance(
+        chunk.chunk.content_block, ToolUseBlock
+    ):
+        content_block = chunk.chunk.content_block
+        current_tool_type = None
+        for tool_type in chunk.tool_types:
+            if tool_type.__name__ == content_block.name:
+                current_tool_type = tool_type
+                break
+        if current_tool_type is None:
+            raise RuntimeError(f"Unknown tool type in stream: {content_block.name}.")
+        return (
+            "",
+            None,
+            ToolUseBlock(
+                id=content_block.id, input={}, name=content_block.name, type="tool_use"
+            ),
+            current_tool_type,
+            bool(buffer),
+        )
+
+    # Update arguments with each chunk
+    if chunk.chunk.type == "input_json":
+        buffer += chunk.chunk.partial_json
+
+        if allow_partial and current_tool_type:
+            current_tool_call.input = from_json(buffer, allow_partial=True)
+            return (
+                buffer,
+                partial(current_tool_type).from_tool_call(current_tool_call),
+                current_tool_call,
+                current_tool_type,
+                False,
+            )
+
+    return buffer, None, current_tool_call, current_tool_type, False
+
+
+class AnthropicToolStream(BaseToolStream[AnthropicCallResponseChunk, AnthropicTool]):
+    """A base class for streaming tools from response chunks."""
+
+    @classmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[AnthropicCallResponseChunk, None, None],
+        allow_partial: Literal[True],
+    ) -> Generator[Optional[AnthropicTool], None, None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[AnthropicCallResponseChunk, None, None],
+        allow_partial: Literal[False],
+    ) -> Generator[AnthropicTool, None, None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[AnthropicCallResponseChunk, None, None],
+        allow_partial: bool = False,
+    ) -> Generator[Optional[AnthropicTool], None, None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    def from_stream(cls, stream, allow_partial=False):
+        """Yields partial tools from the given stream of chunks.
+
+        Args:
+            stream: The generator of chunks from which to stream tools.
+            allow_partial: Whether to allow partial tools.
+
+        Raises:
+            RuntimeError: if a tool in the stream is of an unknown type.
+        """
+        cls._check_version_for_partial(allow_partial)
+        current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+        current_tool_type = None
+        buffer = ""
+        for chunk in stream:
+            (
+                buffer,
+                tool,
+                current_tool_call,
+                current_tool_type,
+                starting_new,
+            ) = _handle_chunk(
+                buffer,
+                chunk,
+                current_tool_call,
+                current_tool_type,
+                allow_partial,
+            )
+            if tool is not None:
+                yield tool
+            if starting_new and allow_partial:
+                yield None
+
+    @classmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[AnthropicCallResponseChunk, None],
+        allow_partial: Literal[True],
+    ) -> AsyncGenerator[Optional[AnthropicTool], None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[AnthropicCallResponseChunk, None],
+        allow_partial: Literal[False],
+    ) -> AsyncGenerator[AnthropicTool, None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[AnthropicCallResponseChunk, None],
+        allow_partial: bool = False,
+    ) -> AsyncGenerator[Optional[AnthropicTool], None]:
+        yield ...  # type: ignore  # pragma: no cover
+
+    @classmethod
+    async def from_async_stream(cls, async_stream, allow_partial=False):
+        """Yields partial tools from the given stream of chunks asynchronously.
+
+        Args:
+            stream: The async generator of chunks from which to stream tools.
+            allow_partial: Whether to allow partial tools.
+
+        Raises:
+            RuntimeError: if a tool in the stream is of an unknown type.
+        """
+        cls._check_version_for_partial(allow_partial)
+        current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+        current_tool_type = None
+        buffer = ""
+        async for chunk in async_stream:
+            (
+                buffer,
+                tool,
+                current_tool_call,
+                current_tool_type,
+                starting_new,
+            ) = _handle_chunk(
+                buffer,
+                chunk,
+                current_tool_call,
+                current_tool_type,
+                allow_partial,
+            )
+            if tool is not None:
+                yield tool
+            if starting_new and allow_partial:
+                yield None
+
+
 class AnthropicStream(
-    BaseStream[AnthropicCallResponseChunk, MessageParam, MessageParam]
+    BaseStream[
+        AnthropicCallResponseChunk,
+        MessageParam,
+        MessageParam,
+        AnthropicTool,
+    ]
 ):
     """A class for streaming responses from Anthropic's Claude API."""
 
-    def __init__(self, stream: Generator[AnthropicCallResponseChunk, None, None]):
+    def __init__(
+        self,
+        stream: Generator[AnthropicCallResponseChunk, None, None],
+        allow_partial: bool = False,
+    ):
         """Initializes an instance of `AnthropicStream`."""
+        AnthropicToolStream._check_version_for_partial(allow_partial)
         super().__init__(stream, MessageParam)
+        self._allow_partial = allow_partial
+
+    def __iter__(
+        self,
+    ) -> Generator[
+        tuple[AnthropicCallResponseChunk, Optional[AnthropicTool]], None, None
+    ]:
+        """Iterator over the stream and constructs tools as they are streamed."""
+        current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+        current_tool_type = None
+        buffer, content = "", []
+        for chunk, _ in super().__iter__():
+            (
+                buffer,
+                tool,
+                current_tool_call,
+                current_tool_type,
+                starting_new,
+            ) = _handle_chunk(
+                buffer,
+                chunk,
+                current_tool_call,
+                current_tool_type,
+                self._allow_partial,
+            )
+            if tool is not None:
+                yield chunk, tool
+            elif current_tool_type is None:
+                yield chunk, None
+            if starting_new and self._allow_partial:
+                yield chunk, None
+            if chunk.chunk.type == "content_block_stop":
+                content.append(chunk.chunk.content_block.model_dump())
+        if content:
+            self.message_param["content"] = content  # type: ignore
 
 
 class AnthropicAsyncStream(
-    BaseAsyncStream[AnthropicCallResponseChunk, MessageParam, MessageParam]
+    BaseAsyncStream[
+        AnthropicCallResponseChunk,
+        MessageParam,
+        MessageParam,
+        AnthropicTool,
+    ]
 ):
     """A class for streaming responses from Anthropic's Claude API."""
 
-    def __init__(self, stream: AsyncGenerator[AnthropicCallResponseChunk, None]):
+    def __init__(
+        self,
+        stream: AsyncGenerator[AnthropicCallResponseChunk, None],
+        allow_partial: bool = False,
+    ):
         """Initializes an instance of `AnthropicAsyncStream`."""
+        AnthropicToolStream._check_version_for_partial(allow_partial)
         super().__init__(stream, MessageParam)
+        self._allow_partial = allow_partial
+
+    def __aiter__(
+        self,
+    ) -> AsyncGenerator[
+        tuple[AnthropicCallResponseChunk, Optional[AnthropicTool]], None
+    ]:
+        """Async iterator over the stream and constructs tools as they are streamed."""
+        stream = super().__aiter__()
+
+        async def generator():
+            current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+            current_tool_type = None
+            buffer, content = "", []
+            async for chunk, _ in stream:
+                (
+                    buffer,
+                    tool,
+                    current_tool_call,
+                    current_tool_type,
+                    starting_new,
+                ) = _handle_chunk(
+                    buffer,
+                    chunk,
+                    current_tool_call,
+                    current_tool_type,
+                    self._allow_partial,
+                )
+                if tool is not None:
+                    yield chunk, tool
+                elif current_tool_type is None:
+                    yield chunk, None
+                if starting_new and self._allow_partial:
+                    yield chunk, None
+                if chunk.chunk.type == "content_block_stop":
+                    content.append(chunk.chunk.content_block.model_dump())
+            if content:
+                self.message_param["content"] = content  # type: ignore
+
+        return generator()

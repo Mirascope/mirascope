@@ -290,7 +290,14 @@ class GeminiCallResponseChunk(
         return None
 
 
-class GeminiStream(BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict]):
+class GeminiStream(
+    BaseStream[
+        GeminiCallResponseChunk,
+        ContentDict,
+        ContentDict,
+        GeminiTool,
+    ]
+):
     """A class for streaming responses from Google's Gemini API."""
 
     def __init__(self, stream: Generator[GeminiCallResponseChunk, None, None]):
@@ -299,7 +306,12 @@ class GeminiStream(BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict]
 
 
 class GeminiAsyncStream(
-    BaseAsyncStream[GeminiCallResponseChunk, ContentDict, ContentDict]
+    BaseAsyncStream[
+        GeminiCallResponseChunk,
+        ContentDict,
+        ContentDict,
+        GeminiTool,
+    ]
 ):
     """A class for streaming responses from Google's Gemini API."""
 

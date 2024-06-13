@@ -159,6 +159,8 @@ def fixture_chat_completion_chunks() -> list[OpenAIChatCompletionChunk]:
             created=0,
             model="test_model",
             object="chat.completion.chunk",
+            system_fingerprint=None,
+            usage=None,
         ),
         OpenAIChatCompletionChunk(
             id="test_id",
@@ -173,10 +175,13 @@ def fixture_chat_completion_chunks() -> list[OpenAIChatCompletionChunk]:
             created=0,
             model="test_model",
             object="chat.completion.chunk",
+            system_fingerprint=None,
+            usage=None,
         ),
         OpenAIChatCompletionChunk(
             id="test_id",
             choices=[],
+            system_fingerprint=None,
             usage=CompletionUsage(prompt_tokens=1, completion_tokens=1, total_tokens=2),
             created=0,
             model="gpt-4-turbo",

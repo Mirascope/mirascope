@@ -28,9 +28,8 @@ from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 from ..partial import partial
 from .calls import BaseCall
 from .prompts import BasePrompt, BasePromptT
-from .tool_streams import BaseToolStream
 from .tools import BaseTool, BaseType
-from .types import BaseCallParams, BaseConfig
+from .types import BaseCallParams, BaseConfig, BaseToolStream
 
 with suppress(ImportError):
     import logfire
