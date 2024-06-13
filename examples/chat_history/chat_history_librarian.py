@@ -25,9 +25,13 @@ class Librarian(OpenAICall):
 librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
+    if librarian.question == "exit":
+        break
     response = librarian.call()
-    librarian.history.append({"role": "user", "content": librarian.question})
-    librarian.history.append(response.message_param)
+    librarian.history += [
+        response.user_message_param,
+        response.message_param,
+    ]
     print(f"(Assistant): {response.content}")
 
 # > (User): What fantasy book should I read?

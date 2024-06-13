@@ -29,8 +29,10 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history.append({"role": "user", "content": librarian.question})
-    librarian.history.append(response.message_param)
+    librarian.history += [
+        response.user_message_param,
+        response.message_param,
+    ]
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -72,8 +74,10 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history.append({"role": "user", "content": librarian.question})
-    librarian.history.append(response.message_param)
+    librarian.history += [
+        response.user_message_param,
+        response.message_param,
+    ]
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -110,8 +114,8 @@ while True:
     librarian.question = input("(User): ")
     response = librarian.call()
     librarian.history += [
-        {"role": "user", "content": librarian.question},
-        {"role": "assistant", "content": response.content},
+        response.user_message_param,
+        response.message_param,
     ]
     # Limit to only the last 10 messages -- i.e. short term memory loss
     librarian.history = librarian.history[-10:]
