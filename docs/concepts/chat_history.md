@@ -29,10 +29,9 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history += [
-        response.user_message_param,
-        response.message_param,
-    ]
+    if response.user_message_param:
+        librarian.history.append(response.user_message_param)
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -74,10 +73,9 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history += [
-        response.user_message_param,
-        response.message_param,
-    ]
+    if response.user_message_param:
+        librarian.history.append(response.user_message_param)
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 #> (User): What fantasy book should I read?
@@ -90,7 +88,7 @@ while True:
 
 As your chat gets longer and longer, you will soon approach the context limit for the particular model. One not so great solution is to remove the oldest messages to stay within the context limit. For example:
 
-```python hl_lines="28"
+```python hl_lines="27"
 import os
 
 from openai.types.chat import ChatCompletionMessageParam
@@ -113,10 +111,9 @@ librarian = Librarian(question="", history=[])
 while True:
     librarian.question = input("(User): ")
     response = librarian.call()
-    librarian.history += [
-        response.user_message_param,
-        response.message_param,
-    ]
+    if response.user_message_param:
+        librarian.history.append(response.user_message_param)
+    librarian.history.append(response.message_param)
     # Limit to only the last 10 messages -- i.e. short term memory loss
     librarian.history = librarian.history[-10:]
     print(f"(Assistant): {response.content}")

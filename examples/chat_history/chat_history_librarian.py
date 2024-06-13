@@ -28,10 +28,9 @@ while True:
     if librarian.question == "exit":
         break
     response = librarian.call()
-    librarian.history += [
-        response.user_message_param,
-        response.message_param,
-    ]
+    if response.user_message_param:
+        librarian.history.append(response.user_message_param)
+    librarian.history.append(response.message_param)
     print(f"(Assistant): {response.content}")
 
 # > (User): What fantasy book should I read?
