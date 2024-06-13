@@ -385,7 +385,7 @@ def test_chroma_vectorstore_add_document(
     mock_upsert.return_value = None
     my_vectorstore = VectorStore()
     my_vectorstore.add([Document(text="foo", id="1")])
-    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"])
+    mock_upsert.assert_called_once_with(ids=["1"], documents=["foo"], metadatas=[None])
     exporter = capfire.exporter
     expected_span_names = [
         "VectorStore.add (pending)",

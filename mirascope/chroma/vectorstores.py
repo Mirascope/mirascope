@@ -1,9 +1,9 @@
 """A module for calling Chroma's Client and Collection."""
 
 from functools import cached_property
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Optional, Union, cast
 
-from chromadb import Collection, EphemeralClient, HttpClient, PersistentClient
+from chromadb import Collection, EphemeralClient, HttpClient, Metadata, PersistentClient
 from chromadb.api import ClientAPI
 
 from ..rag.types import Document
@@ -66,6 +66,7 @@ class ChromaVectorStore(BaseVectorStore):
         return self._index.upsert(
             ids=[document.id for document in documents],
             documents=[document.text for document in documents],
+            metadatas=[cast(Metadata, document.metadata) for document in documents],
             **kwargs,
         )
 

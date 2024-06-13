@@ -293,7 +293,12 @@ class MistralCallResponseChunk(
 
 
 class MistralStream(
-    BaseStream[MistralCallResponseChunk, UserMessage, AssistantMessage]
+    BaseStream[
+        MistralCallResponseChunk,
+        UserMessage,
+        AssistantMessage,
+        MistralTool,
+    ]
 ):
     """A class for streaming responses from Mistral's API."""
 
@@ -303,7 +308,12 @@ class MistralStream(
 
 
 class MistralAsyncStream(
-    BaseAsyncStream[MistralCallResponseChunk, UserMessage, AssistantMessage]
+    BaseAsyncStream[
+        MistralCallResponseChunk,
+        UserMessage,
+        AssistantMessage,
+        MistralTool,
+    ]
 ):
     """A class for streaming responses from Mistral's API."""
 

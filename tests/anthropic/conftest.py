@@ -3,13 +3,17 @@
 from typing import Type
 
 import pytest
+from anthropic.lib.streaming import (
+    ContentBlockStopEvent,
+    InputJsonEvent,
+    MessageStreamEvent,
+)
 from anthropic.types import (
-    ContentBlockDeltaEvent,
     Message,
     MessageStartEvent,
-    MessageStreamEvent,
+    RawContentBlockStartEvent,
     TextBlock,
-    TextDelta,
+    ToolUseBlock,
     Usage,
 )
 
@@ -108,31 +112,65 @@ def fixture_anthropic_call_response_chunks_with_tools(
             ),
             type="message_start",
         ),
-        ContentBlockDeltaEvent(
-            delta=TextDelta(
-                text='"tool_name": "AnthropicBookTool", "title": "The Name of the Wind"',
-                type="text_delta",
+        RawContentBlockStartEvent(
+            content_block=ToolUseBlock(
+                id="test_id", input={}, name="AnthropicBookTool", type="tool_use"
             ),
             index=0,
-            type="content_block_delta",
+            type="content_block_start",
         ),
-        ContentBlockDeltaEvent(
-            delta=TextDelta(text=', "author": "Patrick Rothfuss"}', type="text_delta"),
-            index=1,
-            type="content_block_delta",
+        InputJsonEvent(
+            type="input_json",
+            partial_json='{"title": "The Name of the Wind"',
+            snapshot={"title": "The Name of the Wind"},
         ),
-        ContentBlockDeltaEvent(
-            delta=TextDelta(
-                text='{"tool_name": "AnthropicBookTool", "title": "The Name of the Wind"',
-                type="text_delta",
-            ),
+        InputJsonEvent(
+            type="input_json",
+            partial_json=', "author": "Patrick Rothfuss"}',
+            snapshot={
+                "title": "The Name of the Wind",
+                "author": "Patrick Rothfuss",
+            },
+        ),
+        ContentBlockStopEvent(
             index=2,
-            type="content_block_delta",
+            type="content_block_stop",
+            content_block=ToolUseBlock(
+                id="test_id",
+                input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+                name="AnthropicBookTool",
+                type="tool_use",
+            ),
         ),
-        ContentBlockDeltaEvent(
-            delta=TextDelta(text=', "author": "Patrick Rothfuss"}', type="text_delta"),
+        RawContentBlockStartEvent(
+            content_block=ToolUseBlock(
+                id="test_id", input={}, name="AnthropicBookTool", type="tool_use"
+            ),
             index=3,
-            type="content_block_delta",
+            type="content_block_start",
+        ),
+        InputJsonEvent(
+            type="input_json",
+            partial_json='{"title": "The Name of the Wind"',
+            snapshot={"title": "The Name of the Wind"},
+        ),
+        InputJsonEvent(
+            type="input_json",
+            partial_json=', "author": "Patrick Rothfuss"}',
+            snapshot={
+                "title": "The Name of the Wind",
+                "author": "Patrick Rothfuss",
+            },
+        ),
+        ContentBlockStopEvent(
+            index=6,
+            type="content_block_stop",
+            content_block=ToolUseBlock(
+                id="test_id",
+                input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+                name="AnthropicBookTool",
+                type="tool_use",
+            ),
         ),
     ]
     return [
@@ -151,14 +189,12 @@ def fixture_anthropic_call_response_chunk_with_bad_tool(
 ) -> AnthropicCallResponseChunk:
     """Returns a content block delta event with a bad tool name."""
     return AnthropicCallResponseChunk(
-        chunk=ContentBlockDeltaEvent(
-            delta=TextDelta(
-                text='"tool_name": "BadTool"',
-                type="text_delta",
+        chunk=RawContentBlockStartEvent(
+            content_block=ToolUseBlock(
+                id="test_id", input={}, name="BadTool", type="tool_use"
             ),
             index=3,
-            type="content_block_delta",
+            type="content_block_start",
         ),
         tool_types=[fixture_anthropic_book_tool],
-        response_format="json",
     )

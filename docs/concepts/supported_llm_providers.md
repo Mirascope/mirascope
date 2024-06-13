@@ -472,7 +472,7 @@ response = recipe_recommender(ingredient="apples").call()
 print(response.content)
 ```
 
-With just 1 line and some imports you can immediately test out other providers. You can also swap the provider class manually.
+With just 1 line and some imports you can immediately test out other providers. Note that if you are using `call_params` the keys must match from provider to provider. You can also swap the provider class manually.
 
 ### The manual case
 
@@ -504,7 +504,7 @@ Swap out OpenAI with Gemini:
 
 ```python
 from google.generativeai import configure
-from mirasope.gemini import GeminiCall, GeminiCallParams
+from mirascope.gemini import GeminiCall, GeminiCallParams
 
 configure(api_key="YOUR_GEMINI_API_KEY")
 

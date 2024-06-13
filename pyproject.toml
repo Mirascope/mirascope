@@ -15,7 +15,7 @@ repository = "https://github.com/Mirascope/mirascope"
 python = ">=3.9,<4.0"
 pydantic = "^2.0.2"
 openai = "^1.6.0"
-docstring-parser = "^0.15"
+docstring-parser = ">=0.15,<1.0"
 tenacity = "^8.2.3"
 
 # A list of optional dependencies that are required for certain features
@@ -91,6 +91,7 @@ uvicorn = { extras = ["standard"], version = "^0.27.0" }
 pydantic-settings = "^2.1.0"
 sqlalchemy = "^2.0.25"
 psycopg2 = "^2.9.9"
+llama-index = "^0.10.44"
 
 
 [tool.pytest.ini_options]
