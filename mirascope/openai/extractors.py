@@ -9,9 +9,8 @@ from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import OpenAICall
-from .tool_streams import OpenAIToolStream
 from .tools import OpenAITool
-from .types import OpenAICallParams
+from .types import OpenAICallParams, OpenAIToolStream
 
 logger = logging.getLogger("mirascope")
 

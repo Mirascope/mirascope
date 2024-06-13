@@ -32,6 +32,8 @@ response = RecipeRecommender(ingredient="apples").call(retries=retries)
 print(response.content)  # Content will not contain "Cheese"
 ```
 
+A more realistic usage of retries would involve making sure extraction works properly.
+
 ## Extraction Retries
 
 Retries are also supported for any class that extends `BaseExtractor`. This is particularly useful for [extracting structured information](./extracting_structured_information_using_llms.md) because sometimes the model will fail to properly extract the schema. For example, if the model extracts a field with an incorrect type, this will result in a [`ValidationError`](https://docs.pydantic.dev/latest/errors/validation_errors/).
@@ -40,14 +42,43 @@ Often the failure can be a result of the prompt; however, sometimes it's simply 
 
 If you want to retry the extraction up to some number of times, you can set `retries` equal to the number of runs (defaults to 0). Alternatively, you can pass in [tenacity.Retrying](https://tenacity.readthedocs.io/en/latest/) so that you can customize the behavior of retries. Mirascope will automatically pass in the error to the next call to give context. This will work for all of the `extract`, `extract_async`, `stream`, and `stream_async` methods.
 
+We can take advantage of tenacity `retry_if_exception_type` to check for `ValidationError` and retry as necessary like so:
+
 ```python
-from tenacity import Retrying, stop_after_attempt
+from typing import Literal, Type
+
+from pydantic import BaseModel, ValidationError
+from tenacity import Retrying, retry_if_exception_type, stop_after_attempt
+
+from mirascope.openai import OpenAIExtractor
+
+
+class TaskDetails(BaseModel):
+    description: str
+    due_date: str
+    priority: Literal["low", "normal", "high"]
+
+
+class TaskExtractor(OpenAIExtractor[TaskDetails]):
+    extract_schema: Type[TaskDetails] = TaskDetails
+    prompt_template = """
+    Extract the task details from the following task:
+    {task}
+    """
+
+    task: str
+
 
 retries = Retrying(
     stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(ValidationError),
 )
+task = "Submit quarterly report by next Friday. Task is high priority."
+
 task_details = TaskExtractor(task=task).extract(retries=retries)
 ```
+
+If the extraction has a high failure rate even with retries, it can be a strong signal that the `prompt_template` needs to be improved.
 
 As you can see, Mirascope makes extraction extremely simple. Under the hood, Mirascope uses the provided schema to extract the generated content and validate it (see [Validation](./extracting_structured_information_using_llms.md#validation) for more details).
 

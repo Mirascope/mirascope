@@ -171,7 +171,7 @@ class AnthropicCall(
             with stream as message_stream:
                 for chunk in message_stream:
                     yield AnthropicCallResponseChunk(
-                        chunk=chunk,  # type: ignore
+                        chunk=chunk,
                         user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
@@ -215,7 +215,7 @@ class AnthropicCall(
             async with stream as message_stream:
                 async for chunk in message_stream:  # type: ignore
                     yield AnthropicCallResponseChunk(
-                        chunk=chunk,  # type: ignore
+                        chunk=chunk,
                         user_message_param=user_message_param,
                         tool_types=tool_types,
                         response_format=self.call_params.response_format,
@@ -223,7 +223,7 @@ class AnthropicCall(
         else:
             async for chunk in stream:  # type: ignore
                 yield AnthropicCallResponseChunk(
-                    chunk=chunk,  # type: ignore
+                    chunk=chunk,
                     user_message_param=user_message_param,
                     tool_types=tool_types,
                     response_format=self.call_params.response_format,
