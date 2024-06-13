@@ -212,7 +212,7 @@ def test_anthropic_call_stream(
 
     stream = AnthropicStream(fixture_anthropic_test_call.stream(retries=2))
     content = ""
-    for chunk in stream:
+    for chunk, _ in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
         assert chunk.chunk == fixture_anthropic_message_chunk
         content += chunk.content
@@ -250,7 +250,7 @@ async def test_anthropic_call_stream_async(
     fixture_anthropic_test_call.configuration.client_wrappers = [wrapper]
 
     stream = AnthropicAsyncStream(fixture_anthropic_test_call.stream_async(retries=2))
-    async for chunk in stream:
+    async for chunk, _ in stream:
         assert isinstance(chunk, AnthropicCallResponseChunk)
         assert chunk.chunk == fixture_anthropic_message_chunk
     wrapper.assert_called_once()

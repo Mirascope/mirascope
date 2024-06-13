@@ -120,7 +120,7 @@ def test_cohere_call_stream(
 
         configuration = BaseConfig(client_wrappers=[wrapper])
 
-    chunks = [chunk for chunk in CohereStream(TempCall().stream())]
+    chunks = [chunk for chunk, _ in CohereStream(TempCall().stream())]
     assert len(chunks) == 3
     assert all(chunk.content == "test" for chunk in chunks)
     wrapper.assert_called_once()
@@ -146,7 +146,7 @@ async def test_cohere_call_stream_async(
     temp_call = TempCall()
     stream = CohereAsyncStream(temp_call.stream_async())
 
-    async for chunk in stream:
+    async for chunk, _ in stream:
         assert isinstance(chunk, CohereCallResponseChunk)
         assert isinstance(chunk.chunk, StreamedChatResponse_TextGeneration)
         assert chunk.chunk.text == "test"
