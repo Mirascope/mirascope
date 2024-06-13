@@ -1,6 +1,7 @@
 """Base types and abstract interfaces for typing LLM calls."""
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator, Generator
 from inspect import isclass
 from typing import (
     Any,
@@ -11,8 +12,10 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    overload,
 )
 
+import pydantic
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import Required, TypedDict
 
@@ -295,3 +298,196 @@ class BaseCallResponseChunk(BaseModel, Generic[ChunkT, BaseToolT], ABC):
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
+
+
+BaseCallResponseT = TypeVar("BaseCallResponseT", bound=BaseCallResponse)
+BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
+
+
+class BaseToolStream(BaseModel, Generic[BaseCallResponseChunkT, BaseToolT], ABC):
+    """A base class for streaming tools from response chunks."""
+
+    @classmethod
+    @abstractmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[BaseCallResponseChunkT, None, None],
+        allow_partial: Literal[True],
+    ) -> Generator[Optional[BaseToolT], None, None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[BaseCallResponseChunkT, None, None],
+        allow_partial: Literal[False],
+    ) -> Generator[BaseToolT, None, None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    @overload
+    def from_stream(
+        cls,
+        stream: Generator[BaseCallResponseChunkT, None, None],
+        allow_partial: bool,
+    ) -> Generator[Optional[BaseToolT], None, None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    def from_stream(cls, stream, allow_partial=False):
+        """Yields tools from the given stream of chunks."""
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[BaseCallResponseChunkT, None],
+        allow_partial: Literal[True],
+    ) -> AsyncGenerator[Optional[BaseToolT], None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[BaseCallResponseChunkT, None],
+        allow_partial: Literal[False],
+    ) -> AsyncGenerator[BaseToolT, None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    @overload
+    async def from_async_stream(
+        cls,
+        stream: AsyncGenerator[BaseCallResponseChunkT, None],
+        allow_partial: bool,
+    ) -> AsyncGenerator[Optional[BaseToolT], None]:
+        yield ...  # type: ignore # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    async def from_async_stream(cls, async_stream, allow_partial=False):
+        """Yields tools asynchronously from the given async stream of chunks."""
+        yield ...  # type: ignore # pragma: no cover
+
+    ############################## PRIVATE METHODS ###################################
+
+    @classmethod
+    def _check_version_for_partial(cls, partial: bool) -> None:
+        """Checks that the correct version of Pydantic is installed to use partial."""
+        if partial and int(pydantic.__version__.split(".")[1]) < 7:
+            raise ImportError(
+                "You must have `pydantic==^2.7.0` to stream tools. "
+                f"Current version: {pydantic.__version__}"
+            )  # pragma: no cover
+
+
+BaseToolStreamT = TypeVar("BaseToolStreamT", bound=BaseToolStream)
+MessageParamT = TypeVar("MessageParamT", bound=Any)
+UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
+AssistantMessageParamT = TypeVar("AssistantMessageParamT", bound=Any)
+
+
+class BaseStream(
+    Generic[
+        BaseCallResponseChunkT,
+        UserMessageParamT,
+        AssistantMessageParamT,
+        BaseToolT,
+    ],
+    ABC,
+):
+    """A base class for streaming responses from LLMs."""
+
+    stream: Generator[BaseCallResponseChunkT, None, None]
+    message_param_type: type[AssistantMessageParamT]
+
+    cost: Optional[float] = None
+    user_message_param: Optional[UserMessageParamT] = None
+    message_param: AssistantMessageParamT
+
+    def __init__(
+        self,
+        stream: Generator[BaseCallResponseChunkT, None, None],
+        message_param_type: type[AssistantMessageParamT],
+    ):
+        """Initializes an instance of `BaseStream`."""
+        self.stream = stream
+        self.message_param_type = message_param_type
+
+    def __iter__(
+        self,
+    ) -> Generator[tuple[BaseCallResponseChunkT, Optional[BaseToolT]], None, None]:
+        """Iterator over the stream and stores useful information."""
+        content = ""
+        for chunk in self.stream:
+            content += chunk.content
+            if chunk.cost is not None:
+                self.cost = chunk.cost
+            yield chunk, None
+            self.user_message_param = chunk.user_message_param
+        kwargs = {"role": "assistant"}
+        if "message" in self.message_param_type.__annotations__:
+            kwargs["message"] = content
+        else:
+            kwargs["content"] = content
+        self.message_param = self.message_param_type(**kwargs)
+
+
+class BaseAsyncStream(
+    Generic[
+        BaseCallResponseChunkT,
+        UserMessageParamT,
+        AssistantMessageParamT,
+        BaseToolT,
+    ],
+    ABC,
+):
+    """A base class for async streaming responses from LLMs."""
+
+    stream: AsyncGenerator[BaseCallResponseChunkT, None]
+    message_param_type: type[AssistantMessageParamT]
+
+    cost: Optional[float] = None
+    user_message_param: Optional[UserMessageParamT] = None
+    message_param: AssistantMessageParamT
+
+    def __init__(
+        self,
+        stream: AsyncGenerator[BaseCallResponseChunkT, None],
+        message_param_type: type[AssistantMessageParamT],
+    ):
+        """Initializes an instance of `BaseAsyncStream`."""
+        self.stream = stream
+        self.message_param_type = message_param_type
+
+    def __aiter__(
+        self,
+    ) -> AsyncGenerator[tuple[BaseCallResponseChunkT, Optional[BaseToolT]], None]:
+        """Iterates over the stream and stores useful information."""
+
+        async def generator():
+            content = ""
+            async for chunk in self.stream:
+                content += chunk.content
+                if chunk.cost is not None:
+                    self.cost = chunk.cost
+                yield chunk, None
+                self.user_message_param = chunk.user_message_param
+            kwargs = {"role": "assistant"}
+            if "message" in self.message_param_type.__annotations__:
+                kwargs["message"] = content
+            else:
+                kwargs["content"] = content
+            self.message_param = self.message_param_type(**kwargs)
+
+        return generator()

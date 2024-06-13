@@ -15,9 +15,11 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from mirascope.openai.calls import OpenAICall, _json_mode_content
 from mirascope.openai.tools import OpenAITool
 from mirascope.openai.types import (
+    OpenAIAsyncStream,
     OpenAICallParams,
     OpenAICallResponse,
     OpenAICallResponseChunk,
+    OpenAIStream,
 )
 
 
@@ -186,12 +188,18 @@ def test_openai_call_stream(
     """Tests `OpenAIPrompt.stream` returns expected response."""
     mock_create.return_value = fixture_chat_completion_chunks
 
-    stream = fixture_openai_test_call.stream()
+    stream = OpenAIStream(fixture_openai_test_call.stream())
     last_chunk = None
-    for i, chunk in enumerate(stream):
+    for i, (chunk, _) in enumerate(stream):
         assert isinstance(chunk, OpenAICallResponseChunk)
         assert chunk.chunk == fixture_chat_completion_chunks[i]
         last_chunk = chunk
+    assert stream.cost == 4e-05
+    assert stream.user_message_param == {
+        "role": "user",
+        "content": "You are being tested.",
+    }
+    assert stream.message_param == {"role": "assistant", "content": "I'm testing"}
     assert last_chunk and last_chunk.delta is None
     assert last_chunk and last_chunk.tool_calls is None
     mock_create.assert_called_once_with(
@@ -236,11 +244,12 @@ async def test_openai_prompt_stream_async(
     """Tests `OpenAIPrompt.stream` returns expected response."""
     mock_create.return_value.__aiter__.return_value = fixture_chat_completion_chunks
 
-    stream = fixture_openai_test_call.stream_async()
+    stream = OpenAIAsyncStream(fixture_openai_test_call.stream_async())
 
     i = 0
-    async for chunk in stream:
+    async for chunk, _ in stream:
         assert isinstance(chunk, OpenAICallResponseChunk)
+        print(f"INDEX OF FAILURE: {i}")
         assert chunk.chunk == fixture_chat_completion_chunks[i]
         i += 1
 

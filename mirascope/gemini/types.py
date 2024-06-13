@@ -1,5 +1,6 @@
 """Types for interacting with Google's Gemini models using Mirascope."""
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Optional, TypeVar, Union
 
 from google.generativeai.types import (  # type: ignore
@@ -8,7 +9,14 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse,
 )
 
-from ..base import BaseCallParams, BaseCallResponse, BaseCallResponseChunk, BaseTool
+from ..base import (
+    BaseAsyncStream,
+    BaseCallParams,
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseStream,
+    BaseTool,
+)
 from .tools import GeminiTool
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
@@ -280,3 +288,33 @@ class GeminiCallResponseChunk(
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
+
+
+class GeminiStream(
+    BaseStream[
+        GeminiCallResponseChunk,
+        ContentDict,
+        ContentDict,
+        GeminiTool,
+    ]
+):
+    """A class for streaming responses from Google's Gemini API."""
+
+    def __init__(self, stream: Generator[GeminiCallResponseChunk, None, None]):
+        """Initializes an instance of `GeminiStream`."""
+        super().__init__(stream, ContentDict)
+
+
+class GeminiAsyncStream(
+    BaseAsyncStream[
+        GeminiCallResponseChunk,
+        ContentDict,
+        ContentDict,
+        GeminiTool,
+    ]
+):
+    """A class for streaming responses from Google's Gemini API."""
+
+    def __init__(self, stream: AsyncGenerator[GeminiCallResponseChunk, None]):
+        """Initializes an instance of `GeminiAsyncStream`."""
+        super().__init__(stream, ContentDict)

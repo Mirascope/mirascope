@@ -3,12 +3,20 @@
 from .calls import GroqCall
 from .extractors import GroqExtractor
 from .tools import GroqTool
-from .types import GroqCallParams, GroqCallResponse, GroqCallResponseChunk
+from .types import (
+    GroqAsyncStream,
+    GroqCallParams,
+    GroqCallResponse,
+    GroqCallResponseChunk,
+    GroqStream,
+)
 from .utils import groq_api_calculate_cost
 
 __all__ = [
     "GroqCall",
     "GroqExtractor",
+    "GroqStream",
+    "GroqAsyncStream",
     "GroqTool",
     "GroqCallParams",
     "GroqCallResponse",

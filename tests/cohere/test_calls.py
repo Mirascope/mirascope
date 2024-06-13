@@ -15,10 +15,12 @@ from cohere.types import (
 from mirascope.base import Message
 from mirascope.base.types import BaseConfig
 from mirascope.cohere import (
+    CohereAsyncStream,
     CohereCall,
     CohereCallParams,
     CohereCallResponse,
     CohereCallResponseChunk,
+    CohereStream,
     CohereTool,
 )
 
@@ -118,7 +120,7 @@ def test_cohere_call_stream(
 
         configuration = BaseConfig(client_wrappers=[wrapper])
 
-    chunks = [chunk for chunk in TempCall().stream()]
+    chunks = [chunk for chunk, _ in CohereStream(TempCall().stream())]
     assert len(chunks) == 3
     assert all(chunk.content == "test" for chunk in chunks)
     wrapper.assert_called_once()
@@ -142,9 +144,9 @@ async def test_cohere_call_stream_async(
 
     mock_chat_stream.return_value = fixture_cohere_async_response_chunks
     temp_call = TempCall()
-    stream = temp_call.stream_async()
+    stream = CohereAsyncStream(temp_call.stream_async())
 
-    async for chunk in stream:
+    async for chunk, _ in stream:
         assert isinstance(chunk, CohereCallResponseChunk)
         assert isinstance(chunk.chunk, StreamedChatResponse_TextGeneration)
         assert chunk.chunk.text == "test"

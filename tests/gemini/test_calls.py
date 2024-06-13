@@ -8,7 +8,12 @@ from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from mirascope.gemini.calls import GeminiCall
 from mirascope.gemini.tools import GeminiTool
-from mirascope.gemini.types import GeminiCallParams, GeminiCallResponse
+from mirascope.gemini.types import (
+    GeminiAsyncStream,
+    GeminiCallParams,
+    GeminiCallResponse,
+    GeminiStream,
+)
 
 
 @patch("google.generativeai.GenerativeModel.generate_content", new_callable=MagicMock)
@@ -77,7 +82,7 @@ def test_gemini_call_stream(
     class TempCall(GeminiCall):
         prompt_template = ""
 
-    chunks = [chunk for chunk in TempCall().stream()]
+    chunks = [chunk for chunk, _ in GeminiStream(TempCall().stream())]
     assert len(chunks) == 2
     assert chunks[0].content == "first"
     assert chunks[1].content == "second"
@@ -99,7 +104,7 @@ async def test_gemini_call_stream_async(
     class TempCall(GeminiCall):
         prompt_template = ""
 
-    chunks = [chunk async for chunk in TempCall().stream_async()]
+    chunks = [chunk async for chunk, _ in GeminiAsyncStream(TempCall().stream_async())]
     assert len(chunks) == 2
     assert chunks[0].content == "first"
     assert chunks[1].content == "second"
