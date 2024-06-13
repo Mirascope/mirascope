@@ -3,14 +3,16 @@
 from .calls import OpenAICall
 from .embedders import OpenAIEmbedder
 from .extractors import OpenAIExtractor
-from .tool_streams import OpenAIToolStream
 from .tools import OpenAITool
 from .types import (
+    OpenAIAsyncStream,
     OpenAICallParams,
     OpenAICallResponse,
     OpenAICallResponseChunk,
     OpenAIEmbeddingParams,
     OpenAIEmbeddingResponse,
+    OpenAIStream,
+    OpenAIToolStream,
 )
 from .utils import azure_client_wrapper, openai_api_calculate_cost
 
@@ -20,6 +22,8 @@ __all__ = [
     "OpenAIEmbedder",
     "OpenAIExtractor",
     "OpenAIToolStream",
+    "OpenAIStream",
+    "OpenAIAsyncStream",
     "OpenAITool",
     "OpenAICallParams",
     "OpenAICallResponse",

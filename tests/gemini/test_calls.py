@@ -82,7 +82,7 @@ def test_gemini_call_stream(
     class TempCall(GeminiCall):
         prompt_template = ""
 
-    chunks = [chunk for chunk in GeminiStream(TempCall().stream())]
+    chunks = [chunk for chunk, _ in GeminiStream(TempCall().stream())]
     assert len(chunks) == 2
     assert chunks[0].content == "first"
     assert chunks[1].content == "second"
@@ -104,7 +104,7 @@ async def test_gemini_call_stream_async(
     class TempCall(GeminiCall):
         prompt_template = ""
 
-    chunks = [chunk async for chunk in GeminiAsyncStream(TempCall().stream_async())]
+    chunks = [chunk async for chunk, _ in GeminiAsyncStream(TempCall().stream_async())]
     assert len(chunks) == 2
     assert chunks[0].content == "first"
     assert chunks[1].content == "second"

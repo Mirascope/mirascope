@@ -3,10 +3,10 @@
 from typing import Type
 
 import pytest
+from anthropic.lib.streaming import ContentBlockStopEvent
 from anthropic.types import (
     ContentBlockDeltaEvent,
     ContentBlockStartEvent,
-    ContentBlockStopEvent,
     Message,
     MessageStartEvent,
     TextBlock,
@@ -14,7 +14,13 @@ from anthropic.types import (
 )
 
 from mirascope.anthropic.tools import AnthropicTool
-from mirascope.anthropic.types import AnthropicCallResponse, AnthropicCallResponseChunk
+from mirascope.anthropic.types import (
+    AnthropicAsyncStream,
+    AnthropicCallResponse,
+    AnthropicCallResponseChunk,
+    AnthropicStream,
+    AnthropicToolStream,
+)
 
 
 def test_anthropic_call_response(fixture_anthropic_message: Message):
@@ -94,7 +100,11 @@ def test_anthropic_call_response_chunk(
     assert chunk.type == "content_block_start"
 
     chunk = AnthropicCallResponseChunk(
-        chunk=ContentBlockStopEvent(index=2, type="content_block_stop")
+        chunk=ContentBlockStopEvent(
+            index=2,
+            type="content_block_stop",
+            content_block=TextBlock(text="", type="text"),
+        )
     )
     assert chunk.content == ""
     assert chunk.type == "content_block_stop"
@@ -119,3 +129,149 @@ def test_anthropic_call_response_chunk(
     assert chunk.model == "test_model"
     assert chunk.id == "test_id"
     assert chunk.finish_reasons == ["end_turn"]
+
+
+def test_anthropic_tool_stream_from_stream(
+    fixture_anthropic_call_response_chunks_with_tools: list[AnthropicCallResponseChunk],
+) -> None:
+    """Tests streaming tools from chunks."""
+
+    def generator():
+        for chunk in fixture_anthropic_call_response_chunks_with_tools:
+            yield chunk
+
+    def tool_assertions(tools):
+        assert len(tools) == 7
+        assert tools[0] is not None and tools[0].args == {
+            "title": "The Name of the Wind",
+            "author": None,
+        }
+        assert tools[1] is not None and tools[1].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[2] is not None and tools[2].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[3] is None
+        assert tools[4] is not None and tools[4].args == {
+            "title": "The Name of the Wind",
+            "author": None,
+        }
+        assert tools[5] is not None and tools[5].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[6] is not None and tools[6].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+
+    tools = list(AnthropicToolStream.from_stream(generator(), allow_partial=True))
+    tool_assertions(tools)
+
+    tools = list(AnthropicToolStream.from_stream(generator(), allow_partial=False))
+    assert len(tools) == 2
+
+    tools = [tool for _, tool in AnthropicStream(generator(), allow_partial=True)]
+    tool_assertions(tools[1:])
+
+    tools = [tool for _, tool in AnthropicStream(generator())]
+    assert len(tools[1:]) == 2
+
+
+def test_anthropic_tool_stream_bad_tool_name(
+    fixture_anthropic_call_response_chunk_with_bad_tool: AnthropicCallResponseChunk,
+) -> None:
+    """Tests that a runtime error is thrown when a tool has a bad name."""
+
+    def generator_partial():
+        yield fixture_anthropic_call_response_chunk_with_bad_tool
+
+    with pytest.raises(RuntimeError):
+        list(AnthropicToolStream.from_stream(generator_partial(), allow_partial=True))
+
+    def generator():
+        yield fixture_anthropic_call_response_chunk_with_bad_tool
+
+    with pytest.raises(RuntimeError):
+        list(AnthropicToolStream.from_stream(generator(), allow_partial=False))
+
+
+def test_anthropic_tool_stream_missing_tool_name(
+    fixture_anthropic_call_response_chunk_with_bad_tool: AnthropicCallResponseChunk,
+) -> None:
+    """Tests that a runtime error is thrown when a tool has a bad name."""
+
+    def generator():
+        yield fixture_anthropic_call_response_chunk_with_bad_tool
+
+    with pytest.raises(RuntimeError):
+        list(AnthropicToolStream.from_stream(generator()))
+
+
+def test_anthropic_tool_stream_no_tool_types(
+    fixture_anthropic_call_response_chunks_with_tools: list[AnthropicCallResponseChunk],
+) -> None:
+    """Tests a runtime error is thrown when not using json mode for a tool stream."""
+
+    def generator():
+        for chunk in fixture_anthropic_call_response_chunks_with_tools:
+            chunk.tool_types = None
+            yield chunk
+
+    tools = list(AnthropicToolStream.from_stream(generator()))
+    assert len(tools) == 0
+
+
+@pytest.mark.asyncio
+async def test_anthropic_tool_stream_from_async_stream(
+    fixture_anthropic_call_response_chunks_with_tools: list[AnthropicCallResponseChunk],
+) -> None:
+    """Tests streaming tools from chunks."""
+
+    async def generator():
+        for chunk in fixture_anthropic_call_response_chunks_with_tools:
+            yield chunk
+
+    def tool_assertions(tools):
+        assert len(tools) == 7
+        assert tools[0] is not None and tools[0].args == {
+            "title": "The Name of the Wind",
+            "author": None,
+        }
+        assert tools[1] is not None and tools[1].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[2] is not None and tools[2].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[3] is None
+        assert tools[4] is not None and tools[4].args == {
+            "title": "The Name of the Wind",
+            "author": None,
+        }
+        assert tools[5] is not None and tools[5].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+        assert tools[6] is not None and tools[6].args == {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+
+    tools = [
+        tool
+        async for tool in AnthropicToolStream.from_async_stream(
+            generator(), allow_partial=True
+        )
+    ]
+    tool_assertions(tools)
+
+    tools = [
+        tool async for _, tool in AnthropicAsyncStream(generator(), allow_partial=True)
+    ]
+    tool_assertions(tools[1:])

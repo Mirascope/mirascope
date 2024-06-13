@@ -361,6 +361,7 @@ class GroqStream(
         GroqCallResponseChunk,
         ChatCompletionUserMessageParam,
         ChatCompletionAssistantMessageParam,
+        GroqTool,
     ]
 ):
     """A class for streaming responses from Groq's API."""
@@ -375,6 +376,7 @@ class GroqAsyncStream(
         GroqCallResponseChunk,
         ChatCompletionUserMessageParam,
         ChatCompletionAssistantMessageParam,
+        GroqTool,
     ]
 ):
     """A class for streaming responses from Groq's API."""

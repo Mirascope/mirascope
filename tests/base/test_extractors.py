@@ -10,9 +10,8 @@ from mirascope.anthropic.types import AnthropicCallParams
 from mirascope.base.calls import BaseCall
 from mirascope.base.extractors import BaseExtractor
 from mirascope.base.prompts import BasePrompt
-from mirascope.base.tool_streams import BaseToolStream
 from mirascope.base.tools import BaseTool
-from mirascope.base.types import BaseCallParams
+from mirascope.base.types import BaseCallParams, BaseToolStream
 from mirascope.openai.extractors import OpenAIExtractor
 
 

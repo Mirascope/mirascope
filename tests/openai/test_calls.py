@@ -190,7 +190,7 @@ def test_openai_call_stream(
 
     stream = OpenAIStream(fixture_openai_test_call.stream())
     last_chunk = None
-    for i, chunk in enumerate(stream):
+    for i, (chunk, _) in enumerate(stream):
         assert isinstance(chunk, OpenAICallResponseChunk)
         assert chunk.chunk == fixture_chat_completion_chunks[i]
         last_chunk = chunk
@@ -247,8 +247,9 @@ async def test_openai_prompt_stream_async(
     stream = OpenAIAsyncStream(fixture_openai_test_call.stream_async())
 
     i = 0
-    async for chunk in stream:
+    async for chunk, _ in stream:
         assert isinstance(chunk, OpenAICallResponseChunk)
+        print(f"INDEX OF FAILURE: {i}")
         assert chunk.chunk == fixture_chat_completion_chunks[i]
         i += 1
 

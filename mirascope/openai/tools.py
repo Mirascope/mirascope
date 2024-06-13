@@ -89,6 +89,7 @@ class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
 
         Args:
             tool_call: The `ChatCompletionMessageToolCall` to extract the tool from.
+            allow_partial: Whether to allow partial JSON schemas.
 
         Returns:
             An instance of the tool constructed from the tool call.
