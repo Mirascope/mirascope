@@ -9,9 +9,8 @@ from tenacity import AsyncRetrying, Retrying
 
 from ..base import BaseExtractor, ExtractedType
 from .calls import AnthropicCall
-from .tool_streams import AnthropicToolStream
 from .tools import AnthropicTool
-from .types import AnthropicCallParams
+from .types import AnthropicCallParams, AnthropicToolStream
 
 logger = logging.getLogger("mirascope")
 
