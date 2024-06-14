@@ -70,7 +70,7 @@ def test_extended_base_tool() -> None:
 def test_toolkit() -> None:
     """Tests that `Toolkit` properly namespaces tools."""
 
-    def add(x: int, y: int) -> str:
+    def add(x: int, y: int):
         """Returns `x` + `y` as a string."""
         ...  # pragma: no cover
 
@@ -80,11 +80,8 @@ def test_toolkit() -> None:
         x: int
         y: int
 
-        def call(self) -> str:
-            ...  # pragma: no cover
-
     toolkit = Toolkit([add, Subtract], namespace="math")
     tools = toolkit.tools
     assert len(tools) == 2
     assert tools[0].__name__ == "math.add"
-    assert tools[1].name() == "math.Subtract"
+    assert tools[1].name() == "math.Subtract"  # type: ignore
