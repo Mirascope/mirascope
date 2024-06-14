@@ -157,10 +157,6 @@ module = "weave"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "beautifulsoup4"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
 module = ["langfuse.*"]
 ignore_missing_imports = true
 

@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.openai import OpenAICall, OpenAICallParams
