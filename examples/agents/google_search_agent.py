@@ -29,7 +29,6 @@ def google_search(query: str) -> str:
     try:
         response = requests.get(BASE_URL, params=params)
         data: dict[str, Any] = response.json()
-        print(data)
         items: list[dict[str, Any]] = data.get("items", [])
         if items:
             search_results = []
