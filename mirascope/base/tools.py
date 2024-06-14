@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Generic, Type, TypeVar, Union
 
@@ -41,6 +42,16 @@ class BaseTool(BaseModel, Generic[ToolCallT], ABC):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    @classmethod
+    def name(cls) -> str:
+        """Returns the name of the tool."""
+        return cls.__name__
+
+    @classmethod
+    def description(cls) -> str:
+        """Returns the description of the tool."""
+        return inspect.cleandoc(cls.__doc__) if cls.__doc__ else DEFAULT_TOOL_DOCSTRING
+
     @property
     def args(self) -> dict[str, Any]:
         """The arguments of the tool as a dictionary."""
@@ -51,23 +62,24 @@ class BaseTool(BaseModel, Generic[ToolCallT], ABC):
         }
 
     @property
-    def fn(self) -> Callable:
+    def fn(self) -> Callable[..., str]:
         """Returns the function that the tool describes."""
         raise RuntimeError("Tool does not have an attached function.")
+
+    def call(self) -> str:
+        """Calls the tool's `fn` with the tool's `args`."""
+        return self.fn(**self.args)
 
     @classmethod
     def tool_schema(cls) -> Any:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
         model_schema = cls.model_json_schema()
+        model_schema.pop("title", None)
+        model_schema.pop("description", None)
 
-        fn = {
-            "name": model_schema.pop("title"),
-            "description": model_schema.pop("description")
-            if "description" in model_schema
-            else DEFAULT_TOOL_DOCSTRING,
-        }
+        fn = {"name": cls.name(), "description": cls.description()}
         if model_schema["properties"]:
-            fn["parameters"] = model_schema
+            fn["parameters"] = model_schema  # type: ignore
 
         return fn
 

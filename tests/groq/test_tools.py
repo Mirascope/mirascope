@@ -41,13 +41,15 @@ class FakeTool(GroqTool):
 
     param: str = Field(..., description="A test parameter.")
 
+    @classmethod
+    def name(cls) -> str:
+        return "fake_tool"
+
 
 def test_tool_from_fn() -> None:
     """Tests converting a function into a `GroqTool`."""
     fake_tool("param")
-    assert (
-        GroqTool.from_fn(fake_tool).model_json_schema() == FakeTool.model_json_schema()
-    )
+    assert GroqTool.from_fn(fake_tool).tool_schema() == FakeTool.tool_schema()
 
 
 def test_tool_from_model() -> None:

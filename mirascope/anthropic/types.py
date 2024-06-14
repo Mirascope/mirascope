@@ -124,7 +124,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
                     ToolUseBlock(
                         id="id",
                         input=json.loads(self.content),
-                        name=tool_type.__name__,
+                        name=tool_type.name(),
                         type="tool_use",
                     )
                 )
@@ -144,7 +144,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
             if tool_call.type != "tool_use":
                 continue
             for tool_type in self.tool_types:
-                if tool_call.name == tool_type.__name__:
+                if tool_call.name == tool_type.name():
                     tool = tool_type.from_tool_call(tool_call)
                     extracted_tools.append(tool)
                     break
@@ -360,7 +360,7 @@ def _handle_chunk(
         content_block = chunk.chunk.content_block
         current_tool_type = None
         for tool_type in chunk.tool_types:
-            if tool_type.__name__ == content_block.name:
+            if tool_type.name() == content_block.name:
                 current_tool_type = tool_type
                 break
         if current_tool_type is None:

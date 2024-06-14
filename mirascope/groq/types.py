@@ -170,7 +170,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
                     ChatCompletionMessageToolCall(
                         id="id",
                         function=Function(
-                            name=tool_type.__name__, arguments=self.content
+                            name=tool_type.name(), arguments=self.content
                         ),
                         type="function",
                     )
@@ -192,7 +192,7 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         extracted_tools = []
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
-                if tool_call.function and tool_call.function.name == tool_type.__name__:
+                if tool_call.function and tool_call.function.name == tool_type.name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 

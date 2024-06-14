@@ -22,7 +22,7 @@ from mirascope.openai.tools import OpenAITool
             {
                 "type": "function",
                 "function": {
-                    "name": "MyOpenAITool",
+                    "name": "my_openai_tool",
                     "description": "A test tool.",
                     "parameters": {
                         "type": "object",
@@ -68,7 +68,7 @@ def test_openai_tool_from_tool_call(fixture_my_openai_tool: Type[OpenAITool]):
     tool_call = ChatCompletionMessageToolCall(
         id="id",
         function=Function(
-            arguments='{\n  "param": "param",\n  "optional": 0}', name="MyOpenAITool"
+            arguments='{\n  "param": "param",\n  "optional": 0}', name="my_openai_tool"
         ),
         type="function",
     )
@@ -84,7 +84,7 @@ def test_openai_tool_from_tool_call_validation_error(
     tool_call = ChatCompletionMessageToolCall(
         id="id",
         function=Function(
-            arguments='{\n  "param": 0,\n  "optional": 0}', name="MyOpenAITool"
+            arguments='{\n  "param": 0,\n  "optional": 0}', name="my_openai_tool"
         ),
         type="function",
     )
@@ -99,7 +99,7 @@ def test_openai_tool_from_tool_call_json_decode_error(
     tool_call = ChatCompletionMessageToolCall(
         id="id",
         function=Function(
-            arguments='{\n  "param": "param",\n  "optional": 0', name="MyOpenAITool"
+            arguments='{\n  "param": "param",\n  "optional": 0', name="my_openai_tool"
         ),
         type="function",
     )
@@ -125,9 +125,13 @@ def test_openai_tool_from_fn() -> None:
 
         param: str
 
+        @classmethod
+        def name(cls) -> str:
+            return "fn"
+
     tool_type = OpenAITool.from_fn(fn)
     assert issubclass(tool_type, OpenAITool)
-    assert tool_type.model_json_schema() == Fn.model_json_schema()
+    assert tool_type.tool_schema() == Fn.tool_schema()
 
 
 def test_openai_tool_from_base_type() -> None:

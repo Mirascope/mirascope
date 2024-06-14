@@ -214,7 +214,7 @@ def mirascope_otel(cls) -> Callable:
                                     "arguments": tool.model_dump_json(
                                         exclude={"tool_call"}
                                     ),
-                                    "name": tool.__class__.__name__,
+                                    "name": tool.name(),
                                 }
                             }
                             for tool in tools
@@ -241,7 +241,7 @@ def mirascope_otel(cls) -> Callable:
                                     "arguments": tool.model_dump_json(
                                         exclude={"tool_call"}
                                     ),
-                                    "name": tool.__class__.__name__,
+                                    "name": tool.name(),
                                 }
                             }
                             for tool in tools

@@ -14,7 +14,7 @@ def test_base_tool() -> None:
     base_tool = BaseTool(tool_call="test")  # type: ignore
     assert base_tool.args == {}
     with pytest.raises(RuntimeError):
-        base_tool.fn()
+        base_tool.call()
     tool_schema = BaseTool.tool_schema()
     assert tool_schema["name"] == "BaseTool"
     assert "description" in tool_schema

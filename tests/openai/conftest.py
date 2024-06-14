@@ -97,10 +97,10 @@ def fixture_empty_openai_tool() -> Type[EmptyOpenAITool]:
 def fixture_my_openai_tool_function() -> Callable:
     """Returns a function version of `MyOpenAITool`."""
 
-    def my_open_a_i_tool(param: str, optional: int = 0):
+    def my_openai_tool(param: str, optional: int = 0):
         """A test function."""
 
-    return my_open_a_i_tool
+    return my_openai_tool
 
 
 @pytest.fixture()
@@ -128,7 +128,7 @@ def fixture_chat_completion_with_bad_tools() -> ChatCompletion:
                             id="id",
                             function=Function(
                                 arguments=('{\n  "param": 0,\n  "optional": 0}'),
-                                name="MyOpenAITool",
+                                name="my_openai_tool",
                             ),
                             type="function",
                         )
@@ -176,7 +176,7 @@ def fixture_chat_completion_chunks_with_tools() -> list[ChatCompletionChunk]:
                                 index=0,
                                 id="id0",
                                 function=ChoiceDeltaToolCallFunction(
-                                    arguments="", name="MyOpenAITool"
+                                    arguments="", name="my_openai_tool"
                                 ),
                                 type="function",
                             )

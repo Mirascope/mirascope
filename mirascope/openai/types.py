@@ -183,7 +183,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                     ChatCompletionMessageToolCall(
                         id="id",
                         function=Function(
-                            name=tool_type.__name__, arguments=self.content
+                            name=tool_type.name(), arguments=self.content
                         ),
                         type="function",
                     )
@@ -205,7 +205,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         extracted_tools = []
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
-                if tool_call.function.name == tool_type.__name__:
+                if tool_call.function.name == tool_type.name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 
@@ -418,7 +418,7 @@ def _handle_chunk(
         )
         current_tool_type = None
         for tool_type in chunk.tool_types:
-            if tool_type.__name__ == tool_call.function.name:
+            if tool_type.name() == tool_call.function.name:
                 current_tool_type = tool_type
                 break
         if current_tool_type is None:
