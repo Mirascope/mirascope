@@ -1,5 +1,5 @@
 """
-You can enhance your Instructor experience with Mirascope Prompts.
+You can enhance your Instructor experience with Mirascope BasePrompt.
 """
 
 import instructor

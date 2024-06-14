@@ -352,7 +352,6 @@ If you want to use a proxy, you can easily set the `base_url` class variable for
 Here's an example using Ollama:
 
 ```python
-import os
 
 from mirascope.openai import OpenAICall, OpenAICallParams
 
