@@ -290,9 +290,8 @@ class BookRecommender(OpenAICall):
     call_params = OpenAICallParams(tools=[print_book], tool_choice="required")
 
 
-stream = BookRecommender().stream()
-tool_stream = OpenAIStream(stream)
-for chunk, tool in tool_stream:
+stream = OpenAIStream(BookRecommender().stream())
+for chunk, tool in stream:
     if tool:
         tool.fn(**tool.args)
 

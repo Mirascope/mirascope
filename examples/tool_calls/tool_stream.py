@@ -30,9 +30,8 @@ class Forecast(OpenAICall):
     call_params = OpenAICallParams(tools=[get_current_weather])
 
 
-stream = Forecast().stream()
-tool_stream = OpenAIStream(stream)
-for chunk, tool in tool_stream:
+stream = OpenAIStream(Forecast().stream())
+for chunk, tool in stream:
     if tool:
         tool.fn(**tool.args)
         # > It is 10 degrees fahrenheit in Tokyo, Japan

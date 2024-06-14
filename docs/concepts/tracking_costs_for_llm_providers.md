@@ -25,7 +25,7 @@ print(response.cost)
 
 ## Cost tracking for streaming
 
-Mirascope implements a [`BaseStream`](https://docs.mirascope.io/latest/api/base/types/#mirascope.base.types.BaseStream) class which adds convenience to streaming. Each provider has their own respective class, e.g. if you are using OpenAI, you will use `OpenAIStream`.
+Mirascope implements a [`BaseStream`](https://docs.mirascope.io/latest/api/base/types/#mirascope.base.types.BaseStream) class and `BaseAsyncStream` for async which adds convenience to streaming. Each provider has their own respective class, e.g. if you are using OpenAI, you will use `OpenAIStream`.
 Wrap the stream with `OpenAIStream` to gain access to metadata such as cost for streaming:
 
 ```python
