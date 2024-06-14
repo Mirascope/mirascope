@@ -1,3 +1,4 @@
+"""This example shows how to use logfire to log Mirascope calls."""
 import logfire
 
 from mirascope.logfire import with_logfire

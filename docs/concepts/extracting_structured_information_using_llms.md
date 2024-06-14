@@ -274,26 +274,27 @@ To stream tools, first call `stream` instead of `call` for an LLM call with tool
 ```python
 import os
 
-from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIToolStream
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIStream
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
 
 def print_book(title: str, author: str, description: str):
     """Prints the title and author of a book."""
-    return f"Title: {title}\nAuthor: {author}\nDescription: {description}"
+    print(f"Title: {title}\nAuthor: {author}\nDescription: {description}")
 
 
 class BookRecommender(OpenAICall):
     prompt_template = "Please recommend some books to read."
 
-    call_params = OpenAICallParams(tools=[print_book])
+    call_params = OpenAICallParams(tools=[print_book], tool_choice="required")
 
 
-stream = BookRecommender().stream()
-tool_stream = OpenAIToolStream.from_stream(stream)
-for tool in tool_stream:
-    tool.fn(**tool.args)
+stream = OpenAIStream(BookRecommender().stream())
+for chunk, tool in stream:
+    if tool:
+        tool.fn(**tool.args)
+
 #> Title: The Name of the Wind\nAuthor: Patrick Rothfuss\nDescription: ...
 #> Title: Dune\nAuthor: Frank Herbert\nDescription: ...
 #> ...
@@ -303,13 +304,13 @@ for tool in tool_stream:
 
 Sometimes you may want to stream partial tools as well (i.e. the unfinished tool call with `None` for arguments that haven't yet been streamed). This can be useful for example when observing an agent's flow in real-time. You can simple set `allow_partial=True` to access this feature. In the following code example, we stream each partial tool and update a live console, printing each full tool call before moving on to the next:
 
-```python hl_lines="20"
+```python hl_lines="23"
 import os
 import time
 
 from rich.live import Live
 
-from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIToolStream
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIStream
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
@@ -326,12 +327,12 @@ class BookRecommender(OpenAICall):
 
 
 stream = BookRecommender().stream()
-tool_stream = OpenAIToolStream.from_stream(stream, allow_partial=True)
+tool_stream = OpenAIStream(stream, allow_partial=True)
 
 with Live("", refresh_per_second=15) as live:
-    partial_tools, index = [None], 0
-    previous_tool = None
-    for partial_tool in tool_stream:
+    partial_tools: list[Optional[OpenAITool]] = [None]
+    index = 0
+    for chunk, partial_tool in tool_stream:
         if partial_tool is None:
             index += 1
             partial_tools.append(None)
@@ -339,11 +340,16 @@ with Live("", refresh_per_second=15) as live:
         partial_tools[index] = partial_tool
         live.update(
             "\n-----------------------------\n".join(
-                [pt.fn(**pt.args) for pt in partial_tools]
+                [pt.fn(**pt.args) for pt in partial_tools if pt is not None]
             )
         )
         time.sleep(0.1)
+
 ```
+
+<video style="width: 100%" controls>
+    <source src="../../assets/openai-tool-stream.mp4" type="video/mp4">
+</video>
 
 ### Streaming Pydantic Models
 

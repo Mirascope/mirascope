@@ -1,1 +1,1 @@
-mirascope==^0.4.0
+mirascope==^0.16.1

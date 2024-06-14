@@ -25,11 +25,11 @@ The `messages` method parses the `prompt_template` into a list of messages. In t
 
 - Inline Errors
 
-    ![missing-arguments](../images/prompt_missing_arguments.png)
+    ![missing-arguments](../assets/prompt_missing_arguments.png)
 
 - Autocomplete
 
-    ![autocomplete](../images/prompt_autocomplete.png)
+    ![autocomplete](../assets/prompt_autocomplete.png)
 
 ## Template Variables
 

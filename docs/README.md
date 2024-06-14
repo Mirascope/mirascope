@@ -37,8 +37,8 @@ pip install mirascope[all]        # all optional dependencies
 ## Getting Started
 
 <div align="center">
-    <a href="https://www.youtube.com/watch?v=P44M_IC4YyY"><img src="./images/overview-screenshot-with-play-button.png" alt="Overview" width="340"></a>
-	<a href="https://www.youtube.com/watch?v=uGobZSm2P4Q"><img src="./images/quickstart-screenshot-with-play-button.png" alt="QuickStart" width="340"></a>
+    <a href="https://www.youtube.com/watch?v=P44M_IC4YyY"><img src="./assets/overview-screenshot-with-play-button.png" alt="Overview" width="340"></a>
+	<a href="https://www.youtube.com/watch?v=uGobZSm2P4Q"><img src="./assets/quickstart-screenshot-with-play-button.png" alt="QuickStart" width="340"></a>
 </div>
 
 ## Examples

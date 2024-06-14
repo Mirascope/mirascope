@@ -43,7 +43,7 @@ This will give you:
 * Human-readable display of the conversation with the agent
 * Details of the response, including the number of tokens used
 
-![logfire-screenshot-mirascope-anthropic-call](../images/logfire-screenshot-mirascope-anthropic-call.png)
+![logfire-screenshot-mirascope-anthropic-call](../assets/logfire-screenshot-mirascope-anthropic-call.png)
 
 ### Extract
 
@@ -95,7 +95,7 @@ This will give you:
 * Human-readable display of the conversation with the agent including the function call
 * Details of the response, including the number of tokens used
 
-![logfire-screenshot-mirascope-openai-extractor](../images/logfire-screenshot-mirascope-openai-extractor.png)
+![logfire-screenshot-mirascope-openai-extractor](../assets/logfire-screenshot-mirascope-openai-extractor.png)
 
 ### FastAPI
 
