@@ -45,13 +45,17 @@ class FakeTool(GeminiTool):
 
     param: str = Field(..., description="A test parameter.")
 
+    @classmethod
+    def name(cls) -> str:
+        return "fake_tool"
+
 
 def test_tool_from_fn() -> None:
     """Tests converting a function into a `GeminiTool`."""
     fake_tool("param")
     assert (
-        GeminiTool.from_fn(fake_tool).model_json_schema()
-        == FakeTool.model_json_schema()
+        GeminiTool.from_fn(fake_tool).tool_schema().to_proto()
+        == FakeTool.tool_schema().to_proto()
     )
 
 

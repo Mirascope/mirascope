@@ -288,7 +288,7 @@ def test_openai_tool_stream_from_stream(
                 id="id0",
                 function=Function(
                     arguments='{\n "param": "param",\n "optional": 0\n}',
-                    name="MyOpenAITool",
+                    name="my_openai_tool",
                 ),
                 type="function",
             ),
@@ -296,7 +296,7 @@ def test_openai_tool_stream_from_stream(
                 id="id0",
                 function=Function(
                     arguments='{\n "param": "param",\n "optional": 0\n}',
-                    name="MyOpenAITool",
+                    name="my_openai_tool",
                 ),
                 type="function",
             ),
@@ -384,7 +384,7 @@ async def test_openai_tool_stream_from_async_stream(
                 id="id0",
                 function=Function(
                     arguments='{\n "param": "param",\n "optional": 0\n}',
-                    name="MyOpenAITool",
+                    name="my_openai_tool",
                 ),
                 type="function",
             ),
@@ -392,7 +392,7 @@ async def test_openai_tool_stream_from_async_stream(
                 id="id0",
                 function=Function(
                     arguments='{\n "param": "param",\n "optional": 0\n}',
-                    name="MyOpenAITool",
+                    name="my_openai_tool",
                 ),
                 type="function",
             ),

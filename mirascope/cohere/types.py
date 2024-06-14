@@ -201,7 +201,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
         extracted_tools = []
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
-                if tool_call.name == tool_type.__name__:
+                if tool_call.name == tool_type.name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 

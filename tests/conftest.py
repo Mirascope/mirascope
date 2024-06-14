@@ -114,7 +114,7 @@ def fixture_chat_completion_with_tools() -> ChatCompletion:
                             id="id",
                             function=Function(
                                 arguments='{\n  "param": "param",\n  "optional": 0}',
-                                name="MyOpenAITool",
+                                name="my_openai_tool",
                             ),
                             type="function",
                         )
@@ -197,6 +197,10 @@ class MyOpenAITool(OpenAITool):
     param: str = Field(..., description="A test parameter.")
     optional: int = 0
 
+    @classmethod
+    def name(cls) -> str:
+        return "my_openai_tool"
+
 
 @pytest.fixture()
 def fixture_my_openai_tool_instance(
@@ -210,7 +214,7 @@ def fixture_my_openai_tool_instance(
             id="id",
             function=Function(
                 arguments=('{\n  "param": "param",\n  "optional": 0}'),
-                name="MyOpenAITool",
+                name="my_openai_tool",
             ),
             type="function",
         ),

@@ -67,7 +67,7 @@ def mirascope_logfire() -> Callable:
                                     "arguments": tool.model_dump_json(
                                         exclude={"tool_call"}
                                     ),
-                                    "name": tool.__class__.__name__,
+                                    "name": tool.name(),
                                 }
                             }
                             for tool in tools
@@ -95,7 +95,7 @@ def mirascope_logfire() -> Callable:
                                     "arguments": tool.model_dump_json(
                                         exclude={"tool_call"}
                                     ),
-                                    "name": tool.__class__.__name__,
+                                    "name": tool.name(),
                                 }
                             }
                             for tool in tools
@@ -278,7 +278,7 @@ def handle_after_call(
                 {
                     "function": {
                         "arguments": tool.model_dump_json(exclude={"tool_call"}),
-                        "name": tool.__class__.__name__,
+                        "name": tool.name(),
                     }
                 }
                 for tool in tools

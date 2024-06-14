@@ -96,18 +96,17 @@ def test_openai_extractor_extract_with_custom_messages(
     mock_call: MagicMock,
     fixture_chat_completion_with_tools: ChatCompletion,
     fixture_my_openai_tool: Type[OpenAITool],
-    fixture_my_openai_tool_schema: Type[BaseModel],
 ) -> None:
     """Tests that writing custom messages with an OpenAI extractor works."""
     mock_call.return_value = fixture_chat_completion_with_tools
 
     messages = [{"role": "user", "content": "ensure this is the message"}]
 
-    class TempExtractor(OpenAIExtractor[BaseModel]):
+    class TempExtractor(OpenAIExtractor[OpenAITool]):
         prompt_template = "{test_prop}"
         api_key = "test"
 
-        extract_schema: Type[BaseModel] = fixture_my_openai_tool_schema
+        extract_schema: Type[OpenAITool] = fixture_my_openai_tool
 
         call_params = OpenAICallParams(model="gpt-4")
 

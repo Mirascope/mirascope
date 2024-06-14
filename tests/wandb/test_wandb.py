@@ -209,7 +209,7 @@ def test_trace_response_tool(
                 "id": "id",
                 "function": {
                     "arguments": '{\n  "param": "param",\n  "optional": 0}',
-                    "name": "MyOpenAITool",
+                    "name": "my_openai_tool",
                 },
                 "type": "function",
             },

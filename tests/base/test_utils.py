@@ -48,6 +48,10 @@ class SimpleTool(BaseTool):
     param: str = Field(..., description="A test parameter.")
     optional: int = Field(0, description="An optional test parameter.")
 
+    @classmethod
+    def name(cls) -> str:
+        return "simple_tool"
+
 
 def longer_description_tool() -> None:
     """A test tool with a longer description.
@@ -62,6 +66,10 @@ class LongerDescriptionTool(BaseTool):
     This is a longer description that spans multiple lines.
     """
 
+    @classmethod
+    def name(cls) -> str:
+        return "longer_description_tool"
+
 
 def short_docstring_tool(param: str) -> None:
     """A short docstring function."""
@@ -71,6 +79,10 @@ class ShortDocstringTool(BaseTool):
     """A short docstring function."""
 
     param: str
+
+    @classmethod
+    def name(cls) -> str:
+        return "short_docstring_tool"
 
 
 def reserved_name_tool(model_config: str) -> None:
@@ -86,6 +98,10 @@ class ReservedNameTool(BaseTool):
         serialization_alias="model_config",
     )
 
+    @classmethod
+    def name(cls) -> str:
+        return "reserved_name_tool"
+
 
 def class_method_tool(cls, param: str) -> None:
     """A tool for a class method."""
@@ -96,6 +112,10 @@ class ClassMethodTool(BaseTool):
 
     param: str
 
+    @classmethod
+    def name(cls) -> str:
+        return "class_method_tool"
+
 
 def method_with_self_tool(self, param: str) -> None:
     """A tool for a method with `self`."""
@@ -105,6 +125,10 @@ class MethodWithSelfTool(BaseTool):
     """A tool for a method with `self`."""
 
     param: str
+
+    @classmethod
+    def name(cls) -> str:
+        return "method_with_self_tool"
 
 
 def method_with_return_docstring_tool(param: str) -> str:
@@ -125,6 +149,10 @@ class MethodWithReturnDocstringTool(BaseTool):
 
     param: str
 
+    @classmethod
+    def name(cls) -> str:
+        return "method_with_return_docstring_tool"
+
 
 @pytest.mark.parametrize(
     "fn,expected_tool",
@@ -141,7 +169,7 @@ class MethodWithReturnDocstringTool(BaseTool):
 def test_convert_function_to_tool(fn: Callable, expected_tool: BaseTool) -> None:
     """Tests that `convert_function_to_tool` returns the expected tool."""
     tool = convert_function_to_tool(fn, BaseTool)  # type: ignore
-    assert tool.model_json_schema() == expected_tool.model_json_schema()
+    assert tool.tool_schema() == expected_tool.tool_schema()
 
 
 def no_docstr(param: str):
