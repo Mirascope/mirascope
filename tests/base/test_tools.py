@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from pydantic import BaseModel, ConfigDict, Field
 
-from mirascope.base.tools import BaseTool
+from mirascope.base.tools import BaseTool, Toolkit
 
 
 @patch.multiple(BaseTool, __abstractmethods__=set())
@@ -65,3 +65,26 @@ def test_extended_base_tool() -> None:
         "required": ["a", "ref"],
         "type": "object",
     }
+
+
+def test_toolkit() -> None:
+    """Tests that `Toolkit` properly namespaces tools."""
+
+    def add(x: int, y: int) -> str:
+        """Returns `x` + `y` as a string."""
+        ...  # pragma: no cover
+
+    class Subtract(BaseTool):
+        """Subtracts `y` from `x`."""
+
+        x: int
+        y: int
+
+        def call(self) -> str:
+            ...  # pragma: no cover
+
+    toolkit = Toolkit([add, Subtract], namespace="math")
+    tools = toolkit.tools
+    assert len(tools) == 2
+    assert tools[0].__name__ == "math.add"
+    assert tools[1].name() == "math.Subtract"

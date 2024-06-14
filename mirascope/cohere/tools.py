@@ -9,7 +9,7 @@ from pydantic import BaseModel, SkipValidation
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, BaseType
-from ..base.utils import (
+from ..base.tools import (
     convert_base_model_to_tool,
     convert_base_type_to_tool,
     convert_function_to_tool,

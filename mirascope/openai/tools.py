@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from pydantic_core import from_json
 
 from ..base import BaseTool, BaseType
-from ..base.utils import (
+from ..base.tools import (
     convert_base_model_to_tool,
     convert_base_type_to_tool,
     convert_function_to_tool,

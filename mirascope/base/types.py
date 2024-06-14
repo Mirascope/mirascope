@@ -19,8 +19,7 @@ import pydantic
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import Required, TypedDict
 
-from .tools import BaseTool
-from .utils import convert_function_to_tool
+from .tools import BaseTool, convert_function_to_tool
 
 
 class SystemMessage(TypedDict, total=False):
