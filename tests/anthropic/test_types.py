@@ -65,6 +65,19 @@ def test_anthropic_call_response_json_mode_tool(
         "title": "The Name of the Wind",
         "author": "Patrick Rothfuss",
     }
+    output = "The Name of the Wind by Patrick Rothfuss"
+    assert response.tool_message_params([(response.tools[0], output)]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "id",
+                    "type": "tool_result",
+                    "content": [{"text": output, "type": "text"}],
+                }
+            ],
+        }
+    ]
 
 
 def test_anthropic_call_response_with_tools_bad_stop_reason(
@@ -203,6 +216,20 @@ def test_anthropic_tool_stream_from_stream(
             },
         ],
     }
+    tool = tools[-1]
+    assert tool is not None
+    assert stream.tool_message_params([(tool, "output")]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "test_id",
+                    "content": [{"text": "output", "type": "text"}],
+                    "type": "tool_result",
+                }
+            ],
+        }
+    ]
 
 
 def test_anthropic_tool_stream_bad_tool_name(
@@ -321,3 +348,17 @@ async def test_anthropic_tool_stream_from_async_stream(
             },
         ],
     }
+    tool = tools[-1]
+    assert tool is not None
+    assert stream.tool_message_params([(tool, "output")]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "test_id",
+                    "content": [{"text": "output", "type": "text"}],
+                    "type": "tool_result",
+                }
+            ],
+        }
+    ]

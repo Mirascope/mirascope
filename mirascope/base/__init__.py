@@ -21,6 +21,7 @@ from .types import (
     BaseStream,
     BaseToolStream,
     Message,
+    ToolMessage,
 )
 from .utils import retry
 
@@ -41,6 +42,7 @@ __all__ = [
     "BaseCallResponseChunk",
     "BaseConfig",
     "Message",
+    "ToolMessage",
     "convert_base_model_to_tool",
     "convert_base_type_to_tool",
     "convert_function_to_tool",

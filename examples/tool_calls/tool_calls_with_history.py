@@ -39,10 +39,9 @@ class Forecast(OpenAICall):
 # Make the first call to the LLM
 forecast = Forecast(question="What's the weather in Tokyo Japan?")
 response = forecast.call()
-forecast.history += [
-    {"role": "user", "content": forecast.question},
-    response.message.model_dump(),  # type: ignore
-]
+if response.user_message_param:
+    forecast.history.append(response.user_message_param)
+forecast.history.append(response.message_param)
 
 tool = response.tool
 if tool:
@@ -53,15 +52,7 @@ if tool:
     # > It is 10 degrees fahrenheit in Tokyo, Japan
 
     # reinsert the tool call into the chat messages through history
-    # NOTE: this should be more convenient, e.g. `tool.message_param`
-    forecast.history += [
-        {
-            "role": "tool",
-            "content": output,
-            "tool_call_id": tool.tool_call.id,
-            "name": tool.__class__.__name__,
-        },  # type: ignore
-    ]
+    forecast.history += response.tool_message_params([(tool, output)])
     # Set no question so there isn't a user message
     forecast.question = ""
 else:

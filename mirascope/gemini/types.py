@@ -3,6 +3,7 @@
 from collections.abc import AsyncGenerator, Generator
 from typing import Any, Optional, TypeVar, Union
 
+from google.generativeai.protos import FunctionResponse  # type: ignore
 from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
     ContentDict,
@@ -130,6 +131,16 @@ class GeminiCallResponse(
         if tools:
             return tools[0]
         return None
+
+    @classmethod
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[GeminiTool, object]]
+    ) -> list[FunctionResponse]:
+        """Returns the tool message parameters for tool call results."""
+        return [
+            FunctionResponse(name=tool.name(), response={"result": output})
+            for tool, output in tools_and_outputs
+        ]
 
     @property
     def content(self) -> str:

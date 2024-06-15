@@ -79,6 +79,14 @@ def test_mistral_call_response_with_tools(
     assert response.tool == expected_tool
     assert len(tools) == 1
     assert tools[0] == expected_tool
+    assert response.tool_message_params([(tools[0], "output")]) == [
+        {
+            "role": "tool",
+            "content": "output",
+            "tool_call_id": "null",
+            "name": "BookTool",
+        }
+    ]
 
 
 def test_mistral_call_response_with_tools_bad_stop_sequence(

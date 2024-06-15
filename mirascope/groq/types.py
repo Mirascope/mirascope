@@ -7,6 +7,7 @@ from groq._types import Body, Headers, Query
 from groq.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
+    ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
 from groq.types.chat.chat_completion import (
@@ -209,6 +210,16 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
         if tools:
             return tools[0]
         return None
+
+    @classmethod
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[GroqTool, str]]
+    ) -> list[ChatCompletionToolMessageParam]:
+        """Returns the tool message parameters for tool call results."""
+        return [
+            {"role": "tool", "content": output, "tool_call_id": tool.tool_call.id}
+            for tool, output in tools_and_outputs
+        ]
 
     @property
     def model(self) -> str:

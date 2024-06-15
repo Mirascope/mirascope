@@ -23,6 +23,7 @@ from ..base import (
     BaseCallResponseChunk,
     BaseStream,
     Message,
+    ToolMessage,
 )
 from ..base.types import AssistantMessage, UserMessage
 from .tools import MistralTool
@@ -167,6 +168,21 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
         if tools:
             return tools[0]
         return None
+
+    @classmethod
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[MistralTool, str]]
+    ) -> list[ToolMessage]:
+        """Returns the tool message parameters for tool call results."""
+        return [
+            {
+                "role": "tool",
+                "content": output,
+                "tool_call_id": tool.tool_call.id,
+                "name": tool.name(),
+            }  # type: ignore
+            for tool, output in tools_and_outputs
+        ]
 
     @property
     def usage(self) -> UsageInfo:

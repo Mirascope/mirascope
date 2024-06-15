@@ -219,6 +219,16 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
             return tools[0]
         return None
 
+    @classmethod
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[CohereTool, list[dict[str, Any]]]]
+    ) -> list[ToolResult]:
+        """Returns the tool message parameters for tool call results."""
+        return [
+            {"call": tool.tool_call, "outputs": output}  # type: ignore
+            for tool, output in tools_and_outputs
+        ]
+
     @property
     def usage(self) -> Optional[ApiMetaBilledUnits]:
         """Returns the usage of the response."""

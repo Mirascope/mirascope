@@ -4,6 +4,7 @@ from typing import Type
 
 import pytest
 from google.ai.generativelanguage_v1beta import Part
+from google.generativeai.protos import FunctionResponse  # type: ignore
 from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from mirascope.gemini.tools import GeminiTool
@@ -57,6 +58,9 @@ def test_gemini_call_response_with_tools(
     assert len(tools) == 2
     assert tools[0] == expected_tool
     assert tools[1] == expected_tool
+    assert response.tool_message_params([(tools[0], "output")]) == [
+        FunctionResponse(name="BookTool", response={"result": "output"})
+    ]
 
 
 def test_gemini_call_response_with_tools_bad_stop_sequence(

@@ -89,6 +89,9 @@ def test_groq_call_response_with_tools(
     assert response.tool == expected_tool
     assert len(tools) == 1
     assert tools[0] == expected_tool
+    assert response.tool_message_params([(tools[0], "output")]) == [
+        {"role": "tool", "content": "output", "tool_call_id": "id"}
+    ]
 
 
 def test_groq_call_response_with_assistant_message_tool(
