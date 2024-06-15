@@ -154,6 +154,6 @@ Let us know who you would like us to integrate with next.
 ## Roadmap
 
 - [X]  Pinecone
+- [X]  Cohere Embeddings
 - [ ]  Astra DB
-- [ ]  Cohere Embeddings
 - [ ]  HuggingFace

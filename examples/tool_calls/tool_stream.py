@@ -5,7 +5,7 @@ Streaming tool calls with OpenAIToolStream
 import os
 from typing import Literal
 
-from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIToolStream
+from mirascope.openai import OpenAICall, OpenAICallParams, OpenAIStream
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
@@ -30,9 +30,10 @@ class Forecast(OpenAICall):
     call_params = OpenAICallParams(tools=[get_current_weather])
 
 
-stream = Forecast().stream()
-tool_stream = OpenAIToolStream.from_stream(stream)
-for tool in tool_stream:
+stream = OpenAIStream(Forecast().stream())
+for chunk, tool in stream:
     if tool:
         tool.fn(**tool.args)
         # > It is 10 degrees fahrenheit in Tokyo, Japan
+    else:
+        print(chunk.content, end="", flush=True)

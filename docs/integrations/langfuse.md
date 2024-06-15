@@ -45,7 +45,7 @@ This will give you:
 * Human-readable display of the conversation with the agent
 * Details of the response, including the number of tokens used
 
-![langfuse-screenshot-mirascope-anthropic-call](../images/langfuse-screenshot-mirascope-anthropic-call.png)
+![langfuse-screenshot-mirascope-anthropic-call](../assets/langfuse-screenshot-mirascope-anthropic-call.png)
 
 ## Extract
 
@@ -86,4 +86,4 @@ print(task_details)
 
 This will give you the same view as you would get from using `langfuse.openai`. We will be adding more extraction support for other providers soon.
 
-![langfuse-screenshot-mirascope-openai-extractor](../images/langfuse-screenshot-mirascope-openai-extractor.png)
+![langfuse-screenshot-mirascope-openai-extractor](../assets/langfuse-screenshot-mirascope-openai-extractor.png)

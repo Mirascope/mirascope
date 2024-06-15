@@ -45,6 +45,47 @@ This will insert the history or context between the `SYSTEM` role and the `USER`
 !!! note
     Different model providers have constraints on their roles, so make sure you follow them when injecting `MESSAGES`. For example, Anthropic requires a back-and-forth between single user and assistant messages, and supplying two sequential user messages will throw an error.
 
+## Streaming with Chat History
+
+Using the same example as above, replace the `call` with `stream` and use our convenient `OpenAIStream` class to insert chat history with `user_message_param` and `message_param`:
+
+```python
+import os
+
+from openai.types.chat import ChatCompletionMessageParam
+
+from mirascope.openai import OpenAICall, OpenAIStream
+
+os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
+
+
+class Librarian(OpenAICall):
+    prompt_template = """
+    SYSTEM: You are the world's greatest librarian.
+    MESSAGES: {history}
+    USER: {question}
+    """
+
+    question: str
+    history: list[ChatCompletionMessageParam] = []
+
+
+librarian = Librarian(question="", history=[])
+while True:
+    librarian.question = input("(User): ")
+    if librarian.question == "exit":
+        break
+    stream = OpenAIStream(librarian.stream())
+    print("(Assistant): ", end="")
+    for chunk, tool in stream:
+        if chunk.user_message_param:
+            print(chunk.content, end="", flush=True)
+    print()
+    if stream.user_message_param:
+        librarian.history.append(stream.user_message_param)
+    librarian.history.append(stream.message_param)
+```
+
 ## Overriding messages function
 
 Alternatively, if you do not want to use the prompt_template parser, you can override the `messages` function instead.
