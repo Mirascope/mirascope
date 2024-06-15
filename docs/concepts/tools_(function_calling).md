@@ -98,7 +98,30 @@ print(weather_tool.fn(**weather_tool.args))
 #> The weather in Tokyo, Japan is 72 degrees and sunny.
 ```
 
-Using the [tool_fn](../api/base/utils.md#mirascope.base.utils.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly as mentioned above.
+Using the [tool_fn](../api/base/tools.md#mirascope.base.tools.tool_fn) decorator will attach the function defined by the tool to the tool for easier calling of the function. This happens automatically when using the function directly as mentioned above.
+
+## Adding Examples To Your Tool Definitions
+
+Mirascope makes it easy to add examples to tool definitions, which can help the model better understand how you want it to call the tool. You can add examples both for individual fields as well as for the entire tool.
+
+```python
+class FormatBook(OpenAITool):
+    """Returns the title and author of a book nicely formatted."""
+
+    title: str = Field(..., examples=["The Name of the Wind"])
+    author: str = Field(..., examples=["Rothfuss, Patrick"])
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {"title": "The Name of the Wind", "author": "Rothfuss, Patrick"}
+            ]
+        }
+    )
+
+    def call(self) -> str:
+        return f"{self.title} by {self.author}"
+```
 
 ## Inserting Tools Back Into The Chat Messages
 
