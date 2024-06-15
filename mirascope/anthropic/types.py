@@ -13,7 +13,9 @@ from anthropic.types import (
     MessageParam,
     MessageStartEvent,
     TextBlock,
+    TextBlockParam,
     TextDelta,
+    ToolResultBlockParam,
     ToolUseBlock,
     Usage,
 )
@@ -158,6 +160,24 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
         if tools:
             return tools[0]
         return None
+
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[AnthropicTool, str]]
+    ) -> list[MessageParam]:
+        """Returns the tool message parameters for tool call results."""
+        return [
+            {
+                "role": "user",
+                "content": [
+                    ToolResultBlockParam(
+                        tool_use_id=tool.tool_call.id,
+                        type="tool_result",
+                        content=[{"text": output, "type": "text"}],
+                    )
+                    for tool, output in tools_and_outputs
+                ],
+            }
+        ]
 
     @property
     def content(self) -> str:

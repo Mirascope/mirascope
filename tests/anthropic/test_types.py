@@ -65,6 +65,19 @@ def test_anthropic_call_response_json_mode_tool(
         "title": "The Name of the Wind",
         "author": "Patrick Rothfuss",
     }
+    output = "The Name of the Wind by Patrick Rothfuss"
+    assert response.tool_message_params([(response.tools[0], output)]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "id",
+                    "type": "tool_result",
+                    "content": [{"text": output, "type": "text"}],
+                }
+            ],
+        }
+    ]
 
 
 def test_anthropic_call_response_with_tools_bad_stop_reason(

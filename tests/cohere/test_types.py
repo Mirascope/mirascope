@@ -100,6 +100,11 @@ def test_cohere_call_response_tools(
     assert call_response.tools[0].args == expected_tool_args
     assert call_response.tool is not None
     assert call_response.tool.args == expected_tool_args
+    tool = call_response.tool
+    outputs = [{"output": "output"}]
+    assert call_response.tool_message_params([(tool, outputs)]) == [
+        {"call": tool.tool_call, "outputs": outputs}
+    ]
 
     call_response.response = fixture_non_streamed_response.copy(
         update={"tool_calls": None}

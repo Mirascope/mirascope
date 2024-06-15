@@ -14,6 +14,7 @@ from openai.types.chat import (
     ChatCompletionChunk,
     ChatCompletionMessageToolCall,
     ChatCompletionToolChoiceOptionParam,
+    ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
 from openai.types.chat.chat_completion import Choice
@@ -222,6 +223,19 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
         if tools:
             return tools[0]
         return None
+
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[OpenAITool, str]]
+    ) -> list[ChatCompletionToolMessageParam]:
+        return [
+            ChatCompletionToolMessageParam(
+                role="tool",
+                content=output,
+                tool_call_id=tool.tool_call.id,
+                name=tool.name(),
+            )
+            for tool, output in tools_and_outputs
+        ]
 
     @property
     def usage(self) -> Optional[CompletionUsage]:

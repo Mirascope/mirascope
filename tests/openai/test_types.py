@@ -77,6 +77,14 @@ def test_openai_chat_completion_with_tools(
     assert completion_tool_model_dumps[0] == fixture_tool_model_dump
     assert response.tools is not None
     assert response.tools[0].tool_call == fixture_my_openai_tool_instance.tool_call
+    assert response.tool_message_params([(response.tools[0], "output")]) == [
+        {
+            "role": "tool",
+            "content": "output",
+            "tool_call_id": "id",
+            "name": "my_openai_tool",
+        }
+    ]
 
 
 def test_openai_chat_completion_with_assistant_message_tool(
