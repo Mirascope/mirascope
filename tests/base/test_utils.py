@@ -7,13 +7,16 @@ import pytest
 from pydantic import BaseModel, Field
 from tenacity import AsyncRetrying, RetryError, Retrying, stop_after_attempt
 
-from mirascope.base.tools import DEFAULT_TOOL_DOCSTRING, BaseTool
-from mirascope.base.utils import (
+from mirascope.base.tools import (
+    DEFAULT_TOOL_DOCSTRING,
+    BaseTool,
     convert_base_model_to_tool,
     convert_base_type_to_tool,
     convert_function_to_tool,
-    retry,
     tool_fn,
+)
+from mirascope.base.utils import (
+    retry,
 )
 from mirascope.openai.calls import OpenAICall
 

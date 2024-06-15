@@ -3,7 +3,15 @@
 from .calls import BaseCall
 from .extractors import BaseExtractor, ExtractedType, ExtractionType
 from .prompts import BasePrompt, tags
-from .tools import BaseTool, BaseType
+from .tools import (
+    BaseTool,
+    BaseType,
+    Toolkit,
+    convert_base_model_to_tool,
+    convert_base_type_to_tool,
+    convert_function_to_tool,
+    tool_fn,
+)
 from .types import (
     BaseAsyncStream,
     BaseCallParams,
@@ -14,13 +22,7 @@ from .types import (
     BaseToolStream,
     Message,
 )
-from .utils import (
-    convert_base_model_to_tool,
-    convert_base_type_to_tool,
-    convert_function_to_tool,
-    retry,
-    tool_fn,
-)
+from .utils import retry
 
 __all__ = [
     "BaseCall",
@@ -32,6 +34,7 @@ __all__ = [
     "BaseAsyncStream",
     "BaseToolStream",
     "BaseTool",
+    "Toolkit",
     "BaseType",
     "BaseCallParams",
     "BaseCallResponse",
