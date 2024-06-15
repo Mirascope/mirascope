@@ -159,9 +159,10 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
         """Returns the 0th tool for the 0th choice message."""
         ...  # pragma: no cover
 
+    @classmethod
     @abstractmethod
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[BaseToolT, Any]]
+        cls, tools_and_outputs: list[tuple[BaseToolT, Any]]
     ) -> list[Any]:
         """Returns the tool message parameters for tool call results."""
         ...  # pragma: no cover

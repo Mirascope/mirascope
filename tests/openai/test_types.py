@@ -310,6 +310,14 @@ def test_openai_tool_stream_from_stream(
             ),
         ],
     }
+    assert stream.tool_message_params([(tools[0], "output")]) == [
+        {
+            "role": "tool",
+            "content": "output",
+            "tool_call_id": "id0",
+            "name": "my_openai_tool",
+        }
+    ]
 
 
 def test_openai_tool_stream_bad_tool_name(
@@ -406,6 +414,14 @@ async def test_openai_tool_stream_from_async_stream(
             ),
         ],
     }
+    assert stream.tool_message_params([(tools[0], "output")]) == [
+        {
+            "role": "tool",
+            "content": "output",
+            "tool_call_id": "id0",
+            "name": "my_openai_tool",
+        }
+    ]
 
 
 def test_openai_tool_stream_no_tool_types(

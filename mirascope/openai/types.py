@@ -224,6 +224,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
         self, tools_and_outputs: list[tuple[OpenAITool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
@@ -232,7 +233,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                 role="tool",
                 content=output,
                 tool_call_id=tool.tool_call.id,
-                name=tool.name(),
+                name=tool.name(),  # type: ignore
             )
             for tool, output in tools_and_outputs
         ]
@@ -626,6 +627,11 @@ class OpenAIStream(
         if tool_calls:
             self.message_param["tool_calls"] = tool_calls  # type: ignore
 
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs):
+        """Returns the tool message parameters for tool call results."""
+        return OpenAICallResponse.tool_message_params(tools_and_outputs)
+
 
 class OpenAIAsyncStream(
     BaseAsyncStream[
@@ -684,3 +690,8 @@ class OpenAIAsyncStream(
                 self.message_param["tool_calls"] = tool_calls  # type: ignore
 
         return generator()
+
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs):
+        """Returns the tool message parameters for tool call results."""
+        return OpenAICallResponse.tool_message_params(tools_and_outputs)

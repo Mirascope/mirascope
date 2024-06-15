@@ -169,8 +169,9 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[MistralTool, object]]
+        cls, tools_and_outputs: list[tuple[MistralTool, str]]
     ) -> list[ToolMessage]:
         """Returns the tool message parameters for tool call results."""
         return [
@@ -179,7 +180,7 @@ class MistralCallResponse(BaseCallResponse[ChatCompletionResponse, MistralTool])
                 "content": output,
                 "tool_call_id": tool.tool_call.id,
                 "name": tool.name(),
-            }
+            }  # type: ignore
             for tool, output in tools_and_outputs
         ]
 

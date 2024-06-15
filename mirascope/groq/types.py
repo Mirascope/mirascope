@@ -211,8 +211,9 @@ class GroqCallResponse(BaseCallResponse[ChatCompletion, GroqTool]):
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[GroqTool, object]]
+        self, tools_and_outputs: list[tuple[GroqTool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
         """Returns the tool message parameters for tool call results."""
         return [

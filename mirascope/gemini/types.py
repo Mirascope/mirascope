@@ -132,6 +132,7 @@ class GeminiCallResponse(
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
         self, tools_and_outputs: list[tuple[GeminiTool, object]]
     ) -> list[FunctionResponse]:

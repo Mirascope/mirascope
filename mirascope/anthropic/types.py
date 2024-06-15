@@ -13,7 +13,6 @@ from anthropic.types import (
     MessageParam,
     MessageStartEvent,
     TextBlock,
-    TextBlockParam,
     TextDelta,
     ToolResultBlockParam,
     ToolUseBlock,
@@ -161,6 +160,7 @@ class AnthropicCallResponse(BaseCallResponse[Message, AnthropicTool]):
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
         self, tools_and_outputs: list[tuple[AnthropicTool, str]]
     ) -> list[MessageParam]:
@@ -592,6 +592,11 @@ class AnthropicStream(
         if content:
             self.message_param["content"] = content  # type: ignore
 
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs: list[tuple[AnthropicTool, str]]):
+        """Returns the tool message parameters for tool call results."""
+        return AnthropicCallResponse.tool_message_params(tools_and_outputs)
+
 
 class AnthropicAsyncStream(
     BaseAsyncStream[
@@ -651,3 +656,8 @@ class AnthropicAsyncStream(
                 self.message_param["content"] = content  # type: ignore
 
         return generator()
+
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs: list[tuple[AnthropicTool, str]]):
+        """Returns the tool message parameters for tool call results."""
+        return AnthropicCallResponse.tool_message_params(tools_and_outputs)

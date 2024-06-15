@@ -219,6 +219,7 @@ class CohereCallResponse(BaseCallResponse[NonStreamedChatResponse, CohereTool]):
             return tools[0]
         return None
 
+    @classmethod
     def tool_message_params(
         self, tools_and_outputs: list[tuple[CohereTool, list[dict[str, Any]]]]
     ) -> list[ToolResult]:

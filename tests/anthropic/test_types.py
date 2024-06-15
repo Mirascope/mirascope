@@ -216,6 +216,20 @@ def test_anthropic_tool_stream_from_stream(
             },
         ],
     }
+    tool = tools[-1]
+    assert tool is not None
+    assert stream.tool_message_params([(tool, "output")]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "test_id",
+                    "content": [{"text": "output", "type": "text"}],
+                    "type": "tool_result",
+                }
+            ],
+        }
+    ]
 
 
 def test_anthropic_tool_stream_bad_tool_name(
@@ -334,3 +348,17 @@ async def test_anthropic_tool_stream_from_async_stream(
             },
         ],
     }
+    tool = tools[-1]
+    assert tool is not None
+    assert stream.tool_message_params([(tool, "output")]) == [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "tool_use_id": "test_id",
+                    "content": [{"text": "output", "type": "text"}],
+                    "type": "tool_result",
+                }
+            ],
+        }
+    ]
