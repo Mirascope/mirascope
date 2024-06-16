@@ -56,7 +56,7 @@ def parse_prompt_messages(
                 raise ValueError(
                     f"MESSAGES keyword used with attribute `{template_var}`, which "
                     "is not a `list` of messages."
-                )  # pragma: no cover
+                )
             messages += attr
         else:
             content = format_prompt_template(match.group(2), attrs)

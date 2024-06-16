@@ -27,32 +27,7 @@ def test_base_prompt() -> None:
     }
 
 
-def test_base_prompt_with_messages() -> None:
-    """Tests the `BasePrompt` class with message keywords."""
-
-    class BookRecommendationPrompt(BasePrompt):
-        prompt_template = """
-        SYSTEM: You are the world's greatest librarian.
-        MESSAGES: {messages}
-        USER: Recommend a book.
-        """
-
-        messages: list[MessageParam]
-
-    messages = [
-        {"role": "user", "content": "Hi!"},
-        {"role": "assistant", "content": "Hello!"},
-    ]
-    prompt = BookRecommendationPrompt(messages=messages)
-    assert prompt.message_params() == [
-        {"role": "system", "content": "You are the world's greatest librarian."},
-        {"role": "user", "content": "Hi!"},
-        {"role": "assistant", "content": "Hello!"},
-        {"role": "user", "content": "Recommend a book."},
-    ]
-
-
-def test_base_prompt_with_list_computed_fields() -> None:
+def test_base_prompt_with_computed_fields() -> None:
     """Tests the `BasePrompt` class with list and list[list] computed fields."""
 
     class BookRecommendationPrompt(BasePrompt):
