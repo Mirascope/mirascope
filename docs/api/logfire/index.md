@@ -1,3 +1,0 @@
-# logfire
-
-::: mirascope.logfire

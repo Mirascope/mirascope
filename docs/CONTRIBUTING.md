@@ -69,7 +69,7 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
 
     ```shell
     poetry run ruff check .
-    poetry run mypy .
+    poetry run pyright .
     ```
 
 4. Test!
@@ -132,6 +132,6 @@ We use a [Codecov dashboard](https://app.codecov.io/github/Mirascope/mirascope/t
 
 ## Formatting and Linting
 
-In an effort to keep the codebase clean and easy to work with, we use `ruff` for formatting and both `ruff` and `mypy` for linting. Before sending any PR for review, make sure to run both `ruff` and `mypy`.
+In an effort to keep the codebase clean and easy to work with, we use `ruff` for formatting and both `ruff` and `pyright` for linting. Before sending any PR for review, make sure to run both `ruff` and `pyright`.
 
-If you are using VS Code, then install the extensions in `.vscode/extensions.json` and the workspace settings should automatically run `ruff` formatting on save and show `ruff` and `mypy` errors.
+If you are using VS Code, then install the extensions in `.vscode/extensions.json` and the workspace settings should automatically run `ruff` formatting on save and show `ruff` and `pyright` errors.

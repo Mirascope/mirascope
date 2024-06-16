@@ -1,3 +1,0 @@
-# mistral
-
-::: mirascope.mistral

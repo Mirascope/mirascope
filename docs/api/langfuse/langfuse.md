@@ -1,3 +1,0 @@
-# langfuse
-
-::: mirascope.langfuse
