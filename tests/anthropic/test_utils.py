@@ -1,8 +1,15 @@
 """Tests for Mirascope's Anthropic utils module."""
 
-from anthropic import Anthropic, AnthropicBedrock, AsyncAnthropic, AsyncAnthropicBedrock
+from anthropic import (
+    Anthropic,
+    AnthropicBedrock,
+    AnthropicVertex,
+    AsyncAnthropic,
+    AsyncAnthropicBedrock,
+    AsyncAnthropicVertex,
+)
 
-from mirascope.anthropic.utils import bedrock_client_wrapper
+from mirascope.anthropic.utils import bedrock_client_wrapper, vertex_client_wrapper
 
 
 def test_bedrock_client_wrapper():
@@ -21,6 +28,24 @@ def test_bedrock_client_wrapper():
     async_client = AsyncAnthropic()
     wrapped_async_client = wrapper(async_client)
     assert isinstance(wrapped_async_client, AsyncAnthropicBedrock)
+    for key, value in kwargs.items():
+        assert getattr(wrapped_client, key) == value
+        assert getattr(wrapped_async_client, key) == value
+
+
+def test_vertex_client_wrapper():
+    """Tests the Anthropic client wrapper for GCP Vertex."""
+    kwargs = {
+        "project_id": "TEST_PROJECT_ID",
+        "region": "us-east5",
+    }
+    wrapper = vertex_client_wrapper(**kwargs)
+    client = Anthropic()
+    wrapped_client = wrapper(client)
+    assert isinstance(wrapped_client, AnthropicVertex)
+    async_client = AsyncAnthropic()
+    wrapped_async_client = wrapper(async_client)
+    assert isinstance(wrapped_async_client, AsyncAnthropicVertex)
     for key, value in kwargs.items():
         assert getattr(wrapped_client, key) == value
         assert getattr(wrapped_async_client, key) == value

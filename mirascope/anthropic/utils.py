@@ -2,7 +2,14 @@
 
 from typing import Callable, Optional, Union
 
-from anthropic import Anthropic, AnthropicBedrock, AsyncAnthropic, AsyncAnthropicBedrock
+from anthropic import (
+    Anthropic,
+    AnthropicBedrock,
+    AnthropicVertex,
+    AsyncAnthropic,
+    AsyncAnthropicBedrock,
+    AsyncAnthropicVertex,
+)
 from anthropic._types import URL
 from anthropic.types import Usage
 
@@ -31,6 +38,26 @@ def bedrock_client_wrapper(
             client = AnthropicBedrock(**kwargs)  # type: ignore
         elif isinstance(client, AsyncAnthropic):
             client = AsyncAnthropicBedrock(**kwargs)  # type: ignore
+        return client
+
+    return inner_wrapper
+
+
+def vertex_client_wrapper(
+    project_id: Optional[str] = None,
+    region: Optional[str] = None,
+) -> Callable[
+    [Union[Anthropic, AsyncAnthropic]], Union[AnthropicVertex, AsyncAnthropicVertex]
+]:
+    """Returns a client wrapper for using Anthropic models on GCP Vertex."""
+
+    def inner_wrapper(client: Union[Anthropic, AsyncAnthropic]):
+        """Returns matching `AnthropicVertex` or `AsyncAnthropicVertex` client."""
+        kwargs = {"project_id": project_id, "region": region}
+        if isinstance(client, Anthropic):
+            client = AnthropicVertex(**kwargs)  # type: ignore
+        elif isinstance(client, AsyncAnthropic):
+            client = AsyncAnthropicVertex(**kwargs)  # type: ignore
         return client
 
     return inner_wrapper
