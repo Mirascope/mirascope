@@ -16,7 +16,12 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from openai.types.completion_usage import CompletionUsage
 from typing_extensions import TypedDict
 
-from ..base import BaseCallResponse
+from ..base.tool import BaseTool
+from ..base.types import BaseCallResponse
+
+
+class OpenAITool(BaseTool):
+    """A class for defining tools for OpenAI LLM calls."""
 
 
 class OpenAICallParams(TypedDict):

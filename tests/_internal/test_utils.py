@@ -1,10 +1,13 @@
 """Tests for the _internal utils module."""
 
 from textwrap import dedent
+from typing import Annotated
 
 import pytest
+from pydantic import BaseModel
 
 from mirascope.core._internal import utils
+from mirascope.core.base import BaseTool
 
 
 def test_format_prompt_template() -> None:
@@ -85,3 +88,75 @@ def test_parse_prompt_messages() -> None:
         utils.parse_prompt_messages(
             roles=["system"], template=template, attrs={"messages": "Hi!"}
         )
+
+
+def test_convert_function_to_base_model() -> None:
+    """Tests conversion of a `Callable` signature to a `BaseModel`."""
+
+    def fn(model_name: str = "", self=None, cls=None) -> str:
+        """A test function.
+
+        Args:
+            model_name: A test parameter.
+        """
+        return model_name
+
+    model = utils.convert_function_to_base_model(fn, BaseTool)
+    assert (
+        model.description()
+        == """A test function.\n\nArgs:\n    model_name: A test parameter."""
+    )
+    assert model.name() == "fn"
+
+    tool = model(model_name="test", tool_call="test")  # type: ignore
+    assert tool.call() == "test"
+
+
+def test_convert_function_to_base_model_errors() -> None:
+    """Tests the various `ValueErro` cases in `convert_function_to_base_model`."""
+
+    def fn(param) -> str:
+        ...  # pragma: no cover
+
+    with pytest.raises(ValueError):
+        utils.convert_function_to_base_model(fn, BaseTool)
+
+    def fn(param: str) -> str:
+        """A test function.
+
+        Args:
+            wrong_name: ...
+        """
+        ...  # pragma: no cover
+
+    with pytest.raises(ValueError):
+        utils.convert_function_to_base_model(fn, BaseTool)
+
+    def fn(param: str) -> str:
+        """A test function.
+
+        Args:
+            param:
+        """
+        ...  # pragma: no cover
+
+    with pytest.raises(ValueError):
+        utils.convert_function_to_base_model(fn, BaseTool)
+
+
+def test_convert_base_model_to_base_model() -> None:
+    """Tests conversion of a `BaseModel` to a `BaseModel`."""
+
+    class Model(BaseModel):
+        param: str
+
+    model = utils.convert_base_model_to_base_model(Model, BaseTool)
+    assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
+
+
+def test_convert_base_type_to_tool() -> None:
+    """Tests conversion of a `BaseType` to a `BaseTool`."""
+
+    model = utils.convert_base_type_to_tool(Annotated[str, "a string"], BaseTool)
+    assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
+    assert model.name() == "str"
