@@ -68,7 +68,6 @@ class WeaviateVectorStore(BaseVectorStore):
         """Queries the vectorstore for closest match"""
         query_result = self._index.query.near_text(query=text, **kwargs)
         result = query_result.objects[0]
-        print(result)
 
         return WeaviateQueryResult.from_response(result)
 
