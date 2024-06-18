@@ -7,6 +7,7 @@ from stores.wikipedia_chroma import WikipediaStore
 
 from mirascope.anthropic import AnthropicCall
 
+# from stores.wikipedia_weaviate import WikipediaStore
 # from stores.wikipedia_cohere import WikipediaStore
 # from stores.wikipedia_pinecone import WikipediaStore
 
@@ -34,7 +35,9 @@ class WikipediaCall(AnthropicCall):
     @property
     def context(self):
         store = WikipediaStore()
-        return store.retrieve(self.question).documents
+        retrieval = store.retrieve(self.question).documents
+        # store.close_connection()
+        return retrieval
 
 
 query = "When was caligraphy introduced to Japan and Korea"

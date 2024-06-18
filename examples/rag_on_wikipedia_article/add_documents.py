@@ -5,6 +5,7 @@ import os
 from rag_config import settings
 from stores.wikipedia_chroma import WikipediaStore
 
+# from stores.wikipedia_weaviate import WikipediaStore
 # from stores.wikipedia_cohere import WikipediaStore
 # from stores.wikipedia_pinecone import WikipediaStore
 
@@ -21,3 +22,4 @@ with open(f"{current_dir}/semi_cursive_script_wikipedia.txt") as file:
     data = file.read()
     store = WikipediaStore()
     store.add(data)
+    # store.close_connection()
