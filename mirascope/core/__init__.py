@@ -1,6 +1,11 @@
 """The Mirascope Core Functionality."""
 
-from . import types
-from .base_prompt import BasePrompt, tags
+from contextlib import suppress
 
-__all__ = ["BasePrompt", "tags", "types"]
+from . import base
+from .base import BasePrompt, tags
+
+with suppress(ImportError):
+    from . import openai
+
+__all__ = ["base", "BasePrompt", "openai", "tags"]

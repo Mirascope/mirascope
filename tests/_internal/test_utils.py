@@ -1,4 +1,5 @@
 """Tests for the _internal utils module."""
+
 from textwrap import dedent
 
 import pytest

@@ -5,7 +5,7 @@ from string import Formatter
 from textwrap import dedent
 from typing import Any
 
-from ..types import MessageParam
+from ..base.types import MessageParam
 
 
 def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:

@@ -5,7 +5,7 @@ from typing import Any, Callable, ClassVar, TypeVar
 
 from pydantic import BaseModel
 
-from ._internal import utils
+from .._internal import utils
 from .types import MessageParam
 
 

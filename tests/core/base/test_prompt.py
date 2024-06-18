@@ -3,7 +3,6 @@
 from pydantic import computed_field
 
 from mirascope.core import BasePrompt, tags
-from mirascope.core.types import MessageParam
 
 
 def test_base_prompt() -> None:
