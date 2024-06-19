@@ -56,7 +56,7 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
 
 def parse_prompt_messages(
     roles: list[str], template: str, attrs: dict[str, Any]
-) -> list[BaseMessageParam]:
+) -> list[BaseMessageParam | Any]:
     """Returns messages parsed from the provided prompt `template`.
 
     Raises:
@@ -99,7 +99,7 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def convert_function_to_base_tool(
-    fn: Callable[P, R], base: type[BaseToolT]
+    fn: Callable, base: type[BaseToolT]
 ) -> type[BaseToolT]:
     """Constructst a `BaseToolT` type from the given function.
 
@@ -171,7 +171,7 @@ def convert_function_to_base_tool(
         **cast(dict[str, Any], field_definitions),
     )
 
-    def call(self: base) -> R:
+    def call(self: base):
         return fn(
             **{
                 str(

@@ -24,7 +24,7 @@ def _setup(
     fn: Callable,
     fn_args: dict[str, Any],
     fn_return: OpenAICallFunctionReturn,
-    tools: list[BaseTool] | None,
+    tools: list[type[BaseTool]] | None,
     call_params: OpenAICallParams,
 ) -> tuple[
     str | None,
@@ -32,6 +32,7 @@ def _setup(
     list[type[OpenAITool]] | None,
     OpenAICallParams,
 ]:
+    call_kwargs = call_params.copy()
     prompt_template, messages, computed_fields = None, None, None
     if fn_return is not None:
         computed_fields = fn_return.get("computed_fields", None)
@@ -39,7 +40,7 @@ def _setup(
         messages = fn_return.get("messages", None)
         dynamic_call_params = fn_return.get("call_params", None)
         if dynamic_call_params:
-            call_params |= dynamic_call_params
+            call_kwargs |= dynamic_call_params
 
     if not messages:
         prompt_template = inspect.getdoc(fn)
@@ -47,7 +48,7 @@ def _setup(
         if computed_fields:
             fn_args |= computed_fields
         messages = utils.parse_prompt_messages(
-            roles=["system", "user", "assistant"],
+            roles=["system", "user", "assistant", "tool"],
             template=prompt_template,
             attrs=fn_args,
         )
@@ -55,18 +56,18 @@ def _setup(
     tool_types = None
     if tools:
         tool_types = [
-            utils.convert_base_model_to_base_tool(tool, OpenAITool)  # type: ignore
+            utils.convert_base_model_to_base_tool(tool, OpenAITool)
             if inspect.isclass(tool)
             else utils.convert_function_to_base_tool(tool, OpenAITool)  # type: ignore
             for tool in tools
         ]
-        call_params["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
+        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
 
-    return prompt_template, messages, tool_types, call_params
+    return prompt_template, messages, tool_types, call_kwargs  # type: ignore
 
 
 def openai_call(
-    tools: list[BaseTool] | None = None, **call_params: Unpack[OpenAICallParams]
+    tools: list[type[BaseTool]] | None = None, **call_params: Unpack[OpenAICallParams]
 ):
     '''A decorator for calling the OpenAI API with a typed function.
 
@@ -95,14 +96,12 @@ def openai_call(
     @overload
     def decorator(
         fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAICallResponse]:
-        ...  # pragma: no cover
+    ) -> Callable[P, OpenAICallResponse]: ...  # pragma: no cover
 
     @overload
     def decorator(
         fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAICallResponse]]:
-        ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[OpenAICallResponse]]: ...  # pragma: no cover
 
     def decorator(
         fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],

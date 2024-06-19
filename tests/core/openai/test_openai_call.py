@@ -1,4 +1,5 @@
 """Tests the mirascope.core.openai.openai_call module."""
+
 import pytest
 
 

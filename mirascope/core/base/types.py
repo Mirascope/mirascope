@@ -12,6 +12,10 @@ from typing_extensions import NotRequired, TypedDict
 from .._internal import utils
 
 
+class BaseContent(TypedDict):
+    """A base class for message content."""
+
+
 class BaseMessageParam(TypedDict):
     """A base class for message parameters.
 
@@ -19,7 +23,7 @@ class BaseMessageParam(TypedDict):
     """
 
     role: Literal["system", "user", "assistant", "model"]
-    content: str
+    content: str | list[BaseContent]
 
 
 class BaseTool(BaseModel):
@@ -47,8 +51,7 @@ class BaseTool(BaseModel):
         ...  # pragma: no cover
 
 
-class BaseCallParams(TypedDict, total=False):
-    ...  # pragma: no cover
+class BaseCallParams(TypedDict, total=False): ...  # pragma: no cover
 
 
 MessageParamT = TypeVar("MessageParamT", bound=Any)
@@ -57,7 +60,7 @@ CallParamsT = TypeVar("CallParamsT", bound=BaseCallParams)
 
 class FunctionReturnBase(TypedDict):
     computed_fields: NotRequired[dict[str, str | list[str] | list[list[str]]]]
-    tools: NotRequired[list[BaseTool]]
+    tools: NotRequired[list[type[BaseTool]]]
 
 
 class FunctionReturnMessages(FunctionReturnBase, Generic[MessageParamT]):
