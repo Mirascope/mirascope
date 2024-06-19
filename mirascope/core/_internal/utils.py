@@ -28,15 +28,17 @@ Must include required parameters and may exclude optional parameters unless pres
 """
 
 
-def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
-    """Formats the given prompt `template`"""
-    dedented_template = dedent(template).strip()
-    template_vars = [
-        var for _, var, _, _ in Formatter().parse(dedented_template) if var is not None
-    ]
+def get_template_variables(template: str) -> list[str]:
+    """Returns the variables in the given template string."""
+    return [var for _, var, _, _ in Formatter().parse(template) if var is not None]
 
+
+def get_template_values(
+    template_variables: list[str], attrs: dict[str, Any]
+) -> dict[str, Any]:
+    """Returns the values of the given `template_variables` from the provided `attrs`."""
     values = {}
-    for var in template_vars:
+    for var in template_variables:
         attr = attrs[var]
         if isinstance(attr, list):
             if len(attr) == 0:
@@ -49,6 +51,15 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
                 values[var] = "\n".join([str(item) for item in attr])
         else:
             values[var] = str(attr)
+    return values
+
+
+def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
+    """Formats the given prompt `template`"""
+    dedented_template = dedent(template).strip()
+    template_vars = get_template_variables(dedented_template)
+
+    values = get_template_values(template_vars, attrs)
 
     return dedented_template.format(**values)
 

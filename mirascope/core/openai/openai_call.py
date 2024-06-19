@@ -42,6 +42,17 @@ def openai_call(
         def call(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
             prompt_template = inspect.getdoc(fn)
             assert prompt_template is not None, "The function must have a docstring."
+
+            # Try to get the dictionary for tools from the function result
+            # tools = []
+            fn_result = fn(*args, **kwargs)
+            if isinstance(fn_result, dict):
+                if fn_result_tools := fn_result.get("tools"):
+                    for fn_result_tool in fn_result_tools:
+                        # TODO: Generate tools
+                        # tools.append(generate(fn_result_tool))
+                        pass
+
             attrs = inspect.signature(fn).bind(*args, **kwargs).arguments
             messages = utils.parse_prompt_messages(
                 roles=["system", "user", "assistant"],
