@@ -1,13 +1,18 @@
 """Mirascope Base Type Classes."""
 
+from __future__ import annotations
+
+import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict
-from typing_extensions import TypedDict
+from pydantic import BaseModel, ConfigDict, computed_field
+from typing_extensions import NotRequired, TypedDict
+
+from .._internal import utils
 
 
-class MessageParam(TypedDict):
+class BaseMessageParam(TypedDict):
     """A base class for message parameters.
 
     Available roles: `system`, `user`, `assistant`, `model`.
@@ -17,12 +22,85 @@ class MessageParam(TypedDict):
     content: str
 
 
+class BaseTool(BaseModel):
+    """A class for defining tools for LLM calls."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @classmethod
+    def name(cls) -> str:
+        """Returns the name of the tool."""
+        return cls.__name__
+
+    @classmethod
+    def description(cls) -> str:
+        """Returns the description of the tool."""
+        return (
+            inspect.cleandoc(cls.__doc__)
+            if cls.__doc__
+            else utils.DEFAULT_TOOL_DOCSTRING
+        )
+
+    @abstractmethod
+    def call(self) -> Any:
+        """The method to call the tool."""
+        ...  # pragma: no cover
+
+
+class BaseCallParams(TypedDict, total=False):
+    ...  # pragma: no cover
+
+
+MessageParamT = TypeVar("MessageParamT", bound=Any)
+CallParamsT = TypeVar("CallParamsT", bound=BaseCallParams)
+
+
+class FunctionReturnBase(TypedDict):
+    computed_fields: NotRequired[dict[str, str | list[str] | list[list[str]]]]
+    tools: NotRequired[list[BaseTool]]
+
+
+class FunctionReturnMessages(FunctionReturnBase, Generic[MessageParamT]):
+    messages: NotRequired[list[MessageParamT]]
+
+
+class FunctionReturnCallParams(FunctionReturnBase, Generic[CallParamsT]):
+    call_params: NotRequired[CallParamsT]
+
+
+class FunctionReturnFull(FunctionReturnBase, Generic[MessageParamT, CallParamsT]):
+    messages: NotRequired[list[MessageParamT]]
+    call_params: NotRequired[CallParamsT]
+
+
+BaseFunctionReturn = (
+    FunctionReturnBase
+    | FunctionReturnMessages[MessageParamT]
+    | FunctionReturnCallParams[CallParamsT]
+    | FunctionReturnFull[MessageParamT, CallParamsT]
+    | None
+)
+"""The base function return type for functions as LLM calls."""
+
+
 ResponseT = TypeVar("ResponseT", bound=Any)
+BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+BaseFunctionReturnT = TypeVar("BaseFunctionReturnT", bound=BaseFunctionReturn)
 UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
 
 
-# class BaseCallResponse(BaseModel, Generic[ResponseT, BaseToolT], ABC):
-class BaseCallResponse(BaseModel, Generic[ResponseT, UserMessageParamT], ABC):
+class BaseCallResponse(
+    BaseModel,
+    Generic[
+        ResponseT,
+        BaseToolT,
+        BaseFunctionReturnT,
+        MessageParamT,
+        CallParamsT,
+        UserMessageParamT,
+    ],
+    ABC,
+):
     """A base abstract interface for LLM call responses.
 
     Attributes:
@@ -36,39 +114,46 @@ class BaseCallResponse(BaseModel, Generic[ResponseT, UserMessageParamT], ABC):
     """
 
     response: ResponseT
+    tool_types: list[type[BaseToolT]] | None = None
+    prompt_template: str | None
+    fn_args: dict[str, Any]
+    fn_return: BaseFunctionReturnT
+    messages: list[MessageParamT]
+    call_params: CallParamsT
     user_message_param: UserMessageParamT | None = None
-    # tool_types: list[type[BaseToolT]] | None = None
     start_time: float
     end_time: float
     cost: float | None = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
+    @computed_field
     @property
     @abstractmethod
     def message_param(self) -> Any:
         """Returns the assistant's response as a message parameter."""
         ...  # pragma: no cover
 
-    # @property
-    # @abstractmethod
-    # def tools(self) -> Optional[list[BaseToolT]]:
-    #     """Returns the tools for the 0th choice message."""
-    #     ...  # pragma: no cover
+    @computed_field
+    @property
+    @abstractmethod
+    def tools(self) -> list[BaseToolT] | None:
+        """Returns the tools for the 0th choice message."""
+        ...  # pragma: no cover
 
-    # @property
-    # @abstractmethod
-    # def tool(self) -> Optional[BaseToolT]:
-    #     """Returns the 0th tool for the 0th choice message."""
-    #     ...  # pragma: no cover
+    @property
+    @abstractmethod
+    def tool(self) -> BaseToolT | None:
+        """Returns the 0th tool for the 0th choice message."""
+        ...  # pragma: no cover
 
-    # @classmethod
-    # @abstractmethod
-    # def tool_message_params(
-    #     cls, tools_and_outputs: list[tuple[BaseToolT, Any]]
-    # ) -> list[Any]:
-    #     """Returns the tool message parameters for tool call results."""
-    #     ...  # pragma: no cover
+    @classmethod
+    @abstractmethod
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[BaseToolT, Any]]
+    ) -> list[Any]:
+        """Returns the tool message parameters for tool call results."""
+        ...  # pragma: no cover
 
     @property
     @abstractmethod

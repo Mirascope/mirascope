@@ -1,6 +1,6 @@
 """The Mirascope OpenAI Module."""
 
-from .openai_call import openai_call
-from .types import OpenAICallResponse
+from .calls import openai_call
+from .types import OpenAICallFunctionReturn, OpenAICallResponse
 
-__all__ = ["OpenAICallResponse", "openai_call"]
+__all__ = ["OpenAICallFunctionReturn", "OpenAICallResponse", "openai_call"]

@@ -1,7 +1,6 @@
 """Mirascope Base Classes."""
 
-from .prompt import BasePrompt, tags
-from .tool import BaseTool
-from .types import BaseCallResponse, MessageParam
+from .prompts import BasePrompt, tags
+from .types import BaseCallResponse, BaseMessageParam, BaseTool
 
-__all__ = ["BaseCallResponse", "BasePrompt", "BaseTool", "MessageParam", "tags"]
+__all__ = ["BaseCallResponse", "BaseMessageParam", "BasePrompt", "BaseTool", "tags"]

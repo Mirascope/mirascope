@@ -2,51 +2,116 @@
 
 from __future__ import annotations
 
-from typing import Any
-
+import jiter
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
+    ChatCompletionStreamOptionsParam,
     ChatCompletionToolChoiceOptionParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
 )
-from openai.types.chat.chat_completion import ChatCompletionMessage, Choice
+from openai.types.chat.chat_completion import Choice
 from openai.types.chat.completion_create_params import ResponseFormat
 from openai.types.completion_usage import CompletionUsage
-from typing_extensions import TypedDict
+from openai.types.shared_params import FunctionDefinition
+from pydantic import computed_field
+from typing_extensions import NotRequired, Required
 
-from ..base.tool import BaseTool
-from ..base.types import BaseCallResponse
+from ..base.types import BaseCallParams, BaseCallResponse, BaseFunctionReturn, BaseTool
 
 
 class OpenAITool(BaseTool):
     """A class for defining tools for OpenAI LLM calls."""
 
+    tool_call: ChatCompletionMessageToolCall
 
-class OpenAICallParams(TypedDict):
+    @classmethod
+    def tool_schema(cls) -> ChatCompletionToolParam:
+        """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
+        model_schema = cls.model_json_schema()
+        model_schema.pop("title", None)
+        model_schema.pop("description", None)
+
+        fn = FunctionDefinition(name=cls.name(), description=cls.description())
+        if model_schema["properties"]:
+            fn["parameters"] = model_schema
+
+        return ChatCompletionToolParam(function=fn, type="function")
+
+    @classmethod
+    def from_tool_call(
+        cls, tool_call: ChatCompletionMessageToolCall, allow_partial: bool = False
+    ) -> OpenAITool:
+        """Constructs an `OpenAITool` instance from a `tool_call`."""
+        model_json = jiter.from_json(
+            tool_call.function.arguments.encode(),
+            partial_mode="trailing-strings" if allow_partial else "off",
+        )
+        model_json["tool_call"] = tool_call.model_dump()
+        return cls.model_validate(model_json)
+
+
+class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI API."""
 
-    model: str = "gpt-4o-2024-05-13"
-    frequency_penalty: float | None = None
-    logit_bias: dict[str, int] | None = None
-    logprobs: bool | None = None
-    max_tokens: int | None = None
-    n: int | None = None
-    presence_penalty: float | None = None
-    response_format: ResponseFormat | None = None
-    seed: int | None = None
-    stop: str | list[str] | None = None
-    temperature: float | None = None
-    # tools: list[BaseTool] | None = None
-    tool_choice: ChatCompletionToolChoiceOptionParam | None = None
-    top_logprobs: int | None = None
-    top_p: float | None = None
-    user: str | None = None
+    model: Required[str]
+    frequency_penalty: NotRequired[float | None]
+    logit_bias: NotRequired[dict[str, int] | None]
+    logprobs: NotRequired[bool | None]
+    max_tokens: NotRequired[int | None]
+    n: NotRequired[int | None]
+    parallel_tool_calls: NotRequired[bool]
+    presence_penalty: NotRequired[float | None]
+    response_format: NotRequired[ResponseFormat]
+    seed: NotRequired[int | None]
+    stop: NotRequired[str | list[str] | None]
+    stream_options: NotRequired[ChatCompletionStreamOptionsParam | None]
+    temperature: NotRequired[float | None]
+    tool_choice: NotRequired[ChatCompletionToolChoiceOptionParam]
+    top_logprobs: NotRequired[int | None]
+    top_p: NotRequired[float | None]
+    user: NotRequired[str]
+
+
+OpenAICallFunctionReturn = BaseFunctionReturn[
+    ChatCompletionMessageParam, OpenAICallParams
+]
+'''The function return type for functions wrapped with the `openai_call` decorator.
+
+Attributes:
+    computed_fields: The computed fields to use in the prompt template.
+    messages: The messages to send to the OpenAI API. If provided, `computed_fields`
+        will be ignored.
+    call_params: The call parameters to use when calling the OpenAI API. These will
+        override any call parameters provided to the decorator.
+
+Example:
+
+```python
+from mirascope.core.openai import OpenAICallFunctionReturn, openai_call
+
+@openai_call(model="gpt-4o")
+def recommend_book(genre: str) -> OpenAICallFunctionReturn:
+    """Recommend a {capitalized_genre} book."""
+    reeturn {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+```
+'''
 
 
 class OpenAICallResponse(
-    BaseCallResponse[ChatCompletion, ChatCompletionUserMessageParam]
+    BaseCallResponse[
+        ChatCompletion,
+        OpenAITool,
+        OpenAICallFunctionReturn,
+        ChatCompletionMessageParam,
+        OpenAICallParams,
+        ChatCompletionUserMessageParam,
+    ]
 ):
     '''A convenience wrapper around the OpenAI `ChatCompletion` response.
 
@@ -69,8 +134,7 @@ class OpenAICallResponse(
     ```
     '''
 
-    response_format: ResponseFormat | None = None
-
+    @computed_field
     @property
     def message_param(self) -> ChatCompletionAssistantMessageParam:
         """Returns the assistants's response as a message parameter."""
@@ -116,83 +180,51 @@ class OpenAICallResponse(
         """Returns the tool calls for the 0th choice message."""
         return self.message.tool_calls
 
-    #     @property
-    #     def tools(self) -> Optional[list[OpenAITool]]:
-    #         """Returns the tools for the 0th choice message.
+    @computed_field
+    @property
+    def tools(self) -> list[OpenAITool] | None:
+        """Returns any available tool calls as their `OpenAITool` definition.
 
-    #         Raises:
-    #             ValidationError: if a tool call doesn't match the tool's schema.
-    #         """
-    #         if not self.tool_types:
-    #             return None
+        Raises:
+            ValidationError: if a tool call doesn't match the tool's schema.
+        """
+        if not self.tool_types or not self.tool_calls:
+            return None
 
-    #         if self.choice.finish_reason == "length":
-    #             raise RuntimeError(
-    #                 "Finish reason was `length`, indicating the model ran out of tokens "
-    #                 "(and could not complete the tool call if trying to)"
-    #             )
+        extracted_tools = []
+        for tool_call in self.tool_calls:
+            for tool_type in self.tool_types:
+                if tool_call.function.name == tool_type.name():
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                    break
 
-    #         def reconstruct_tools_from_content() -> list[OpenAITool]:
-    #             # Note: we only handle single tool calls in this case
-    #             tool_type = self.tool_types[0]  # type: ignore
-    #             return [
-    #                 tool_type.from_tool_call(
-    #                     ChatCompletionMessageToolCall(
-    #                         id="id",
-    #                         function=Function(
-    #                             name=tool_type.name(), arguments=self.content
-    #                         ),
-    #                         type="function",
-    #                     )
-    #                 )
-    #             ]
+        return extracted_tools
 
-    #         if self.response_format == ResponseFormat(type="json_object"):
-    #             return reconstruct_tools_from_content()
+    @computed_field
+    @property
+    def tool(self) -> OpenAITool | None:
+        """Returns the 0th tool for the 0th choice message.
 
-    #         if not self.tool_calls:
-    #             # Let's see if we got an assistant message back instead and try to
-    #             # reconstruct a tool call in this case. We'll assume if it starts with
-    #             # an open curly bracket that we got a tool call assistant message.
-    #             if "{" == self.content[0]:
-    #                 # Note: we only handle single tool calls in JSON mode.
-    #                 return reconstruct_tools_from_content()
-    #             return None
+        Raises:
+            ValidationError: if the tool call doesn't match the tool's schema.
+        """
+        if tools := self.tools:
+            return tools[0]
+        return None
 
-    #         extracted_tools = []
-    #         for tool_call in self.tool_calls:
-    #             for tool_type in self.tool_types:
-    #                 if tool_call.function.name == tool_type.name():
-    #                     extracted_tools.append(tool_type.from_tool_call(tool_call))
-    #                     break
-
-    #         return extracted_tools
-
-    #     @property
-    #     def tool(self) -> Optional[OpenAITool]:
-    #         """Returns the 0th tool for the 0th choice message.
-
-    #         Raises:
-    #             ValidationError: if the tool call doesn't match the tool's schema.
-    #         """
-    #         tools = self.tools
-    #         if tools:
-    #             return tools[0]
-    #         return None
-
-    #     @classmethod
-    #     def tool_message_params(
-    #         self, tools_and_outputs: list[tuple[OpenAITool, str]]
-    #     ) -> list[ChatCompletionToolMessageParam]:
-    #         return [
-    #             ChatCompletionToolMessageParam(
-    #                 role="tool",
-    #                 content=output,
-    #                 tool_call_id=tool.tool_call.id,
-    #                 name=tool.name(),  # type: ignore
-    #             )
-    #             for tool, output in tools_and_outputs
-    #         ]
+    @classmethod
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[OpenAITool, str]]
+    ) -> list[ChatCompletionToolMessageParam]:
+        return [
+            ChatCompletionToolMessageParam(
+                role="tool",
+                content=output,
+                tool_call_id=tool.tool_call.id,
+                name=tool.name(),  # type: ignore
+            )
+            for tool, output in tools_and_outputs
+        ]
 
     @property
     def usage(self) -> CompletionUsage | None:
@@ -208,12 +240,3 @@ class OpenAICallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
-
-    def dump(self) -> dict[str, Any]:
-        """Dumps the response to a dictionary."""
-        return {
-            "start_time": self.start_time,
-            "end_time": self.end_time,
-            "output": self.response.model_dump(),
-            "cost": self.cost,
-        }
