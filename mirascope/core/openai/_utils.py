@@ -5,7 +5,7 @@ from typing import Any, Callable
 
 from openai.types.chat import ChatCompletionMessageParam
 
-from .._internal import utils
+from ..base import _utils
 from ..base import BaseTool
 from .call_params import OpenAICallParams
 from .function_return import OpenAICallFunctionReturn
@@ -39,7 +39,7 @@ def setup_call(
         assert prompt_template is not None, "The function must have a docstring."
         if computed_fields:
             fn_args |= computed_fields
-        messages = utils.parse_prompt_messages(
+        messages = _utils.parse_prompt_messages(
             roles=["system", "user", "assistant", "tool"],
             template=prompt_template,
             attrs=fn_args,
@@ -48,9 +48,9 @@ def setup_call(
     tool_types = None
     if tools:
         tool_types = [
-            utils.convert_base_model_to_base_tool(tool, OpenAITool)
+            _utils.convert_base_model_to_base_tool(tool, OpenAITool)
             if inspect.isclass(tool)
-            else utils.convert_function_to_base_tool(tool, OpenAITool)
+            else _utils.convert_function_to_base_tool(tool, OpenAITool)
             for tool in tools
         ]
         call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore

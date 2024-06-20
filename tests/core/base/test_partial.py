@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from mirascope.core._internal.partial import partial
+from mirascope.core.base._partial import partial
 
 
 class ShallowModel(BaseModel):

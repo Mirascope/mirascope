@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
-from .._internal import utils
+from . import _utils
 
 
 class BaseTool(BaseModel):
@@ -25,7 +25,7 @@ class BaseTool(BaseModel):
         return (
             inspect.cleandoc(cls.__doc__)
             if cls.__doc__
-            else utils.DEFAULT_TOOL_DOCSTRING
+            else _utils.DEFAULT_TOOL_DOCSTRING
         )
 
     @abstractmethod
