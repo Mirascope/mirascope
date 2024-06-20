@@ -33,13 +33,11 @@ class BaseToolKit(BaseModel, ABC):
 
     def create_tool(self) -> type[BaseTool]:
         """The method to create the tools."""
-        formated_template = self._toolkit_tool_method.__doc__.format(
-            **{var: getattr(self, var) for var in self._toolkit_template_vars}
-        )
+        formated_template = self._toolkit_tool_method.__doc__.format(self=self)
         return convert_function_to_base_tool(self._toolkit_tool_method, BaseTool, formated_template)
 
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs):
         toolkit_tool_method: Optional[Callable] = None
         for name, value in cls.__dict__.items():
             if getattr(value, _TOOLKIT_TOOL_METHOD_MARKER, False):
@@ -59,7 +57,6 @@ class BaseToolKit(BaseModel, ABC):
 
         if dedented_template != template:
             toolkit_tool_method.__doc__ = dedented_template
-
         for var in template_vars:
             if not var.startswith("self."):
                 # Should be supported un-self variables?
@@ -69,8 +66,7 @@ class BaseToolKit(BaseModel, ABC):
 
             self_var = var[5:]
             # Expecting pydantic model fields or class attribute and property
-            # TODO: Check attribute type such like callable, property, etc.
-            if self_var in cls.model_fields_set or hasattr(cls, self_var):
+            if self_var in cls.model_fields or hasattr(cls, self_var):
                 continue
             raise ValueError(
                 f"The toolkit_tool method template variable {var} is not found in the class"
