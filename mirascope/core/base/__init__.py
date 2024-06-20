@@ -20,7 +20,7 @@ __all__ = [
     "BasePrompt",
     "BaseStream",
     "BaseTool",
-    "tags",
     "BaseToolKit",
+    "tags",
     "toolkit_tool"
 ]
