@@ -14,6 +14,7 @@ repository = "https://github.com/Mirascope/mirascope"
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
 pydantic = "^2.7.4"
+jiter = "^0.4.2"
 docstring-parser = ">=0.15,<1.0"
 eval-type-backport = "^0.2.0"
 
@@ -26,7 +27,7 @@ all = ["openai"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-pyright = "^1.1.367"
+pyright = "^1.1.368"
 ruff = "^0.4.9"
 pytest-asyncio = "^0.23.7"
 pytest-cov = "^4.1.0"

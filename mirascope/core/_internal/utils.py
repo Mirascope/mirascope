@@ -2,6 +2,7 @@
 
 import inspect
 import re
+from abc import update_abstractmethods
 from string import Formatter
 from textwrap import dedent
 from typing import (
@@ -20,7 +21,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from ..base.types import MessageParam
+from ..base.types import BaseMessageParam
 
 DEFAULT_TOOL_DOCSTRING = """\
 Correctly formatted and typed parameters extracted from the completion. \
@@ -66,7 +67,7 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
 
 def parse_prompt_messages(
     roles: list[str], template: str, attrs: dict[str, Any]
-) -> list[MessageParam]:
+) -> list[BaseMessageParam | Any]:
     """Returns messages parsed from the provided prompt `template`.
 
     Raises:
@@ -105,13 +106,13 @@ def parse_prompt_messages(
 
 P = ParamSpec("P")
 R = TypeVar("R")
-BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
+BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
-def convert_function_to_base_model(
-    fn: Callable[P, R], base: type[BaseModelT]
-) -> type[BaseModelT]:
-    """Constructst a `BaseModelT` type from the given function.
+def convert_function_to_base_tool(
+    fn: Callable, base: type[BaseToolT]
+) -> type[BaseToolT]:
+    """Constructst a `BaseToolT` type from the given function.
 
     This method expects all function parameters to be properly documented in identical
     order with identical variable names, as well as descriptions of each parameter.
@@ -119,10 +120,10 @@ def convert_function_to_base_model(
 
     Args:
         fn: The function to convert.
-        base: The `BaseModel` type to which the function is converted.
+        base: The `BaseToolT` type to which the function is converted.
 
     Returns:
-        The constructed `BaseModelT` type.
+        The constructed `BaseToolT` type.
 
     Raises:
         ValueError: if the given function's parameters don't have type annotations.
@@ -174,29 +175,33 @@ def convert_function_to_base_model(
             field_info,
         )
 
-    class BaseWithCall(base):
-        def call(self) -> R:
-            return fn(
-                **{
-                    self.model_fields[field_name].alias
-                    if self.model_fields[field_name].alias
-                    else field_name: getattr(self, field_name)
-                    for field_name in self.model_dump(exclude={"tool_call"})
-                }
-            )
-
-    return create_model(
+    model = create_model(
         fn.__name__,
-        __base__=BaseWithCall,
+        __base__=base,
         __doc__=inspect.cleandoc(fn.__doc__) if fn.__doc__ else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
 
+    def call(self: base):
+        return fn(
+            **{
+                str(
+                    self.model_fields[field_name].alias
+                    if self.model_fields[field_name].alias
+                    else field_name
+                ): getattr(self, field_name)
+                for field_name in self.model_dump(exclude={"tool_call"})
+            }
+        )
 
-def convert_base_model_to_base_model(
-    schema: type[BaseModel], base: type[BaseModelT]
-) -> type[BaseModelT]:
-    """Converts a `BaseModel` schema to a `BaseModelT` type.
+    setattr(model, "call", call)
+    return update_abstractmethods(model)
+
+
+def convert_base_model_to_base_tool(
+    model: type[BaseModel], base: type[BaseToolT]
+) -> type[BaseToolT]:
+    """Converts a `BaseModel` schema to a `BaseToolT` type.
 
     By adding a docstring (if needed) and passing on fields and field information in
     dictionary format, a Pydantic `BaseModel` can be converted into an `BaseTool` for
@@ -210,23 +215,27 @@ def convert_base_model_to_base_model(
     """
     field_definitions = {
         field_name: (field_info.annotation, field_info)
-        for field_name, field_info in schema.model_fields.items()
+        for field_name, field_info in model.model_fields.items()
     }
-    return create_model(
-        f"{schema.__name__}",
+    tool_type = create_model(
+        f"{model.__name__}",
         __base__=base,
-        __doc__=schema.__doc__ if schema.__doc__ else DEFAULT_TOOL_DOCSTRING,
+        __doc__=model.__doc__ if model.__doc__ else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
+    for name, value in inspect.getmembers(model):
+        if not hasattr(tool_type, name) or name in ["name", "description", "call"]:
+            setattr(tool_type, name, value)
+    return update_abstractmethods(tool_type)
 
 
 BaseType = str | int | float | bool | list | set | tuple
 
 
-def convert_base_type_to_tool(
-    schema: type[BaseType], base: type[BaseModelT]
-) -> type[BaseModelT]:
-    """Converts a `BaseType` to a `BaseModelT` type."""
+def convert_base_type_to_base_tool(
+    schema: type[BaseType], base: type[BaseToolT]
+) -> type[BaseToolT]:
+    """Converts a `BaseType` to a `BaseToolT` type."""
     if get_origin(schema) == Annotated:
         schema.__name__ = get_args(schema)[0].__name__
     return create_model(

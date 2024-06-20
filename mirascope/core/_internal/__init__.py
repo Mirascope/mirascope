@@ -1,5 +1,5 @@
 """Internal module for Mirascope Core."""
 
-from . import utils
+from . import partial, utils
 
-__all__ = ["utils"]
+__all__ = ["partial", "utils"]

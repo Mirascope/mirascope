@@ -101,7 +101,7 @@ def test_convert_function_to_base_model() -> None:
         """
         return model_name
 
-    model = utils.convert_function_to_base_model(fn, BaseTool)
+    model = utils.convert_function_to_base_tool(fn, BaseTool)
     assert (
         model.description()
         == """A test function.\n\nArgs:\n    model_name: A test parameter."""
@@ -115,13 +115,12 @@ def test_convert_function_to_base_model() -> None:
 def test_convert_function_to_base_model_errors() -> None:
     """Tests the various `ValueErro` cases in `convert_function_to_base_model`."""
 
-    def fn(param) -> str:
-        ...  # pragma: no cover
+    def empty(param) -> str: ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_model(fn, BaseTool)
+        utils.convert_function_to_base_tool(empty, BaseTool)
 
-    def fn(param: str) -> str:
+    def wrong_param_name(param: str) -> str:
         """A test function.
 
         Args:
@@ -130,9 +129,9 @@ def test_convert_function_to_base_model_errors() -> None:
         ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_model(fn, BaseTool)
+        utils.convert_function_to_base_tool(wrong_param_name, BaseTool)
 
-    def fn(param: str) -> str:
+    def missing_param_description(param: str) -> str:
         """A test function.
 
         Args:
@@ -141,22 +140,26 @@ def test_convert_function_to_base_model_errors() -> None:
         ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_model(fn, BaseTool)
+        utils.convert_function_to_base_tool(missing_param_description, BaseTool)
 
 
-def test_convert_base_model_to_base_model() -> None:
-    """Tests conversion of a `BaseModel` to a `BaseModel`."""
+def test_convert_base_model_to_base_tool() -> None:
+    """Tests conversion of a `BaseModel` to a `BaseTool`."""
 
     class Model(BaseModel):
         param: str
 
-    model = utils.convert_base_model_to_base_model(Model, BaseTool)
+        def call(self) -> str:
+            return self.param
+
+    model = utils.convert_base_model_to_base_tool(Model, BaseTool)
     assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
+    assert model(param="test").call() == "test"  # type: ignore
 
 
 def test_convert_base_type_to_tool() -> None:
     """Tests conversion of a `BaseType` to a `BaseTool`."""
 
-    model = utils.convert_base_type_to_tool(Annotated[str, "a string"], BaseTool)
+    model = utils.convert_base_type_to_base_tool(Annotated[str, "a string"], BaseTool)  # type: ignore
     assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
     assert model.name() == "str"

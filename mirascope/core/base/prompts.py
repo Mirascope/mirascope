@@ -6,7 +6,7 @@ from typing import Any, Callable, ClassVar, TypeVar
 from pydantic import BaseModel
 
 from .._internal import utils
-from .types import MessageParam
+from .types import BaseMessageParam
 
 
 class BasePrompt(BaseModel):
@@ -43,7 +43,7 @@ class BasePrompt(BaseModel):
         """Returns the formatted template."""
         return utils.format_prompt_template(self.prompt_template, self.model_dump())
 
-    def message_params(self) -> list[MessageParam]:
+    def message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
         return utils.parse_prompt_messages(
             roles=["system", "user", "assistant", "model"],
