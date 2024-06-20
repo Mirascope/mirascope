@@ -6,8 +6,10 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
 
+from ._utils import BaseType
+
 _ChunkT = TypeVar("_ChunkT", bound=Any)
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 
 class BaseStructuredStream(Generic[_ChunkT, _ResponseModelT], ABC):

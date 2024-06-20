@@ -3,13 +3,13 @@
 from collections.abc import AsyncGenerator, Generator
 from typing import Generic, TypeVar
 
-import jiter
 from openai.types.chat import ChatCompletionChunk
 from pydantic import BaseModel
 
-from ..base import BaseAsyncStructuredStream, BaseStructuredStream, _partial
+from ..base import BaseAsyncStructuredStream, BaseStructuredStream, _utils
+from ._utils import extract_tool_return
 
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 class OpenAIStructuredStream(
@@ -33,11 +33,8 @@ class OpenAIStructuredStream(
             else:
                 ValueError("No tool call or JSON object found in response.")
             if json_output:
-                json_obj = jiter.from_json(
-                    json_output.encode(), partial_mode="trailing-strings"
-                )
-                yield _partial.partial(self.response_model).model_validate(json_obj)
-        yield self.response_model.model_validate_json(json_output)
+                yield extract_tool_return(self.response_model, json_output, True)
+        yield extract_tool_return(self.response_model, json_output, False)
 
 
 class OpenAIAsyncStructuredStream(
@@ -64,10 +61,7 @@ class OpenAIAsyncStructuredStream(
                 else:
                     ValueError("No tool call or JSON object found in response.")
                 if json_output:
-                    json_obj = jiter.from_json(
-                        json_output.encode(), partial_mode="trailing-strings"
-                    )
-                    yield _partial.partial(self.response_model).model_validate(json_obj)
-            yield self.response_model.model_validate_json(json_output)
+                    yield extract_tool_return(self.response_model, json_output, True)
+            yield extract_tool_return(self.response_model, json_output, False)
 
         return generator()

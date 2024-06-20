@@ -3,14 +3,17 @@
 import inspect
 import re
 from abc import update_abstractmethods
+from enum import Enum
 from string import Formatter
 from textwrap import dedent
 from typing import (
     Annotated,
     Any,
     Callable,
+    Literal,
     ParamSpec,
     TypeVar,
+    Union,
     cast,
     get_args,
     get_origin,
@@ -223,6 +226,16 @@ def convert_base_model_to_base_tool(
 
 
 BaseType = str | int | float | bool | list | set | tuple
+
+
+def is_base_type(type_: Any) -> bool:
+    """Check if a type is a base type."""
+    base_types = {str, int, float, bool, list, set, tuple}
+    return (
+        (inspect.isclass(type_) and issubclass(type_, Enum))
+        or type_ in base_types
+        or get_origin(type_) in base_types.union({Literal, Union, Annotated})
+    )
 
 
 def convert_base_type_to_base_tool(

@@ -2,8 +2,6 @@
 
 import datetime
 import inspect
-import json
-from textwrap import dedent
 from typing import (
     AsyncIterable,
     Awaitable,
@@ -16,12 +14,11 @@ from typing import (
     overload,
 )
 
-import jiter
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from pydantic import BaseModel
 
-from ..base import BaseTool, _partial, _utils
-from ._utils import setup_call, setup_extract
+from ..base import BaseTool, _utils
+from ._utils import extract_tool_return, setup_call, setup_extract, setup_extract_tool
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
@@ -32,7 +29,7 @@ from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStr
 from .tools import OpenAITool
 
 _P = ParamSpec("_P")
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 @overload
@@ -204,7 +201,7 @@ def openai_call(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, _ResponseModelT]:
         assert response_model is not None
-        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+        tool = setup_extract_tool(response_model)
 
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert response_model is not None
@@ -219,14 +216,15 @@ def openai_call(
             )
 
             if json_mode and (content := response.choices[0].message.content):
-                output = response_model.model_validate_json(content)
+                json_output = content
             elif tool_calls := response.choices[0].message.tool_calls:
-                output = response_model.model_validate_json(
-                    tool_calls[0].function.arguments
-                )
+                json_output = tool_calls[0].function.arguments
             else:
                 raise ValueError("No tool call or JSON object found in response.")
-            output._response = response  # type: ignore
+
+            output = extract_tool_return(response_model, json_output, False)
+            if isinstance(response_model, BaseModel):
+                output._response = response  # type: ignore
             return output
 
         return inner
@@ -235,7 +233,7 @@ def openai_call(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, Iterable[_ResponseModelT]]:
         assert response_model is not None
-        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+        tool = setup_extract_tool(response_model)
 
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
             assert response_model is not None
@@ -441,8 +439,9 @@ def openai_call_async(
     def extract_decorator(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     ) -> Callable[_P, Awaitable[_ResponseModelT]]:
+        nonlocal response_model
         assert response_model is not None
-        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+        tool = setup_extract_tool(response_model)
 
         async def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert response_model is not None
@@ -457,14 +456,15 @@ def openai_call_async(
             )
 
             if json_mode and (content := response.choices[0].message.content):
-                output = response_model.model_validate_json(content)
+                json_output = content
             elif tool_calls := response.choices[0].message.tool_calls:
-                output = response_model.model_validate_json(
-                    tool_calls[0].function.arguments
-                )
+                json_output = tool_calls[0].function.arguments
             else:
                 raise ValueError("No tool call or JSON object found in response.")
-            output._response = response  # type: ignore
+
+            output = extract_tool_return(response_model, json_output, False)
+            if isinstance(response_model, BaseModel):
+                output._response = response  # type: ignore
             return output
 
         return inner
@@ -473,7 +473,7 @@ def openai_call_async(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     ) -> Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]]:
         assert response_model is not None
-        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+        tool = setup_extract_tool(response_model)
 
         async def inner(
             *args: _P.args, **kwargs: _P.kwargs
