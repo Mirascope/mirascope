@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, SkipValidation, computed_field
 
 from .call_params import BaseCallParams
 from .function_return import BaseFunctionReturn
@@ -48,7 +48,7 @@ class BaseCallResponse(
     prompt_template: str | None
     fn_args: dict[str, Any]
     fn_return: _BaseFunctionReturnT
-    messages: list[_MessageParamT]
+    messages: SkipValidation[list[_MessageParamT]]
     call_params: _CallParamsT
     user_message_param: _UserMessageParamT | None = None
     start_time: float

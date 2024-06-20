@@ -41,7 +41,7 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
 
     values = {}
     if "self" in attrs:
-        values["self"] = attrs.pop("self")
+        values["self"] = attrs.get("self")
     for var in template_vars:
         if var.startswith("self"):
             continue
@@ -79,7 +79,14 @@ def parse_prompt_messages(
                 for _, var, _, _ in Formatter().parse(match.group(2))
                 if var is not None
             ][0]
-            attr = attrs[template_var]
+            if template_var.startswith("self"):
+                if "self" not in attrs:
+                    raise ValueError(
+                        "MESSAGES keyword used with `self.` but `self` was not found."
+                    )
+                attr = getattr(attrs["self"], template_var[5:])
+            else:
+                attr = attrs[template_var]
             if attr is None or not isinstance(attr, list):
                 raise ValueError(
                     f"MESSAGES keyword used with attribute `{template_var}`, which "
