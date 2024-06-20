@@ -9,8 +9,8 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion_message_tool_call import Function
 
-from ..base._partial import partial
 from ..base import BaseAsyncStream, BaseStream
+from ..base._partial import partial
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .tools import OpenAITool

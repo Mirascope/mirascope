@@ -1,15 +1,48 @@
 """Utilities for the Mirascope Core OpenAI module."""
 
 import inspect
-from typing import Any, Callable
+import json
+from textwrap import dedent
+from typing import Any, Callable, overload
 
 from openai.types.chat import ChatCompletionMessageParam
 
-from ..base import _utils
-from ..base import BaseTool
+from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
 from .function_return import OpenAICallFunctionReturn
 from .tools import OpenAITool
+
+
+@overload
+def setup_call(
+    fn: Callable,
+    fn_args: dict[str, Any],
+    fn_return: OpenAICallFunctionReturn,
+    tools: None,
+    call_params: OpenAICallParams,
+) -> tuple[
+    str | None,
+    list[ChatCompletionMessageParam],
+    None,
+    OpenAICallParams,
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def setup_call(
+    fn: Callable,
+    fn_args: dict[str, Any],
+    fn_return: OpenAICallFunctionReturn,
+    tools: list[type[BaseTool] | Callable],
+    call_params: OpenAICallParams,
+) -> tuple[
+    str | None,
+    list[ChatCompletionMessageParam],
+    list[type[OpenAITool]],
+    OpenAICallParams,
+]:
+    ...  # pragma: no cover
 
 
 def setup_call(
@@ -56,3 +89,43 @@ def setup_call(
         call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
 
     return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+
+
+def setup_extract(
+    fn: Callable,
+    fn_args: dict[str, Any],
+    fn_return: OpenAICallFunctionReturn,
+    tool: type[BaseTool],
+    call_params: OpenAICallParams,
+) -> tuple[
+    bool,
+    list[ChatCompletionMessageParam],
+    OpenAICallParams,
+]:
+    _, messages, [tool_type], call_kwargs = setup_call(
+        fn, fn_args, fn_return, [tool], call_params
+    )
+
+    response_format = call_kwargs.get("response_format", None)
+    if json_mode := bool(
+        response_format
+        and "type" in response_format
+        and response_format["type"] == "json_object"
+    ):
+        messages.append(
+            {
+                "role": "user",
+                "content": dedent(
+                    f"""\
+            Extract a valid JSON object instance from the content using this schema:
+                        
+            {json.dumps(tool_type.model_json_schema(), indent=2)}"""
+                ),
+            }
+        )
+        call_kwargs["tools"] = None  # type: ignore
+    else:
+        call_kwargs["tools"] = [tool_type.tool_schema()]  # type: ignore
+        call_kwargs["tool_choice"] = "required"
+
+    return json_mode, messages, call_kwargs

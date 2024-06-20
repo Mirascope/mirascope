@@ -2,6 +2,8 @@
 
 import datetime
 import inspect
+import json
+from textwrap import dedent
 from typing import (
     AsyncIterable,
     Awaitable,
@@ -14,17 +16,20 @@ from typing import (
     overload,
 )
 
+import jiter
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from pydantic import BaseModel
 
-from ..base import BaseTool
+from ..base import BaseTool, _partial, _utils
+from ._utils import setup_call, setup_extract
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .cost import openai_api_calculate_cost
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
-from ._utils import setup_call
+from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStream
+from .tools import OpenAITool
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel)
@@ -129,8 +134,6 @@ def openai_call(
     Returns:
         The decorator for turning a typed function into an OpenAI API call.
     '''
-    if response_model is not None:
-        raise ValueError("`response_model` is not yet supported.")
 
     def call_decorator(
         fn: Callable[_P, OpenAICallFunctionReturn],
@@ -197,6 +200,66 @@ def openai_call(
 
         return inner
 
+    def extract_decorator(
+        fn: Callable[_P, OpenAICallFunctionReturn],
+    ) -> Callable[_P, _ResponseModelT]:
+        assert response_model is not None
+        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+
+        def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+            assert response_model is not None
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = fn(*args, **kwargs)
+            json_mode, messages, call_kwargs = setup_extract(
+                fn, fn_args, fn_return, tool, call_params
+            )
+            client = OpenAI()
+            response = client.chat.completions.create(
+                model=model, stream=False, messages=messages, **call_kwargs
+            )
+
+            if json_mode and (content := response.choices[0].message.content):
+                output = response_model.model_validate_json(content)
+            elif tool_calls := response.choices[0].message.tool_calls:
+                output = response_model.model_validate_json(
+                    tool_calls[0].function.arguments
+                )
+            else:
+                raise ValueError("No tool call or JSON object found in response.")
+            output._response = response  # type: ignore
+            return output
+
+        return inner
+
+    def extract_stream_decorator(
+        fn: Callable[_P, OpenAICallFunctionReturn],
+    ) -> Callable[_P, Iterable[_ResponseModelT]]:
+        assert response_model is not None
+        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+
+        def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
+            assert response_model is not None
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = fn(*args, **kwargs)
+            json_mode, messages, call_kwargs = setup_extract(
+                fn, fn_args, fn_return, tool, call_params
+            )
+            client = OpenAI()
+            return OpenAIStructuredStream(
+                stream=(
+                    chunk
+                    for chunk in client.chat.completions.create(
+                        model=model, stream=True, messages=messages, **call_kwargs
+                    )
+                ),
+                response_model=response_model,
+                json_mode=json_mode,
+            )
+
+        return inner
+
+    if response_model:
+        return extract_stream_decorator if stream else extract_decorator
     if stream:
         return stream_decorator
     return call_decorator
@@ -307,8 +370,6 @@ def openai_call_async(
     Returns:
         The decorator for turning a typed function into an AsyncOpenAI API call.
     '''
-    if response_model is not None:
-        raise ValueError("`response_model` is not yet supported.")
 
     def call_decorator(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
@@ -377,6 +438,68 @@ def openai_call_async(
 
         return inner_async
 
+    def extract_decorator(
+        fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    ) -> Callable[_P, Awaitable[_ResponseModelT]]:
+        assert response_model is not None
+        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+
+        async def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+            assert response_model is not None
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = await fn(*args, **kwargs)
+            json_mode, messages, call_kwargs = setup_extract(
+                fn, fn_args, fn_return, tool, call_params
+            )
+            client = AsyncOpenAI()
+            response = await client.chat.completions.create(
+                model=model, stream=False, messages=messages, **call_kwargs
+            )
+
+            if json_mode and (content := response.choices[0].message.content):
+                output = response_model.model_validate_json(content)
+            elif tool_calls := response.choices[0].message.tool_calls:
+                output = response_model.model_validate_json(
+                    tool_calls[0].function.arguments
+                )
+            else:
+                raise ValueError("No tool call or JSON object found in response.")
+            output._response = response  # type: ignore
+            return output
+
+        return inner
+
+    def extract_stream_decorator(
+        fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    ) -> Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]]:
+        assert response_model is not None
+        tool = _utils.convert_base_model_to_base_tool(response_model, OpenAITool)
+
+        async def inner(
+            *args: _P.args, **kwargs: _P.kwargs
+        ) -> AsyncIterable[_ResponseModelT]:
+            assert response_model is not None
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = await fn(*args, **kwargs)
+            json_mode, messages, call_kwargs = setup_extract(
+                fn, fn_args, fn_return, tool, call_params
+            )
+            client = AsyncOpenAI()
+            return OpenAIAsyncStructuredStream(
+                stream=(
+                    chunk
+                    async for chunk in await client.chat.completions.create(
+                        model=model, stream=True, messages=messages, **call_kwargs
+                    )
+                ),
+                response_model=response_model,
+                json_mode=json_mode,
+            )
+
+        return inner
+
+    if response_model:
+        return extract_stream_decorator if stream else extract_decorator
     if stream:
         return stream_decorator
     return call_decorator
