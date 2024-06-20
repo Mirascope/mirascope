@@ -6,7 +6,7 @@ from typing import Any, Callable, ClassVar, TypeVar
 from pydantic import BaseModel
 
 from .._internal import utils
-from .types import BaseMessageParam
+from .message_param import BaseMessageParam
 
 
 class BasePrompt(BaseModel):

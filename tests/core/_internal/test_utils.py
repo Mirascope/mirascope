@@ -115,7 +115,8 @@ def test_convert_function_to_base_model() -> None:
 def test_convert_function_to_base_model_errors() -> None:
     """Tests the various `ValueErro` cases in `convert_function_to_base_model`."""
 
-    def empty(param) -> str: ...  # pragma: no cover
+    def empty(param) -> str:
+        ...  # pragma: no cover
 
     with pytest.raises(ValueError):
         utils.convert_function_to_base_tool(empty, BaseTool)
