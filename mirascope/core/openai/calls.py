@@ -14,13 +14,14 @@ from typing import (
     overload,
 )
 
-from openai import AsyncOpenAI, OpenAI
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from pydantic import BaseModel
 
 from ..base import BaseTool
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
+from .cost import openai_api_calculate_cost
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
 from .utils import setup_call
@@ -40,8 +41,7 @@ def openai_call(
 ) -> Callable[
     [Callable[P, OpenAICallFunctionReturn]],
     Callable[P, OpenAICallResponse],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -55,8 +55,7 @@ def openai_call(
 ) -> Callable[
     [Callable[P, OpenAICallFunctionReturn]],
     Callable[P, ResponseModelT],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -70,8 +69,7 @@ def openai_call(
 ) -> Callable[
     [Callable[P, OpenAICallFunctionReturn]],
     Callable[P, OpenAIStream],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -85,8 +83,7 @@ def openai_call(
 ) -> Callable[
     [Callable[P, OpenAICallFunctionReturn]],
     Callable[P, Iterable[ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 def openai_call(
@@ -158,7 +155,7 @@ def openai_call(
                 else None,
                 start_time=start_time,
                 end_time=datetime.datetime.now().timestamp() * 1000,
-                cost=None,  # NEED THIS FIXED
+                cost=openai_api_calculate_cost(response.usage, response.model),
             )
 
         return inner
@@ -173,6 +170,10 @@ def openai_call(
                 fn, fn_args, fn_return, tools, call_params
             )
             client = OpenAI()
+
+            if not isinstance(client, AzureOpenAI):
+                call_kwargs["stream_options"] = {"include_usage": True}
+
             stream = client.chat.completions.create(
                 model=model, stream=True, messages=messages, **call_kwargs
             )
@@ -185,7 +186,7 @@ def openai_call(
                         if messages[-1]["role"] == "user"
                         else None,
                         tool_types=tool_types,
-                        cost=None,  # NEED THIS FIXED
+                        cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                     )
 
             return OpenAIStream(generator())
@@ -208,8 +209,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[P, Awaitable[OpenAICallResponse]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -223,8 +223,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[P, Awaitable[ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -238,8 +237,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[P, Awaitable[OpenAIAsyncStream]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -253,8 +251,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[P, Awaitable[AsyncIterable[ResponseModelT]]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 def openai_call_async(
@@ -332,7 +329,7 @@ def openai_call_async(
                 else None,
                 start_time=start_time,
                 end_time=datetime.datetime.now().timestamp() * 1000,
-                cost=None,  # NEED THIS FIXED
+                cost=openai_api_calculate_cost(response.usage, response.model),
             )
 
         return inner_async
@@ -347,6 +344,10 @@ def openai_call_async(
                 fn, fn_args, fn_return, tools, call_params
             )
             client = AsyncOpenAI()
+
+            if not isinstance(client, AsyncAzureOpenAI):
+                call_kwargs["stream_options"] = {"include_usage": True}
+
             stream = await client.chat.completions.create(
                 model=model, stream=True, messages=messages, **call_kwargs
             )
@@ -359,7 +360,7 @@ def openai_call_async(
                         if messages[-1]["role"] == "user"
                         else None,
                         tool_types=tool_types,
-                        cost=None,  # NEED THIS FIXED
+                        cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                     )
 
             return OpenAIAsyncStream(generator())

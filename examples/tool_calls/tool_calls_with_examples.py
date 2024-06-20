@@ -6,8 +6,8 @@ import os
 
 from pydantic import ConfigDict, Field
 
+from mirascope.core import openai
 from mirascope.core.base import BaseTool
-from mirascope.core.openai import openai_call
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
@@ -30,7 +30,7 @@ class FormatBook(BaseTool):
         return f"{self.title} by {self.author}"
 
 
-@openai_call(model="gpt-4o", tools=[FormatBook], tool_choice="required")
+@openai.call(model="gpt-4o", tools=[FormatBook], tool_choice="required")
 def recommend_book():
     """Recommend a nonfiction book for me to read."""
 

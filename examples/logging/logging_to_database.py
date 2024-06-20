@@ -6,7 +6,7 @@ from sqlalchemy import JSON, Float, Integer, MetaData, String, create_engine
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-from mirascope.core.openai import openai_call
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
 
@@ -47,7 +47,7 @@ def get_current_weather(
         print("I'm not sure what the weather is like in {location}")
 
 
-@openai_call(model="gpt-4o", tools=[get_current_weather])
+@openai.call(model="gpt-4o", tools=[get_current_weather])
 def forecast(location: str):
     """What's the weather in {location}?"""
 

@@ -7,7 +7,7 @@ from typing import Literal
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core.openai import openai_call
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
@@ -28,7 +28,7 @@ class Forecast(BaseModel):
         else:
             return f"I'm not sure what the weather is like in {location}"
 
-    @openai_call(model="gpt-4o")
+    @openai.call(model="gpt-4o")
     def _step(self, question: str):
         """
         MESSAGES: {self.history}

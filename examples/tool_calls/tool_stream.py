@@ -3,7 +3,7 @@
 import os
 from typing import Literal
 
-from mirascope.core.openai import openai_stream
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_API_KEY"
 
@@ -22,7 +22,7 @@ def get_current_weather(
         print("I'm not sure what the weather is like in {location}")
 
 
-@openai_stream(model="gpt-4o", tools=[get_current_weather])
+@openai.call(model="gpt-4o", tools=[get_current_weather], stream=True)
 def forecast(location: str):
     """What's the weather in {location}"""
 
