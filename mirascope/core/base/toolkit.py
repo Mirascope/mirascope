@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from textwrap import dedent
 from typing import Callable, Optional, ClassVar, ParamSpec
-from functools import wraps
 
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import LiteralString
@@ -22,12 +21,7 @@ def toolkit_tool(
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 
-    # TODO: Validate first argument is self
-    @wraps(method)
-    def inner(*args, **kwargs):
-        return method(*args, **kwargs)
-
-    return inner
+    return method
 
 
 class BaseToolKit(BaseModel, ABC):
