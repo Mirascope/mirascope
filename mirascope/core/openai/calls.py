@@ -3,14 +3,19 @@
 import datetime
 import inspect
 from typing import (
+    AsyncIterable,
     Awaitable,
     Callable,
+    Iterable,
+    Literal,
     ParamSpec,
+    TypeVar,
     Unpack,
     overload,
 )
 
 from openai import AsyncOpenAI, OpenAI
+from pydantic import BaseModel
 
 from ..base import BaseTool
 from .call_params import OpenAICallParams
@@ -21,12 +26,83 @@ from .streams import OpenAIAsyncStream, OpenAIStream
 from .utils import setup_call
 
 P = ParamSpec("P")
+ResponseModelT = TypeVar("ResponseModelT", bound=BaseModel)
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, OpenAICallFunctionReturn]],
+    Callable[P, OpenAICallResponse],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT],
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, OpenAICallFunctionReturn]],
+    Callable[P, ResponseModelT],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, OpenAICallFunctionReturn]],
+    Callable[P, OpenAIStream],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT],
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, OpenAICallFunctionReturn]],
+    Callable[P, Iterable[ResponseModelT]],
+]:
+    ...  # pragma: no cover
 
 
 def openai_call(
+    model: str,
+    *,
+    stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT] | None = None,
     **call_params: Unpack[OpenAICallParams],
-):
+) -> Callable[
+    [Callable[P, OpenAICallFunctionReturn]],
+    Callable[
+        P,
+        OpenAICallResponse | OpenAIStream | ResponseModelT | Iterable[ResponseModelT],
+    ],
+]:
     '''A decorator for calling the OpenAI API with a typed function.
 
     This decorator is used to wrap a typed function that calls the OpenAI API. It parses
@@ -44,193 +120,252 @@ def openai_call(
     ```
 
     Args:
+        model: The OpenAI model to use in the API call.
+        stream: Whether to stream the response from the API call.
         tools: The tools to use in the OpenAI API call.
         **call_params: The `OpenAICallParams` call parameters to use in the API call.
 
     Returns:
         The decorator for turning a typed function into an OpenAI API call.
     '''
+    if response_model is not None:
+        raise ValueError("`response_model` is not yet supported.")
 
-    @overload
     def call_decorator(
         fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAICallResponse]: ...  # pragma: no cover
+    ) -> Callable[P, OpenAICallResponse]:
+        def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = fn(*args, **kwargs)
+            prompt_template, messages, tool_types, call_kwargs = setup_call(
+                fn, fn_args, fn_return, tools, call_params
+            )
+            client = OpenAI()
+            start_time = datetime.datetime.now().timestamp() * 1000
+            response = client.chat.completions.create(
+                model=model, stream=False, messages=messages, **call_kwargs
+            )
+            return OpenAICallResponse(
+                response=response,
+                tool_types=tool_types,
+                prompt_template=prompt_template,
+                fn_args=fn_args,
+                fn_return=fn_return,
+                messages=messages,
+                call_params=call_kwargs,
+                user_message_param=messages[-1]
+                if messages[-1]["role"] == "user"
+                else None,
+                start_time=start_time,
+                end_time=datetime.datetime.now().timestamp() * 1000,
+                cost=None,  # NEED THIS FIXED
+            )
 
-    @overload
-    def call_decorator(
-        fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAICallResponse]]: ...  # pragma: no cover
+        return inner
 
-    def call_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, OpenAICallResponse | Awaitable[OpenAICallResponse]]:
-        if inspect.iscoroutinefunction(fn):
+    def stream_decorator(
+        fn: Callable[P, OpenAICallFunctionReturn],
+    ) -> Callable[P, OpenAIStream]:
+        def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAIStream:
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = fn(*args, **kwargs)
+            _, messages, tool_types, call_kwargs = setup_call(
+                fn, fn_args, fn_return, tools, call_params
+            )
+            client = OpenAI()
+            stream = client.chat.completions.create(
+                model=model, stream=True, messages=messages, **call_kwargs
+            )
 
-            async def inner_async(
-                *args: P.args, **kwargs: P.kwargs
-            ) -> OpenAICallResponse:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = await fn(*args, **kwargs)
-                prompt_template, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = AsyncOpenAI()
-                start_time = datetime.datetime.now().timestamp() * 1000
-                response = await client.chat.completions.create(
-                    messages=messages, **call_kwargs
-                )
-                return OpenAICallResponse(
-                    response=response,
-                    tool_types=tool_types,
-                    prompt_template=prompt_template,
-                    fn_args=fn_args,
-                    fn_return=fn_return,
-                    messages=messages,
-                    call_params=call_kwargs,
-                    user_message_param=messages[-1]
-                    if messages[-1]["role"] == "user"
-                    else None,
-                    start_time=start_time,
-                    end_time=datetime.datetime.now().timestamp() * 1000,
-                    cost=None,  # NEED THIS FIXED
-                )
+            def generator():
+                for chunk in stream:
+                    yield OpenAICallResponseChunk(
+                        chunk=chunk,
+                        user_message_param=messages[-1]
+                        if messages[-1]["role"] == "user"
+                        else None,
+                        tool_types=tool_types,
+                        cost=None,  # NEED THIS FIXED
+                    )
 
-            return inner_async
-        else:
+            return OpenAIStream(generator())
 
-            def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = fn(*args, **kwargs)
-                assert not inspect.isawaitable(fn_return)
-                prompt_template, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = OpenAI()
-                start_time = datetime.datetime.now().timestamp() * 1000
-                response = client.chat.completions.create(
-                    messages=messages, **call_kwargs
-                )
-                return OpenAICallResponse(
-                    response=response,
-                    tool_types=tool_types,
-                    prompt_template=prompt_template,
-                    fn_args=fn_args,
-                    fn_return=fn_return,
-                    messages=messages,
-                    call_params=call_kwargs,
-                    user_message_param=messages[-1]
-                    if messages[-1]["role"] == "user"
-                    else None,
-                    start_time=start_time,
-                    end_time=datetime.datetime.now().timestamp() * 1000,
-                    cost=None,  # NEED THIS FIXED
-                )
+        return inner
 
-            return inner
-
+    if stream:
+        return stream_decorator
     return call_decorator
 
 
-def openai_stream(
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
     **call_params: Unpack[OpenAICallParams],
-):
-    '''A decorator for streaming the OpenAI API with a typed function.
+) -> Callable[
+    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[P, Awaitable[OpenAICallResponse]],
+]:
+    ...  # pragma: no cover
 
-    This decorator is used to wrap a typed function that calls the OpenAI API and
-    streams the response. It parses the docstring of the wrapped function as the
-    messages array and templates the input arguments for the function into each
-    message's template.
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT],
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[P, Awaitable[ResponseModelT]],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[P, Awaitable[OpenAIAsyncStream]],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT],
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[P, Awaitable[AsyncIterable[ResponseModelT]]],
+]:
+    ...  # pragma: no cover
+
+
+def openai_call_async(
+    model: str,
+    *,
+    stream: bool = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[ResponseModelT] | None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[
+        P,
+        Awaitable[OpenAICallResponse]
+        | Awaitable[OpenAIAsyncStream]
+        | Awaitable[ResponseModelT]
+        | Awaitable[AsyncIterable[ResponseModelT]],
+    ],
+]:
+    '''A decorator for calling the AsyncOpenAI API with a typed function.
+
+    This decorator is used to wrap a typed function that calls the OpenAI API. It parses
+    the docstring of the wrapped function as the messages array and templates the input
+    arguments for the function into each message's template.
 
     Example:
 
     ```python
-    @openai_stream(model="gpt-4o")
-    def recommend_book(genre: str):
+    @openai_call_async(model="gpt-4o")
+    async def recommend_book(genre: str):
         """Recommend a {genre} book."""
 
-    stream = recommend_book("fantasy")
-    for chunk in stream:
-        print(chunk.content, end="", flush=True)
+    async def run():
+        response = await recommend_book("fantasy")
+
+    asyncio.run(run())
     ```
 
     Args:
+        model: The OpenAI model to use in the API call.
+        stream: Whether to stream the response from the API call.
         tools: The tools to use in the OpenAI API call.
         **call_params: The `OpenAICallParams` call parameters to use in the API call.
 
     Returns:
-        The decorator for turning a typed function into an OpenAI API stream.
+        The decorator for turning a typed function into an AsyncOpenAI API call.
     '''
+    if response_model is not None:
+        raise ValueError("`response_model` is not yet supported.")
 
-    @overload
-    def stream_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAIStream]: ...  # pragma: no cover
+    def call_decorator(
+        fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
+    ) -> Callable[P, Awaitable[OpenAICallResponse]]:
+        async def inner_async(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = await fn(*args, **kwargs)
+            prompt_template, messages, tool_types, call_kwargs = setup_call(
+                fn, fn_args, fn_return, tools, call_params
+            )
+            client = AsyncOpenAI()
+            start_time = datetime.datetime.now().timestamp() * 1000
+            response = await client.chat.completions.create(
+                model=model, stream=False, messages=messages, **call_kwargs
+            )
+            return OpenAICallResponse(
+                response=response,
+                tool_types=tool_types,
+                prompt_template=prompt_template,
+                fn_args=fn_args,
+                fn_return=fn_return,
+                messages=messages,
+                call_params=call_kwargs,
+                user_message_param=messages[-1]
+                if messages[-1]["role"] == "user"
+                else None,
+                start_time=start_time,
+                end_time=datetime.datetime.now().timestamp() * 1000,
+                cost=None,  # NEED THIS FIXED
+            )
 
-    @overload
+        return inner_async
+
     def stream_decorator(
         fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]: ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]:
+        async def inner_async(*args: P.args, **kwargs: P.kwargs) -> OpenAIAsyncStream:
+            fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+            fn_return = await fn(*args, **kwargs)
+            _, messages, tool_types, call_kwargs = setup_call(
+                fn, fn_args, fn_return, tools, call_params
+            )
+            client = AsyncOpenAI()
+            stream = await client.chat.completions.create(
+                model=model, stream=True, messages=messages, **call_kwargs
+            )
 
-    def stream_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, OpenAIStream | Awaitable[OpenAIAsyncStream]]:
-        if inspect.iscoroutinefunction(fn):
+            async def generator():
+                async for chunk in stream:
+                    yield OpenAICallResponseChunk(
+                        chunk=chunk,
+                        user_message_param=messages[-1]
+                        if messages[-1]["role"] == "user"
+                        else None,
+                        tool_types=tool_types,
+                        cost=None,  # NEED THIS FIXED
+                    )
 
-            async def inner_async(
-                *args: P.args, **kwargs: P.kwargs
-            ) -> OpenAIAsyncStream:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = await fn(*args, **kwargs)
-                _, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = AsyncOpenAI()
-                stream = await client.chat.completions.create(
-                    messages=messages, stream=True, **call_kwargs
-                )
+            return OpenAIAsyncStream(generator())
 
-                async def generator():
-                    async for chunk in stream:
-                        yield OpenAICallResponseChunk(
-                            chunk=chunk,
-                            user_message_param=messages[-1]
-                            if messages[-1]["role"] == "user"
-                            else None,
-                            tool_types=tool_types,
-                            cost=None,  # NEED THIS FIXED
-                        )
+        return inner_async
 
-                return OpenAIAsyncStream(generator())
-
-            return inner_async
-        else:
-
-            def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAIStream:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = fn(*args, **kwargs)
-                assert not inspect.isawaitable(fn_return)
-                _, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = OpenAI()
-                stream = client.chat.completions.create(
-                    messages=messages, stream=True, **call_kwargs
-                )
-
-                def generator():
-                    for chunk in stream:
-                        yield OpenAICallResponseChunk(
-                            chunk=chunk,
-                            user_message_param=messages[-1]
-                            if messages[-1]["role"] == "user"
-                            else None,
-                            tool_types=tool_types,
-                            cost=None,  # NEED THIS FIXED
-                        )
-
-                return OpenAIStream(generator())
-
-            return inner
-
-    return stream_decorator
+    if stream:
+        return stream_decorator
+    return call_decorator
