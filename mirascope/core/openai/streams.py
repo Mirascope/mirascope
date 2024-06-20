@@ -1,131 +1,178 @@
-"""The `openai_stream` decorator for easy OpenAI API typed functions for streaming."""
+"""This module contains classes for streaming responses from OpenAI's API."""
 
-import inspect
-from typing import (
-    Awaitable,
-    Callable,
-    ParamSpec,
-    Unpack,
-    overload,
+from collections.abc import AsyncGenerator, Generator
+
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageToolCall,
+    ChatCompletionUserMessageParam,
 )
+from openai.types.chat.chat_completion_message_tool_call import Function
 
-from openai import AsyncOpenAI, OpenAI
-
-from ..base.types import BaseTool
-from .types import (
-    OpenAIAsyncStream,
-    OpenAICallFunctionReturn,
-    OpenAICallParams,
-    OpenAICallResponseChunk,
-    OpenAIStream,
-)
-from .utils import setup_call
-
-P = ParamSpec("P")
+from .._internal.partial import partial
+from ..base import BaseAsyncStream, BaseStream
+from .call_response import OpenAICallResponse
+from .call_response_chunk import OpenAICallResponseChunk
+from .tools import OpenAITool
 
 
-def openai_stream(
-    tools: list[type[BaseTool] | Callable] | None = None,
-    **call_params: Unpack[OpenAICallParams],
+def _handle_chunk(
+    chunk: OpenAICallResponseChunk,
+    current_tool_call: ChatCompletionMessageToolCall,
+    current_tool_type: type[OpenAITool] | None,
+    allow_partial: bool,
+) -> tuple[
+    OpenAITool | None,
+    ChatCompletionMessageToolCall,
+    type[OpenAITool] | None,
+    bool,
+]:
+    """Handles a chunk of the stream."""
+    if not chunk.tool_types or not chunk.tool_calls:
+        return None, current_tool_call, current_tool_type, False
+
+    tool_call = chunk.tool_calls[0]
+    # Reset on new tool
+    if tool_call.id and tool_call.function is not None:
+        previous_tool_call = current_tool_call.model_copy()
+        previous_tool_type = current_tool_type
+        current_tool_call = ChatCompletionMessageToolCall(
+            id=tool_call.id,
+            function=Function(
+                arguments="",
+                name=tool_call.function.name if tool_call.function.name else "",
+            ),
+            type="function",
+        )
+        current_tool_type = None
+        for tool_type in chunk.tool_types:
+            if tool_type.name() == tool_call.function.name:
+                current_tool_type = tool_type
+                break
+        if current_tool_type is None:
+            raise RuntimeError(
+                f"Unknown tool type in stream: {tool_call.function.name}"
+            )
+        if previous_tool_call.id and previous_tool_type is not None:
+            return (
+                previous_tool_type.from_tool_call(
+                    previous_tool_call, allow_partial=allow_partial
+                ),
+                current_tool_call,
+                current_tool_type,
+                True,
+            )
+
+    # Update arguments with each chunk
+    if tool_call.function and tool_call.function.arguments:
+        current_tool_call.function.arguments += tool_call.function.arguments
+
+        if allow_partial and current_tool_type:
+            return (
+                partial(current_tool_type).from_tool_call(
+                    current_tool_call, allow_partial=True
+                ),
+                current_tool_call,
+                current_tool_type,
+                False,
+            )
+
+    return None, current_tool_call, current_tool_type, False
+
+
+class OpenAIStream(
+    BaseStream[
+        OpenAICallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+        OpenAITool,
+    ]
 ):
-    '''A decorator for streaming the OpenAI API with a typed function.
+    """A class for streaming responses from OpenAI's API."""
 
-    This decorator is used to wrap a typed function that calls the OpenAI API and
-    streams the response. It parses the docstring of the wrapped function as the
-    messages array and templates the input arguments for the function into each
-    message's template.
+    def __init__(self, stream: Generator[OpenAICallResponseChunk, None, None]):
+        """Initializes an instance of `OpenAIStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)
 
-    Example:
+    def __iter__(
+        self,
+    ) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
+        """Iterator over the stream and constructs tools as they are streamed."""
+        current_tool_call = ChatCompletionMessageToolCall(
+            id="", function=Function(arguments="", name=""), type="function"
+        )
+        current_tool_type, tool_calls = None, []
+        for chunk, _ in super().__iter__():
+            if not chunk.tool_types or not chunk.tool_calls:
+                if current_tool_type:
+                    yield chunk, current_tool_type.from_tool_call(current_tool_call)
+                    tool_calls.append(current_tool_call)
+                    current_tool_type = None
+                else:
+                    yield chunk, None
+            tool, current_tool_call, current_tool_type, _ = _handle_chunk(
+                chunk, current_tool_call, current_tool_type, False
+            )
+            if tool is not None:
+                yield chunk, tool
+                tool_calls.append(tool.tool_call)
+        if tool_calls:
+            self.message_param["tool_calls"] = tool_calls  # type: ignore
 
-    ```python
-    @openai_stream(model="gpt-4o")
-    def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs):
+        """Returns the tool message parameters for tool call results."""
+        return OpenAICallResponse.tool_message_params(tools_and_outputs)
 
-    stream = recommend_book("fantasy")
-    for chunk in stream:
-        print(chunk.content, end="", flush=True)
-    ```
 
-    Args:
-        tools: The tools to use in the OpenAI API call.
-        **call_params: The `OpenAICallParams` call parameters to use in the API call.
+class OpenAIAsyncStream(
+    BaseAsyncStream[
+        OpenAICallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+        OpenAITool,
+    ]
+):
+    """A class for streaming responses from OpenAI's API."""
 
-    Returns:
-        The decorator for turning a typed function into an OpenAI API stream.
-    '''
+    def __init__(self, stream: AsyncGenerator[OpenAICallResponseChunk, None]):
+        """Initializes an instance of `OpenAIAsyncStream`."""
+        super().__init__(stream, ChatCompletionAssistantMessageParam)
 
-    @overload
-    def stream_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAIStream]:
-        ...  # pragma: no cover
+    def __aiter__(
+        self,
+    ) -> AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]:
+        """Iterator over the stream and constructs tools as they are streamed."""
+        stream = super().__aiter__()
 
-    @overload
-    def stream_decorator(
-        fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]:
-        ...  # pragma: no cover
+        async def generator():
+            current_tool_call = ChatCompletionMessageToolCall(
+                id="", function=Function(arguments="", name=""), type="function"
+            )
+            current_tool_type, tool_calls = None, []
+            async for chunk, _ in stream:
+                if not chunk.tool_types or not chunk.tool_calls:
+                    if current_tool_type:
+                        yield chunk, current_tool_type.from_tool_call(current_tool_call)
+                        tool_calls.append(current_tool_call)
+                        current_tool_type = None
+                    else:
+                        yield chunk, None
+                (
+                    tool,
+                    current_tool_call,
+                    current_tool_type,
+                    _,
+                ) = _handle_chunk(chunk, current_tool_call, current_tool_type, False)
+                if tool is not None:
+                    yield chunk, tool
+                    tool_calls.append(tool.tool_call)
+            if tool_calls:
+                self.message_param["tool_calls"] = tool_calls  # type: ignore
 
-    def stream_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, OpenAIStream | Awaitable[OpenAIAsyncStream]]:
-        if inspect.iscoroutinefunction(fn):
+        return generator()
 
-            async def inner_async(
-                *args: P.args, **kwargs: P.kwargs
-            ) -> OpenAIAsyncStream:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = await fn(*args, **kwargs)
-                _, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = AsyncOpenAI()
-                stream = await client.chat.completions.create(
-                    messages=messages, stream=True, **call_kwargs
-                )
-
-                async def generator():
-                    async for chunk in stream:
-                        yield OpenAICallResponseChunk(
-                            chunk=chunk,
-                            user_message_param=messages[-1]
-                            if messages[-1]["role"] == "user"
-                            else None,
-                            tool_types=tool_types,
-                            cost=None,  # NEED THIS FIXED
-                        )
-
-                return OpenAIAsyncStream(generator())
-
-            return inner_async
-        else:
-
-            def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAIStream:
-                fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
-                fn_return = fn(*args, **kwargs)
-                assert not inspect.isawaitable(fn_return)
-                _, messages, tool_types, call_kwargs = setup_call(
-                    fn, fn_args, fn_return, tools, call_params
-                )
-                client = OpenAI()
-                stream = client.chat.completions.create(
-                    messages=messages, stream=True, **call_kwargs
-                )
-
-                def generator():
-                    for chunk in stream:
-                        yield OpenAICallResponseChunk(
-                            chunk=chunk,
-                            user_message_param=messages[-1]
-                            if messages[-1]["role"] == "user"
-                            else None,
-                            tool_types=tool_types,
-                            cost=None,  # NEED THIS FIXED
-                        )
-
-                return OpenAIStream(generator())
-
-            return inner
-
-    return stream_decorator
+    @classmethod
+    def tool_message_params(cls, tools_and_outputs):
+        """Returns the tool message parameters for tool call results."""
+        return OpenAICallResponse.tool_message_params(tools_and_outputs)

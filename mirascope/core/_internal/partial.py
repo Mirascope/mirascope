@@ -59,5 +59,5 @@ def partial(wrapped_class: type[Model]) -> type[Model]:
         **{
             field_name: _make_field_optional(field_info)
             for field_name, field_info in wrapped_class.model_fields.items()
-        },
+        },  # type: ignore
     )

@@ -6,8 +6,10 @@ from typing import Any, Callable
 from openai.types.chat import ChatCompletionMessageParam
 
 from .._internal import utils
-from ..base.types import BaseTool
-from .types import OpenAICallFunctionReturn, OpenAICallParams, OpenAITool
+from ..base import BaseTool
+from .call_params import OpenAICallParams
+from .function_return import OpenAICallFunctionReturn
+from .tools import OpenAITool
 
 
 def setup_call(
