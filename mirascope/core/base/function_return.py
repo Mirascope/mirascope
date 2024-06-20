@@ -1,6 +1,6 @@
 """The base function return type for functions as LLM calls."""
 
-from typing import Any, Generic, TypeVar
+from typing import Any, Callable, Generic, TypeVar
 
 from typing_extensions import NotRequired, TypedDict
 
@@ -13,7 +13,7 @@ CallParamsT = TypeVar("CallParamsT", bound=BaseCallParams)
 
 class FunctionReturnBase(TypedDict):
     computed_fields: NotRequired[dict[str, str | list[str] | list[list[str]]]]
-    tools: NotRequired[list[type[BaseTool]]]
+    tools: NotRequired[list[type[BaseTool] | Callable]]
 
 
 class FunctionReturnMessages(FunctionReturnBase, Generic[MessageParamT]):

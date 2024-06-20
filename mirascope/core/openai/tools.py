@@ -1,5 +1,7 @@
 """The `OpenAITool` class for easy tool usage with OpenAI LLM calls."""
 
+from __future__ import annotations
+
 import jiter
 from openai.types.chat import (
     ChatCompletionMessageToolCall,
@@ -8,7 +10,6 @@ from openai.types.chat import (
 from openai.types.shared_params import FunctionDefinition
 
 from ..base import BaseTool
-from .tools import OpenAITool
 
 
 class OpenAITool(BaseTool):
