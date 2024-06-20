@@ -110,7 +110,7 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def convert_function_to_base_tool(
-    fn: Callable, base: type[BaseToolT]
+    fn: Callable, base: type[BaseToolT], __doc__: str | None = None
 ) -> type[BaseToolT]:
     """Constructst a `BaseToolT` type from the given function.
 
@@ -121,6 +121,7 @@ def convert_function_to_base_tool(
     Args:
         fn: The function to convert.
         base: The `BaseToolT` type to which the function is converted.
+        __doc__: The docstring to use for the constructed `BaseToolT` type.
 
     Returns:
         The constructed `BaseToolT` type.
@@ -133,8 +134,9 @@ def convert_function_to_base_tool(
             doesn't have a docstring description.
     """
     docstring = None
-    if fn.__doc__:
-        docstring = parse(fn.__doc__)
+    func_doc = __doc__ or fn.__doc__
+    if func_doc:
+        docstring = parse(func_doc)
 
     field_definitions = {}
     hints = get_type_hints(fn)
@@ -178,7 +180,7 @@ def convert_function_to_base_tool(
     model = create_model(
         fn.__name__,
         __base__=base,
-        __doc__=inspect.cleandoc(fn.__doc__) if fn.__doc__ else DEFAULT_TOOL_DOCSTRING,
+        __doc__=inspect.cleandoc(func_doc) if func_doc else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
 

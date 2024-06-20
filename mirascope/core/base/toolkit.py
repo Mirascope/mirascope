@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict
 from typing_extensions import LiteralString
 
 from . import BaseTool
-from .._internal.utils import get_template_variables
+from .._internal.utils import get_template_variables, convert_function_to_base_tool
 
 _TOOLKIT_TOOL_METHOD_MARKER: LiteralString = "__toolkit_tool_method__"
 
@@ -34,7 +34,7 @@ class BaseToolKit(BaseModel, ABC):
     """A class for defining tools for LLM call tools."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    _toolkit_tool_method: ClassVar[Callable[..., str]]
+    _toolkit_tool_method: ClassVar[Callable[[BaseToolKit, ...], str]]
     _toolkit_template_vars: ClassVar[list[str]]
 
     def create_tool(self) -> type[BaseTool]:
@@ -42,8 +42,7 @@ class BaseToolKit(BaseModel, ABC):
         formated_template = self._toolkit_tool_method.__doc__.format(
             **{var: getattr(self, var) for var in self._toolkit_template_vars}
         )
-        # TODO: Generate the tool class with the formatted template
-        ...
+        return convert_function_to_base_tool(self._toolkit_tool_method, BaseTool, formated_template)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
