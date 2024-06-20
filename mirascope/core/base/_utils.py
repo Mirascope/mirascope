@@ -21,7 +21,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from ..base.message_param import BaseMessageParam
+from .message_param import BaseMessageParam
 
 DEFAULT_TOOL_DOCSTRING = """\
 Correctly formatted and typed parameters extracted from the completion. \
@@ -37,7 +37,11 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
     ]
 
     values = {}
+    if "self" in attrs:
+        values["self"] = attrs.pop("self")
     for var in template_vars:
+        if var.startswith("self"):
+            continue
         attr = attrs[var]
         if isinstance(attr, list):
             if len(attr) == 0:

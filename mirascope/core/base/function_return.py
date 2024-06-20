@@ -7,8 +7,8 @@ from typing_extensions import NotRequired, TypedDict
 from .call_params import BaseCallParams
 from .tools import BaseTool
 
-MessageParamT = TypeVar("MessageParamT", bound=Any)
-CallParamsT = TypeVar("CallParamsT", bound=BaseCallParams)
+_MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 
 
 class FunctionReturnBase(TypedDict):
@@ -16,24 +16,24 @@ class FunctionReturnBase(TypedDict):
     tools: NotRequired[list[type[BaseTool] | Callable]]
 
 
-class FunctionReturnMessages(FunctionReturnBase, Generic[MessageParamT]):
-    messages: NotRequired[list[MessageParamT]]
+class FunctionReturnMessages(FunctionReturnBase, Generic[_MessageParamT]):
+    messages: NotRequired[list[_MessageParamT]]
 
 
-class FunctionReturnCallParams(FunctionReturnBase, Generic[CallParamsT]):
-    call_params: NotRequired[CallParamsT]
+class FunctionReturnCallParams(FunctionReturnBase, Generic[_CallParamsT]):
+    call_params: NotRequired[_CallParamsT]
 
 
-class FunctionReturnFull(FunctionReturnBase, Generic[MessageParamT, CallParamsT]):
-    messages: NotRequired[list[MessageParamT]]
-    call_params: NotRequired[CallParamsT]
+class FunctionReturnFull(FunctionReturnBase, Generic[_MessageParamT, _CallParamsT]):
+    messages: NotRequired[list[_MessageParamT]]
+    call_params: NotRequired[_CallParamsT]
 
 
 BaseFunctionReturn = (
     FunctionReturnBase
-    | FunctionReturnMessages[MessageParamT]
-    | FunctionReturnCallParams[CallParamsT]
-    | FunctionReturnFull[MessageParamT, CallParamsT]
+    | FunctionReturnMessages[_MessageParamT]
+    | FunctionReturnCallParams[_CallParamsT]
+    | FunctionReturnFull[_MessageParamT, _CallParamsT]
     | None
 )
 """The base function return type for functions as LLM calls."""

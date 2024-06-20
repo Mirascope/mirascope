@@ -7,34 +7,36 @@ from typing import Any, Generic, TypeVar
 from .call_response_chunk import BaseCallResponseChunk
 from .tools import BaseTool
 
-BaseCallResponseChunkT = TypeVar("BaseCallResponseChunkT", bound=BaseCallResponseChunk)
-UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
-AssistantMessageParamT = TypeVar("AssistantMessageParamT", bound=Any)
-BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+_BaseCallResponseChunkT = TypeVar(
+    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
+)
+_UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
+_AssistantMessageParamT = TypeVar("_AssistantMessageParamT", bound=Any)
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
 class BaseStream(
     Generic[
-        BaseCallResponseChunkT,
-        UserMessageParamT,
-        AssistantMessageParamT,
-        BaseToolT,
+        _BaseCallResponseChunkT,
+        _UserMessageParamT,
+        _AssistantMessageParamT,
+        _BaseToolT,
     ],
     ABC,
 ):
     """A base class for streaming responses from LLMs."""
 
-    stream: Generator[BaseCallResponseChunkT, None, None]
-    message_param_type: type[AssistantMessageParamT]
+    stream: Generator[_BaseCallResponseChunkT, None, None]
+    message_param_type: type[_AssistantMessageParamT]
 
     cost: float | None = None
-    user_message_param: UserMessageParamT | None = None
-    message_param: AssistantMessageParamT
+    user_message_param: _UserMessageParamT | None = None
+    message_param: _BaseToolT
 
     def __init__(
         self,
-        stream: Generator[BaseCallResponseChunkT, None, None],
-        message_param_type: type[AssistantMessageParamT],
+        stream: Generator[_BaseCallResponseChunkT, None, None],
+        message_param_type: type[_AssistantMessageParamT],
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
@@ -42,7 +44,7 @@ class BaseStream(
 
     def __iter__(
         self,
-    ) -> Generator[tuple[BaseCallResponseChunkT, BaseToolT | None], None, None]:
+    ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
         """Iterator over the stream and stores useful information."""
         content = ""
         for chunk in self.stream:
@@ -61,26 +63,26 @@ class BaseStream(
 
 class BaseAsyncStream(
     Generic[
-        BaseCallResponseChunkT,
-        UserMessageParamT,
-        AssistantMessageParamT,
-        BaseToolT,
+        _BaseCallResponseChunkT,
+        _UserMessageParamT,
+        _AssistantMessageParamT,
+        _BaseToolT,
     ],
     ABC,
 ):
     """A base class for async streaming responses from LLMs."""
 
-    stream: AsyncGenerator[BaseCallResponseChunkT, None]
-    message_param_type: type[AssistantMessageParamT]
+    stream: AsyncGenerator[_BaseCallResponseChunkT, None]
+    message_param_type: type[_AssistantMessageParamT]
 
     cost: float | None = None
-    user_message_param: UserMessageParamT | None = None
-    message_param: AssistantMessageParamT
+    user_message_param: _UserMessageParamT | None = None
+    message_param: _AssistantMessageParamT
 
     def __init__(
         self,
-        stream: AsyncGenerator[BaseCallResponseChunkT, None],
-        message_param_type: type[AssistantMessageParamT],
+        stream: AsyncGenerator[_BaseCallResponseChunkT, None],
+        message_param_type: type[_AssistantMessageParamT],
     ):
         """Initializes an instance of `BaseAsyncStream`."""
         self.stream = stream
@@ -88,7 +90,7 @@ class BaseAsyncStream(
 
     def __aiter__(
         self,
-    ) -> AsyncGenerator[tuple[BaseCallResponseChunkT, BaseToolT | None], None]:
+    ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]:
         """Iterates over the stream and stores useful information."""
 
         async def generator():

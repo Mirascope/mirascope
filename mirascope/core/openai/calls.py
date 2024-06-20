@@ -24,10 +24,10 @@ from .call_response_chunk import OpenAICallResponseChunk
 from .cost import openai_api_calculate_cost
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
-from .utils import setup_call
+from ._utils import setup_call
 
-P = ParamSpec("P")
-ResponseModelT = TypeVar("ResponseModelT", bound=BaseModel)
+_P = ParamSpec("_P")
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel)
 
 
 @overload
@@ -39,9 +39,10 @@ def openai_call(
     response_model: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, OpenAICallFunctionReturn]],
-    Callable[P, OpenAICallResponse],
-]: ...  # pragma: no cover
+    [Callable[_P, OpenAICallFunctionReturn]],
+    Callable[_P, OpenAICallResponse],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -50,12 +51,13 @@ def openai_call(
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT],
+    response_model: type[_ResponseModelT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, OpenAICallFunctionReturn]],
-    Callable[P, ResponseModelT],
-]: ...  # pragma: no cover
+    [Callable[_P, OpenAICallFunctionReturn]],
+    Callable[_P, _ResponseModelT],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -67,9 +69,10 @@ def openai_call(
     response_model: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, OpenAICallFunctionReturn]],
-    Callable[P, OpenAIStream],
-]: ...  # pragma: no cover
+    [Callable[_P, OpenAICallFunctionReturn]],
+    Callable[_P, OpenAIStream],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -78,12 +81,13 @@ def openai_call(
     *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT],
+    response_model: type[_ResponseModelT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, OpenAICallFunctionReturn]],
-    Callable[P, Iterable[ResponseModelT]],
-]: ...  # pragma: no cover
+    [Callable[_P, OpenAICallFunctionReturn]],
+    Callable[_P, Iterable[_ResponseModelT]],
+]:
+    ...  # pragma: no cover
 
 
 def openai_call(
@@ -91,13 +95,13 @@ def openai_call(
     *,
     stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT] | None = None,
+    response_model: type[_ResponseModelT] | None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, OpenAICallFunctionReturn]],
+    [Callable[_P, OpenAICallFunctionReturn]],
     Callable[
-        P,
-        OpenAICallResponse | OpenAIStream | ResponseModelT | Iterable[ResponseModelT],
+        _P,
+        OpenAICallResponse | OpenAIStream | _ResponseModelT | Iterable[_ResponseModelT],
     ],
 ]:
     '''A decorator for calling the OpenAI API with a typed function.
@@ -129,9 +133,9 @@ def openai_call(
         raise ValueError("`response_model` is not yet supported.")
 
     def call_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAICallResponse]:
-        def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
+        fn: Callable[_P, OpenAICallFunctionReturn],
+    ) -> Callable[_P, OpenAICallResponse]:
+        def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAICallResponse:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = fn(*args, **kwargs)
             prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -161,9 +165,9 @@ def openai_call(
         return inner
 
     def stream_decorator(
-        fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAIStream]:
-        def inner(*args: P.args, **kwargs: P.kwargs) -> OpenAIStream:
+        fn: Callable[_P, OpenAICallFunctionReturn],
+    ) -> Callable[_P, OpenAIStream]:
+        def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIStream:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = fn(*args, **kwargs)
             _, messages, tool_types, call_kwargs = setup_call(
@@ -207,9 +211,10 @@ def openai_call_async(
     response_model: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
-    Callable[P, Awaitable[OpenAICallResponse]],
-]: ...  # pragma: no cover
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[_P, Awaitable[OpenAICallResponse]],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -218,12 +223,13 @@ def openai_call_async(
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT],
+    response_model: type[_ResponseModelT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
-    Callable[P, Awaitable[ResponseModelT]],
-]: ...  # pragma: no cover
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[_P, Awaitable[_ResponseModelT]],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -235,9 +241,10 @@ def openai_call_async(
     response_model: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
-    Callable[P, Awaitable[OpenAIAsyncStream]],
-]: ...  # pragma: no cover
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[_P, Awaitable[OpenAIAsyncStream]],
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -246,12 +253,13 @@ def openai_call_async(
     *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT],
+    response_model: type[_ResponseModelT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
-    Callable[P, Awaitable[AsyncIterable[ResponseModelT]]],
-]: ...  # pragma: no cover
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
+]:
+    ...  # pragma: no cover
 
 
 def openai_call_async(
@@ -259,16 +267,16 @@ def openai_call_async(
     *,
     stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[ResponseModelT] | None = None,
+    response_model: type[_ResponseModelT] | None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
-    [Callable[P, Awaitable[OpenAICallFunctionReturn]]],
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[
-        P,
+        _P,
         Awaitable[OpenAICallResponse]
         | Awaitable[OpenAIAsyncStream]
-        | Awaitable[ResponseModelT]
-        | Awaitable[AsyncIterable[ResponseModelT]],
+        | Awaitable[_ResponseModelT]
+        | Awaitable[AsyncIterable[_ResponseModelT]],
     ],
 ]:
     '''A decorator for calling the AsyncOpenAI API with a typed function.
@@ -303,9 +311,11 @@ def openai_call_async(
         raise ValueError("`response_model` is not yet supported.")
 
     def call_decorator(
-        fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAICallResponse]]:
-        async def inner_async(*args: P.args, **kwargs: P.kwargs) -> OpenAICallResponse:
+        fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    ) -> Callable[_P, Awaitable[OpenAICallResponse]]:
+        async def inner_async(
+            *args: _P.args, **kwargs: _P.kwargs
+        ) -> OpenAICallResponse:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = await fn(*args, **kwargs)
             prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -335,9 +345,9 @@ def openai_call_async(
         return inner_async
 
     def stream_decorator(
-        fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]:
-        async def inner_async(*args: P.args, **kwargs: P.kwargs) -> OpenAIAsyncStream:
+        fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    ) -> Callable[_P, Awaitable[OpenAIAsyncStream]]:
+        async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIAsyncStream:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = await fn(*args, **kwargs)
             _, messages, tool_types, call_kwargs = setup_call(
