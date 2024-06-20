@@ -6,8 +6,7 @@ from typing import Annotated
 import pytest
 from pydantic import BaseModel
 
-from mirascope.core.base import _utils
-from mirascope.core.base import BaseTool
+from mirascope.core.base import BaseTool, _utils
 
 
 def test_format_prompt_template() -> None:
@@ -103,10 +102,10 @@ def test_convert_function_to_base_model() -> None:
 
     model = _utils.convert_function_to_base_tool(fn, BaseTool)
     assert (
-        model.description()
+        model._description()
         == """A test function.\n\nArgs:\n    model_name: A test parameter."""
     )
-    assert model.name() == "fn"
+    assert model._name() == "fn"
 
     tool = model(model_name="test", tool_call="test")  # type: ignore
     assert tool.call() == "test"
@@ -154,7 +153,7 @@ def test_convert_base_model_to_base_tool() -> None:
             return self.param
 
     model = _utils.convert_base_model_to_base_tool(Model, BaseTool)
-    assert model.description() == _utils.DEFAULT_TOOL_DOCSTRING
+    assert model._description() == _utils.DEFAULT_TOOL_DOCSTRING
     assert model(param="test").call() == "test"  # type: ignore
 
 
@@ -162,5 +161,5 @@ def test_convert_base_type_to_tool() -> None:
     """Tests conversion of a `BaseType` to a `BaseTool`."""
 
     model = _utils.convert_base_type_to_base_tool(Annotated[str, "a string"], BaseTool)  # type: ignore
-    assert model.description() == _utils.DEFAULT_TOOL_DOCSTRING
-    assert model.name() == "str"
+    assert model._description() == _utils.DEFAULT_TOOL_DOCSTRING
+    assert model._name() == "str"

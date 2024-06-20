@@ -46,7 +46,7 @@ def _handle_chunk(
         )
         current_tool_type = None
         for tool_type in chunk.tool_types:
-            if tool_type.name() == tool_call.function.name:
+            if tool_type._name() == tool_call.function.name:
                 current_tool_type = tool_type
                 break
         if current_tool_type is None:

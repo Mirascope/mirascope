@@ -24,7 +24,7 @@ class OpenAITool(BaseTool):
         model_schema.pop("title", None)
         model_schema.pop("description", None)
 
-        fn = FunctionDefinition(name=cls.name(), description=cls.description())
+        fn = FunctionDefinition(name=cls._name(), description=cls._description())
         if model_schema["properties"]:
             fn["parameters"] = model_schema
 
