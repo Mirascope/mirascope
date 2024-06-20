@@ -54,14 +54,12 @@ def openai_call(
     @overload
     def call_decorator(
         fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAICallResponse]:
-        ...  # pragma: no cover
+    ) -> Callable[P, OpenAICallResponse]: ...  # pragma: no cover
 
     @overload
     def call_decorator(
         fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAICallResponse]]:
-        ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[OpenAICallResponse]]: ...  # pragma: no cover
 
     def call_decorator(
         fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],
@@ -167,14 +165,12 @@ def openai_stream(
     @overload
     def stream_decorator(
         fn: Callable[P, OpenAICallFunctionReturn],
-    ) -> Callable[P, OpenAIStream]:
-        ...  # pragma: no cover
+    ) -> Callable[P, OpenAIStream]: ...  # pragma: no cover
 
     @overload
     def stream_decorator(
         fn: Callable[P, Awaitable[OpenAICallFunctionReturn]],
-    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]:
-        ...  # pragma: no cover
+    ) -> Callable[P, Awaitable[OpenAIAsyncStream]]: ...  # pragma: no cover
 
     def stream_decorator(
         fn: Callable[P, OpenAICallFunctionReturn | Awaitable[OpenAICallFunctionReturn]],
