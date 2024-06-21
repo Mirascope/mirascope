@@ -152,7 +152,7 @@ def convert_function_to_base_tool(
     fn: Callable,
     base: type[BaseToolT],
     __doc__: str | None = None,
-    namespace: str | None = None,
+    __namespace__: str | None = None,
 ) -> type[BaseToolT]:
     """Constructst a `BaseToolT` type from the given function.
 
@@ -164,7 +164,7 @@ def convert_function_to_base_tool(
         fn: The function to convert.
         base: The `BaseToolT` type to which the function is converted.
         __doc__: The docstring to use for the constructed `BaseToolT` type.
-        namespace: The namespace to use for the constructed `BaseToolT` type.
+        __namespace__: The namespace to use for the constructed `BaseToolT` type.
 
     Returns:
         The constructed `BaseToolT` type.
@@ -225,7 +225,7 @@ def convert_function_to_base_tool(
         )
 
     model = create_model(
-        f"{namespace}.{fn.__name__}" if namespace else fn.__name__,
+        f"{__namespace__}.{fn.__name__}" if __namespace__ else fn.__name__,
         __base__=base,
         __doc__=inspect.cleandoc(func_doc) if func_doc else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
