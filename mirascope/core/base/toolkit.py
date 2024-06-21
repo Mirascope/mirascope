@@ -20,7 +20,7 @@ P = ParamSpec("P")
 
 
 def toolkit_tool(
-        method: Callable[Concatenate[BaseToolKit, P], str],
+    method: Callable[Concatenate[BaseToolKit, P], str],
 ) -> Callable[Concatenate[BaseToolKit, P], str]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
@@ -53,7 +53,7 @@ class BaseToolKit(BaseModel, ABC):
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
         # validate the namespace
-        if cls._namespace is not None:
+        if cls._namespace:
             if cls._namespace in _namespaces:
                 raise ValueError(f"The namespace {cls._namespace} is already used")
             _namespaces.add(cls._namespace)
