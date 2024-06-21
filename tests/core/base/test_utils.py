@@ -9,8 +9,8 @@ from pydantic import BaseModel
 from mirascope.core.base import _utils, BaseTool
 
 
-def test_format_prompt_template() -> None:
-    """Tests the `format_prompt_template` function."""
+def test_format_template() -> None:
+    """Tests the `format_template` function."""
     prompt_template = """
     Recommend a {empty_list} book.
 
