@@ -5,7 +5,7 @@ from typing import Any, Callable, Generic, TypeVar
 from typing_extensions import NotRequired, TypedDict
 
 from .call_params import BaseCallParams
-from .tools import BaseTool
+from .tool import BaseTool
 
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)

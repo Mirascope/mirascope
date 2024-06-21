@@ -4,8 +4,7 @@ import inspect
 from abc import abstractmethod
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, GetCoreSchemaHandler
-from pydantic_core import core_schema
+from pydantic import BaseModel, ConfigDict
 
 from . import _utils
 

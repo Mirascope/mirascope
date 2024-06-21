@@ -15,7 +15,7 @@ from pydantic import (
 
 from .call_params import BaseCallParams
 from .function_return import BaseFunctionReturn
-from .tools import BaseTool
+from .tool import BaseTool
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)

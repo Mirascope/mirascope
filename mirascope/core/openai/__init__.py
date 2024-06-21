@@ -1,26 +1,23 @@
 """The Mirascope OpenAI Module."""
 
+from .call import openai_call
+from .call import openai_call as call
+from .call_async import openai_call_async
+from .call_async import openai_call_async as call_async
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .calls import openai_call, openai_call_async
-from .calls import openai_call as call
-from .calls import openai_call_async as call_async
 from .function_return import OpenAICallFunctionReturn
-from .streams import OpenAIAsyncStream, OpenAIStream
-from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStream
-from .tools import OpenAITool
+from .tool import OpenAITool
 
 __all__ = [
     "call",
-    "OpenAIAsyncStream",
-    "OpenAIAsyncStructuredStream",
+    "call_async",
     "OpenAICallFunctionReturn",
     "OpenAICallParams",
     "OpenAICallResponse",
     "OpenAICallResponseChunk",
-    "OpenAIStream",
-    "OpenAIStructuredStream",
     "OpenAITool",
     "openai_call",
+    "openai_call_async",
 ]

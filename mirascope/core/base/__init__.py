@@ -6,14 +6,18 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .function_return import BaseFunctionReturn
 from .message_param import BaseMessageParam
-from .prompts import BasePrompt, tags
-from .streams import BaseAsyncStream, BaseStream
-from .structured_streams import BaseAsyncStructuredStream, BaseStructuredStream
-from .tools import BaseTool
+from .prompt import BasePrompt, tags
+from .stream import BaseStream
+from .stream_async import BaseAsyncStream
+from .structured_stream import BaseStructuredStream
+from .structured_stream_async import BaseAsyncStructuredStream
+from .tool import BaseTool
 from .toolkit import BaseToolKit, toolkit_tool
+
 
 __all__ = [
     "BaseAsyncStream",
+    "BaseAsyncStructuredStream",
     "BaseCallParams",
     "BaseCallResponse",
     "BaseCallResponseChunk",

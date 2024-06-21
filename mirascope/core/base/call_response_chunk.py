@@ -7,7 +7,7 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
-from .tools import BaseTool
+from .tool import BaseTool
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)

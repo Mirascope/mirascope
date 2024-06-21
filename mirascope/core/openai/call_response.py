@@ -16,7 +16,7 @@ from pydantic import computed_field
 from ..base import BaseCallResponse
 from .call_params import OpenAICallParams
 from .function_return import OpenAICallFunctionReturn
-from .tools import OpenAITool
+from .tool import OpenAITool
 
 
 class OpenAICallResponse(

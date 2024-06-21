@@ -19,10 +19,12 @@ from typing import (
     get_type_hints,
 )
 
+import jiter
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
+from ._partial import partial
 from .message_param import BaseMessageParam
 
 DEFAULT_TOOL_DOCSTRING = """\
@@ -277,3 +279,32 @@ def convert_base_type_to_base_tool(
         __doc__=DEFAULT_TOOL_DOCSTRING,
         value=(schema, ...),
     )
+
+
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+
+
+def setup_extract_tool(
+    response_model: type[BaseModel] | type[BaseType], tool_type: type[BaseToolT]
+) -> type[BaseToolT]:
+    if is_base_type(response_model):
+        return convert_base_type_to_base_tool(response_model, tool_type)  # type: ignore
+    return convert_base_model_to_base_tool(response_model, tool_type)  # type: ignore
+
+
+def extract_tool_return(
+    response_model: type[_ResponseModelT], json_output: str, allow_partial: bool
+) -> _ResponseModelT:
+    json_obj = jiter.from_json(
+        json_output.encode(),
+        partial_mode="trailing-strings" if allow_partial else "off",
+    )
+    if is_base_type(response_model):
+        temp_model = convert_base_type_to_base_tool(response_model, BaseModel)  # type: ignore
+        if allow_partial:
+            return partial(temp_model).model_validate(json_obj).value  # type: ignore
+        return temp_model.model_validate(json_obj).value  # type: ignore
+
+    if allow_partial:
+        return partial(response_model).model_validate(json_obj)  # type: ignore
+    return response_model.model_validate(json_obj)  # type: ignore
