@@ -22,7 +22,7 @@ def test_toolkit() -> None:
 
     toolkit = BookRecommendationToolKit(reading_level="beginner")
     tool = toolkit.create_tool()
-    assert tool.name() == "format_book"
-    assert tool.description() == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+    assert tool._name() == "format_book"
+    assert tool._description() == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     assert tool(title="The Name of the Wind",
                 author="Rothfuss, Patrick").call() == "The Name of the Wind by Rothfuss, Patrick"

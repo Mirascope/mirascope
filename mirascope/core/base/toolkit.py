@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from typing_extensions import LiteralString
 
 from . import BaseTool
-from .._internal.utils import get_template_variables, convert_function_to_base_tool
+from ._utils import convert_function_to_base_tool, get_template_variables
 
 _TOOLKIT_TOOL_METHOD_MARKER: LiteralString = "__toolkit_tool_method__"
 

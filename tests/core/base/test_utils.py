@@ -6,7 +6,7 @@ from typing import Annotated
 import pytest
 from pydantic import BaseModel
 
-from mirascope.core.base import BaseTool, _utils
+from mirascope.core.base import _utils, BaseTool
 
 
 def test_format_prompt_template() -> None:
