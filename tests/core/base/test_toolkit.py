@@ -8,6 +8,13 @@ import pytest
 from mirascope.core.base import BaseToolKit, toolkit_tool
 
 
+@pytest.fixture
+def mock_namespaces():
+    mock_namespaces = set()
+    with mock.patch("mirascope.core.base.toolkit._namespaces", mock_namespaces):
+        yield mock_namespaces
+
+
 @pytest.mark.parametrize(
     "namespace, expected_name",
     [
@@ -15,7 +22,7 @@ from mirascope.core.base import BaseToolKit, toolkit_tool
         ("book_tools", "book_tools.format_book"),
     ],
 )
-def test_toolkit(namespace: str | None, expected_name: str) -> None:
+def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> None:
     """Tests the `BaseToolKit` class and the `toolkit_tool` decorator."""
 
     class BookRecommendationToolKit(BaseToolKit):
@@ -47,7 +54,7 @@ def test_toolkit(namespace: str | None, expected_name: str) -> None:
     )
 
 
-def test_toolkit_multiple_method() -> None:
+def test_toolkit_multiple_method(mock_namespaces) -> None:
     """Toolkits with multiple toolkit_tool methods should be created correctly."""
 
     def dummy_decorator(func):
@@ -137,7 +144,7 @@ def test_toolkit_tool_method_not_found() -> None:
                 return "dummy"
 
 
-def test_toolkit_tool_method_has_non_self_var() -> None:
+def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
     """Check if toolkit_tool method has non-self variable, a ValueError should be raised."""
 
     with pytest.raises(
@@ -162,7 +169,7 @@ def test_toolkit_tool_method_has_non_self_var() -> None:
                 return f"{title} by {author}"
 
 
-def test_toolkit_tool_method_has_no_exists_var() -> None:
+def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
     """Check if toolkit_tool method has no exists variable, a ValueError should be raised."""
 
     with pytest.raises(
@@ -186,12 +193,11 @@ def test_toolkit_tool_method_has_no_exists_var() -> None:
                 return f"{title} by {author}"
 
 
-def test_toolkit_namespace_already_used() -> None:
+def test_toolkit_namespace_already_used(mock_namespaces) -> None:
     """Check if toolkit_tool namespace is already used, a ValueError should be raised."""
-    with (
-        mock.patch("mirascope.core.base.toolkit._namespaces", {"book_tools"}),
-        pytest.raises(ValueError, match="The namespace book_tools is already used"),
-    ):
+
+    mock_namespaces.add("book_tools")
+    with pytest.raises(ValueError, match="The namespace book_tools is already used"):
 
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
