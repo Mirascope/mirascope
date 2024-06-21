@@ -81,7 +81,7 @@ class BasePrompt(BaseModel):
         }
 
     @overload
-    def call(
+    def run(
         self,
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _BaseCallResponseT]
@@ -90,7 +90,7 @@ class BasePrompt(BaseModel):
         ...  # pragma: no cover
 
     @overload
-    def call(
+    def run(
         self,
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _BaseStreamT]
@@ -99,7 +99,7 @@ class BasePrompt(BaseModel):
         ...  # pragma: no cover
 
     @overload
-    def call(  # type: ignore
+    def run(  # type: ignore
         self,
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _ResponseModelT]
@@ -108,7 +108,7 @@ class BasePrompt(BaseModel):
         ...  # pragma: no cover
 
     @overload
-    def call(
+    def run(
         self,
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]],
@@ -117,7 +117,47 @@ class BasePrompt(BaseModel):
     ) -> Iterable[_ResponseModelT]:
         ...  # pragma: no cover
 
-    def call(
+    @overload
+    def run(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            Callable[..., Awaitable[_BaseCallResponseT]],
+        ],
+    ) -> Awaitable[_BaseCallResponseT]:
+        ...  # pragma: no cover
+
+    @overload
+    def run(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            Callable[..., Awaitable[_BaseAsyncStreamT]],
+        ],
+    ) -> Awaitable[_BaseAsyncStreamT]:
+        ...  # pragma: no cover
+
+    @overload
+    def run(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            Callable[..., Awaitable[_ResponseModelT]],
+        ],
+    ) -> Awaitable[_ResponseModelT]:
+        ...  # pragma: no cover
+
+    @overload
+    def run(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
+        ],
+    ) -> Awaitable[AsyncIterable[_ResponseModelT]]:
+        ...  # pragma: no cover
+
+    def run(
         self,
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]],
@@ -134,61 +174,8 @@ class BasePrompt(BaseModel):
         | Callable[
             [Callable[..., BaseFunctionReturn]],
             Callable[..., Iterable[_ResponseModelT]],
-        ],
-    ) -> (
-        _BaseCallResponseT | _BaseStreamT | _ResponseModelT | Iterable[_ResponseModelT]
-    ):
-        """Returns the response of calling the API of the provided decorator."""
-
-        @decorator
-        def _call() -> BaseFunctionReturn:
-            return {"messages": self.message_params()}
-
-        return _call()
-
-    @overload
-    async def call_async(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
-            Callable[..., Awaitable[_BaseCallResponseT]],
-        ],
-    ) -> _BaseCallResponseT:
-        ...  # pragma: no cover
-
-    @overload
-    async def call_async(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
-            Callable[..., Awaitable[_BaseAsyncStreamT]],
-        ],
-    ) -> _BaseAsyncStreamT:
-        ...  # pragma: no cover
-
-    @overload
-    async def call_async(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
-            Callable[..., Awaitable[_ResponseModelT]],
-        ],
-    ) -> _ResponseModelT:
-        ...  # pragma: no cover
-
-    @overload
-    async def call_async(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
-            Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
-        ],
-    ) -> AsyncIterable[_ResponseModelT]:
-        ...  # pragma: no cover
-
-    async def call_async(
-        self,
-        decorator: Callable[
+        ]
+        | Callable[
             [Callable[..., Awaitable[BaseFunctionReturn]]],
             Callable[..., Awaitable[_BaseCallResponseT]],
         ]
@@ -206,17 +193,29 @@ class BasePrompt(BaseModel):
         ],
     ) -> (
         _BaseCallResponseT
-        | _BaseAsyncStreamT
+        | _BaseStreamT
         | _ResponseModelT
-        | AsyncIterable[_ResponseModelT]
+        | Iterable[_ResponseModelT]
+        | Awaitable[_BaseCallResponseT]
+        | Awaitable[_BaseAsyncStreamT]
+        | Awaitable[_ResponseModelT]
+        | Awaitable[AsyncIterable[_ResponseModelT]]
     ):
-        """Returns the response of async calling the API of the provided decorator."""
+        """Returns the response of calling the API of the provided decorator."""
+        if "async" in decorator.func.__name__:  # type: ignore
 
-        @decorator
-        async def _call_async() -> BaseFunctionReturn:
-            return {"messages": self.message_params()}
+            @decorator  # type: ignore
+            async def _run_async() -> BaseFunctionReturn:
+                return {"messages": self.message_params()}
 
-        return await _call_async()
+            return _run_async()
+        else:
+
+            @decorator  # type: ignore
+            def _run() -> BaseFunctionReturn:
+                return {"messages": self.message_params()}
+
+            return _run()
 
 
 BasePromptT = TypeVar("BasePromptT", bound=BasePrompt)
