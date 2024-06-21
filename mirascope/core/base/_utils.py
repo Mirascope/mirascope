@@ -34,14 +34,29 @@ Must include required parameters and may exclude optional parameters unless pres
 
 
 def get_template_variables(template: str) -> list[str]:
-    """Returns the variables in the given template string."""
+    """Returns the variables in the given template string.
+
+    Args:
+        template: The template string to parse.
+
+    Returns:
+        The variables in the template string.
+    """
     return [var for _, var, _, _ in Formatter().parse(template) if var is not None]
 
 
 def get_template_values(
     template_variables: list[str], attrs: dict[str, Any]
 ) -> dict[str, Any]:
-    """Returns the values of the given `template_variables` from the provided `attrs`."""
+    """Returns the values of the given `template_variables` from the provided `attrs`.
+
+    Args:
+        template_variables: The variables to extract from the `attrs`.
+        attrs: The attributes to extract the variables from.
+
+    Returns:
+        The values of the template variables.
+    """
     values = {}
     if "self" in attrs:
         values["self"] = attrs.get("self")
@@ -64,7 +79,16 @@ def get_template_values(
 
 
 def format_template(template: str, attrs: dict[str, Any]) -> str:
-    """Formats the given prompt `template`"""
+    """Formats the given prompt `template`
+
+    Args:
+        template: The template to format.
+        attrs: The attributes to use for formatting.
+
+    Returns:
+        The formatted template.
+
+    """
     dedented_template = inspect.cleandoc(template).strip()
     template_vars = get_template_variables(dedented_template)
 
