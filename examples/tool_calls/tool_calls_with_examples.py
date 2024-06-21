@@ -2,6 +2,7 @@
 You can add examples to your tool definitions to help the model better use the tool.
 Examples can be added for individual fields as well as for the entire model.
 """
+
 import os
 
 from pydantic import ConfigDict, Field
