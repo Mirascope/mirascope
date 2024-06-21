@@ -240,7 +240,7 @@ def convert_base_model_to_base_tool(
         **cast(dict[str, Any], field_definitions),
     )
     for name, value in inspect.getmembers(model):
-        if not hasattr(tool_type, name) or name in ["name", "description", "call"]:
+        if not hasattr(tool_type, name) or name in ["_name", "_description", "call"]:
             setattr(tool_type, name, value)
     return update_abstractmethods(tool_type)
 
