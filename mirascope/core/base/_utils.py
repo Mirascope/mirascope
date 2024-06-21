@@ -125,7 +125,10 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def convert_function_to_base_tool(
-    fn: Callable, base: type[BaseToolT], __doc__: str | None = None, namespace: str | None = None
+    fn: Callable,
+    base: type[BaseToolT],
+    __doc__: str | None = None,
+    namespace: str | None = None,
 ) -> type[BaseToolT]:
     """Constructst a `BaseToolT` type from the given function.
 
