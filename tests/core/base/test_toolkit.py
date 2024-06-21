@@ -1,4 +1,5 @@
 """Tests for the `toolkit` module."""
+
 from typing import Literal, ClassVar
 from unittest import mock
 
@@ -20,7 +21,7 @@ def test_toolkit(namespace: str | None, expected_name: str) -> None:
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""
 
-        _namespace: ClassVar[str] = namespace
+        _namespace: ClassVar[str | None] = namespace
         reading_level: Literal["beginner", "advanced"]
 
         @toolkit_tool
@@ -37,12 +38,12 @@ def test_toolkit(namespace: str | None, expected_name: str) -> None:
     tool = tools[0]
     assert tool._name() == expected_name
     assert (
-            tool._description()
-            == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+        tool._description()
+        == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     )
     assert (
-            tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()
-            == "The Name of the Wind by Rothfuss, Patrick"
+        tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()
+        == "The Name of the Wind by Rothfuss, Patrick"
     )
 
 
@@ -55,7 +56,7 @@ def test_toolkit_multiple_method() -> None:
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""
 
-        _namespace: ClassVar[str] = 'book_tools'
+        _namespace: ClassVar[str | None] = "book_tools"
         reading_level: Literal["beginner", "advanced"]
         language: Literal["english", "spanish", "french"]
 
@@ -85,23 +86,26 @@ def test_toolkit_multiple_method() -> None:
     tools = toolkit.create_tools()
     assert len(tools) == 2
 
-    assert tools[0]._name() == 'book_tools.format_book'
+    assert tools[0]._name() == "book_tools.format_book"
     assert (
-            tools[0]._description()
-            == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+        tools[0]._description()
+        == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     )
     assert (
-            tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()
-            == "The Name of the Wind by Rothfuss, Patrick"
+        tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()
+        == "The Name of the Wind by Rothfuss, Patrick"
     )
-    assert tools[1]._name() == 'book_tools.format_world_book'
+    assert tools[1]._name() == "book_tools.format_world_book"
     assert (
-            tools[1]._description()
-            == "Returns the title, author, and genre of a book nicely formatted.\n\nReading level: beginner\nlanguage: spanish"
+        tools[1]._description()
+        == "Returns the title, author, and genre of a book nicely formatted.\n\nReading level: beginner\n"
+        "language: spanish"
     )
     assert (
-            tools[1](title="The Name of the Wind", author="Rothfuss, Patrick", genre="fantasy").call()
-            == "The Name of the Wind by Rothfuss, Patrick (fantasy)"
+        tools[1](
+            title="The Name of the Wind", author="Rothfuss, Patrick", genre="fantasy"
+        ).call()
+        == "The Name of the Wind by Rothfuss, Patrick (fantasy)"
     )
 
 
@@ -112,10 +116,11 @@ def test_toolkit_tool_method_not_found() -> None:
         return func
 
     with pytest.raises(ValueError, match="No toolkit_tool method found"):
+
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str] = 'book_tools'
+            _namespace: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -133,14 +138,18 @@ def test_toolkit_tool_method_not_found() -> None:
 
 
 def test_toolkit_tool_method_has_non_self_var() -> None:
-    """check if toolkit_tool method has non-self variable, a ValueError should be raised."""
+    """Check if toolkit_tool method has non-self variable, a ValueError should be raised."""
 
-    with pytest.raises(ValueError,
-                       match="The toolkit_tool method must use self. prefix in template variables when creating tools dynamically"):
+    with pytest.raises(
+        ValueError,
+        match="The toolkit_tool method must use self. prefix in template variables "
+        "when creating tools dynamically",
+    ):
+
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str] = 'book_tools'
+            _namespace: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -154,14 +163,17 @@ def test_toolkit_tool_method_has_non_self_var() -> None:
 
 
 def test_toolkit_tool_method_has_no_exists_var() -> None:
-    """check if toolkit_tool method has no exists variable, a ValueError should be raised."""
+    """Check if toolkit_tool method has no exists variable, a ValueError should be raised."""
 
-    with pytest.raises(ValueError,
-                       match="The toolkit_tool method template variable self.not_exists is not found in the class"):
+    with pytest.raises(
+        ValueError,
+        match="The toolkit_tool method template variable self.not_exists is not found in the class",
+    ):
+
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str] = 'book_tools'
+            _namespace: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -175,11 +187,13 @@ def test_toolkit_tool_method_has_no_exists_var() -> None:
 
 
 def test_toolkit_namespace_already_used() -> None:
-    """check if toolkit_tool namespace is already used, a ValueError should be raised."""
-    with (mock.patch('mirascope.core.base.toolkit._namespaces', {'book_tools'}),
-          pytest.raises(ValueError,
-                        match="The namespace book_tools is already used")):
+    """Check if toolkit_tool namespace is already used, a ValueError should be raised."""
+    with (
+        mock.patch("mirascope.core.base.toolkit._namespaces", {"book_tools"}),
+        pytest.raises(ValueError, match="The namespace book_tools is already used"),
+    ):
+
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str] = 'book_tools'
+            _namespace: ClassVar[str | None] = "book_tools"
