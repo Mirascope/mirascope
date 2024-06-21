@@ -2,6 +2,7 @@
 
 import datetime
 import inspect
+from functools import wraps
 from typing import (
     AsyncIterable,
     Awaitable,
@@ -19,11 +20,9 @@ from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
 from ._utils import (
-    extract_tool_return,
     openai_api_calculate_cost,
     setup_call,
     setup_extract,
-    setup_extract_tool,
 )
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
@@ -31,6 +30,7 @@ from .call_response_chunk import OpenAICallResponseChunk
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
 from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStream
+from .tools import OpenAITool
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
@@ -47,7 +47,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAICallResponse],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -61,7 +62,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, _ResponseModelT],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -75,7 +77,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAIStream],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -89,7 +92,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, Iterable[_ResponseModelT]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 def openai_call(
@@ -135,6 +139,7 @@ def openai_call(
     def call_decorator(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, OpenAICallResponse]:
+        @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAICallResponse:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = fn(*args, **kwargs)
@@ -167,6 +172,7 @@ def openai_call(
     def stream_decorator(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, OpenAIStream]:
+        @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIStream:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = fn(*args, **kwargs)
@@ -201,8 +207,9 @@ def openai_call(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, _ResponseModelT]:
         assert response_model is not None
-        tool = setup_extract_tool(response_model)
+        tool = _utils.setup_extract_tool(response_model, OpenAITool)
 
+        @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert response_model is not None
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
@@ -222,7 +229,7 @@ def openai_call(
             else:
                 raise ValueError("No tool call or JSON object found in response.")
 
-            output = extract_tool_return(response_model, json_output, False)
+            output = _utils.extract_tool_return(response_model, json_output, False)
             if isinstance(response_model, BaseModel):
                 output._response = response  # type: ignore
             return output
@@ -233,8 +240,9 @@ def openai_call(
         fn: Callable[_P, OpenAICallFunctionReturn],
     ) -> Callable[_P, Iterable[_ResponseModelT]]:
         assert response_model is not None
-        tool = setup_extract_tool(response_model)
+        tool = _utils.setup_extract_tool(response_model, OpenAITool)
 
+        @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
             assert response_model is not None
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
@@ -274,7 +282,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAICallResponse]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -288,7 +297,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[_ResponseModelT]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -302,7 +312,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAIAsyncStream]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -316,7 +327,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 def openai_call_async(
@@ -368,6 +380,7 @@ def openai_call_async(
     def call_decorator(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     ) -> Callable[_P, Awaitable[OpenAICallResponse]]:
+        @wraps(fn)
         async def inner_async(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> OpenAICallResponse:
@@ -402,6 +415,7 @@ def openai_call_async(
     def stream_decorator(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     ) -> Callable[_P, Awaitable[OpenAIAsyncStream]]:
+        @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIAsyncStream:
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
             fn_return = await fn(*args, **kwargs)
@@ -437,8 +451,9 @@ def openai_call_async(
     ) -> Callable[_P, Awaitable[_ResponseModelT]]:
         nonlocal response_model
         assert response_model is not None
-        tool = setup_extract_tool(response_model)
+        tool = _utils.setup_extract_tool(response_model, OpenAITool)
 
+        @wraps(fn)
         async def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert response_model is not None
             fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
@@ -458,7 +473,7 @@ def openai_call_async(
             else:
                 raise ValueError("No tool call or JSON object found in response.")
 
-            output = extract_tool_return(response_model, json_output, False)
+            output = _utils.extract_tool_return(response_model, json_output, False)
             if isinstance(response_model, BaseModel):
                 output._response = response  # type: ignore
             return output
@@ -469,8 +484,9 @@ def openai_call_async(
         fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     ) -> Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]]:
         assert response_model is not None
-        tool = setup_extract_tool(response_model)
+        tool = _utils.setup_extract_tool(response_model, OpenAITool)
 
+        @wraps(fn)
         async def inner(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> AsyncIterable[_ResponseModelT]:

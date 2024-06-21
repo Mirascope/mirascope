@@ -30,7 +30,8 @@ def setup_call(
     list[ChatCompletionMessageParam],
     None,
     OpenAICallParams,
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -45,7 +46,8 @@ def setup_call(
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]],
     OpenAICallParams,
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 def setup_call(
@@ -132,31 +134,6 @@ def setup_extract(
         call_kwargs["tool_choice"] = "required"
 
     return json_mode, messages, call_kwargs
-
-
-def setup_extract_tool(
-    response_model: type[BaseModel] | type[_utils.BaseType],
-) -> type[OpenAITool]:
-    if _utils.is_base_type(response_model):
-        return _utils.convert_base_type_to_base_tool(response_model, OpenAITool)  # type: ignore
-    return _utils.convert_base_model_to_base_tool(response_model, OpenAITool)  # type: ignore
-
-
-def extract_tool_return(
-    response_model: type[_ResponseModelT], json_output: str, allow_partial: bool
-) -> _ResponseModelT:
-    temp_model = response_model
-    if is_base_type := _utils.is_base_type(response_model):
-        temp_model = _utils.convert_base_type_to_base_tool(response_model, BaseModel)  # type: ignore
-
-    if allow_partial:
-        json_obj = jiter.from_json(
-            json_output.encode(), partial_mode="trailing-strings"
-        )
-        output = _partial.partial(temp_model).model_validate(json_obj)  # type: ignore
-    else:
-        output = temp_model.model_validate_json(json_output)  # type: ignore
-    return output if not is_base_type else output.value  # type: ignore
 
 
 def openai_api_calculate_cost(

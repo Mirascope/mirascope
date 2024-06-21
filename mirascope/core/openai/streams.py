@@ -10,7 +10,6 @@ from openai.types.chat import (
 from openai.types.chat.chat_completion_message_tool_call import Function
 
 from ..base import BaseAsyncStream, BaseStream
-from ..base._partial import partial
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .tools import OpenAITool
@@ -20,16 +19,14 @@ def _handle_chunk(
     chunk: OpenAICallResponseChunk,
     current_tool_call: ChatCompletionMessageToolCall,
     current_tool_type: type[OpenAITool] | None,
-    allow_partial: bool,
 ) -> tuple[
     OpenAITool | None,
     ChatCompletionMessageToolCall,
     type[OpenAITool] | None,
-    bool,
 ]:
     """Handles a chunk of the stream."""
     if not chunk.tool_types or not chunk.tool_calls:
-        return None, current_tool_call, current_tool_type, False
+        return None, current_tool_call, current_tool_type
 
     tool_call = chunk.tool_calls[0]
     # Reset on new tool
@@ -55,29 +52,16 @@ def _handle_chunk(
             )
         if previous_tool_call.id and previous_tool_type is not None:
             return (
-                previous_tool_type.from_tool_call(
-                    previous_tool_call, allow_partial=allow_partial
-                ),
+                previous_tool_type.from_tool_call(previous_tool_call),
                 current_tool_call,
                 current_tool_type,
-                True,
             )
 
     # Update arguments with each chunk
     if tool_call.function and tool_call.function.arguments:
         current_tool_call.function.arguments += tool_call.function.arguments
 
-        if allow_partial and current_tool_type:
-            return (
-                partial(current_tool_type).from_tool_call(
-                    current_tool_call, allow_partial=True
-                ),
-                current_tool_call,
-                current_tool_type,
-                False,
-            )
-
-    return None, current_tool_call, current_tool_type, False
+    return None, current_tool_call, current_tool_type
 
 
 class OpenAIStream(
@@ -110,8 +94,8 @@ class OpenAIStream(
                     current_tool_type = None
                 else:
                     yield chunk, None
-            tool, current_tool_call, current_tool_type, _ = _handle_chunk(
-                chunk, current_tool_call, current_tool_type, False
+            tool, current_tool_call, current_tool_type = _handle_chunk(
+                chunk, current_tool_call, current_tool_type
             )
             if tool is not None:
                 yield chunk, tool
@@ -158,12 +142,9 @@ class OpenAIAsyncStream(
                         current_tool_type = None
                     else:
                         yield chunk, None
-                (
-                    tool,
-                    current_tool_call,
-                    current_tool_type,
-                    _,
-                ) = _handle_chunk(chunk, current_tool_call, current_tool_type, False)
+                tool, current_tool_call, current_tool_type = _handle_chunk(
+                    chunk, current_tool_call, current_tool_type
+                )
                 if tool is not None:
                     yield chunk, tool
                     tool_calls.append(tool.tool_call)

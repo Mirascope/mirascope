@@ -31,13 +31,8 @@ class OpenAITool(BaseTool):
         return ChatCompletionToolParam(function=fn, type="function")
 
     @classmethod
-    def from_tool_call(
-        cls, tool_call: ChatCompletionMessageToolCall, allow_partial: bool = False
-    ) -> OpenAITool:
+    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
         """Constructs an `OpenAITool` instance from a `tool_call`."""
-        model_json = jiter.from_json(
-            tool_call.function.arguments.encode(),
-            partial_mode="trailing-strings" if allow_partial else "off",
-        )
+        model_json = jiter.from_json(tool_call.function.arguments.encode())
         model_json["tool_call"] = tool_call.model_dump()
         return cls.model_validate(model_json)
