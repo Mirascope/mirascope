@@ -12,6 +12,8 @@ from .stream_async import BaseAsyncStream
 from .structured_stream import BaseStructuredStream
 from .structured_stream_async import BaseAsyncStructuredStream
 from .tool import BaseTool
+from .toolkit import BaseToolKit, toolkit_tool
+
 
 __all__ = [
     "BaseAsyncStream",
@@ -25,7 +27,9 @@ __all__ = [
     "BaseStream",
     "BaseStructuredStream",
     "BaseTool",
-    "_partial",
+    "BaseToolKit",
     "tags",
+    "toolkit_tool",
+    "_partial",
     "_utils",
 ]

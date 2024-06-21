@@ -5,7 +5,6 @@ import re
 from abc import update_abstractmethods
 from enum import Enum
 from string import Formatter
-from textwrap import dedent
 from typing import (
     Annotated,
     Any,
@@ -34,17 +33,34 @@ Must include required parameters and may exclude optional parameters unless pres
 """
 
 
-def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
-    """Formats the given prompt `template`"""
-    dedented_template = dedent(template).strip()
-    template_vars = [
-        var for _, var, _, _ in Formatter().parse(dedented_template) if var is not None
-    ]
+def get_template_variables(template: str) -> list[str]:
+    """Returns the variables in the given template string.
 
+    Args:
+        template: The template string to parse.
+
+    Returns:
+        The variables in the template string.
+    """
+    return [var for _, var, _, _ in Formatter().parse(template) if var is not None]
+
+
+def get_template_values(
+    template_variables: list[str], attrs: dict[str, Any]
+) -> dict[str, Any]:
+    """Returns the values of the given `template_variables` from the provided `attrs`.
+
+    Args:
+        template_variables: The variables to extract from the `attrs`.
+        attrs: The attributes to extract the variables from.
+
+    Returns:
+        The values of the template variables.
+    """
     values = {}
     if "self" in attrs:
         values["self"] = attrs.get("self")
-    for var in template_vars:
+    for var in template_variables:
         if var.startswith("self"):
             continue
         attr = attrs[var]
@@ -59,6 +75,24 @@ def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
                 values[var] = "\n".join([str(item) for item in attr])
         else:
             values[var] = str(attr)
+    return values
+
+
+def format_template(template: str, attrs: dict[str, Any]) -> str:
+    """Formats the given prompt `template`
+
+    Args:
+        template: The template to format.
+        attrs: The attributes to use for formatting.
+
+    Returns:
+        The formatted template.
+
+    """
+    dedented_template = inspect.cleandoc(template).strip()
+    template_vars = get_template_variables(dedented_template)
+
+    values = get_template_values(template_vars, attrs)
 
     return dedented_template.format(**values)
 
@@ -96,14 +130,14 @@ def parse_prompt_messages(
                 )
             messages += attr
         else:
-            content = format_prompt_template(match.group(2), attrs)
+            content = format_template(match.group(2), attrs)
             if content:
                 messages.append({"role": role, "content": content})
     if len(messages) == 0:
         messages.append(
             {
                 "role": "user",
-                "content": format_prompt_template(template, attrs),
+                "content": format_template(template, attrs),
             }
         )
     return messages
@@ -115,7 +149,10 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def convert_function_to_base_tool(
-    fn: Callable, base: type[BaseToolT]
+    fn: Callable,
+    base: type[BaseToolT],
+    __doc__: str | None = None,
+    __namespace__: str | None = None,
 ) -> type[BaseToolT]:
     """Constructst a `BaseToolT` type from the given function.
 
@@ -126,6 +163,8 @@ def convert_function_to_base_tool(
     Args:
         fn: The function to convert.
         base: The `BaseToolT` type to which the function is converted.
+        __doc__: The docstring to use for the constructed `BaseToolT` type.
+        __namespace__: The namespace to use for the constructed `BaseToolT` type.
 
     Returns:
         The constructed `BaseToolT` type.
@@ -138,13 +177,18 @@ def convert_function_to_base_tool(
             doesn't have a docstring description.
     """
     docstring = None
-    if fn.__doc__:
-        docstring = parse(fn.__doc__)
+    func_doc = __doc__ or fn.__doc__
+    if func_doc:
+        docstring = parse(func_doc)
 
     field_definitions = {}
     hints = get_type_hints(fn)
+    has_self = False
     for i, parameter in enumerate(inspect.signature(fn).parameters.values()):
-        if parameter.name == "self" or parameter.name == "cls":
+        if parameter.name == "self":
+            has_self = True
+            continue
+        if parameter.name == "cls":
             continue
         if parameter.annotation == inspect.Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
@@ -181,22 +225,25 @@ def convert_function_to_base_tool(
         )
 
     model = create_model(
-        fn.__name__,
+        f"{__namespace__}.{fn.__name__}" if __namespace__ else fn.__name__,
         __base__=base,
-        __doc__=inspect.cleandoc(fn.__doc__) if fn.__doc__ else DEFAULT_TOOL_DOCSTRING,
+        __doc__=inspect.cleandoc(func_doc) if func_doc else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
 
     def call(self: base):
         return fn(
-            **{
-                str(
-                    self.model_fields[field_name].alias
-                    if self.model_fields[field_name].alias
-                    else field_name
-                ): getattr(self, field_name)
-                for field_name in self.model_dump(exclude={"tool_call"})
-            }
+            **(
+                ({"self": self} if has_self else {})
+                | {
+                    str(
+                        self.model_fields[field_name].alias
+                        if self.model_fields[field_name].alias
+                        else field_name
+                    ): getattr(self, field_name)
+                    for field_name in self.model_dump(exclude={"tool_call"})
+                }
+            )
         )
 
     setattr(model, "call", call)

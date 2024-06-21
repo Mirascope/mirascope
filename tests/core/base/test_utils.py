@@ -6,11 +6,11 @@ from typing import Annotated
 import pytest
 from pydantic import BaseModel
 
-from mirascope.core.base import BaseTool, _utils
+from mirascope.core.base import _utils, BaseTool
 
 
-def test_format_prompt_template() -> None:
-    """Tests the `format_prompt_template` function."""
+def test_format_template() -> None:
+    """Tests the `format_template` function."""
     prompt_template = """
     Recommend a {empty_list} book.
 
@@ -32,7 +32,7 @@ def test_format_prompt_template() -> None:
         "genres": genres,
         "authors_and_books": authors_and_books,
     }
-    formatted_prompt_template = _utils.format_prompt_template(prompt_template, attrs)
+    formatted_prompt_template = _utils.format_template(prompt_template, attrs)
     assert (
         formatted_prompt_template
         == dedent(

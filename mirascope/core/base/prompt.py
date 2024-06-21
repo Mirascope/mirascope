@@ -41,7 +41,7 @@ class BasePrompt(BaseModel):
 
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return _utils.format_prompt_template(self.prompt_template, self.model_dump())
+        return _utils.format_template(self.prompt_template, self.model_dump())
 
     def message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
