@@ -38,12 +38,11 @@ class BaseToolKit(BaseModel, ABC):
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
-        tools: list[type[BaseTool]] = []
-        for method, template_vars, template in self._toolkit_tool_methods:
-            formatted_template = template.format(self=self)
-            tool = convert_function_to_base_tool(method, BaseTool, formatted_template)
-            tools.append(tool)
-        return tools
+        return [
+            convert_function_to_base_tool(method, BaseTool, template)
+            for method, template_vars, template in
+            self._toolkit_tool_methods
+        ]
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
