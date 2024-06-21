@@ -12,7 +12,7 @@ from openai.types.chat.chat_completion_chunk import (
 from openai.types.completion_usage import CompletionUsage
 
 from ..base import BaseCallResponseChunk
-from .tools import OpenAITool
+from .tool import OpenAITool
 
 
 class OpenAICallResponseChunk(

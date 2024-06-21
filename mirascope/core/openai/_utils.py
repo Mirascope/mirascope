@@ -5,15 +5,19 @@ import json
 from textwrap import dedent
 from typing import Any, Callable, TypeVar, overload
 
-import jiter
-from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import (
+    ChatCompletionMessageParam,
+    ChatCompletionMessageToolCall,
+)
+from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.completion_usage import CompletionUsage
 from pydantic import BaseModel
 
-from ..base import BaseTool, _partial, _utils
+from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
+from .call_response_chunk import OpenAICallResponseChunk
 from .function_return import OpenAICallFunctionReturn
-from .tools import OpenAITool
+from .tool import OpenAITool
 
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
@@ -30,8 +34,7 @@ def setup_call(
     list[ChatCompletionMessageParam],
     None,
     OpenAICallParams,
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -46,8 +49,7 @@ def setup_call(
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]],
     OpenAICallParams,
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 def setup_call(
@@ -94,6 +96,55 @@ def setup_call(
         call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
 
     return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+
+
+def handle_chunk(
+    chunk: OpenAICallResponseChunk,
+    current_tool_call: ChatCompletionMessageToolCall,
+    current_tool_type: type[OpenAITool] | None,
+) -> tuple[
+    OpenAITool | None,
+    ChatCompletionMessageToolCall,
+    type[OpenAITool] | None,
+]:
+    """Handles a chunk of the stream."""
+    if not chunk.tool_types or not chunk.tool_calls:
+        return None, current_tool_call, current_tool_type
+
+    tool_call = chunk.tool_calls[0]
+    # Reset on new tool
+    if tool_call.id and tool_call.function is not None:
+        previous_tool_call = current_tool_call.model_copy()
+        previous_tool_type = current_tool_type
+        current_tool_call = ChatCompletionMessageToolCall(
+            id=tool_call.id,
+            function=Function(
+                arguments="",
+                name=tool_call.function.name if tool_call.function.name else "",
+            ),
+            type="function",
+        )
+        current_tool_type = None
+        for tool_type in chunk.tool_types:
+            if tool_type._name() == tool_call.function.name:
+                current_tool_type = tool_type
+                break
+        if current_tool_type is None:
+            raise RuntimeError(
+                f"Unknown tool type in stream: {tool_call.function.name}"
+            )
+        if previous_tool_call.id and previous_tool_type is not None:
+            return (
+                previous_tool_type.from_tool_call(previous_tool_call),
+                current_tool_call,
+                current_tool_type,
+            )
+
+    # Update arguments with each chunk
+    if tool_call.function and tool_call.function.arguments:
+        current_tool_call.function.arguments += tool_call.function.arguments
+
+    return None, current_tool_call, current_tool_type
 
 
 def setup_extract(

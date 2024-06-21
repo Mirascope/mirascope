@@ -281,6 +281,10 @@ def extract_tool_return(
     )
     if is_base_type(response_model):
         temp_model = convert_base_type_to_base_tool(response_model, BaseModel)  # type: ignore
+        if allow_partial:
+            return partial(temp_model).model_validate(json_obj).value  # type: ignore
         return temp_model.model_validate(json_obj).value  # type: ignore
 
+    if allow_partial:
+        return partial(response_model).model_validate(json_obj)  # type: ignore
     return response_model.model_validate(json_obj)  # type: ignore
