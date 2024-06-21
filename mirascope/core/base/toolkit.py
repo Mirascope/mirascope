@@ -24,7 +24,7 @@ def toolkit_tool(
     return method
 
 
-class TookKitToolMethod(NamedTuple):
+class ToolKitToolMethod(NamedTuple):
     method: Callable[..., str]
     template_vars: list[str]
     template: str
@@ -34,7 +34,7 @@ class BaseToolKit(BaseModel, ABC):
     """A class for defining tools for LLM call tools."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    _toolkit_tool_methods: ClassVar[list[TookKitToolMethod]]
+    _toolkit_tool_methods: ClassVar[list[ToolKitToolMethod]]
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
@@ -74,7 +74,7 @@ class BaseToolKit(BaseModel, ABC):
                 )
 
             cls._toolkit_tool_methods.append(
-                TookKitToolMethod(attr, template_vars, dedented_template)
+                ToolKitToolMethod(attr, template_vars, dedented_template)
             )
         if not cls._toolkit_tool_methods:
             raise ValueError("No toolkit_tool method found")
