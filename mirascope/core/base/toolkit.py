@@ -39,13 +39,13 @@ class BaseToolKit(BaseModel, ABC):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     _toolkit_tool_methods: ClassVar[list[ToolKitToolMethod]]
-    _namespace: ClassVar[str | None] = None
+    __namespace__: ClassVar[str | None] = None
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
         return [
             convert_function_to_base_tool(
-                method, BaseTool, template.format(self=self), self._namespace
+                method, BaseTool, template.format(self=self), self.__namespace__
             )
             for method, template_vars, template in self._toolkit_tool_methods
         ]
@@ -53,10 +53,10 @@ class BaseToolKit(BaseModel, ABC):
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
         # validate the namespace
-        if cls._namespace:
-            if cls._namespace in _namespaces:
-                raise ValueError(f"The namespace {cls._namespace} is already used")
-            _namespaces.add(cls._namespace)
+        if cls.__namespace__:
+            if cls.__namespace__ in _namespaces:
+                raise ValueError(f"The namespace {cls.__namespace__} is already used")
+            _namespaces.add(cls.__namespace__)
 
         cls._toolkit_tool_methods = []
         for attr in cls.__dict__.values():

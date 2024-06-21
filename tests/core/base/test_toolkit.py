@@ -28,7 +28,7 @@ def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> 
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""
 
-        _namespace: ClassVar[str | None] = namespace
+        __namespace__: ClassVar[str | None] = namespace
         reading_level: Literal["beginner", "advanced"]
 
         @toolkit_tool
@@ -63,7 +63,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""
 
-        _namespace: ClassVar[str | None] = "book_tools"
+        __namespace__: ClassVar[str | None] = "book_tools"
         reading_level: Literal["beginner", "advanced"]
         language: Literal["english", "spanish", "french"]
 
@@ -127,7 +127,7 @@ def test_toolkit_tool_method_not_found() -> None:
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str | None] = "book_tools"
+            __namespace__: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -156,7 +156,7 @@ def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str | None] = "book_tools"
+            __namespace__: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -180,7 +180,7 @@ def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str | None] = "book_tools"
+            __namespace__: ClassVar[str | None] = "book_tools"
             reading_level: Literal["beginner", "advanced"]
             language: Literal["english", "spanish", "french"]
 
@@ -202,4 +202,4 @@ def test_toolkit_namespace_already_used(mock_namespaces) -> None:
         class BookRecommendationToolKit(BaseToolKit):
             """A toolkit for recommending books."""
 
-            _namespace: ClassVar[str | None] = "book_tools"
+            __namespace__: ClassVar[str | None] = "book_tools"
