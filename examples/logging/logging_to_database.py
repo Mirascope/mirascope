@@ -1,15 +1,15 @@
 """Logging your LLM responses to a postgres database"""
+
 import os
 from typing import Literal, Optional
 
-from sqlalchemy import JSON, Float, Integer, MetaData, String, create_engine
+from sqlalchemy import Float, Integer, MetaData, String, create_engine
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-from mirascope.core.openai import openai_call
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-
 TABLE_NAME = "openai_chat_completions"
 
 
@@ -24,13 +24,18 @@ class OpenAIChatCompletionTable(Base):
     )
     prompt_template: Mapped[str] = mapped_column(String(), nullable=False)
     fn_args: Mapped[Optional[dict]] = mapped_column(JSONB)
+    fn_return: Mapped[Optional[dict]] = mapped_column(JSONB)
     messages: Mapped[Optional[list[dict]]] = mapped_column(JSONB)
     call_params: Mapped[Optional[dict]] = mapped_column(JSONB)
     start_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     end_time: Mapped[Optional[float]] = mapped_column(Float(), nullable=False)
     cost: Mapped[Optional[float]] = mapped_column(Float())
     response: Mapped[Optional[dict]] = mapped_column(JSONB)
+    tool_types: Mapped[Optional[list[dict]]] = mapped_column(JSONB)
     tools: Mapped[Optional[list[dict]]] = mapped_column(JSONB)
+    tool: Mapped[Optional[dict]] = mapped_column(JSONB)
+    user_message_param: Mapped[Optional[dict]] = mapped_column(JSONB)
+    message_param: Mapped[Optional[dict]] = mapped_column(JSONB)
 
 
 def get_current_weather(
@@ -47,7 +52,7 @@ def get_current_weather(
         print("I'm not sure what the weather is like in {location}")
 
 
-@openai_call(model="gpt-4o", tools=[get_current_weather])
+@openai.call(model="gpt-4o", tools=[get_current_weather])
 def forecast(location: str):
     """What's the weather in {location}?"""
 
@@ -69,9 +74,8 @@ def create_database():
 
 response = forecast(location="tokyo")
 # create_database()  # ONE TIME ONLY
-print(response.model_dump())
-# Session = sessionmaker(engine)
-# with Session() as session:
-#     openai_completion_db = OpenAIChatCompletionTable(**response.model_dump())
-#     session.add(openai_completion_db)
-#     session.commit()
+Session = sessionmaker(engine)
+with Session() as session:
+    openai_completion_db = OpenAIChatCompletionTable(**response.model_dump())
+    session.add(openai_completion_db)
+    session.commit()

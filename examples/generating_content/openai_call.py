@@ -1,26 +1,28 @@
-"""Basic example using an @openai_call to make a call."""
+"""Basic example using an @openai.call to make a call."""
+
 import os
 
-from mirascope.core.openai import openai_call
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
-@openai_call(model="gpt-4o")
+@openai.call(model="gpt-4o")
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
 
 
 results = recommend_book(genre="fiction")
 print(results.content)
-# > Certainly! If you're looking for a compelling fiction book, I highly recommend
-#   "The Night Circus" by Erin Morgenstern. ...
+# > Sure! If you enjoy contemporary fiction with rich character development and intricate
+#   plots, I would recommend "The Night Circus" by Erin Morgenstern. ...
 print(results.cost)
+# > 0.001575
 print(results.usage)
-# > CompletionUsage(completion_tokens=116, prompt_tokens=12, total_tokens=128)
+# > CompletionUsage(completion_tokens=101, prompt_tokens=12, total_tokens=113)
 print(results.message_param)
 # > {
-#       "content": 'Certainly! If you haven\'t read it yet, I highly recommend "The Night Circus" by Erin Morgenstern. ...',
+#       "content": 'Sure! If you enjoy contemporary fiction with rich character development and intricate...',
 #       "role": "assistant",
 #       "tool_calls": None,
 #   }

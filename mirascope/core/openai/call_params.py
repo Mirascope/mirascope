@@ -7,7 +7,7 @@ from openai.types.chat import (
     ChatCompletionToolChoiceOptionParam,
 )
 from openai.types.chat.completion_create_params import ResponseFormat
-from typing_extensions import NotRequired, Required
+from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
@@ -15,7 +15,6 @@ from ..base import BaseCallParams
 class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI API."""
 
-    model: Required[str]
     frequency_penalty: NotRequired[float | None]
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]

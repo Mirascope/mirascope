@@ -5,17 +5,17 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer
 
 from .tools import BaseTool
 
-ChunkT = TypeVar("ChunkT", bound=Any)
-BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
-UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
+_ChunkT = TypeVar("_ChunkT", bound=Any)
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
 
 
 class BaseCallResponseChunk(
-    BaseModel, Generic[ChunkT, BaseToolT, UserMessageParamT], ABC
+    BaseModel, Generic[_ChunkT, _BaseToolT, _UserMessageParamT], ABC
 ):
     """A base abstract interface for LLM streaming response chunks.
 
@@ -27,9 +27,9 @@ class BaseCallResponseChunk(
         cost: The cost of the completion in dollars.
     """
 
-    chunk: ChunkT
-    tool_types: list[type[BaseToolT]] | None = None
-    user_message_param: UserMessageParamT | None = None
+    chunk: _ChunkT
+    tool_types: list[type[_BaseToolT]] | None = None
+    user_message_param: _UserMessageParamT | None = None
     cost: float | None = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
@@ -94,3 +94,7 @@ class BaseCallResponseChunk(
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
+
+    @field_serializer("tool_types")
+    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+        return [{"type": "function", "name": tool.__name__} for tool in tool_types]

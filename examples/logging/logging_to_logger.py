@@ -1,9 +1,14 @@
-"""Logging your LLM responses to a CSV file"""
+"""Logging your LLM responses to the logger"""
+
+import logging
 import os
 
-import pandas as pd
-
 from mirascope.core import openai
+
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+
+logger = logging.getLogger("mirascope")
+
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
@@ -14,6 +19,4 @@ def recommend_books(topic: str):
 
 
 response = recommend_books(topic="how to bake a cake")
-df = pd.DataFrame([response.model_dump()])
-with open("log.csv", "w") as f:
-    df.to_csv(f, index=False)
+logger.info(response.model_dump())

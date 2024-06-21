@@ -110,7 +110,7 @@ class OpenAICallResponse(
         extracted_tools = []
         for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
-                if tool_call.function.name == tool_type.name():
+                if tool_call.function.name == tool_type._name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 
@@ -137,7 +137,7 @@ class OpenAICallResponse(
                 role="tool",
                 content=output,
                 tool_call_id=tool.tool_call.id,
-                name=tool.name(),  # type: ignore
+                name=tool._name(),  # type: ignore
             )
             for tool, output in tools_and_outputs
         ]

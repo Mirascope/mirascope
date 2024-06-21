@@ -6,8 +6,7 @@ from typing import Annotated
 import pytest
 from pydantic import BaseModel
 
-from mirascope.core._internal import utils
-from mirascope.core.base import BaseTool
+from mirascope.core.base import BaseTool, _utils
 
 
 def test_format_prompt_template() -> None:
@@ -33,7 +32,7 @@ def test_format_prompt_template() -> None:
         "genres": genres,
         "authors_and_books": authors_and_books,
     }
-    formatted_prompt_template = utils.format_prompt_template(prompt_template, attrs)
+    formatted_prompt_template = _utils.format_prompt_template(prompt_template, attrs)
     assert (
         formatted_prompt_template
         == dedent(
@@ -67,7 +66,7 @@ def test_parse_prompt_messages() -> None:
         {"role": "user", "content": "Hi!"},
         {"role": "assistant", "content": "Hello!"},
     ]
-    parsed_messages = utils.parse_prompt_messages(
+    parsed_messages = _utils.parse_prompt_messages(
         roles=["system", "user", "assistant"],
         template=template,
         attrs={"messages": messages},
@@ -80,12 +79,12 @@ def test_parse_prompt_messages() -> None:
     ]
 
     with pytest.raises(ValueError):
-        utils.parse_prompt_messages(
+        _utils.parse_prompt_messages(
             roles=["system"], template=template, attrs={"messages": None}
         )
 
     with pytest.raises(ValueError):
-        utils.parse_prompt_messages(
+        _utils.parse_prompt_messages(
             roles=["system"], template=template, attrs={"messages": "Hi!"}
         )
 
@@ -101,12 +100,12 @@ def test_convert_function_to_base_model() -> None:
         """
         return model_name
 
-    model = utils.convert_function_to_base_tool(fn, BaseTool)
+    model = _utils.convert_function_to_base_tool(fn, BaseTool)
     assert (
-        model.description()
+        model._description()
         == """A test function.\n\nArgs:\n    model_name: A test parameter."""
     )
-    assert model.name() == "fn"
+    assert model._name() == "fn"
 
     tool = model(model_name="test", tool_call="test")  # type: ignore
     assert tool.call() == "test"
@@ -115,10 +114,11 @@ def test_convert_function_to_base_model() -> None:
 def test_convert_function_to_base_model_errors() -> None:
     """Tests the various `ValueErro` cases in `convert_function_to_base_model`."""
 
-    def empty(param) -> str: ...  # pragma: no cover
+    def empty(param) -> str:
+        ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_tool(empty, BaseTool)
+        _utils.convert_function_to_base_tool(empty, BaseTool)
 
     def wrong_param_name(param: str) -> str:
         """A test function.
@@ -129,7 +129,7 @@ def test_convert_function_to_base_model_errors() -> None:
         ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_tool(wrong_param_name, BaseTool)
+        _utils.convert_function_to_base_tool(wrong_param_name, BaseTool)
 
     def missing_param_description(param: str) -> str:
         """A test function.
@@ -140,7 +140,7 @@ def test_convert_function_to_base_model_errors() -> None:
         ...  # pragma: no cover
 
     with pytest.raises(ValueError):
-        utils.convert_function_to_base_tool(missing_param_description, BaseTool)
+        _utils.convert_function_to_base_tool(missing_param_description, BaseTool)
 
 
 def test_convert_base_model_to_base_tool() -> None:
@@ -152,14 +152,14 @@ def test_convert_base_model_to_base_tool() -> None:
         def call(self) -> str:
             return self.param
 
-    model = utils.convert_base_model_to_base_tool(Model, BaseTool)
-    assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
+    model = _utils.convert_base_model_to_base_tool(Model, BaseTool)
+    assert model._description() == _utils.DEFAULT_TOOL_DOCSTRING
     assert model(param="test").call() == "test"  # type: ignore
 
 
 def test_convert_base_type_to_tool() -> None:
     """Tests conversion of a `BaseType` to a `BaseTool`."""
 
-    model = utils.convert_base_type_to_base_tool(Annotated[str, "a string"], BaseTool)  # type: ignore
-    assert model.description() == utils.DEFAULT_TOOL_DOCSTRING
-    assert model.name() == "str"
+    model = _utils.convert_base_type_to_base_tool(Annotated[str, "a string"], BaseTool)  # type: ignore
+    assert model._description() == _utils.DEFAULT_TOOL_DOCSTRING
+    assert model._name() == "str"

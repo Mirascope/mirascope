@@ -3,14 +3,17 @@
 import inspect
 import re
 from abc import update_abstractmethods
+from enum import Enum
 from string import Formatter
 from textwrap import dedent
 from typing import (
     Annotated,
     Any,
     Callable,
+    Literal,
     ParamSpec,
     TypeVar,
+    Union,
     cast,
     get_args,
     get_origin,
@@ -21,7 +24,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from ..base.message_param import BaseMessageParam
+from .message_param import BaseMessageParam
 
 DEFAULT_TOOL_DOCSTRING = """\
 Correctly formatted and typed parameters extracted from the completion. \
@@ -39,7 +42,11 @@ def get_template_values(
 ) -> dict[str, Any]:
     """Returns the values of the given `template_variables` from the provided `attrs`."""
     values = {}
+    if "self" in attrs:
+        values["self"] = attrs.get("self")
     for var in template_variables:
+        if var.startswith("self"):
+            continue
         attr = attrs[var]
         if isinstance(attr, list):
             if len(attr) == 0:
@@ -83,7 +90,14 @@ def parse_prompt_messages(
                 for _, var, _, _ in Formatter().parse(match.group(2))
                 if var is not None
             ][0]
-            attr = attrs[template_var]
+            if template_var.startswith("self"):
+                if "self" not in attrs:
+                    raise ValueError(
+                        "MESSAGES keyword used with `self.` but `self` was not found."
+                    )
+                attr = getattr(attrs["self"], template_var[5:])
+            else:
+                attr = attrs[template_var]
             if attr is None or not isinstance(attr, list):
                 raise ValueError(
                     f"MESSAGES keyword used with attribute `{template_var}`, which "
@@ -232,6 +246,16 @@ def convert_base_model_to_base_tool(
 
 
 BaseType = str | int | float | bool | list | set | tuple
+
+
+def is_base_type(type_: Any) -> bool:
+    """Check if a type is a base type."""
+    base_types = {str, int, float, bool, list, set, tuple}
+    return (
+        (inspect.isclass(type_) and issubclass(type_, Enum))
+        or type_ in base_types
+        or get_origin(type_) in base_types.union({Literal, Union, Annotated})
+    )
 
 
 def convert_base_type_to_base_tool(

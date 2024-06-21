@@ -5,29 +5,35 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    SkipValidation,
+    computed_field,
+    field_serializer,
+)
 
 from .call_params import BaseCallParams
 from .function_return import BaseFunctionReturn
 from .tools import BaseTool
 
-ResponseT = TypeVar("ResponseT", bound=Any)
-BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
-BaseFunctionReturnT = TypeVar("BaseFunctionReturnT", bound=BaseFunctionReturn)
-MessageParamT = TypeVar("MessageParamT", bound=Any)
-CallParamsT = TypeVar("CallParamsT", bound=BaseCallParams)
-UserMessageParamT = TypeVar("UserMessageParamT", bound=Any)
+_ResponseT = TypeVar("_ResponseT", bound=Any)
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_BaseFunctionReturnT = TypeVar("_BaseFunctionReturnT", bound=BaseFunctionReturn)
+_MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
+_UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
 
 
 class BaseCallResponse(
     BaseModel,
     Generic[
-        ResponseT,
-        BaseToolT,
-        BaseFunctionReturnT,
-        MessageParamT,
-        CallParamsT,
-        UserMessageParamT,
+        _ResponseT,
+        _BaseToolT,
+        _BaseFunctionReturnT,
+        _MessageParamT,
+        _CallParamsT,
+        _UserMessageParamT,
     ],
     ABC,
 ):
@@ -43,14 +49,14 @@ class BaseCallResponse(
         cost: The cost of the completion in dollars.
     """
 
-    response: ResponseT
-    tool_types: list[type[BaseToolT]] | None = None
+    response: _ResponseT
+    tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None
     fn_args: dict[str, Any]
-    fn_return: BaseFunctionReturnT
-    messages: list[MessageParamT]
-    call_params: CallParamsT
-    user_message_param: UserMessageParamT | None = None
+    fn_return: _BaseFunctionReturnT
+    messages: SkipValidation[list[_MessageParamT]]
+    call_params: _CallParamsT
+    user_message_param: _UserMessageParamT | None = None
     start_time: float
     end_time: float
     cost: float | None = None
@@ -67,20 +73,20 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
-    def tools(self) -> list[BaseToolT] | None:
+    def tools(self) -> list[_BaseToolT] | None:
         """Returns the tools for the 0th choice message."""
         ...  # pragma: no cover
 
     @property
     @abstractmethod
-    def tool(self) -> BaseToolT | None:
+    def tool(self) -> _BaseToolT | None:
         """Returns the 0th tool for the 0th choice message."""
         ...  # pragma: no cover
 
     @classmethod
     @abstractmethod
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[BaseToolT, Any]]
+        cls, tools_and_outputs: list[tuple[_BaseToolT, Any]]
     ) -> list[Any]:
         """Returns the tool message parameters for tool call results."""
         ...  # pragma: no cover
@@ -145,3 +151,7 @@ class BaseCallResponse(
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
+
+    @field_serializer("tool_types")
+    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+        return [{"type": "function", "name": tool.__name__} for tool in tool_types]

@@ -9,8 +9,8 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion_message_tool_call import Function
 
-from .._internal.partial import partial
 from ..base import BaseAsyncStream, BaseStream
+from ..base._partial import partial
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .tools import OpenAITool
@@ -46,7 +46,7 @@ def _handle_chunk(
         )
         current_tool_type = None
         for tool_type in chunk.tool_types:
-            if tool_type.name() == tool_call.function.name:
+            if tool_type._name() == tool_call.function.name:
                 current_tool_type = tool_type
                 break
         if current_tool_type is None:

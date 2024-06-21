@@ -1,12 +1,13 @@
-"""Basic example using an @openai_stream to stream a call."""
+"""Basic example using an @openai.call to stream a call."""
+
 import os
 
-from mirascope.core.openai import openai_stream
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
-@openai_stream(model="gpt-4o")
+@openai.call(model="gpt-4o", stream=True)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
 
@@ -17,6 +18,7 @@ for chunk, _ in results:
     # > Certainly! If you're looking for a compelling fiction book, I highly recommend
     #   "The Night Circus" by Erin Morgenstern. ...
 print(results.cost)
+# > 0.0018
 print(results.message_param)
 # > {
 #       "content": 'Certainly! If you haven\'t read it yet, I highly recommend "The Night Circus" by Erin Morgenstern. ...',

@@ -1,13 +1,14 @@
-"""Basic example using an @openai_call to make an async call."""
+"""Basic example using an @openai.call_async to make an async call."""
+
 import asyncio
 import os
 
-from mirascope.core.openai import openai_call
+from mirascope.core import openai
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
-@openai_call(model="gpt-4o")
+@openai.call_async(model="gpt-4o")
 async def recommend_book(genre: str):
     """Recommend a {genre} book."""
 
@@ -18,6 +19,7 @@ async def run():
     # > Certainly! If you're looking for a compelling fiction book, I highly recommend
     #   "The Night Circus" by Erin Morgenstern. ...
     print(results.cost)
+    # > 0.0018
     print(results.usage)
     # > CompletionUsage(completion_tokens=116, prompt_tokens=12, total_tokens=128)
     print(results.message_param)

@@ -4,9 +4,10 @@ import inspect
 from abc import abstractmethod
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, GetCoreSchemaHandler
+from pydantic_core import core_schema
 
-from .._internal import utils
+from . import _utils
 
 
 class BaseTool(BaseModel):
@@ -15,17 +16,17 @@ class BaseTool(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def name(cls) -> str:
+    def _name(cls) -> str:
         """Returns the name of the tool."""
         return cls.__name__
 
     @classmethod
-    def description(cls) -> str:
+    def _description(cls) -> str:
         """Returns the description of the tool."""
         return (
             inspect.cleandoc(cls.__doc__)
             if cls.__doc__
-            else utils.DEFAULT_TOOL_DOCSTRING
+            else _utils.DEFAULT_TOOL_DOCSTRING
         )
 
     @abstractmethod
