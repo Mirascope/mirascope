@@ -32,7 +32,7 @@ def test_format_prompt_template() -> None:
         "genres": genres,
         "authors_and_books": authors_and_books,
     }
-    formatted_prompt_template = _utils.format_prompt_template(prompt_template, attrs)
+    formatted_prompt_template = _utils.format_template(prompt_template, attrs)
     assert (
         formatted_prompt_template
         == dedent(
@@ -114,8 +114,7 @@ def test_convert_function_to_base_model() -> None:
 def test_convert_function_to_base_model_errors() -> None:
     """Tests the various `ValueErro` cases in `convert_function_to_base_model`."""
 
-    def empty(param) -> str:
-        ...  # pragma: no cover
+    def empty(param) -> str: ...  # pragma: no cover
 
     with pytest.raises(ValueError):
         _utils.convert_function_to_base_tool(empty, BaseTool)

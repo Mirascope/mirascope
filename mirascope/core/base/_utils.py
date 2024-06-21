@@ -5,7 +5,6 @@ import re
 from abc import update_abstractmethods
 from enum import Enum
 from string import Formatter
-from textwrap import dedent
 from typing import (
     Annotated,
     Any,
@@ -62,9 +61,9 @@ def get_template_values(
     return values
 
 
-def format_prompt_template(template: str, attrs: dict[str, Any]) -> str:
+def format_template(template: str, attrs: dict[str, Any]) -> str:
     """Formats the given prompt `template`"""
-    dedented_template = dedent(template).strip()
+    dedented_template = inspect.cleandoc(template).strip()
     template_vars = get_template_variables(dedented_template)
 
     values = get_template_values(template_vars, attrs)
@@ -105,14 +104,14 @@ def parse_prompt_messages(
                 )
             messages += attr
         else:
-            content = format_prompt_template(match.group(2), attrs)
+            content = format_template(match.group(2), attrs)
             if content:
                 messages.append({"role": role, "content": content})
     if len(messages) == 0:
         messages.append(
             {
                 "role": "user",
-                "content": format_prompt_template(template, attrs),
+                "content": format_template(template, attrs),
             }
         )
     return messages
@@ -154,8 +153,10 @@ def convert_function_to_base_tool(
 
     field_definitions = {}
     hints = get_type_hints(fn)
+    has_self_or_cls = False
     for i, parameter in enumerate(inspect.signature(fn).parameters.values()):
         if parameter.name == "self" or parameter.name == "cls":
+            has_self_or_cls = True
             continue
         if parameter.annotation == inspect.Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
@@ -200,14 +201,17 @@ def convert_function_to_base_tool(
 
     def call(self: base):
         return fn(
-            **{
-                str(
-                    self.model_fields[field_name].alias
-                    if self.model_fields[field_name].alias
-                    else field_name
-                ): getattr(self, field_name)
-                for field_name in self.model_dump(exclude={"tool_call"})
-            }
+            **(
+                ({"self": self} if has_self_or_cls else {})
+                | {
+                    str(
+                        self.model_fields[field_name].alias
+                        if self.model_fields[field_name].alias
+                        else field_name
+                    ): getattr(self, field_name)
+                    for field_name in self.model_dump(exclude={"tool_call"})
+                }
+            )
         )
 
     setattr(model, "call", call)
