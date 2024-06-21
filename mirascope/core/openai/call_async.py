@@ -15,7 +15,7 @@ from typing import (
 from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
-from ._call_async import call_async_decorator
+from ._create_async import create_async_decorator
 from ._extract_async import extract_async_decorator
 from ._stream_async import OpenAIAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
@@ -38,7 +38,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAICallResponse]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -52,7 +53,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[_ResponseModelT]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -66,7 +68,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAIAsyncStream]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -80,7 +83,8 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 def openai_call_async(
@@ -149,5 +153,5 @@ def openai_call_async(
             stream_async_decorator, model=model, tools=tools, call_params=call_params
         )
     return partial(
-        call_async_decorator, model=model, tools=tools, call_params=call_params
+        create_async_decorator, model=model, tools=tools, call_params=call_params
     )

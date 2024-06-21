@@ -16,7 +16,7 @@ from .function_return import OpenAICallFunctionReturn
 _P = ParamSpec("_P")
 
 
-def call_decorator(
+def create_decorator(
     fn: Callable[_P, OpenAICallFunctionReturn],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
