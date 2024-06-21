@@ -1,3 +1,4 @@
+"""The module for defining the toolkit class for LLM call tools."""
 from __future__ import annotations
 
 import inspect
@@ -5,12 +6,12 @@ from abc import ABC
 from typing import Callable, ClassVar, NamedTuple
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import LiteralString, ParamSpec, Concatenate
+from typing_extensions import ParamSpec, Concatenate
 
 from . import BaseTool
 from ._utils import convert_function_to_base_tool, get_template_variables
 
-_TOOLKIT_TOOL_METHOD_MARKER: LiteralString = "__toolkit_tool_method__"
+_TOOLKIT_TOOL_METHOD_MARKER: str = "__toolkit_tool_method__"
 
 P = ParamSpec("P")
 
