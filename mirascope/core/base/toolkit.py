@@ -16,7 +16,7 @@ P = ParamSpec("P")
 
 
 def toolkit_tool(
-    method: Callable[[BaseToolKit, ...], str],
+        method: Callable[[BaseToolKit, ...], str],
 ) -> Callable[[BaseToolKit, ...], str]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
@@ -62,7 +62,8 @@ class BaseToolKit(BaseModel, ABC):
                 if not var.startswith("self."):
                     # Should be supported un-self variables?
                     raise ValueError(
-                        "The toolkit_tool method must use self. prefix in template variables"
+                        "The toolkit_tool method must use self. prefix in template variables "
+                        "when creating tools dynamically"
                     )
 
                 self_var = var[5:]
