@@ -1,5 +1,6 @@
 """Tests for the `toolkit` module."""
 from typing import Literal, ClassVar
+from unittest import mock
 
 import pytest
 
@@ -171,3 +172,14 @@ def test_toolkit_tool_method_has_no_exists_var() -> None:
                 Reading level: {self.not_exists}
                 """
                 return f"{title} by {author}"
+
+
+def test_toolkit_namespace_already_used() -> None:
+    """check if toolkit_tool namespace is already used, a ValueError should be raised."""
+    with (mock.patch('mirascope.core.base.toolkit._namespaces', {'book_tools'}),
+          pytest.raises(ValueError,
+                        match="The namespace book_tools is already used")):
+        class BookRecommendationToolKit(BaseToolKit):
+            """A toolkit for recommending books."""
+
+            _namespace: ClassVar[str] = 'book_tools'

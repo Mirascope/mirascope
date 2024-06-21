@@ -14,11 +14,13 @@ from ._utils import convert_function_to_base_tool, get_template_variables
 
 _TOOLKIT_TOOL_METHOD_MARKER: str = "__toolkit_tool_method__"
 
+_namespaces: set[str] = set()
+
 P = ParamSpec("P")
 
 
 def toolkit_tool(
-    method: Callable[Concatenate[BaseToolKit, P], str],
+        method: Callable[Concatenate[BaseToolKit, P], str],
 ) -> Callable[Concatenate[BaseToolKit, P], str]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
@@ -37,7 +39,7 @@ class BaseToolKit(BaseModel, ABC):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     _toolkit_tool_methods: ClassVar[list[ToolKitToolMethod]]
-    _namespace: ClassVar[str | None] = None
+    _namespaces: ClassVar[str | None] = None
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
@@ -50,6 +52,12 @@ class BaseToolKit(BaseModel, ABC):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
+        # validate the namespace
+        if cls._namespace is not None:
+            if cls._namespace in _namespaces:
+                raise ValueError(f"The namespace {cls._namespace} is already used")
+            _namespaces.add(cls._namespace)
+
         cls._toolkit_tool_methods = []
         for attr in cls.__dict__.values():
             if not getattr(attr, _TOOLKIT_TOOL_METHOD_MARKER, False):
