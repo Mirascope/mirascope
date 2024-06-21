@@ -37,11 +37,14 @@ class BaseToolKit(BaseModel, ABC):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     _toolkit_tool_methods: ClassVar[list[ToolKitToolMethod]]
+    _namespace: ClassVar[str | None] = None
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
         return [
-            convert_function_to_base_tool(method, BaseTool, template)
+            convert_function_to_base_tool(
+                method, BaseTool, template.format(self=self), self._namespace
+            )
             for method, template_vars, template in self._toolkit_tool_methods
         ]
 

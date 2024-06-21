@@ -1,5 +1,5 @@
 """Tests for the `toolkit` module."""
-from typing import Literal
+from typing import Literal, ClassVar
 
 from mirascope.core.base import BaseToolKit, toolkit_tool
 
@@ -10,6 +10,7 @@ def test_toolkit() -> None:
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""
 
+        _namespace: ClassVar[str] = 'book_tools'
         reading_level: Literal["beginner", "advanced"]
 
         @toolkit_tool
@@ -24,12 +25,12 @@ def test_toolkit() -> None:
     tools = toolkit.create_tools()
     assert len(tools) == 1
     tool = tools[0]
-    assert tool._name() == "format_book"
+    assert tool._name() == "book_tools.format_book"
     assert (
-        tool._description()
-        == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+            tool._description()
+            == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     )
     assert (
-        tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()
-        == "The Name of the Wind by Rothfuss, Patrick"
+            tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()
+            == "The Name of the Wind by Rothfuss, Patrick"
     )
