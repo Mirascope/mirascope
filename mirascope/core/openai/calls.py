@@ -18,15 +18,19 @@ from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
-from ._utils import extract_tool_return, setup_call, setup_extract, setup_extract_tool
+from ._utils import (
+    extract_tool_return,
+    openai_api_calculate_cost,
+    setup_call,
+    setup_extract,
+    setup_extract_tool,
+)
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .cost import openai_api_calculate_cost
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
 from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStream
-from .tools import OpenAITool
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
@@ -43,8 +47,7 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAICallResponse],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -58,8 +61,7 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, _ResponseModelT],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -73,8 +75,7 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAIStream],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -88,8 +89,7 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, Iterable[_ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 def openai_call(
@@ -274,8 +274,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAICallResponse]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -289,8 +288,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[_ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -304,8 +302,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAIAsyncStream]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -319,8 +316,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 def openai_call_async(

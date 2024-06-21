@@ -1,6 +1,7 @@
 """
 This example shows how to use Mirascope to call tools and append the tool call to history.
 """
+
 import os
 from typing import Literal
 
@@ -12,11 +13,11 @@ from mirascope.core import openai
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
-class Forecast(BaseModel):
+class WeatherBroadcaster(BaseModel):
     history: list[ChatCompletionMessageParam] = []
 
     def get_current_weather(
-        location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
+        self, location: str, unit: Literal["celsius", "fahrenheit"] = "fahrenheit"
     ):
         """Get the current weather in a given location."""
         if "tokyo" in location.lower():
@@ -42,12 +43,12 @@ class Forecast(BaseModel):
         if tool := response.tool:
             output = tool.call()
             self.history += response.tool_message_params([(tool, output)])
-            return self._get_forecast(question)
+            return self.get_forecast(question)
         else:
             return response.content
 
 
 # Make the first call to the LLM
-forecast = Forecast(history=[])
+forecast = WeatherBroadcaster(history=[])
 response = forecast.get_forecast(question="What's the weather in Tokyo Japan?")
 print(response)

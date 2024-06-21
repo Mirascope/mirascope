@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer
 
 from .tools import BaseTool
 
@@ -94,3 +94,7 @@ class BaseCallResponseChunk(
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
+
+    @field_serializer("tool_types")
+    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+        return [{"type": "function", "name": tool.__name__} for tool in tool_types]

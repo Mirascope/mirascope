@@ -6,7 +6,6 @@ from .call_response_chunk import OpenAICallResponseChunk
 from .calls import openai_call, openai_call_async
 from .calls import openai_call as call
 from .calls import openai_call_async as call_async
-from .cost import openai_api_calculate_cost
 from .function_return import OpenAICallFunctionReturn
 from .streams import OpenAIAsyncStream, OpenAIStream
 from .structured_streams import OpenAIAsyncStructuredStream, OpenAIStructuredStream
@@ -23,6 +22,5 @@ __all__ = [
     "OpenAIStream",
     "OpenAIStructuredStream",
     "OpenAITool",
-    "openai_api_calculate_cost",
     "openai_call",
 ]
