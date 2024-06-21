@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC
-from typing import Callable, ClassVar, ParamSpec, NamedTuple
+from typing import Callable, ClassVar, NamedTuple
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import LiteralString
+from typing_extensions import LiteralString, ParamSpec, Concatenate
 
 from . import BaseTool
 from ._utils import convert_function_to_base_tool, get_template_variables
@@ -16,8 +16,8 @@ P = ParamSpec("P")
 
 
 def toolkit_tool(
-        method: Callable[[BaseToolKit, ...], str],
-) -> Callable[[BaseToolKit, ...], str]:
+        method: Callable[Concatenate[BaseToolKit, P], str],
+) -> Callable[Concatenate[BaseToolKit, P], str]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 
@@ -25,7 +25,7 @@ def toolkit_tool(
 
 
 class TookKitToolMethod(NamedTuple):
-    method: Callable[[BaseToolKit, ...], str]
+    method: Callable[..., str]
     template_vars: list[str]
     template: str
 
@@ -59,7 +59,6 @@ class BaseToolKit(BaseModel, ABC):
 
             for var in template_vars:
                 if not var.startswith("self."):
-                    # Should be supported un-self variables?
                     raise ValueError(
                         "The toolkit_tool method must use self. prefix in template variables "
                         "when creating tools dynamically"
