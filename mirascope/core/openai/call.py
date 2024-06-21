@@ -14,7 +14,7 @@ from typing import (
 from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
-from ._call import call_decorator
+from ._create import create_decorator
 from ._extract import extract_decorator
 from ._stream import OpenAIStream, stream_decorator
 from ._structured_stream import structured_stream_decorator
@@ -37,7 +37,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAICallResponse],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -51,7 +52,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, _ResponseModelT],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -65,7 +67,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, OpenAIStream],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 @overload
@@ -79,7 +82,8 @@ def openai_call(
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, Iterable[_ResponseModelT]],
-]: ...  # pragma: no cover
+]:
+    ...  # pragma: no cover
 
 
 def openai_call(
@@ -141,4 +145,4 @@ def openai_call(
         return partial(
             stream_decorator, model=model, tools=tools, call_params=call_params
         )
-    return partial(call_decorator, model=model, tools=tools, call_params=call_params)
+    return partial(create_decorator, model=model, tools=tools, call_params=call_params)

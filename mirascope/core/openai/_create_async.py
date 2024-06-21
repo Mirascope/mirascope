@@ -19,7 +19,7 @@ from .function_return import OpenAICallFunctionReturn
 _P = ParamSpec("_P")
 
 
-def call_async_decorator(
+def create_async_decorator(
     fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
