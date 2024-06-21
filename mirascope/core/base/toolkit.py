@@ -35,7 +35,48 @@ class ToolKitToolMethod(NamedTuple):
 
 
 class BaseToolKit(BaseModel, ABC):
-    """A class for defining tools for LLM call tools."""
+    """A class for defining tools for LLM call tools.
+
+    The class should have methods decorated with `@toolkit_tool` to create tools.
+
+    Example:
+    ```python
+    from mirascope.core.base import BaseToolKit, toolkit_tool
+    from mirascope.core.openai import openai_call
+
+    class BookRecommendationToolKit(BaseToolKit):
+        '''A toolkit for recommending books.'''
+
+        __namespace__: ClassVar[str | None] = 'book_tools'
+        reading_level: Literal["beginner", "advanced"]
+
+        @toolkit_tool
+        def format_book(self, title: str, author: str) -> str:
+            '''Returns the title and author of a book nicely formatted.
+
+            Reading level: {self.reading_level}
+            '''
+            return f"{title} by {author}"
+
+    toolkit = BookRecommendationToolKit(reading_level="beginner")
+    tools = toolkit.create_tools()
+
+    @openai_call(model="gpt-4o")
+    def recommend_book(genre: str, reading_level: Literal["beginner", "advanced"]):
+        '''Recommend a {genre} book.'''
+        toolkit = BookRecommendationToolKit(reading_level=reading_level)
+        return {"tools": [toolkit.create_tools()]}
+
+    response = recommend_book("fantasy", "beginner")
+    if tool := response.tool:
+        output = tool.call()
+        print(output)
+        #> The Name of the Wind by Patrick Rothfuss
+    else:
+        print(response.content)
+        #> Sure! I would recommend...
+    ```
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     _toolkit_tool_methods: ClassVar[list[ToolKitToolMethod]]
