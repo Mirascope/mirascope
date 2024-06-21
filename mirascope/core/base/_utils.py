@@ -153,10 +153,12 @@ def convert_function_to_base_tool(
 
     field_definitions = {}
     hints = get_type_hints(fn)
-    has_self_or_cls = False
+    has_self = False
     for i, parameter in enumerate(inspect.signature(fn).parameters.values()):
-        if parameter.name == "self" or parameter.name == "cls":
-            has_self_or_cls = True
+        if parameter.name == "self":
+            has_self = True
+            continue
+        if parameter.name == "cls":
             continue
         if parameter.annotation == inspect.Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
@@ -202,7 +204,7 @@ def convert_function_to_base_tool(
     def call(self: base):
         return fn(
             **(
-                ({"self": self} if has_self_or_cls else {})
+                ({"self": self} if has_self else {})
                 | {
                     str(
                         self.model_fields[field_name].alias
