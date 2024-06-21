@@ -1,4 +1,5 @@
 """The module for defining the toolkit class for LLM call tools."""
+
 from __future__ import annotations
 
 import inspect
@@ -17,7 +18,7 @@ P = ParamSpec("P")
 
 
 def toolkit_tool(
-        method: Callable[Concatenate[BaseToolKit, P], str],
+    method: Callable[Concatenate[BaseToolKit, P], str],
 ) -> Callable[Concatenate[BaseToolKit, P], str]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
@@ -41,8 +42,7 @@ class BaseToolKit(BaseModel, ABC):
         """The method to create the tools."""
         return [
             convert_function_to_base_tool(method, BaseTool, template)
-            for method, template_vars, template in
-            self._toolkit_tool_methods
+            for method, template_vars, template in self._toolkit_tool_methods
         ]
 
     @classmethod
