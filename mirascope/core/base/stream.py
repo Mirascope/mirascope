@@ -13,11 +13,16 @@ _BaseCallResponseChunkT = TypeVar(
 _UserMessageParamT = TypeVar("_UserMessageParamT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_OutputT = TypeVar("_OutputT")
 
 
 class BaseStream(
     Generic[
-        _BaseCallResponseChunkT, _UserMessageParamT, _AssistantMessageParamT, _BaseToolT
+        _BaseCallResponseChunkT,
+        _UserMessageParamT,
+        _AssistantMessageParamT,
+        _BaseToolT,
+        _OutputT,
     ],
     ABC,
 ):
@@ -25,6 +30,7 @@ class BaseStream(
 
     stream: Generator[_BaseCallResponseChunkT, None, None]
     message_param_type: type[_AssistantMessageParamT]
+    output_parser: Callable[[_BaseCallResponseChunkT], _OutputT] | None
 
     cost: float | None = None
     user_message_param: _UserMessageParamT | None = None
@@ -34,22 +40,28 @@ class BaseStream(
         self,
         stream: Generator[_BaseCallResponseChunkT, None, None],
         message_param_type: type[_AssistantMessageParamT],
+        output_parser: Callable[[_BaseCallResponseChunkT], _OutputT] | None = None,
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
         self.message_param_type = message_param_type
+        self.output_parser = output_parser
 
     def __iter__(
         self,
-    ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
+    ) -> Generator[
+        tuple[_BaseCallResponseChunkT | _OutputT, _BaseToolT | None], None, None
+    ]:
         """Iterator over the stream and stores useful information."""
         content = ""
         for chunk in self.stream:
+            self.user_message_param = chunk.user_message_param
             content += chunk.content
             if chunk.cost is not None:
                 self.cost = chunk.cost
+            if self.output_parser is not None:
+                chunk = self.output_parser(chunk)
             yield chunk, None
-            self.user_message_param = chunk.user_message_param
         kwargs = {"role": "assistant"}
         if "message" in self.message_param_type.__annotations__:
             kwargs["message"] = content

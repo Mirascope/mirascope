@@ -98,3 +98,7 @@ class BaseCallResponseChunk(
     @field_serializer("tool_types")
     def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
         return [{"type": "function", "name": tool.__name__} for tool in tool_types]
+
+    def __str__(self) -> str:
+        """Returns the string content of the chunk."""
+        return self.content
