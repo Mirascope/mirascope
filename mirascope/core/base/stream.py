@@ -2,7 +2,7 @@
 
 from abc import ABC
 from collections.abc import Generator
-from typing import Any, Generic, TypeVar
+from typing import Callable, Generic, TypeVar
 
 from .call_response_chunk import BaseCallResponseChunk
 from .tool import BaseTool
@@ -10,17 +10,14 @@ from .tool import BaseTool
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
-_UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
-_AssistantMessageParamT = TypeVar("_AssistantMessageParamT", bound=Any)
+_UserMessageParamT = TypeVar("_UserMessageParamT")
+_AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
 class BaseStream(
     Generic[
-        _BaseCallResponseChunkT,
-        _UserMessageParamT,
-        _AssistantMessageParamT,
-        _BaseToolT,
+        _BaseCallResponseChunkT, _UserMessageParamT, _AssistantMessageParamT, _BaseToolT
     ],
     ABC,
 ):
@@ -31,7 +28,7 @@ class BaseStream(
 
     cost: float | None = None
     user_message_param: _UserMessageParamT | None = None
-    message_param: _BaseToolT
+    message_param: _AssistantMessageParamT
 
     def __init__(
         self,

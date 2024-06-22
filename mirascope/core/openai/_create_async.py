@@ -3,7 +3,7 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Awaitable, Callable, ParamSpec
+from typing import Awaitable, Callable, ParamSpec, TypeVar
 
 from openai import AsyncOpenAI
 
@@ -17,16 +17,20 @@ from .call_response import OpenAICallResponse
 from .function_return import OpenAICallFunctionReturn
 
 _P = ParamSpec("_P")
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_async_decorator(
     fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None,
     call_params: OpenAICallParams,
-) -> Callable[_P, Awaitable[OpenAICallResponse]]:
+) -> Callable[_P, Awaitable[OpenAICallResponse | _ParsedOutputT]]:
     @wraps(fn)
-    async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> OpenAICallResponse:
+    async def inner_async(
+        *args: _P.args, **kwargs: _P.kwargs
+    ) -> OpenAICallResponse | _ParsedOutputT:
         fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
         fn_return = await fn(*args, **kwargs)
         prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -37,7 +41,7 @@ def create_async_decorator(
         response = await client.chat.completions.create(
             model=model, stream=False, messages=messages, **call_kwargs
         )
-        return OpenAICallResponse(
+        output = OpenAICallResponse(
             response=response,
             tool_types=tool_types,
             prompt_template=prompt_template,
@@ -50,5 +54,6 @@ def create_async_decorator(
             end_time=datetime.datetime.now().timestamp() * 1000,
             cost=openai_api_calculate_cost(response.usage, response.model),
         )
+        return output if not output_parser else output_parser(output)
 
     return inner_async

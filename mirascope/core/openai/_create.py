@@ -3,7 +3,7 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Callable, ParamSpec
+from typing import Callable, ParamSpec, TypeVar
 
 from openai import OpenAI
 
@@ -14,16 +14,20 @@ from .call_response import OpenAICallResponse
 from .function_return import OpenAICallFunctionReturn
 
 _P = ParamSpec("_P")
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_decorator(
     fn: Callable[_P, OpenAICallFunctionReturn],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None,
     call_params: OpenAICallParams,
-) -> Callable[_P, OpenAICallResponse]:
+) -> Callable[_P, OpenAICallResponse | _ParsedOutputT]:
     @wraps(fn)
-    def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAICallResponse:
+    def inner(
+        *args: _P.args, **kwargs: _P.kwargs
+    ) -> OpenAICallResponse | _ParsedOutputT:
         fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
         fn_return = fn(*args, **kwargs)
         prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -34,7 +38,7 @@ def create_decorator(
         response = client.chat.completions.create(
             model=model, stream=False, messages=messages, **call_kwargs
         )
-        return OpenAICallResponse(
+        output = OpenAICallResponse(
             response=response,
             tool_types=tool_types,
             prompt_template=prompt_template,
@@ -47,5 +51,6 @@ def create_decorator(
             end_time=datetime.datetime.now().timestamp() * 1000,
             cost=openai_api_calculate_cost(response.usage, response.model),
         )
+        return output if not output_parser else output_parser(output)
 
     return inner
