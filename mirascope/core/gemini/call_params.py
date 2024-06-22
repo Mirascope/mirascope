@@ -12,7 +12,6 @@ from ..base import BaseCallParams
 class GeminiCallParams(BaseCallParams):
     """The parameters to use when calling the Gemini API."""
 
-    model: str
     generation_config: NotRequired[dict[str, Any]]
     safety_settings: NotRequired[Any]
     request_options: NotRequired[dict[str, Any]]

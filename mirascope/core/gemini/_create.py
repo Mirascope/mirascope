@@ -31,12 +31,10 @@ def create_decorator(
         )
         client = GenerativeModel(model_name=model)
         start_time = datetime.datetime.now().timestamp() * 1000
-        print("WEGWERG")
-        print(messages)
         response = client.generate_content(
             messages,
             stream=False,
-            tools=call_kwargs.pop("tools") if "tools" in call_kwargs else None,
+            tools=tools,
             **call_kwargs,
         )
         return GeminiCallResponse(

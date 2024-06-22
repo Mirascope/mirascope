@@ -1,15 +1,10 @@
-"""Basic example using an @openai.call to make a call."""
+"""Basic example using an @gemini.call to make a call."""
 
-import os
-
-from dotenv import load_dotenv
 from google.generativeai import configure  # type: ignore
 
 from mirascope.core import gemini
 
-load_dotenv()
-configure(api_key=os.getenv("GEMINI_API_KEY"))
-# os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
+configure(api_key="YOUR_GEMINI_API_KEY")
 
 
 @gemini.call(model="gemini-1.0-pro")
@@ -19,17 +14,14 @@ def recommend_book(genre: str):
 
 results = recommend_book(genre="fiction")
 print(results.content)
-# > Sure! If you enjoy contemporary fiction with rich character development and intricate
-#   plots, I would recommend "The Night Circus" by Erin Morgenstern. ...
+# > **Literary Fiction:**
+# >
+# > * **The Overstory** by Richard Powers: An ambitious and thought-provoking novel ...
 print(results.cost)
-# > 0.001575
+# > None
 print(results.usage)
-# > CompletionUsage(completion_tokens=101, prompt_tokens=12, total_tokens=113)
+# > None
 print(results.message_param)
-# > {
-#       "content": 'Sure! If you enjoy contemporary fiction with rich character development and intricate...',
-#       "role": "assistant",
-#       "tool_calls": None,
-#   }
+# > {'role': 'model', 'parts': [text: "**Literary Fiction:**\n\n* **The ..."]}
 print(results.user_message_param)
-# > {"content": "Recommend a fiction book.", "role": "user"}
+# > {'parts': ['Recommend a fiction book.'], 'role': 'user'}

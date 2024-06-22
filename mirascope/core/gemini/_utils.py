@@ -15,6 +15,22 @@ from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
 
 
+def parse_prompt_messages(
+    roles: list[str],
+    template: str,
+    attrs: dict[str, Any],
+) -> list[ContentsType]:
+    """Returns the `ContentsType` messages for Gemini `generate_content`."""
+    return [
+        {"role": message["role"], "parts": [message["content"]]}
+        for message in _utils.parse_prompt_messages(
+            roles=roles,
+            template=template,
+            attrs=attrs,
+        )
+    ]
+
+
 @overload
 def setup_call(
     fn: Callable,
@@ -72,7 +88,7 @@ def setup_call(
         assert prompt_template is not None, "The function must have a docstring."
         if computed_fields:
             fn_args |= computed_fields
-        messages = _utils.parse_prompt_messages(
+        messages = parse_prompt_messages(
             roles=["model", "user", "tool"],
             template=prompt_template,
             attrs=fn_args,
