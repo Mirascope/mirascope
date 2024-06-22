@@ -6,6 +6,7 @@ from typing import (
     Awaitable,
     Callable,
     Literal,
+    NoReturn,
     ParamSpec,
     TypeVar,
     Unpack,
@@ -25,6 +26,7 @@ from .function_return import OpenAICallFunctionReturn
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 @overload
@@ -34,6 +36,7 @@ def openai_call_async(
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
@@ -48,11 +51,12 @@ def openai_call_async(
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[_ResponseModelT],
+    response_model: None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
-    Callable[_P, Awaitable[_ResponseModelT]],
+    Callable[_P, Awaitable[_ParsedOutputT]],
 ]:
     ...  # pragma: no cover
 
@@ -61,9 +65,10 @@ def openai_call_async(
 def openai_call_async(
     model: str,
     *,
-    stream: Literal[True],
+    stream: Literal[True] = True,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
@@ -76,14 +81,70 @@ def openai_call_async(
 def openai_call_async(
     model: str,
     *,
+    stream: Literal[True] = True,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
+    Callable[_P, Awaitable[_ResponseModelT]],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
 ]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call_async(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
     ...  # pragma: no cover
 
 
@@ -93,12 +154,13 @@ def openai_call_async(
     stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT] | None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[
         _P,
-        Awaitable[OpenAICallResponse]
+        Awaitable[OpenAICallResponse | _ParsedOutputT]
         | Awaitable[OpenAIAsyncStream]
         | Awaitable[_ResponseModelT]
         | Awaitable[AsyncIterable[_ResponseModelT]],
@@ -132,6 +194,10 @@ def openai_call_async(
     Returns:
         The decorator for turning a typed function into an AsyncOpenAI API call.
     '''
+    if stream and output_parser:
+        raise ValueError("Using both `stream` and `output_parser` not supported yet.")
+    if response_model and output_parser:
+        raise ValueError("Cannot use both `response_model` and `output_parser`.")
 
     if response_model:
         if stream:
@@ -153,5 +219,9 @@ def openai_call_async(
             stream_async_decorator, model=model, tools=tools, call_params=call_params
         )
     return partial(
-        create_async_decorator, model=model, tools=tools, call_params=call_params
+        create_async_decorator,
+        model=model,
+        tools=tools,
+        output_parser=output_parser,
+        call_params=call_params,
     )

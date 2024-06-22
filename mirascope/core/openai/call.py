@@ -5,6 +5,7 @@ from typing import (
     Callable,
     Iterable,
     Literal,
+    NoReturn,
     ParamSpec,
     TypeVar,
     Unpack,
@@ -24,6 +25,7 @@ from .function_return import OpenAICallFunctionReturn
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 @overload
@@ -33,6 +35,7 @@ def openai_call(
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
@@ -47,11 +50,12 @@ def openai_call(
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
-    response_model: type[_ResponseModelT],
+    response_model: None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
-    Callable[_P, _ResponseModelT],
+    Callable[_P, _ParsedOutputT],
 ]:
     ...  # pragma: no cover
 
@@ -60,9 +64,10 @@ def openai_call(
 def openai_call(
     model: str,
     *,
-    stream: Literal[True],
+    stream: Literal[True] = True,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
@@ -75,14 +80,70 @@ def openai_call(
 def openai_call(
     model: str,
     *,
+    stream: Literal[True] = True,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: None = None,
+    **call_params: Unpack[OpenAICallParams],
+) -> Callable[
+    [Callable[_P, OpenAICallFunctionReturn]],
+    Callable[_P, _ResponseModelT],
+]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
+    output_parser: None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[_P, Iterable[_ResponseModelT]],
 ]:
+    ...  # pragma: no cover
+
+
+@overload
+def openai_call(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
+    **call_params: Unpack[OpenAICallParams],
+) -> NoReturn:
     ...  # pragma: no cover
 
 
@@ -92,12 +153,17 @@ def openai_call(
     stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT] | None = None,
+    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None = None,
     **call_params: Unpack[OpenAICallParams],
 ) -> Callable[
     [Callable[_P, OpenAICallFunctionReturn]],
     Callable[
         _P,
-        OpenAICallResponse | OpenAIStream | _ResponseModelT | Iterable[_ResponseModelT],
+        OpenAICallResponse
+        | _ParsedOutputT
+        | OpenAIStream
+        | _ResponseModelT
+        | Iterable[_ResponseModelT],
     ],
 ]:
     '''A decorator for calling the OpenAI API with a typed function.
@@ -125,6 +191,10 @@ def openai_call(
     Returns:
         The decorator for turning a typed function into an OpenAI API call.
     '''
+    if stream and output_parser:
+        raise ValueError("Using both `stream` and `output_parser` not supported yet.")
+    if response_model and output_parser:
+        raise ValueError("Cannot use both `response_model` and `output_parser`.")
 
     if response_model:
         if stream:
@@ -145,4 +215,10 @@ def openai_call(
         return partial(
             stream_decorator, model=model, tools=tools, call_params=call_params
         )
-    return partial(create_decorator, model=model, tools=tools, call_params=call_params)
+    return partial(
+        create_decorator,
+        model=model,
+        tools=tools,
+        output_parser=output_parser,
+        call_params=call_params,
+    )
