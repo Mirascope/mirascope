@@ -132,6 +132,7 @@ class OpenAICallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[OpenAITool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
+        """Returns the tool message parameters for tool call results."""
         return [
             ChatCompletionToolMessageParam(
                 role="tool",

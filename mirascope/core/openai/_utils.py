@@ -3,7 +3,7 @@
 import inspect
 import json
 from textwrap import dedent
-from typing import Any, Callable, TypeVar, overload
+from typing import Any, Callable, overload
 
 from openai.types.chat import (
     ChatCompletionMessageParam,
@@ -11,15 +11,12 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.completion_usage import CompletionUsage
-from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
 from .call_response_chunk import OpenAICallResponseChunk
 from .function_return import OpenAICallFunctionReturn
 from .tool import OpenAITool
-
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 @overload
