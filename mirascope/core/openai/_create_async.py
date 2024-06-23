@@ -1,13 +1,12 @@
 """This module contains the OpenAI `call_async_decorator` function."""
 
 import datetime
-import inspect
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
 from openai import AsyncOpenAI
 
-from ..base import BaseTool
+from ..base import BaseTool, _utils
 from ._utils import (
     openai_api_calculate_cost,
     setup_call,
@@ -31,7 +30,7 @@ def create_async_decorator(
     async def inner_async(
         *args: _P.args, **kwargs: _P.kwargs
     ) -> OpenAICallResponse | _ParsedOutputT:
-        fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+        fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = await fn(*args, **kwargs)
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params

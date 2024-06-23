@@ -1,13 +1,12 @@
 """This module contains the Gemini `call_decorator` function."""
 
 import datetime
-import inspect
 from functools import wraps
 from typing import Callable, ParamSpec
 
 from google.generativeai import GenerativeModel  # type: ignore
 
-from ..base import BaseTool
+from ..base import BaseTool, _utils
 from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
@@ -24,7 +23,7 @@ def create_decorator(
 ) -> Callable[_P, GeminiCallResponse]:
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> GeminiCallResponse:
-        fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+        fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params

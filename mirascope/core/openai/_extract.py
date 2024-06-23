@@ -1,6 +1,5 @@
 """This module contains the OpenAI `extract_decorator` function."""
 
-import inspect
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
@@ -29,7 +28,7 @@ def extract_decorator(
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
         assert response_model is not None
-        fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+        fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params

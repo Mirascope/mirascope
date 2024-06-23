@@ -43,8 +43,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAICallResponse]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -59,8 +58,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[_ParsedOutputT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -72,8 +70,7 @@ def openai_call_async(
     response_model: None = None,
     output_parser: Callable[[OpenAICallResponseChunk], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
@@ -88,8 +85,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAIAsyncStream[OpenAICallResponseChunk]]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -104,8 +100,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[OpenAIAsyncStream[_ParsedOutputT]]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -117,8 +112,7 @@ def openai_call_async(
     response_model: None = None,
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
@@ -133,8 +127,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[_ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -147,8 +140,7 @@ def openai_call_async(
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT]
     | Callable[[OpenAICallResponseChunk], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
@@ -163,8 +155,7 @@ def openai_call_async(
 ) -> Callable[
     [Callable[_P, Awaitable[OpenAICallFunctionReturn]]],
     Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
@@ -177,8 +168,7 @@ def openai_call_async(
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT]
     | Callable[[OpenAICallResponseChunk], _ParsedOutputT],
     **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+) -> NoReturn: ...  # pragma: no cover
 
 
 def openai_call_async(

@@ -33,6 +33,15 @@ Must include required parameters and may exclude optional parameters unless pres
 """
 
 
+def get_fn_args(
+    fn: Callable, args: tuple[object, ...], kwargs: dict[str, Any]
+) -> dict[str, Any]:
+    """Returns the `args` and `kwargs` as a dictionary bound by `fn`'s signature."""
+    bound_args = inspect.signature(fn).bind_partial(*args, **kwargs)
+    bound_args.apply_defaults()
+    return bound_args.arguments
+
+
 def get_template_variables(template: str) -> list[str]:
     """Returns the variables in the given template string.
 

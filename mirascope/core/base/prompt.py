@@ -86,8 +86,7 @@ class BasePrompt(BaseModel):
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _BaseCallResponseT]
         ],
-    ) -> _BaseCallResponseT:
-        ...  # pragma: no cover
+    ) -> _BaseCallResponseT: ...  # pragma: no cover
 
     @overload
     def run(
@@ -95,8 +94,7 @@ class BasePrompt(BaseModel):
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _BaseStreamT]
         ],
-    ) -> _BaseStreamT:
-        ...  # pragma: no cover
+    ) -> _BaseStreamT: ...  # pragma: no cover
 
     @overload
     def run(  # type: ignore
@@ -104,8 +102,7 @@ class BasePrompt(BaseModel):
         decorator: Callable[
             [Callable[..., BaseFunctionReturn]], Callable[..., _ResponseModelT]
         ],
-    ) -> _ResponseModelT:
-        ...  # pragma: no cover
+    ) -> _ResponseModelT: ...  # pragma: no cover
 
     @overload
     def run(
@@ -114,8 +111,7 @@ class BasePrompt(BaseModel):
             [Callable[..., BaseFunctionReturn]],
             Callable[..., Iterable[_ResponseModelT]],
         ],
-    ) -> Iterable[_ResponseModelT]:
-        ...  # pragma: no cover
+    ) -> Iterable[_ResponseModelT]: ...  # pragma: no cover
 
     @overload
     def run(
@@ -124,8 +120,7 @@ class BasePrompt(BaseModel):
             [Callable[..., Awaitable[BaseFunctionReturn]]],
             Callable[..., Awaitable[_BaseCallResponseT]],
         ],
-    ) -> Awaitable[_BaseCallResponseT]:
-        ...  # pragma: no cover
+    ) -> Awaitable[_BaseCallResponseT]: ...  # pragma: no cover
 
     @overload
     def run(
@@ -134,8 +129,7 @@ class BasePrompt(BaseModel):
             [Callable[..., Awaitable[BaseFunctionReturn]]],
             Callable[..., Awaitable[_BaseAsyncStreamT]],
         ],
-    ) -> Awaitable[_BaseAsyncStreamT]:
-        ...  # pragma: no cover
+    ) -> Awaitable[_BaseAsyncStreamT]: ...  # pragma: no cover
 
     @overload
     def run(
@@ -144,8 +138,7 @@ class BasePrompt(BaseModel):
             [Callable[..., Awaitable[BaseFunctionReturn]]],
             Callable[..., Awaitable[_ResponseModelT]],
         ],
-    ) -> Awaitable[_ResponseModelT]:
-        ...  # pragma: no cover
+    ) -> Awaitable[_ResponseModelT]: ...  # pragma: no cover
 
     @overload
     def run(
@@ -154,8 +147,7 @@ class BasePrompt(BaseModel):
             [Callable[..., Awaitable[BaseFunctionReturn]]],
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
-    ) -> Awaitable[AsyncIterable[_ResponseModelT]]:
-        ...  # pragma: no cover
+    ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
 
     def run(
         self,

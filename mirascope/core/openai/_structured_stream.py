@@ -1,6 +1,5 @@
 """This module contains the OpenAI `structured_stream_decorator` function."""
 
-import inspect
 from collections.abc import Generator
 from functools import wraps
 from typing import Callable, Generic, Iterable, ParamSpec, TypeVar
@@ -56,7 +55,7 @@ def structured_stream_decorator(
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
         assert response_model is not None
-        fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+        fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params

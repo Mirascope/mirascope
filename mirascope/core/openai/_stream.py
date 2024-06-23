@@ -1,6 +1,5 @@
 """This module contains the OpenAI `stream_decorator` function."""
 
-import inspect
 from collections.abc import Generator
 from functools import wraps
 from typing import Callable, Generic, ParamSpec, TypeVar
@@ -13,7 +12,7 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion_message_tool_call import Function
 
-from ..base import BaseStream, BaseTool
+from ..base import BaseStream, BaseTool, _utils
 from ._utils import handle_chunk, openai_api_calculate_cost, setup_call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
@@ -92,7 +91,7 @@ def stream_decorator(
 ) -> Callable[_P, OpenAIStream[OpenAICallResponseChunk | _OutputT]]:
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIStream:
-        fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
+        fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
         _, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
