@@ -234,7 +234,7 @@ def convert_function_to_base_tool(
         )
 
     model = create_model(
-        f"{__namespace__}.{fn.__name__}" if __namespace__ else fn.__name__,
+        f"{__namespace__}_{fn.__name__}" if __namespace__ else fn.__name__,
         __base__=base,
         __doc__=inspect.cleandoc(func_doc) if func_doc else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),

@@ -7,7 +7,7 @@ from abc import ABC
 from typing import Callable, ClassVar, NamedTuple
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import ParamSpec, Concatenate
+from typing_extensions import Concatenate, ParamSpec
 
 from . import BaseTool
 from ._utils import convert_function_to_base_tool, get_template_variables
@@ -42,7 +42,7 @@ class BaseToolKit(BaseModel, ABC):
     Example:
     ```python
     from mirascope.core.base import BaseToolKit, toolkit_tool
-    from mirascope.core.openai import openai_call
+    from mirascope.core import openai
 
     class BookRecommendationToolKit(BaseToolKit):
         '''A toolkit for recommending books.'''
@@ -58,14 +58,11 @@ class BaseToolKit(BaseModel, ABC):
             '''
             return f"{title} by {author}"
 
-    toolkit = BookRecommendationToolKit(reading_level="beginner")
-    tools = toolkit.create_tools()
-
-    @openai_call(model="gpt-4o")
+    @openai.call(model="gpt-4o")
     def recommend_book(genre: str, reading_level: Literal["beginner", "advanced"]):
         '''Recommend a {genre} book.'''
         toolkit = BookRecommendationToolKit(reading_level=reading_level)
-        return {"tools": [toolkit.create_tools()]}
+        return {"tools": toolkit.create_tools()}
 
     response = recommend_book("fantasy", "beginner")
     if tool := response.tool:

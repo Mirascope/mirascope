@@ -15,9 +15,9 @@ from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
 from ._create import create_decorator
+from ._extract import extract_decorator
+from ._stream import GeminiStream, stream_decorator
 
-# from ._extract import extract_decorator
-# from ._stream import OpenAIStream, stream_decorator
 # from ._structured_stream import structured_stream_decorator
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
@@ -41,34 +41,32 @@ def gemini_call(
 ]: ...  # pragma: no cover
 
 
-# @overload
-# def gemini_call(
-#     model: str,
-#     *,
-#     stream: Literal[False] = False,
-#     tools: list[type[BaseTool] | Callable] | None = None,
-#     response_model: type[_ResponseModelT],
-#     **call_params: Unpack[OpenAICallParams],
-# ) -> Callable[
-#     [Callable[_P, OpenAICallFunctionReturn]],
-#     Callable[_P, _ResponseModelT],
-# ]:
-#     ...  # pragma: no cover
+@overload
+def gemini_call(
+    model: str,
+    *,
+    stream: Literal[False] = False,
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: type[_ResponseModelT],
+    **call_params: Unpack[GeminiCallParams],
+) -> Callable[
+    [Callable[_P, GeminiCallFunctionReturn]],
+    Callable[_P, _ResponseModelT],
+]: ...  # pragma: no cover
 
 
-# @overload
-# def gemini_call(
-#     model: str,
-#     *,
-#     stream: Literal[True],
-#     tools: list[type[BaseTool] | Callable] | None = None,
-#     response_model: None = None,
-#     **call_params: Unpack[OpenAICallParams],
-# ) -> Callable[
-#     [Callable[_P, OpenAICallFunctionReturn]],
-#     Callable[_P, OpenAIStream],
-# ]:
-#     ...  # pragma: no cover
+@overload
+def gemini_call(
+    model: str,
+    *,
+    stream: Literal[True],
+    tools: list[type[BaseTool] | Callable] | None = None,
+    response_model: None = None,
+    **call_params: Unpack[GeminiCallParams],
+) -> Callable[
+    [Callable[_P, GeminiCallFunctionReturn]],
+    Callable[_P, GeminiStream],
+]: ...  # pragma: no cover
 
 
 # @overload
@@ -125,6 +123,17 @@ def gemini_call(
     Returns:
         The decorator for turning a typed function into an OpenAI API call.
     '''
+    if response_model:
+        return partial(
+            extract_decorator,
+            model=model,
+            response_model=response_model,
+            call_params=call_params,
+        )
+    if stream:
+        return partial(
+            stream_decorator, model=model, tools=tools, call_params=call_params
+        )
     return partial(create_decorator, model=model, tools=tools, call_params=call_params)
 
 

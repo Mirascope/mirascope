@@ -33,7 +33,6 @@ def create_decorator(
         response = client.generate_content(
             messages,
             stream=False,
-            tools=tools,
             **call_kwargs,
         )
         return GeminiCallResponse(

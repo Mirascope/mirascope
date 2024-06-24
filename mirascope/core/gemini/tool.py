@@ -1,4 +1,4 @@
-"""Classes for using tools with Google's Gemini API."""
+"""The `GeminiTool` class for easy tool usage with Google's Gemini LLM calls."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from google.generativeai.types import (  # type: ignore
     FunctionDeclaration,
     Tool,
 )
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
@@ -14,7 +15,7 @@ from ..base import BaseTool
 class GeminiTool(BaseTool):
     """A class for defining tools for Gemini LLM calls."""
 
-    tool_call: FunctionCall
+    tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod
     def tool_schema(cls) -> Tool:
@@ -41,6 +42,7 @@ class GeminiTool(BaseTool):
                     "properties"
                 ].items()
             }
+        print(model_schema)
         return Tool(function_declarations=[FunctionDeclaration(**model_schema)])
 
     @classmethod

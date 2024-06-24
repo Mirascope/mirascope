@@ -3,14 +3,11 @@
 import inspect
 from typing import Any, Callable, overload
 
-from google.generativeai.types import (  # type: ignore
-    ContentsType,  # type: ignore
-)
+from google.generativeai.types import ContentsType  # type: ignore
 
 from ..base import BaseTool, _utils
 from .call_params import GeminiCallParams
-
-# from .call_response_chunk import GeminiCallResponseChunk
+from .call_response_chunk import GeminiCallResponseChunk
 from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
 
