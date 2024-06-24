@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import Callable, Generator, ParamSpec
+from typing import Callable, Generator, Generic, ParamSpec, TypeVar
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentDict  # type: ignore
@@ -13,15 +13,12 @@ from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
+_OutputT = TypeVar("_OutputT")
 
 
 class GeminiStream(
-    BaseStream[
-        GeminiCallResponseChunk,
-        ContentDict,
-        ContentDict,
-        GeminiTool,
-    ]
+    BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool, _OutputT],
+    Generic[_OutputT],
 ):
     """A class for streaming responses from Google's Gemini API."""
 

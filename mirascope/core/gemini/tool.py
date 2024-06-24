@@ -27,23 +27,21 @@ class GeminiTool(BaseTool):
         fn = {"name": cls._name(), "description": cls._description()}
         if model_schema["properties"]:
             fn["parameters"] = model_schema  # type: ignore
-
-        if "parameters" in model_schema:
-            if "$defs" in model_schema["parameters"]:
+        if model_schema["required"]:
+            fn["parameters"]["required"] = model_schema["required"]
+        if "parameters" in fn:
+            if "$defs" in fn["parameters"]:
                 raise ValueError(
                     "Unfortunately Google's Gemini API cannot handle nested structures "
                     "with $defs."
                 )
-            model_schema["parameters"]["properties"] = {
+            fn["parameters"]["properties"] = {
                 prop: {
                     key: value for key, value in prop_schema.items() if key != "title"
                 }
-                for prop, prop_schema in model_schema["parameters"][
-                    "properties"
-                ].items()
+                for prop, prop_schema in fn["parameters"]["properties"].items()
             }
-        print(model_schema)
-        return Tool(function_declarations=[FunctionDeclaration(**model_schema)])
+        return Tool(function_declarations=[FunctionDeclaration(**fn)])
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
