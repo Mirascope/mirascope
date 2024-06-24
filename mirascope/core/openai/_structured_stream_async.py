@@ -38,7 +38,10 @@ class OpenAIAsyncStructuredStream(
             nonlocal self
             json_output = ""
             async for chunk in self.stream:
-                if self.json_mode and (content := chunk.choices[0].delta.content):
+                if (
+                    self.json_mode
+                    and (content := chunk.choices[0].delta.content) is not None
+                ):
                     json_output += content
                 elif (
                     (tool_calls := chunk.choices[0].delta.tool_calls)
