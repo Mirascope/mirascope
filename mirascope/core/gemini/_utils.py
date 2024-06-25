@@ -105,55 +105,6 @@ def setup_call(
     return prompt_template, messages, tool_types, call_kwargs  # type: ignore
 
 
-# def handle_chunk(
-#     chunk: GeminiCallResponseChunk,
-#     current_tool_call: ChatCompletionMessageToolCall,
-#     current_tool_type: type[GeminiTool] | None,
-# ) -> tuple[
-#     GeminiTool | None,
-#     ChatCompletionMessageToolCall,
-#     type[GeminiTool] | None,
-# ]:
-#     """Handles a chunk of the stream."""
-#     if not chunk.tool_types or not chunk.tool_calls:
-#         return None, current_tool_call, current_tool_type
-
-#     tool_call = chunk.tool_calls[0]
-#     # Reset on new tool
-#     if tool_call.id and tool_call.function is not None:
-#         previous_tool_call = current_tool_call.model_copy()
-#         previous_tool_type = current_tool_type
-#         current_tool_call = ChatCompletionMessageToolCall(
-#             id=tool_call.id,
-#             function=Function(
-#                 arguments="",
-#                 name=tool_call.function.name if tool_call.function.name else "",
-#             ),
-#             type="function",
-#         )
-#         current_tool_type = None
-#         for tool_type in chunk.tool_types:
-#             if tool_type._name() == tool_call.function.name:
-#                 current_tool_type = tool_type
-#                 break
-#         if current_tool_type is None:
-#             raise RuntimeError(
-#                 f"Unknown tool type in stream: {tool_call.function.name}"
-#             )
-#         if previous_tool_call.id and previous_tool_type is not None:
-#             return (
-#                 previous_tool_type.from_tool_call(previous_tool_call),
-#                 current_tool_call,
-#                 current_tool_type,
-#             )
-
-#     # Update arguments with each chunk
-#     if tool_call.function and tool_call.function.arguments:
-#         current_tool_call.function.arguments += tool_call.function.arguments
-
-#     return None, current_tool_call, current_tool_type
-
-
 def setup_extract(
     fn: Callable,
     fn_args: dict[str, Any],
@@ -170,17 +121,19 @@ def setup_extract(
     )
     if json_mode := bool(
         (generation_config := call_kwargs.get("generation_config", None))
-        and generation_config.response_mime_type == "application/json"
+        and generation_config.get("response_mime_type", "") == "application/json"
     ):
         messages.append(
             {
                 "role": "user",
-                "content": dedent(
-                    f"""\
+                "parts": [
+                    dedent(
+                        f"""\
             Extract a valid JSON object instance from the content using this schema:
 
             {json.dumps(tool_type.model_json_schema(), indent=2)}"""
-                ),
+                    )
+                ],
             }
         )
         call_kwargs["tools"] = None  # type: ignore

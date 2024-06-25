@@ -1,35 +1,29 @@
-"""This module contains the OpenAI `structured_stream_async_decorator` function."""
+"""This module contains the Gemini `structured_stream_async_decorator` function."""
 
+import json
 from collections.abc import AsyncGenerator
 from functools import wraps
-from typing import (
-    AsyncIterable,
-    Awaitable,
-    Callable,
-    Generic,
-    ParamSpec,
-    TypeVar,
-)
+from typing import AsyncIterable, Awaitable, Callable, Generic, ParamSpec, TypeVar
 
-from openai import AsyncOpenAI
-from openai.types.chat import ChatCompletionChunk
+from google.generativeai import GenerativeModel  # type: ignore
+from google.generativeai.types import GenerateContentResponse
 from pydantic import BaseModel
 
 from ..base import BaseAsyncStructuredStream, _utils
 from ._utils import setup_extract
-from .call_params import OpenAICallParams
-from .function_return import OpenAICallFunctionReturn
-from .tool import OpenAITool
+from .call_params import GeminiCallParams
+from .function_return import GeminiCallFunctionReturn
+from .tool import GeminiTool
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
-class OpenAIAsyncStructuredStream(
+class GeminiAsyncStructuredStream(
     Generic[_ResponseModelT],
-    BaseAsyncStructuredStream[ChatCompletionChunk, _ResponseModelT],
+    BaseAsyncStructuredStream[GenerateContentResponse, _ResponseModelT],
 ):
-    """A class for async streaming structured outputs from OpenAI's API."""
+    """A class for streaming structured outputs from Gemini's API."""
 
     def __aiter__(self) -> AsyncGenerator[_ResponseModelT, None]:
         """Iterates over the stream and extracts structured outputs."""
@@ -40,15 +34,15 @@ class OpenAIAsyncStructuredStream(
             async for chunk in self.stream:
                 if (
                     self.json_mode
-                    and (content := chunk.choices[0].delta.content) is not None
+                    and (content := chunk.candidates[0].content.parts[0].text)
+                    is not None
                 ):
+                    print(content)
                     json_output += content
                 elif (
-                    (tool_calls := chunk.choices[0].delta.tool_calls)
-                    and (function := tool_calls[0].function)
-                    and (arguments := function.arguments)
-                ):
-                    json_output += arguments
+                    tool_calls := chunk.candidates[0].content.parts[0].function_call
+                ) and (arguments := tool_calls.args):
+                    json_output += json.dumps(dict(arguments))
                 else:
                     ValueError("No tool call or JSON object found in response.")
                 if json_output:
@@ -61,13 +55,13 @@ class OpenAIAsyncStructuredStream(
 
 
 def structured_stream_async_decorator(
-    fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    fn: Callable[_P, Awaitable[GeminiCallFunctionReturn]],
     model: str,
     response_model: type[_ResponseModelT],
-    call_params: OpenAICallParams,
+    call_params: GeminiCallParams,
 ) -> Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]]:
     assert response_model is not None
-    tool = _utils.setup_extract_tool(response_model, OpenAITool)
+    tool = _utils.setup_extract_tool(response_model, GeminiTool)
 
     @wraps(fn)
     async def inner_async(
@@ -79,14 +73,14 @@ def structured_stream_async_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = AsyncOpenAI()
-        return OpenAIAsyncStructuredStream(
-            stream=(
-                chunk
-                async for chunk in await client.chat.completions.create(
-                    model=model, stream=True, messages=messages, **call_kwargs
-                )
-            ),
+        client = GenerativeModel(model_name=model)
+        stream = client.generate_content_async(
+            messages,
+            stream=True,
+            **call_kwargs,
+        )
+        return GeminiAsyncStructuredStream(
+            stream=stream,
             response_model=response_model,
             json_mode=json_mode,
         )

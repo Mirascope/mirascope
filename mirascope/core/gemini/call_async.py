@@ -1,9 +1,10 @@
-"""The `gemini_call` decorator for functions as LLM calls."""
+"""The `gemini_call_async` decorator for easy Gemini API typed functions."""
 
 from functools import partial
 from typing import (
+    AsyncIterable,
+    Awaitable,
     Callable,
-    Iterable,
     Literal,
     ParamSpec,
     TypeVar,
@@ -11,14 +12,14 @@ from typing import (
     overload,
 )
 
-from google.generativeai.types import GenerateContentResponse  # type: ignore
+from google.generativeai.types import GenerateContentResponse
 from pydantic import BaseModel
 
 from ..base import BaseTool, _utils
-from ._create import create_decorator
-from ._extract import extract_decorator
-from ._stream import GeminiStream, stream_decorator
-from ._structured_stream import structured_stream_decorator
+from ._create_async import create_async_decorator
+from ._extract_async import extract_async_decorator
+from ._stream_async import GeminiAsyncStream, stream_async_decorator
+from ._structured_stream_async import structured_stream_async_decorator
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
@@ -30,7 +31,7 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 @overload
-def gemini_call(
+def gemini_call_async(
     model: str,
     *,
     stream: Literal[False] = False,
@@ -39,13 +40,13 @@ def gemini_call(
     output_parser: None = None,
     **call_params: Unpack[GeminiCallParams],
 ) -> Callable[
-    [Callable[_P, GeminiCallFunctionReturn]],
-    Callable[_P, GeminiCallResponse],
+    [Callable[_P, Awaitable[GeminiCallFunctionReturn]]],
+    Callable[_P, Awaitable[GeminiCallResponse]],
 ]: ...  # pragma: no cover
 
 
 @overload
-def gemini_call(
+def gemini_call_async(
     model: str,
     *,
     stream: Literal[False] = False,
@@ -54,13 +55,13 @@ def gemini_call(
     output_parser: None = None,
     **call_params: Unpack[GeminiCallParams],
 ) -> Callable[
-    [Callable[_P, GeminiCallFunctionReturn]],
-    Callable[_P, _ResponseModelT],
+    [Callable[_P, Awaitable[GeminiCallFunctionReturn]]],
+    Callable[_P, Awaitable[_ResponseModelT]],
 ]: ...  # pragma: no cover
 
 
 @overload
-def gemini_call(
+def gemini_call_async(
     model: str,
     *,
     stream: Literal[True],
@@ -69,13 +70,13 @@ def gemini_call(
     output_parser: None = None,
     **call_params: Unpack[GeminiCallParams],
 ) -> Callable[
-    [Callable[_P, GeminiCallFunctionReturn]],
-    Callable[_P, GeminiStream[GenerateContentResponse]],
+    [Callable[_P, Awaitable[GeminiCallFunctionReturn]]],
+    Callable[_P, Awaitable[GeminiAsyncStream[GenerateContentResponse]]],
 ]: ...  # pragma: no cover
 
 
 @overload
-def gemini_call(
+def gemini_call_async(
     model: str,
     *,
     stream: Literal[True],
@@ -84,12 +85,12 @@ def gemini_call(
     output_parser: None = None,
     **call_params: Unpack[GeminiCallParams],
 ) -> Callable[
-    [Callable[_P, GeminiCallFunctionReturn]],
-    Callable[_P, Iterable[_ResponseModelT]],
+    [Callable[_P, Awaitable[GeminiCallFunctionReturn]]],
+    Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
 ]: ...  # pragma: no cover
 
 
-def gemini_call(
+def gemini_call_async(
     model: str,
     *,
     stream: bool = False,
@@ -103,10 +104,10 @@ def gemini_call(
     [Callable[_P, GeminiCallFunctionReturn]],
     Callable[
         _P,
-        GeminiCallResponse
-        | GeminiStream[GenerateContentResponse | _ParsedOutputT]
-        | _ResponseModelT
-        | Iterable[_ResponseModelT],
+        Awaitable[GeminiCallResponse | _ParsedOutputT]
+        | Awaitable[GeminiAsyncStream[GenerateContentResponse | _ParsedOutputT]]
+        | Awaitable[_ResponseModelT]
+        | Awaitable[AsyncIterable[_ResponseModelT]],
     ],
 ]:
     '''A decorator for calling the Gemini API with a typed function.
@@ -135,31 +136,34 @@ def gemini_call(
         The decorator for turning a typed function into an Gemini API call.
     '''
 
+    if response_model and output_parser:
+        raise ValueError("Cannot use both `response_model` and `output_parser`.")
+
     if response_model:
         if stream:
             return partial(
-                structured_stream_decorator,
+                structured_stream_async_decorator,
                 model=model,
                 response_model=response_model,
                 call_params=call_params,
             )
         else:
             return partial(
-                extract_decorator,
+                extract_async_decorator,
                 model=model,
                 response_model=response_model,
                 call_params=call_params,
             )
     if stream:
         return partial(
-            stream_decorator,
+            stream_async_decorator,
             model=model,
             tools=tools,
             output_parser=output_parser,
             call_params=call_params,
         )
     return partial(
-        create_decorator,
+        create_async_decorator,
         model=model,
         tools=tools,
         output_parser=output_parser,

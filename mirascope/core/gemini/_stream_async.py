@@ -1,6 +1,7 @@
-import inspect
+"""This module contains the Gemini `stream_async_decorator` function."""
+
 from functools import wraps
-from typing import Callable, Generator, Generic, ParamSpec, TypeVar
+from typing import AsyncGenerator, Awaitable, Callable, Generic, ParamSpec, TypeVar
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import (  # type: ignore
@@ -8,7 +9,7 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse,
 )
 
-from ..base import BaseStream, BaseTool, _utils
+from ..base import BaseAsyncStream, BaseTool, _utils
 from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response_chunk import GeminiCallResponseChunk
@@ -19,41 +20,47 @@ _P = ParamSpec("_P")
 _OutputT = TypeVar("_OutputT")
 
 
-class GeminiStream(
-    BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool, _OutputT],
+class GeminiAsyncStream(
+    BaseAsyncStream[
+        GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool, _OutputT
+    ],
     Generic[_OutputT],
 ):
     """A class for streaming responses from Google's Gemini API."""
 
-    def __init__(self, stream: Generator[GeminiCallResponseChunk, None, None]):
+    def __init__(
+        self,
+        stream: AsyncGenerator[GeminiCallResponseChunk, None],
+        output_parser: Callable[[GeminiCallResponseChunk], _OutputT] | None,
+    ):
         """Initializes an instance of `GeminiStream`."""
-        super().__init__(stream, ContentDict)
+        super().__init__(stream, ContentDict, output_parser)
 
 
-def stream_decorator(
-    fn: Callable[_P, GeminiCallFunctionReturn],
+def stream_async_decorator(
+    fn: Callable[_P, Awaitable[GeminiCallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[GeminiCallResponseChunk], _OutputT] | None,
     call_params: GeminiCallParams,
-) -> Callable[_P, GeminiStream[GenerateContentResponse | _OutputT]]:
+) -> Callable[_P, Awaitable[GeminiAsyncStream[GenerateContentResponse | _OutputT]]]:
     @wraps(fn)
-    def inner(*args: _P.args, **kwargs: _P.kwargs) -> GeminiStream:
+    async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> GeminiAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
-        fn_return = fn(*args, **kwargs)
+        fn_return = await fn(*args, **kwargs)
         _, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = GenerativeModel(model_name=model)
-        stream = client.generate_content(
+        stream = await client.generate_content_async(
             messages,
             stream=True,
             tools=tools,
             **call_kwargs,
         )
 
-        def generator():
-            for chunk in stream:
+        async def generator():
+            async for chunk in stream:
                 yield GeminiCallResponseChunk(
                     chunk=chunk,
                     user_message_param=messages[-1]
@@ -63,6 +70,6 @@ def stream_decorator(
                     cost=None,
                 )
 
-        return GeminiStream(generator(), output_parser)
+        return GeminiAsyncStream(generator(), output_parser)
 
-    return inner
+    return inner_async

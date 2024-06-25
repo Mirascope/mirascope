@@ -26,7 +26,7 @@ def extract_async_decorator(
     tool = _utils.setup_extract_tool(response_model, OpenAITool)
 
     @wraps(fn)
-    async def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+    async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
         assert response_model is not None
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = await fn(*args, **kwargs)
@@ -50,4 +50,4 @@ def extract_async_decorator(
             output._response = response  # type: ignore
         return output
 
-    return inner
+    return inner_async

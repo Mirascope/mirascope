@@ -1,11 +1,13 @@
+<<<<<<< Updated upstream
+=======
+import os
+>>>>>>> Stashed changes
 from typing import ClassVar, Literal
-
-from dotenv import load_dotenv
 
 from mirascope.core import openai
 from mirascope.core.base import BaseToolKit, toolkit_tool
 
-load_dotenv()
+os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
 class BookRecommendationToolKit(BaseToolKit):
