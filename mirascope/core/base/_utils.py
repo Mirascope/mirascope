@@ -329,11 +329,17 @@ def setup_extract_tool(
 
 
 def extract_tool_return(
-    response_model: type[_ResponseModelT], json_output: str, allow_partial: bool
+    response_model: type[_ResponseModelT],
+    json_output: str | object,
+    allow_partial: bool,
 ) -> _ResponseModelT:
-    json_obj = jiter.from_json(
-        json_output.encode(),
-        partial_mode="trailing-strings" if allow_partial else "off",
+    json_obj = (
+        jiter.from_json(
+            json_output.encode(),
+            partial_mode="trailing-strings" if allow_partial else "off",
+        )
+        if isinstance(json_output, str)
+        else json_output
     )
     if is_base_type(response_model):
         temp_model = convert_base_type_to_base_tool(response_model, BaseModel)  # type: ignore
