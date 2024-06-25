@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
-=======
 import os
->>>>>>> Stashed changes
 from typing import ClassVar, Literal
 
 from mirascope.core import openai
