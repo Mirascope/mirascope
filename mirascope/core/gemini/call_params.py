@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
-
+from google.generativeai.types import GenerationConfig, RequestOptions
+from google.generativeai.types.content_types import ToolConfigType
+from google.generativeai.types.safety_types import SafetySettingOptions
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
@@ -12,6 +13,7 @@ from ..base import BaseCallParams
 class GeminiCallParams(BaseCallParams):
     """The parameters to use when calling the Gemini API."""
 
-    generation_config: NotRequired[dict[str, Any]]
-    safety_settings: NotRequired[Any]
-    request_options: NotRequired[dict[str, Any]]
+    generation_config: NotRequired[GenerationConfig]
+    safety_settings: NotRequired[SafetySettingOptions]
+    request_options: NotRequired[RequestOptions]
+    tool_config: NotRequired[ToolConfigType]

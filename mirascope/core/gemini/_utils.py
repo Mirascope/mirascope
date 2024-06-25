@@ -1,6 +1,8 @@
 """Utilities for the Mirascope Core OpenAI module."""
 
 import inspect
+import json
+from textwrap import dedent
 from typing import Any, Callable, overload
 
 from google.generativeai.types import ContentsType  # type: ignore
@@ -153,41 +155,40 @@ def setup_call(
 #     return None, current_tool_call, current_tool_type
 
 
-# def setup_extract(
-#     fn: Callable,
-#     fn_args: dict[str, Any],
-#     fn_return: GeminiCallFunctionReturn,
-#     tool: type[BaseTool],
-#     call_params: GeminiCallParams,
-# ) -> tuple[
-#     bool,
-#     list[ChatCompletionMessageParam],
-#     GeminiCallParams,
-# ]:
-#     _, messages, [tool_type], call_kwargs = setup_call(
-#         fn, fn_args, fn_return, [tool], call_params
-#     )
+def setup_extract(
+    fn: Callable,
+    fn_args: dict[str, Any],
+    fn_return: GeminiCallFunctionReturn,
+    tool: type[BaseTool],
+    call_params: GeminiCallParams,
+) -> tuple[
+    bool,
+    list[ContentsType],
+    GeminiCallParams,
+]:
+    _, messages, [tool_type], call_kwargs = setup_call(
+        fn, fn_args, fn_return, [tool], call_params
+    )
+    if json_mode := bool(
+        (generation_config := call_kwargs.get("generation_config", None))
+        and generation_config.response_mime_type == "application/json"
+    ):
+        messages.append(
+            {
+                "role": "user",
+                "content": dedent(
+                    f"""\
+            Extract a valid JSON object instance from the content using this schema:
 
-#     response_format = call_kwargs.get("response_format", None)
-#     if json_mode := bool(
-#         response_format
-#         and "type" in response_format
-#         and response_format["type"] == "json_object"
-#     ):
-#         messages.append(
-#             {
-#                 "role": "user",
-#                 "content": dedent(
-#                     f"""\
-#             Extract a valid JSON object instance from the content using this schema:
+            {json.dumps(tool_type.model_json_schema(), indent=2)}"""
+                ),
+            }
+        )
+        call_kwargs["tools"] = None  # type: ignore
+    else:
+        call_kwargs["tools"] = [tool_type.tool_schema()]  # type: ignore
+        tool_config = call_kwargs.get("tool_config", {})
+        tool_config["function_calling_config"] = {"mode": "auto"}
+        call_kwargs["tool_config"] = tool_config
 
-#             {json.dumps(tool_type.model_json_schema(), indent=2)}"""
-#                 ),
-#             }
-#         )
-#         call_kwargs["tools"] = None  # type: ignore
-#     else:
-#         call_kwargs["tools"] = [tool_type.tool_schema()]  # type: ignore
-#         call_kwargs["tool_choice"] = "required"
-
-#     return json_mode, messages, call_kwargs
+    return json_mode, messages, call_kwargs

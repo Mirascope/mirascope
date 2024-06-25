@@ -1,6 +1,7 @@
 """This module contains the OpenAI `extract_decorator` function."""
 
 import inspect
+import json
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
@@ -8,7 +9,7 @@ from google.generativeai import GenerativeModel  # type: ignore
 from pydantic import BaseModel
 
 from ..base import _utils
-from ._utils import setup_call
+from ._utils import setup_extract
 from .call_params import GeminiCallParams
 from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
@@ -31,22 +32,25 @@ def extract_decorator(
         assert response_model is not None
         fn_args = inspect.signature(fn).bind(*args, **kwargs).arguments
         fn_return = fn(*args, **kwargs)
-        _, messages, _, call_kwargs = setup_call(
-            fn, fn_args, fn_return, [], call_params
+        json_mode, messages, call_kwargs = setup_extract(
+            fn, fn_args, fn_return, tool, call_params
         )
         client = GenerativeModel(model_name=model)
         response = client.generate_content(
             messages,
             stream=False,
-            tools=[tool],
             **call_kwargs,
         )
-        if tool_calls := response.candidates[0].content.parts:
+        content = response.candidates[0].content.parts
+        if json_mode and content is not None:
+            json_output = content[0].text
+        elif tool_calls := content:
             json_output = tool_calls[0].function_call.args
         else:
             raise ValueError("No tool call or JSON object found in response.")
-
-        output = _utils.extract_tool_return(response_model, json_output, False)
+        output = _utils.extract_tool_return(
+            response_model, json.dumps(dict(json_output)), False
+        )
         if isinstance(response_model, BaseModel):
             output._response = response  # type: ignore
         return output
