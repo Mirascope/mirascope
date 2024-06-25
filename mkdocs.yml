@@ -93,6 +93,8 @@ plugins:
 
 nav:
   - Get Started: "README.md"
+  - Learn:
+    - Philosophy: "learn/philosophy.md"
   - API Reference: "api/index.md"
   - Help: "HELP.md"
   - Contributing: "CONTRIBUTING.md"
