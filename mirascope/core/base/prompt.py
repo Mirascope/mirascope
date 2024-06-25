@@ -23,6 +23,7 @@ from ._stream_async import BaseAsyncStream
 from ._utils import BaseType, format_template, parse_prompt_messages
 
 _P = ParamSpec("_P")
+_R = TypeVar("_R")
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseAsyncStreamT = TypeVar("_BaseAsyncStreamT", bound=BaseAsyncStream)
@@ -58,15 +59,20 @@ class BasePrompt(BaseModel):
 
     tags: ClassVar[list[str]] = []
 
+    @classmethod
+    def _prompt_template(cls) -> str:
+        """Returns the prompt template."""
+        return cls.__annotations__.get("prompt_template", cls.__doc__)
+
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return format_template(self.__doc__, self.model_dump())
+        return format_template(self._prompt_template(), self.model_dump())
 
     def message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
         return parse_prompt_messages(
             roles=["system", "user", "assistant", "model"],
-            template=self.__doc__,
+            template=self._prompt_template(),
             attrs=self.model_dump(),
         )
 
@@ -75,7 +81,7 @@ class BasePrompt(BaseModel):
         return {
             "tags": self.tags,
             "prompt": str(self),
-            "template": inspect.cleandoc(self.__doc__),
+            "template": inspect.cleandoc(self._prompt_template()),
             "inputs": self.model_dump(),
         }
 
@@ -209,10 +215,28 @@ class BasePrompt(BaseModel):
             return _run()
 
 
-BasePromptT = TypeVar("BasePromptT", bound=BasePrompt)
+_BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 
 
-def tags(args: list[str]) -> Callable[[type[BasePromptT]], type[BasePromptT]]:
+def prompt_template(template: str):
+    """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`."""
+
+    @overload
+    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...  # pragma: no cover
+
+    @overload
+    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...  # pragma: no cover
+
+    def inner(
+        prompt: type[_BasePromptT] | Callable[_P, _R],
+    ) -> type[_BasePromptT] | Callable[_P, _R]:
+        prompt.__annotations__["prompt_template"] = template
+        return prompt
+
+    return inner
+
+
+def tags(args: list[str]) -> Callable[[type[_BasePromptT]], type[_BasePromptT]]:
     """A decorator for adding tags to a `BasePrompt`.
 
     Adding this decorator to a `BasePrompt` updates the `tags` class attribute to the
@@ -243,7 +267,7 @@ def tags(args: list[str]) -> Callable[[type[BasePromptT]], type[BasePromptT]]:
         The decorated class with `tags` class attribute set.
     """
 
-    def wrapper(model_class: type[BasePromptT]) -> type[BasePromptT]:
+    def wrapper(model_class: type[_BasePromptT]) -> type[_BasePromptT]:
         """Updates the `tags` class attribute to the given value."""
         setattr(model_class, "tags", args)
         return model_class

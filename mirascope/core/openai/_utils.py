@@ -72,7 +72,7 @@ def setup_call(
             call_kwargs |= dynamic_call_params
 
     if not messages:
-        prompt_template = inspect.getdoc(fn)
+        prompt_template = fn.__annotations__.get("prompt_template", inspect.getdoc(fn))
         assert prompt_template is not None, "The function must have a docstring."
         if computed_fields:
             fn_args |= computed_fields

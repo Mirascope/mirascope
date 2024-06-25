@@ -10,7 +10,7 @@ from ._stream import BaseStream
 from ._stream_async import BaseAsyncStream
 from ._structured_stream import BaseStructuredStream
 from ._structured_stream_async import BaseAsyncStructuredStream
-from .prompt import BasePrompt, tags
+from .prompt import BasePrompt, prompt_template, tags
 from .tool import BaseTool
 from .toolkit import BaseToolKit, toolkit_tool
 
