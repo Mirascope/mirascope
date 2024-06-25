@@ -1,4 +1,4 @@
-"""The `openai_call` decorator for functions as LLM calls."""
+"""The `anthropic_call` decorator for functions as LLM calls."""
 
 from functools import partial
 from typing import (
@@ -17,12 +17,12 @@ from pydantic import BaseModel
 from ..base import BaseTool, _utils
 from ._create import create_decorator
 from ._extract import extract_decorator
-from ._stream import OpenAIStream, stream_decorator
+from ._stream import AnthropicStream, stream_decorator
 from ._structured_stream import structured_stream_decorator
-from .call_params import OpenAICallParams
-from .call_response import OpenAICallResponse
-from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAICallFunctionReturn
+from .call_params import AnthropicCallParams
+from .call_response import AnthropicCallResponse
+from .call_response_chunk import AnthropicCallResponseChunk
+from .function_return import AnthropicCallFunctionReturn
 
 _P = ParamSpec("_P")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
@@ -30,186 +30,177 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
+    max_tokens: int = 1000,
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
     output_parser: None = None,
-    **call_params: Unpack[OpenAICallParams],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
-    Callable[_P, OpenAICallResponse],
-]:
-    ...  # pragma: no cover
+    [Callable[_P, AnthropicCallFunctionReturn]],
+    Callable[_P, AnthropicCallResponse],
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
-    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
+    output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
+    [Callable[_P, AnthropicCallFunctionReturn]],
     Callable[_P, _ParsedOutputT],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
-    output_parser: Callable[[OpenAICallResponseChunk], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+    output_parser: Callable[[AnthropicCallResponseChunk], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[True] = True,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
     output_parser: None = None,
-    **call_params: Unpack[OpenAICallParams],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
-    Callable[_P, OpenAIStream[OpenAICallResponseChunk]],
-]:
-    ...  # pragma: no cover
+    [Callable[_P, AnthropicCallFunctionReturn]],
+    Callable[_P, AnthropicStream[AnthropicCallResponseChunk]],
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[True] = True,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
-    output_parser: Callable[[OpenAICallResponseChunk], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
+    output_parser: Callable[[AnthropicCallResponseChunk], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
-    Callable[_P, OpenAIStream[_ParsedOutputT]],
-]:
-    ...  # pragma: no cover
+    [Callable[_P, AnthropicCallFunctionReturn]],
+    Callable[_P, AnthropicStream[_ParsedOutputT]],
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[True] = True,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: None = None,
-    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+    output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
     output_parser: None = None,
-    **call_params: Unpack[OpenAICallParams],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
+    [Callable[_P, AnthropicCallFunctionReturn]],
     Callable[_P, _ResponseModelT],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[False] = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
-    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT]
-    | Callable[[OpenAICallResponseChunk], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+    output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT]
+    | Callable[[AnthropicCallResponseChunk], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
+) -> NoReturn: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
     output_parser: None = None,
-    **call_params: Unpack[OpenAICallParams],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
+    [Callable[_P, AnthropicCallFunctionReturn]],
     Callable[_P, Iterable[_ResponseModelT]],
-]:
-    ...  # pragma: no cover
+]: ...  # pragma: no cover
 
 
 @overload
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: Literal[True],
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT],
-    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT]
-    | Callable[[OpenAICallResponseChunk], _ParsedOutputT],
-    **call_params: Unpack[OpenAICallParams],
-) -> NoReturn:
-    ...  # pragma: no cover
+    output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT]
+    | Callable[[AnthropicCallResponseChunk], _ParsedOutputT],
+    **call_params: Unpack[AnthropicCallParams],
+) -> NoReturn: ...  # pragma: no cover
 
 
-def openai_call(
+def anthropic_call(
     model: str,
     *,
     stream: bool = False,
     tools: list[type[BaseTool] | Callable] | None = None,
     response_model: type[_ResponseModelT] | None = None,
-    output_parser: Callable[[OpenAICallResponse], _ParsedOutputT]
-    | Callable[[OpenAICallResponseChunk], _ParsedOutputT]
+    output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT]
+    | Callable[[AnthropicCallResponseChunk], _ParsedOutputT]
     | None = None,
-    **call_params: Unpack[OpenAICallParams],
+    **call_params: Unpack[AnthropicCallParams],
 ) -> Callable[
-    [Callable[_P, OpenAICallFunctionReturn]],
+    [Callable[_P, AnthropicCallFunctionReturn]],
     Callable[
         _P,
-        OpenAICallResponse
+        AnthropicCallResponse
         | _ParsedOutputT
-        | OpenAIStream[OpenAICallResponseChunk | _ParsedOutputT]
+        | AnthropicStream[AnthropicCallResponseChunk | _ParsedOutputT]
         | _ResponseModelT
         | Iterable[_ResponseModelT],
     ],
 ]:
-    '''A decorator for calling the OpenAI API with a typed function.
+    '''A decorator for calling the Anthropic API with a typed function.
 
-    This decorator is used to wrap a typed function that calls the OpenAI API. It parses
-    the docstring of the wrapped function as the messages array and templates the input
-    arguments for the function into each message's template.
+    This decorator is used to wrap a typed function that calls the Anthropic API. It
+    parses the docstring of the wrapped function as the messages array and templates the
+    input arguments for the function into each message's template.
 
     Example:
 
     ```python
-    @openai_call(model="gpt-4o")
+    @anthropic_call(model="claude-3-5-sonnet-20240620")
     def recommend_book(genre: str):
         """Recommend a {genre} book."""
 
@@ -217,13 +208,13 @@ def openai_call(
     ```
 
     Args:
-        model: The OpenAI model to use in the API call.
+        model: The Anthropic model to use in the API call.
         stream: Whether to stream the response from the API call.
-        tools: The tools to use in the OpenAI API call.
-        **call_params: The `OpenAICallParams` call parameters to use in the API call.
+        tools: The tools to use in the Anthropic API call.
+        **call_params: The `AnthropicCallParams` call parameters to use in the API call.
 
     Returns:
-        The decorator for turning a typed function into an OpenAI API call.
+        The decorator for turning a typed function into an Anthropic API call.
     '''
     if response_model and output_parser:
         raise ValueError("Cannot use both `response_model` and `output_parser`.")
