@@ -1,6 +1,6 @@
 """The `BasePrompt` class for better prompt engineering."""
 
-from textwrap import dedent
+import inspect
 from typing import (
     Any,
     AsyncIterable,
@@ -15,12 +15,12 @@ from typing import (
 
 from pydantic import BaseModel
 
+from ._call_response import BaseCallResponse
+from ._function_return import BaseFunctionReturn
+from ._message_param import BaseMessageParam
+from ._stream import BaseStream
+from ._stream_async import BaseAsyncStream
 from ._utils import BaseType, format_template, parse_prompt_messages
-from .call_response import BaseCallResponse
-from .function_return import BaseFunctionReturn
-from .message_param import BaseMessageParam
-from .stream import BaseStream
-from .stream_async import BaseAsyncStream
 
 _P = ParamSpec("_P")
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -57,17 +57,16 @@ class BasePrompt(BaseModel):
     """
 
     tags: ClassVar[list[str]] = []
-    prompt_template: ClassVar[str] = ""
 
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return format_template(self.prompt_template, self.model_dump())
+        return format_template(self.__doc__, self.model_dump())
 
     def message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
         return parse_prompt_messages(
             roles=["system", "user", "assistant", "model"],
-            template=self.prompt_template,
+            template=self.__doc__,
             attrs=self.model_dump(),
         )
 
@@ -76,7 +75,7 @@ class BasePrompt(BaseModel):
         return {
             "tags": self.tags,
             "prompt": str(self),
-            "template": dedent(self.prompt_template).strip("\n"),
+            "template": inspect.cleandoc(self.__doc__),
             "inputs": self.model_dump(),
         }
 

@@ -3,9 +3,7 @@ Convenience built on top of tools that makes extracting structured information r
 """
 
 import os
-from typing import Literal
 
-from pydantic import BaseModel
 
 from mirascope.core import openai
 

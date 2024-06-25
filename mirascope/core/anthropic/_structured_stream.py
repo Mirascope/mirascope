@@ -5,7 +5,7 @@ from functools import wraps
 from typing import Callable, Generic, Iterable, ParamSpec, TypeVar
 
 from anthropic import Anthropic
-from anthropic.lib.streaming import InputJsonEvent, MessageStreamEvent, TextEvent
+from anthropic.lib.streaming import MessageStreamEvent
 from pydantic import BaseModel
 
 from ..base import BaseStructuredStream, _utils

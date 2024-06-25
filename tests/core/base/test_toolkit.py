@@ -1,6 +1,6 @@
 """Tests for the `toolkit` module."""
 
-from typing import Literal, ClassVar
+from typing import ClassVar, Literal
 from unittest import mock
 
 import pytest
@@ -19,7 +19,7 @@ def mock_namespaces():
     "namespace, expected_name",
     [
         (None, "format_book"),
-        ("book_tools", "book_tools.format_book"),
+        ("book_tools", "book_tools_format_book"),
     ],
 )
 def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> None:
@@ -93,7 +93,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
     tools = toolkit.create_tools()
     assert len(tools) == 2
 
-    assert tools[0]._name() == "book_tools.format_book"
+    assert tools[0]._name() == "book_tools_format_book"
     assert (
         tools[0]._description()
         == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
@@ -102,7 +102,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
         tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()
         == "The Name of the Wind by Rothfuss, Patrick"
     )
-    assert tools[1]._name() == "book_tools.format_world_book"
+    assert tools[1]._name() == "book_tools_format_world_book"
     assert (
         tools[1]._description()
         == "Returns the title, author, and genre of a book nicely formatted.\n\nReading level: beginner\n"

@@ -9,7 +9,7 @@ def test_base_prompt() -> None:
     """Tests the `BasePrompt` class."""
 
     class BookRecommendationPrompt(BasePrompt):
-        prompt_template = "Recommend a {genre} book."
+        """Recommend a {genre} book."""
 
         genre: str
 
@@ -30,7 +30,7 @@ def test_base_prompt_with_computed_fields() -> None:
     """Tests the `BasePrompt` class with list and list[list] computed fields."""
 
     class BookRecommendationPrompt(BasePrompt):
-        prompt_template = "Recommend a {genre} book."
+        """Recommend a {genre} book."""
 
         @computed_field
         @property
@@ -46,7 +46,7 @@ def test_tags() -> None:
 
     @tags(["version:0001"])
     class BookRecommendationPrompt(BasePrompt):
-        prompt_template = "Recommend a book."
+        """Recommend a book."""
 
     prompt = BookRecommendationPrompt()
     assert prompt.tags == ["version:0001"]

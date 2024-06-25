@@ -1,14 +1,10 @@
 """This module contains the `AnthropicCallResponseChunk` class."""
 
 from anthropic.types import (
-    ContentBlockDeltaEvent,
-    ContentBlockStartEvent,
     MessageParam,
     MessageStartEvent,
     MessageStreamEvent,
     RawMessageDeltaEvent,
-    TextBlock,
-    TextDelta,
     Usage,
 )
 

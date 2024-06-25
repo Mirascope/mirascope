@@ -3,7 +3,6 @@ Convenience built on top of tools that makes extracting structured information r
 (Gemini)
 """
 
-import os
 from typing import Literal
 
 from google.generativeai import configure

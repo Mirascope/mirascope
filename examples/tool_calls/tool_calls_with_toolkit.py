@@ -1,4 +1,3 @@
-import inspect
 from typing import ClassVar, Literal
 
 from dotenv import load_dotenv

@@ -4,7 +4,7 @@ from abc import ABC
 from collections.abc import Generator
 from typing import Callable, Generic, TypeVar
 
-from .call_response_chunk import BaseCallResponseChunk
+from ._call_response_chunk import BaseCallResponseChunk
 from .tool import BaseTool
 
 _BaseCallResponseChunkT = TypeVar(

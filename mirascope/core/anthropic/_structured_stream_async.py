@@ -12,7 +12,7 @@ from typing import (
 )
 
 from anthropic import AsyncAnthropic
-from anthropic.lib.streaming import InputJsonEvent, MessageStreamEvent, TextEvent
+from anthropic.lib.streaming import MessageStreamEvent
 from pydantic import BaseModel
 
 from ..base import BaseAsyncStructuredStream, _utils

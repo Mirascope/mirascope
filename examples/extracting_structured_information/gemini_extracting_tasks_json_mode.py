@@ -1,6 +1,5 @@
 """Extracting unstructured information into json using json mode for Gemini:"""
 
-import os
 
 from google.generativeai import configure
 
