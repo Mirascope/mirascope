@@ -68,7 +68,7 @@ class BasePrompt(BaseModel):
         """Returns the formatted template."""
         return format_template(self._prompt_template(), self.model_dump())
 
-    def _message_params(self) -> list[BaseMessageParam]:
+    def message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
         return parse_prompt_messages(
             roles=["system", "user", "assistant", "model"],
@@ -203,14 +203,14 @@ class BasePrompt(BaseModel):
 
             @decorator  # type: ignore
             async def _run_async() -> BaseFunctionReturn:
-                return {"messages": self._message_params()}
+                return {"messages": self.message_params()}
 
             return _run_async()
         else:
 
             @decorator  # type: ignore
             def _run() -> BaseFunctionReturn:
-                return {"messages": self._message_params()}
+                return {"messages": self.message_params()}
 
             return _run()
 
