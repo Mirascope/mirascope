@@ -16,10 +16,9 @@ from pydantic import BaseModel
 
 from ._call_response import BaseCallResponse
 from ._function_return import BaseFunctionReturn
-from ._message_param import BaseMessageParam
 from ._stream import BaseStream
 from ._stream_async import BaseAsyncStream
-from ._utils import BaseType, format_template, parse_prompt_messages
+from ._utils import BaseType, format_template
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -69,14 +68,6 @@ class BasePrompt(BaseModel):
     def __str__(self) -> str:
         """Returns the formatted template."""
         return format_template(self._prompt_template(), self.model_dump())
-
-    def message_params(self) -> list[BaseMessageParam]:
-        """Returns the template as a formatted list of `Message` instances."""
-        return parse_prompt_messages(
-            roles=["system", "user", "assistant", "model"],
-            template=self._prompt_template(),
-            attrs=self.model_dump(),
-        )
 
     def dump(self) -> dict[str, Any]:
         """Dumps the contents of the prompt into a dictionary."""
@@ -204,15 +195,15 @@ class BasePrompt(BaseModel):
         if "async" in decorator.func.__name__:  # type: ignore
 
             @decorator  # type: ignore
-            async def _run_async() -> BaseFunctionReturn:
-                return {"messages": self.message_params()}
+            @prompt_template(self._prompt_template())
+            async def _run_async() -> BaseFunctionReturn: ...  # pragma: no cover
 
             return _run_async()
         else:
 
             @decorator  # type: ignore
-            def _run() -> BaseFunctionReturn:
-                return {"messages": self.message_params()}
+            @prompt_template(self._prompt_template())
+            def _run() -> BaseFunctionReturn: ...  # pragma: no cover
 
             return _run()
 

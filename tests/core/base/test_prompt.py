@@ -15,9 +15,6 @@ def test_base_prompt() -> None:
 
     prompt = BookRecommendationPrompt(genre="fantasy")
     assert str(prompt) == "Recommend a fantasy book."
-    assert prompt.message_params() == [
-        {"role": "user", "content": "Recommend a fantasy book."}
-    ]
     assert prompt.dump() == {
         "tags": [],
         "prompt": "Recommend a fantasy book.",
