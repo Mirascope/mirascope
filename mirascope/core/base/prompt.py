@@ -68,7 +68,7 @@ class BasePrompt(BaseModel):
         """Returns the formatted template."""
         return format_template(self._prompt_template(), self.model_dump())
 
-    def message_params(self) -> list[BaseMessageParam]:
+    def _message_params(self) -> list[BaseMessageParam]:
         """Returns the template as a formatted list of `Message` instances."""
         return parse_prompt_messages(
             roles=["system", "user", "assistant", "model"],
@@ -203,14 +203,14 @@ class BasePrompt(BaseModel):
 
             @decorator  # type: ignore
             async def _run_async() -> BaseFunctionReturn:
-                return {"messages": self.message_params()}
+                return {"messages": self._message_params()}
 
             return _run_async()
         else:
 
             @decorator  # type: ignore
             def _run() -> BaseFunctionReturn:
-                return {"messages": self.message_params()}
+                return {"messages": self._message_params()}
 
             return _run()
 
@@ -267,9 +267,9 @@ def tags(args: list[str]) -> Callable[[type[_BasePromptT]], type[_BasePromptT]]:
         The decorated class with `tags` class attribute set.
     """
 
-    def wrapper(model_class: type[_BasePromptT]) -> type[_BasePromptT]:
+    def inner(model_class: type[_BasePromptT]) -> type[_BasePromptT]:
         """Updates the `tags` class attribute to the given value."""
         setattr(model_class, "tags", args)
         return model_class
 
-    return wrapper
+    return inner
