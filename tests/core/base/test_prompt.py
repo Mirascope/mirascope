@@ -49,5 +49,4 @@ def test_tags() -> None:
         """Recommend a book."""
 
     prompt = BookRecommendationPrompt()
-    assert prompt.tags == ["version:0001"]
     assert prompt.dump()["tags"] == ["version:0001"]

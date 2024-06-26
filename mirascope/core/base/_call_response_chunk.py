@@ -27,6 +27,7 @@ class BaseCallResponseChunk(
         cost: The cost of the completion in dollars.
     """
 
+    tags: list[str]
     chunk: _ChunkT
     tool_types: list[type[_BaseToolT]] | None = None
     user_message_param: _UserMessageParamT | None = None

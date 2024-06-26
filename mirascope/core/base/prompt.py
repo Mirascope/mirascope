@@ -6,7 +6,6 @@ from typing import (
     AsyncIterable,
     Awaitable,
     Callable,
-    ClassVar,
     Iterable,
     ParamSpec,
     TypeVar,
@@ -57,12 +56,15 @@ class BasePrompt(BaseModel):
     ```
     """
 
-    tags: ClassVar[list[str]] = []
-
     @classmethod
     def _prompt_template(cls) -> str:
         """Returns the prompt template."""
         return cls.__annotations__.get("prompt_template", cls.__doc__)
+
+    @classmethod
+    def _tags(cls) -> list[str]:
+        """Returns the prompt tags."""
+        return cls.__annotations__.get("tags", [])
 
     def __str__(self) -> str:
         """Returns the formatted template."""
@@ -79,7 +81,7 @@ class BasePrompt(BaseModel):
     def dump(self) -> dict[str, Any]:
         """Dumps the contents of the prompt into a dictionary."""
         return {
-            "tags": self.tags,
+            "tags": self._tags(),
             "prompt": str(self),
             "template": inspect.cleandoc(self._prompt_template()),
             "inputs": self.model_dump(),
@@ -236,12 +238,12 @@ def prompt_template(template: str):
     return inner
 
 
-def tags(args: list[str]) -> Callable[[type[_BasePromptT]], type[_BasePromptT]]:
-    """A decorator for adding tags to a `BasePrompt`.
+def tags(tags: list[str]):
+    """A decorator for adding tags to a `BasePrompt` or `call`.
 
-    Adding this decorator to a `BasePrompt` updates the `tags` class attribute to the
-    given value. This is useful for adding metadata to a `BasePrompt` that can be used
-    for logging or filtering.
+    Adding this decorator to a `BasePrompt` or `call` updates the `tags` annotation to
+    the given value. This is useful for adding metadata to a `BasePrompt` or `call` that
+    can be used for logging or filtering.
 
     Example:
 
@@ -256,20 +258,25 @@ def tags(args: list[str]) -> Callable[[type[_BasePromptT]], type[_BasePromptT]]:
 
     prompt = BookRecommendationPrompt(genre="fantasy")
 
-    print(prompt.tags)
-    #> ["version:0001", "books"]
-
     print(prompt.dump()["tags"])
     #> ["version:0001", "books"]
     ```
 
     Returns:
-        The decorated class with `tags` class attribute set.
+        The decorator function that updates the `tags` attribute of the decorated input.
     """
 
-    def inner(model_class: type[_BasePromptT]) -> type[_BasePromptT]:
+    @overload
+    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...  # pragma: no cover
+
+    @overload
+    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...  # pragma: no cover
+
+    def inner(
+        prompt: type[_BasePromptT] | Callable[_P, _R],
+    ) -> type[_BasePromptT] | Callable[_P, _R]:
         """Updates the `tags` class attribute to the given value."""
-        setattr(model_class, "tags", args)
-        return model_class
+        prompt.__annotations__["tags"] = tags
+        return prompt
 
     return inner

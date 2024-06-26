@@ -122,6 +122,7 @@ def stream_async_decorator(
                 if isinstance(chunk, RawMessageDeltaEvent):
                     usage.output_tokens += chunk.usage.output_tokens
                 yield AnthropicCallResponseChunk(
+                    tags=fn.__annotations__.get("tags", []),
                     chunk=chunk,
                     user_message_param=messages[-1]
                     if messages[-1]["role"] == "user"

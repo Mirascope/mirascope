@@ -41,6 +41,7 @@ def create_async_decorator(
             model=model, stream=False, messages=messages, **call_kwargs
         )
         output = OpenAICallResponse(
+            tags=fn.__annotations__.get("tags", []),
             response=response,
             tool_types=tool_types,
             prompt_template=prompt_template,

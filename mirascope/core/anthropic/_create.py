@@ -38,6 +38,7 @@ def create_decorator(
             model=model, stream=False, messages=messages, **call_kwargs
         )
         output = AnthropicCallResponse(
+            tags=fn.__annotations__.get("tags", []),
             response=response,
             tool_types=tool_types,
             prompt_template=prompt_template,

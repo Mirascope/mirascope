@@ -55,6 +55,7 @@ def stream_decorator(
         def generator():
             for chunk in stream:
                 yield GeminiCallResponseChunk(
+                    tags=fn.__annotations__.get("tags", []),
                     chunk=chunk,
                     user_message_param=messages[-1]
                     if messages[-1]["role"] == "user"
