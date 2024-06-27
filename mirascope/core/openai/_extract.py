@@ -46,7 +46,7 @@ def extract_decorator(
             raise ValueError("No tool call or JSON object found in response.")
 
         output = _utils.extract_tool_return(response_model, json_output, False)
-        if isinstance(response_model, BaseModel):
+        if isinstance(output, BaseModel):
             output._response = response  # type: ignore
             return output
         else:

@@ -49,18 +49,22 @@ class BaseStream(
     ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
         """Iterator over the stream and stores useful information."""
         content = ""
-        for chunk in self.stream:
-            self.user_message_param = chunk.user_message_param
-            content += chunk.content
-            if chunk.cost is not None:
-                self.cost = chunk.cost
-            if chunk.input_tokens is not None:
-                self.input_tokens = chunk.input_tokens
-            if chunk.output_tokens is not None:
-                self.output_tokens = chunk.output_tokens
-            if chunk.model is not None:
-                self.model = chunk.model
-            yield chunk, None
+        try:
+            while True:
+                chunk = next(self.stream)
+                self.user_message_param = chunk.user_message_param
+                content += chunk.content
+                if chunk.cost is not None:
+                    self.cost = chunk.cost
+                if chunk.input_tokens is not None:
+                    self.input_tokens = chunk.input_tokens
+                if chunk.output_tokens is not None:
+                    self.output_tokens = chunk.output_tokens
+                if chunk.model is not None:
+                    self.model = chunk.model
+                yield chunk, None
+        except StopIteration as e:
+            print(f"\nRETURN VALUE: {e.value}")
         kwargs = {"role": "assistant"}
         if "message" in self.message_param_type.__annotations__:
             kwargs["message"] = content

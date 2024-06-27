@@ -50,7 +50,7 @@ def extract_async_decorator(
         output = _utils.extract_tool_return(
             response_model, json.dumps(dict(json_output)), False
         )
-        if isinstance(response_model, BaseModel):
+        if isinstance(output, BaseModel):
             output._response = response  # type: ignore
         return output
 

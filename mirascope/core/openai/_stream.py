@@ -109,6 +109,7 @@ def stream_decorator(
                     tool_types=tool_types,
                     cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 )
+            return fn_args, fn_return, call_params
 
         return OpenAIStream(generator())
 
