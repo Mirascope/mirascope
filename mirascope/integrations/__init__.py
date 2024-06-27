@@ -5,4 +5,7 @@ from contextlib import suppress
 with suppress(ImportError):
     from . import tenacity as tenacity
 
-__all__ = ["tenacity"]
+with suppress(ImportError):
+    from . import logfire as logfire
+
+__all__ = ["tenacity", "logfire"]

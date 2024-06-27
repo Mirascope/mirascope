@@ -61,6 +61,7 @@ class BaseCallResponse(
     start_time: float
     end_time: float
     cost: float | None = None
+    provider: str | None = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 

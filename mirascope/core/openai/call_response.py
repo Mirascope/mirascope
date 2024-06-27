@@ -50,6 +50,8 @@ class OpenAICallResponse(
     ```
     '''
 
+    provider: str = "openai"
+
     @computed_field
     @property
     def message_param(self) -> ChatCompletionAssistantMessageParam:

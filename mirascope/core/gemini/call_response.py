@@ -49,6 +49,8 @@ class GeminiCallResponse(
     ```
     '''
 
+    provider: str = "gemini"
+
     @computed_field
     @property
     def message_param(self) -> ContentDict:

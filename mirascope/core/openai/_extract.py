@@ -48,6 +48,12 @@ def extract_decorator(
         output = _utils.extract_tool_return(response_model, json_output, False)
         if isinstance(response_model, BaseModel):
             output._response = response  # type: ignore
-        return output
+            return output
+        else:
+            output_instance = _utils.create_base_type_with_response(response_model)(
+                output
+            )
+            output_instance._response = response
+            return output_instance
 
     return inner

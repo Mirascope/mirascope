@@ -40,6 +40,8 @@ class AnthropicCallResponse(
     ```
     '''
 
+    provider: str = "anthropic"
+
     @computed_field
     @property
     def message_param(self) -> MessageParam:

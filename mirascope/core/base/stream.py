@@ -28,8 +28,10 @@ class BaseStream(
 
     stream: Generator[_BaseCallResponseChunkT, None, None]
     message_param_type: type[_AssistantMessageParamT]
-
+    model: str | None = None
     cost: float | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
 
@@ -52,6 +54,12 @@ class BaseStream(
             content += chunk.content
             if chunk.cost is not None:
                 self.cost = chunk.cost
+            if chunk.input_tokens is not None:
+                self.input_tokens = chunk.input_tokens
+            if chunk.output_tokens is not None:
+                self.output_tokens = chunk.output_tokens
+            if chunk.model is not None:
+                self.model = chunk.model
             yield chunk, None
         kwargs = {"role": "assistant"}
         if "message" in self.message_param_type.__annotations__:
