@@ -23,6 +23,6 @@ from mirascope.core import anthropic
 @anthropic.call(model="gpt-4o")
 def recommend_book(genre: str) -> anthropic.AnthropicCallFunctionReturn:
     """Recommend a {capitalized_genre} book."""
-    reeturn {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+    return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
 ```
 '''
