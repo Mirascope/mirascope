@@ -1,12 +1,8 @@
-import inspect
 from functools import wraps
-from typing import Callable, Generator, Generic, ParamSpec, TypeVar
+from typing import Callable, Generator, ParamSpec
 
 from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import (  # type: ignore
-    ContentDict,
-    GenerateContentResponse,
-)
+from google.generativeai.types import ContentDict  # type: ignore
 
 from ..base import BaseStream, BaseTool, _utils
 from ._utils import setup_call
@@ -16,12 +12,10 @@ from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
-_OutputT = TypeVar("_OutputT")
 
 
 class GeminiStream(
-    BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool, _OutputT],
-    Generic[_OutputT],
+    BaseStream[GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool],
 ):
     """A class for streaming responses from Google's Gemini API."""
 
@@ -34,9 +28,8 @@ def stream_decorator(
     fn: Callable[_P, GeminiCallFunctionReturn],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
-    output_parser: Callable[[GeminiCallResponseChunk], _OutputT] | None,
     call_params: GeminiCallParams,
-) -> Callable[_P, GeminiStream[GenerateContentResponse | _OutputT]]:
+) -> Callable[_P, GeminiStream]:
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> GeminiStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
@@ -64,6 +57,6 @@ def stream_decorator(
                     cost=None,
                 )
 
-        return GeminiStream(generator(), output_parser)
+        return GeminiStream(generator())
 
     return inner

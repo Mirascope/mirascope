@@ -31,7 +31,6 @@ from .function_return import OpenAICallFunctionReturn
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")
-_OutputT = TypeVar("_OutputT")
 
 
 class OpenAIAsyncStream(
@@ -40,26 +39,21 @@ class OpenAIAsyncStream(
         ChatCompletionUserMessageParam,
         ChatCompletionAssistantMessageParam,
         OpenAITool,
-        _OutputT,
     ],
-    Generic[_OutputT],
 ):
     """A class for streaming responses from OpenAI's API."""
 
     def __init__(
         self,
         stream: AsyncGenerator[OpenAICallResponseChunk, None],
-        output_parser: Callable[[OpenAICallResponseChunk], _OutputT] | None,
     ):
         """Initializes an instance of `OpenAIAsyncStream`."""
-        super().__init__(stream, ChatCompletionAssistantMessageParam, output_parser)
+        super().__init__(stream, ChatCompletionAssistantMessageParam)
 
     def __aiter__(
         self,
-    ) -> AsyncGenerator[tuple[_OutputT, OpenAITool | None], None]:
+    ) -> AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]:
         """Iterator over the stream and constructs tools as they are streamed."""
-        output_parser = self.output_parser if self.output_parser else lambda x: x
-        self.output_parser = None
         stream = super().__aiter__()
 
         async def generator():
@@ -68,23 +62,23 @@ class OpenAIAsyncStream(
             )
             current_tool_type, tool_calls = None, []
             async for chunk, _ in stream:
-                if not chunk.tool_types or not chunk.tool_calls:  # type: ignore
+                if not chunk.tool_types or not chunk.tool_calls:
                     if current_tool_type:
                         yield (
-                            output_parser(chunk),  # type: ignore
+                            chunk,
                             current_tool_type.from_tool_call(current_tool_call),
                         )
                         tool_calls.append(current_tool_call)
                         current_tool_type = None
                     else:
-                        yield output_parser(chunk), None  # type: ignore
+                        yield chunk, None
                 tool, current_tool_call, current_tool_type = handle_chunk(
-                    chunk,  # type: ignore
+                    chunk,
                     current_tool_call,
                     current_tool_type,
                 )
                 if tool is not None:
-                    yield output_parser(chunk), tool  # type:ignore
+                    yield chunk, tool
                     tool_calls.append(tool.tool_call)
             if tool_calls:
                 self.message_param["tool_calls"] = tool_calls  # type: ignore
@@ -101,9 +95,8 @@ def stream_async_decorator(
     fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
-    output_parser: Callable[[OpenAICallResponseChunk], _OutputT] | None,
     call_params: OpenAICallParams,
-) -> Callable[_P, Awaitable[OpenAIAsyncStream[OpenAICallResponseChunk | _OutputT]]]:
+) -> Callable[_P, Awaitable[OpenAIAsyncStream]]:
     @wraps(fn)
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
@@ -132,6 +125,6 @@ def stream_async_decorator(
                     cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 )
 
-        return OpenAIAsyncStream(generator(), output_parser)
+        return OpenAIAsyncStream(generator())
 
     return inner_async

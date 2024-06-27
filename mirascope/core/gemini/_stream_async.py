@@ -1,13 +1,10 @@
 """This module contains the Gemini `stream_async_decorator` function."""
 
 from functools import wraps
-from typing import AsyncGenerator, Awaitable, Callable, Generic, ParamSpec, TypeVar
+from typing import AsyncGenerator, Awaitable, Callable, ParamSpec
 
 from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import (  # type: ignore
-    ContentDict,
-    GenerateContentResponse,
-)
+from google.generativeai.types import ContentDict  # type: ignore
 
 from ..base import BaseAsyncStream, BaseTool, _utils
 from ._utils import setup_call
@@ -17,33 +14,27 @@ from .function_return import GeminiCallFunctionReturn
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
-_OutputT = TypeVar("_OutputT")
 
 
 class GeminiAsyncStream(
-    BaseAsyncStream[
-        GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool, _OutputT
-    ],
-    Generic[_OutputT],
+    BaseAsyncStream[GeminiCallResponseChunk, ContentDict, ContentDict, GeminiTool]
 ):
     """A class for streaming responses from Google's Gemini API."""
 
     def __init__(
         self,
         stream: AsyncGenerator[GeminiCallResponseChunk, None],
-        output_parser: Callable[[GeminiCallResponseChunk], _OutputT] | None,
     ):
         """Initializes an instance of `GeminiStream`."""
-        super().__init__(stream, ContentDict, output_parser)
+        super().__init__(stream, ContentDict)
 
 
 def stream_async_decorator(
     fn: Callable[_P, Awaitable[GeminiCallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
-    output_parser: Callable[[GeminiCallResponseChunk], _OutputT] | None,
     call_params: GeminiCallParams,
-) -> Callable[_P, Awaitable[GeminiAsyncStream[GenerateContentResponse | _OutputT]]]:
+) -> Callable[_P, Awaitable[GeminiAsyncStream]]:
     @wraps(fn)
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> GeminiAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
@@ -71,6 +62,6 @@ def stream_async_decorator(
                     cost=None,
                 )
 
-        return GeminiAsyncStream(generator(), output_parser)
+        return GeminiAsyncStream(generator())
 
     return inner_async

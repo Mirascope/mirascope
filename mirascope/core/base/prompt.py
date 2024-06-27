@@ -15,11 +15,11 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ._call_response import BaseCallResponse
-from ._function_return import BaseFunctionReturn
-from ._stream import BaseStream
-from ._stream_async import BaseAsyncStream
 from ._utils import BaseType, format_template
+from .call_response import BaseCallResponse
+from .function_return import BaseFunctionReturn
+from .stream import BaseStream
+from .stream_async import BaseAsyncStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")

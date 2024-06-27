@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 from functools import wraps
-from typing import Callable, Generic, ParamSpec, TypeVar
+from typing import Callable, ParamSpec
 
 from anthropic import Anthropic
 from anthropic.types import (
@@ -22,35 +22,24 @@ from .function_return import AnthropicCallFunctionReturn
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")
-_OutputT = TypeVar("_OutputT")
 
 
 class AnthropicStream(
-    BaseStream[
-        AnthropicCallResponseChunk,
-        MessageParam,
-        MessageParam,
-        AnthropicTool,
-        _OutputT,
-    ],
-    Generic[_OutputT],
+    BaseStream[AnthropicCallResponseChunk, MessageParam, MessageParam, AnthropicTool]
 ):
     """A class for streaming responses from Anthropic's API."""
 
     def __init__(
         self,
         stream: Generator[AnthropicCallResponseChunk, None, None],
-        output_parser: Callable[[AnthropicCallResponseChunk], _OutputT] | None,
     ):
         """Initializes an instance of `AnthropicStream`."""
-        super().__init__(stream, MessageParam, output_parser)
+        super().__init__(stream, MessageParam)
 
     def __iter__(
         self,
-    ) -> Generator[tuple[_OutputT, AnthropicTool | None], None, None]:
+    ) -> Generator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None]:
         """Iterator over the stream and constructs tools as they are streamed."""
-        output_parser = self.output_parser if self.output_parser else lambda x: x
-        self.output_parser = None
         current_text_block = TextBlock(id="", text="", type="text")
         current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
         current_tool_type, content, buffer = None, [], ""
@@ -59,13 +48,13 @@ class AnthropicStream(
                 buffer, chunk, current_tool_call, current_tool_type
             )
             if tool is not None:
-                yield output_parser(chunk), tool
+                yield chunk, tool
                 if current_text_block.text:
                     content.append(current_text_block)
                     current_text_block = TextBlock(id="", text="", type="text")
                 content.append(tool.tool_call)
             else:
-                yield output_parser(chunk), None
+                yield chunk, None
                 current_text_block.text += chunk.content
         self.message_param["content"] = content
 
@@ -79,9 +68,8 @@ def stream_decorator(
     fn: Callable[_P, AnthropicCallFunctionReturn],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
-    output_parser: Callable[[AnthropicCallResponseChunk], _OutputT] | None,
     call_params: AnthropicCallParams,
-) -> Callable[_P, AnthropicStream[AnthropicCallResponseChunk | _OutputT]]:
+) -> Callable[_P, AnthropicStream]:
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> AnthropicStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
@@ -113,6 +101,6 @@ def stream_decorator(
                     cost=anthropic_api_calculate_cost(usage, model),
                 )
 
-        return AnthropicStream(generator(), output_parser)
+        return AnthropicStream(generator())
 
     return inner

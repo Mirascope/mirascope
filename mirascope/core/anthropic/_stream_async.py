@@ -2,13 +2,7 @@
 
 from collections.abc import AsyncGenerator
 from functools import wraps
-from typing import (
-    Awaitable,
-    Callable,
-    Generic,
-    ParamSpec,
-    TypeVar,
-)
+from typing import Awaitable, Callable, ParamSpec
 
 from anthropic import AsyncAnthropic
 from anthropic.types import (
@@ -32,35 +26,26 @@ from .function_return import AnthropicCallFunctionReturn
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")
-_OutputT = TypeVar("_OutputT")
 
 
 class AnthropicAsyncStream(
     BaseAsyncStream[
-        AnthropicCallResponseChunk,
-        MessageParam,
-        MessageParam,
-        AnthropicTool,
-        _OutputT,
-    ],
-    Generic[_OutputT],
+        AnthropicCallResponseChunk, MessageParam, MessageParam, AnthropicTool
+    ]
 ):
     """A class for streaming responses from Anthropic's API."""
 
     def __init__(
         self,
         stream: AsyncGenerator[AnthropicCallResponseChunk, None],
-        output_parser: Callable[[AnthropicCallResponseChunk], _OutputT] | None,
     ):
         """Initializes an instance of `AnthropicAsyncStream`."""
-        super().__init__(stream, MessageParam, output_parser)
+        super().__init__(stream, MessageParam)
 
     def __aiter__(
         self,
-    ) -> AsyncGenerator[tuple[_OutputT, AnthropicTool | None], None]:
+    ) -> AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None]:
         """Iterator over the stream and constructs tools as they are streamed."""
-        output_parser = self.output_parser if self.output_parser else lambda x: x
-        self.output_parser = None
         stream = super().__aiter__()
 
         async def generator():
@@ -73,13 +58,13 @@ class AnthropicAsyncStream(
                         buffer, chunk, current_tool_call, current_tool_type
                     )
                     if tool is not None:
-                        yield output_parser(chunk), tool
+                        yield chunk, tool
                         if current_text_block.text:
                             content.append(current_text_block)
                             current_text_block = TextBlock(id="", text="", type="text")
                         content.append(tool.tool_call)
                     else:
-                        yield output_parser(chunk), None
+                        yield chunk, None
                         current_text_block.text += chunk.content
                 self.message_param["content"] = content
 
@@ -95,11 +80,8 @@ def stream_async_decorator(
     fn: Callable[_P, Awaitable[AnthropicCallFunctionReturn]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
-    output_parser: Callable[[AnthropicCallResponseChunk], _OutputT] | None,
     call_params: AnthropicCallParams,
-) -> Callable[
-    _P, Awaitable[AnthropicAsyncStream[AnthropicCallResponseChunk | _OutputT]]
-]:
+) -> Callable[_P, Awaitable[AnthropicAsyncStream]]:
     @wraps(fn)
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> AnthropicAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
@@ -131,6 +113,6 @@ def stream_async_decorator(
                     cost=anthropic_api_calculate_cost(usage, model),
                 )
 
-        return AnthropicAsyncStream(generator(), output_parser)
+        return AnthropicAsyncStream(generator())
 
     return inner_async

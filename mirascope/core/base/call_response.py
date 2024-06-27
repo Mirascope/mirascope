@@ -13,8 +13,8 @@ from pydantic import (
     field_serializer,
 )
 
-from ._call_params import BaseCallParams
-from ._function_return import BaseFunctionReturn
+from .call_params import BaseCallParams
+from .function_return import BaseFunctionReturn
 from .tool import BaseTool
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
