@@ -10,14 +10,14 @@ from ..base import BaseTool, _utils
 from ._utils import openai_api_calculate_cost, setup_call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 
 _P = ParamSpec("_P")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_decorator(
-    fn: Callable[_P, OpenAICallFunctionReturn],
+    fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None,

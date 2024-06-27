@@ -19,9 +19,7 @@ def sentiment_classifier(review: str):
 
 
 @openai.call()
-def review_responder(
-    review: str, sentiment: Sentiment
-) -> openai.OpenAICallFunctionReturn:
+def review_responder(review: str, sentiment: Sentiment) -> openai.OpenAIDynamicConfig:
     """
     SYSTEM:
     Your task is to respond to a review.

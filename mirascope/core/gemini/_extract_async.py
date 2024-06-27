@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from ..base import _utils
 from ._utils import setup_extract
 from .call_params import GeminiCallParams
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
@@ -18,7 +18,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 def extract_async_decorator(
-    fn: Callable[_P, Awaitable[GeminiCallFunctionReturn]],
+    fn: Callable[_P, Awaitable[GeminiDynamicConfig]],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: GeminiCallParams,

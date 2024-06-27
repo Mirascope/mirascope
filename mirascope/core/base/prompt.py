@@ -16,7 +16,7 @@ from pydantic import BaseModel
 
 from ._utils import BaseType, format_template
 from .call_response import BaseCallResponse
-from .function_return import BaseFunctionReturn
+from .dynamic_config import BaseDynamicConfig
 from .stream import BaseStream
 from .stream_async import BaseAsyncStream
 
@@ -82,7 +82,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., BaseFunctionReturn]], Callable[..., _BaseCallResponseT]
+            [Callable[..., BaseDynamicConfig]], Callable[..., _BaseCallResponseT]
         ],
     ) -> _BaseCallResponseT: ...  # pragma: no cover
 
@@ -90,7 +90,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., BaseFunctionReturn]], Callable[..., _BaseStreamT]
+            [Callable[..., BaseDynamicConfig]], Callable[..., _BaseStreamT]
         ],
     ) -> _BaseStreamT: ...  # pragma: no cover
 
@@ -98,7 +98,7 @@ class BasePrompt(BaseModel):
     def run(  # type: ignore
         self,
         decorator: Callable[
-            [Callable[..., BaseFunctionReturn]], Callable[..., _ResponseModelT]
+            [Callable[..., BaseDynamicConfig]], Callable[..., _ResponseModelT]
         ],
     ) -> _ResponseModelT: ...  # pragma: no cover
 
@@ -106,7 +106,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., BaseFunctionReturn]],
+            [Callable[..., BaseDynamicConfig]],
             Callable[..., Iterable[_ResponseModelT]],
         ],
     ) -> Iterable[_ResponseModelT]: ...  # pragma: no cover
@@ -115,7 +115,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_BaseCallResponseT]],
         ],
     ) -> Awaitable[_BaseCallResponseT]: ...  # pragma: no cover
@@ -124,7 +124,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_BaseAsyncStreamT]],
         ],
     ) -> Awaitable[_BaseAsyncStreamT]: ...  # pragma: no cover
@@ -133,7 +133,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_ResponseModelT]],
         ],
     ) -> Awaitable[_ResponseModelT]: ...  # pragma: no cover
@@ -142,7 +142,7 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
     ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
@@ -150,35 +150,35 @@ class BasePrompt(BaseModel):
     def run(
         self,
         decorator: Callable[
-            [Callable[..., BaseFunctionReturn]],
+            [Callable[..., BaseDynamicConfig]],
             Callable[..., _BaseCallResponseT],
         ]
         | Callable[
-            [Callable[..., BaseFunctionReturn]],
+            [Callable[..., BaseDynamicConfig]],
             Callable[..., _BaseStreamT],
         ]
         | Callable[
-            [Callable[..., BaseFunctionReturn]],
+            [Callable[..., BaseDynamicConfig]],
             Callable[..., _ResponseModelT],
         ]
         | Callable[
-            [Callable[..., BaseFunctionReturn]],
+            [Callable[..., BaseDynamicConfig]],
             Callable[..., Iterable[_ResponseModelT]],
         ]
         | Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_BaseCallResponseT]],
         ]
         | Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_BaseAsyncStreamT]],
         ]
         | Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_ResponseModelT]],
         ]
         | Callable[
-            [Callable[..., Awaitable[BaseFunctionReturn]]],
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
     ) -> (

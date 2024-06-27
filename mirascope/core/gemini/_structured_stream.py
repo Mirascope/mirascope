@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from ..base import BaseStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import GeminiCallParams
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
@@ -47,7 +47,7 @@ class GeminiStructuredStream(
 
 
 def structured_stream_decorator(
-    fn: Callable[_P, GeminiCallFunctionReturn],
+    fn: Callable[_P, GeminiDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: GeminiCallParams,

@@ -13,7 +13,7 @@ from pydantic import computed_field
 
 from ..base import BaseCallResponse
 from .call_params import GeminiCallParams
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 
@@ -21,7 +21,7 @@ class GeminiCallResponse(
     BaseCallResponse[
         GenerateContentResponse | AsyncGenerateContentResponse,
         GeminiTool,
-        GeminiCallFunctionReturn,
+        GeminiDynamicConfig,
         ContentsType,
         GeminiCallParams,
         ContentDict,

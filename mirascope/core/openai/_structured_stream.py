@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from ..base import BaseStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import OpenAICallParams
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")
@@ -47,7 +47,7 @@ class OpenAIStructuredStream(
 
 
 def structured_stream_decorator(
-    fn: Callable[_P, OpenAICallFunctionReturn],
+    fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: OpenAICallParams,

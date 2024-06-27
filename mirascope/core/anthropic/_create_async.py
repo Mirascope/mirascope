@@ -13,14 +13,14 @@ from ._utils import (
 )
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 
 _P = ParamSpec("_P")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_async_decorator(
-    fn: Callable[_P, Awaitable[AnthropicCallFunctionReturn]],
+    fn: Callable[_P, Awaitable[AnthropicDynamicConfig]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT] | None,

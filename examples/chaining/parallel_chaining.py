@@ -33,7 +33,7 @@ async def ingredient_identifier(ingredient: str) -> IngredientsList:
 
 
 @openai.call_async(model="gpt-3.5-turbo")
-async def recipe_recommender(ingredient: str) -> openai.OpenAICallFunctionReturn:
+async def recipe_recommender(ingredient: str) -> openai.OpenAIDynamicConfig:
     """
     SYSTEM:
     Your task is to recommend a recipe. Pretend that you are chef {chef}.

@@ -1,4 +1,4 @@
-"""The base function return type for functions as LLM calls."""
+"""The base type in a function as an LLM call to return for dynamic configuration."""
 
 from typing import Any, Callable, Generic, TypeVar
 
@@ -11,29 +11,29 @@ _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 
 
-class FunctionReturnBase(TypedDict):
+class DynamicConfigBase(TypedDict):
     computed_fields: NotRequired[dict[str, str | list[str] | list[list[str]]]]
     tools: NotRequired[list[type[BaseTool] | Callable]]
 
 
-class FunctionReturnMessages(FunctionReturnBase, Generic[_MessageParamT]):
+class DynamicConfigMessages(DynamicConfigBase, Generic[_MessageParamT]):
     messages: NotRequired[list[_MessageParamT]]
 
 
-class FunctionReturnCallParams(FunctionReturnBase, Generic[_CallParamsT]):
+class DynamicConfigCallParams(DynamicConfigBase, Generic[_CallParamsT]):
     call_params: NotRequired[_CallParamsT]
 
 
-class FunctionReturnFull(FunctionReturnBase, Generic[_MessageParamT, _CallParamsT]):
+class DynamicConfigFull(DynamicConfigBase, Generic[_MessageParamT, _CallParamsT]):
     messages: NotRequired[list[_MessageParamT]]
     call_params: NotRequired[_CallParamsT]
 
 
-BaseFunctionReturn = (
-    FunctionReturnBase
-    | FunctionReturnMessages[_MessageParamT]
-    | FunctionReturnCallParams[_CallParamsT]
-    | FunctionReturnFull[_MessageParamT, _CallParamsT]
+BaseDynamicConfig = (
+    DynamicConfigBase
+    | DynamicConfigMessages[_MessageParamT]
+    | DynamicConfigCallParams[_CallParamsT]
+    | DynamicConfigFull[_MessageParamT, _CallParamsT]
     | None
 )
-"""The base function return type for functions as LLM calls."""
+"""The base type in a function as an LLM call to return for dynamic configuration."""

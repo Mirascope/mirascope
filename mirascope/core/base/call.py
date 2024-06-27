@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from ._utils import BaseType
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
-from .function_return import BaseFunctionReturn
+from .dynamic_config import BaseDynamicConfig
 from .stream import BaseStream
 from .tool import BaseTool
 
@@ -29,7 +29,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _ExtractModelT = TypeVar("_ExtractModelT", bound=BaseModel | BaseType)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
-_BaseFunctionReturnT = TypeVar("_BaseFunctionReturnT", bound=BaseFunctionReturn)
+_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _P = ParamSpec("_P")
 
@@ -38,11 +38,11 @@ def call_factory(
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
-    TFunctionReturn: type[_BaseFunctionReturnT],
+    TFunctionReturn: type[_BaseDynamicConfigT],
     TStream: type[_BaseStreamT],
     create_decorator: Callable[
         [
-            Callable[_P, _BaseFunctionReturnT],
+            Callable[_P, _BaseDynamicConfigT],
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
@@ -52,7 +52,7 @@ def call_factory(
     ],
     stream_decorator: Callable[
         [
-            Callable[_P, _BaseFunctionReturnT],
+            Callable[_P, _BaseDynamicConfigT],
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseChunkT], _ParsedOutputT] | None,
@@ -62,7 +62,7 @@ def call_factory(
     ],
     extract_decorator: Callable[
         [
-            Callable[_P, _BaseFunctionReturnT],
+            Callable[_P, _BaseDynamicConfigT],
             str,
             type[_ExtractModelT],
             _BaseCallParamsT,
@@ -71,7 +71,7 @@ def call_factory(
     ],
     structured_stream_decorator: Callable[
         [
-            Callable[_P, _BaseFunctionReturnT],
+            Callable[_P, _BaseDynamicConfigT],
             str,
             type[_ExtractModelT],
             _BaseCallParamsT,

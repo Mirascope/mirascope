@@ -10,7 +10,7 @@ from anthropic.types import MessageParam, ToolUseBlock, Usage
 from ..base import BaseTool, _utils
 from .call_params import AnthropicCallParams
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 
@@ -18,7 +18,7 @@ from .tool import AnthropicTool
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: AnthropicCallFunctionReturn,
+    fn_return: AnthropicDynamicConfig,
     tools: None,
     call_params: AnthropicCallParams,
 ) -> tuple[
@@ -33,7 +33,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: AnthropicCallFunctionReturn,
+    fn_return: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable],
     call_params: AnthropicCallParams,
 ) -> tuple[
@@ -47,7 +47,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: AnthropicCallFunctionReturn,
+    fn_return: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: AnthropicCallParams,
 ) -> tuple[
@@ -148,7 +148,7 @@ def handle_chunk(
 def setup_extract(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: AnthropicCallFunctionReturn,
+    fn_return: AnthropicDynamicConfig,
     tool: type[BaseTool],
     call_params: AnthropicCallParams,
 ) -> tuple[

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from ..base import _utils
 from ._utils import setup_extract
 from .call_params import AnthropicCallParams
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")
@@ -17,7 +17,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 def extract_decorator(
-    fn: Callable[_P, AnthropicCallFunctionReturn],
+    fn: Callable[_P, AnthropicDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: AnthropicCallParams,

@@ -18,7 +18,7 @@ from ._utils import anthropic_api_calculate_cost, handle_chunk, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")
@@ -65,7 +65,7 @@ class AnthropicStream(
 
 
 def stream_decorator(
-    fn: Callable[_P, AnthropicCallFunctionReturn],
+    fn: Callable[_P, AnthropicDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: AnthropicCallParams,

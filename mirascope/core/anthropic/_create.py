@@ -10,14 +10,14 @@ from ..base import BaseTool, _utils
 from ._utils import anthropic_api_calculate_cost, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 
 _P = ParamSpec("_P")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_decorator(
-    fn: Callable[_P, AnthropicCallFunctionReturn],
+    fn: Callable[_P, AnthropicDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT] | None,

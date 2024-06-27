@@ -6,7 +6,7 @@ from .call_async import call_async_factory
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
-from .function_return import BaseFunctionReturn
+from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
 from .prompt import BasePrompt, prompt_template, tags
 from .stream import BaseStream
@@ -22,7 +22,7 @@ __all__ = [
     "BaseCallParams",
     "BaseCallResponse",
     "BaseCallResponseChunk",
-    "BaseFunctionReturn",
+    "BaseDynamicConfig",
     "BaseMessageParam",
     "BasePrompt",
     "BaseStream",

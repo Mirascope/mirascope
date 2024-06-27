@@ -15,7 +15,7 @@ from pydantic import computed_field
 
 from ..base import BaseCallResponse
 from .call_params import OpenAICallParams
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 
@@ -23,7 +23,7 @@ class OpenAICallResponse(
     BaseCallResponse[
         ChatCompletion,
         OpenAITool,
-        OpenAICallFunctionReturn,
+        OpenAIDynamicConfig,
         ChatCompletionMessageParam,
         OpenAICallParams,
         ChatCompletionUserMessageParam,

@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from ._utils import BaseType
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
-from .function_return import BaseFunctionReturn
+from .dynamic_config import BaseDynamicConfig
 from .stream_async import BaseAsyncStream
 from .tool import BaseTool
 
@@ -30,7 +30,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _ExtractModelT = TypeVar("_ExtractModelT", bound=BaseModel | BaseType)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
-_BaseFunctionReturnT = TypeVar("_BaseFunctionReturnT", bound=BaseFunctionReturn)
+_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseAsyncStreamT = TypeVar("_BaseAsyncStreamT", bound=BaseAsyncStream)
 _P = ParamSpec("_P")
 
@@ -39,11 +39,11 @@ def call_async_factory(
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
-    TFunctionReturn: type[_BaseFunctionReturnT],
+    TFunctionReturn: type[_BaseDynamicConfigT],
     TAsyncStream: type[_BaseAsyncStreamT],
     create_async_decorator: Callable[
         [
-            Callable[_P, Awaitable[_BaseFunctionReturnT]],
+            Callable[_P, Awaitable[_BaseDynamicConfigT]],
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
@@ -53,7 +53,7 @@ def call_async_factory(
     ],
     stream_async_decorator: Callable[
         [
-            Callable[_P, Awaitable[_BaseFunctionReturnT]],
+            Callable[_P, Awaitable[_BaseDynamicConfigT]],
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseChunkT], _ParsedOutputT] | None,
@@ -63,7 +63,7 @@ def call_async_factory(
     ],
     extract_async_decorator: Callable[
         [
-            Callable[_P, Awaitable[_BaseFunctionReturnT]],
+            Callable[_P, Awaitable[_BaseDynamicConfigT]],
             str,
             type[_ExtractModelT],
             _BaseCallParamsT,
@@ -72,7 +72,7 @@ def call_async_factory(
     ],
     structured_stream_async_decorator: Callable[
         [
-            Callable[_P, Awaitable[_BaseFunctionReturnT]],
+            Callable[_P, Awaitable[_BaseDynamicConfigT]],
             str,
             type[_ExtractModelT],
             _BaseCallParamsT,

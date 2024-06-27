@@ -8,13 +8,13 @@ from ._structured_stream_async import structured_stream_async_decorator
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 
 gemini_call_async = call_async_factory(
     GeminiCallResponse,
     GeminiCallResponseChunk,
     GeminiCallParams,
-    GeminiCallFunctionReturn,
+    GeminiDynamicConfig,
     GeminiAsyncStream,
     create_async_decorator,
     stream_async_decorator,

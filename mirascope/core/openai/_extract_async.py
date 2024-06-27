@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from ..base import _utils
 from ._utils import setup_extract
 from .call_params import OpenAICallParams
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")
@@ -17,7 +17,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | _utils.BaseType)
 
 
 def extract_async_decorator(
-    fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    fn: Callable[_P, Awaitable[OpenAIDynamicConfig]],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: OpenAICallParams,

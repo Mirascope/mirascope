@@ -9,7 +9,7 @@ from google.generativeai.types import ContentsType  # type: ignore
 
 from ..base import BaseTool, _utils
 from .call_params import GeminiCallParams
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 
@@ -33,7 +33,7 @@ def parse_prompt_messages(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: GeminiCallFunctionReturn,
+    fn_return: GeminiDynamicConfig,
     tools: None,
     call_params: GeminiCallParams,
 ) -> tuple[
@@ -48,7 +48,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: GeminiCallFunctionReturn,
+    fn_return: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable],
     call_params: GeminiCallParams,
 ) -> tuple[
@@ -62,7 +62,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: GeminiCallFunctionReturn,
+    fn_return: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: GeminiCallParams,
 ) -> tuple[
@@ -108,7 +108,7 @@ def setup_call(
 def setup_extract(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: GeminiCallFunctionReturn,
+    fn_return: GeminiDynamicConfig,
     tool: type[BaseTool],
     call_params: GeminiCallParams,
 ) -> tuple[

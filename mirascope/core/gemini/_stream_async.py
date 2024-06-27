@@ -10,7 +10,7 @@ from ..base import BaseAsyncStream, BaseTool, _utils
 from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")
@@ -30,7 +30,7 @@ class GeminiAsyncStream(
 
 
 def stream_async_decorator(
-    fn: Callable[_P, Awaitable[GeminiCallFunctionReturn]],
+    fn: Callable[_P, Awaitable[GeminiDynamicConfig]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: GeminiCallParams,

@@ -9,13 +9,13 @@ from ._stream_async import AnthropicAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 
 anthropic_call_async = call_async_factory(
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
     AnthropicCallParams,
-    AnthropicCallFunctionReturn,
+    AnthropicDynamicConfig,
     AnthropicAsyncStream,
     create_async_decorator,
     stream_async_decorator,

@@ -8,13 +8,13 @@ from ._structured_stream import structured_stream_decorator
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 
 openai_call = call_factory(
     OpenAICallResponse,
     OpenAICallResponseChunk,
     OpenAICallParams,
-    OpenAICallFunctionReturn,
+    OpenAIDynamicConfig,
     OpenAIStream,
     create_decorator,
     stream_decorator,

@@ -15,7 +15,7 @@ from openai.types.completion_usage import CompletionUsage
 from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 
@@ -23,7 +23,7 @@ from .tool import OpenAITool
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: OpenAICallFunctionReturn,
+    fn_return: OpenAIDynamicConfig,
     tools: None,
     call_params: OpenAICallParams,
 ) -> tuple[
@@ -38,7 +38,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: OpenAICallFunctionReturn,
+    fn_return: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable],
     call_params: OpenAICallParams,
 ) -> tuple[
@@ -52,7 +52,7 @@ def setup_call(
 def setup_call(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: OpenAICallFunctionReturn,
+    fn_return: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: OpenAICallParams,
 ) -> tuple[
@@ -147,7 +147,7 @@ def handle_chunk(
 def setup_extract(
     fn: Callable,
     fn_args: dict[str, Any],
-    fn_return: OpenAICallFunctionReturn,
+    fn_return: OpenAIDynamicConfig,
     tool: type[BaseTool],
     call_params: OpenAICallParams,
 ) -> tuple[

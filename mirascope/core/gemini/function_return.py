@@ -2,10 +2,10 @@
 
 from google.generativeai.types import ContentsType  # type: ignore
 
-from ..base import BaseFunctionReturn
+from ..base import BaseDynamicConfig
 from .call_params import GeminiCallParams
 
-GeminiCallFunctionReturn = BaseFunctionReturn[ContentsType, GeminiCallParams]
+GeminiDynamicConfig = BaseDynamicConfig[ContentsType, GeminiCallParams]
 '''The function return type for functions wrapped with the `gemini_call` decorator.
 
 Attributes:
@@ -18,10 +18,10 @@ Attributes:
 Example:
 
 ```python
-from mirascope.core.gemini import GeminiCallFunctionReturn, gemini_call
+from mirascope.core.gemini import GeminiDynamicConfig, gemini_call
 
 @gemini_call(model="gemini-pro")
-def recommend_book(genre: str) -> GeminiCallFunctionReturn:
+def recommend_book(genre: str) -> GeminiDynamicConfig:
     """Recommend a {capitalized_genre} book."""
     reeturn {"computed_fields": {"capitalized_genre": genre.capitalize()}}
 ```

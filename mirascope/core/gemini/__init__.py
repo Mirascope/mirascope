@@ -7,13 +7,13 @@ from .call_async import gemini_call_async as call_async
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 from .tool import GeminiTool
 
 __all__ = [
     "call",
     "call_async",
-    "GeminiCallFunctionReturn",
+    "GeminiDynamicConfig",
     "GeminiCallParams",
     "GeminiCallResponse",
     "GeminiCallResponseChunk",

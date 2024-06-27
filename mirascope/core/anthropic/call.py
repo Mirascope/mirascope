@@ -8,13 +8,13 @@ from ._structured_stream import structured_stream_decorator
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 
 anthropic_call = call_factory(
     AnthropicCallResponse,
     AnthropicCallResponseChunk,
     AnthropicCallParams,
-    AnthropicCallFunctionReturn,
+    AnthropicDynamicConfig,
     AnthropicStream,
     create_decorator,
     stream_decorator,

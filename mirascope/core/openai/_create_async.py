@@ -13,14 +13,14 @@ from ._utils import (
 )
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 
 _P = ParamSpec("_P")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_async_decorator(
-    fn: Callable[_P, Awaitable[OpenAICallFunctionReturn]],
+    fn: Callable[_P, Awaitable[OpenAIDynamicConfig]],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None,

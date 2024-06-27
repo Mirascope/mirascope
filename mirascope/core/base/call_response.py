@@ -14,12 +14,12 @@ from pydantic import (
 )
 
 from .call_params import BaseCallParams
-from .function_return import BaseFunctionReturn
+from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-_BaseFunctionReturnT = TypeVar("_BaseFunctionReturnT", bound=BaseFunctionReturn)
+_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
@@ -30,7 +30,7 @@ class BaseCallResponse(
     Generic[
         _ResponseT,
         _BaseToolT,
-        _BaseFunctionReturnT,
+        _BaseDynamicConfigT,
         _MessageParamT,
         _CallParamsT,
         _UserMessageParamT,
@@ -54,7 +54,7 @@ class BaseCallResponse(
     tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None
     fn_args: dict[str, Any]
-    fn_return: _BaseFunctionReturnT
+    fn_return: _BaseDynamicConfigT
     messages: SkipValidation[list[_MessageParamT]]
     call_params: _CallParamsT
     user_message_param: _UserMessageParamT | None = None

@@ -17,7 +17,7 @@ from ._utils import handle_chunk, openai_api_calculate_cost, setup_call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")
@@ -77,7 +77,7 @@ class OpenAIStream(
 
 
 def stream_decorator(
-    fn: Callable[_P, OpenAICallFunctionReturn],
+    fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: OpenAICallParams,

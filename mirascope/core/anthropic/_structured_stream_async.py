@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from ..base import BaseAsyncStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import AnthropicCallParams
-from .function_return import AnthropicCallFunctionReturn
+from .function_return import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")
@@ -53,7 +53,7 @@ class AnthropicAsyncStructuredStream(
 
 
 def structured_stream_async_decorator(
-    fn: Callable[_P, Awaitable[AnthropicCallFunctionReturn]],
+    fn: Callable[_P, Awaitable[AnthropicDynamicConfig]],
     model: str,
     response_model: type[_ResponseModelT],
     call_params: AnthropicCallParams,

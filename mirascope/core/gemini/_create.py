@@ -10,14 +10,14 @@ from ..base import BaseTool, _utils
 from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
-from .function_return import GeminiCallFunctionReturn
+from .function_return import GeminiDynamicConfig
 
 _P = ParamSpec("_P")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 
 
 def create_decorator(
-    fn: Callable[_P, GeminiCallFunctionReturn],
+    fn: Callable[_P, GeminiDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[GeminiCallResponse], _ParsedOutputT] | None,

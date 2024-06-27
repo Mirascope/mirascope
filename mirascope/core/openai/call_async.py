@@ -9,13 +9,13 @@ from ._stream_async import OpenAIAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
-from .function_return import OpenAICallFunctionReturn
+from .function_return import OpenAIDynamicConfig
 
 openai_call_async = call_async_factory(
     OpenAICallResponse,
     OpenAICallResponseChunk,
     OpenAICallParams,
-    OpenAICallFunctionReturn,
+    OpenAIDynamicConfig,
     OpenAIAsyncStream,
     create_async_decorator,
     stream_async_decorator,

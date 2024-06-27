@@ -2,10 +2,10 @@
 
 from anthropic.types import MessageParam
 
-from ..base import BaseFunctionReturn
+from ..base import BaseDynamicConfig
 from .call_params import AnthropicCallParams
 
-AnthropicCallFunctionReturn = BaseFunctionReturn[MessageParam, AnthropicCallParams]
+AnthropicDynamicConfig = BaseDynamicConfig[MessageParam, AnthropicCallParams]
 '''The function return type for functions wrapped with the `anthropic_call` decorator.
 
 Attributes:
@@ -21,7 +21,7 @@ Example:
 from mirascope.core import anthropic
 
 @anthropic.call(model="gpt-4o")
-def recommend_book(genre: str) -> anthropic.AnthropicCallFunctionReturn:
+def recommend_book(genre: str) -> anthropic.AnthropicDynamicConfig:
     """Recommend a {capitalized_genre} book."""
     return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
 ```
