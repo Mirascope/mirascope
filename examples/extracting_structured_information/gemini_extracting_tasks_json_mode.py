@@ -1,6 +1,5 @@
 """Extracting unstructured information into json using json mode for Gemini:"""
 
-
 from google.generativeai import configure
 
 from mirascope.core import gemini

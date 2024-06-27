@@ -5,9 +5,7 @@ from functools import wraps
 from typing import (
     Awaitable,
     Callable,
-    Generic,
     ParamSpec,
-    TypeVar,
 )
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI

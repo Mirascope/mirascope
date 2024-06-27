@@ -1,6 +1,5 @@
 """This module contains the Gemini `extract_decorator` function."""
 
-import json
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 

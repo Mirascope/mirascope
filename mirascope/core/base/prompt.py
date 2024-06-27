@@ -9,7 +9,6 @@ from typing import (
     Iterable,
     ParamSpec,
     TypeVar,
-    Unpack,
     overload,
 )
 
