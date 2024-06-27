@@ -76,6 +76,8 @@ def setup_call(
             template=prompt_template,
             attrs=fn_args,
         )
+        if messages[0]["role"] == "system":
+            call_kwargs["system"] = messages.pop(0)["content"]
 
     tool_types = None
     if tools:

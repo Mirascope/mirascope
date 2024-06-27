@@ -9,6 +9,7 @@ from typing import (
     Iterable,
     ParamSpec,
     TypeVar,
+    Unpack,
     overload,
 )
 
@@ -192,20 +193,17 @@ class BasePrompt(BaseModel):
         | Awaitable[AsyncIterable[_ResponseModelT]]
     ):
         """Returns the response of calling the API of the provided decorator."""
-        if "async" in decorator.func.__name__:  # type: ignore
-
-            @decorator  # type: ignore
-            @prompt_template(self._prompt_template())
-            async def _run_async() -> BaseFunctionReturn: ...  # pragma: no cover
-
-            return _run_async()
-        else:
-
-            @decorator  # type: ignore
-            @prompt_template(self._prompt_template())
-            def _run() -> BaseFunctionReturn: ...  # pragma: no cover
-
-            return _run()
+        kwargs = self.model_dump()
+        args_str = ", ".join(f"{k}: {type(v).__name__}" for k, v in kwargs.items())
+        fn_def = (
+            f"async def fn({args_str}): ..."
+            if "async" in decorator.func.__name__
+            else f"def fn({args_str}): ..."
+        )
+        namespace = {}
+        exec(fn_def, namespace)
+        fn = namespace["fn"]
+        return decorator(prompt_template(self._prompt_template())(fn))(**kwargs)
 
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
