@@ -12,7 +12,7 @@ _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 
 
 class DynamicConfigBase(TypedDict):
-    computed_fields: NotRequired[dict[str, str | list[str] | list[list[str]]]]
+    computed_fields: NotRequired[dict[str, Any | list[Any] | list[list[Any]]]]
     tools: NotRequired[list[type[BaseTool] | Callable]]
 
 
