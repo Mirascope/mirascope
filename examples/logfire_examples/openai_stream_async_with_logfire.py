@@ -9,7 +9,6 @@ from mirascope.core import openai
 from mirascope.integrations.logfire import with_logfire
 
 logfire.configure()
-
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 

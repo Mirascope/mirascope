@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 from functools import wraps
-from typing import Callable, ParamSpec
+from typing import Any, Callable, ParamSpec
 
 from anthropic import Anthropic
 from anthropic.types import (
@@ -29,12 +29,17 @@ class AnthropicStream(
 ):
     """A class for streaming responses from Anthropic's API."""
 
+    provider: str = "anthropic"
+
     def __init__(
         self,
         stream: Generator[AnthropicCallResponseChunk, None, None],
+        prompt_template: str,
+        fn_args: dict[str, Any],
+        call_params: AnthropicCallParams,
     ):
         """Initializes an instance of `AnthropicStream`."""
-        super().__init__(stream, MessageParam)
+        super().__init__(stream, MessageParam, prompt_template, fn_args, call_params)
 
     def __iter__(
         self,
@@ -74,7 +79,7 @@ def stream_decorator(
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> AnthropicStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
-        _, messages, tool_types, call_kwargs = setup_call(
+        prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = Anthropic()
@@ -101,6 +106,6 @@ def stream_decorator(
                     cost=anthropic_api_calculate_cost(usage, model),
                 )
 
-        return AnthropicStream(generator())
+        return AnthropicStream(generator(), prompt_template, fn_args, call_params)
 
     return inner

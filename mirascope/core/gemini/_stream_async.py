@@ -1,7 +1,7 @@
 """This module contains the Gemini `stream_async_decorator` function."""
 
 from functools import wraps
-from typing import AsyncGenerator, Awaitable, Callable, ParamSpec
+from typing import Any, AsyncGenerator, Awaitable, Callable, ParamSpec
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import ContentDict  # type: ignore
@@ -21,12 +21,17 @@ class GeminiAsyncStream(
 ):
     """A class for streaming responses from Google's Gemini API."""
 
+    provider: str = "gemini"
+
     def __init__(
         self,
         stream: AsyncGenerator[GeminiCallResponseChunk, None],
+        prompt_template: str,
+        fn_args: dict[str, Any],
+        call_params: GeminiCallParams,
     ):
         """Initializes an instance of `GeminiStream`."""
-        super().__init__(stream, ContentDict)
+        super().__init__(stream, ContentDict, prompt_template, fn_args, call_params)
 
 
 def stream_async_decorator(
@@ -39,7 +44,7 @@ def stream_async_decorator(
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> GeminiAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = await fn(*args, **kwargs)
-        _, messages, tool_types, call_kwargs = setup_call(
+        prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = GenerativeModel(model_name=model)
@@ -62,6 +67,6 @@ def stream_async_decorator(
                     cost=None,
                 )
 
-        return GeminiAsyncStream(generator())
+        return GeminiAsyncStream(generator(), prompt_template, fn_args, call_params)
 
     return inner_async

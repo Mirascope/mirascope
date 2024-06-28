@@ -3,6 +3,7 @@
 from collections.abc import AsyncGenerator
 from functools import wraps
 from typing import (
+    Any,
     Awaitable,
     Callable,
     ParamSpec,
@@ -41,12 +42,23 @@ class OpenAIAsyncStream(
 ):
     """A class for streaming responses from OpenAI's API."""
 
+    provider: str = "openai"
+
     def __init__(
         self,
         stream: AsyncGenerator[OpenAICallResponseChunk, None],
+        prompt_template: str,
+        fn_args: dict[str, Any],
+        call_params: OpenAICallParams,
     ):
         """Initializes an instance of `OpenAIAsyncStream`."""
-        super().__init__(stream, ChatCompletionAssistantMessageParam)
+        super().__init__(
+            stream,
+            ChatCompletionAssistantMessageParam,
+            prompt_template,
+            fn_args,
+            call_params,
+        )
 
     def __aiter__(
         self,
@@ -99,7 +111,7 @@ def stream_async_decorator(
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = await fn(*args, **kwargs)
-        _, messages, tool_types, call_kwargs = setup_call(
+        prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = AsyncOpenAI()
@@ -123,6 +135,6 @@ def stream_async_decorator(
                     cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 )
 
-        return OpenAIAsyncStream(generator())
+        return OpenAIAsyncStream(generator(), prompt_template, fn_args, call_params)
 
     return inner_async

@@ -1,16 +1,11 @@
 """Mirascope x Logfire Integration."""
 
-import inspect
 from contextlib import contextmanager
-from functools import wraps
-from string import Formatter
 from typing import (
     Any,
-    AsyncIterable,
     Awaitable,
     Callable,
     Generator,
-    Iterable,
     ParamSpec,
     TypeVar,
     overload,
@@ -61,7 +56,7 @@ def with_logfire(
             "template_variables": result.fn_args,
             "output": output,
             "messages": result.messages,
-            "response_data": result.model_dump(),
+            "response_data": result.response,
         }
 
         if tools := result.tools:
@@ -89,9 +84,24 @@ def with_logfire(
         stream: BaseStream,
         logfire_span: logfire.LogfireSpan | None,
     ):
-        stream_dict = {k: v for k, v in vars(stream).items() if not k.startswith("_")}
+        output: dict[str, Any] = {
+            "cost": stream.cost,
+            "input_tokens": stream.input_tokens,
+            "output_tokens": stream.output_tokens,
+            "content": stream.message_param.get("content", None),
+        }
+        span_data = {
+            "async": False,
+            "output": output,
+            "messages": [stream.user_message_param],
+            "call_params": stream.call_params,
+            "model": stream.model,
+            "provider": stream.provider,
+            "prompt_template": stream.prompt_template,
+            "template_variables": stream.fn_args,
+        }
         if logfire_span is not None:
-            logfire_span.set_attributes(stream_dict)
+            logfire_span.set_attributes(span_data)
 
     def handle_base_model(result: BaseModel, logfire_span: logfire.LogfireSpan | None):
         print("baz")
@@ -111,7 +121,7 @@ def with_logfire(
             "template_variables": result.fn_args,
             "output": output,
             "messages": result.messages,
-            "response_data": result.model_dump(),
+            "response_data": result.response,
         }
 
         if tools := result.tools:
@@ -139,7 +149,24 @@ def with_logfire(
         stream: BaseStream,
         logfire_span: logfire.LogfireSpan | None,
     ):
-        handle_stream(stream, logfire_span)
+        output: dict[str, Any] = {
+            "cost": stream.cost,
+            "input_tokens": stream.input_tokens,
+            "output_tokens": stream.output_tokens,
+            "content": stream.message_param.get("content", None),
+        }
+        span_data = {
+            "async": True,
+            "output": output,
+            "messages": [stream.user_message_param],
+            "call_params": stream.call_params,
+            "model": stream.model,
+            "provider": stream.provider,
+            "prompt_template": stream.prompt_template,
+            "template_variables": stream.fn_args,
+        }
+        if logfire_span is not None:
+            logfire_span.set_attributes(span_data)
 
     return middleware(
         fn,

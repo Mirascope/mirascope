@@ -37,7 +37,9 @@ def default_context_manager():
 def middleware(
     fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
     *,
-    custom_context_manager: Generator[_T, Any, None] = default_context_manager(),
+    custom_context_manager: Callable[
+        [], Generator[_T, Any, None]
+    ] = default_context_manager,
     custom_decorator: _DecoratorType | None = None,
     handle_call_response: Callable[[BaseCallResponse, _T], None] | None = None,
     handle_call_response_async: Callable[[BaseCallResponse, _T], Awaitable[None]]
@@ -83,10 +85,10 @@ def middleware(
             def new_aiter(self):
                 async def generator():
                     with custom_context_manager() as context:
-                        async for chunk, tool in original_aiter:
+                        async for chunk, tool in original_aiter():
                             yield chunk, tool
-                    if handle_stream_async:
-                        await handle_stream_async(result, context)
+                        if handle_stream_async is not None:
+                            await handle_stream_async(result, context)
 
                 return generator()
 

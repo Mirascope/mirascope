@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncGenerator
 from functools import wraps
-from typing import Awaitable, Callable, ParamSpec
+from typing import Any, Awaitable, Callable, ParamSpec
 
 from anthropic import AsyncAnthropic
 from anthropic.types import (
@@ -35,12 +35,17 @@ class AnthropicAsyncStream(
 ):
     """A class for streaming responses from Anthropic's API."""
 
+    provider: str = "anthropic"
+
     def __init__(
         self,
         stream: AsyncGenerator[AnthropicCallResponseChunk, None],
+        prompt_template: str,
+        fn_args: dict[str, Any],
+        call_params: AnthropicCallParams,
     ):
         """Initializes an instance of `AnthropicAsyncStream`."""
-        super().__init__(stream, MessageParam)
+        super().__init__(stream, MessageParam, prompt_template, fn_args, call_params)
 
     def __aiter__(
         self,
@@ -86,7 +91,7 @@ def stream_async_decorator(
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> AnthropicAsyncStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = await fn(*args, **kwargs)
-        _, messages, tool_types, call_kwargs = setup_call(
+        prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = AsyncAnthropic()
@@ -113,6 +118,6 @@ def stream_async_decorator(
                     cost=anthropic_api_calculate_cost(usage, model),
                 )
 
-        return AnthropicAsyncStream(generator())
+        return AnthropicAsyncStream(generator(), prompt_template, fn_args, call_params)
 
     return inner_async

@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 from functools import wraps
-from typing import Callable, ParamSpec
+from typing import Any, Callable, ParamSpec
 
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import (
@@ -33,12 +33,23 @@ class OpenAIStream(
 ):
     """A class for streaming responses from OpenAI's API."""
 
+    provider: str = "openai"
+
     def __init__(
         self,
         stream: Generator[OpenAICallResponseChunk, None, None],
+        prompt_template: str,
+        fn_args: dict[str, Any],
+        call_params: OpenAICallParams,
     ):
         """Initializes an instance of `OpenAIStream`."""
-        super().__init__(stream, ChatCompletionAssistantMessageParam)
+        super().__init__(
+            stream,
+            ChatCompletionAssistantMessageParam,
+            prompt_template,
+            fn_args,
+            call_params,
+        )
 
     def __iter__(
         self,
@@ -86,7 +97,7 @@ def stream_decorator(
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> OpenAIStream:
         fn_args = _utils.get_fn_args(fn, args, kwargs)
         fn_return = fn(*args, **kwargs)
-        _, messages, tool_types, call_kwargs = setup_call(
+        prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
         client = OpenAI()
@@ -109,8 +120,7 @@ def stream_decorator(
                     tool_types=tool_types,
                     cost=openai_api_calculate_cost(chunk.usage, chunk.model),
                 )
-            return fn_args, fn_return, call_params
 
-        return OpenAIStream(generator())
+        return OpenAIStream(generator(), prompt_template, fn_args, call_params)
 
     return inner
