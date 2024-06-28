@@ -48,7 +48,7 @@ def with_logfire(
             return
         output: dict[str, Any] = {}
         span_data = {
-            "async": True,
+            "async": False,
             "call_params": result.call_params,
             "model": result.model,
             "provider": result.provider,

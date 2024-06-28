@@ -4,6 +4,7 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
 from openai import OpenAI
+from openai._base_client import BaseClient
 from pydantic import BaseModel
 
 from ..base import _utils
@@ -20,6 +21,7 @@ def extract_decorator(
     fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
+    client: BaseClient | None,
     call_params: OpenAICallParams,
 ) -> Callable[_P, _ResponseModelT]:
     assert response_model is not None
@@ -33,8 +35,8 @@ def extract_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = OpenAI()
-        response = client.chat.completions.create(
+        _client = client or OpenAI()
+        response = _client.chat.completions.create(
             model=model, stream=False, messages=messages, **call_kwargs
         )
 

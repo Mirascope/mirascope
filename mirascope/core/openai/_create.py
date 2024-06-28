@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
 from openai import OpenAI
+from openai._base_client import BaseClient
 
 from ..base import BaseTool, _utils
 from ._utils import openai_api_calculate_cost, setup_call
@@ -21,6 +22,7 @@ def create_decorator(
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[OpenAICallResponse], _ParsedOutputT] | None,
+    client: BaseClient | None,
     call_params: OpenAICallParams,
 ) -> Callable[_P, OpenAICallResponse | _ParsedOutputT]:
     @wraps(fn)
@@ -32,9 +34,9 @@ def create_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = OpenAI()
+        _client = client or OpenAI()
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = client.chat.completions.create(
+        response = _client.chat.completions.create(
             model=model, stream=False, messages=messages, **call_kwargs
         )
         output = OpenAICallResponse(

@@ -31,6 +31,7 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
+_BaseClientT = TypeVar("_BaseClientT", bound=object)
 _P = ParamSpec("_P")
 
 
@@ -46,6 +47,7 @@ def call_factory(
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
+            _BaseClientT,
             _BaseCallParamsT,
         ],
         Callable[_P, _BaseCallResponseT | _ParsedOutputT],
@@ -56,6 +58,7 @@ def call_factory(
             str,
             list[type[BaseTool] | Callable] | None,
             Callable[[_BaseCallResponseChunkT], _ParsedOutputT] | None,
+            _BaseClientT,
             _BaseCallParamsT,
         ],
         Callable[_P, _BaseStreamT],
@@ -65,6 +68,7 @@ def call_factory(
             Callable[_P, _BaseDynamicConfigT],
             str,
             type[_ExtractModelT],
+            _BaseClientT,
             _BaseCallParamsT,
         ],
         Callable[_P, _ExtractModelT],
@@ -74,6 +78,7 @@ def call_factory(
             Callable[_P, _BaseDynamicConfigT],
             str,
             type[_ExtractModelT],
+            _BaseClientT,
             _BaseCallParamsT,
         ],
         Callable[_P, Iterable[_ExtractModelT]],
@@ -87,6 +92,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -101,6 +107,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -115,6 +122,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -126,6 +134,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -140,6 +149,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -151,6 +161,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -162,6 +173,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -177,6 +189,7 @@ def call_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -188,6 +201,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -203,6 +217,7 @@ def call_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -215,6 +230,7 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT]
         | None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TFunctionReturn]],
@@ -238,6 +254,7 @@ def call_factory(
                     structured_stream_decorator,
                     model=model,
                     response_model=response_model,
+                    client=client,
                     call_params=call_params,
                 )
             else:
@@ -245,6 +262,7 @@ def call_factory(
                     extract_decorator,
                     model=model,
                     response_model=response_model,
+                    client=client,
                     call_params=call_params,
                 )
         if stream:
@@ -252,6 +270,7 @@ def call_factory(
                 stream_decorator,
                 model=model,
                 tools=tools,
+                client=client,
                 call_params=call_params,
             )
         return partial(
@@ -259,6 +278,7 @@ def call_factory(
             model=model,
             tools=tools,
             output_parser=output_parser,  # type: ignore
+            client=client,
             call_params=call_params,
         )
 

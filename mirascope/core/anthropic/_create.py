@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
 from anthropic import Anthropic
+from anthropic._base_client import BaseClient
 
 from ..base import BaseTool, _utils
 from ._utils import anthropic_api_calculate_cost, setup_call
@@ -21,6 +22,7 @@ def create_decorator(
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[AnthropicCallResponse], _ParsedOutputT] | None,
+    client: BaseClient | None,
     call_params: AnthropicCallParams,
 ) -> Callable[_P, AnthropicCallResponse | _ParsedOutputT]:
     @wraps(fn)
@@ -32,9 +34,9 @@ def create_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = Anthropic()
+        _client = client or Anthropic()
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = client.messages.create(
+        response = _client.messages.create(
             model=model, stream=False, messages=messages, **call_kwargs
         )
         output = AnthropicCallResponse(

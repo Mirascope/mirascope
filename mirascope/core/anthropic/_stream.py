@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Any, Callable, ParamSpec
 
 from anthropic import Anthropic
+from anthropic._base_client import BaseClient
 from anthropic.types import (
     MessageParam,
     MessageStartEvent,
@@ -73,6 +74,7 @@ def stream_decorator(
     fn: Callable[_P, AnthropicDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
+    client: BaseClient | None,
     call_params: AnthropicCallParams,
 ) -> Callable[_P, AnthropicStream]:
     @wraps(fn)
@@ -82,9 +84,9 @@ def stream_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = Anthropic()
+        _client = client or Anthropic()
 
-        stream = client.messages.create(
+        stream = _client.messages.create(
             model=model, stream=True, messages=messages, **call_kwargs
         )
 

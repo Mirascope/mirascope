@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Callable, Generic, Iterable, ParamSpec, TypeVar
 
 from openai import OpenAI
+from openai._base_client import BaseClient
 from openai.types.chat import ChatCompletionChunk
 from pydantic import BaseModel
 
@@ -50,6 +51,7 @@ def structured_stream_decorator(
     fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
+    client: BaseClient | None,
     call_params: OpenAICallParams,
 ) -> Callable[_P, Iterable[_ResponseModelT]]:
     assert response_model is not None
@@ -63,11 +65,11 @@ def structured_stream_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = OpenAI()
+        _client = client or OpenAI()
         return OpenAIStructuredStream(
             stream=(
                 chunk
-                for chunk in client.chat.completions.create(
+                for chunk in _client.chat.completions.create(
                     model=model, stream=True, messages=messages, **call_kwargs
                 )
             ),

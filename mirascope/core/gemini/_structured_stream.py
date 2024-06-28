@@ -50,6 +50,7 @@ def structured_stream_decorator(
     fn: Callable[_P, GeminiDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
+    client: GenerativeModel | None,
     call_params: GeminiCallParams,
 ) -> Callable[_P, Iterable[_ResponseModelT]]:
     assert response_model is not None
@@ -63,8 +64,8 @@ def structured_stream_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = GenerativeModel(model_name=model)
-        stream = client.generate_content(
+        _client = client or GenerativeModel(model_name=model)
+        stream = _client.generate_content(
             messages,
             stream=True,
             **call_kwargs,

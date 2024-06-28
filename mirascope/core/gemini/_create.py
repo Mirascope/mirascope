@@ -21,6 +21,7 @@ def create_decorator(
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
     output_parser: Callable[[GeminiCallResponse], _ParsedOutputT] | None,
+    client: GenerativeModel | None,
     call_params: GeminiCallParams,
 ) -> Callable[_P, GeminiCallResponse | _ParsedOutputT]:
     @wraps(fn)
@@ -32,9 +33,9 @@ def create_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = GenerativeModel(model_name=model)
+        _client = client or GenerativeModel(model_name=model)
         start_time = datetime.datetime.now().timestamp() * 1000
-        response = client.generate_content(
+        response = _client.generate_content(
             messages,
             stream=False,
             **call_kwargs,

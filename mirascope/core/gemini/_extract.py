@@ -20,6 +20,7 @@ def extract_decorator(
     fn: Callable[_P, GeminiDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
+    client: GenerativeModel | None,
     call_params: GeminiCallParams,
 ) -> Callable[_P, _ResponseModelT]:
     assert response_model is not None
@@ -33,8 +34,8 @@ def extract_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = GenerativeModel(model_name=model)
-        response = client.generate_content(
+        _client = client or GenerativeModel(model_name=model)
+        response = _client.generate_content(
             messages,
             stream=False,
             **call_kwargs,

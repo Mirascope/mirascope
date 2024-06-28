@@ -51,27 +51,6 @@ def middleware(
 ) -> Callable[_P, _R] | Callable[_P, Awaitable[_R]]:
     """Wraps a Mirascope function with middleware."""
 
-    def handlers(result: _R):
-        if isinstance(result, BaseCallResponse) and handle_call_response is not None:
-            with custom_context_manager() as context:
-                handle_call_response(result, context)
-        elif isinstance(result, BaseStream) and handle_stream is not None:
-            original_iter = result.__iter__
-
-            def new_iter(self):
-                with custom_context_manager() as context:
-                    for chunk, tool in original_iter():
-                        yield chunk, tool
-                    if handle_stream is not None:
-                        handle_stream(result, context)
-
-            result.__class__.__iter__ = types.MethodType(new_iter, result)  # type: ignore
-        elif isinstance(result, BaseModel) and handle_base_model is not None:
-            with custom_context_manager() as context:
-                handle_base_model(result._response, context)
-        elif isinstance(result, Iterable[BaseModel]):
-            ...
-
     async def handlers_async(result: _R):
         if (
             isinstance(result, BaseCallResponse)
@@ -101,7 +80,26 @@ def middleware(
 
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> _R:
         result = fn(*args, **kwargs)
-        handlers(result)
+        if isinstance(result, BaseCallResponse) and handle_call_response is not None:
+            with custom_context_manager() as context:
+                handle_call_response(result, context)
+        elif isinstance(result, BaseStream) and handle_stream is not None:
+            original_iter = result.__iter__
+
+            def new_iter(self):
+                # Create the context manager when user iterates over the stream
+                with custom_context_manager() as context:
+                    for chunk, tool in original_iter():
+                        yield chunk, tool
+                    if handle_stream is not None:
+                        handle_stream(result, context)
+
+            result.__class__.__iter__ = types.MethodType(new_iter, result)  # type: ignore
+        elif isinstance(result, BaseModel) and handle_base_model is not None:
+            with custom_context_manager() as context:
+                handle_base_model(result._response, context)
+        elif isinstance(result, Iterable[BaseModel]):
+            ...
         return result
 
     async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> Awaitable[_R]:

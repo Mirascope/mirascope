@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Any, Callable, ParamSpec
 
 from openai import AzureOpenAI, OpenAI
+from openai._base_client import BaseClient
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageToolCall,
@@ -91,6 +92,7 @@ def stream_decorator(
     fn: Callable[_P, OpenAIDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
+    client: BaseClient | None,
     call_params: OpenAICallParams,
 ) -> Callable[_P, OpenAIStream]:
     @wraps(fn)
@@ -100,12 +102,12 @@ def stream_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = OpenAI()
+        _client = client or OpenAI()
 
-        if not isinstance(client, AzureOpenAI):
+        if not isinstance(_client, AzureOpenAI):
             call_kwargs["stream_options"] = {"include_usage": True}
 
-        stream = client.chat.completions.create(
+        stream = _client.chat.completions.create(
             model=model, stream=True, messages=messages, **call_kwargs
         )
 

@@ -36,6 +36,7 @@ def stream_decorator(
     fn: Callable[_P, GeminiDynamicConfig],
     model: str,
     tools: list[type[BaseTool] | Callable] | None,
+    client: GenerativeModel | None,
     call_params: GeminiCallParams,
 ) -> Callable[_P, GeminiStream]:
     @wraps(fn)
@@ -45,8 +46,8 @@ def stream_decorator(
         prompt_template, messages, tool_types, call_kwargs = setup_call(
             fn, fn_args, fn_return, tools, call_params
         )
-        client = GenerativeModel(model_name=model)
-        stream = client.generate_content(
+        _client = client or GenerativeModel(model_name=model)
+        stream = _client.generate_content(
             messages,
             stream=True,
             tools=tools,

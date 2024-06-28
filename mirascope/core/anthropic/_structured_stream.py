@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Callable, Generic, Iterable, ParamSpec, TypeVar
 
 from anthropic import Anthropic
+from anthropic._base_client import BaseClient
 from anthropic.lib.streaming import MessageStreamEvent
 from pydantic import BaseModel
 
@@ -42,6 +43,7 @@ def structured_stream_decorator(
     fn: Callable[_P, AnthropicDynamicConfig],
     model: str,
     response_model: type[_ResponseModelT],
+    client: BaseClient | None,
     call_params: AnthropicCallParams,
 ) -> Callable[_P, Iterable[_ResponseModelT]]:
     assert response_model is not None
@@ -55,11 +57,11 @@ def structured_stream_decorator(
         json_mode, messages, call_kwargs = setup_extract(
             fn, fn_args, fn_return, tool, call_params
         )
-        client = Anthropic()
+        _client = client or Anthropic()
         return AnthropicStructuredStream(
             stream=(
                 chunk
-                for chunk in client.messages.create(
+                for chunk in _client.messages.create(
                     model=model, stream=True, messages=messages, **call_kwargs
                 )
             ),
