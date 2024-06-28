@@ -193,10 +193,10 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator."""
         kwargs = self.model_dump()
-        args_str = ", ".join(f"{k}: {type(v).__name__}" for k, v in kwargs.items())
+        args_str = ", ".join(kwargs.keys())
         fn_def = (
             f"async def fn({args_str}): ..."
-            if "async" in decorator.func.__name__
+            if "async" in decorator.__name__
             else f"def fn({args_str}): ..."
         )
         namespace = {}
