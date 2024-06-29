@@ -36,10 +36,11 @@ _P = ParamSpec("_P")
 
 
 def call_factory(
+    *,
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
-    TFunctionReturn: type[_BaseDynamicConfigT],
+    TDynamicConfig: type[_BaseDynamicConfigT],
     TStream: type[_BaseStreamT],
     create_decorator: Callable[
         [
@@ -95,7 +96,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[_P, TCallResponse],
     ]: ...  # pragma: no cover
 
@@ -110,7 +111,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[_P, _ParsedOutputT],
     ]: ...  # pragma: no cover
 
@@ -137,7 +138,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[_P, TStream],
     ]: ...  # pragma: no cover
 
@@ -176,7 +177,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[_P, _ResponseModelT],
     ]: ...  # pragma: no cover
 
@@ -204,7 +205,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[_P, Iterable[_ResponseModelT]],
     ]: ...  # pragma: no cover
 
@@ -233,7 +234,7 @@ def call_factory(
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, TFunctionReturn]],
+        [Callable[_P, TDynamicConfig]],
         Callable[
             _P,
             TCallResponse

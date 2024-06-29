@@ -1,25 +1,29 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory
-from ._create import create_decorator
+from ..base import call_factory, create_factory
 from ._extract import extract_decorator
 from ._stream import OpenAIStream, stream_decorator
 from ._structured_stream import structured_stream_decorator
+from ._utils import openai_api_calculate_cost, setup_call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAIDynamicConfig
+from .dyanmic_config import OpenAIDynamicConfig
 
 openai_call = call_factory(
-    OpenAICallResponse,
-    OpenAICallResponseChunk,
-    OpenAICallParams,
-    OpenAIDynamicConfig,
-    OpenAIStream,
-    create_decorator,
-    stream_decorator,
-    extract_decorator,
-    structured_stream_decorator,
+    TCallResponse=OpenAICallResponse,
+    TCallResponseChunk=OpenAICallResponseChunk,
+    TCallParams=OpenAICallParams,
+    TDynamicConfig=OpenAIDynamicConfig,
+    TStream=OpenAIStream,
+    create_decorator=create_factory(
+        TBaseCallResponse=OpenAICallResponse,
+        setup_call=setup_call,
+        calculate_cost=openai_api_calculate_cost,
+    ),
+    stream_decorator=stream_decorator,
+    extract_decorator=extract_decorator,
+    structured_stream_decorator=structured_stream_decorator,
 )
 '''A decorator for calling the OpenAI API with a typed function.
 

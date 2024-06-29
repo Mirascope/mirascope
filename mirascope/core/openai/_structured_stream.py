@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from ..base import BaseStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import OpenAICallParams
-from .function_return import OpenAIDynamicConfig
+from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")

@@ -54,7 +54,7 @@ class BaseCallResponse(
     tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None
     fn_args: dict[str, Any]
-    fn_return: _BaseDynamicConfigT
+    dynamic_config: _BaseDynamicConfigT
     messages: SkipValidation[list[_MessageParamT]]
     call_params: _CallParamsT
     user_message_param: _UserMessageParamT | None = None

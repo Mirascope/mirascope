@@ -26,7 +26,7 @@ from ._utils import (
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAIDynamicConfig
+from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 _P = ParamSpec("_P")

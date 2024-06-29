@@ -1,25 +1,29 @@
 """The `gemini_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory
-from ._create import create_decorator
+from ..base import call_factory, create_factory
 from ._extract import extract_decorator
 from ._stream import GeminiStream, stream_decorator
 from ._structured_stream import structured_stream_decorator
+from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 
 gemini_call = call_factory(
-    GeminiCallResponse,
-    GeminiCallResponseChunk,
-    GeminiCallParams,
-    GeminiDynamicConfig,
-    GeminiStream,
-    create_decorator,
-    stream_decorator,
-    extract_decorator,
-    structured_stream_decorator,
+    TCallResponse=GeminiCallResponse,
+    TCallResponseChunk=GeminiCallResponseChunk,
+    TCallParams=GeminiCallParams,
+    TDynamicConfig=GeminiDynamicConfig,
+    TStream=GeminiStream,
+    create_decorator=create_factory(
+        TBaseCallResponse=GeminiCallResponse,
+        setup_call=setup_call,
+        calculate_cost=lambda response, model: None,
+    ),
+    stream_decorator=stream_decorator,
+    extract_decorator=extract_decorator,
+    structured_stream_decorator=structured_stream_decorator,
 )
 '''A decorator for calling the Gemini API with a typed function.
 

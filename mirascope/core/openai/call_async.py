@@ -2,25 +2,29 @@
 
 from mirascope.core.openai.call_response_chunk import OpenAICallResponseChunk
 
-from ..base import call_async_factory
-from ._create_async import create_async_decorator
+from ..base import call_async_factory, create_factory
 from ._extract_async import extract_async_decorator
 from ._stream_async import OpenAIAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
+from ._utils import openai_api_calculate_cost, setup_call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
-from .function_return import OpenAIDynamicConfig
+from .dyanmic_config import OpenAIDynamicConfig
 
 openai_call_async = call_async_factory(
-    OpenAICallResponse,
-    OpenAICallResponseChunk,
-    OpenAICallParams,
-    OpenAIDynamicConfig,
-    OpenAIAsyncStream,
-    create_async_decorator,
-    stream_async_decorator,
-    extract_async_decorator,
-    structured_stream_async_decorator,
+    TCallResponse=OpenAICallResponse,
+    TCallResponseChunk=OpenAICallResponseChunk,
+    TCallParams=OpenAICallParams,
+    TDynamicConfig=OpenAIDynamicConfig,
+    TAsyncStream=OpenAIAsyncStream,
+    create_async_decorator=create_factory(
+        TBaseCallResponse=OpenAICallResponse,
+        setup_call=setup_call,
+        calculate_cost=openai_api_calculate_cost,
+    ),
+    stream_async_decorator=stream_async_decorator,
+    extract_async_decorator=extract_async_decorator,
+    structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the AsyncOpenAI API with a typed function.
 

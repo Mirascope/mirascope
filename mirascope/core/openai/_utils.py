@@ -3,96 +3,48 @@
 import inspect
 import json
 from textwrap import dedent
-from typing import Any, Callable, overload
+from typing import Any, Awaitable, Callable
 
+from openai import AsyncOpenAI, OpenAI
+from openai._base_client import BaseClient
 from openai.types.chat import (
+    ChatCompletion,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
 )
 from openai.types.chat.chat_completion_message_tool_call import Function
-from openai.types.completion_usage import CompletionUsage
 
 from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
 from .call_response_chunk import OpenAICallResponseChunk
-from .function_return import OpenAIDynamicConfig
+from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
 
 
-@overload
 def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: OpenAIDynamicConfig,
-    tools: None,
-    call_params: OpenAICallParams,
-) -> tuple[
-    str | None,
-    list[ChatCompletionMessageParam],
-    None,
-    OpenAICallParams,
-]: ...  # pragma: no cover
-
-
-@overload
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: OpenAIDynamicConfig,
-    tools: list[type[BaseTool] | Callable],
-    call_params: OpenAICallParams,
-) -> tuple[
-    str | None,
-    list[ChatCompletionMessageParam],
-    list[type[OpenAITool]],
-    OpenAICallParams,
-]: ...  # pragma: no cover
-
-
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: OpenAIDynamicConfig,
+    model: str,
+    client: BaseClient | None,
+    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
+    fn_args: dict[str, any],
+    dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: OpenAICallParams,
 ) -> tuple[
-    str | None,
-    list[ChatCompletionMessageParam],
-    list[type[OpenAITool]] | None,
-    OpenAICallParams,
+    Callable[..., ChatCompletion],
+    str,
+    list[dict[str, ChatCompletionMessageParam]],
+    list[type[OpenAITool]],
+    dict[str, Any],
 ]:
-    call_kwargs = call_params.copy()
-    prompt_template, messages, computed_fields = None, None, None
-    if fn_return is not None:
-        computed_fields = fn_return.get("computed_fields", None)
-        tools = fn_return.get("tools", tools)
-        messages = fn_return.get("messages", None)
-        dynamic_call_params = fn_return.get("call_params", None)
-        if dynamic_call_params:
-            call_kwargs |= dynamic_call_params
+    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+        fn, fn_args, dynamic_config, tools, OpenAITool, call_params
+    )
+    if client is None:
+        client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
+    create = client.chat.completions.create
+    call_kwargs |= {"model": model, "messages": messages}
 
-    if not messages:
-        prompt_template = fn.__annotations__.get("prompt_template", inspect.getdoc(fn))
-        assert prompt_template is not None, "The function must have a docstring."
-        if computed_fields:
-            fn_args |= computed_fields
-        messages = _utils.parse_prompt_messages(
-            roles=["system", "user", "assistant", "tool"],
-            template=prompt_template,
-            attrs=fn_args,
-        )
-
-    tool_types = None
-    if tools:
-        tool_types = [
-            _utils.convert_base_model_to_base_tool(tool, OpenAITool)
-            if inspect.isclass(tool)
-            else _utils.convert_function_to_base_tool(tool, OpenAITool)
-            for tool in tools
-        ]
-        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
-
-    return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create, prompt_template, messages, tool_types, call_kwargs
 
 
 def handle_chunk(
@@ -185,7 +137,7 @@ def setup_extract(
 
 
 def openai_api_calculate_cost(
-    usage: CompletionUsage | None, model="gpt-3.5-turbo-16k"
+    response: ChatCompletion, model="gpt-3.5-turbo-16k"
 ) -> float | None:
     """Calculate the cost of a completion using the OpenAI API.
 
@@ -266,9 +218,10 @@ def openai_api_calculate_cost(
             "completion": 0.000_000_13,
         },
     }
-    if usage is None:
+    if (usage := response.usage) is None:
         return None
     try:
+        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None

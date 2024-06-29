@@ -7,7 +7,7 @@ from .call_async import anthropic_call_async as call_async
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 __all__ = [

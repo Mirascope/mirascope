@@ -32,14 +32,16 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseAsyncStreamT = TypeVar("_BaseAsyncStreamT", bound=BaseAsyncStream)
+_BaseClientT = TypeVar("_BaseClientT", bound=object)
 _P = ParamSpec("_P")
 
 
 def call_async_factory(
+    *,
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
-    TFunctionReturn: type[_BaseDynamicConfigT],
+    TDynamicConfig: type[_BaseDynamicConfigT],
     TAsyncStream: type[_BaseAsyncStreamT],
     create_async_decorator: Callable[
         [
@@ -88,9 +90,10 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[_P, Awaitable[TCallResponse]],
     ]: ...  # pragma: no cover
 
@@ -102,9 +105,10 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[_P, Awaitable[_ParsedOutputT]],
     ]: ...  # pragma: no cover
 
@@ -116,6 +120,7 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -127,9 +132,10 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[_P, Awaitable[TAsyncStream]],
     ]: ...  # pragma: no cover
 
@@ -141,6 +147,7 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -152,6 +159,7 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -163,9 +171,10 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[_P, Awaitable[_ResponseModelT]],
     ]: ...  # pragma: no cover
 
@@ -178,6 +187,7 @@ def call_async_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -189,9 +199,10 @@ def call_async_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
     ]: ...  # pragma: no cover
 
@@ -204,6 +215,7 @@ def call_async_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
 
@@ -216,9 +228,10 @@ def call_async_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT]
         | None = None,
+        client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
-        [Callable[_P, Awaitable[TFunctionReturn]]],
+        [Callable[_P, Awaitable[TDynamicConfig]]],
         Callable[
             _P,
             Awaitable[TCallResponse]
@@ -260,6 +273,7 @@ def call_async_factory(
             model=model,
             tools=tools,
             output_parser=output_parser,  # type: ignore
+            client=client,
             call_params=call_params,
         )
 

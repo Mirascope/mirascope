@@ -13,7 +13,7 @@ from pydantic import computed_field
 
 from ..base import BaseCallResponse
 from .call_params import GeminiCallParams
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
 

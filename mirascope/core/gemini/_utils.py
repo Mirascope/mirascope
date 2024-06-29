@@ -3,106 +3,65 @@
 import inspect
 import json
 from textwrap import dedent
-from typing import Any, Callable, overload
+from typing import Any, Awaitable, Callable
 
-from google.generativeai.types import ContentsType  # type: ignore
+from google.generativeai import GenerativeModel  # type: ignore
+from google.generativeai.types import (  # type: ignore
+    ContentsType,
+    GenerateContentResponse,
+)
 
 from ..base import BaseTool, _utils
 from .call_params import GeminiCallParams
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
 
-def parse_prompt_messages(
-    roles: list[str],
-    template: str,
-    attrs: dict[str, Any],
-) -> list[ContentsType]:
-    """Returns the `ContentsType` messages for Gemini `generate_content`."""
-    return [
-        {"role": message["role"], "parts": [message["content"]]}
-        for message in _utils.parse_prompt_messages(
-            roles=roles,
-            template=template,
-            attrs=attrs,
-        )
-    ]
-
-
-@overload
 def setup_call(
-    fn: Callable,
+    model: str,
+    client: object | None,
+    fn: Callable[..., GeminiDynamicConfig | Awaitable[GeminiDynamicConfig]],
     fn_args: dict[str, Any],
-    fn_return: GeminiDynamicConfig,
-    tools: None,
-    call_params: GeminiCallParams,
-) -> tuple[
-    str | None,
-    list[ContentsType],
-    None,
-    GeminiCallParams,
-]: ...  # pragma: no cover
-
-
-@overload
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: GeminiDynamicConfig,
-    tools: list[type[BaseTool] | Callable],
-    call_params: GeminiCallParams,
-) -> tuple[
-    str | None,
-    list[ContentsType],
-    list[type[GeminiTool]],
-    GeminiCallParams,
-]: ...  # pragma: no cover
-
-
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: GeminiDynamicConfig,
+    dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: GeminiCallParams,
 ) -> tuple[
-    str | None,
-    list[ContentsType],
-    list[type[GeminiTool]] | None,
-    GeminiCallParams,
+    Callable[..., GenerateContentResponse],
+    str,
+    list[dict[str, ContentsType]],
+    list[type[GeminiTool]],
+    dict[str, Any],
 ]:
-    call_kwargs = call_params.copy()
-    prompt_template, messages, computed_fields = None, None, None
-    if fn_return is not None:
-        computed_fields = fn_return.get("computed_fields", None)
-        tools = fn_return.get("tools", tools)
-        messages = fn_return.get("messages", None)
-        dynamic_call_params = fn_return.get("call_params", None)
-        if dynamic_call_params:
-            call_kwargs |= dynamic_call_params
+    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+        fn, fn_args, dynamic_config, tools, GeminiTool, call_params
+    )
 
-    if not messages:
-        prompt_template = inspect.getdoc(fn)
-        assert prompt_template is not None, "The function must have a docstring."
-        if computed_fields:
-            fn_args |= computed_fields
-        messages = parse_prompt_messages(
-            roles=["model", "user", "tool"],
-            template=prompt_template,
-            attrs=fn_args,
-        )
+    gemini_messages = []
+    for message in messages:
+        if (role := message["role"]) == "system":
+            gemini_messages += [
+                {
+                    "role": "user",
+                    "parts": [message["content"]],
+                },
+                {
+                    "role": "model",
+                    "parts": ["Ok! I will adhere to this system message."],
+                },
+            ]
+        else:
+            gemini_messages.append({"role": role, "parts": [message["content"]]})
 
-    tool_types = None
-    if tools:
-        tool_types = [
-            _utils.convert_base_model_to_base_tool(tool, GeminiTool)
-            if inspect.isclass(tool)
-            else _utils.convert_function_to_base_tool(tool, GeminiTool)
-            for tool in tools
-        ]
-        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
+    if client is None:
+        client = GenerativeModel(model_name=model)
+    create = (
+        client.generate_content_async
+        if inspect.iscoroutinefunction(fn)
+        else client.generate_content
+    )
+    call_kwargs |= {"contents": gemini_messages}
 
-    return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create, prompt_template, gemini_messages, tool_types, call_kwargs
 
 
 def setup_extract(

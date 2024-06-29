@@ -19,7 +19,7 @@ from ._utils import anthropic_api_calculate_cost, handle_chunk, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from ..base import BaseStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import GeminiCallParams
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")

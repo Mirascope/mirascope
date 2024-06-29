@@ -8,7 +8,7 @@ from ..base import BaseStream, BaseTool, _utils
 from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
 _P = ParamSpec("_P")

@@ -1,25 +1,29 @@
 """The `gemini_call_async` decorator for easy Gemini API typed functions."""
 
-from ..base import call_async_factory
-from ._create_async import create_async_decorator
+from ..base import call_async_factory, create_factory
 from ._extract_async import extract_async_decorator
 from ._stream_async import GeminiAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
+from ._utils import setup_call
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
-from .function_return import GeminiDynamicConfig
+from .dynamic_config import GeminiDynamicConfig
 
 gemini_call_async = call_async_factory(
-    GeminiCallResponse,
-    GeminiCallResponseChunk,
-    GeminiCallParams,
-    GeminiDynamicConfig,
-    GeminiAsyncStream,
-    create_async_decorator,
-    stream_async_decorator,
-    extract_async_decorator,
-    structured_stream_async_decorator,
+    TCallResponse=GeminiCallResponse,
+    TCallResponseChunk=GeminiCallResponseChunk,
+    TCallParams=GeminiCallParams,
+    TDynamicConfig=GeminiDynamicConfig,
+    TAsyncStream=GeminiAsyncStream,
+    create_async_decorator=create_factory(
+        TBaseCallResponse=GeminiCallResponse,
+        setup_call=setup_call,
+        calculate_cost=lambda response, model: None,
+    ),
+    stream_async_decorator=stream_async_decorator,
+    extract_async_decorator=extract_async_decorator,
+    structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the Gemini API with a typed function.
 

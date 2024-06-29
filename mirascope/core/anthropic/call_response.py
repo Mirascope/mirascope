@@ -5,7 +5,7 @@ from pydantic import computed_field
 
 from ..base import BaseCallResponse
 from .call_params import AnthropicCallParams
-from .function_return import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 

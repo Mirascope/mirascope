@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from ..base import BaseAsyncStructuredStream, _utils
 from ._utils import setup_extract
 from .call_params import AnthropicCallParams
-from .function_return import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 _P = ParamSpec("_P")

@@ -3,93 +3,45 @@
 import inspect
 import json
 from textwrap import dedent
-from typing import Any, Callable, overload
+from typing import Any, Awaitable, Callable
 
-from anthropic.types import MessageParam, ToolUseBlock, Usage
+from anthropic import Anthropic, AsyncAnthropic
+from anthropic._base_client import BaseClient
+from anthropic.types import Message, MessageParam, ToolUseBlock, Usage
 
 from ..base import BaseTool, _utils
 from .call_params import AnthropicCallParams
 from .call_response_chunk import AnthropicCallResponseChunk
-from .function_return import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
 
-@overload
 def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: AnthropicDynamicConfig,
-    tools: None,
-    call_params: AnthropicCallParams,
-) -> tuple[
-    str | None,
-    list[MessageParam],
-    None,
-    AnthropicCallParams,
-]: ...  # pragma: no cover
-
-
-@overload
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: AnthropicDynamicConfig,
-    tools: list[type[BaseTool] | Callable],
-    call_params: AnthropicCallParams,
-) -> tuple[
-    str | None,
-    list[MessageParam],
-    list[type[AnthropicTool]],
-    AnthropicCallParams,
-]: ...  # pragma: no cover
-
-
-def setup_call(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: AnthropicDynamicConfig,
+    model: str,
+    client: BaseClient | None,
+    fn: Callable[..., AnthropicDynamicConfig | Awaitable[AnthropicDynamicConfig]],
+    fn_args: dict[str, any],
+    dynamic_config: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     call_params: AnthropicCallParams,
 ) -> tuple[
-    str | None,
-    list[MessageParam],
-    list[type[AnthropicTool]] | None,
-    AnthropicCallParams,
+    Callable[..., Message],
+    str,
+    list[dict[str, MessageParam]],
+    list[type[AnthropicTool]],
+    dict[str, Any],
 ]:
-    call_kwargs = call_params.copy()
-    prompt_template, messages, computed_fields = None, None, None
-    if fn_return is not None:
-        computed_fields = fn_return.get("computed_fields", None)
-        tools = fn_return.get("tools", tools)
-        messages = fn_return.get("messages", None)
-        dynamic_call_params = fn_return.get("call_params", None)
-        if dynamic_call_params:
-            call_kwargs |= dynamic_call_params
+    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+        fn, fn_args, dynamic_config, tools, AnthropicTool, call_params
+    )
+    if messages[0]["role"] == "system":
+        call_kwargs["system"] = messages.pop(0)["content"]
+    if client is None:
+        client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
+    create = client.messages.create
+    call_kwargs |= {"model": model, "messages": messages}
 
-    if not messages:
-        prompt_template = fn.__annotations__.get("prompt_template", inspect.getdoc(fn))
-        assert prompt_template is not None, "The function must have a docstring."
-        if computed_fields:
-            fn_args |= computed_fields
-        messages = _utils.parse_prompt_messages(
-            roles=["system", "user", "assistant", "tool"],
-            template=prompt_template,
-            attrs=fn_args,
-        )
-        if messages[0]["role"] == "system":
-            call_kwargs["system"] = messages.pop(0)["content"]
-
-    tool_types = None
-    if tools:
-        tool_types = [
-            _utils.convert_base_model_to_base_tool(tool, AnthropicTool)
-            if inspect.isclass(tool)
-            else _utils.convert_function_to_base_tool(tool, AnthropicTool)
-            for tool in tools
-        ]
-        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
-
-    return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create, prompt_template, messages, tool_types, call_kwargs
 
 
 def handle_chunk(
@@ -178,7 +130,7 @@ def setup_extract(
 
 
 def anthropic_api_calculate_cost(
-    usage: Usage, model="claude-3-haiku-20240229"
+    response: Message, model="claude-3-haiku-20240229"
 ) -> float | None:
     """Calculate the cost of a completion using the Anthropic API.
 
@@ -219,12 +171,13 @@ def anthropic_api_calculate_cost(
     }
 
     try:
+        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_cost = usage.input_tokens * model_pricing["prompt"]
-    completion_cost = usage.output_tokens * model_pricing["completion"]
+    prompt_cost = response.usage.input_tokens * model_pricing["prompt"]
+    completion_cost = response.usage.output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost
