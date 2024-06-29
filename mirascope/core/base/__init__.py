@@ -11,15 +11,13 @@ from .dynamic_config import BaseDynamicConfig
 from .extract import extract_factory
 from .message_param import BaseMessageParam
 from .prompt import BasePrompt, prompt_template, tags
-from .stream import BaseStream
-from .stream_async import BaseAsyncStream
+from .stream import BaseStream, stream_factory
 from .structured_stream import BaseStructuredStream
 from .structured_stream_async import BaseAsyncStructuredStream
 from .tool import BaseTool
 from .toolkit import BaseToolKit, toolkit_tool
 
 __all__ = [
-    "BaseAsyncStream",
     "BaseAsyncStructuredStream",
     "BaseCallParams",
     "BaseCallResponse",
@@ -36,6 +34,7 @@ __all__ = [
     "create_factory",
     "extract_factory",
     "prompt_template",
+    "stream_factory",
     "tags",
     "toolkit_tool",
     "_partial",

@@ -16,7 +16,8 @@ from anthropic.lib.streaming import MessageStreamEvent
 from pydantic import BaseModel
 
 from ..base import BaseAsyncStructuredStream, _utils
-from ._utils import setup_extract
+
+# from ._utils import setup_extract
 from .call_params import AnthropicCallParams
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool

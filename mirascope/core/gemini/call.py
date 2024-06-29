@@ -1,14 +1,36 @@
 """The `gemini_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory, create_factory, extract_factory
-from ._stream import GeminiStream, stream_decorator
+from google.generativeai.types import ContentDict
+
+from ..base import (
+    BaseStream,
+    call_factory,
+    create_factory,
+    extract_factory,
+    stream_factory,
+)
 from ._structured_stream import structured_stream_decorator
-from ._utils import gemini_api_calculate_cost, get_json_output, setup_call
+from ._utils import (
+    gemini_api_calculate_cost,
+    get_json_output,
+    handle_stream,
+    handle_stream_async,
+    setup_call,
+)
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
+
+GeminiStream = BaseStream[
+    GeminiCallResponseChunk,
+    ContentDict,
+    ContentDict,
+    ContentDict,
+    GeminiTool,
+    GeminiDynamicConfig,
+]
 
 gemini_call = call_factory(
     TCallResponse=GeminiCallResponse,
@@ -21,7 +43,14 @@ gemini_call = call_factory(
         setup_call=setup_call,
         calculate_cost=gemini_api_calculate_cost,
     ),
-    stream_decorator=stream_decorator,
+    stream_decorator=stream_factory(
+        TBaseCallResponseChunk=GeminiCallResponseChunk,
+        TStream=GeminiStream,
+        TMessageParamType=ContentDict,
+        setup_call=setup_call,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
     extract_decorator=extract_factory(
         TBaseCallResponse=GeminiCallResponse,
         TToolType=GeminiTool,

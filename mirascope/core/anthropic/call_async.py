@@ -1,28 +1,56 @@
 """The `anthropic_call_async` decorator for easy Anthropic API typed functions."""
 
-from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
+from anthropic.types import MessageParam
 
-from ..base import call_async_factory, create_factory, extract_factory
-from ._stream_async import AnthropicAsyncStream, stream_async_decorator
+from ..base import (
+    BaseStream,
+    call_async_factory,
+    create_factory,
+    extract_factory,
+    stream_factory,
+)
 from ._structured_stream_async import structured_stream_async_decorator
-from ._utils import anthropic_api_calculate_cost, get_json_output, setup_call
+from ._utils import (
+    anthropic_api_calculate_cost,
+    get_json_output,
+    handle_stream,
+    handle_stream_async,
+    setup_call,
+)
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
+from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
+
+AnthropicAsyncStream = BaseStream[
+    AnthropicCallResponseChunk,
+    MessageParam,
+    MessageParam,
+    MessageParam,
+    AnthropicTool,
+    AnthropicDynamicConfig,
+]
 
 anthropic_call_async = call_async_factory(
     TCallResponse=AnthropicCallResponse,
     TCallResponseChunk=AnthropicCallResponseChunk,
     TCallParams=AnthropicCallParams,
     TDynamicConfig=AnthropicDynamicConfig,
-    TAsyncStream=AnthropicAsyncStream,
+    TStream=AnthropicAsyncStream,
     create_async_decorator=create_factory(
         TBaseCallResponse=AnthropicCallResponse,
         setup_call=setup_call,
         calculate_cost=anthropic_api_calculate_cost,
     ),
-    stream_async_decorator=stream_async_decorator,
+    stream_async_decorator=stream_factory(
+        TBaseCallResponseChunk=AnthropicCallResponseChunk,
+        TStream=AnthropicAsyncStream,
+        TMessageParamType=MessageParam,
+        setup_call=setup_call,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
     extract_async_decorator=extract_factory(
         TBaseCallResponse=AnthropicCallResponse,
         TToolType=AnthropicTool,

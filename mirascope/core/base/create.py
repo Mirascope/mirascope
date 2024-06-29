@@ -131,7 +131,7 @@ def create_factory(
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
-                call_params=call_kwargs,
+                call_params=call_params,
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,
@@ -169,7 +169,7 @@ def create_factory(
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
-                call_params=call_kwargs,
+                call_params=call_params,
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,

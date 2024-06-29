@@ -18,13 +18,11 @@ from ._utils import BaseType, format_template
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .stream import BaseStream
-from .stream_async import BaseAsyncStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
-_BaseAsyncStreamT = TypeVar("_BaseAsyncStreamT", bound=BaseAsyncStream)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 
@@ -125,9 +123,9 @@ class BasePrompt(BaseModel):
         self,
         decorator: Callable[
             [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[_BaseAsyncStreamT]],
+            Callable[..., Awaitable[_BaseStreamT]],
         ],
-    ) -> Awaitable[_BaseAsyncStreamT]: ...  # pragma: no cover
+    ) -> Awaitable[_BaseStreamT]: ...  # pragma: no cover
 
     @overload
     def run(
@@ -171,7 +169,7 @@ class BasePrompt(BaseModel):
         ]
         | Callable[
             [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[_BaseAsyncStreamT]],
+            Callable[..., Awaitable[_BaseStreamT]],
         ]
         | Callable[
             [Callable[..., Awaitable[BaseDynamicConfig]]],
@@ -187,7 +185,7 @@ class BasePrompt(BaseModel):
         | _ResponseModelT
         | Iterable[_ResponseModelT]
         | Awaitable[_BaseCallResponseT]
-        | Awaitable[_BaseAsyncStreamT]
+        | Awaitable[_BaseStreamT]
         | Awaitable[_ResponseModelT]
         | Awaitable[AsyncIterable[_ResponseModelT]]
     ):

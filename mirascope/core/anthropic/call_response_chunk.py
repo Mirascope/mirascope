@@ -1,7 +1,6 @@
 """This module contains the `AnthropicCallResponseChunk` class."""
 
 from anthropic.types import (
-    MessageParam,
     MessageStartEvent,
     MessageStreamEvent,
     RawMessageDeltaEvent,
@@ -9,12 +8,9 @@ from anthropic.types import (
 )
 
 from ..base import BaseCallResponseChunk
-from .tool import AnthropicTool
 
 
-class AnthropicCallResponseChunk(
-    BaseCallResponseChunk[MessageStreamEvent, AnthropicTool, MessageParam]
-):
+class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
     '''A convenience wrapper around the Anthropic `ChatCompletionChunk` streamed chunks.
 
     When calling the Anthropic API using a function decorated with `anthropic_call` and
@@ -78,8 +74,8 @@ class AnthropicCallResponseChunk(
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        if self.usage:
-            return self.usage.input_tokens
+        if usage := self.usage:
+            return usage.input_tokens if hasattr(usage, "input_tokens") else None
         return None
 
     @property

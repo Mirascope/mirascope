@@ -1,14 +1,36 @@
 """The `anthropic_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory, create_factory, extract_factory
-from ._stream import AnthropicStream, stream_decorator
+from anthropic.types import MessageParam
+
+from ..base import (
+    BaseStream,
+    call_factory,
+    create_factory,
+    extract_factory,
+    stream_factory,
+)
 from ._structured_stream import structured_stream_decorator
-from ._utils import anthropic_api_calculate_cost, get_json_output, setup_call
+from ._utils import (
+    anthropic_api_calculate_cost,
+    get_json_output,
+    handle_stream,
+    handle_stream_async,
+    setup_call,
+)
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
+
+AnthropicStream = BaseStream[
+    AnthropicCallResponseChunk,
+    MessageParam,
+    MessageParam,
+    MessageParam,
+    AnthropicTool,
+    AnthropicDynamicConfig,
+]
 
 anthropic_call = call_factory(
     TCallResponse=AnthropicCallResponse,
@@ -21,7 +43,14 @@ anthropic_call = call_factory(
         setup_call=setup_call,
         calculate_cost=anthropic_api_calculate_cost,
     ),
-    stream_decorator=stream_decorator,
+    stream_decorator=stream_factory(
+        TBaseCallResponseChunk=AnthropicCallResponseChunk,
+        TStream=AnthropicStream,
+        TMessageParamType=MessageParam,
+        setup_call=setup_call,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
     extract_decorator=extract_factory(
         TBaseCallResponse=AnthropicCallResponse,
         TToolType=AnthropicTool,

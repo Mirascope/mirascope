@@ -1,14 +1,40 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory, create_factory, extract_factory
-from ._stream import OpenAIStream, stream_decorator
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+    ChatCompletionUserMessageParam,
+)
+
+from ..base import (
+    BaseStream,
+    call_factory,
+    create_factory,
+    extract_factory,
+    stream_factory,
+)
 from ._structured_stream import structured_stream_decorator
-from ._utils import get_json_output, openai_api_calculate_cost, setup_call
+from ._utils import (
+    get_json_output,
+    handle_stream,
+    handle_stream_async,
+    openai_api_calculate_cost,
+    setup_call,
+)
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
+
+OpenAIStream = BaseStream[
+    OpenAICallResponseChunk,
+    ChatCompletionUserMessageParam,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+    OpenAITool,
+    OpenAIDynamicConfig,
+]
 
 openai_call = call_factory(
     TCallResponse=OpenAICallResponse,
@@ -21,7 +47,14 @@ openai_call = call_factory(
         setup_call=setup_call,
         calculate_cost=openai_api_calculate_cost,
     ),
-    stream_decorator=stream_decorator,
+    stream_decorator=stream_factory(
+        TBaseCallResponseChunk=OpenAICallResponseChunk,
+        TStream=OpenAIStream,
+        TMessageParamType=ChatCompletionAssistantMessageParam,
+        setup_call=setup_call,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
     extract_decorator=extract_factory(
         TBaseCallResponse=OpenAICallResponse,
         TToolType=OpenAITool,

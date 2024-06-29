@@ -1,9 +1,6 @@
 """This module contains the `OpenAICallResponseChunk` class."""
 
-from openai.types.chat import (
-    ChatCompletionChunk,
-    ChatCompletionUserMessageParam,
-)
+from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import (
     Choice,
     ChoiceDelta,
@@ -12,14 +9,9 @@ from openai.types.chat.chat_completion_chunk import (
 from openai.types.completion_usage import CompletionUsage
 
 from ..base import BaseCallResponseChunk
-from .tool import OpenAITool
 
 
-class OpenAICallResponseChunk(
-    BaseCallResponseChunk[
-        ChatCompletionChunk, OpenAITool, ChatCompletionUserMessageParam
-    ]
-):
+class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     '''A convenience wrapper around the OpenAI `ChatCompletionChunk` streamed chunks.
 
     When calling the OpenAI API using a function decorated with `openai_call` and

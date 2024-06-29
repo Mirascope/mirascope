@@ -19,7 +19,7 @@ from ._utils import BaseType
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
-from .stream_async import BaseAsyncStream
+from .stream import BaseStream
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -31,7 +31,7 @@ _ExtractModelT = TypeVar("_ExtractModelT", bound=BaseModel | BaseType)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
-_BaseAsyncStreamT = TypeVar("_BaseAsyncStreamT", bound=BaseAsyncStream)
+_BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _P = ParamSpec("_P")
 
@@ -42,7 +42,7 @@ def call_async_factory(
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
     TDynamicConfig: type[_BaseDynamicConfigT],
-    TAsyncStream: type[_BaseAsyncStreamT],
+    TStream: type[_BaseStreamT],
     create_async_decorator: Callable[
         [
             Callable[_P, Awaitable[_BaseDynamicConfigT]],
@@ -61,7 +61,7 @@ def call_async_factory(
             Callable[[_BaseCallResponseChunkT], _ParsedOutputT] | None,
             _BaseCallParamsT,
         ],
-        Callable[_P, Awaitable[_BaseAsyncStreamT]],
+        Callable[_P, Awaitable[_BaseStreamT]],
     ],
     extract_async_decorator: Callable[
         [
@@ -140,7 +140,7 @@ def call_async_factory(
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, Awaitable[TDynamicConfig]]],
-        Callable[_P, Awaitable[TAsyncStream]],
+        Callable[_P, Awaitable[TStream]],
     ]: ...  # pragma: no cover
 
     @overload
@@ -247,7 +247,7 @@ def call_async_factory(
             _P,
             Awaitable[TCallResponse]
             | Awaitable[_ParsedOutputT]
-            | Awaitable[TAsyncStream]
+            | Awaitable[TStream]
             | Awaitable[_ResponseModelT]
             | Awaitable[AsyncIterable[_ResponseModelT]],
         ],
@@ -279,6 +279,8 @@ def call_async_factory(
                 stream_async_decorator,
                 model=model,
                 tools=tools,
+                json_mode=json_mode,
+                client=client,
                 call_params=call_params,
             )
         return partial(

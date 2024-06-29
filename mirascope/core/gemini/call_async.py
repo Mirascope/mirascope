@@ -1,27 +1,56 @@
 """The `gemini_call_async` decorator for easy Gemini API typed functions."""
 
-from ..base import call_async_factory, create_factory, extract_factory
-from ._stream_async import GeminiAsyncStream, stream_async_decorator
+from google.generativeai.types import ContentDict
+
+from ..base import (
+    BaseStream,
+    call_async_factory,
+    create_factory,
+    extract_factory,
+    stream_factory,
+)
 from ._structured_stream_async import structured_stream_async_decorator
-from ._utils import gemini_api_calculate_cost, get_json_output, setup_call
+from ._utils import (
+    gemini_api_calculate_cost,
+    get_json_output,
+    handle_stream,
+    handle_stream_async,
+    setup_call,
+)
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
+GeminiAsyncStream = BaseStream[
+    GeminiCallResponseChunk,
+    ContentDict,
+    ContentDict,
+    ContentDict,
+    GeminiTool,
+    GeminiDynamicConfig,
+]
+
 gemini_call_async = call_async_factory(
     TCallResponse=GeminiCallResponse,
     TCallResponseChunk=GeminiCallResponseChunk,
     TCallParams=GeminiCallParams,
     TDynamicConfig=GeminiDynamicConfig,
-    TAsyncStream=GeminiAsyncStream,
+    TStream=GeminiAsyncStream,
     create_async_decorator=create_factory(
         TBaseCallResponse=GeminiCallResponse,
         setup_call=setup_call,
         calculate_cost=gemini_api_calculate_cost,
     ),
-    stream_async_decorator=stream_async_decorator,
+    stream_async_decorator=stream_factory(
+        TBaseCallResponseChunk=GeminiCallResponseChunk,
+        TStream=GeminiAsyncStream,
+        TMessageParamType=ContentDict,
+        setup_call=setup_call,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
     extract_async_decorator=extract_factory(
         TBaseCallResponse=GeminiCallResponse,
         TToolType=GeminiTool,

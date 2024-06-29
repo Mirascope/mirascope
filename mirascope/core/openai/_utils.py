@@ -1,14 +1,14 @@
 """Utilities for the Mirascope Core OpenAI module."""
 
 import inspect
-import json
-from textwrap import dedent
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Awaitable, Callable
 
 from openai import AsyncOpenAI, OpenAI
 from openai._base_client import BaseClient
 from openai.types.chat import (
     ChatCompletion,
+    ChatCompletionChunk,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
 )
@@ -66,20 +66,21 @@ def get_json_output(response: ChatCompletion, json_mode: bool) -> str:
         raise ValueError("No tool call or JSON object found in response.")
 
 
-def handle_chunk(
-    chunk: OpenAICallResponseChunk,
+def _handle_chunk(
+    chunk: ChatCompletionChunk,
     current_tool_call: ChatCompletionMessageToolCall,
     current_tool_type: type[OpenAITool] | None,
+    tool_types: list[type[OpenAITool]] | None,
 ) -> tuple[
     OpenAITool | None,
     ChatCompletionMessageToolCall,
     type[OpenAITool] | None,
 ]:
     """Handles a chunk of the stream."""
-    if not chunk.tool_types or not chunk.tool_calls:
+    if not tool_types or not (tool_calls := chunk.choices[0].delta.tool_calls):
         return None, current_tool_call, current_tool_type
 
-    tool_call = chunk.tool_calls[0]
+    tool_call = tool_calls[0]
     # Reset on new tool
     if tool_call.id and tool_call.function is not None:
         previous_tool_call = current_tool_call.model_copy()
@@ -93,7 +94,7 @@ def handle_chunk(
             type="function",
         )
         current_tool_type = None
-        for tool_type in chunk.tool_types:
+        for tool_type in tool_types:
             if tool_type._name() == tool_call.function.name:
                 current_tool_type = tool_type
                 break
@@ -113,6 +114,64 @@ def handle_chunk(
         current_tool_call.function.arguments += tool_call.function.arguments
 
     return None, current_tool_call, current_tool_type
+
+
+def handle_stream(
+    stream: Generator[ChatCompletionChunk, None, None],
+    tool_types: list[type[OpenAITool]] | None,
+) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
+    """Iterates over the stream and constructs tools as they are streamed."""
+    current_tool_call = ChatCompletionMessageToolCall(
+        id="", function=Function(arguments="", name=""), type="function"
+    )
+    current_tool_type = None
+    for chunk in stream:
+        if not tool_types or not chunk.choices[0].delta.tool_calls:
+            if current_tool_type:
+                yield (
+                    chunk,
+                    current_tool_type.from_tool_call(current_tool_call),
+                )
+                current_tool_type = None
+            else:
+                yield chunk, None
+        tool, current_tool_call, current_tool_type = _handle_chunk(
+            chunk,
+            current_tool_call,
+            current_tool_type,
+            tool_types,
+        )
+        if tool is not None:
+            yield chunk, tool
+
+
+async def handle_stream_async(
+    stream: AsyncGenerator[ChatCompletionChunk, None],
+    tool_types: list[type[OpenAITool]] | None,
+):
+    """Async iterates over the stream and constructs tools as they are streamed."""
+    current_tool_call = ChatCompletionMessageToolCall(
+        id="", function=Function(arguments="", name=""), type="function"
+    )
+    current_tool_type = None
+    async for chunk in stream:
+        if not tool_types or not chunk.choices[0].delta.tool_calls:
+            if current_tool_type:
+                yield (
+                    chunk,
+                    current_tool_type.from_tool_call(current_tool_call),
+                )
+                current_tool_type = None
+            else:
+                yield chunk, None
+        tool, current_tool_call, current_tool_type = _handle_chunk(
+            chunk,
+            current_tool_call,
+            current_tool_type,
+            tool_types,
+        )
+        if tool is not None:
+            yield chunk, tool
 
 
 def openai_api_calculate_cost(

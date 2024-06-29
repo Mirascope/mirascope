@@ -1,6 +1,7 @@
 """Utilities for the Mirascope Core OpenAI module."""
 
 import inspect
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Awaitable, Callable
 
 from google.generativeai import GenerativeModel  # type: ignore
@@ -87,6 +88,30 @@ def get_json_output(response: GenerateContentResponse, json_mode: bool) -> str:
         return tool_calls[0].function_call.args
     else:
         raise ValueError("No tool call or JSON object found in response.")
+
+
+def handle_stream(
+    stream: Generator[GenerateContentResponse, None, None],
+    tool_types: list[type[GeminiTool] | Callable],
+):
+    """Iterator over the stream and constructs tools as they are streamed.
+
+    Note: gemini does not currently support streaming tools.
+    """
+    for chunk in stream:
+        yield chunk, None
+
+
+async def handle_stream_async(
+    stream: AsyncGenerator[GenerateContentResponse, None],
+    tool_types: list[type[GeminiTool] | Callable],
+):
+    """Async iterator over the stream and constructs tools as they are streamed.
+
+    Note: gemini does not currently support streaming tools.
+    """
+    async for chunk in stream:
+        yield chunk, None
 
 
 def gemini_api_calculate_cost(

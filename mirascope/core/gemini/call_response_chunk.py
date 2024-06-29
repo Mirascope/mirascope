@@ -1,15 +1,9 @@
-from google.generativeai.types import (  # type: ignore
-    ContentDict,
-    GenerateContentResponse,
-)
+from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from ..base import BaseCallResponseChunk
-from .tool import GeminiTool
 
 
-class GeminiCallResponseChunk(
-    BaseCallResponseChunk[GenerateContentResponse, GeminiTool, ContentDict]
-):
+class GeminiCallResponseChunk(BaseCallResponseChunk[GenerateContentResponse]):
     """Convenience wrapper around chat completion streaming chunks.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via

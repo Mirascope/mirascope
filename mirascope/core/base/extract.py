@@ -3,7 +3,7 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Any, Awaitable, Callable, ParamSpec, TypeVar
+from typing import Any, Awaitable, Callable, ParamSpec, TypeVar, overload
 
 from pydantic import BaseModel
 
@@ -51,6 +51,7 @@ def extract_factory(
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
+    @overload
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT],
         model: str,
@@ -58,7 +59,26 @@ def extract_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT]:
+    ) -> Callable[_P, _ResponseModelT]: ...  # pragma: no cover
+
+    @overload
+    def decorator(
+        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        model: str,
+        response_model: type[_ResponseModelT],
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, Awaitable[_ResponseModelT]]: ...  # pragma: no cover
+
+    def decorator(
+        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        model: str,
+        response_model: type[_ResponseModelT],
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
         assert response_model is not None
         tool = _utils.setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)

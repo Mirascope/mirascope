@@ -283,6 +283,7 @@ def call_factory(
                 stream_decorator,
                 model=model,
                 tools=tools,
+                json_mode=json_mode,
                 client=client,
                 call_params=call_params,
             )
