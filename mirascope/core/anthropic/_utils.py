@@ -2,12 +2,11 @@
 
 import inspect
 import json
-from textwrap import dedent
 from typing import Any, Awaitable, Callable
 
 from anthropic import Anthropic, AsyncAnthropic
 from anthropic._base_client import BaseClient
-from anthropic.types import Message, MessageParam, ToolUseBlock, Usage
+from anthropic.types import Message, MessageParam, ToolUseBlock
 
 from ..base import BaseTool, _utils
 from .call_params import AnthropicCallParams
@@ -17,13 +16,16 @@ from .tool import AnthropicTool
 
 
 def setup_call(
+    *,
     model: str,
     client: BaseClient | None,
     fn: Callable[..., AnthropicDynamicConfig | Awaitable[AnthropicDynamicConfig]],
     fn_args: dict[str, any],
     dynamic_config: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
     call_params: AnthropicCallParams,
+    extract: bool,
 ) -> tuple[
     Callable[..., Message],
     str,
@@ -41,7 +43,28 @@ def setup_call(
     create = client.messages.create
     call_kwargs |= {"model": model, "messages": messages}
 
+    if json_mode:
+        messages[-1]["content"] += _utils.json_mode_content(
+            tool_types[0] if tools else None
+        )
+        call_kwargs.pop("tools", None)
+    elif extract:
+        call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
+
     return create, prompt_template, messages, tool_types, call_kwargs
+
+
+def get_json_output(response: Message, json_mode: bool):
+    """Get the JSON output from a completion response."""
+    block = response.content[0]
+    if json_mode and block.type == "text":
+        json_start = block.text.index("{")
+        json_end = block.text.rfind("}")
+        return block.text[json_start : json_end + 1]
+    elif block.type == "tool_use":
+        return block.input
+    else:
+        raise ValueError("No tool call or JSON object found in response.")
 
 
 def handle_chunk(
@@ -95,38 +118,6 @@ def handle_chunk(
         buffer += chunk.chunk.delta.partial_json
 
     return buffer, None, current_tool_call, current_tool_type
-
-
-def setup_extract(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: AnthropicDynamicConfig,
-    tool: type[BaseTool],
-    call_params: AnthropicCallParams,
-) -> tuple[
-    bool,
-    list[MessageParam],
-    AnthropicCallParams,
-]:
-    _, messages, [tool_type], call_kwargs = setup_call(
-        fn, fn_args, fn_return, [tool], call_params
-    )
-
-    response_format = call_kwargs.get("response_format", None)
-    if json_mode := bool(response_format == "json"):
-        messages[-1]["content"] += dedent(
-            f"""
-                
-                Extract a valid JSON object instance from the content using this schema:
-                
-                {json.dumps(tool_type.model_json_schema(), indent=2)}"""
-        )
-        call_kwargs["tools"] = None  # type: ignore
-    else:
-        call_kwargs["tools"] = [tool_type.tool_schema()]  # type: ignore
-        call_kwargs["tool_choice"] = {"name": tool_type._name(), "type": "tool"}
-
-    return json_mode, messages, call_kwargs
 
 
 def anthropic_api_calculate_cost(

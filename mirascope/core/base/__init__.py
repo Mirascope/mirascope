@@ -8,6 +8,7 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .create import create_factory
 from .dynamic_config import BaseDynamicConfig
+from .extract import extract_factory
 from .message_param import BaseMessageParam
 from .prompt import BasePrompt, prompt_template, tags
 from .stream import BaseStream
@@ -33,6 +34,7 @@ __all__ = [
     "call_async_factory",
     "call_factory",
     "create_factory",
+    "extract_factory",
     "prompt_template",
     "tags",
     "toolkit_tool",

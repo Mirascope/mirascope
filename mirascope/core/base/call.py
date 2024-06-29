@@ -93,6 +93,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -108,6 +109,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -123,6 +125,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
@@ -135,6 +138,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -150,6 +154,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
@@ -162,6 +167,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
@@ -174,6 +180,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -190,6 +197,7 @@ def call_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
@@ -202,6 +210,7 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -218,6 +227,7 @@ def call_factory(
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT],
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> NoReturn: ...  # pragma: no cover
@@ -231,6 +241,7 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT]
         | None = None,
+        json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
     ) -> Callable[
@@ -263,6 +274,7 @@ def call_factory(
                     extract_decorator,
                     model=model,
                     response_model=response_model,
+                    json_mode=json_mode,
                     client=client,
                     call_params=call_params,
                 )
@@ -278,7 +290,8 @@ def call_factory(
             create_decorator,
             model=model,
             tools=tools,
-            output_parser=output_parser,  # type: ignore
+            output_parser=output_parser,
+            json_mode=json_mode,
             client=client,
             call_params=call_params,
         )

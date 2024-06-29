@@ -65,22 +65,23 @@ def structured_stream_async_decorator(
     async def inner(
         *args: _P.args, **kwargs: _P.kwargs
     ) -> AsyncIterable[_ResponseModelT]:
-        assert response_model is not None
-        fn_args = _utils.get_fn_args(fn, args, kwargs)
-        fn_return = await fn(*args, **kwargs)
-        json_mode, messages, call_kwargs = setup_extract(
-            fn, fn_args, fn_return, tool, call_params
-        )
-        client = AsyncAnthropic()
-        return AnthropicAsyncStructuredStream(
-            stream=(
-                chunk
-                async for chunk in await client.messages.create(
-                    model=model, stream=True, messages=messages, **call_kwargs
-                )
-            ),
-            response_model=response_model,
-            json_mode=json_mode,
-        )
+        # assert response_model is not None
+        # fn_args = _utils.get_fn_args(fn, args, kwargs)
+        # fn_return = await fn(*args, **kwargs)
+        # json_mode, messages, call_kwargs = setup_extract(
+        #     fn, fn_args, fn_return, tool, call_params
+        # )
+        # client = AsyncAnthropic()
+        # return AnthropicAsyncStructuredStream(
+        #     stream=(
+        #         chunk
+        #         async for chunk in await client.messages.create(
+        #             model=model, stream=True, messages=messages, **call_kwargs
+        #         )
+        #     ),
+        #     response_model=response_model,
+        #     json_mode=json_mode,
+        # )
+        ...
 
     return inner

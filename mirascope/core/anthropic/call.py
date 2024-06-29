@@ -1,14 +1,14 @@
 """The `anthropic_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory, create_factory
-from ._extract import extract_decorator
+from ..base import call_factory, create_factory, extract_factory
 from ._stream import AnthropicStream, stream_decorator
 from ._structured_stream import structured_stream_decorator
-from ._utils import anthropic_api_calculate_cost, setup_call
+from ._utils import anthropic_api_calculate_cost, get_json_output, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
+from .tool import AnthropicTool
 
 anthropic_call = call_factory(
     TCallResponse=AnthropicCallResponse,
@@ -22,7 +22,13 @@ anthropic_call = call_factory(
         calculate_cost=anthropic_api_calculate_cost,
     ),
     stream_decorator=stream_decorator,
-    extract_decorator=extract_decorator,
+    extract_decorator=extract_factory(
+        TBaseCallResponse=AnthropicCallResponse,
+        TToolType=AnthropicTool,
+        setup_call=setup_call,
+        get_json_output=get_json_output,
+        calculate_cost=anthropic_api_calculate_cost,
+    ),
     structured_stream_decorator=structured_stream_decorator,
 )
 '''A decorator for calling the Anthropic API with a typed function.

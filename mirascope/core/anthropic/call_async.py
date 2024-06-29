@@ -2,14 +2,14 @@
 
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
 
-from ..base import call_async_factory, create_factory
-from ._extract_async import extract_async_decorator
+from ..base import call_async_factory, create_factory, extract_factory
 from ._stream_async import AnthropicAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
-from ._utils import anthropic_api_calculate_cost, setup_call
+from ._utils import anthropic_api_calculate_cost, get_json_output, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .dynamic_config import AnthropicDynamicConfig
+from .tool import AnthropicTool
 
 anthropic_call_async = call_async_factory(
     TCallResponse=AnthropicCallResponse,
@@ -23,7 +23,13 @@ anthropic_call_async = call_async_factory(
         calculate_cost=anthropic_api_calculate_cost,
     ),
     stream_async_decorator=stream_async_decorator,
-    extract_async_decorator=extract_async_decorator,
+    extract_async_decorator=extract_factory(
+        TBaseCallResponse=AnthropicCallResponse,
+        TToolType=AnthropicTool,
+        setup_call=setup_call,
+        get_json_output=get_json_output,
+        calculate_cost=anthropic_api_calculate_cost,
+    ),
     structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the AsyncAnthropic API with a typed function.
