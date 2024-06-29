@@ -36,9 +36,9 @@ def with_logfire(
 
     @contextmanager
     def custom_context_manager() -> Generator[logfire.LogfireSpan, Any, None]:
-        with logfire.with_settings(custom_scope_suffix="mirascope").span(
-            fn.__name__
-        ) as logfire_span:
+        with logfire.with_settings(
+            custom_scope_suffix="mirascope", tags=fn.__annotations__.get("tags", [])
+        ).span(fn.__name__) as logfire_span:
             yield logfire_span
 
     def handle_call_response(
@@ -104,7 +104,18 @@ def with_logfire(
             logfire_span.set_attributes(span_data)
 
     def handle_base_model(result: BaseModel, logfire_span: logfire.LogfireSpan | None):
-        print("baz")
+        response: BaseCallResponse = result._response
+        # handle_call_response(response, logfire_span)
+        output: dict[str, Any] = {"response_model": result}
+        # if cost := response.cost:
+        #     output["cost"] = cost
+        # if input_tokens := response.input_tokens:
+        #     output["input_tokens"] = input_tokens
+        # if output_tokens := response.output_tokens:
+        #     output["output_tokens"] = output_tokens
+        # if content := response.content:
+        #     output["content"] = content
+        logfire_span.set_attribute("output", output)
 
     async def handle_call_response_async(
         result: BaseCallResponse, logfire_span: logfire.LogfireSpan | None

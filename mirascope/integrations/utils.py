@@ -41,13 +41,15 @@ def middleware(
         [], Generator[_T, Any, None]
     ] = default_context_manager,
     custom_decorator: _DecoratorType | None = None,
-    handle_call_response: Callable[[BaseCallResponse, _T], None] | None = None,
-    handle_call_response_async: Callable[[BaseCallResponse, _T], Awaitable[None]]
+    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
+    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
     | None = None,
-    handle_stream: Callable[[BaseStream, _T], None] | None = None,
-    handle_stream_async: Callable[[BaseStream, _T], Awaitable[None]] | None = None,
-    handle_base_model: Callable[[BaseModel, _T], None] | None = None,
-    handle_base_model_async: Callable[[BaseModel, _T], Awaitable[None]] | None = None,
+    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
+    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    | None = None,
+    handle_base_model: Callable[[BaseModel, _T | None], None] | None = None,
+    handle_base_model_async: Callable[[BaseModel, _T | None], Awaitable[None]]
+    | None = None,
 ) -> Callable[_P, _R] | Callable[_P, Awaitable[_R]]:
     """Wraps a Mirascope function with middleware."""
 
@@ -57,7 +59,10 @@ def middleware(
             and handle_call_response_async is not None
         ):
             with custom_context_manager() as context:
-                await handle_call_response_async(result, context)
+                if context is None:
+                    await handle_call_response_async(result)
+                else:
+                    await handle_call_response_async(result, context)
         elif isinstance(result, BaseAsyncStream) and handle_stream_async is not None:
             original_aiter = result.__aiter__
 
@@ -67,14 +72,20 @@ def middleware(
                         async for chunk, tool in original_aiter():
                             yield chunk, tool
                         if handle_stream_async is not None:
-                            await handle_stream_async(result, context)
+                            if context is None:
+                                await handle_stream_async(result)
+                            else:
+                                await handle_stream_async(result, context)
 
                 return generator()
 
             result.__class__.__aiter__ = types.MethodType(new_aiter, result)
         elif isinstance(result, BaseModel) and handle_base_model_async is not None:
             with custom_context_manager() as context:
-                await handle_base_model_async(result._response, context)
+                if context is None:
+                    await handle_base_model_async(result)
+                else:
+                    await handle_base_model_async(result, context)
         elif isinstance(result, Iterable[BaseModel]):
             ...
 
@@ -82,7 +93,10 @@ def middleware(
         result = fn(*args, **kwargs)
         if isinstance(result, BaseCallResponse) and handle_call_response is not None:
             with custom_context_manager() as context:
-                handle_call_response(result, context)
+                if context is None:
+                    handle_call_response(result)
+                else:
+                    handle_call_response(result, context)
         elif isinstance(result, BaseStream) and handle_stream is not None:
             original_iter = result.__iter__
 
@@ -92,12 +106,18 @@ def middleware(
                     for chunk, tool in original_iter():
                         yield chunk, tool
                     if handle_stream is not None:
-                        handle_stream(result, context)
+                        if context is None:
+                            handle_stream(result)
+                        else:
+                            handle_stream(result, context)
 
-            result.__class__.__iter__ = types.MethodType(new_iter, result)  # type: ignore
+            result.__class__.__iter__ = new_iter
         elif isinstance(result, BaseModel) and handle_base_model is not None:
             with custom_context_manager() as context:
-                handle_base_model(result._response, context)
+                if context is not None:
+                    handle_base_model(result, context)
+                else:
+                    handle_base_model(result)
         elif isinstance(result, Iterable[BaseModel]):
             ...
         return result
