@@ -6,13 +6,8 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
-from ..base import (
-    BaseStream,
-    call_async_factory,
-    create_factory,
-    extract_factory,
-    stream_factory,
-)
+from ..base import call_async_factory
+from ..base._stream import BaseStream
 from ._structured_stream_async import structured_stream_async_decorator
 from ._utils import (
     get_json_output,
@@ -43,26 +38,13 @@ openai_call_async = call_async_factory(
     TCallParams=OpenAICallParams,
     TDynamicConfig=OpenAIDynamicConfig,
     TStream=OpenAIAsyncStream,
-    create_async_decorator=create_factory(
-        TBaseCallResponse=OpenAICallResponse,
-        setup_call=setup_call,
-        calculate_cost=openai_api_calculate_cost,
-    ),
-    stream_async_decorator=stream_factory(
-        TBaseCallResponseChunk=OpenAICallResponseChunk,
-        TStream=OpenAIAsyncStream,
-        TMessageParamType=ChatCompletionAssistantMessageParam,
-        setup_call=setup_call,
-        handle_stream=handle_stream,
-        handle_stream_async=handle_stream_async,
-    ),
-    extract_async_decorator=extract_factory(
-        TBaseCallResponse=OpenAICallResponse,
-        TToolType=OpenAITool,
-        setup_call=setup_call,
-        get_json_output=get_json_output,
-        calculate_cost=openai_api_calculate_cost,
-    ),
+    TMessageParamType=ChatCompletionAssistantMessageParam,
+    TToolType=OpenAITool,
+    setup_call=setup_call,
+    get_json_output=get_json_output,
+    handle_stream=handle_stream,
+    handle_stream_async=handle_stream_async,
+    calculate_cost=openai_api_calculate_cost,
     structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the AsyncOpenAI API with a typed function.

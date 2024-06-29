@@ -1,14 +1,11 @@
-"""The `extract_factory` method for generating provider specific create decorators."""
+"""The `create_factory` method for generating provider specific create decorators."""
 
 import datetime
 import inspect
 from functools import wraps
 from typing import Any, Awaitable, Callable, ParamSpec, TypeVar, overload
 
-from pydantic import BaseModel
-
-from ..base import _utils
-from ._utils import BaseType, get_fn_args
+from ._utils import get_fn_args
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -17,16 +14,15 @@ from .tool import BaseTool
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
 
 
-def extract_factory(
+def create_factory(
     *,
-    TBaseCallResponse: type[_BaseCallResponseT],
-    TToolType: type[BaseTool],
+    TCallResponse: type[_BaseCallResponseT],
     setup_call: Callable[
         [
             str,
@@ -46,45 +42,71 @@ def extract_factory(
             dict[str, Any],
         ],
     ],
-    get_json_output: Callable[[_ResponseT, bool], str],
     calculate_cost: Callable[[_ResponseT, str], float],
-):
+) -> Callable[
+    [
+        Callable[_P, _BaseDynamicConfigT],
+        str,
+        list[type[BaseTool] | Callable] | None,
+        Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
+        bool,
+        _BaseClientT | None,
+        _BaseCallResponseT,
+    ],
+    Callable[
+        _P,
+        _BaseCallResponseT
+        | _ParsedOutputT
+        | Awaitable[_BaseCallResponseT | _ParsedOutputT],
+    ],
+]:
     """Returns the wrapped function with the provider specific interfaces."""
 
     @overload
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT],
         model: str,
-        response_model: type[_ResponseModelT],
+        tools: list[type[BaseTool] | Callable] | None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT]: ...  # pragma: no cover
+        call_params: _BaseCallResponseT,
+    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...  # pragma: no cover
 
     @overload
     def decorator(
         fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
-        response_model: type[_ResponseModelT],
+        tools: list[type[BaseTool] | Callable] | None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[_ResponseModelT]]: ...  # pragma: no cover
+        call_params: _BaseCallResponseT,
+    ) -> Callable[
+        _P,
+        Awaitable[_BaseCallResponseT | _ParsedOutputT],
+    ]: ...  # pragma: no cover
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         model: str,
-        response_model: type[_ResponseModelT],
+        tools: list[type[BaseTool] | Callable] | None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
-        assert response_model is not None
-        tool = _utils.setup_extract_tool(response_model, TToolType)
+        call_params: _BaseCallResponseT,
+    ) -> Callable[
+        _P,
+        _BaseCallResponseT
+        | _ParsedOutputT
+        | Awaitable[_BaseCallResponseT | _ParsedOutputT],
+    ]:
         is_async = inspect.iscoroutinefunction(fn)
 
         @wraps(fn)
-        def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+        def inner(
+            *args: _P.args, **kwargs: _P.kwargs
+        ) -> TCallResponse | _ParsedOutputT:
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -93,15 +115,15 @@ def extract_factory(
                 fn=fn,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
-                tools=[tool],
+                tools=tools,
                 json_mode=json_mode,
                 call_params=call_params,
-                extract=True,
+                extract=False,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
             response = create(**call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
-            call_response = TBaseCallResponse(
+            output = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),
                 response=response,
                 tool_types=tool_types,
@@ -109,7 +131,7 @@ def extract_factory(
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
-                call_params=call_kwargs,
+                call_params=call_params,
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,
@@ -117,17 +139,12 @@ def extract_factory(
                 end_time=end_time,
                 cost=calculate_cost(response, model),
             )
-            json_output = get_json_output(response, json_mode)
-            output = _utils.extract_tool_return(response_model, json_output, False)
-            if isinstance(output, BaseModel):
-                output._response = call_response
-            else:
-                output = _utils.create_base_type_with_response(response_model)(output)
-                output._response = call_response
-            return output
+            return output if not output_parser else output_parser(output)
 
         @wraps(fn)
-        async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+        async def inner_async(
+            *args: _P.args, **kwargs: _P.kwargs
+        ) -> TCallResponse | _ParsedOutputT:
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = await fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -136,15 +153,15 @@ def extract_factory(
                 fn=fn,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
-                tools=[tool],
+                tools=tools,
                 json_mode=json_mode,
                 call_params=call_params,
-                extract=True,
+                extract=False,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
             response = await create(**call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
-            call_response = TBaseCallResponse(
+            output = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),
                 response=response,
                 tool_types=tool_types,
@@ -152,7 +169,7 @@ def extract_factory(
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
-                call_params=call_kwargs,
+                call_params=call_params,
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,
@@ -160,14 +177,7 @@ def extract_factory(
                 end_time=end_time,
                 cost=calculate_cost(response, model),
             )
-            json_output = get_json_output(response, json_mode)
-            output = _utils.extract_tool_return(response_model, json_output, False)
-            if isinstance(output, BaseModel):
-                output._response = call_response
-            else:
-                output = _utils.create_base_type_with_response(response_model)(output)
-                output._response = call_response
-            return output
+            return output if not output_parser else output_parser(output)
 
         return inner_async if is_async else inner
 

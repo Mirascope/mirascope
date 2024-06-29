@@ -6,13 +6,8 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 
-from ..base import (
-    BaseStream,
-    call_factory,
-    create_factory,
-    extract_factory,
-    stream_factory,
-)
+from ..base import call_factory
+from ..base._stream import BaseStream
 from ._structured_stream import structured_stream_decorator
 from ._utils import (
     get_json_output,
@@ -42,26 +37,14 @@ openai_call = call_factory(
     TCallParams=OpenAICallParams,
     TDynamicConfig=OpenAIDynamicConfig,
     TStream=OpenAIStream,
-    create_decorator=create_factory(
-        TBaseCallResponse=OpenAICallResponse,
-        setup_call=setup_call,
-        calculate_cost=openai_api_calculate_cost,
-    ),
-    stream_decorator=stream_factory(
-        TBaseCallResponseChunk=OpenAICallResponseChunk,
-        TStream=OpenAIStream,
-        TMessageParamType=ChatCompletionAssistantMessageParam,
-        setup_call=setup_call,
-        handle_stream=handle_stream,
-        handle_stream_async=handle_stream_async,
-    ),
-    extract_decorator=extract_factory(
-        TBaseCallResponse=OpenAICallResponse,
-        TToolType=OpenAITool,
-        setup_call=setup_call,
-        get_json_output=get_json_output,
-        calculate_cost=openai_api_calculate_cost,
-    ),
+    TMessageParamType=ChatCompletionAssistantMessageParam,
+    TToolType=OpenAITool,
+    setup_call=setup_call,
+    get_json_output=get_json_output,
+    handle_stream=handle_stream,
+    handle_stream_async=handle_stream_async,
+    calculate_cost=openai_api_calculate_cost,
+    # TO BE REFACTORED
     structured_stream_decorator=structured_stream_decorator,
 )
 '''A decorator for calling the OpenAI API with a typed function.

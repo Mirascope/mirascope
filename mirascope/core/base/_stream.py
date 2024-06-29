@@ -167,7 +167,7 @@ _P = ParamSpec("_P")
 
 
 def stream_factory(
-    TBaseCallResponseChunk: type[_BaseCallResponseChunkT],
+    TCallResponseChunk: type[_BaseCallResponseChunkT],
     TStream: type[BaseStream],
     TMessageParamType: type[_AssistantMessageParamT],
     setup_call: Callable[
@@ -248,7 +248,7 @@ def stream_factory(
                 for chunk, tool in handle_stream(
                     create(stream=True, **call_kwargs), tool_types
                 ):
-                    yield TBaseCallResponseChunk(chunk=chunk), tool
+                    yield TCallResponseChunk(chunk=chunk), tool
 
             return TStream(
                 generator(),
@@ -287,7 +287,7 @@ def stream_factory(
                 async for chunk, tool in handle_stream_async(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
-                    yield TBaseCallResponseChunk(chunk=chunk), tool
+                    yield TCallResponseChunk(chunk=chunk), tool
 
             return TStream(
                 generator(),

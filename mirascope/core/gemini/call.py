@@ -2,13 +2,8 @@
 
 from google.generativeai.types import ContentDict
 
-from ..base import (
-    BaseStream,
-    call_factory,
-    create_factory,
-    extract_factory,
-    stream_factory,
-)
+from ..base import call_factory
+from ..base._stream import BaseStream
 from ._structured_stream import structured_stream_decorator
 from ._utils import (
     gemini_api_calculate_cost,
@@ -38,26 +33,13 @@ gemini_call = call_factory(
     TCallParams=GeminiCallParams,
     TDynamicConfig=GeminiDynamicConfig,
     TStream=GeminiStream,
-    create_decorator=create_factory(
-        TBaseCallResponse=GeminiCallResponse,
-        setup_call=setup_call,
-        calculate_cost=gemini_api_calculate_cost,
-    ),
-    stream_decorator=stream_factory(
-        TBaseCallResponseChunk=GeminiCallResponseChunk,
-        TStream=GeminiStream,
-        TMessageParamType=ContentDict,
-        setup_call=setup_call,
-        handle_stream=handle_stream,
-        handle_stream_async=handle_stream_async,
-    ),
-    extract_decorator=extract_factory(
-        TBaseCallResponse=GeminiCallResponse,
-        TToolType=GeminiTool,
-        setup_call=setup_call,
-        get_json_output=get_json_output,
-        calculate_cost=gemini_api_calculate_cost,
-    ),
+    TMessageParamType=ContentDict,
+    TToolType=GeminiTool,
+    setup_call=setup_call,
+    get_json_output=get_json_output,
+    handle_stream=handle_stream,
+    handle_stream_async=handle_stream_async,
+    calculate_cost=gemini_api_calculate_cost,
     structured_stream_decorator=structured_stream_decorator,
 )
 '''A decorator for calling the Gemini API with a typed function.

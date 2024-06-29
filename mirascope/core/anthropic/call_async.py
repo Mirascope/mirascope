@@ -2,13 +2,8 @@
 
 from anthropic.types import MessageParam
 
-from ..base import (
-    BaseStream,
-    call_async_factory,
-    create_factory,
-    extract_factory,
-    stream_factory,
-)
+from ..base import call_async_factory
+from ..base._stream import BaseStream
 from ._structured_stream_async import structured_stream_async_decorator
 from ._utils import (
     anthropic_api_calculate_cost,
@@ -38,26 +33,13 @@ anthropic_call_async = call_async_factory(
     TCallParams=AnthropicCallParams,
     TDynamicConfig=AnthropicDynamicConfig,
     TStream=AnthropicAsyncStream,
-    create_async_decorator=create_factory(
-        TBaseCallResponse=AnthropicCallResponse,
-        setup_call=setup_call,
-        calculate_cost=anthropic_api_calculate_cost,
-    ),
-    stream_async_decorator=stream_factory(
-        TBaseCallResponseChunk=AnthropicCallResponseChunk,
-        TStream=AnthropicAsyncStream,
-        TMessageParamType=MessageParam,
-        setup_call=setup_call,
-        handle_stream=handle_stream,
-        handle_stream_async=handle_stream_async,
-    ),
-    extract_async_decorator=extract_factory(
-        TBaseCallResponse=AnthropicCallResponse,
-        TToolType=AnthropicTool,
-        setup_call=setup_call,
-        get_json_output=get_json_output,
-        calculate_cost=anthropic_api_calculate_cost,
-    ),
+    TMessageParamType=MessageParam,
+    TToolType=AnthropicTool,
+    setup_call=setup_call,
+    get_json_output=get_json_output,
+    handle_stream=handle_stream,
+    handle_stream_async=handle_stream_async,
+    calculate_cost=anthropic_api_calculate_cost,
     structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the AsyncAnthropic API with a typed function.

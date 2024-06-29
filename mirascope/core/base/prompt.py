@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from ._utils import BaseType, format_template
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
-from .stream import BaseStream
+from ._stream import BaseStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
