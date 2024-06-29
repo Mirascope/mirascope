@@ -22,13 +22,16 @@ from .tool import OpenAITool
 
 
 def setup_call(
+    *,
     model: str,
     client: BaseClient | None,
     fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
     call_params: OpenAICallParams,
+    extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion],
     str,
@@ -43,8 +46,24 @@ def setup_call(
         client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
     create = client.chat.completions.create
     call_kwargs |= {"model": model, "messages": messages}
+    if json_mode:
+        call_kwargs["response_format"] = {"type": "json_object"}
+        messages[-1]["content"] += _utils.json_mode_content(tools[0] if tools else None)
+        call_kwargs.pop("tools", None)
+    elif extract:
+        call_kwargs["tool_choice"] = "required"
 
     return create, prompt_template, messages, tool_types, call_kwargs
+
+
+def get_json_output(response: ChatCompletion, json_mode: bool) -> str:
+    """Get the JSON output from a completion response."""
+    if json_mode and (content := response.choices[0].message.content):
+        return content
+    elif tool_calls := response.choices[0].message.tool_calls:
+        return tool_calls[0].function.arguments
+    else:
+        raise ValueError("No tool call or JSON object found in response.")
 
 
 def handle_chunk(
@@ -94,46 +113,6 @@ def handle_chunk(
         current_tool_call.function.arguments += tool_call.function.arguments
 
     return None, current_tool_call, current_tool_type
-
-
-def setup_extract(
-    fn: Callable,
-    fn_args: dict[str, Any],
-    fn_return: OpenAIDynamicConfig,
-    tool: type[BaseTool],
-    call_params: OpenAICallParams,
-) -> tuple[
-    bool,
-    list[ChatCompletionMessageParam],
-    OpenAICallParams,
-]:
-    _, messages, [tool_type], call_kwargs = setup_call(
-        fn, fn_args, fn_return, [tool], call_params
-    )
-
-    response_format = call_kwargs.get("response_format", None)
-    if json_mode := bool(
-        response_format
-        and "type" in response_format
-        and response_format["type"] == "json_object"
-    ):
-        messages.append(
-            {
-                "role": "user",
-                "content": dedent(
-                    f"""\
-            Extract a valid JSON object instance from the content using this schema:
-                        
-            {json.dumps(tool_type.model_json_schema(), indent=2)}"""
-                ),
-            }
-        )
-        call_kwargs["tools"] = None  # type: ignore
-    else:
-        call_kwargs["tools"] = [tool_type.tool_schema()]  # type: ignore
-        call_kwargs["tool_choice"] = "required"
-
-    return json_mode, messages, call_kwargs
 
 
 def openai_api_calculate_cost(

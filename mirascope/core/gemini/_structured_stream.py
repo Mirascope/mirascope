@@ -10,7 +10,8 @@ from google.generativeai.types import GenerateContentResponse
 from pydantic import BaseModel
 
 from ..base import BaseStructuredStream, _utils
-from ._utils import setup_extract
+
+# from ._utils import setup_extract
 from .call_params import GeminiCallParams
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
@@ -58,22 +59,23 @@ def structured_stream_decorator(
 
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-        assert response_model is not None
-        fn_args = _utils.get_fn_args(fn, args, kwargs)
-        fn_return = fn(*args, **kwargs)
-        json_mode, messages, call_kwargs = setup_extract(
-            fn, fn_args, fn_return, tool, call_params
-        )
-        _client = client or GenerativeModel(model_name=model)
-        stream = _client.generate_content(
-            messages,
-            stream=True,
-            **call_kwargs,
-        )
-        return GeminiStructuredStream(
-            stream=(chunk for chunk in stream),
-            response_model=response_model,
-            json_mode=json_mode,
-        )
+        # assert response_model is not None
+        # fn_args = _utils.get_fn_args(fn, args, kwargs)
+        # fn_return = fn(*args, **kwargs)
+        # json_mode, messages, call_kwargs = setup_extract(
+        #     fn, fn_args, fn_return, tool, call_params
+        # )
+        # _client = client or GenerativeModel(model_name=model)
+        # stream = _client.generate_content(
+        #     messages,
+        #     stream=True,
+        #     **call_kwargs,
+        # )
+        # return GeminiStructuredStream(
+        #     stream=(chunk for chunk in stream),
+        #     response_model=response_model,
+        #     json_mode=json_mode,
+        # )
+        ...
 
     return inner

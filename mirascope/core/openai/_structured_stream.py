@@ -10,7 +10,8 @@ from openai.types.chat import ChatCompletionChunk
 from pydantic import BaseModel
 
 from ..base import BaseStructuredStream, _utils
-from ._utils import setup_extract
+
+# from ._utils import setup_extract
 from .call_params import OpenAICallParams
 from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -59,22 +60,23 @@ def structured_stream_decorator(
 
     @wraps(fn)
     def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-        assert response_model is not None
-        fn_args = _utils.get_fn_args(fn, args, kwargs)
-        fn_return = fn(*args, **kwargs)
-        json_mode, messages, call_kwargs = setup_extract(
-            fn, fn_args, fn_return, tool, call_params
-        )
-        _client = client or OpenAI()
-        return OpenAIStructuredStream(
-            stream=(
-                chunk
-                for chunk in _client.chat.completions.create(
-                    model=model, stream=True, messages=messages, **call_kwargs
-                )
-            ),
-            response_model=response_model,
-            json_mode=json_mode,
-        )
+        # assert response_model is not None
+        # fn_args = _utils.get_fn_args(fn, args, kwargs)
+        # fn_return = fn(*args, **kwargs)
+        # json_mode, messages, call_kwargs = setup_extract(
+        #     fn, fn_args, fn_return, tool, call_params
+        # )
+        # _client = client or OpenAI()
+        # return OpenAIStructuredStream(
+        #     stream=(
+        #         chunk
+        #         for chunk in _client.chat.completions.create(
+        #             model=model, stream=True, messages=messages, **call_kwargs
+        #         )
+        #     ),
+        #     response_model=response_model,
+        #     json_mode=json_mode,
+        # )
+        ...
 
     return inner

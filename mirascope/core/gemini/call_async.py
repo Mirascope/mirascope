@@ -1,14 +1,14 @@
 """The `gemini_call_async` decorator for easy Gemini API typed functions."""
 
-from ..base import call_async_factory, create_factory
-from ._extract_async import extract_async_decorator
+from ..base import call_async_factory, create_factory, extract_factory
 from ._stream_async import GeminiAsyncStream, stream_async_decorator
 from ._structured_stream_async import structured_stream_async_decorator
-from ._utils import setup_call
+from ._utils import gemini_api_calculate_cost, get_json_output, setup_call
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
+from .tool import GeminiTool
 
 gemini_call_async = call_async_factory(
     TCallResponse=GeminiCallResponse,
@@ -19,10 +19,16 @@ gemini_call_async = call_async_factory(
     create_async_decorator=create_factory(
         TBaseCallResponse=GeminiCallResponse,
         setup_call=setup_call,
-        calculate_cost=lambda response, model: None,
+        calculate_cost=gemini_api_calculate_cost,
     ),
     stream_async_decorator=stream_async_decorator,
-    extract_async_decorator=extract_async_decorator,
+    extract_async_decorator=extract_factory(
+        TBaseCallResponse=GeminiCallResponse,
+        TToolType=GeminiTool,
+        setup_call=setup_call,
+        get_json_output=get_json_output,
+        calculate_cost=gemini_api_calculate_cost,
+    ),
     structured_stream_async_decorator=structured_stream_async_decorator,
 )
 '''A decorator for calling the Gemini API with a typed function.

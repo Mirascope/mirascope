@@ -11,6 +11,7 @@ from .format_template import format_template
 from .get_fn_args import get_fn_args
 from .get_template_values import get_template_values
 from .get_template_variables import get_template_variables
+from .json_mode_content import json_mode_content
 from .parse_prompt_messages import parse_prompt_messages
 from .setup_call import setup_call
 from .setup_extract_tool import setup_extract_tool
@@ -28,6 +29,7 @@ __all__ = [
     "get_template_values",
     "get_template_variables",
     "is_base_type",
+    "json_mode_content",
     "parse_prompt_messages",
     "setup_call",
     "setup_extract_tool",

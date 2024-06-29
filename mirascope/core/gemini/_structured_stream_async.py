@@ -10,7 +10,8 @@ from google.generativeai.types import GenerateContentResponse
 from pydantic import BaseModel
 
 from ..base import BaseAsyncStructuredStream, _utils
-from ._utils import setup_extract
+
+# from ._utils import setup_extract
 from .call_params import GeminiCallParams
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
@@ -67,22 +68,23 @@ def structured_stream_async_decorator(
     async def inner_async(
         *args: _P.args, **kwargs: _P.kwargs
     ) -> AsyncIterable[_ResponseModelT]:
-        assert response_model is not None
-        fn_args = _utils.get_fn_args(fn, args, kwargs)
-        fn_return = await fn(*args, **kwargs)
-        json_mode, messages, call_kwargs = setup_extract(
-            fn, fn_args, fn_return, tool, call_params
-        )
-        client = GenerativeModel(model_name=model)
-        stream = client.generate_content_async(
-            messages,
-            stream=True,
-            **call_kwargs,
-        )
-        return GeminiAsyncStructuredStream(
-            stream=stream,
-            response_model=response_model,
-            json_mode=json_mode,
-        )
+        # assert response_model is not None
+        # fn_args = _utils.get_fn_args(fn, args, kwargs)
+        # fn_return = await fn(*args, **kwargs)
+        # json_mode, messages, call_kwargs = setup_extract(
+        #     fn, fn_args, fn_return, tool, call_params
+        # )
+        # client = GenerativeModel(model_name=model)
+        # stream = client.generate_content_async(
+        #     messages,
+        #     stream=True,
+        #     **call_kwargs,
+        # )
+        # return GeminiAsyncStructuredStream(
+        #     stream=stream,
+        #     response_model=response_model,
+        #     json_mode=json_mode,
+        # )
+        ...
 
     return inner_async
