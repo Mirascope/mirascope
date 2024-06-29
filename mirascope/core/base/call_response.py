@@ -56,7 +56,7 @@ class BaseCallResponse(
     fn_args: dict[str, Any]
     dynamic_config: _BaseDynamicConfigT
     messages: SkipValidation[list[_MessageParamT]]
-    call_params: _CallParamsT
+    call_params: SkipValidation[_CallParamsT]
     user_message_param: _UserMessageParamT | None = None
     start_time: float
     end_time: float
