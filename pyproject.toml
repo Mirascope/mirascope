@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "0.18.0"
+version = "0.18.1"
 description = "An intuitive approach to building with LLMs"
 license = "MIT"
 authors = [
@@ -150,7 +150,12 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["venv", "virtualenvs", "examples/instructor", "examples/django_examples"]
+exclude = [
+    "venv",
+    "virtualenvs",
+    "examples/instructor",
+    "examples/django_examples",
+]
 
 [[tool.mypy.overrides]]
 module = "mistralai"

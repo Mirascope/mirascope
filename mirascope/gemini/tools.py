@@ -76,9 +76,17 @@ class GeminiTool(BaseTool[FunctionCall]):
                     "Unfortunately Google's Gemini API cannot handle nested structures "
                     "with $defs."
                 )
+
+            def handle_enum_schema(prop_schema):
+                if "enum" in prop_schema:
+                    prop_schema["format"] = "enum"
+                return prop_schema
+
             tool_schema["parameters"]["properties"] = {
                 prop: {
-                    key: value for key, value in prop_schema.items() if key != "title"
+                    key: value
+                    for key, value in handle_enum_schema(prop_schema).items()
+                    if key != "title"
                 }
                 for prop, prop_schema in tool_schema["parameters"]["properties"].items()
             }
