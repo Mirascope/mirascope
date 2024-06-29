@@ -92,9 +92,12 @@ plugins:
             docstring_style: google
 
 nav:
-  - Get Started: "README.md"
+  - Get Started:
+      - "README.md"
+      - Philosophy: "learn/philosophy.md"
   - Learn:
-    - Philosophy: "learn/philosophy.md"
+      - Concepts: ""
+      - Putting It Together: ""
   - API Reference: "api/index.md"
   - Help: "HELP.md"
   - Contributing: "CONTRIBUTING.md"
