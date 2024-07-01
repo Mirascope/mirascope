@@ -7,8 +7,13 @@ from typing import Any, Awaitable, Callable, ParamSpec, TypeVar, overload
 
 from pydantic import BaseModel
 
-from . import _utils
-from ._utils import BaseType, get_fn_args
+from ._utils import (
+    BaseType,
+    create_base_type_with_response,
+    extract_tool_return,
+    get_fn_args,
+    setup_extract_tool,
+)
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -79,8 +84,7 @@ def extract_factory(
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
-        assert response_model is not None
-        tool = _utils.setup_extract_tool(response_model, TToolType)
+        tool = setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)
 
         @wraps(fn)
@@ -117,12 +121,12 @@ def extract_factory(
                 end_time=end_time,
                 cost=calculate_cost(response, model),
             )
-            json_output = get_json_output(response, json_mode)
-            output = _utils.extract_tool_return(response_model, json_output, False)
+            json_output = get_json_output(call_response, json_mode)
+            output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
                 output._response = call_response
             else:
-                output = _utils.create_base_type_with_response(response_model)(output)
+                output = create_base_type_with_response(response_model)(output)
                 output._response = call_response
             return output
 
@@ -160,12 +164,12 @@ def extract_factory(
                 end_time=end_time,
                 cost=calculate_cost(response, model),
             )
-            json_output = get_json_output(response, json_mode)
-            output = _utils.extract_tool_return(response_model, json_output, False)
+            json_output = get_json_output(call_response, json_mode)
+            output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
                 output._response = call_response
             else:
-                output = _utils.create_base_type_with_response(response_model)(output)
+                output = create_base_type_with_response(response_model)(output)
                 output._response = call_response
             return output
 

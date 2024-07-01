@@ -17,6 +17,7 @@ from anthropic.types import (
 
 from ..base import BaseTool, _utils
 from .call_params import AnthropicCallParams
+from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
@@ -61,17 +62,28 @@ def setup_call(
     return create, prompt_template, messages, tool_types, call_kwargs
 
 
-def get_json_output(response: Message, json_mode: bool):
+def get_json_output(
+    response: AnthropicCallResponse | AnthropicCallResponseChunk, json_mode: bool
+) -> str:
     """Get the JSON output from a completion response."""
-    block = response.content[0]
-    if json_mode and block.type == "text":
-        json_start = block.text.index("{")
-        json_end = block.text.rfind("}")
-        return block.text[json_start : json_end + 1]
-    elif block.type == "tool_use":
-        return block.input
-    else:
+    if isinstance(response, AnthropicCallResponse):
+        if json_mode and (content := response.content):
+            json_start = content.index("{")
+            json_end = content.rfind("}")
+            return content[json_start : json_end + 1]
+        elif (block := response.response.content[0]) and block.type == "tool_use":
+            return block.input
         raise ValueError("No tool call or JSON object found in response.")
+    else:
+        if json_mode:
+            return response.content
+        elif (
+            response.chunk.type == "content_block_delta"
+            and (delta := response.chunk.delta)
+            and delta.type == "input_json_delta"
+        ):
+            return delta.partial_json
+        return ""
 
 
 def _handle_chunk(

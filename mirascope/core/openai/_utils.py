@@ -16,6 +16,7 @@ from openai.types.chat.chat_completion_message_tool_call import Function
 
 from ..base import BaseTool, _utils
 from .call_params import OpenAICallParams
+from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -56,14 +57,26 @@ def setup_call(
     return create, prompt_template, messages, tool_types, call_kwargs
 
 
-def get_json_output(response: ChatCompletion, json_mode: bool) -> str:
+def get_json_output(
+    response: OpenAICallResponse | OpenAICallResponseChunk, json_mode: bool
+) -> str:
     """Get the JSON output from a completion response."""
-    if json_mode and (content := response.choices[0].message.content):
-        return content
-    elif tool_calls := response.choices[0].message.tool_calls:
-        return tool_calls[0].function.arguments
-    else:
+    if isinstance(response, OpenAICallResponse):
+        if json_mode and response.content:
+            return response.content
+        elif response.tool_calls:
+            return response.tool_calls[0].function.arguments
         raise ValueError("No tool call or JSON object found in response.")
+    else:
+        if json_mode:
+            return response.content
+        elif (
+            (tool_calls := response.tool_calls)
+            and (function := tool_calls[0].function)
+            and (arguments := function.arguments) is not None
+        ):
+            return arguments
+        return ""
 
 
 def _handle_chunk(

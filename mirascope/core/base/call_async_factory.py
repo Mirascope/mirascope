@@ -4,7 +4,6 @@ from collections.abc import AsyncGenerator, Generator
 from functools import partial
 from typing import (
     Any,
-    AsyncIterable,
     Awaitable,
     Callable,
     Literal,
@@ -20,6 +19,7 @@ from pydantic import BaseModel
 from ._create import create_factory
 from ._extract import extract_factory
 from ._stream import BaseStream, stream_factory
+from ._structured_stream import BaseStructuredStream, structured_stream_factory
 from ._utils import BaseType
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -41,6 +41,9 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _P = ParamSpec("_P")
+
+
+AsyncStructuredStream = BaseStructuredStream
 
 
 def call_async_factory(
@@ -81,15 +84,6 @@ def call_async_factory(
         Awaitable[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]],
     ],
     calculate_cost: Callable[[_ResponseT, str], float],
-    structured_stream_async_decorator: Callable[
-        [
-            Callable[_P, Awaitable[_BaseDynamicConfigT]],
-            str,
-            type[_ExtractModelT],
-            _BaseCallParamsT,
-        ],
-        Callable[_P, Awaitable[AsyncIterable[_ExtractModelT]]],
-    ],
 ):
     @overload
     def base_call(
@@ -221,7 +215,7 @@ def call_async_factory(
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, Awaitable[TDynamicConfig]]],
-        Callable[_P, Awaitable[AsyncIterable[_ResponseModelT]]],
+        Callable[_P, Awaitable[AsyncStructuredStream[_ResponseModelT]]],
     ]: ...  # pragma: no cover
 
     @overload
@@ -258,7 +252,7 @@ def call_async_factory(
             | Awaitable[_ParsedOutputT]
             | Awaitable[TStream]
             | Awaitable[_ResponseModelT]
-            | Awaitable[AsyncIterable[_ResponseModelT]],
+            | Awaitable[AsyncStructuredStream[_ResponseModelT]],
         ],
     ]:
         if stream and output_parser:
@@ -269,9 +263,17 @@ def call_async_factory(
         if response_model:
             if stream:
                 return partial(
-                    structured_stream_async_decorator,
+                    structured_stream_factory(
+                        TCallResponseChunk=TCallResponseChunk,
+                        TMessageParamType=TMessageParamType,
+                        TToolType=TToolType,
+                        setup_call=setup_call,
+                        get_json_output=get_json_output,
+                    ),
                     model=model,
                     response_model=response_model,
+                    json_mode=json_mode,
+                    client=client,
                     call_params=call_params,
                 )
             else:

@@ -12,5 +12,5 @@ def json_mode_content(tool_type: type[BaseTool] | None):
         return "\n\nExtract ONLY a valid JSON dict using the schema."
     return dedent(f"""
                   
-    Extract ONLY a valid JSON dict from the content using this schema:
+    Extract ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to this schema:
     {json.dumps(tool_type.model_json_schema(), indent=2)}""")

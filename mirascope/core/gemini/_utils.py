@@ -12,6 +12,8 @@ from google.generativeai.types import (  # type: ignore
 
 from ..base import BaseTool, _utils
 from .call_params import GeminiCallParams
+from .call_response import GeminiCallResponse
+from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
@@ -79,21 +81,27 @@ def setup_call(
     return create, prompt_template, gemini_messages, tool_types, call_kwargs
 
 
-def get_json_output(response: GenerateContentResponse, json_mode: bool) -> str:
+def get_json_output(
+    response: GeminiCallResponse | GeminiCallResponseChunk, json_mode: bool
+) -> str:
     """Extracts the JSON output from a Gemini response."""
-    content = response.candidates[0].content.parts
-    if json_mode and content is not None:
-        return content[0].text
-    elif tool_calls := content:
-        return tool_calls[0].function_call.args
+    if isinstance(response, GeminiCallResponse):
+        if json_mode and response.content:
+            return response.content
+        elif tool_calls := response.tool_calls:
+            return tool_calls[0].function_call.args
+        else:
+            raise ValueError("No tool call or JSON object found in response.")
     else:
-        raise ValueError("No tool call or JSON object found in response.")
+        if not json_mode:
+            raise ValueError("Gemini only supports structured streaming in json mode.")
+        return response.content
 
 
 def handle_stream(
     stream: Generator[GenerateContentResponse, None, None],
     tool_types: list[type[GeminiTool] | Callable],
-):
+) -> Generator[tuple[GeminiCallResponseChunk, None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed.
 
     Note: gemini does not currently support streaming tools.
@@ -105,7 +113,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[GenerateContentResponse, None],
     tool_types: list[type[GeminiTool] | Callable],
-):
+) -> AsyncGenerator[tuple[GeminiCallResponseChunk, None], None, None]:
     """Async iterator over the stream and constructs tools as they are streamed.
 
     Note: gemini does not currently support streaming tools.

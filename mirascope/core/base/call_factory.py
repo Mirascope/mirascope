@@ -6,7 +6,6 @@ from typing import (
     Any,
     Awaitable,
     Callable,
-    Iterable,
     Literal,
     NoReturn,
     ParamSpec,
@@ -20,6 +19,7 @@ from pydantic import BaseModel
 from ._create import create_factory
 from ._extract import extract_factory
 from ._stream import BaseStream, stream_factory
+from ._structured_stream import BaseStructuredStream, structured_stream_factory
 from ._utils import BaseType
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -41,6 +41,9 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _P = ParamSpec("_P")
+
+
+StructuredStream = BaseStructuredStream
 
 
 def call_factory(
@@ -81,16 +84,6 @@ def call_factory(
         Awaitable[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]],
     ],
     calculate_cost: Callable[[_ResponseT, str], float],
-    structured_stream_decorator: Callable[
-        [
-            Callable[_P, _BaseDynamicConfigT],
-            str,
-            type[_ExtractModelT],
-            _BaseClientT,
-            _BaseCallParamsT,
-        ],
-        Callable[_P, Iterable[_ExtractModelT]],
-    ],
 ):
     @overload
     def base_call(
@@ -222,7 +215,7 @@ def call_factory(
         **call_params: Unpack[TCallParams],
     ) -> Callable[
         [Callable[_P, TDynamicConfig]],
-        Callable[_P, Iterable[_ResponseModelT]],
+        Callable[_P, StructuredStream[_ResponseModelT]],
     ]: ...  # pragma: no cover
 
     @overload
@@ -259,7 +252,7 @@ def call_factory(
             | _ParsedOutputT
             | TStream
             | _ResponseModelT
-            | Iterable[_ResponseModelT],
+            | StructuredStream[_ResponseModelT],
         ],
     ]:
         if stream and output_parser:
@@ -270,9 +263,16 @@ def call_factory(
         if response_model:
             if stream:
                 return partial(
-                    structured_stream_decorator,
+                    structured_stream_factory(
+                        TCallResponseChunk=TCallResponseChunk,
+                        TMessageParamType=TMessageParamType,
+                        TToolType=TToolType,
+                        setup_call=setup_call,
+                        get_json_output=get_json_output,
+                    ),
                     model=model,
                     response_model=response_model,
+                    json_mode=json_mode,
                     client=client,
                     call_params=call_params,
                 )
