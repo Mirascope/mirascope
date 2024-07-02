@@ -24,7 +24,6 @@ def get_template_values(
         if "." in var:
             var = var.split(".")[0]
             values[var] = attrs.get(var)
-            print(values[var])
             continue
         attr = attrs[var]
         if isinstance(attr, list):
