@@ -5,7 +5,7 @@ import types
 from .base_type import BaseType
 
 
-def create_base_type_with_response(type_: type[BaseType]):
+def create_base_type_with_response(type_: type[BaseType]) -> type:
     class_name = f"{type_.__name__.capitalize()}WithResponse"
 
     # Define the __new__ method
@@ -16,7 +16,7 @@ def create_base_type_with_response(type_: type[BaseType]):
 
     # Check if the type is a generic type
     if hasattr(type_, "__origin__"):
-        base_type = type_.__origin__
+        base_type = getattr(type_, "__origin__")
     else:
         base_type = type_
 

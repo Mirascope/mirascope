@@ -3,15 +3,19 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Any, Awaitable, Callable, ParamSpec, TypeVar, overload
+from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
 from pydantic import BaseModel
 
 from ._utils import (
     BaseType,
+    CalculateCost,
+    GetJsonOutput,
+    SetupCall,
     create_base_type_with_response,
     extract_tool_return,
     get_fn_args,
+    is_base_type,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -24,6 +28,8 @@ _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
+_ResponseChunkT = TypeVar("_ResponseChunkT")
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
 
@@ -32,27 +38,16 @@ def extract_factory(
     *,
     TCallResponse: type[_BaseCallResponseT],
     TToolType: type[BaseTool],
-    setup_call: Callable[
-        [
-            str,
-            _BaseClientT,
-            Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
-            dict[str, Any],
-            _BaseDynamicConfigT,
-            list[type[BaseTool] | Callable] | None,
-            _BaseCallParamsT,
-            bool,
-        ],
-        tuple[
-            Callable[..., _ResponseT],
-            str,
-            list[dict[str, Any]],
-            list[type[BaseTool]],
-            dict[str, Any],
-        ],
+    setup_call: SetupCall[
+        _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
     ],
-    get_json_output: Callable[[_ResponseT, bool], str],
-    calculate_cost: Callable[[_ResponseT, str], float],
+    get_json_output: GetJsonOutput[_BaseCallResponseT],
+    calculate_cost: CalculateCost[_ResponseT],
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
@@ -89,6 +84,7 @@ def extract_factory(
 
         @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+            assert SetupCall.fn_is_sync(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -103,7 +99,7 @@ def extract_factory(
                 extract=True,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
-            response = create(**call_kwargs)
+            response = create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),
@@ -124,14 +120,15 @@ def extract_factory(
             json_output = get_json_output(call_response, json_mode)
             output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
-                output._response = call_response
-            else:
+                output._response = call_response  # type: ignore
+            elif is_base_type(response_model):
                 output = create_base_type_with_response(response_model)(output)
                 output._response = call_response
-            return output
+            return output  # type: ignore
 
         @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+            assert SetupCall.fn_is_async(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = await fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -146,7 +143,7 @@ def extract_factory(
                 extract=True,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
-            response = await create(**call_kwargs)
+            response = await create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),
@@ -167,11 +164,11 @@ def extract_factory(
             json_output = get_json_output(call_response, json_mode)
             output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
-                output._response = call_response
-            else:
+                output._response = call_response  # type: ignore
+            elif is_base_type(response_model):
                 output = create_base_type_with_response(response_model)(output)
                 output._response = call_response
-            return output
+            return output  # type: ignore
 
         return inner_async if is_async else inner
 

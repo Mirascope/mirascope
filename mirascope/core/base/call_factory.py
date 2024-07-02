@@ -3,9 +3,10 @@
 from collections.abc import AsyncGenerator, Generator
 from functools import partial
 from typing import (
-    Any,
+    AsyncIterable,
     Awaitable,
     Callable,
+    Iterable,
     Literal,
     NoReturn,
     ParamSpec,
@@ -20,7 +21,8 @@ from ._create import create_factory
 from ._extract import extract_factory
 from ._stream import BaseStream, stream_factory
 from ._structured_stream import BaseStructuredStream, structured_stream_factory
-from ._utils import BaseType
+from ._utils import BaseType, GetJsonOutput, LLMFunctionDecorator, SetupCall
+from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
@@ -31,14 +33,14 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
-_ExtractModelT = TypeVar("_ExtractModelT", bound=BaseModel | BaseType)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseModel)
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
+_ResponseChunkT = TypeVar("_ResponseChunkT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _P = ParamSpec("_P")
 
@@ -52,35 +54,24 @@ def call_factory(
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TCallParams: type[_BaseCallParamsT],
     TDynamicConfig: type[_BaseDynamicConfigT],
-    TStream: type[_BaseStreamT],
     TMessageParamType: type[_AssistantMessageParamT],
     TToolType: type[_BaseToolT],
-    setup_call: Callable[
-        [
-            str,
-            _BaseClientT,
-            Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
-            dict[str, Any],
-            _BaseDynamicConfigT,
-            list[type[BaseTool] | Callable] | None,
-            _BaseCallParamsT,
-            bool,
-        ],
-        tuple[
-            Callable[..., _ResponseT],
-            str,
-            list[dict[str, Any]],
-            list[type[BaseTool]],
-            dict[str, Any],
-        ],
+    TStream: type[_BaseStreamT],
+    setup_call: SetupCall[
+        _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
     ],
-    get_json_output: Callable[[_ResponseT, bool], str],
+    get_json_output: GetJsonOutput[_BaseCallResponseT | _BaseCallResponseChunkT],
     handle_stream: Callable[
-        [Generator[_BaseCallResponseChunkT, None, None], list[type[_BaseToolT]]],
+        [Generator[_ResponseChunkT, None, None], list[type[_BaseToolT]]],
         Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None],
     ],
     handle_stream_async: Callable[
-        [AsyncGenerator[_BaseCallResponseChunkT, None], list[type[_BaseToolT]]],
+        [AsyncGenerator[_ResponseChunkT, None], list[type[_BaseToolT]]],
         Awaitable[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]],
     ],
     calculate_cost: Callable[[_ResponseT, str], float],
@@ -96,9 +87,8 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[_P, TCallResponse],
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, TCallResponse, TCallResponse
     ]: ...  # pragma: no cover
 
     @overload
@@ -112,9 +102,8 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[_P, _ParsedOutputT],
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
     ]: ...  # pragma: no cover
 
     @overload
@@ -141,10 +130,7 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[_P, TStream],
-    ]: ...  # pragma: no cover
+    ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -183,9 +169,8 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[_P, _ResponseModelT],
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ResponseModelT, _ResponseModelT
     ]: ...  # pragma: no cover
 
     @overload
@@ -213,9 +198,8 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[_P, StructuredStream[_ResponseModelT]],
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
     ]: ...  # pragma: no cover
 
     @overload
@@ -244,16 +228,18 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         **call_params: Unpack[TCallParams],
-    ) -> Callable[
-        [Callable[_P, TDynamicConfig]],
-        Callable[
-            _P,
-            TCallResponse
-            | _ParsedOutputT
-            | TStream
-            | _ResponseModelT
-            | StructuredStream[_ResponseModelT],
-        ],
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig,
+        TCallResponse
+        | _ParsedOutputT
+        | TStream
+        | _ResponseModelT
+        | Iterable[_ResponseModelT],
+        TCallResponse
+        | _ParsedOutputT
+        | TStream
+        | _ResponseModelT
+        | AsyncIterable[_ResponseModelT],
     ]:
         if stream and output_parser:
             raise ValueError("Cannot use `output_parser` with `stream=True`.")
@@ -265,7 +251,6 @@ def call_factory(
                 return partial(
                     structured_stream_factory(
                         TCallResponseChunk=TCallResponseChunk,
-                        TMessageParamType=TMessageParamType,
                         TToolType=TToolType,
                         setup_call=setup_call,
                         get_json_output=get_json_output,
@@ -275,7 +260,7 @@ def call_factory(
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,
-                )
+                )  # type: ignore
             else:
                 return partial(
                     extract_factory(
@@ -290,13 +275,14 @@ def call_factory(
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,
-                )
+                )  # type: ignore
         if stream:
             return partial(
                 stream_factory(
+                    TCallResponse=TCallResponse,
                     TCallResponseChunk=TCallResponseChunk,
-                    TStream=TStream,
                     TMessageParamType=TMessageParamType,
+                    TStream=TStream,
                     setup_call=setup_call,
                     handle_stream=handle_stream,
                     handle_stream_async=handle_stream_async,
@@ -306,7 +292,7 @@ def call_factory(
                 json_mode=json_mode,
                 client=client,
                 call_params=call_params,
-            )
+            )  # type: ignore
         return partial(
             create_factory(
                 TCallResponse=TCallResponse,
@@ -319,6 +305,6 @@ def call_factory(
             json_mode=json_mode,
             client=client,
             call_params=call_params,
-        )
+        )  # type: ignore
 
     return base_call

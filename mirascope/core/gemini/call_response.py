@@ -97,7 +97,7 @@ class GeminiCallResponse(
 
     @classmethod
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[GeminiTool, object]]
+        cls, tools_and_outputs: list[tuple[GeminiTool, object]]
     ) -> list[FunctionResponse]:
         """Returns the tool message parameters for tool call results."""
         return [

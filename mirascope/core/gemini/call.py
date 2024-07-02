@@ -17,14 +17,20 @@ from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
 
-GeminiStream = BaseStream[
-    GeminiCallResponseChunk,
-    ContentDict,
-    ContentDict,
-    ContentDict,
-    GeminiTool,
-    GeminiDynamicConfig,
-]
+
+class GeminiStream(
+    BaseStream[
+        GeminiCallResponse,
+        GeminiCallResponseChunk,
+        ContentDict,
+        ContentDict,
+        ContentDict,
+        GeminiTool,
+        GeminiDynamicConfig,
+        GeminiCallParams,
+    ]
+): ...  # pragma: no cover
+
 
 gemini_call = call_factory(
     TCallResponse=GeminiCallResponse,

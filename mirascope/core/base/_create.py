@@ -3,9 +3,9 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Any, Awaitable, Callable, ParamSpec, TypeVar, overload
+from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
-from ._utils import get_fn_args
+from ._utils import CalculateCost, SetupCall, get_fn_args
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -17,49 +17,24 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
+_ResponseChunkT = TypeVar("_ResponseChunkT")
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
 
 
 def create_factory(
     *,
     TCallResponse: type[_BaseCallResponseT],
-    setup_call: Callable[
-        [
-            str,
-            _BaseClientT,
-            Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
-            dict[str, Any],
-            _BaseDynamicConfigT,
-            list[type[BaseTool] | Callable] | None,
-            _BaseCallParamsT,
-            bool,
-        ],
-        tuple[
-            Callable[..., _ResponseT],
-            str,
-            list[dict[str, Any]],
-            list[type[BaseTool]],
-            dict[str, Any],
-        ],
+    setup_call: SetupCall[
+        _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
     ],
-    calculate_cost: Callable[[_ResponseT, str], float],
-) -> Callable[
-    [
-        Callable[_P, _BaseDynamicConfigT],
-        str,
-        list[type[BaseTool] | Callable] | None,
-        Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
-        bool,
-        _BaseClientT | None,
-        _BaseCallResponseT,
-    ],
-    Callable[
-        _P,
-        _BaseCallResponseT
-        | _ParsedOutputT
-        | Awaitable[_BaseCallResponseT | _ParsedOutputT],
-    ],
-]:
+    calculate_cost: CalculateCost[_ResponseT],
+):
     """Returns the wrapped function with the provider specific interfaces."""
 
     @overload
@@ -70,7 +45,7 @@ def create_factory(
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallResponseT,
+        call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...  # pragma: no cover
 
     @overload
@@ -81,7 +56,7 @@ def create_factory(
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallResponseT,
+        call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
         Awaitable[_BaseCallResponseT | _ParsedOutputT],
@@ -94,7 +69,7 @@ def create_factory(
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallResponseT,
+        call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
         _BaseCallResponseT
@@ -107,6 +82,7 @@ def create_factory(
         def inner(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> TCallResponse | _ParsedOutputT:
+            assert SetupCall.fn_is_sync(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -121,7 +97,7 @@ def create_factory(
                 extract=False,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
-            response = create(**call_kwargs)
+            response = create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             output = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),
@@ -145,6 +121,7 @@ def create_factory(
         async def inner_async(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> TCallResponse | _ParsedOutputT:
+            assert SetupCall.fn_is_async(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = await fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -159,7 +136,7 @@ def create_factory(
                 extract=False,
             )
             start_time = datetime.datetime.now().timestamp() * 1000
-            response = await create(**call_kwargs)
+            response = await create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             output = TCallResponse(
                 tags=fn.__annotations__.get("tags", []),

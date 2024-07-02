@@ -5,9 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, field_serializer
-
-from .tool import BaseTool
+from pydantic import BaseModel, ConfigDict
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 

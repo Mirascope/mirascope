@@ -1,11 +1,15 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, overload
 
-from openai import AsyncOpenAI, OpenAI
-from openai._base_client import BaseClient
-from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionMessageParam,
+)
+from pyparsing import C
 
 from ...base import BaseTool, _utils
 from ..call_params import OpenAICallParams
@@ -16,9 +20,9 @@ from ..tool import OpenAITool
 def setup_call(
     *,
     model: str,
-    client: BaseClient | None,
+    client: AsyncAzureOpenAI | AsyncOpenAI | AzureOpenAI | OpenAI | None,
     fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
-    fn_args: dict[str, any],
+    fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
@@ -40,7 +44,9 @@ def setup_call(
     call_kwargs |= {"model": model, "messages": messages}
     if json_mode:
         call_kwargs["response_format"] = {"type": "json_object"}
-        messages[-1]["content"] += _utils.json_mode_content(tools[0] if tools else None)
+        messages[-1]["content"] += _utils.json_mode_content(
+            tool_types[0] if tool_types else None
+        )
         call_kwargs.pop("tools", None)
     elif extract:
         call_kwargs["tool_choice"] = "required"

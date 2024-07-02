@@ -17,14 +17,20 @@ from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
-AnthropicStream = BaseStream[
-    AnthropicCallResponseChunk,
-    MessageParam,
-    MessageParam,
-    MessageParam,
-    AnthropicTool,
-    AnthropicDynamicConfig,
-]
+
+class AnthropicStream(
+    BaseStream[
+        AnthropicCallResponse,
+        AnthropicCallResponseChunk,
+        MessageParam,
+        MessageParam,
+        MessageParam,
+        AnthropicTool,
+        AnthropicDynamicConfig,
+        AnthropicCallParams,
+    ]
+): ...  # pragma: no cover
+
 
 anthropic_call = call_factory(
     TCallResponse=AnthropicCallResponse,

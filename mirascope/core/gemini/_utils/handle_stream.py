@@ -18,16 +18,16 @@ def handle_stream(
     Note: gemini does not currently support streaming tools.
     """
     for chunk in stream:
-        yield chunk, None
+        yield GeminiCallResponseChunk(chunk=chunk), None
 
 
 async def handle_stream_async(
     stream: AsyncGenerator[GenerateContentResponse, None],
     tool_types: list[type[GeminiTool] | Callable],
-) -> AsyncGenerator[tuple[GeminiCallResponseChunk, None], None, None]:
+) -> AsyncGenerator[tuple[GeminiCallResponseChunk, None], None]:
     """Async iterator over the stream and constructs tools as they are streamed.
 
     Note: gemini does not currently support streaming tools.
     """
     async for chunk in stream:
-        yield chunk, None
+        yield GeminiCallResponseChunk(chunk=chunk), None

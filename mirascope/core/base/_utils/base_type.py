@@ -2,12 +2,12 @@
 
 import inspect
 from enum import Enum
-from typing import Annotated, Any, Literal, Union, get_origin
+from typing import Annotated, Any, Literal, TypeGuard, Union, get_origin
 
 BaseType = str | int | float | bool | list | set | tuple
 
 
-def is_base_type(type_: Any) -> bool:
+def is_base_type(type_: Any) -> TypeGuard[type[BaseType]]:
     """Check if a type is a base type."""
     base_types = {str, int, float, bool, list, set, tuple}
     return (

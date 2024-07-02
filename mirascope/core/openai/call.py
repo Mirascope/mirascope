@@ -1,13 +1,19 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
+from typing import Generic, TypeVar
+
 from openai.types.chat import (
+    ChatCompletion,
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
 )
+from pydantic import BaseModel
 
 from ..base import call_factory
 from ..base._stream import BaseStream
+from ..base._structured_stream import BaseStructuredStream
+from ..base._utils import BaseType
 from ._utils import (
     calculate_cost,
     get_json_output,
@@ -21,23 +27,29 @@ from .call_response_chunk import OpenAICallResponseChunk
 from .dyanmic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
 
-OpenAIStream = BaseStream[
-    OpenAICallResponseChunk,
-    ChatCompletionUserMessageParam,
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-    OpenAITool,
-    OpenAIDynamicConfig,
-]
+
+class OpenAIStream(
+    BaseStream[
+        OpenAICallResponse,
+        OpenAICallResponseChunk,
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+        ChatCompletionMessageParam,
+        OpenAITool,
+        OpenAIDynamicConfig,
+        OpenAICallParams,
+    ]
+): ...  # pragma: no cover
+
 
 openai_call = call_factory(
     TCallResponse=OpenAICallResponse,
     TCallResponseChunk=OpenAICallResponseChunk,
     TCallParams=OpenAICallParams,
     TDynamicConfig=OpenAIDynamicConfig,
-    TStream=OpenAIStream,
     TMessageParamType=ChatCompletionAssistantMessageParam,
     TToolType=OpenAITool,
+    TStream=OpenAIStream,
     setup_call=setup_call,
     get_json_output=get_json_output,
     handle_stream=handle_stream,

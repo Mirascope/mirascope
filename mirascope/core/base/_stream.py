@@ -6,12 +6,14 @@ from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
 
-from ._utils import get_fn_args
+from ._utils import SetupCall, get_fn_args
 from .call_params import BaseCallParams
+from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
 
+_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
@@ -19,18 +21,20 @@ _UserMessageParamT = TypeVar("_UserMessageParamT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-_CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
 
 class BaseStream(
     Generic[
+        _BaseCallResponseT,
         _BaseCallResponseChunkT,
         _UserMessageParamT,
         _AssistantMessageParamT,
         _MessageParamT,
         _BaseToolT,
         _BaseDynamicConfigT,
+        _BaseCallParamsT,
     ],
     ABC,
 ):
@@ -44,17 +48,16 @@ class BaseStream(
         ]
     )
     tags: list[str]
-    tools_types: list[type[_BaseToolT]] | None
+    tool_types: list[type[_BaseToolT]] | None
     message_param_type: type[_AssistantMessageParamT]
+    call_response_type: type[_BaseCallResponseT]
     model: str | None = None
     cost: float | None = None
     prompt_template: str | None = None
     fn_args: dict[str, Any] | None = None
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
-    call_params: _CallParamsT
-    input_tokens: int | float | None = None
-    output_tokens: int | float | None = None
+    call_params: _BaseCallParamsT
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     provider: str
@@ -70,13 +73,14 @@ class BaseStream(
         tags: list[str],
         tool_types: list[type[_BaseToolT]] | None,
         message_param_type: type[_AssistantMessageParamT],
+        call_response_type: type[_BaseCallResponseT],
         model: str,
         cost: float | None,
         prompt_template: str,
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
-        call_params: _CallParamsT,
+        call_params: _BaseCallParamsT,
         user_message_param: _UserMessageParamT | None,
     ):
         """Initializes an instance of `BaseStream`."""
@@ -84,6 +88,7 @@ class BaseStream(
         self.tags = tags
         self.tool_types = tool_types
         self.message_param_type = message_param_type
+        self.call_response_type = call_response_type
         self.model = model
         self.cost = cost
         self.prompt_template = prompt_template
@@ -112,7 +117,7 @@ class BaseStream(
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
-        kwargs = {"role": "assistant"}
+        kwargs: dict[str, Any] = {"role": "assistant"}
         if "message" in self.message_param_type.__annotations__:
             kwargs["message"] = content
         else:
@@ -142,7 +147,7 @@ class BaseStream(
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, None
-            kwargs = {"role": "assistant"}
+            kwargs: dict[str, Any] = {"role": "assistant"}
             if "message" in self.message_param_type.__annotations__:
                 kwargs["message"] = content
                 if tool_calls:
@@ -155,6 +160,10 @@ class BaseStream(
 
         return generator()
 
+    def tool_message_params(self, tools_and_outputs):
+        """Returns the tool message parameters for tool call results."""
+        return self.call_response_type.tool_message_params(tools_and_outputs)
+
 
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
@@ -163,39 +172,31 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
+_ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
 
 
 def stream_factory(
+    *,
+    TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
-    TStream: type[BaseStream],
     TMessageParamType: type[_AssistantMessageParamT],
-    setup_call: Callable[
-        [
-            str,
-            _BaseClientT,
-            Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
-            dict[str, Any],
-            _BaseDynamicConfigT,
-            list[type[BaseTool] | Callable] | None,
-            _BaseCallParamsT,
-            bool,
-        ],
-        tuple[
-            Callable[..., _ResponseT],
-            str,
-            list[dict[str, Any]],
-            list[type[BaseTool]],
-            dict[str, Any],
-        ],
+    TStream: type[BaseStream],
+    setup_call: SetupCall[
+        _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
     ],
     handle_stream: Callable[
-        [Generator[_BaseCallResponseChunkT, None, None], list[type[_BaseToolT]]],
+        [Generator[_ResponseChunkT, None, None], list[type[_BaseToolT]] | None],
         Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None],
     ],
     handle_stream_async: Callable[
-        [AsyncGenerator[_BaseCallResponseChunkT, None], list[type[_BaseToolT]]],
-        Awaitable[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]],
+        [AsyncGenerator[_ResponseChunkT, None], list[type[_BaseToolT]] | None],
+        AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
     ],
 ):
     @overload
@@ -219,7 +220,7 @@ def stream_factory(
     ) -> Callable[_P, Awaitable[TStream]]: ...  # pragma: no cover
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT],
+        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
@@ -230,6 +231,7 @@ def stream_factory(
 
         @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
+            assert SetupCall.fn_is_sync(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -255,6 +257,7 @@ def stream_factory(
                 tags=fn.__annotations__.get("tags", []),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
+                call_response_type=TCallResponse,
                 model=model,
                 cost=None,
                 prompt_template=prompt_template,
@@ -269,6 +272,7 @@ def stream_factory(
 
         @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
+            assert SetupCall.fn_is_async(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = await fn(*args, **kwargs)
             create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -294,6 +298,7 @@ def stream_factory(
                 tags=fn.__annotations__.get("tags", []),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
+                call_response_type=TCallResponse,
                 model=model,
                 cost=None,
                 prompt_template=prompt_template,
