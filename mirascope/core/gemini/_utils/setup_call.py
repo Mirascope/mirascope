@@ -1,7 +1,6 @@
-"""Utilities for the Mirascope Core OpenAI module."""
+"""This module contains the setup_call function, which is used to set up the"""
 
 import inspect
-from collections.abc import AsyncGenerator, Generator
 from typing import Any, Awaitable, Callable
 
 from google.generativeai import GenerativeModel  # type: ignore
@@ -10,12 +9,10 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse,
 )
 
-from ..base import BaseTool, _utils
-from .call_params import GeminiCallParams
-from .call_response import GeminiCallResponse
-from .call_response_chunk import GeminiCallResponseChunk
-from .dynamic_config import GeminiDynamicConfig
-from .tool import GeminiTool
+from ...base import BaseTool, _utils
+from ..call_params import GeminiCallParams
+from ..dynamic_config import GeminiDynamicConfig
+from ..tool import GeminiTool
 
 
 def setup_call(
@@ -79,51 +76,3 @@ def setup_call(
     call_kwargs |= {"contents": gemini_messages}
 
     return create, prompt_template, gemini_messages, tool_types, call_kwargs
-
-
-def get_json_output(
-    response: GeminiCallResponse | GeminiCallResponseChunk, json_mode: bool
-) -> str:
-    """Extracts the JSON output from a Gemini response."""
-    if isinstance(response, GeminiCallResponse):
-        if json_mode and response.content:
-            return response.content
-        elif tool_calls := response.tool_calls:
-            return tool_calls[0].function_call.args
-        else:
-            raise ValueError("No tool call or JSON object found in response.")
-    else:
-        if not json_mode:
-            raise ValueError("Gemini only supports structured streaming in json mode.")
-        return response.content
-
-
-def handle_stream(
-    stream: Generator[GenerateContentResponse, None, None],
-    tool_types: list[type[GeminiTool] | Callable],
-) -> Generator[tuple[GeminiCallResponseChunk, None], None, None]:
-    """Iterator over the stream and constructs tools as they are streamed.
-
-    Note: gemini does not currently support streaming tools.
-    """
-    for chunk in stream:
-        yield chunk, None
-
-
-async def handle_stream_async(
-    stream: AsyncGenerator[GenerateContentResponse, None],
-    tool_types: list[type[GeminiTool] | Callable],
-) -> AsyncGenerator[tuple[GeminiCallResponseChunk, None], None, None]:
-    """Async iterator over the stream and constructs tools as they are streamed.
-
-    Note: gemini does not currently support streaming tools.
-    """
-    async for chunk in stream:
-        yield chunk, None
-
-
-def gemini_api_calculate_cost(
-    response: GenerateContentResponse, model: str
-) -> float | None:
-    """Calculate the cost of a Gemini API call."""
-    return None
