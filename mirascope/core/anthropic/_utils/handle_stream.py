@@ -2,7 +2,6 @@
 
 import json
 from collections.abc import AsyncGenerator, Generator
-from typing import Iterable
 
 from anthropic.types import MessageStreamEvent, TextBlock, ToolUseBlock
 
@@ -62,59 +61,51 @@ def _handle_chunk(
 
 
 def handle_stream(
-    stream: Generator[MessageStreamEvent, None, None]
-    | AsyncGenerator[MessageStreamEvent, None],
+    stream: Generator[MessageStreamEvent, None, None],
     tool_types: list[type[AnthropicTool]] | None,
-) -> (
-    Generator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None]
-    | AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None]
-):
+) -> Generator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
-    if isinstance(stream, Iterable):
+    current_text_block = TextBlock(text="", type="text")
+    current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+    current_tool_type, content, buffer = None, [], ""
+    for chunk in stream:
+        buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
+            buffer, chunk, current_tool_call, current_tool_type, tool_types
+        )
+        if tool is not None:
+            yield AnthropicCallResponseChunk(chunk=chunk), tool
+            if current_text_block.text:
+                content.append(current_text_block)
+                current_text_block = TextBlock(text="", type="text")
+            content.append(tool.tool_call)
+        else:
+            yield AnthropicCallResponseChunk(chunk=chunk), None
+            if hasattr(chunk, "content_block") and hasattr(
+                (content_block := getattr(chunk, "content_block")), "text"
+            ):
+                current_text_block.text += getattr(content_block, "text")
 
-        def generator():
-            current_text_block = TextBlock(text="", type="text")
-            current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
-            current_tool_type, content, buffer = None, [], ""
-            for chunk in stream:
-                buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-                    buffer, chunk, current_tool_call, current_tool_type, tool_types
-                )
-                if tool is not None:
-                    yield AnthropicCallResponseChunk(chunk=chunk), tool
-                    if current_text_block.text:
-                        content.append(current_text_block)
-                        current_text_block = TextBlock(text="", type="text")
-                    content.append(tool.tool_call)
-                else:
-                    yield AnthropicCallResponseChunk(chunk=chunk), None
-                    if hasattr(chunk, "content_block") and hasattr(
-                        (content_block := getattr(chunk, "content_block")), "text"
-                    ):
-                        current_text_block.text += getattr(content_block, "text")
 
-        return generator()
-    else:
-
-        async def async_generator():
-            current_text_block = TextBlock(text="", type="text")
-            current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
-            current_tool_type, content, buffer = None, [], ""
-            async for chunk in stream:
-                buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-                    buffer, chunk, current_tool_call, current_tool_type, tool_types
-                )
-                if tool is not None:
-                    yield AnthropicCallResponseChunk(chunk=chunk), tool
-                    if current_text_block.text:
-                        content.append(current_text_block)
-                        current_text_block = TextBlock(text="", type="text")
-                    content.append(tool.tool_call)
-                else:
-                    yield AnthropicCallResponseChunk(chunk=chunk), None
-                    if hasattr(chunk, "content_block") and hasattr(
-                        (content_block := getattr(chunk, "content_block")), "text"
-                    ):
-                        current_text_block.text += getattr(content_block, "text")
-
-        return async_generator()
+async def handle_stream_async(
+    stream: AsyncGenerator[MessageStreamEvent, None],
+    tool_types: list[type[AnthropicTool]] | None,
+) -> AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None]:
+    current_text_block = TextBlock(text="", type="text")
+    current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
+    current_tool_type, content, buffer = None, [], ""
+    async for chunk in stream:
+        buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
+            buffer, chunk, current_tool_call, current_tool_type, tool_types
+        )
+        if tool is not None:
+            yield AnthropicCallResponseChunk(chunk=chunk), tool
+            if current_text_block.text:
+                content.append(current_text_block)
+                current_text_block = TextBlock(text="", type="text")
+            content.append(tool.tool_call)
+        else:
+            yield AnthropicCallResponseChunk(chunk=chunk), None
+            if hasattr(chunk, "content_block") and hasattr(
+                (content_block := getattr(chunk, "content_block")), "text"
+            ):
+                current_text_block.text += getattr(content_block, "text")

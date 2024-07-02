@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+from typing import Any
 
 from anthropic.types import ToolParam, ToolUseBlock
 
@@ -31,5 +32,5 @@ class AnthropicTool(BaseTool):
     def from_tool_call(cls, tool_call: ToolUseBlock) -> AnthropicTool:
         """Constructs an `AnthropicTool` instance from a `tool_call`."""
         model_json = copy.deepcopy(tool_call.input)
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json["tool_call"] = tool_call.model_dump()  # type: ignore
         return cls.model_validate(model_json)

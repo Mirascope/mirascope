@@ -3,8 +3,14 @@
 import inspect
 from typing import Any, Awaitable, Callable
 
-from anthropic import Anthropic, AsyncAnthropic
-from anthropic._base_client import BaseClient
+from anthropic import (
+    Anthropic,
+    AnthropicBedrock,
+    AnthropicVertex,
+    AsyncAnthropic,
+    AsyncAnthropicBedrock,
+    AsyncAnthropicVertex,
+)
 from anthropic.types import Message, MessageParam
 
 from ...base import BaseTool, _utils
@@ -16,16 +22,22 @@ from ..tool import AnthropicTool
 def setup_call(
     *,
     model: str,
-    client: BaseClient | None,
+    client: Anthropic
+    | AsyncAnthropic
+    | AnthropicBedrock
+    | AsyncAnthropicBedrock
+    | AnthropicVertex
+    | AsyncAnthropicVertex
+    | None,
     fn: Callable[..., AnthropicDynamicConfig | Awaitable[AnthropicDynamicConfig]],
-    fn_args: dict[str, any],
+    fn_args: dict[str, Any],
     dynamic_config: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., Message],
+    Callable[..., Message] | Callable[..., Awaitable[Message]],
     str,
     list[dict[str, MessageParam]],
     list[type[AnthropicTool]],

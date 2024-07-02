@@ -49,13 +49,13 @@ class GeminiCallResponse(
     ```
     '''
 
-    provider: str = "gemini"
+    provider = "gemini"
 
     @computed_field
     @property
     def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
-        return {"role": "model", "parts": self.response.parts}
+        return {"role": "model", "parts": self.response.parts}  # type: ignore
 
     @computed_field
     @property

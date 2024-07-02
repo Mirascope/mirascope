@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
 
-from ._utils import HandleStream, SetupCall, get_fn_args
+from ._utils import HandleStream, HandleStreamAsync, SetupCall, get_fn_args
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -190,6 +190,9 @@ def stream_factory(
         _BaseToolT,
     ],
     handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
+    handle_stream_async: HandleStreamAsync[
+        _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
+    ],
 ):
     @overload
     def decorator(
@@ -280,7 +283,7 @@ def stream_factory(
             )
 
             async def generator():
-                async for chunk, tool in handle_stream(
+                async for chunk, tool in handle_stream_async(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
                     yield chunk, tool

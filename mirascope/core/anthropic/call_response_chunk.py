@@ -1,9 +1,11 @@
 """This module contains the `AnthropicCallResponseChunk` class."""
 
 from anthropic.types import (
+    MessageDeltaUsage,
     MessageStartEvent,
     MessageStreamEvent,
     RawMessageDeltaEvent,
+    RawMessageStartEvent,
     Usage,
 )
 
@@ -39,7 +41,7 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         return (
             self.chunk.delta.text
             if self.chunk.type == "content_block_delta"
-            and self.chunk.delta.type in ["text", "text_delta"]
+            and self.chunk.delta.type == "text_delta"
             else ""
         )
 
@@ -60,10 +62,12 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
     @property
     def finish_reasons(self) -> list[str] | None:
         """Returns the finish reason of the response."""
-        return self.chunk.message.stop_reason
+        if isinstance(self.chunk, RawMessageStartEvent):
+            return [str(self.chunk.message.stop_reason)]
+        return None
 
     @property
-    def usage(self) -> Usage | None:
+    def usage(self) -> Usage | MessageDeltaUsage | None:
         """Returns the usage of the message."""
         if isinstance(self.chunk, MessageStartEvent):
             return self.chunk.message.usage
@@ -74,8 +78,8 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        if usage := self.usage:
-            return usage.input_tokens if hasattr(usage, "input_tokens") else None
+        if (usage := self.usage) and hasattr(usage, "input_tokens"):
+            return getattr(usage, "input_tokens")
         return None
 
     @property

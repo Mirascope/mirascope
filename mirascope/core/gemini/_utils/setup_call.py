@@ -18,7 +18,7 @@ from ..tool import GeminiTool
 def setup_call(
     *,
     model: str,
-    client: object | None,
+    client: GenerativeModel | None,
     fn: Callable[..., GeminiDynamicConfig | Awaitable[GeminiDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: GeminiDynamicConfig,
@@ -27,7 +27,8 @@ def setup_call(
     call_params: GeminiCallParams,
     extract: bool = False,
 ) -> tuple[
-    Callable[..., GenerateContentResponse],
+    Callable[..., GenerateContentResponse]
+    | Callable[..., Awaitable[GenerateContentResponse]],
     str,
     list[dict[str, ContentsType]],
     list[type[GeminiTool]],
@@ -75,4 +76,4 @@ def setup_call(
     )
     call_kwargs |= {"contents": gemini_messages}
 
-    return create, prompt_template, gemini_messages, tool_types, call_kwargs
+    return create, prompt_template, gemini_messages, tool_types, call_kwargs  # type: ignore

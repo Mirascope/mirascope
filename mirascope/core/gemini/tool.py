@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import (  # type: ignore
     FunctionDeclaration,
@@ -24,7 +26,7 @@ class GeminiTool(BaseTool):
         model_schema.pop("title", None)
         model_schema.pop("description", None)
 
-        fn = {"name": cls._name(), "description": cls._description()}
+        fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
         if model_schema["properties"]:
             fn["parameters"] = model_schema  # type: ignore
         if model_schema["required"]:
@@ -56,6 +58,8 @@ class GeminiTool(BaseTool):
         """Constructs an `GeminiTool` instance from a `tool_call`."""
         if not tool_call.args:
             raise ValueError("Tool call doesn't have any arguments.")
-        model_json = {key: value for key, value in tool_call.args.items()}
+        model_json: dict[str, Any] = {
+            key: value for key, value in tool_call.args.items()
+        }
         model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)

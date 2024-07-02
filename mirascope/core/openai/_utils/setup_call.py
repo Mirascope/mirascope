@@ -1,7 +1,7 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, overload
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
@@ -15,7 +15,7 @@ from ..tool import OpenAITool
 def setup_call(
     *,
     model: str,
-    client: AsyncAzureOpenAI | AsyncOpenAI | AzureOpenAI | OpenAI | None,
+    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
     fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
@@ -24,7 +24,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion],
+    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
     str,
     list[dict[str, ChatCompletionMessageParam]],
     list[type[OpenAITool]],

@@ -40,13 +40,13 @@ class AnthropicCallResponse(
     ```
     '''
 
-    provider: str = "anthropic"
+    provider = "anthropic"
 
     @computed_field
     @property
     def message_param(self) -> MessageParam:
         """Returns the assistants's response as a message parameter."""
-        return self.response.model_dump(include={"content", "role"})
+        return self.response.model_dump(include={"content", "role"})  # type: ignore
 
     @property
     def content(self) -> str:

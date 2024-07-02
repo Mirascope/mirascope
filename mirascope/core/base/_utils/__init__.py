@@ -19,6 +19,7 @@ from .protocols import (
     CreateFn,
     GetJsonOutput,
     HandleStream,
+    HandleStreamAsync,
     LLMFunctionDecorator,
     SetupCall,
 )
@@ -42,6 +43,7 @@ __all__ = [
     "get_template_values",
     "get_template_variables",
     "HandleStream",
+    "HandleStreamAsync",
     "is_base_type",
     "json_mode_content",
     "LLMFunctionDecorator",

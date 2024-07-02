@@ -50,7 +50,7 @@ class OpenAICallResponse(
     ```
     '''
 
-    provider: str = "openai"
+    provider = "openai"
 
     @computed_field
     @property

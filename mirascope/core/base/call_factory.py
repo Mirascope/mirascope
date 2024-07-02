@@ -23,6 +23,7 @@ from ._utils import (
     CalculateCost,
     GetJsonOutput,
     HandleStream,
+    HandleStreamAsync,
     LLMFunctionDecorator,
     SetupCall,
 )
@@ -69,6 +70,9 @@ def call_factory(
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseT | _BaseCallResponseChunkT],
     handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
+    handle_stream_async: HandleStreamAsync[
+        _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
+    ],
     calculate_cost: CalculateCost[_ResponseT],
 ):
     @overload
@@ -279,6 +283,7 @@ def call_factory(
                     TStream=TStream,
                     setup_call=setup_call,
                     handle_stream=handle_stream,
+                    handle_stream_async=handle_stream_async,
                 ),
                 model=model,
                 tools=tools,

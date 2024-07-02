@@ -1,5 +1,7 @@
 """Get the JSON output from an anthropic call response or chunk."""
 
+import json
+
 from ..call_response import AnthropicCallResponse
 from ..call_response_chunk import AnthropicCallResponseChunk
 
@@ -14,7 +16,7 @@ def get_json_output(
             json_end = content.rfind("}")
             return content[json_start : json_end + 1]
         elif (block := response.response.content[0]) and block.type == "tool_use":
-            return block.input
+            return json.dumps(block.input)
         raise ValueError("No tool call or JSON object found in response.")
     else:
         if json_mode:

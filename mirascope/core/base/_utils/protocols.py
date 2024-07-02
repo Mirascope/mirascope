@@ -171,47 +171,25 @@ class SetupCall(
 class HandleStream(
     Protocol[_InvariantResponseChunkT, _BaseCallResponseChunkT, _BaseToolT]
 ):
-    @overload
     def __call__(
         self,
         stream: Generator[_InvariantResponseChunkT, None, None],
         tool_types: list[type[_BaseToolT]] | None,
     ) -> Generator[
-        tuple[_BaseCallResponseChunkT, _BaseToolT], None, None
+        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
     ]: ...  # pragma: no cover
 
-    @overload
+
+class HandleStreamAsync(
+    Protocol[_InvariantResponseChunkT, _BaseCallResponseChunkT, _BaseToolT]
+):
     def __call__(
         self,
         stream: AsyncGenerator[_InvariantResponseChunkT, None],
         tool_types: list[type[_BaseToolT]] | None,
     ) -> AsyncGenerator[
-        tuple[_BaseCallResponseChunkT, _BaseToolT], None
+        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
     ]: ...  # pragma: no cover
-
-    def __call__(
-        self,
-        stream: Generator[_InvariantResponseChunkT, None, None]
-        | AsyncGenerator[_InvariantResponseChunkT, None],
-        tool_types: list[type[_BaseToolT]] | None,
-    ) -> (
-        Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
-        | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]
-    ): ...  # pragma: no cover
-
-    # @staticmethod
-    # def is_generator(
-    #     generator: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
-    #     | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
-    # ) -> TypeGuard[Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]]:
-    #     return inspect.isgeneratorfunction(generator)
-
-    # @staticmethod
-    # def is_async_generator(
-    #     generator: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
-    #     | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
-    # ) -> TypeGuard[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]]:
-    #     return inspect.isasyncgenfunction(generator)
 
 
 class GetJsonOutput(Protocol[_R]):
@@ -219,4 +197,6 @@ class GetJsonOutput(Protocol[_R]):
 
 
 class CalculateCost(Protocol[_R]):
-    def __call__(self, response: _R, model: str) -> float: ...  # pragma: no cover
+    def __call__(
+        self, response: _R, model: str
+    ) -> float | None: ...  # pragma: no cover

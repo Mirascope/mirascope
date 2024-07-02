@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC
-from typing import Callable, ClassVar, NamedTuple
+from typing import Callable, ClassVar, NamedTuple, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import Concatenate, ParamSpec
@@ -17,15 +17,6 @@ _TOOLKIT_TOOL_METHOD_MARKER: str = "__toolkit_tool_method__"
 _namespaces: set[str] = set()
 
 P = ParamSpec("P")
-
-
-def toolkit_tool(
-    method: Callable[Concatenate[BaseToolKit, P], str],
-) -> Callable[Concatenate[BaseToolKit, P], str]:
-    # Mark the method as a toolkit tool
-    setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
-
-    return method
 
 
 class ToolKitToolMethod(NamedTuple):
@@ -128,3 +119,15 @@ class BaseToolKit(BaseModel, ABC):
             )
         if not cls._toolkit_tool_methods:
             raise ValueError("No toolkit_tool method found")
+
+
+_BaseToolKitT = TypeVar("_BaseToolKitT", bound=BaseToolKit)
+
+
+def toolkit_tool(
+    method: Callable[Concatenate[_BaseToolKitT, P], str],
+) -> Callable[Concatenate[_BaseToolKitT, P], str]:
+    # Mark the method as a toolkit tool
+    setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
+
+    return method

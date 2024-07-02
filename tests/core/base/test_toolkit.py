@@ -49,7 +49,7 @@ def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> 
         == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     )
     assert (
-        tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()
+        tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()  # type: ignore
         == "The Name of the Wind by Rothfuss, Patrick"
     )
 
@@ -99,7 +99,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
         == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
     )
     assert (
-        tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()
+        tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()  # type: ignore
         == "The Name of the Wind by Rothfuss, Patrick"
     )
     assert tools[1]._name() == "book_tools_format_world_book"
@@ -110,7 +110,9 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
     )
     assert (
         tools[1](
-            title="The Name of the Wind", author="Rothfuss, Patrick", genre="fantasy"
+            title="The Name of the Wind",  # type: ignore
+            author="Rothfuss, Patrick",  # type: ignore
+            genre="fantasy",  # type: ignore
         ).call()
         == "The Name of the Wind by Rothfuss, Patrick (fantasy)"
     )
