@@ -1,7 +1,6 @@
 """Mirascope Base Classes."""
 
 from . import _partial, _utils
-from .call_async_factory import call_async_factory
 from .call_factory import call_factory
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -21,7 +20,6 @@ __all__ = [
     "BasePrompt",
     "BaseTool",
     "BaseToolKit",
-    "call_async_factory",
     "call_factory",
     "prompt_template",
     "tags",

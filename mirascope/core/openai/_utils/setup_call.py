@@ -1,15 +1,10 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable, overload
+from typing import Any, Awaitable, Callable
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
-from openai.types.chat import (
-    ChatCompletion,
-    ChatCompletionChunk,
-    ChatCompletionMessageParam,
-)
-from pyparsing import C
+from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool, _utils
 from ..call_params import OpenAICallParams

@@ -134,7 +134,7 @@ def structured_stream_factory(
         _ResponseChunkT,
         _BaseToolT,
     ],
-    get_json_output: GetJsonOutput[_ResponseT],
+    get_json_output: GetJsonOutput[_BaseCallResponseChunkT],
 ):
     @overload
     def decorator(

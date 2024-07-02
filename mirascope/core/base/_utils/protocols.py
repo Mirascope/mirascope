@@ -14,20 +14,19 @@ from typing import (
     overload,
 )
 
-from .._stream import BaseStream
-from ..call_response import BaseCallResponse
+from ..call_response_chunk import BaseCallResponseChunk
 from ..tool import BaseTool
 
-_BaseCallResponseT = TypeVar(
-    "_BaseCallResponseT", covariant=True, bound=BaseCallResponse
+_BaseCallResponseChunkT = TypeVar(
+    "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
-_BaseStreamT = TypeVar("_BaseStreamT", covariant=True, bound=BaseStream)
 _BaseClientT = TypeVar("_BaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
 _AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)
 _ResponseChunkT = TypeVar("_ResponseChunkT", covariant=True)
+_InvariantResponseChunkT = TypeVar("_InvariantResponseChunkT", contravariant=True)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
 _R = TypeVar("_R", contravariant=True)
@@ -167,6 +166,52 @@ class SetupCall(
         fn: Callable[_P, _R | Awaitable[_R]],
     ) -> TypeGuard[Callable[_P, Awaitable[_R]]]:
         return inspect.iscoroutinefunction(fn)
+
+
+class HandleStream(
+    Protocol[_InvariantResponseChunkT, _BaseCallResponseChunkT, _BaseToolT]
+):
+    @overload
+    def __call__(
+        self,
+        stream: Generator[_InvariantResponseChunkT, None, None],
+        tool_types: list[type[_BaseToolT]] | None,
+    ) -> Generator[
+        tuple[_BaseCallResponseChunkT, _BaseToolT], None, None
+    ]: ...  # pragma: no cover
+
+    @overload
+    def __call__(
+        self,
+        stream: AsyncGenerator[_InvariantResponseChunkT, None],
+        tool_types: list[type[_BaseToolT]] | None,
+    ) -> AsyncGenerator[
+        tuple[_BaseCallResponseChunkT, _BaseToolT], None
+    ]: ...  # pragma: no cover
+
+    def __call__(
+        self,
+        stream: Generator[_InvariantResponseChunkT, None, None]
+        | AsyncGenerator[_InvariantResponseChunkT, None],
+        tool_types: list[type[_BaseToolT]] | None,
+    ) -> (
+        Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
+        | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]
+    ): ...  # pragma: no cover
+
+    # @staticmethod
+    # def is_generator(
+    #     generator: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
+    #     | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
+    # ) -> TypeGuard[Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]]:
+    #     return inspect.isgeneratorfunction(generator)
+
+    # @staticmethod
+    # def is_async_generator(
+    #     generator: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None]
+    #     | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
+    # ) -> TypeGuard[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]]:
+    #     return inspect.isasyncgenfunction(generator)
 
 
 class GetJsonOutput(Protocol[_R]):

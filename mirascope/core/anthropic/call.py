@@ -4,13 +4,7 @@ from anthropic.types import MessageParam
 
 from ..base import call_factory
 from ..base._stream import BaseStream
-from ._utils import (
-    calculate_cost,
-    get_json_output,
-    handle_stream,
-    handle_stream_async,
-    setup_call,
-)
+from ._utils import calculate_cost, get_json_output, handle_stream, setup_call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
@@ -35,15 +29,15 @@ class AnthropicStream(
 anthropic_call = call_factory(
     TCallResponse=AnthropicCallResponse,
     TCallResponseChunk=AnthropicCallResponseChunk,
-    TCallParams=AnthropicCallParams,
     TDynamicConfig=AnthropicDynamicConfig,
     TStream=AnthropicStream,
     TMessageParamType=MessageParam,
     TToolType=AnthropicTool,
+    TCallParams=AnthropicCallParams,
+    default_call_params=AnthropicCallParams(max_tokens=1000),
     setup_call=setup_call,
     get_json_output=get_json_output,
     handle_stream=handle_stream,
-    handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
 )
 '''A decorator for calling the Anthropic API with a typed function.

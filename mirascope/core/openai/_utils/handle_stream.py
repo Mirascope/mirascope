@@ -1,6 +1,8 @@
 """Handles the stream of completion chunks."""
 
+import inspect
 from collections.abc import AsyncGenerator, Generator
+from typing import Iterable
 
 from openai.types.chat import ChatCompletionChunk, ChatCompletionMessageToolCall
 from openai.types.chat.chat_completion_message_tool_call import Function
@@ -60,58 +62,65 @@ def _handle_chunk(
 
 
 def handle_stream(
-    stream: Generator[ChatCompletionChunk, None, None],
+    stream: Generator[ChatCompletionChunk, None, None]
+    | AsyncGenerator[ChatCompletionChunk, None],
     tool_types: list[type[OpenAITool]] | None,
-) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
+) -> (
+    Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]
+    | AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]
+):
     """Iterates over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionMessageToolCall(
         id="", function=Function(arguments="", name=""), type="function"
     )
     current_tool_type = None
-    for chunk in stream:
-        if not tool_types or not chunk.choices[0].delta.tool_calls:
-            if current_tool_type:
-                yield (
-                    chunk,
-                    current_tool_type.from_tool_call(current_tool_call),
-                )
-                current_tool_type = None
-            else:
-                yield chunk, None
-        tool, current_tool_call, current_tool_type = _handle_chunk(
-            chunk,
-            current_tool_call,
-            current_tool_type,
-            tool_types,
-        )
-        if tool is not None:
-            yield chunk, tool
 
+    if isinstance(stream, Iterable):
 
-async def handle_stream_async(
-    stream: AsyncGenerator[ChatCompletionChunk, None],
-    tool_types: list[type[OpenAITool]] | None,
-):
-    """Async iterates over the stream and constructs tools as they are streamed."""
-    current_tool_call = ChatCompletionMessageToolCall(
-        id="", function=Function(arguments="", name=""), type="function"
-    )
-    current_tool_type = None
-    async for chunk in stream:
-        if not tool_types or not chunk.choices[0].delta.tool_calls:
-            if current_tool_type:
-                yield (
+        def generator():
+            nonlocal current_tool_call, current_tool_type
+            for chunk in stream:
+                if not tool_types or not chunk.choices[0].delta.tool_calls:
+                    if current_tool_type:
+                        yield (
+                            OpenAICallResponseChunk(chunk=chunk),
+                            current_tool_type.from_tool_call(current_tool_call),
+                        )
+                        current_tool_type = None
+                    else:
+                        yield OpenAICallResponseChunk(chunk=chunk), None
+                tool, current_tool_call, current_tool_type = _handle_chunk(
                     chunk,
-                    current_tool_type.from_tool_call(current_tool_call),
+                    current_tool_call,
+                    current_tool_type,
+                    tool_types,
                 )
-                current_tool_type = None
-            else:
-                yield chunk, None
-        tool, current_tool_call, current_tool_type = _handle_chunk(
-            chunk,
-            current_tool_call,
-            current_tool_type,
-            tool_types,
-        )
-        if tool is not None:
-            yield chunk, tool
+                if tool is not None:
+                    yield OpenAICallResponseChunk(chunk=chunk), tool
+
+        return generator()
+    else:
+
+        async def async_generator():
+            nonlocal current_tool_call, current_tool_type
+            assert inspect.isasyncgen(stream)
+            async for chunk in stream:
+                if not tool_types or not chunk.choices[0].delta.tool_calls:
+                    if current_tool_type:
+                        yield (
+                            OpenAICallResponseChunk(chunk=chunk),
+                            current_tool_type.from_tool_call(current_tool_call),
+                        )
+                        current_tool_type = None
+                    else:
+                        yield OpenAICallResponseChunk(chunk=chunk), None
+                tool, current_tool_call, current_tool_type = _handle_chunk(
+                    chunk,
+                    current_tool_call,
+                    current_tool_type,
+                    tool_types,
+                )
+                if tool is not None:
+                    yield OpenAICallResponseChunk(chunk=chunk), tool
+
+        return async_generator()

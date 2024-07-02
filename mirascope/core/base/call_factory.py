@@ -1,17 +1,14 @@
 """The `call_factory` method for generating provider specific call decorators."""
 
-from collections.abc import AsyncGenerator, Generator
 from functools import partial
 from typing import (
     AsyncIterable,
-    Awaitable,
     Callable,
     Iterable,
     Literal,
     NoReturn,
     ParamSpec,
     TypeVar,
-    Unpack,
     overload,
 )
 
@@ -20,8 +17,15 @@ from pydantic import BaseModel
 from ._create import create_factory
 from ._extract import extract_factory
 from ._stream import BaseStream, stream_factory
-from ._structured_stream import BaseStructuredStream, structured_stream_factory
-from ._utils import BaseType, GetJsonOutput, LLMFunctionDecorator, SetupCall
+from ._structured_stream import structured_stream_factory
+from ._utils import (
+    BaseType,
+    CalculateCost,
+    GetJsonOutput,
+    HandleStream,
+    LLMFunctionDecorator,
+    SetupCall,
+)
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -45,18 +49,16 @@ _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _P = ParamSpec("_P")
 
 
-StructuredStream = BaseStructuredStream
-
-
 def call_factory(
     *,
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
-    TCallParams: type[_BaseCallParamsT],
     TDynamicConfig: type[_BaseDynamicConfigT],
     TMessageParamType: type[_AssistantMessageParamT],
     TToolType: type[_BaseToolT],
     TStream: type[_BaseStreamT],
+    TCallParams: type[_BaseCallParamsT],
+    default_call_params: _BaseCallParamsT,
     setup_call: SetupCall[
         _BaseClientT,
         _BaseDynamicConfigT,
@@ -66,15 +68,8 @@ def call_factory(
         _BaseToolT,
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseT | _BaseCallResponseChunkT],
-    handle_stream: Callable[
-        [Generator[_ResponseChunkT, None, None], list[type[_BaseToolT]]],
-        Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None],
-    ],
-    handle_stream_async: Callable[
-        [AsyncGenerator[_ResponseChunkT, None], list[type[_BaseToolT]]],
-        Awaitable[AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None]],
-    ],
-    calculate_cost: Callable[[_ResponseT, str], float],
+    handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
+    calculate_cost: CalculateCost[_ResponseT],
 ):
     @overload
     def base_call(
@@ -86,7 +81,7 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, TCallResponse, TCallResponse
     ]: ...  # pragma: no cover
@@ -101,7 +96,7 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, _ParsedOutputT, _ParsedOutputT
     ]: ...  # pragma: no cover
@@ -116,7 +111,7 @@ def call_factory(
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> NoReturn: ...  # pragma: no cover
 
     @overload
@@ -129,7 +124,7 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]: ...  # pragma: no cover
 
     @overload
@@ -142,7 +137,7 @@ def call_factory(
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> NoReturn: ...  # pragma: no cover
 
     @overload
@@ -155,7 +150,7 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> NoReturn: ...  # pragma: no cover
 
     @overload
@@ -168,7 +163,7 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, _ResponseModelT, _ResponseModelT
     ]: ...  # pragma: no cover
@@ -184,7 +179,7 @@ def call_factory(
         | Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> NoReturn: ...  # pragma: no cover
 
     @overload
@@ -197,7 +192,7 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
     ]: ...  # pragma: no cover
@@ -213,7 +208,7 @@ def call_factory(
         | Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> NoReturn: ...  # pragma: no cover
 
     def base_call(
@@ -227,7 +222,7 @@ def call_factory(
         | None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        **call_params: Unpack[TCallParams],
+        call_params: TCallParams = default_call_params,
     ) -> LLMFunctionDecorator[
         TDynamicConfig,
         TCallResponse
@@ -280,12 +275,10 @@ def call_factory(
             return partial(
                 stream_factory(
                     TCallResponse=TCallResponse,
-                    TCallResponseChunk=TCallResponseChunk,
                     TMessageParamType=TMessageParamType,
                     TStream=TStream,
                     setup_call=setup_call,
                     handle_stream=handle_stream,
-                    handle_stream_async=handle_stream_async,
                 ),
                 model=model,
                 tools=tools,

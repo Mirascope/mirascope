@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
 
-from ._utils import SetupCall, get_fn_args
+from ._utils import HandleStream, SetupCall, get_fn_args
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -179,7 +179,6 @@ _P = ParamSpec("_P")
 def stream_factory(
     *,
     TCallResponse: type[_BaseCallResponseT],
-    TCallResponseChunk: type[_BaseCallResponseChunkT],
     TMessageParamType: type[_AssistantMessageParamT],
     TStream: type[BaseStream],
     setup_call: SetupCall[
@@ -190,14 +189,7 @@ def stream_factory(
         _ResponseChunkT,
         _BaseToolT,
     ],
-    handle_stream: Callable[
-        [Generator[_ResponseChunkT, None, None], list[type[_BaseToolT]] | None],
-        Generator[tuple[_BaseCallResponseChunkT, _BaseToolT], None, None],
-    ],
-    handle_stream_async: Callable[
-        [AsyncGenerator[_ResponseChunkT, None], list[type[_BaseToolT]] | None],
-        AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT], None],
-    ],
+    handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
 ):
     @overload
     def decorator(
@@ -250,7 +242,7 @@ def stream_factory(
                 for chunk, tool in handle_stream(
                     create(stream=True, **call_kwargs), tool_types
                 ):
-                    yield TCallResponseChunk(chunk=chunk), tool
+                    yield chunk, tool
 
             return TStream(
                 generator(),
@@ -288,10 +280,10 @@ def stream_factory(
             )
 
             async def generator():
-                async for chunk, tool in handle_stream_async(
+                async for chunk, tool in handle_stream(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
-                    yield TCallResponseChunk(chunk=chunk), tool
+                    yield chunk, tool
 
             return TStream(
                 generator(),

@@ -18,6 +18,7 @@ from .protocols import (
     CalculateCost,
     CreateFn,
     GetJsonOutput,
+    HandleStream,
     LLMFunctionDecorator,
     SetupCall,
 )
@@ -40,6 +41,7 @@ __all__ = [
     "get_fn_args",
     "get_template_values",
     "get_template_variables",
+    "HandleStream",
     "is_base_type",
     "json_mode_content",
     "LLMFunctionDecorator",
