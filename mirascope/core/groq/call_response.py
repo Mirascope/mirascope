@@ -50,7 +50,7 @@ class GroqCallResponse(
     ```
     '''
 
-    provider = "groq"
+    _provider = "groq"
 
     @computed_field
     @property

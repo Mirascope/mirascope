@@ -49,7 +49,7 @@ class GeminiCallResponse(
     ```
     '''
 
-    provider = "gemini"
+    _provider = "gemini"
 
     @computed_field
     @property

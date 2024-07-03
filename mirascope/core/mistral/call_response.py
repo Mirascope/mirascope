@@ -46,7 +46,7 @@ class MistralCallResponse(
     ```
     '''
 
-    provider = "mistral"
+    _provider = "mistral"
 
     @computed_field
     @property

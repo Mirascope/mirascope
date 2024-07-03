@@ -40,7 +40,7 @@ class AnthropicCallResponse(
     ```
     '''
 
-    provider = "anthropic"
+    _provider = "anthropic"
 
     @computed_field
     @property

@@ -5,7 +5,7 @@ import inspect
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from ._utils import (
     BaseType,
@@ -118,7 +118,11 @@ def extract_factory(
                 cost=calculate_cost(response, model),
             )
             json_output = get_json_output(call_response, json_mode)
-            output = extract_tool_return(response_model, json_output, False)
+            try:
+                output = extract_tool_return(response_model, json_output, False)
+            except ValidationError as e:
+                e._response = call_response  # type: ignore
+                raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
             elif is_base_type(response_model):

@@ -62,7 +62,7 @@ class BaseCallResponse(
     end_time: float
     cost: float | None = None
 
-    provider: ClassVar[str] = "NO PROVIDER"
+    _provider: ClassVar[str] = "NO PROVIDER"
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 

@@ -52,7 +52,7 @@ class CohereCallResponse(
     ```
     '''
 
-    provider = "cohere"
+    _provider = "cohere"
 
     @computed_field
     @property
