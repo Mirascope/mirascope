@@ -1,9 +1,10 @@
 import inspect
+import json
 from abc import update_abstractmethods
 from typing import Any, Callable, TypeVar, cast, get_type_hints
 
 from docstring_parser import parse
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, ConfigDict, create_model
 from pydantic.fields import FieldInfo
 
 from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
@@ -39,10 +40,13 @@ def convert_function_to_base_tool(
         ValueError: if a given function's parameter is in the docstring args section but
             doesn't have a docstring description.
     """
-    docstring = None
+    docstring, examples = None, []
     func_doc = __doc__ or fn.__doc__
     if func_doc:
         docstring = parse(func_doc)
+        for example in docstring.examples or []:
+            if example.description:
+                examples.append(json.loads(example.description))
 
     field_definitions = {}
     hints = get_type_hints(fn)
@@ -93,6 +97,8 @@ def convert_function_to_base_tool(
         __doc__=inspect.cleandoc(func_doc) if func_doc else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
+    if examples:
+        model.model_config["json_schema_extra"] = {"examples": examples}
 
     def call(self: base):
         return fn(
