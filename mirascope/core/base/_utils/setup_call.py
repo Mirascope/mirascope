@@ -5,6 +5,7 @@ from typing import Any, Awaitable, Callable, TypeVar
 
 from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig
+from ..message_param import BaseMessageParam
 from ..tool import BaseTool
 from .convert_base_model_to_base_tool import convert_base_model_to_base_tool
 from .convert_function_to_base_tool import convert_function_to_base_tool
@@ -23,7 +24,7 @@ def setup_call(
     call_params: BaseCallParams,
 ) -> tuple[
     str,
-    list[dict[str, Any]],
+    list[BaseMessageParam],
     list[type[_BaseToolT]] | None,
     dict[str, Any],
 ]:
