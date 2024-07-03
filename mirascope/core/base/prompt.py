@@ -14,10 +14,10 @@ from typing import (
 
 from pydantic import BaseModel
 
+from ._stream import BaseStream
 from ._utils import BaseType, format_template
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
-from ._stream import BaseStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -109,42 +109,6 @@ class BasePrompt(BaseModel):
         ],
     ) -> Iterable[_ResponseModelT]: ...  # pragma: no cover
 
-    @overload
-    def run(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[_BaseCallResponseT]],
-        ],
-    ) -> Awaitable[_BaseCallResponseT]: ...  # pragma: no cover
-
-    @overload
-    def run(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[_BaseStreamT]],
-        ],
-    ) -> Awaitable[_BaseStreamT]: ...  # pragma: no cover
-
-    @overload
-    def run(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[_ResponseModelT]],
-        ],
-    ) -> Awaitable[_ResponseModelT]: ...  # pragma: no cover
-
-    @overload
-    def run(
-        self,
-        decorator: Callable[
-            [Callable[..., Awaitable[BaseDynamicConfig]]],
-            Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
-        ],
-    ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
-
     def run(
         self,
         decorator: Callable[
@@ -162,8 +126,57 @@ class BasePrompt(BaseModel):
         | Callable[
             [Callable[..., BaseDynamicConfig]],
             Callable[..., Iterable[_ResponseModelT]],
-        ]
-        | Callable[
+        ],
+    ) -> (
+        _BaseCallResponseT | _BaseStreamT | _ResponseModelT | Iterable[_ResponseModelT]
+    ):
+        """Returns the response of calling the API of the provided decorator."""
+        kwargs = self.model_dump()
+        args_str = ", ".join(kwargs.keys())
+        namespace = {}
+        exec(f"def fn({args_str}): ...", namespace)
+        fn = namespace["fn"]
+        return decorator(prompt_template(self._prompt_template())(fn))(**kwargs)
+
+    @overload
+    def run_async(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
+            Callable[..., Awaitable[_BaseCallResponseT]],
+        ],
+    ) -> Awaitable[_BaseCallResponseT]: ...  # pragma: no cover
+
+    @overload
+    def run_async(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
+            Callable[..., Awaitable[_BaseStreamT]],
+        ],
+    ) -> Awaitable[_BaseStreamT]: ...  # pragma: no cover
+
+    @overload
+    def run_async(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
+            Callable[..., Awaitable[_ResponseModelT]],
+        ],
+    ) -> Awaitable[_ResponseModelT]: ...  # pragma: no cover
+
+    @overload
+    def run_async(
+        self,
+        decorator: Callable[
+            [Callable[..., Awaitable[BaseDynamicConfig]]],
+            Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
+        ],
+    ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
+
+    def run_async(
+        self,
+        decorator: Callable[
             [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[_BaseCallResponseT]],
         ]
@@ -180,30 +193,15 @@ class BasePrompt(BaseModel):
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
     ) -> (
-        _BaseCallResponseT
-        | _BaseStreamT
-        | _ResponseModelT
-        | Iterable[_ResponseModelT]
-        | Awaitable[_BaseCallResponseT]
+        Awaitable[_BaseCallResponseT]
         | Awaitable[_BaseStreamT]
         | Awaitable[_ResponseModelT]
         | Awaitable[AsyncIterable[_ResponseModelT]]
     ):
-        """Returns the response of calling the API of the provided decorator."""
         kwargs = self.model_dump()
         args_str = ", ".join(kwargs.keys())
-        name = (
-            decorator.__name__
-            if hasattr(decorator, "__name__")
-            else decorator.func.__name__  # type: ignore
-        )
-        fn_def = (
-            f"async def fn({args_str}): ..."
-            if "async" in name
-            else f"def fn({args_str}): ..."
-        )
         namespace = {}
-        exec(fn_def, namespace)
+        exec(f"async def fn({args_str}): ...", namespace)
         fn = namespace["fn"]
         return decorator(prompt_template(self._prompt_template())(fn))(**kwargs)
 
