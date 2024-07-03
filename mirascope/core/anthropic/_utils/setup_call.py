@@ -40,7 +40,7 @@ def setup_call(
     Callable[..., Message] | Callable[..., Awaitable[Message]],
     str,
     list[dict[str, MessageParam]],
-    list[type[AnthropicTool]],
+    list[type[AnthropicTool]] | None,
     dict[str, Any],
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
@@ -55,10 +55,11 @@ def setup_call(
 
     if json_mode:
         messages[-1]["content"] += _utils.json_mode_content(
-            tool_types[0] if tools else None
+            tool_types[0] if tool_types else None
         )
         call_kwargs.pop("tools", None)
     elif extract:
+        assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
 
     return create, prompt_template, messages, tool_types, call_kwargs

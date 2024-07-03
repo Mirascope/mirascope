@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -61,7 +61,8 @@ class BaseCallResponse(
     start_time: float
     end_time: float
     cost: float | None = None
-    provider: str | None = None
+
+    provider: ClassVar[str] = "NO PROVIDER"
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 

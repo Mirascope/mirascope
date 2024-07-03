@@ -1,40 +1,40 @@
-"""This module contains the setup_call function for OpenAI tools."""
+"""This module contains the setup_call function for Groq tools."""
 
 import inspect
 from typing import Any, Awaitable, Callable
 
-from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
-from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from groq import AsyncGroq, Groq
+from groq.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool, _utils
-from ..call_params import OpenAICallParams
-from ..dynamic_config import OpenAIDynamicConfig
-from ..tool import OpenAITool
+from ..call_params import GroqCallParams
+from ..dynamic_config import GroqDynamicConfig
+from ..tool import GroqTool
 
 
 def setup_call(
     *,
     model: str,
-    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
+    client: Groq | AsyncGroq | None,
+    fn: Callable[..., GroqDynamicConfig | Awaitable[GroqDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: OpenAIDynamicConfig,
+    dynamic_config: GroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: GroqCallParams,
     extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
     str,
     list[dict[str, ChatCompletionMessageParam]],
-    list[type[OpenAITool]] | None,
+    list[type[GroqTool]] | None,
     dict[str, Any],
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, OpenAITool, call_params
+        fn, fn_args, dynamic_config, tools, GroqTool, call_params
     )
     if client is None:
-        client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
+        client = AsyncGroq() if inspect.iscoroutinefunction(fn) else Groq()
     create = client.chat.completions.create
     call_kwargs |= {"model": model, "messages": messages}
     if json_mode:
@@ -45,6 +45,9 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs["tool_choice"] = "required"
+        call_kwargs["tool_choice"] = {
+            "type": "function",
+            "function": {"name": tool_types[0]._name()},
+        }
 
     return create, prompt_template, messages, tool_types, call_kwargs

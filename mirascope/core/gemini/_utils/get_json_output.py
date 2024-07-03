@@ -15,7 +15,6 @@ def get_json_output(
             return tool_calls[0].function_call.args
         else:
             raise ValueError("No tool call or JSON object found in response.")
-    else:
-        if not json_mode:
-            raise ValueError("Gemini only supports structured streaming in json mode.")
-        return response.content
+    elif not json_mode:
+        raise ValueError("Gemini only supports structured streaming in json mode.")
+    return response.content

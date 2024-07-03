@@ -63,6 +63,7 @@ def setup_call(
         )
         call_kwargs.pop("tools", None)
     elif extract:
+        assert tool_types, "At least one tool must be provided for extraction."
         tool_config = call_kwargs.get("tool_config", {})
         tool_config["function_calling_config"] = {"mode": "auto"}
         call_kwargs["tool_config"] = tool_config

@@ -1,6 +1,6 @@
-"""This module contains the `OpenAICallResponse` class."""
+"""This module contains the `GroqCallResponse` class."""
 
-from openai.types.chat import (
+from groq.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessage,
@@ -9,48 +9,48 @@ from openai.types.chat import (
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
-from openai.types.chat.chat_completion import Choice
-from openai.types.completion_usage import CompletionUsage
+from groq.types.chat.chat_completion import Choice
+from groq.types.completion_usage import CompletionUsage
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
-from .call_params import OpenAICallParams
-from .dynamic_config import OpenAIDynamicConfig
-from .tool import OpenAITool
+from .call_params import GroqCallParams
+from .dynamic_config import GroqDynamicConfig
+from .tool import GroqTool
 
 
-class OpenAICallResponse(
+class GroqCallResponse(
     BaseCallResponse[
         ChatCompletion,
-        OpenAITool,
-        OpenAIDynamicConfig,
+        GroqTool,
+        GroqDynamicConfig,
         ChatCompletionMessageParam,
-        OpenAICallParams,
+        GroqCallParams,
         ChatCompletionUserMessageParam,
     ]
 ):
-    '''A convenience wrapper around the OpenAI `ChatCompletion` response.
+    '''A convenience wrapper around the Groq `ChatCompletion` response.
 
-    When calling the OpenAI API using a function decorated with `openai_call`, the
-    response will be an `OpenAICallResponse` instance with properties that allow for
+    When calling the Groq API using a function decorated with `groq_call`, the
+    response will be an `GroqCallResponse` instance with properties that allow for
     more convenience access to commonly used attributes.
 
     Example:
 
     ```python
-    from mirascope.core.openai import openai_call
+    from mirascope.core.groq import groq_call
 
-    @openai_call(model="gpt-4o")
+    @groq_call(model="gpt-4o")
     def recommend_book(genre: str):
         """Recommend a {genre} book."""
 
-    response = recommend_book("fantasy")  # response is an `OpenAICallResponse` instance
+    response = recommend_book("fantasy")  # response is an `GroqCallResponse` instance
     print(response.content)
     #> Sure! I would recommend...
     ```
     '''
 
-    provider = "openai"
+    provider = "groq"
 
     @computed_field
     @property
@@ -100,8 +100,8 @@ class OpenAICallResponse(
 
     @computed_field
     @property
-    def tools(self) -> list[OpenAITool] | None:
-        """Returns any available tool calls as their `OpenAITool` definition.
+    def tools(self) -> list[GroqTool] | None:
+        """Returns any available tool calls as their `GroqTool` definition.
 
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
@@ -120,7 +120,7 @@ class OpenAICallResponse(
 
     @computed_field
     @property
-    def tool(self) -> OpenAITool | None:
+    def tool(self) -> GroqTool | None:
         """Returns the 0th tool for the 0th choice message.
 
         Raises:
@@ -132,7 +132,7 @@ class OpenAICallResponse(
 
     @classmethod
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[OpenAITool, str]]
+        cls, tools_and_outputs: list[tuple[GroqTool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
         """Returns the tool message parameters for tool call results."""
         return [
