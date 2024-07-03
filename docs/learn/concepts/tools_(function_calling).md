@@ -159,6 +159,28 @@ class FormatBook(BaseTool):
         return f"{title} by {author}"
 ```
 
+You can provide examples for the entire model when using functions as tools. Simply add JSON examples that can be loaded into the `model_config`:
+
+```python
+from mirascope.core import openai
+
+
+def format_book(title: str, author: str) -> str:
+    """Returns a formatted book recommendation.
+
+    Example:
+        {"title": "THE HOBBIT", "author": "J.R.R. Tolkien"}
+
+    Example:
+        {"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss"}
+
+    Args:
+        title: The title of the book.
+        author: The author of the book.
+    """
+    return f"Sure! I would recommend {title} by {author}."
+```
+
 ## ToolKit
 
 Mirascope’s `ToolKit` class allows you to dynamically generate functions to be used as tools  with additional configurations. Its functionality is best explained via an example:
