@@ -6,10 +6,11 @@ We currently support the following providers:
 
 - [OpenAI](https://platform.openai.com/docs/quickstart?context=python)
 - [Anthropic](https://docs.anthropic.com/claude/docs/quickstart-guide)
-- [Mistral](https://docs.mistral.ai/)
-- [Cohere](https://docs.cohere.com/docs/the-cohere-platform)
-- [Groq](https://console.groq.com/docs/quickstart)
 - [Gemini](https://ai.google.dev/tutorials/get_started_web)
+- [Mistral](https://docs.mistral.ai/)
+- [Groq](https://console.groq.com/docs/quickstart)
+- [Cohere](https://docs.cohere.com/docs/the-cohere-platform)
+- [LiteLLM](https://docs.litellm.ai/)
 
 This also means that we support any providers that use these APIs.
 
@@ -62,6 +63,16 @@ def recommend_book(genre: str):
     """Recommend a {genre} book."""
 ```
 
+=== "Groq”
+
+```python
+from mirascope.core import groq
+
+@groq.call(model="mixtral-8x7b-32768")
+def recommend_book(genre: str):
+    """Recommend a {genre} book."""
+```
+
 === "Cohere”
 
 ```python
@@ -72,12 +83,12 @@ def recommend_book(genre: str):
     """Recommend a {genre} book."""
 ```
 
-=== "Groq”
+=== "LiteLLM"
 
 ```python
-from mirascope.core import groq
+from mirascope.core import litellm
 
-@groq.call(model="mixtral-8x7b-32768")
+@litellm.call(model="gpt-4o")
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
 ```
@@ -101,4 +112,4 @@ def recommend_book(genre: str):
 
 ## `BasePrompt`
 
-Mirascope’s `BasePrompt` class is intended for cases when you want to dynamically change model providers. Its `run()` function accepts all of our supported providers’ decorators, giving you flexibility to change providers in your code. Read more about `BasePrompt` here [link].
+Mirascope’s `BasePrompt` class is intended for cases when you want to dynamically change model providers. Its `run()` and `run_async` functions accepts all of our supported providers’ decorators, giving you flexibility to change providers in your code. Read more about `BasePrompt` here [link].

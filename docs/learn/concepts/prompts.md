@@ -46,8 +46,8 @@ response = prompt.run(
 )
 
 # Async Stream
-response = prompt.run(
-	anthropic.call_async(model="claude-3-5-sonnet-20240620", stream=True)
+response = prompt.run_async(
+	anthropic.call(model="claude-3-5-sonnet-20240620", stream=True)
 )
 ```
 
