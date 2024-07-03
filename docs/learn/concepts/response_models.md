@@ -170,6 +170,28 @@ class Book(BaseModel):
     )
 ```
 
+You can provide examples for the entire model when using functions as tools. Simply add JSON examples that can be loaded into the `model_config`:
+
+```python
+from mirascope.core import openai
+
+
+def format_book(title: str, author: str) -> str:
+    """Returns a formatted book recommendation.
+
+    Example:
+        {"title": "THE HOBBIT", "author": "J.R.R. Tolkien"}
+
+    Example:
+        {"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss"}
+
+    Args:
+        title: The title of the book.
+        author: The author of the book.
+    """
+    return f"Sure! I would recommend {title} by {author}."
+```
+
 ## Validate Output and Retry
 
 Model outputs do not always adhere to the correct structure or typing, and inserting validation errors back into your prompt and running it again often resolves any problems.
