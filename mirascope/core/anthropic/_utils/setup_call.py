@@ -39,7 +39,7 @@ def setup_call(
 ) -> tuple[
     Callable[..., Message] | Callable[..., Awaitable[Message]],
     str,
-    list[dict[str, MessageParam]],
+    list[MessageParam],
     list[type[AnthropicTool]] | None,
     dict[str, Any],
 ]:
@@ -62,4 +62,4 @@ def setup_call(
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return create, prompt_template, messages, tool_types, call_kwargs  # type: ignore

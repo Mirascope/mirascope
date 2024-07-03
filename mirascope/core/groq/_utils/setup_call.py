@@ -26,7 +26,7 @@ def setup_call(
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
     str,
-    list[dict[str, ChatCompletionMessageParam]],
+    list[ChatCompletionMessageParam],
     list[type[GroqTool]] | None,
     dict[str, Any],
 ]:
@@ -50,4 +50,4 @@ def setup_call(
             "function": {"name": tool_types[0]._name()},
         }
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return create, prompt_template, messages, tool_types, call_kwargs  # type: ignore

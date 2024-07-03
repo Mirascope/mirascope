@@ -27,7 +27,7 @@ def setup_call(
     Callable[..., NonStreamedChatResponse]
     | Callable[..., Awaitable[NonStreamedChatResponse]],
     str,
-    list[dict[str, BaseMessageParam]],
+    list[BaseMessageParam],
     list[type[CohereTool]] | None,
     dict[str, Any],
 ]:

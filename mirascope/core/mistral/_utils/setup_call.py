@@ -33,7 +33,7 @@ def setup_call(
     Callable[..., ChatCompletionResponse]
     | Callable[..., Awaitable[ChatCompletionResponse]],
     str,
-    list[dict[str, BaseMessageParam]],
+    list[BaseMessageParam],
     list[type[MistralTool]] | None,
     dict[str, Any],
 ]:

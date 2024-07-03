@@ -56,7 +56,7 @@ all = [
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
-pyright = "^1.1.368"
+pyright = "^1.1.370"
 ruff = "^0.4.9"
 pytest-asyncio = "^0.23.7"
 pytest-cov = "^4.1.0"

@@ -30,7 +30,7 @@ def setup_call(
     Callable[..., GenerateContentResponse]
     | Callable[..., Awaitable[GenerateContentResponse]],
     str,
-    list[dict[str, ContentsType]],
+    list[ContentsType],
     list[type[GeminiTool]],
     dict[str, Any],
 ]:
