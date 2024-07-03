@@ -24,7 +24,7 @@ def setup_call(
 ) -> tuple[
     str,
     list[dict[str, Any]],
-    list[type[_BaseToolT]],
+    list[type[_BaseToolT]] | None,
     dict[str, Any],
 ]:
     call_kwargs = call_params.copy()

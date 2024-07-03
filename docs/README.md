@@ -123,14 +123,14 @@ print(response)
 # > Sure! I would recommend The Name of the Wind by...
 ```
 
-To use **async functions**, use the `call_async` decorator (same support as `call`):
+To use **async functions**, just make the function async:
 
 ```python
 import asyncio
 
 from mirascope.core import openai
 
-@openai.call_async("gpt-4o")
+@openai.call("gpt-4o")
 async def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
