@@ -171,6 +171,25 @@ print(book)
 # > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
+To use **JSON mode**, set `json_mode=True` with or without `response_model`:
+
+```python
+from pydantic import BaseModel
+
+class Book(BaseModel):
+    title: str
+    author: str
+    
+@openai.call("gpt-4o", response_model=Book, json_mode=True)
+def recommend_book(genre: str):
+    """Recommend a {genre} book."""
+    
+book = recommend_book("fantasy")
+assert isinstance(book, Book)
+print(book)
+# > title='The Name of the Wind' author='Patrick Rothfuss'
+```
+
 To **stream structured information**, set `stream=True` and `response_model`:
 
 ```python
