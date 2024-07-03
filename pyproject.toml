@@ -25,6 +25,7 @@ tenacity = { version = "^8.4.2", optional = true }
 hyperdx-opentelemetry = { version = "^0.1.0", optional = true }
 langfuse = { version = "^2.30.0", optional = true }
 logfire = { version = ">=0.41.0,<1.0.0", optional = true }
+mistralai = { version = "^0.4.1", optional = true }
 opentelemetry-api = { version = "^1.22.0", optional = true }
 opentelemetry-sdk = { version = "^1.22.0", optional = true }
 
@@ -37,6 +38,7 @@ tenacity = ["tenacity"]
 hyperdx = ["hyperdx-opentelemetry"]
 langfuse = ["langfuse"]
 logfire = ["logfire"]
+mistral = ["mistralai"]
 opentelemetry = ["opentelemetry-api", "opentelemetry-sdk"]
 all = [
     "google-generativeai",

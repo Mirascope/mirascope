@@ -8,8 +8,8 @@ from typing_extensions import TypedDict
 class BaseMessageParam(TypedDict):
     """A base class for message parameters.
 
-    Available roles: `system`, `user`, `assistant`.
+    Available roles: `system`, `user`, `assistant`, `tool`.
     """
 
-    role: Literal["system", "user", "assistant"]
+    role: Literal["system", "user", "assistant", "tool"]
     content: str
