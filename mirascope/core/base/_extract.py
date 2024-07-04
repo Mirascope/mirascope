@@ -125,9 +125,9 @@ def extract_factory(
                 raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            elif is_base_type(response_model):
-                output = create_base_type_with_response(response_model)(output)
-                output._response = call_response
+            # elif is_base_type(response_model):
+            #     output = create_base_type_with_response(response_model)(output)
+            #     output._response = call_response
             return output  # type: ignore
 
         @wraps(fn)
@@ -169,9 +169,9 @@ def extract_factory(
             output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            elif is_base_type(response_model):
-                output = create_base_type_with_response(response_model)(output)
-                output._response = call_response
+            # elif is_base_type(response_model):
+            #     output = create_base_type_with_response(response_model)(output)
+            #     output._response = call_response
             return output  # type: ignore
 
         return inner_async if is_async else inner

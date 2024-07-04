@@ -1,7 +1,9 @@
 """The `call_factory` method for generating provider specific call decorators."""
 
+from enum import Enum
 from functools import partial
 from typing import (
+    Annotated,
     AsyncIterable,
     Callable,
     Iterable,
@@ -37,7 +39,9 @@ _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+_ResponseModelT = TypeVar(
+    "_ResponseModelT", bound=BaseModel | BaseType | Enum | Annotated
+)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
