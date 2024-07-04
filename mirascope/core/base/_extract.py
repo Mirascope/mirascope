@@ -12,10 +12,9 @@ from ._utils import (
     CalculateCost,
     GetJsonOutput,
     SetupCall,
-    create_base_type_with_response,
     extract_tool_return,
     get_fn_args,
-    is_base_type,
+    get_tags,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -102,7 +101,7 @@ def extract_factory(
             response = create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,
@@ -125,9 +124,6 @@ def extract_factory(
                 raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            # elif is_base_type(response_model):
-            #     output = create_base_type_with_response(response_model)(output)
-            #     output._response = call_response
             return output  # type: ignore
 
         @wraps(fn)
@@ -150,7 +146,7 @@ def extract_factory(
             response = await create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,
@@ -169,9 +165,6 @@ def extract_factory(
             output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            # elif is_base_type(response_model):
-            #     output = create_base_type_with_response(response_model)(output)
-            #     output._response = call_response
             return output  # type: ignore
 
         return inner_async if is_async else inner

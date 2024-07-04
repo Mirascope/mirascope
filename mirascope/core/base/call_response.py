@@ -49,7 +49,7 @@ class BaseCallResponse(
         cost: The cost of the completion in dollars.
     """
 
-    tags: list[str]
+    tags: set[str]
     response: _ResponseT
     tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None

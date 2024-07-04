@@ -5,7 +5,7 @@ import inspect
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
-from ._utils import CalculateCost, SetupCall, get_fn_args
+from ._utils import CalculateCost, SetupCall, get_fn_args, get_tags
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -100,7 +100,7 @@ def create_factory(
             response = create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             output = TCallResponse(
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,
@@ -139,7 +139,7 @@ def create_factory(
             response = await create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             output = TCallResponse(
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,

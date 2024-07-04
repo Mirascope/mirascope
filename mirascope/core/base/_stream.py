@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
 
-from ._utils import HandleStream, HandleStreamAsync, SetupCall, get_fn_args
+from ._utils import HandleStream, HandleStreamAsync, SetupCall, get_fn_args, get_tags
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -47,7 +47,7 @@ class BaseStream(
             None,
         ]
     )
-    tags: list[str]
+    tags: set[str]
     tool_types: list[type[_BaseToolT]] | None
     message_param_type: type[_AssistantMessageParamT]
     call_response_type: type[_BaseCallResponseT]
@@ -70,7 +70,7 @@ class BaseStream(
             None,
         ],
         *,
-        tags: list[str],
+        tags: set[str],
         tool_types: list[type[_BaseToolT]] | None,
         message_param_type: type[_AssistantMessageParamT],
         call_response_type: type[_BaseCallResponseT],
@@ -249,7 +249,7 @@ def stream_factory(
 
             return TStream(
                 generator(),
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
@@ -290,7 +290,7 @@ def stream_factory(
 
             return TStream(
                 generator(),
-                tags=fn.__annotations__.get("tags", []),
+                tags=get_tags(fn, dynamic_config),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,

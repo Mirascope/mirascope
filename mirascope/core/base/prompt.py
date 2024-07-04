@@ -37,7 +37,7 @@ class BasePrompt(BaseModel):
     ```python
     from mirascope.core import BasePrompt, tags
 
-    @tags(["version:0001"])
+    @tags({"version:0001"})
     class BookRecommendationPrompt(BasePrompt):
         prompt_template = "Recommend a {genre} book."
 
@@ -59,9 +59,9 @@ class BasePrompt(BaseModel):
         return cls.__annotations__.get("prompt_template", cls.__doc__)
 
     @classmethod
-    def _tags(cls) -> list[str]:
+    def _tags(cls) -> set[str]:
         """Returns the prompt tags."""
-        return cls.__annotations__.get("tags", [])
+        return cls.__annotations__.get("tags", {})
 
     def __str__(self) -> str:
         """Returns the formatted template."""
@@ -227,7 +227,7 @@ def prompt_template(template: str):
     return inner
 
 
-def tags(tags: list[str]):
+def tags(tags: set[str]):
     """A decorator for adding tags to a `BasePrompt` or `call`.
 
     Adding this decorator to a `BasePrompt` or `call` updates the `tags` annotation to
@@ -239,7 +239,7 @@ def tags(tags: list[str]):
     ```python
     from mirascope.core import BasePrompt, tags
 
-    @tags(["version:0001", "books"])
+    @tags({"version:0001", "books"})
     class BookRecommendationPrompt(BasePrompt):
         prompt_template = "Recommend a {genre} book."
 
@@ -248,7 +248,7 @@ def tags(tags: list[str]):
     prompt = BookRecommendationPrompt(genre="fantasy")
 
     print(prompt.dump()["tags"])
-    #> ["version:0001", "books"]
+    #> {"version:0001", "books"}
     ```
 
     Returns:
