@@ -47,6 +47,7 @@ gemini_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
+    provider="gemini",
 )
 '''A decorator for calling the Gemini API with a typed function.
 

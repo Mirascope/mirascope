@@ -50,6 +50,7 @@ litellm_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
+    provider="litellm",
 )
 '''A decorator for calling the LiteLLM API with a typed function.
 

@@ -44,6 +44,7 @@ mistral_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
+    provider="mistral",
 )
 '''A decorator for calling the Mistral API with a typed function.
 

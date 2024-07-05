@@ -50,6 +50,7 @@ groq_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
+    provider="groq",
 )
 '''A decorator for calling the Groq API with a typed function.
 

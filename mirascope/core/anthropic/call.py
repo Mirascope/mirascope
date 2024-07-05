@@ -46,6 +46,7 @@ anthropic_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
+    provider="anthropic",
 )
 '''A decorator for calling the Anthropic API with a typed function.
 
