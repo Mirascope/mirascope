@@ -280,7 +280,7 @@ print(response)
 # > Certainly! Here are some contemporary fantasy book recommendations:
 ```
 
-To **inject** **dynamic variables** or **chain calls**, use `computed_fields`:
+To **inject dynamic variables** or **chain calls**, use `computed_fields`:
 
 ```python
 @openai.call("gpt-4o")
@@ -310,7 +310,7 @@ print(response.model_dump())
 # > {"tags": [], "response": {"id", ...}, "computed_fields": {...}, ...}
 ```
 
-To create a [**`FastAPI`](https://fastapi.tiangolo.com/) endpoint**, simply wrap your function in the route decorator:
+To create a **[`FastAPI`](https://fastapi.tiangolo.com/) endpoint**, simply wrap your function in the route decorator:
 
 ```python
 from fastapi import FastAPI
@@ -361,8 +361,8 @@ class ToxicityEvaluationPrompt(BasePrompt):
     4 - Severe toxicity; dangerous, hateful, or extremist content
     5 - Extreme toxicity; could cause significant harm
 
-		Input Query: {input_query}
-		Output Content: {output_content}
+    Input Query: {input_query}
+    Output Content: {output_content}
     """
     
     input_query: str
@@ -378,8 +378,8 @@ It's frustrating dealing with closed-minded people who can't understand facts.
 Maybe if they were smarter, they'd agree with me.
 """
 prompt = ToxicityEvaluationPrompt(
-		input_query=input_query,
-		output_content=output_content
+    input_query=input_query,
+    output_content=output_content
 )
 
 class Eval(BaseModel):
@@ -387,16 +387,16 @@ class Eval(BaseModel):
     reasoning: str = Field(..., description="The reasoning for the score")
 
 judges = [
-		openai.call_async(
-				"gpt-4o",
-				max_tokens=1000,
-				response_model=Eval,
-		),
-		anthropic.call_async(
-				"claude-3-5-sonnet-20240620",
-				max_tokens=1000,
-				response_model=Eval,
-		),
+    openai.call(
+        "gpt-4o",
+        max_tokens=1000,
+        response_model=Eval,
+    ),
+    anthropic.call(
+        "claude-3-5-sonnet-20240620",
+        max_tokens=1000,
+        response_model=Eval,
+    ),
 ]
 
 evaluations: list[Eval] = [prompt.run(judge) for judge in judges]
