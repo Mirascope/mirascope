@@ -6,11 +6,18 @@ from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
 
-from ._utils import HandleStream, HandleStreamAsync, SetupCall, get_fn_args, get_tags
+from ._utils import (
+    HandleStream,
+    HandleStreamAsync,
+    SetupCall,
+    get_fn_args,
+    get_metadata,
+)
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
+from .metadata import Metadata
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -47,7 +54,7 @@ class BaseStream(
             None,
         ]
     )
-    tags: set[str]
+    metadata: Metadata
     tool_types: list[type[_BaseToolT]] | None
     message_param_type: type[_AssistantMessageParamT]
     call_response_type: type[_BaseCallResponseT]
@@ -70,7 +77,7 @@ class BaseStream(
             None,
         ],
         *,
-        tags: set[str],
+        metadata: Metadata,
         tool_types: list[type[_BaseToolT]] | None,
         message_param_type: type[_AssistantMessageParamT],
         call_response_type: type[_BaseCallResponseT],
@@ -86,7 +93,7 @@ class BaseStream(
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
-        self.tags = tags
+        self.metadata = metadata
         self.tool_types = tool_types
         self.message_param_type = message_param_type
         self.call_response_type = call_response_type
@@ -252,7 +259,7 @@ def stream_factory(
 
             return TStream(
                 generator(),
-                tags=get_tags(fn, dynamic_config),
+                metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
@@ -294,7 +301,7 @@ def stream_factory(
 
             return TStream(
                 generator(),
-                tags=get_tags(fn, dynamic_config),
+                metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,

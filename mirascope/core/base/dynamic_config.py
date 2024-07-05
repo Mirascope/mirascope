@@ -5,6 +5,7 @@ from typing import Any, Callable, Generic, TypeVar
 from typing_extensions import NotRequired, TypedDict
 
 from .call_params import BaseCallParams
+from .metadata import Metadata
 from .tool import BaseTool
 
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
@@ -12,7 +13,7 @@ _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 
 
 class DynamicConfigBase(TypedDict):
-    tags: NotRequired[set[str]]
+    metadata: NotRequired[Metadata]
     computed_fields: NotRequired[dict[str, Any | list[Any] | list[list[Any]]]]
     tools: NotRequired[list[type[BaseTool] | Callable]]
 

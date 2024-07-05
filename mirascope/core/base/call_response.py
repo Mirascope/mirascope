@@ -15,6 +15,7 @@ from pydantic import (
 
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
+from .metadata import Metadata
 from .tool import BaseTool
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
@@ -49,7 +50,7 @@ class BaseCallResponse(
         cost: The cost of the completion in dollars.
     """
 
-    tags: set[str]
+    metadata: Metadata
     response: _ResponseT
     tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None

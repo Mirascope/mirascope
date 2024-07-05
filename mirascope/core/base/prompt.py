@@ -18,6 +18,7 @@ from ._stream import BaseStream
 from ._utils import BaseType, format_template
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
+from .metadata import Metadata
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -35,9 +36,9 @@ class BasePrompt(BaseModel):
     Example:
 
     ```python
-    from mirascope.core import BasePrompt, tags
+    from mirascope.core import BasePrompt, metadata
 
-    @tags({"version:0001"})
+    @metadata({"tags": {"version:0001"}})
     class BookRecommendationPrompt(BasePrompt):
         prompt_template = "Recommend a {genre} book."
 
@@ -59,9 +60,9 @@ class BasePrompt(BaseModel):
         return cls.__annotations__.get("prompt_template", cls.__doc__)
 
     @classmethod
-    def _tags(cls) -> set[str]:
-        """Returns the prompt tags."""
-        return cls.__annotations__.get("tags", {})
+    def _metadata(cls) -> set[str]:
+        """Returns the prompt's metadata."""
+        return cls.__annotations__.get("metadata", {})
 
     def __str__(self) -> str:
         """Returns the formatted template."""
@@ -70,7 +71,7 @@ class BasePrompt(BaseModel):
     def dump(self) -> dict[str, Any]:
         """Dumps the contents of the prompt into a dictionary."""
         return {
-            "tags": self._tags(),
+            "metadata": self._metadata(),
             "prompt": str(self),
             "template": inspect.cleandoc(self._prompt_template()),
             "inputs": self.model_dump(),
@@ -227,19 +228,19 @@ def prompt_template(template: str):
     return inner
 
 
-def tags(tags: set[str]):
-    """A decorator for adding tags to a `BasePrompt` or `call`.
+def metadata(metadata: Metadata):
+    """A decorator for adding metadata to a `BasePrompt` or `call`.
 
-    Adding this decorator to a `BasePrompt` or `call` updates the `tags` annotation to
-    the given value. This is useful for adding metadata to a `BasePrompt` or `call` that
-    can be used for logging or filtering.
+    Adding this decorator to a `BasePrompt` or `call` updates the `metadata` annotation
+    to the given value. This is useful for adding metadata to a `BasePrompt` or `call`
+    that can be used for logging or filtering.
 
     Example:
 
     ```python
-    from mirascope.core import BasePrompt, tags
+    from mirascope.core import BasePrompt, metadata
 
-    @tags({"version:0001", "books"})
+    @metadata({"tags": {"version:0001", "books"}})
     class BookRecommendationPrompt(BasePrompt):
         prompt_template = "Recommend a {genre} book."
 
@@ -247,12 +248,12 @@ def tags(tags: set[str]):
 
     prompt = BookRecommendationPrompt(genre="fantasy")
 
-    print(prompt.dump()["tags"])
-    #> {"version:0001", "books"}
+    print(prompt.dump()["metadata"])
+    #> {"metadata": {"version:0001", "books"}}
     ```
 
     Returns:
-        The decorator function that updates the `tags` attribute of the decorated input.
+        Decorator function that updates the `metadata` attribute of the decorated input.
     """
 
     @overload
@@ -264,8 +265,8 @@ def tags(tags: set[str]):
     def inner(
         prompt: type[_BasePromptT] | Callable[_P, _R],
     ) -> type[_BasePromptT] | Callable[_P, _R]:
-        """Updates the `tags` class attribute to the given value."""
-        prompt.__annotations__["tags"] = tags
+        """Updates the `metadata` class attribute to the given value."""
+        prompt.__annotations__["metadata"] = metadata
         return prompt
 
     return inner

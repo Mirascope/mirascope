@@ -7,7 +7,7 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
-from .prompt import BasePrompt, prompt_template, tags
+from .prompt import BasePrompt, metadata, prompt_template
 from .tool import BaseTool
 from .toolkit import BaseToolKit, toolkit_tool
 
@@ -21,8 +21,8 @@ __all__ = [
     "BaseTool",
     "BaseToolKit",
     "call_factory",
+    "metadata",
     "prompt_template",
-    "tags",
     "toolkit_tool",
     "_partial",
     "_utils",

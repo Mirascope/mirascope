@@ -3,7 +3,14 @@
 from contextlib import suppress
 
 from . import base
-from .base import BasePrompt, BaseTool, BaseToolKit, prompt_template, tags, toolkit_tool
+from .base import (
+    BasePrompt,
+    BaseTool,
+    BaseToolKit,
+    metadata,
+    prompt_template,
+    toolkit_tool,
+)
 
 with suppress(ImportError):
     from . import openai as openai
@@ -13,8 +20,8 @@ __all__ = [
     "BasePrompt",
     "BaseTool",
     "BaseToolKit",
+    "metadata",
     "openai",
     "prompt_template",
-    "tags",
     "toolkit_tool",
 ]

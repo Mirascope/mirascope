@@ -14,7 +14,7 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     get_fn_args,
-    get_tags,
+    get_metadata,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -101,7 +101,7 @@ def extract_factory(
             response = create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
-                tags=get_tags(fn, dynamic_config),
+                metadata=get_metadata(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,
@@ -146,7 +146,7 @@ def extract_factory(
             response = await create(stream=False, **call_kwargs)
             end_time = datetime.datetime.now().timestamp() * 1000
             call_response = TCallResponse(
-                tags=get_tags(fn, dynamic_config),
+                metadata=get_metadata(fn, dynamic_config),
                 response=response,
                 tool_types=tool_types,
                 prompt_template=prompt_template,

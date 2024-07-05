@@ -36,8 +36,10 @@ def with_logfire(
 
     @contextmanager
     def custom_context_manager() -> Generator[logfire.LogfireSpan, Any, None]:
+        metadata = fn.__annotations__.get("metadata", {})
+        tags = getattr(metadata, "tags", {})
         with logfire.with_settings(
-            custom_scope_suffix="mirascope", tags=fn.__annotations__.get("tags", [])
+            custom_scope_suffix="mirascope", tags=list(tags)
         ).span(fn.__name__) as logfire_span:
             yield logfire_span
 
