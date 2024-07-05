@@ -109,7 +109,7 @@ There are two core primitives — `call` and `BasePrompt`.
 
 ### Call
 
-Every provider we support has a corresponding `call` and `call_async` decorator for **turning a** **function into a call to an LLM**:
+Every provider we support has a corresponding `call` decorator for **turning a function into a call to an LLM**:
 
 ```python
 from mirascope.core import openai
@@ -117,6 +117,21 @@ from mirascope.core import openai
 @openai.call("gpt-4o")
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
+    
+response = recommend_book("fantasy")
+print(response)
+# > Sure! I would recommend The Name of the Wind by...
+```
+
+If you don't like the idea of using a docstring as the prompt, use the `@prompt_template` decorator instead:
+
+```python
+from mirascope.core import openai, prompt_template
+
+@openai.call("gpt-4o")
+@prompt_template("Recommend a {genre} book.""")
+def recommend_book(genre: str):
+    """This function recommends a book using the OpenAI API."""
     
 response = recommend_book("fantasy")
 print(response)
