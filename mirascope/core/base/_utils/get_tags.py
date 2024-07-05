@@ -10,4 +10,4 @@ def get_tags(fn: Callable, dynamic_config: BaseDynamicConfig) -> set[str]:
     tags: set[str] = fn.__annotations__.get("tags", set())
     if dynamic_tags := getattr(dynamic_config, "tags", set()):
         tags = tags | dynamic_tags
-    return tags
+    return set(tags)
