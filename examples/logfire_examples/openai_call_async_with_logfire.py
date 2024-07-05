@@ -17,7 +17,7 @@ logfire.configure()
 
 
 @with_logfire
-@openai.call_async(model="gpt-3.5-turbo")
+@openai.call(model="gpt-3.5-turbo")
 async def recommend_book(genre: str):
     """Recommend a {genre} book."""
 

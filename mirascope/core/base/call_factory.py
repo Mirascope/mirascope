@@ -78,6 +78,7 @@ def call_factory(
         _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
     calculate_cost: CalculateCost[_ResponseT],
+    provider: str,
 ):
     @overload
     def base_call(
@@ -288,6 +289,7 @@ def call_factory(
                     setup_call=setup_call,
                     handle_stream=handle_stream,
                     handle_stream_async=handle_stream_async,
+                    provider=provider,
                 ),
                 model=model,
                 tools=tools,

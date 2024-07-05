@@ -82,6 +82,7 @@ class BaseStream(
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
         user_message_param: _UserMessageParamT | None,
+        provider: str,
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
@@ -97,6 +98,7 @@ class BaseStream(
         self.messages = messages
         self.call_params = call_params
         self.user_message_param = user_message_param
+        self.provider = provider
 
     def __iter__(
         self,
@@ -193,6 +195,7 @@ def stream_factory(
     handle_stream_async: HandleStreamAsync[
         _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
+    provider: str,
 ):
     @overload
     def decorator(
@@ -263,6 +266,7 @@ def stream_factory(
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,
+                provider=provider,
             )
 
         @wraps(fn)
@@ -304,6 +308,7 @@ def stream_factory(
                 user_message_param=messages[-1]
                 if messages[-1]["role"] == "user"
                 else None,
+                provider=provider,
             )
 
         return inner_async if is_async else inner

@@ -16,14 +16,11 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ..core.base import (
-    BaseAsyncStream,
-    BaseCallResponse,
-    BaseStream,
-)
+from ..core.base import BaseCallResponse
+from ..core.base._stream import BaseStream
 
 _P = ParamSpec("_P")
-_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel | BaseAsyncStream)
+_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel)
 _F = TypeVar("_F", bound=Callable[..., Any])
 _DecoratorType = Callable[[_F], _F]
 _T = TypeVar("_T")
@@ -63,7 +60,7 @@ def middleware(
                     await handle_call_response_async(result)
                 else:
                     await handle_call_response_async(result, context)
-        elif isinstance(result, BaseAsyncStream) and handle_stream_async is not None:
+        elif isinstance(result, BaseStream) and handle_stream_async is not None:
             original_aiter = result.__aiter__
 
             def new_aiter(self):

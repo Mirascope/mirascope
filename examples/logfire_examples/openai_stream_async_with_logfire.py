@@ -13,7 +13,7 @@ os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 
 
 @with_logfire
-@openai.call_async(model="gpt-3.5-turbo", stream=True)
+@openai.call(model="gpt-3.5-turbo", stream=True)
 async def recommend_book(genre: str):
     """Recommend a {genre} book."""
 
