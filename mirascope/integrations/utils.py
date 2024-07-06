@@ -1,11 +1,11 @@
 """Mirascope middleware utils."""
 
 import inspect
-import types
 from contextlib import contextmanager
 from functools import wraps
 from typing import (
     Any,
+    AsyncIterable,
     Awaitable,
     Callable,
     Generator,
@@ -20,7 +20,9 @@ from ..core.base import BaseCallResponse
 from ..core.base._stream import BaseStream
 
 _P = ParamSpec("_P")
-_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel)
+_R = TypeVar(
+    "_R", bound=BaseCallResponse | BaseStream | BaseModel | Iterable | AsyncIterable
+)
 _F = TypeVar("_F", bound=Callable[..., Any])
 _DecoratorType = Callable[[_F], _F]
 _T = TypeVar("_T")
@@ -50,7 +52,58 @@ def middleware(
 ) -> Callable[_P, _R] | Callable[_P, Awaitable[_R]]:
     """Wraps a Mirascope function with middleware."""
 
-    async def handlers_async(result: _R):
+    def inner(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+        result = fn(*args, **kwargs)
+        if isinstance(result, BaseCallResponse) and handle_call_response is not None:
+            with custom_context_manager() as context:
+                if context is None:
+                    handle_call_response(result)
+                else:
+                    handle_call_response(result, context)
+        elif isinstance(result, BaseStream) and handle_stream is not None:
+            original_iter = result.__iter__
+
+            def new_iter(self):
+                # Create the context manager when user iterates over the stream
+                with custom_context_manager() as context:
+                    for chunk, tool in original_iter():
+                        yield chunk, tool
+                    if handle_stream is not None:
+                        if context is None:
+                            handle_stream(result)
+                        else:
+                            handle_stream(result, context)
+
+            result.__class__.__iter__ = (
+                custom_decorator(new_iter) if custom_decorator else new_iter
+            )
+        elif isinstance(result, BaseModel) and handle_base_model is not None:
+            with custom_context_manager() as context:
+                if context is not None:
+                    handle_base_model(result, context)
+                else:
+                    handle_base_model(result)
+        elif isinstance(result, Iterable):
+            original_iter = result.__iter__
+
+            def new_iter(self):
+                # Create the context manager when user iterates over the stream
+                with custom_context_manager() as context:
+                    for chunk in original_iter():
+                        yield chunk
+                    if handle_base_model is not None:
+                        if context is None:
+                            handle_base_model(result)
+                        else:
+                            handle_base_model(result, context)
+
+            result.__class__.__iter__ = (
+                custom_decorator(new_iter) if custom_decorator else new_iter
+            )
+        return result
+
+    async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> Awaitable[_R]:
+        result = await fn(*args, **kwargs)
         if (
             isinstance(result, BaseCallResponse)
             and handle_call_response_async is not None
@@ -76,52 +129,34 @@ def middleware(
 
                 return generator()
 
-            result.__class__.__aiter__ = types.MethodType(new_aiter, result)
+            result.__class__.__aiter__ = (
+                custom_decorator(new_aiter) if custom_decorator else new_aiter
+            )
         elif isinstance(result, BaseModel) and handle_base_model_async is not None:
             with custom_context_manager() as context:
                 if context is None:
                     await handle_base_model_async(result)
                 else:
                     await handle_base_model_async(result, context)
-        elif isinstance(result, Iterable[BaseModel]):
-            ...
+        elif isinstance(result, AsyncIterable):
+            original_aiter = result.__aiter__
 
-    def inner(*args: _P.args, **kwargs: _P.kwargs) -> _R:
-        result = fn(*args, **kwargs)
-        if isinstance(result, BaseCallResponse) and handle_call_response is not None:
-            with custom_context_manager() as context:
-                if context is None:
-                    handle_call_response(result)
-                else:
-                    handle_call_response(result, context)
-        elif isinstance(result, BaseStream) and handle_stream is not None:
-            original_iter = result.__iter__
+            def new_aiter(self):
+                async def generator():
+                    with custom_context_manager() as context:
+                        async for chunk in original_aiter():
+                            yield chunk
+                        if handle_stream_async is not None:
+                            if context is None:
+                                await handle_base_model_async(result)
+                            else:
+                                await handle_base_model_async(result, context)
 
-            def new_iter(self):
-                # Create the context manager when user iterates over the stream
-                with custom_context_manager() as context:
-                    for chunk, tool in original_iter():
-                        yield chunk, tool
-                    if handle_stream is not None:
-                        if context is None:
-                            handle_stream(result)
-                        else:
-                            handle_stream(result, context)
+                return generator()
 
-            result.__class__.__iter__ = new_iter
-        elif isinstance(result, BaseModel) and handle_base_model is not None:
-            with custom_context_manager() as context:
-                if context is not None:
-                    handle_base_model(result, context)
-                else:
-                    handle_base_model(result)
-        elif isinstance(result, Iterable[BaseModel]):
-            ...
-        return result
-
-    async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> Awaitable[_R]:
-        result = await fn(*args, **kwargs)
-        await handlers_async(result)
+            result.__class__.__aiter__ = (
+                custom_decorator(new_aiter) if custom_decorator else new_aiter
+            )
         return result
 
     inner_fn = inner_async if inspect.iscoroutinefunction(fn) else inner
