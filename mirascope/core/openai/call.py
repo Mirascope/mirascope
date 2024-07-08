@@ -33,7 +33,8 @@ class OpenAIStream(
         OpenAIDynamicConfig,
         OpenAICallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "openai"
 
 
 openai_call = call_factory(

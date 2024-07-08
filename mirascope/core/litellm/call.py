@@ -33,7 +33,8 @@ class LiteLLMStream(
         LiteLLMDynamicConfig,
         LiteLLMCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "litellm"
 
 
 litellm_call = call_factory(

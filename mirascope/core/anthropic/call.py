@@ -29,7 +29,8 @@ class AnthropicStream(
         AnthropicDynamicConfig,
         AnthropicCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "anthropic"
 
 
 anthropic_call = call_factory(

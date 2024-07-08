@@ -30,7 +30,8 @@ class GeminiStream(
         GeminiDynamicConfig,
         GeminiCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "gemini"
 
 
 gemini_call = call_factory(

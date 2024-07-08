@@ -4,7 +4,16 @@ import inspect
 from abc import ABC
 from collections.abc import AsyncGenerator, Generator
 from functools import wraps
-from typing import Any, Awaitable, Callable, Generic, ParamSpec, TypeVar, overload
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    ClassVar,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    overload,
+)
 
 from ._utils import (
     HandleStream,
@@ -67,7 +76,8 @@ class BaseStream(
     call_params: _BaseCallParamsT
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
-    provider: str
+
+    _provider: ClassVar[str] = "NO PROVIDER"
 
     def __init__(
         self,

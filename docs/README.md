@@ -322,7 +322,7 @@ To **dump all relevant information** from a call, run the `model_dump` method:
 ```python
 response = recommend_book("fantasy")
 print(response.model_dump())
-# > {"tags": [], "response": {"id", ...}, "computed_fields": {...}, ...}
+# > {"metadata": {}, "response": {"id", ...}, "computed_fields": {...}, ...}
 ```
 
 To create a **[`FastAPI`](https://fastapi.tiangolo.com/) endpoint**, simply wrap your function in the route decorator:
