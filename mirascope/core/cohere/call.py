@@ -27,7 +27,8 @@ class CohereStream(
         CohereDynamicConfig,
         CohereCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "cohere"
 
 
 cohere_call = call_factory(

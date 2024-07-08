@@ -33,7 +33,8 @@ class GroqStream(
         GroqDynamicConfig,
         GroqCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "groq"
 
 
 groq_call = call_factory(

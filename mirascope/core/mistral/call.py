@@ -27,7 +27,8 @@ class MistralStream(
         MistralDynamicConfig,
         MistralCallParams,
     ]
-): ...  # pragma: no cover
+):
+    _provider = "mistral"
 
 
 mistral_call = call_factory(
