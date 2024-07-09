@@ -75,8 +75,8 @@ def with_logfire(
             tool_calls = [
                 {
                     "function": {
-                        "arguments": tool.model_dump_json(exclude={"tool_call"}),
-                        "name": tool.name(),
+                        "arguments": tool.model_dump_json(),
+                        "name": tool._name,
                     }
                 }
                 for tool in tools

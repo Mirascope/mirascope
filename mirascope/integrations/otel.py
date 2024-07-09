@@ -28,11 +28,12 @@ from opentelemetry.trace.span import Span
 from opentelemetry.util.types import Attributes, AttributeValue
 from pydantic import BaseModel
 
-from ..core.base import BaseAsyncStream, BaseCallResponse, BaseStream
+from ..core.base import BaseCallResponse
+from ..core.base._stream import BaseStream
 from .utils import middleware
 
 _P = ParamSpec("_P")
-_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel | BaseAsyncStream)
+_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel)
 
 
 def configure(
@@ -77,14 +78,13 @@ def with_otel(
         with tracer.start_as_current_span(f"{fn.__name__}") as span:
             yield span
 
-    def handle_call_response(result: BaseCallResponse, span: Span | None):
-        if span is None:
-            return
+    def get_call_response_attributes(
+        result: BaseCallResponse,
+    ) -> dict[str, AttributeValue]:
         max_tokens = getattr(result.call_params, "max_tokens", 0)
         temperature = getattr(result.call_params, "temperature", 0)
         top_p = getattr(result.call_params, "top_p", 0)
-        attributes: dict[str, AttributeValue] = {
-            "async": False,
+        return {
             "gen_ai.system": result.prompt_template,
             "gen_ai.request.model": result.model,
             "gen_ai.request.max_tokens": max_tokens,
@@ -95,6 +95,14 @@ def with_otel(
             "gen_ai.response.finish_reasons": result.finish_reasons,
             "gen_ai.usage.completion_tokens": result.output_tokens,
             "gen_ai.usage.prompt_tokens": result.input_tokens,
+        }
+
+    def handle_call_response(result: BaseCallResponse, span: Span | None):
+        if span is None:
+            return
+        attributes: dict[str, AttributeValue] = {
+            **get_call_response_attributes(result),
+            "async": False,
         }
 
         prompt_event: Attributes = {
@@ -141,17 +149,44 @@ def with_otel(
             attributes=completion_event,
         )
 
-    def handle_base_model(result: BaseModel, span: Span | None): ...
+    def handle_base_model(result: BaseModel, span: Span | None):
+        if span is None:
+            return
+        if getattr(result, "_response", None) is not None:
+            response: BaseCallResponse = result._response
+            attributes: dict[str, AttributeValue] = {
+                **get_call_response_attributes(response),
+                "async": False,
+            }
+            span.set_attributes(attributes)
 
-    async def handle_call_response_async(
-        result: BaseCallResponse, span: Span | None
-    ): ...
+            prompt_event: Attributes = {
+                "gen_ai.prompt": json.dumps(response.user_message_param),
+            }
+            span.add_event("gen_ai.content.prompt", attributes=prompt_event)
+            # TODO: Add support for BaseStructuredStream
+            if isinstance(result, BaseModel):
+                completion_event: Attributes = {
+                    "gen_ai.completion": json.dumps(result.model_dump()),
+                }
+                span.add_event(
+                    "gen_ai.content.completion",
+                    attributes=completion_event,
+                )
 
-    async def handle_stream_async(stream: BaseStream, span: Span | None): ...
+    async def handle_call_response_async(result: BaseCallResponse, span: Span | None):
+        handle_call_response(result, span)
+
+    async def handle_stream_async(stream: BaseStream, span: Span | None):
+        handle_stream(stream, span)
+
+    async def handle_base_model_async(result: BaseModel, span: Span | None):
+        handle_base_model(result, span)
 
     provider = get_tracer_provider()
     if not isinstance(provider, TracerProvider):
         configure()
+
     return middleware(
         fn,
         custom_context_manager=custom_context_manager,
@@ -160,5 +195,5 @@ def with_otel(
         handle_stream=handle_stream,
         handle_stream_async=handle_stream_async,
         handle_base_model=handle_base_model,
-        # handle_base_model_async=handle_base_model_async,
+        handle_base_model_async=handle_base_model_async,
     )

@@ -1,6 +1,6 @@
 """The Mirascope OpenAI Module."""
 
-from .call import openai_call
+from .call import OpenAIStream, openai_call
 from .call import openai_call as call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
@@ -10,6 +10,7 @@ from .tool import OpenAITool
 
 __all__ = [
     "call",
+    "OpenAIStream",
     "OpenAIDynamicConfig",
     "OpenAICallParams",
     "OpenAICallResponse",
