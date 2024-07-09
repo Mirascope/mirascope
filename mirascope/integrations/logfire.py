@@ -57,17 +57,19 @@ def with_logfire(
         }
 
     def get_stream_span_data(stream: BaseStream) -> dict:
+        content = ""
+        if "message_param" in stream:
+            content = stream.message_param.get(
+                "content", ""
+            ) or stream.message_param.get("message", "")
         return {
             "messages": [stream.user_message_param],
             "call_params": stream.call_params,
             "model": stream.model,
-            "provider": stream.provider,
+            "provider": stream._provider,
             "prompt_template": stream.prompt_template,
             "template_variables": stream.fn_args,
-            "output": {
-                "cost": stream.cost,
-                "content": stream.message_param.get("content", None),
-            },
+            "output": {"cost": stream.cost, "content": content},
         }
 
     def get_tool_calls(result: BaseCallResponse) -> list[dict] | None:
@@ -75,8 +77,8 @@ def with_logfire(
             tool_calls = [
                 {
                     "function": {
-                        "arguments": tool.model_dump_json(exclude={"tool_call"}),
-                        "name": tool.name(),
+                        "arguments": tool.args,
+                        "name": tool._name(),
                     }
                 }
                 for tool in tools

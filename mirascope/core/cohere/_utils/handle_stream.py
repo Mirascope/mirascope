@@ -14,7 +14,7 @@ def handle_stream(
 ) -> Generator[tuple[CohereCallResponseChunk, None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed.
 
-    Note: gemini does not currently support streaming tools.
+    Note: cohere does not currently support streaming tools.
     """
     for chunk in stream:
         yield CohereCallResponseChunk(chunk=chunk), None
@@ -27,7 +27,7 @@ async def handle_stream_async(
     """
     Async iterator over the stream and constructs tools as they are streamed.
 
-    Note: gemini does not currently support streaming tools.
+    Note: cohere does not currently support streaming tools.
     """
     async for chunk in stream:
         yield CohereCallResponseChunk(chunk=chunk), None
