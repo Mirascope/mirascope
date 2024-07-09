@@ -167,7 +167,7 @@ class BaseStream(
                     self.model = chunk.model
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
-                yield chunk, None
+                yield chunk, tool
             kwargs: dict[str, Any] = {"role": "assistant"}
             if "message" in self.message_param_type.__annotations__:
                 kwargs["message"] = content
