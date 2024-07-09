@@ -289,7 +289,6 @@ def call_factory(
                     setup_call=setup_call,
                     handle_stream=handle_stream,
                     handle_stream_async=handle_stream_async,
-                    provider=provider,
                 ),
                 model=model,
                 tools=tools,
