@@ -139,10 +139,12 @@ class BaseStream(
         kwargs: dict[str, Any] = {"role": "assistant"}
         if "message" in self.message_param_type.__annotations__:
             kwargs["message"] = content
+            if tool_calls:
+                kwargs["tool_calls"] = tool_calls
         else:
             kwargs["content"] = content
-        if tool_calls:
-            kwargs["tool_calls"] = tool_calls
+            if tool_calls:
+                kwargs["content"] = [kwargs["content"]] + tool_calls
         self.message_param = self.message_param_type(**kwargs)
 
     def __aiter__(
