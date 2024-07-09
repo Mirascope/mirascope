@@ -18,7 +18,7 @@ The [Mirascope GitHub Issues](https://github.com/Mirascope/mirascope/issues) are
 
 ## :material-help: Usage Documentation
 
-The [usage documentation](concepts/philosophy.md) is the most complete guide on how to get started with **Mirascope**.
+The [usage documentation](PHILOSOPHY.md) is the most complete guide on how to get started with **Mirascope**.
 
 ## :material-api: SDK API Documentation
 

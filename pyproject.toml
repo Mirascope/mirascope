@@ -63,10 +63,10 @@ pytest-cov = "^4.1.0"
 
 [tool.poetry.group.docs.dependencies]
 mike = "^2.0.0"
-mkdocs = "^1.4.3"
-mkdocs-material = "^9.1.18"
-mkdocstrings = "^0.22.0"
-mkdocstrings-python = "^1.1.2"
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.28"
+mkdocstrings = "^0.25.1"
+mkdocstrings-python = "^1.10.5"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

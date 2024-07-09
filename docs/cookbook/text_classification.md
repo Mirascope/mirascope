@@ -66,4 +66,4 @@ label = analyze_sentiment(text)
 assert label == Sentiment.POSITIVE
 ```
 
-In this recipe, we've shown how to use simpler types like `bool` and `Enum` to classify text, but you can also set `response_model` to more complex Pydantic `BaseModel` definitions to extract not just the label but also additional information such as the reasonining for the label. Check out the [`response_model` usage documentation](../learn/concepts/response_models.md) for more information.
+In this recipe, we've shown how to use simpler types like `bool` and `Enum` to classify text, but you can also set `response_model` to more complex Pydantic `BaseModel` definitions to extract not just the label but also additional information such as the reasonining for the label. Check out the [`response_model` usage documentation](../learn/response_models.md) for more information.
