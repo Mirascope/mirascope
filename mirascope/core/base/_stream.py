@@ -134,7 +134,7 @@ class BaseStream(
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
-        if tool_calls == []:
+        if not tool_calls:
             tool_calls = None
         self.message_param = self.construct_message_param(tool_calls, content)
 
@@ -159,7 +159,7 @@ class BaseStream(
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
-            if tool_calls == []:
+            if not tool_calls:
                 tool_calls = None
             self.message_param = self.construct_message_param(tool_calls, content)
 
