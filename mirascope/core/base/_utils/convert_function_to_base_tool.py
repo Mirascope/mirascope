@@ -4,7 +4,7 @@ from abc import update_abstractmethods
 from typing import Any, Callable, TypeVar, cast, get_type_hints
 
 from docstring_parser import parse
-from pydantic import BaseModel, ConfigDict, create_model
+from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
 from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
@@ -115,5 +115,11 @@ def convert_function_to_base_tool(
             )
         )
 
-    setattr(model, "call", call)
+    async def call_async(self: base):
+        return await call(self)
+
+    if inspect.iscoroutinefunction(fn):
+        setattr(model, "call_async", call_async)
+    else:
+        setattr(model, "call", call)
     return update_abstractmethods(model)
