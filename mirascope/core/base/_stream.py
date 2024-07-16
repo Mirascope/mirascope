@@ -136,7 +136,7 @@ class BaseStream(
             yield chunk, tool
         if not tool_calls:
             tool_calls = None
-        self.message_param = self.construct_message_param(tool_calls, content)
+        self.message_param = self._construct_message_param(tool_calls, content)
 
     def __aiter__(
         self,
@@ -161,12 +161,12 @@ class BaseStream(
                 yield chunk, tool
             if not tool_calls:
                 tool_calls = None
-            self.message_param = self.construct_message_param(tool_calls, content)
+            self.message_param = self._construct_message_param(tool_calls, content)
 
         return generator()
 
     @abstractmethod
-    def construct_message_param(
+    def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ):
         """Constructs the assistant message."""

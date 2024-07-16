@@ -24,7 +24,7 @@ class AnthropicStream(
 ):
     _provider = "anthropic"
 
-    def construct_message_param(
+    def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ) -> MessageParam:
         """Returns the tool message parameters for tool call results."""

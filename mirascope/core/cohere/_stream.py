@@ -23,7 +23,7 @@ class CohereStream(
 ):
     _provider = "cohere"
 
-    def construct_message_param(
+    def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ) -> BaseMessageParam:
         print(tool_calls)

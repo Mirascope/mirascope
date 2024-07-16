@@ -24,7 +24,7 @@ class GeminiStream(
 ):
     _provider = "gemini"
 
-    def construct_message_param(
+    def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ) -> ContentDict:
         return {

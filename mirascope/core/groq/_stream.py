@@ -28,7 +28,7 @@ class GroqStream(
 ):
     _provider = "groq"
 
-    def construct_message_param(
+    def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ) -> ChatCompletionAssistantMessageParam:
         return ChatCompletionAssistantMessageParam(
