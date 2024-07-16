@@ -14,6 +14,7 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -159,3 +160,8 @@ class OpenAICallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

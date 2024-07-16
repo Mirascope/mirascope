@@ -3,9 +3,7 @@
 from openai.types.chat import ChatCompletionAssistantMessageParam
 
 from ..base import call_factory
-from ._stream import OpenAIStream
 from ._utils import (
-    calculate_cost,
     get_json_output,
     handle_stream,
     handle_stream_async,
@@ -15,6 +13,7 @@ from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dynamic_config import OpenAIDynamicConfig
+from .stream import OpenAIStream
 from .tool import OpenAITool
 
 openai_call = call_factory(
@@ -30,7 +29,6 @@ openai_call = call_factory(
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
-    calculate_cost=calculate_cost,
 )
 '''A decorator for calling the OpenAI API with a typed function.
 

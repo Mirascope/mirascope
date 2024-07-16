@@ -10,6 +10,7 @@ from .extract_tool_return import extract_tool_return
 from .format_template import format_template
 from .get_fn_args import get_fn_args
 from .get_metadata import get_metadata
+from .get_possible_user_message_param import get_possible_user_message_param
 from .get_template_values import get_template_values
 from .get_template_variables import get_template_variables
 from .json_mode_content import json_mode_content
@@ -42,6 +43,7 @@ __all__ = [
     "GetJsonOutput",
     "get_fn_args",
     "get_metadata",
+    "get_possible_user_message_param",
     "get_template_values",
     "get_template_variables",
     "HandleStream",

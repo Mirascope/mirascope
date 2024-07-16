@@ -9,7 +9,8 @@ from mistralai.models.chat_completion import (
 from mistralai.models.common import UsageInfo
 from pydantic import computed_field
 
-from ..base import BaseCallResponse, BaseMessageParam
+from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .dynamic_config import MistralDynamicConfig
 from .tool import MistralTool
@@ -20,9 +21,9 @@ class MistralCallResponse(
         ChatCompletionResponse,
         MistralTool,
         MistralDynamicConfig,
-        BaseMessageParam,
+        ChatMessage,
         MistralCallParams,
-        BaseMessageParam,
+        ChatMessage,
     ]
 ):
     '''A convenience wrapper around the Mistral `ChatCompletion` response.
@@ -50,9 +51,9 @@ class MistralCallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> BaseMessageParam:
+    def message_param(self) -> ChatMessage:
         """Returns the assistants's response as a message parameter."""
-        return self.message.model_dump()  # type: ignore
+        return self.message
 
     @property
     def choices(self) -> list[ChatCompletionResponseChoice]:
@@ -135,15 +136,15 @@ class MistralCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[MistralTool, str]]
-    ) -> list[BaseMessageParam]:
+    ) -> list[ChatMessage]:
         """Returns the tool message parameters for tool call results."""
         return [
-            {
-                "role": "tool",
-                "content": output,
-                "tool_call_id": tool.tool_call.id,
-                "name": tool._name(),
-            }  # type: ignore
+            ChatMessage(
+                role="tool",
+                content=output,
+                tool_call_id=tool.tool_call.id,
+                name=tool._name(),
+            )
             for tool, output in tools_and_outputs
         ]
 
@@ -161,3 +162,8 @@ class MistralCallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

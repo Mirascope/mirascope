@@ -61,9 +61,9 @@ class BaseCallResponse(
     user_message_param: _UserMessageParamT | None = None
     start_time: float
     end_time: float
-    cost: float | None = None
 
     _provider: ClassVar[str] = "NO PROVIDER"
+    _model: str = "NO MODEL"
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
@@ -153,6 +153,15 @@ class BaseCallResponse(
         """Should return the number of output tokens.
 
         If there is no output_tokens, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def cost(self) -> float | None:
+        """Should return the cost of the response in dollars.
+
+        If there is no cost, this method must return None.
         """
         ...  # pragma: no cover
 

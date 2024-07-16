@@ -196,7 +196,10 @@ class GetJsonOutput(Protocol[_R]):
     def __call__(self, response: _R, json_mode: bool) -> str: ...  # pragma: no cover
 
 
-class CalculateCost(Protocol[_R]):
+class CalculateCost(Protocol):
     def __call__(
-        self, response: _R, model: str
+        self,
+        input_tokens: int | float | None,
+        output_tokens: int | float | None,
+        model: str,
     ) -> float | None: ...  # pragma: no cover

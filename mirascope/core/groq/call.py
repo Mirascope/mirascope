@@ -3,9 +3,7 @@
 from groq.types.chat import ChatCompletionAssistantMessageParam
 
 from ..base import call_factory
-from ._stream import GroqStream
 from ._utils import (
-    calculate_cost,
     get_json_output,
     handle_stream,
     handle_stream_async,
@@ -15,6 +13,7 @@ from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk
 from .dynamic_config import GroqDynamicConfig
+from .stream import GroqStream
 from .tool import GroqTool
 
 groq_call = call_factory(
@@ -30,7 +29,6 @@ groq_call = call_factory(
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
-    calculate_cost=calculate_cost,
 )
 '''A decorator for calling the Groq API with a typed function.
 

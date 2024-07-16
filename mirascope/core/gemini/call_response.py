@@ -12,6 +12,7 @@ from google.generativeai.types import (  # type: ignore
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import GeminiCallParams
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
@@ -143,12 +144,12 @@ class GeminiCallResponse(
         ]
 
     @property
-    def model(self) -> None:
+    def model(self) -> str:
         """Returns the model name.
 
         google.generativeai does not return model, so we return None
         """
-        return None
+        return self._model
 
     @property
     def usage(self) -> None:
@@ -167,3 +168,8 @@ class GeminiCallResponse(
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

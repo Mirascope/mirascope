@@ -21,6 +21,7 @@ from ._utils import (
     SetupCall,
     get_fn_args,
     get_metadata,
+    get_possible_user_message_param,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -67,8 +68,7 @@ class BaseStream(
     tool_types: list[type[_BaseToolT]] | None
     message_param_type: type[_AssistantMessageParamT]
     call_response_type: type[_BaseCallResponseT]
-    model: str | None = None
-    cost: float | None = None
+    model: str
     prompt_template: str | None = None
     fn_args: dict[str, Any] | None = None
     dynamic_config: _BaseDynamicConfigT
@@ -76,6 +76,8 @@ class BaseStream(
     call_params: _BaseCallParamsT
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
+    input_tokens: int | float | None = None
+    output_tokens: int | float | None = None
 
     _provider: ClassVar[str] = "NO PROVIDER"
 
@@ -92,13 +94,11 @@ class BaseStream(
         message_param_type: type[_AssistantMessageParamT],
         call_response_type: type[_BaseCallResponseT],
         model: str,
-        cost: float | None,
         prompt_template: str,
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
-        user_message_param: _UserMessageParamT | None,
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
@@ -107,13 +107,12 @@ class BaseStream(
         self.message_param_type = message_param_type
         self.call_response_type = call_response_type
         self.model = model
-        self.cost = cost
         self.prompt_template = prompt_template
         self.fn_args = fn_args
         self.dynamic_config = dynamic_config
         self.messages = messages
         self.call_params = call_params
-        self.user_message_param = user_message_param
+        self.user_message_param = get_possible_user_message_param(messages)  # type: ignore
 
     def __iter__(
         self,
@@ -126,9 +125,17 @@ class BaseStream(
         for chunk, tool in self.stream:
             content += chunk.content
             if chunk.input_tokens is not None:
-                self.input_tokens = chunk.input_tokens
+                self.input_tokens = (
+                    chunk.input_tokens
+                    if not self.input_tokens
+                    else self.input_tokens + chunk.input_tokens
+                )
             if chunk.output_tokens is not None:
-                self.output_tokens = chunk.output_tokens
+                self.output_tokens = (
+                    chunk.output_tokens
+                    if not self.output_tokens
+                    else self.output_tokens + chunk.output_tokens
+                )
             if chunk.model is not None:
                 self.model = chunk.model
             if tool:
@@ -151,9 +158,17 @@ class BaseStream(
             async for chunk, tool in self.stream:
                 content += chunk.content
                 if chunk.input_tokens is not None:
-                    self.input_tokens = chunk.input_tokens
+                    self.input_tokens = (
+                        chunk.input_tokens
+                        if not self.input_tokens
+                        else self.input_tokens + chunk.input_tokens
+                    )
                 if chunk.output_tokens is not None:
-                    self.output_tokens = chunk.output_tokens
+                    self.output_tokens = (
+                        chunk.output_tokens
+                        if not self.output_tokens
+                        else self.output_tokens + chunk.output_tokens
+                    )
                 if chunk.model is not None:
                     self.model = chunk.model
                 if tool:
@@ -165,10 +180,16 @@ class BaseStream(
 
         return generator()
 
+    @property
+    @abstractmethod
+    def cost(self) -> float | None:
+        """Returns the cost of the stream."""
+        ...  # pragma: no cover
+
     @abstractmethod
     def _construct_message_param(
-        self, tool_calls: list | None = None, content: str | None = None
-    ):
+        self, tool_calls: list[Any] | None = None, content: str | None = None
+    ) -> _AssistantMessageParamT:
         """Constructs the assistant message."""
         ...  # pragma: no cover
 
@@ -254,9 +275,12 @@ def stream_factory(
             )
 
             def generator():
+                nonlocal model
                 for chunk, tool in handle_stream(
                     create(stream=True, **call_kwargs), tool_types
                 ):
+                    if chunk.model is not None:
+                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
@@ -266,15 +290,11 @@ def stream_factory(
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
                 model=model,
-                cost=None,
                 prompt_template=prompt_template,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
             )
 
         @wraps(fn)
@@ -295,9 +315,12 @@ def stream_factory(
             )
 
             async def generator():
+                nonlocal model
                 async for chunk, tool in handle_stream_async(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
+                    if chunk.model is not None:
+                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
@@ -307,15 +330,11 @@ def stream_factory(
                 message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
                 model=model,
-                cost=None,
                 prompt_template=prompt_template,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
             )
 
         return inner_async if is_async else inner

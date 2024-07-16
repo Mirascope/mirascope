@@ -16,6 +16,7 @@ from cohere.types import (
 from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import CohereCallParams
 from .dynamic_config import CohereDynamicConfig
 from .tool import CohereTool
@@ -70,12 +71,12 @@ class CohereCallResponse(
         return self.response.text
 
     @property
-    def model(self) -> str | None:
+    def model(self) -> str:
         """Returns the name of the response model.
 
         Cohere does not return model, so we return None
         """
-        return None
+        return self._model
 
     @property
     def id(self) -> str | None:
@@ -175,3 +176,8 @@ class CohereCallResponse(
         if self.usage:
             return self.usage.output_tokens
         return None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the response."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

@@ -1,9 +1,11 @@
 """Calculate the cost of a completion using the OpenAI API."""
 
-from openai.types.chat import ChatCompletion
 
-
-def calculate_cost(response: ChatCompletion, model="gpt-3.5-turbo-16k") -> float | None:
+def calculate_cost(
+    input_tokens: int | float | None,
+    output_tokens: int | float | None,
+    model="gpt-3.5-turbo-16k",
+) -> float | None:
     """Calculate the cost of a completion using the OpenAI API.
 
     https://openai.com/pricing
@@ -83,16 +85,16 @@ def calculate_cost(response: ChatCompletion, model="gpt-3.5-turbo-16k") -> float
             "completion": 0.000_000_13,
         },
     }
-    if (usage := response.usage) is None:
+    if input_tokens is None or output_tokens is None:
         return None
+
     try:
-        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_cost = usage.prompt_tokens * model_pricing["prompt"]
-    completion_cost = usage.completion_tokens * model_pricing["completion"]
+    prompt_cost = input_tokens * model_pricing["prompt"]
+    completion_cost = output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

@@ -1,10 +1,10 @@
 """Calculate the cost of a completion using the Mistral API."""
 
-from mistralai.models.chat_completion import ChatCompletionResponse
-
 
 def calculate_cost(
-    response: ChatCompletionResponse, model="open-mistral-7b"
+    input_tokens: int | float | None,
+    output_tokens: int | float | None,
+    model="open-mistral-7b",
 ) -> float | None:
     """Calculate the cost of a completion using the Mistral API.
 
@@ -26,15 +26,16 @@ def calculate_cost(
         "mistral-medium": {"prompt": 0.000_002_7, "completion": 0.000_008_1},
         "mistral-large": {"prompt": 0.000_008, "completion": 0.000_024},
     }
+
+    if input_tokens is None or output_tokens is None:
+        return None
+
     try:
-        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    completion_tokens = response.usage.completion_tokens or 0
-    prompt_cost = response.usage.prompt_tokens * model_pricing["prompt"]
-    completion_cost = completion_tokens * model_pricing["completion"]
-    total_cost = prompt_cost + completion_cost
+    completion_cost = input_tokens * model_pricing["completion"]
+    total_cost = output_tokens + completion_cost
 
     return total_cost
