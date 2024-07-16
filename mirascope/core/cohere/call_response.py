@@ -74,7 +74,7 @@ class CohereCallResponse(
     def model(self) -> str:
         """Returns the name of the response model.
 
-        Cohere does not return model, so we return None
+        Cohere does not return model, so we return the model provided by the user.
         """
         return self._model
 
