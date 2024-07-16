@@ -78,7 +78,6 @@ def call_factory(
         _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
     calculate_cost: CalculateCost[_ResponseT],
-    provider: str,
 ):
     @overload
     def base_call(

@@ -28,6 +28,15 @@ class BaseTool(BaseModel):
             else _utils.DEFAULT_TOOL_DOCSTRING
         )
 
+    @property
+    def args(self) -> dict[str, Any]:
+        """The arguments of the tool as a dictionary."""
+        return {
+            field: getattr(self, field)
+            for field in self.model_fields
+            if field != "tool_call"
+        }
+
     @abstractmethod
     def call(self) -> Any:
         """The method to call the tool."""

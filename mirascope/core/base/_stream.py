@@ -1,7 +1,7 @@
 """This module contains the base classes for streaming responses from LLMs."""
 
 import inspect
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import (
@@ -134,16 +134,9 @@ class BaseStream(
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
-        kwargs: dict[str, Any] = {"role": "assistant"}
-        if "message" in self.message_param_type.__annotations__:
-            kwargs["message"] = content
-            if tool_calls:
-                kwargs["tool_calls"] = tool_calls
-        else:
-            kwargs["content"] = content
-            if tool_calls:
-                kwargs["content"] = [kwargs["content"]] + tool_calls
-        self.message_param = self.message_param_type(**kwargs)
+        if not tool_calls:
+            tool_calls = None
+        self.message_param = self._construct_message_param(tool_calls, content)
 
     def __aiter__(
         self,
@@ -166,18 +159,18 @@ class BaseStream(
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
-            kwargs: dict[str, Any] = {"role": "assistant"}
-            if "message" in self.message_param_type.__annotations__:
-                kwargs["message"] = content
-                if tool_calls:
-                    kwargs["tool_calls"] = tool_calls
-            else:
-                kwargs["content"] = content
-                if tool_calls:
-                    kwargs["content"] = [kwargs["content"]] + tool_calls
-            self.message_param = self.message_param_type(**kwargs)
+            if not tool_calls:
+                tool_calls = None
+            self.message_param = self._construct_message_param(tool_calls, content)
 
         return generator()
+
+    @abstractmethod
+    def _construct_message_param(
+        self, tool_calls: list | None = None, content: str | None = None
+    ):
+        """Constructs the assistant message."""
+        ...  # pragma: no cover
 
     def tool_message_params(self, tools_and_outputs):
         """Returns the tool message parameters for tool call results."""

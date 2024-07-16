@@ -1,13 +1,9 @@
 """The `litellm_call` decorator for functions as LLM calls."""
 
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-    ChatCompletionUserMessageParam,
-)
+from openai.types.chat import ChatCompletionAssistantMessageParam
 
 from ..base import call_factory
-from ..base._stream import BaseStream
+from ._stream import LiteLLMStream
 from ._utils import (
     calculate_cost,
     get_json_output,
@@ -20,22 +16,6 @@ from .call_response import LiteLLMCallResponse
 from .call_response_chunk import LiteLLMCallResponseChunk
 from .dynamic_config import LiteLLMDynamicConfig
 from .tool import LiteLLMTool
-
-
-class LiteLLMStream(
-    BaseStream[
-        LiteLLMCallResponse,
-        LiteLLMCallResponseChunk,
-        ChatCompletionUserMessageParam,
-        ChatCompletionAssistantMessageParam,
-        ChatCompletionMessageParam,
-        LiteLLMTool,
-        LiteLLMDynamicConfig,
-        LiteLLMCallParams,
-    ]
-):
-    _provider = "litellm"
-
 
 litellm_call = call_factory(
     TCallResponse=LiteLLMCallResponse,
@@ -51,7 +31,6 @@ litellm_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
-    provider="litellm",
 )
 '''A decorator for calling the LiteLLM API with a typed function.
 

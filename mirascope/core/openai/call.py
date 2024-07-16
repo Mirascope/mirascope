@@ -1,13 +1,9 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-    ChatCompletionUserMessageParam,
-)
+from openai.types.chat import ChatCompletionAssistantMessageParam
 
 from ..base import call_factory
-from ..base._stream import BaseStream
+from ._stream import OpenAIStream
 from ._utils import (
     calculate_cost,
     get_json_output,
@@ -20,22 +16,6 @@ from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
-
-
-class OpenAIStream(
-    BaseStream[
-        OpenAICallResponse,
-        OpenAICallResponseChunk,
-        ChatCompletionUserMessageParam,
-        ChatCompletionAssistantMessageParam,
-        ChatCompletionMessageParam,
-        OpenAITool,
-        OpenAIDynamicConfig,
-        OpenAICallParams,
-    ]
-):
-    _provider = "openai"
-
 
 openai_call = call_factory(
     TCallResponse=OpenAICallResponse,
@@ -51,7 +31,6 @@ openai_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
-    provider="openai",
 )
 '''A decorator for calling the OpenAI API with a typed function.
 

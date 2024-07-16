@@ -1,7 +1,7 @@
 """The `cohere_call` decorator for functions as LLM calls."""
 
 from ..base import BaseMessageParam, call_factory
-from ..base._stream import BaseStream
+from ._stream import CohereStream
 from ._utils import (
     calculate_cost,
     get_json_output,
@@ -14,22 +14,6 @@ from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
 from .dynamic_config import CohereDynamicConfig
 from .tool import CohereTool
-
-
-class CohereStream(
-    BaseStream[
-        CohereCallResponse,
-        CohereCallResponseChunk,
-        BaseMessageParam,
-        BaseMessageParam,
-        BaseMessageParam,
-        CohereTool,
-        CohereDynamicConfig,
-        CohereCallParams,
-    ]
-):
-    _provider = "cohere"
-
 
 cohere_call = call_factory(
     TCallResponse=CohereCallResponse,
@@ -45,7 +29,6 @@ cohere_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
     calculate_cost=calculate_cost,
-    provider="cohere",
 )
 '''A decorator for calling the Cohere API with a typed function.
 

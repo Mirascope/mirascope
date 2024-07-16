@@ -47,7 +47,7 @@ class GeminiTool(BaseTool):
                 prop: {
                     key: value
                     for key, value in handle_enum_schema(prop_schema).items()
-                    if key != "title"
+                    if key != "title" and key != "default"
                 }
                 for prop, prop_schema in fn["parameters"]["properties"].items()
             }
