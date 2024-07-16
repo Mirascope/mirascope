@@ -14,6 +14,7 @@ from .get_possible_user_message_param import get_possible_user_message_param
 from .get_template_values import get_template_values
 from .get_template_variables import get_template_variables
 from .json_mode_content import json_mode_content
+from .parse_content_template import parse_content_template
 from .parse_prompt_messages import parse_prompt_messages
 from .protocols import (
     AsyncCreateFn,
@@ -51,6 +52,7 @@ __all__ = [
     "is_base_type",
     "json_mode_content",
     "LLMFunctionDecorator",
+    "parse_content_template",
     "parse_prompt_messages",
     "SetupCall",
     "setup_call",
