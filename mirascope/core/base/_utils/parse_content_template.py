@@ -86,7 +86,8 @@ def _construct_parts(part: _Part, attrs: dict[str, Any]) -> List[TextPart | Imag
         return [{"type": "text", "text": format_template(part["template"], attrs)}]
     elif part["type"] == "image":
         path_key, *options = part["template"][7:-1].split(",")
-        return [_construct_image_part(attrs[path_key], options)]
+        source = attrs[path_key]
+        return [_construct_image_part(attrs[path_key], options)] if source else []
     elif part["type"] == "images":
         path_key, *options = part["template"][8:-1].split(",")
         sources = attrs[path_key]
@@ -94,7 +95,11 @@ def _construct_parts(part: _Part, attrs: dict[str, Any]) -> List[TextPart | Imag
             raise ValueError(
                 f"When using 'images' template, '{path_key}' must be a list."
             )
-        return [_construct_image_part(source, options) for source in sources]
+        return (
+            [_construct_image_part(source, options) for source in sources]
+            if sources
+            else []
+        )
     raise ValueError(f"Template type '{part['type']}' not supported.")
 
 
