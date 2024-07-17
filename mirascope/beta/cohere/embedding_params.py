@@ -1,4 +1,6 @@
-from typing import Any, Literal, NotRequired, Sequence, TypedDict
+from typing import Any, Literal, NotRequired, Sequence
+
+from typing_extensions import TypedDict
 
 from ..rag.embedding_params import BaseEmbeddingParams
 
