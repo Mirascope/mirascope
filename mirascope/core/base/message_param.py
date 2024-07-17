@@ -1,24 +1,27 @@
 """This module contains the base class for message parameters."""
 
-from typing import Iterable, Literal
+from typing import Literal
 
 from typing_extensions import TypedDict
 
+_PartType = Literal["text", "image", "images"]
+_Detail = Literal["auto", "low", "high"]
 
-class _Image(TypedDict):
+
+class ImagePart(TypedDict):
     type: Literal["image"]
-    media_type: Literal["image/png", "image/jpeg", "image/gif", "image/webp"]
-    base64_image: str
-    detail: Literal["low", "high"] | None
+    media_type: str
+    image: bytes
+    detail: _Detail | None
 
 
-class _Text(TypedDict):
+class TextPart(TypedDict):
     type: Literal["text"]
-    content: str
+    text: str
 
 
 class BaseMessageParam(TypedDict):
     """A base class for message parameters."""
 
     role: str
-    content: str | Iterable[_Text | _Image]
+    content: list[TextPart | ImagePart]
