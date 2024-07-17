@@ -3,9 +3,8 @@
 from openai.types.chat import ChatCompletionAssistantMessageParam
 
 from ..base import call_factory
-from ._stream import LiteLLMStream
+from .stream import LiteLLMStream
 from ._utils import (
-    calculate_cost,
     get_json_output,
     handle_stream,
     handle_stream_async,
@@ -30,7 +29,6 @@ litellm_call = call_factory(
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
-    calculate_cost=calculate_cost,
 )
 '''A decorator for calling the LiteLLM API with a typed function.
 

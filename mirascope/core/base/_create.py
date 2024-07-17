@@ -5,7 +5,12 @@ import inspect
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
-from ._utils import CalculateCost, SetupCall, get_fn_args, get_metadata
+from ._utils import (
+    SetupCall,
+    get_fn_args,
+    get_metadata,
+    get_possible_user_message_param,
+)
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -33,7 +38,6 @@ def create_factory(
         _ResponseChunkT,
         _BaseToolT,
     ],
-    calculate_cost: CalculateCost[_ResponseT],
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
@@ -108,13 +112,11 @@ def create_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
+                user_message_param=get_possible_user_message_param(messages),
                 start_time=start_time,
                 end_time=end_time,
-                cost=calculate_cost(response, model),
             )
+            output._model = model
             return output if not output_parser else output_parser(output)
 
         @wraps(fn)
@@ -147,13 +149,11 @@ def create_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
+                user_message_param=get_possible_user_message_param(messages),
                 start_time=start_time,
                 end_time=end_time,
-                cost=calculate_cost(response, model),
             )
+            output._model = model
             return output if not output_parser else output_parser(output)
 
         return inner_async if is_async else inner

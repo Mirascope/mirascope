@@ -1,10 +1,10 @@
 """Calculate the cost of a completion using the Groq API."""
 
-from groq.types.chat import ChatCompletion
-
 
 def calculate_cost(
-    response: ChatCompletion, model="mixtral-8x7b-32768"
+    input_tokens: int | float | None,
+    output_tokens: int | float | None,
+    model="mixtral-8x7b-32768",
 ) -> float | None:
     """Calculate the cost of a completion using the Groq API.
 
@@ -45,18 +45,16 @@ def calculate_cost(
         },
     }
 
-    if not response.usage:
+    if input_tokens is None or output_tokens is None:
         return None
+
     try:
-        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_tokens = response.usage.prompt_tokens or 0
-    completion_tokens = response.usage.completion_tokens or 0
-    prompt_cost = prompt_tokens * model_pricing["prompt"]
-    completion_cost = completion_tokens * model_pricing["completion"]
+    prompt_cost = input_tokens * model_pricing["prompt"]
+    completion_cost = output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

@@ -4,6 +4,7 @@ from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
@@ -138,6 +139,7 @@ class AnthropicCallResponse(
         """Returns the number of output tokens."""
         return self.usage.output_tokens
 
-    def __str__(self) -> str:
-        """Returns the string content of the response."""
-        return self.content
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

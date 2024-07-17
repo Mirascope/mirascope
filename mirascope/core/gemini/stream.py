@@ -1,8 +1,10 @@
 """The `GeminiStream` class for convenience around streaming LLM calls."""
 
+from google.ai.generativelanguage import FunctionCall
 from google.generativeai.types import ContentDict
 
 from ..base._stream import BaseStream
+from ._utils import calculate_cost
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
@@ -24,12 +26,15 @@ class GeminiStream(
 ):
     _provider = "gemini"
 
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+
     def _construct_message_param(
-        self, tool_calls: list | None = None, content: str | None = None
+        self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
     ) -> ContentDict:
         return {
-            "role": "assistant",
-            "content": {
-                "parts": [{"type": "text", "text": content}],
-            },
+            "role": "model",
+            "parts": [{"type": "text", "text": content}] + (tool_calls or []),
         }

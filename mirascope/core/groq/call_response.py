@@ -14,6 +14,7 @@ from groq.types.completion_usage import CompletionUsage
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .dynamic_config import GroqDynamicConfig
 from .tool import GroqTool
@@ -159,3 +160,8 @@ class GroqCallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

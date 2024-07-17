@@ -1,9 +1,11 @@
 """Calculate the cost of a completion using the Anthropic API."""
 
-from anthropic.types import Message
 
-
-def calculate_cost(response: Message, model="claude-3-haiku-20240229") -> float | None:
+def calculate_cost(
+    input_tokens: int | float | None,
+    output_tokens: int | float | None,
+    model="claude-3-haiku-20240229",
+) -> float | None:
     """Calculate the cost of a completion using the Anthropic API.
 
     https://www.anthropic.com/api
@@ -42,14 +44,16 @@ def calculate_cost(response: Message, model="claude-3-haiku-20240229") -> float 
         },
     }
 
+    if input_tokens is None or output_tokens is None:
+        return None
+
     try:
-        model = response.model if response.model else model
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_cost = response.usage.input_tokens * model_pricing["prompt"]
-    completion_cost = response.usage.output_tokens * model_pricing["completion"]
+    prompt_cost = input_tokens * model_pricing["prompt"]
+    completion_cost = output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

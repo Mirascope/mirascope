@@ -41,3 +41,8 @@ class BaseTool(BaseModel):
     def call(self) -> Any:
         """The method to call the tool."""
         ...  # pragma: no cover
+
+    @abstractmethod
+    async def call_async(self) -> Any:
+        """The method to call the tool asynchronously."""
+        ...  # pragma: no cover

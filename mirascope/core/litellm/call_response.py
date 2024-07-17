@@ -15,6 +15,7 @@ from openai.types.chat.chat_completion import Choice
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
+from ._utils import calculate_cost
 from .call_params import LiteLLMCallParams
 from .dynamic_config import LiteLLMDynamicConfig
 from .tool import LiteLLMTool
@@ -80,9 +81,9 @@ class LiteLLMCallResponse(
         return self.message.content if self.message.content is not None else ""
 
     @property
-    def model(self) -> str | None:
+    def model(self) -> str:
         """Returns the name of the response model."""
-        return self.response.model
+        return self.response.model if self.response.model else self._model
 
     @property
     def id(self) -> str:
@@ -160,3 +161,8 @@ class LiteLLMCallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

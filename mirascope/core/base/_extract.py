@@ -9,12 +9,12 @@ from pydantic import BaseModel, ValidationError
 
 from ._utils import (
     BaseType,
-    CalculateCost,
     GetJsonOutput,
     SetupCall,
     extract_tool_return,
     get_fn_args,
     get_metadata,
+    get_possible_user_message_param,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -46,7 +46,6 @@ def extract_factory(
         _BaseToolT,
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseT],
-    calculate_cost: CalculateCost[_ResponseT],
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
@@ -109,13 +108,11 @@ def extract_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_kwargs,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
+                user_message_param=get_possible_user_message_param(messages),
                 start_time=start_time,
                 end_time=end_time,
-                cost=calculate_cost(response, model),
             )
+            call_response._model = model
             json_output = get_json_output(call_response, json_mode)
             try:
                 output = extract_tool_return(response_model, json_output, False)
@@ -154,13 +151,11 @@ def extract_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_kwargs,
-                user_message_param=messages[-1]
-                if messages[-1]["role"] == "user"
-                else None,
+                user_message_param=get_possible_user_message_param(messages),
                 start_time=start_time,
                 end_time=end_time,
-                cost=calculate_cost(response, model),
             )
+            call_response._model = model
             json_output = get_json_output(call_response, json_mode)
             output = extract_tool_return(response_model, json_output, False)
             if isinstance(output, BaseModel):

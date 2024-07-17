@@ -1,9 +1,9 @@
 """The `mistral_call` decorator for functions as LLM calls."""
 
-from ..base import BaseMessageParam, call_factory
-from ._stream import MistralStream
+from mistralai.models.chat_completion import ChatMessage
+
+from ..base import call_factory
 from ._utils import (
-    calculate_cost,
     get_json_output,
     handle_stream,
     handle_stream_async,
@@ -13,13 +13,14 @@ from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
 from .dynamic_config import MistralDynamicConfig
+from .stream import MistralStream
 from .tool import MistralTool
 
 mistral_call = call_factory(
     TCallResponse=MistralCallResponse,
     TCallResponseChunk=MistralCallResponseChunk,
     TDynamicConfig=MistralDynamicConfig,
-    TMessageParamType=BaseMessageParam,
+    TMessageParamType=ChatMessage,
     TToolType=MistralTool,
     TStream=MistralStream,
     TCallParams=MistralCallParams,
@@ -28,7 +29,6 @@ mistral_call = call_factory(
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
-    calculate_cost=calculate_cost,
 )
 '''A decorator for calling the Mistral API with a typed function.
 

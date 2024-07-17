@@ -3,9 +3,7 @@
 from google.generativeai.types import ContentDict
 
 from ..base import call_factory
-from ._stream import GeminiStream
 from ._utils import (
-    calculate_cost,
     get_json_output,
     handle_stream,
     handle_stream_async,
@@ -15,6 +13,7 @@ from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
+from .stream import GeminiStream
 from .tool import GeminiTool
 
 gemini_call = call_factory(
@@ -30,7 +29,6 @@ gemini_call = call_factory(
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
-    calculate_cost=calculate_cost,
 )
 '''A decorator for calling the Gemini API with a typed function.
 

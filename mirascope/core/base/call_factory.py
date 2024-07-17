@@ -77,7 +77,6 @@ def call_factory(
     handle_stream_async: HandleStreamAsync[
         _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
-    calculate_cost: CalculateCost[_ResponseT],
 ):
     @overload
     def base_call(
@@ -271,7 +270,6 @@ def call_factory(
                         TToolType=TToolType,
                         setup_call=setup_call,
                         get_json_output=get_json_output,
-                        calculate_cost=calculate_cost,
                     ),
                     model=model,
                     response_model=response_model,
@@ -296,11 +294,7 @@ def call_factory(
                 call_params=call_params,
             )  # type: ignore
         return partial(
-            create_factory(
-                TCallResponse=TCallResponse,
-                setup_call=setup_call,
-                calculate_cost=calculate_cost,
-            ),
+            create_factory(TCallResponse=TCallResponse, setup_call=setup_call),
             model=model,
             tools=tools,
             output_parser=output_parser,

@@ -7,6 +7,7 @@ from openai.types.chat import (
 )
 
 from ..base._stream import BaseStream
+from ._utils import calculate_cost
 from .call_params import LiteLLMCallParams
 from .call_response import LiteLLMCallResponse
 from .call_response_chunk import LiteLLMCallResponseChunk
@@ -28,11 +29,18 @@ class LiteLLMStream(
 ):
     _provider = "litellm"
 
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+
     def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
     ) -> ChatCompletionAssistantMessageParam:
-        return ChatCompletionAssistantMessageParam(
+        message_param = ChatCompletionAssistantMessageParam(
             role="assistant",
             content=content,
-            tool_calls=tool_calls,
         )
+        if tool_calls:
+            message_param["tool_calls"] = tool_calls
+        return message_param

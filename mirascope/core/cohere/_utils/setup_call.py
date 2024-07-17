@@ -27,39 +27,43 @@ def setup_call(
     Callable[..., NonStreamedChatResponse]
     | Callable[..., Awaitable[NonStreamedChatResponse]],
     str,
-    list[BaseMessageParam],
+    list[ChatMessage],
     list[type[CohereTool]] | None,
     dict[str, Any],
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, CohereTool, call_params
     )
+    messages = [
+        ChatMessage(role=message["role"].upper(), message=message["content"])  # type: ignore
+        for message in messages
+    ]
+
     if client is None:
         client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
 
     preamble = ""
     if "preamble" in call_kwargs and call_kwargs["preamble"] is not None:
         preamble += call_kwargs.pop("preamble")
-    if messages[0]["role"] == "SYSTEM":
-        preamble += messages.pop(0)["content"]
+    if messages[0].role == "SYSTEM":  # type: ignore
+        if preamble:
+            preamble += "\n\n"
+        preamble += messages.pop(0).message
     if preamble:
         call_kwargs["preamble"] = preamble
     if len(messages) > 1:
-        call_kwargs["chat_history"] = [
-            ChatMessage(role=message["role"].upper(), message=message["content"])  # type: ignore
-            for message in messages[:-1]
-        ]
-    call_kwargs |= {
-        "model": model,
-        "message": messages[-1]["content"],
-    }
+        call_kwargs["chat_history"] = messages[:-1]
     if json_mode:
-        messages[-1]["content"] += _utils.json_mode_content(
+        messages[-1].message += _utils.json_mode_content(
             tool_types[0] if tool_types else None
         )
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
+    call_kwargs |= {
+        "model": model,
+        "message": messages[-1].message,
+    }
 
     def create_or_stream(stream: bool, **kwargs: Any):
         if stream:
