@@ -147,7 +147,8 @@ class GeminiCallResponse(
     def model(self) -> str:
         """Returns the model name.
 
-        google.generativeai does not return model, so we return None
+        google.generativeai does not return model, so we return the model provided by
+        the user.
         """
         return self._model
 
