@@ -5,8 +5,8 @@ from typing import Any, Literal, Optional
 import weaviate.types as wt
 from pydantic import BaseModel, ConfigDict
 
-from ..document import Document
-from ..vectorstore_params import BaseVectorStoreParams
+from ..base.document import Document
+from ..base.vectorstore_params import BaseVectorStoreParams
 
 
 class WeaviateSettings(BaseModel):

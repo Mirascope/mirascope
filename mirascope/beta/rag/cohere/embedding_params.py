@@ -2,7 +2,7 @@ from typing import Any, Literal, NotRequired, Sequence
 
 from typing_extensions import TypedDict
 
-from ..embedding_params import BaseEmbeddingParams
+from ..base.embedding_params import BaseEmbeddingParams
 
 
 class RequestOptions(TypedDict):

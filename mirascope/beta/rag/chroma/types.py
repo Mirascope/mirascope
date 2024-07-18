@@ -8,7 +8,7 @@ from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
 from chromadb.types import Vector
 from pydantic import BaseModel, ConfigDict
 
-from ..vectorstore_params import BaseVectorStoreParams
+from ..base.vectorstore_params import BaseVectorStoreParams
 
 
 class ChromaParams(BaseVectorStoreParams):

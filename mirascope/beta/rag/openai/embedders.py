@@ -9,7 +9,7 @@ from openai import AsyncOpenAI, OpenAI
 from openai.types import Embedding
 from openai.types.create_embedding_response import CreateEmbeddingResponse, Usage
 
-from ..embedders import BaseEmbedder
+from ..base.embedders import BaseEmbedder
 from .embedding_params import OpenAIEmbeddingParams
 from .embedding_response import OpenAIEmbeddingResponse
 

@@ -3,7 +3,7 @@ from typing import Literal
 from httpx import Timeout
 from openai._types import Body, Headers, Query
 
-from ..embedding_params import BaseEmbeddingParams
+from ..base.embedding_params import BaseEmbeddingParams
 
 
 class OpenAIEmbeddingParams(BaseEmbeddingParams):

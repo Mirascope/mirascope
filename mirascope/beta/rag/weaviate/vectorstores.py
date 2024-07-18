@@ -6,8 +6,8 @@ import weaviate.classes as wvc
 from weaviate import WeaviateClient
 from weaviate.collections.collection import Collection
 
-from ..document import Document
-from ..vectorstores import BaseVectorStore
+from ..base.document import Document
+from ..base.vectorstores import BaseVectorStore
 from .types import (
     WeaviateParams,
     WeaviateQueryResult,

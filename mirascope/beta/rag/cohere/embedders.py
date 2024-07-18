@@ -5,7 +5,7 @@ from typing import ClassVar, Optional, Union
 
 from cohere import AsyncClient, Client
 
-from ..embedders import BaseEmbedder
+from ..base.embedders import BaseEmbedder
 from .embedding_params import CohereEmbeddingParams
 from .embedding_response import CohereEmbeddingResponse
 

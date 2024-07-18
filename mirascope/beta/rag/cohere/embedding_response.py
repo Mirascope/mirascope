@@ -3,7 +3,7 @@ from typing import Literal
 from cohere.types import EmbedByTypeResponseEmbeddings, EmbedResponse
 from pydantic import SkipValidation
 
-from ..embedding_response import BaseEmbeddingResponse
+from ..base.embedding_response import BaseEmbeddingResponse
 
 
 class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):

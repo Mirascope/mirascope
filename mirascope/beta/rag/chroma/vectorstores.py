@@ -6,8 +6,8 @@ from typing import Any, ClassVar, Optional, Union, cast
 from chromadb import Collection, EphemeralClient, HttpClient, Metadata, PersistentClient
 from chromadb.api import ClientAPI
 
-from ..document import Document
-from ..vectorstores import BaseVectorStore
+from ..base.document import Document
+from ..base.vectorstores import BaseVectorStore
 from .types import ChromaParams, ChromaQueryResult, ChromaSettings
 
 

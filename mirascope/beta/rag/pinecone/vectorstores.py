@@ -5,9 +5,9 @@ from typing import Any, Callable, ClassVar, Optional, Union
 
 from pinecone import Index, Pinecone, QueryResponse
 
-from ..document import Document
-from ..embedding_response import BaseEmbeddingResponse
-from ..vectorstores import BaseVectorStore
+from ..base.document import Document
+from ..base.embedding_response import BaseEmbeddingResponse
+from ..base.vectorstores import BaseVectorStore
 from .types import (
     PineconePodParams,
     PineconeQueryResult,
