@@ -22,7 +22,6 @@ from ._stream import BaseStream, stream_factory
 from ._structured_stream import structured_stream_factory
 from ._utils import (
     BaseType,
-    CalculateCost,
     GetJsonOutput,
     HandleStream,
     HandleStreamAsync,

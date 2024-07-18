@@ -16,6 +16,16 @@ def convert_message_params(
         converted_content = []
         for part in content:
             if part["type"] == "image":
+                if part["media_type"] not in [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp",
+                ]:
+                    raise ValueError(
+                        f"Unsupported image media type: {part['media_type']}. OpenAI"
+                        " currently only supports JPEG, PNG, GIF, and WebP images."
+                    )
                 data = base64.b64encode(part["image"]).decode("utf-8")
                 converted_content.append(
                     {

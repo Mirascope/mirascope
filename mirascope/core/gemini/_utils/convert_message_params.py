@@ -32,6 +32,18 @@ def convert_message_params(
             converted_content = []
             for part in content:
                 if part["type"] == "image":
+                    if part["media_type"] not in [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                        "image/heic",
+                        "image/heif",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported image media type: {part['media_type']}. "
+                            "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
+                            "and HEIF images."
+                        )
                     image = PIL.Image.open(io.BytesIO(part["image"]))
                     converted_content.append(image)
                 else:
