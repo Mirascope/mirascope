@@ -7,7 +7,8 @@ from litellm import acompletion, completion
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
-from ...base import BaseTool, _utils
+from ...base import BaseTool
+from ...openai._utils import setup_call as setup_call_openai
 from ..call_params import LiteLLMCallParams
 from ..dynamic_config import LiteLLMDynamicConfig
 from ..tool import LiteLLMTool
@@ -31,23 +32,16 @@ def setup_call(
     list[type[LiteLLMTool]] | None,
     dict[str, Any],
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, LiteLLMTool, call_params
+    _, prompt_template, messages, tool_types, call_kwargs = setup_call_openai(
+        model=model,
+        client=client,
+        fn=fn,
+        fn_args=fn_args,
+        dynamic_config=dynamic_config,
+        tools=tools,
+        json_mode=json_mode,
+        call_params=call_params,
+        extract=extract,
     )
-    if client is not None:
-        raise ValueError(
-            "Mirascope's LiteLLM integration doesn't currently support custom clients."
-        )
     create = acompletion if inspect.iscoroutinefunction(fn) else completion
-    call_kwargs |= {"model": model, "messages": messages}
-    if json_mode:
-        call_kwargs["response_format"] = {"type": "json_object"}
-        messages[-1]["content"] += _utils.json_mode_content(
-            tool_types[0] if tool_types else None
-        )
-        call_kwargs.pop("tools", None)
-    elif extract:
-        assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs["tool_choice"] = "required"
-
     return create, prompt_template, messages, tool_types, call_kwargs  # type: ignore

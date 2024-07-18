@@ -13,10 +13,11 @@ from anthropic import (
 )
 from anthropic.types import Message, MessageParam
 
-from ...base import BaseTool, _utils
+from ...base import BaseTool, TextPart, _utils
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig
 from ..tool import AnthropicTool
+from .convert_message_params import convert_message_params
 
 
 def setup_call(
@@ -48,18 +49,22 @@ def setup_call(
     )
     if messages[0]["role"] == "system":
         call_kwargs["system"] = messages.pop(0)["content"]
-    if client is None:
-        client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
-    create = client.messages.create
-    call_kwargs |= {"model": model, "messages": messages}
 
     if json_mode:
-        messages[-1]["content"] += _utils.json_mode_content(
-            tool_types[0] if tool_types else None
-        )
+        json_mode_part: TextPart = {
+            "type": "text",
+            "text": _utils.json_mode_content(tool_types[0] if tool_types else None),
+        }
+        messages[-1]["content"].append(json_mode_part)
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
+    messages = convert_message_params(messages)
+    call_kwargs |= {"model": model, "messages": messages}
 
-    return create, prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    if client is None:
+        client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
+    create = client.messages.create
+
+    return create, prompt_template, messages, tool_types, call_kwargs

@@ -17,6 +17,7 @@ from ...base import BaseTool, _utils
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
+from .convert_message_params import convert_message_params
 
 
 def setup_call(
@@ -41,26 +42,28 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, MistralTool, call_params
     )
-    messages = [
-        ChatMessage(role=message["role"], content=message["content"])
-        for message in messages
-    ]
-    if client is None:
-        client = (
-            MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
-        )
+    messages = convert_message_params(messages)
     if json_mode:
         call_kwargs["response_format"] = ResponseFormat(
             type=ResponseFormats("json_object")
         )
-        messages[-1].content += _utils.json_mode_content(
+        json_mode_content = _utils.json_mode_content(
             tool_types[0] if tool_types else None
         )
+        if messages[-1].role == "user":
+            messages[-1].content += json_mode_content
+        else:
+            messages.append(ChatMessage(role="user", content=json_mode_content))
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = ToolChoice.any
     call_kwargs |= {"model": model, "messages": messages}
+
+    if client is None:
+        client = (
+            MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
+        )
 
     def create_or_stream(stream: bool, **kwargs: Any):
         if stream:

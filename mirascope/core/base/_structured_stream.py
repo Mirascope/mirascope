@@ -3,7 +3,6 @@
 import inspect
 from collections.abc import AsyncGenerator, Generator
 from functools import wraps
-from re import T
 from typing import (
     AsyncIterable,
     Awaitable,

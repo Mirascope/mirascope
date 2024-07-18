@@ -6,10 +6,11 @@ from typing import Any, Awaitable, Callable
 from cohere import AsyncClient, Client
 from cohere.types import ChatMessage, NonStreamedChatResponse
 
-from ...base import BaseMessageParam, BaseTool, _utils
+from ...base import BaseTool, _utils
 from ..call_params import CohereCallParams
 from ..dynamic_config import CohereDynamicConfig
 from ..tool import CohereTool
+from .convert_message_params import convert_message_params
 
 
 def setup_call(
@@ -34,13 +35,7 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, CohereTool, call_params
     )
-    messages = [
-        ChatMessage(role=message["role"].upper(), message=message["content"])  # type: ignore
-        for message in messages
-    ]
-
-    if client is None:
-        client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
+    messages = convert_message_params(messages)
 
     preamble = ""
     if "preamble" in call_kwargs and call_kwargs["preamble"] is not None:
@@ -64,6 +59,9 @@ def setup_call(
         "model": model,
         "message": messages[-1].message,
     }
+
+    if client is None:
+        client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
 
     def create_or_stream(stream: bool, **kwargs: Any):
         if stream:

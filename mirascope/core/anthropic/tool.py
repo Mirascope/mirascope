@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-from typing import Any
 
 from anthropic.types import ToolParam, ToolUseBlock
 

@@ -1,7 +1,6 @@
 """Basic example using an @openai.call_async to make a call with logfire."""
 
 import asyncio
-import os
 
 import logfire
 
