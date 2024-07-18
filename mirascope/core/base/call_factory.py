@@ -250,7 +250,9 @@ def call_factory(
             if stream:
                 return partial(
                     structured_stream_factory(
+                        TCallResponse=TCallResponse,
                         TCallResponseChunk=TCallResponseChunk,
+                        TStream=TStream,
                         TToolType=TToolType,
                         setup_call=setup_call,
                         get_json_output=get_json_output,
