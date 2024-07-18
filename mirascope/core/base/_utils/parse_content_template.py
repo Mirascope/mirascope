@@ -116,7 +116,7 @@ def _parse_image_options(options_str: str) -> _ImageOptions:
     return options
 
 
-def _construct_image_part(source: str, options: list[str]) -> ImagePart:
+def _construct_image_part(source: str | bytes, options: list[str]) -> ImagePart:
     options_dict = _parse_image_options(",".join(options))
     media_type, image = _load_image(source)
     return {
@@ -162,7 +162,7 @@ def _load_audio(source: str | bytes) -> tuple[str, bytes]:
         raise ValueError(f"Failed to load or encode audio from {source}: {str(e)}")
 
 
-def _construct_audio_part(source: str) -> AudioPart:
+def _construct_audio_part(source: str | bytes) -> AudioPart:
     # Note: audio does not currently support additional options, at least for now.
     media_type, audio = _load_audio(source)
     return {"type": "audio", "media_type": media_type, "audio": audio}
