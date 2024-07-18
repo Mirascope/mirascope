@@ -84,15 +84,18 @@ def _get_image_type(image_data: bytes) -> str:
     raise ValueError("Unsupported image type")
 
 
-def _load_image(source: str) -> tuple[str, bytes]:
+def _load_image(source: str | bytes) -> tuple[str, bytes]:
     try:
-        if source.startswith(("http://", "https://")):
+        # Some typing weirdness here where checking `isinstance(source, bytes)` results
+        # in a type hint of `str | bytearray | memoryview` for source in the else.
+        if isinstance(source, (bytes, bytearray, memoryview)):
+            image_data = source
+        elif source.startswith(("http://", "https://")):
             with urllib.request.urlopen(source) as response:
                 image_data = response.read()
         else:
             with open(source, "rb") as f:
                 image_data = f.read()
-
         image_type = f"image/{_get_image_type(image_data)}"
         return image_type, image_data
     except Exception as e:
@@ -141,9 +144,12 @@ def _get_audio_type(audio_data: bytes) -> str:
     raise ValueError("Unsupported file type")
 
 
-def _load_audio(source: str) -> tuple[str, bytes]:
+def _load_audio(source: str | bytes) -> tuple[str, bytes]:
     try:
-        if source.startswith(("http://", "https://")):
+        # See comment in _load_image for explanation of this typing weirdness.
+        if isinstance(source, (bytes, bytearray, memoryview)):
+            audio_data = source
+        elif source.startswith(("http://", "https://")):
             with urllib.request.urlopen(source) as response:
                 audio_data = response.read()
         else:
