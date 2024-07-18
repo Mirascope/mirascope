@@ -1,7 +1,5 @@
 """The `mistral_call` decorator for functions as LLM calls."""
 
-from mistralai.models.chat_completion import ChatMessage
-
 from ..base import call_factory
 from ._utils import (
     get_json_output,
@@ -20,7 +18,6 @@ mistral_call = call_factory(
     TCallResponse=MistralCallResponse,
     TCallResponseChunk=MistralCallResponseChunk,
     TDynamicConfig=MistralDynamicConfig,
-    TMessageParamType=ChatMessage,
     TToolType=MistralTool,
     TStream=MistralStream,
     TCallParams=MistralCallParams,

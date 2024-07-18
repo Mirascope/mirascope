@@ -1,9 +1,6 @@
 """The `anthropic_call` decorator for functions as LLM calls."""
 
-from anthropic.types import MessageParam
-
 from ..base import call_factory
-from .stream import AnthropicStream
 from ._utils import (
     get_json_output,
     handle_stream,
@@ -14,6 +11,7 @@ from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
+from .stream import AnthropicStream
 from .tool import AnthropicTool
 
 anthropic_call = call_factory(
@@ -21,7 +19,6 @@ anthropic_call = call_factory(
     TCallResponseChunk=AnthropicCallResponseChunk,
     TDynamicConfig=AnthropicDynamicConfig,
     TStream=AnthropicStream,
-    TMessageParamType=MessageParam,
     TToolType=AnthropicTool,
     TCallParams=AnthropicCallParams,
     default_call_params=AnthropicCallParams(max_tokens=1000),

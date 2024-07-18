@@ -22,7 +22,6 @@ from ._stream import BaseStream, stream_factory
 from ._structured_stream import structured_stream_factory
 from ._utils import (
     BaseType,
-    CalculateCost,
     GetJsonOutput,
     HandleStream,
     HandleStreamAsync,
@@ -59,7 +58,6 @@ def call_factory(
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TDynamicConfig: type[_BaseDynamicConfigT],
-    TMessageParamType: type[_AssistantMessageParamT],
     TToolType: type[_BaseToolT],
     TStream: type[_BaseStreamT],
     TCallParams: type[_BaseCallParamsT],
@@ -281,7 +279,6 @@ def call_factory(
             return partial(
                 stream_factory(
                     TCallResponse=TCallResponse,
-                    TMessageParamType=TMessageParamType,
                     TStream=TStream,
                     setup_call=setup_call,
                     handle_stream=handle_stream,

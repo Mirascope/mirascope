@@ -1,7 +1,5 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
-from openai.types.chat import ChatCompletionAssistantMessageParam
-
 from ..base import call_factory
 from ._utils import (
     get_json_output,
@@ -20,7 +18,6 @@ openai_call = call_factory(
     TCallResponse=OpenAICallResponse,
     TCallResponseChunk=OpenAICallResponseChunk,
     TDynamicConfig=OpenAIDynamicConfig,
-    TMessageParamType=ChatCompletionAssistantMessageParam,
     TToolType=OpenAITool,
     TStream=OpenAIStream,
     TCallParams=OpenAICallParams,

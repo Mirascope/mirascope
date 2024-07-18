@@ -1,7 +1,5 @@
 """The `gemini_call` decorator for functions as LLM calls."""
 
-from google.generativeai.types import ContentDict
-
 from ..base import call_factory
 from ._utils import (
     get_json_output,
@@ -21,7 +19,6 @@ gemini_call = call_factory(
     TCallResponseChunk=GeminiCallResponseChunk,
     TDynamicConfig=GeminiDynamicConfig,
     TStream=GeminiStream,
-    TMessageParamType=ContentDict,
     TToolType=GeminiTool,
     TCallParams=GeminiCallParams,
     default_call_params=GeminiCallParams(),

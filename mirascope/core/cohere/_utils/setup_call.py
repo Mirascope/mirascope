@@ -1,7 +1,6 @@
 """This module contains the setup_call function for Cohere tools."""
 
 import inspect
-from lib2to3.pytree import convert
 from typing import Any, Awaitable, Callable
 
 from cohere import AsyncClient, Client
