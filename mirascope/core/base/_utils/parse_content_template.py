@@ -2,12 +2,20 @@
 
 import re
 import urllib.request
-from typing import Any, List, cast, get_args
+from typing import Any, List, Literal, cast, get_args
 
 from typing_extensions import TypedDict
 
-from ..message_param import BaseMessageParam, ImagePart, TextPart, _Detail, _PartType
+from ..message_param import (
+    AudioPart,
+    BaseMessageParam,
+    ImagePart,
+    TextPart,
+    _Detail,
+)
 from .format_template import format_template
+
+_PartType = Literal["text", "image", "images", "audio", "audios"]
 
 
 class _Part(TypedDict):
@@ -76,7 +84,7 @@ def _get_image_type(image_data: bytes) -> str:
     raise ValueError("Unsupported image type")
 
 
-def _load_and_encode_image(source: str) -> tuple[str, bytes]:
+def _load_image(source: str) -> tuple[str, bytes]:
     try:
         if source.startswith(("http://", "https://")):
             with urllib.request.urlopen(source) as response:
@@ -107,7 +115,7 @@ def _parse_image_options(options_str: str) -> _ImageOptions:
 
 def _construct_image_part(source: str, options: list[str]) -> ImagePart:
     options_dict = _parse_image_options(",".join(options))
-    media_type, image = _load_and_encode_image(source)
+    media_type, image = _load_image(source)
     return {
         "type": "image",
         "media_type": media_type,
@@ -116,7 +124,47 @@ def _construct_image_part(source: str, options: list[str]) -> ImagePart:
     }
 
 
-def _construct_parts(part: _Part, attrs: dict[str, Any]) -> List[TextPart | ImagePart]:
+def _get_audio_type(audio_data: bytes) -> str:
+    if audio_data.startswith(b"RIFF") and audio_data[8:12] == b"WAVE":
+        return "wav"
+    elif audio_data.startswith(b"ID3") or audio_data.startswith(b"\xff\xfb"):
+        return "mp3"
+    elif audio_data.startswith(b"FORM") and audio_data[8:12] == b"AIFF":
+        return "aiff"
+    elif audio_data.startswith(b"\xff\xf1") or audio_data.startswith(b"\xff\xf9"):
+        return "aac"
+    elif audio_data.startswith(b"OggS"):
+        return "ogg"
+    elif audio_data.startswith(b"fLaC"):
+        return "flac"
+
+    raise ValueError("Unsupported file type")
+
+
+def _load_audio(source: str) -> tuple[str, bytes]:
+    try:
+        if source.startswith(("http://", "https://")):
+            with urllib.request.urlopen(source) as response:
+                audio_data = response.read()
+        else:
+            with open(source, "rb") as f:
+                audio_data = f.read()
+
+        audio_type = f"audio/{_get_audio_type(audio_data)}"
+        return audio_type, audio_data
+    except Exception as e:
+        raise ValueError(f"Failed to load or encode audio from {source}: {str(e)}")
+
+
+def _construct_audio_part(source: str) -> AudioPart:
+    # Note: audio does not currently support additional options, at least for now.
+    media_type, audio = _load_audio(source)
+    return {"type": "audio", "media_type": media_type, "audio": audio}
+
+
+def _construct_parts(
+    part: _Part, attrs: dict[str, Any]
+) -> List[TextPart | ImagePart | AudioPart]:
     if part["type"] == "text":
         return [{"type": "text", "text": format_template(part["template"], attrs)}]
     elif part["type"] == "image":
@@ -135,6 +183,18 @@ def _construct_parts(part: _Part, attrs: dict[str, Any]) -> List[TextPart | Imag
             if sources
             else []
         )
+    elif part["type"] == "audio":
+        path_key = part["template"][7:-1]
+        source = attrs[path_key]
+        return [_construct_audio_part(source)] if source else []
+    elif part["type"] == "audios":
+        path_key = part["template"][8:-1]
+        sources = attrs[path_key]
+        if not isinstance(sources, list):
+            raise ValueError(
+                f"When using 'audios' template, '{path_key}' must be a list."
+            )
+        return [_construct_audio_part(source) for source in sources] if sources else []
     raise ValueError(f"Template type '{part['type']}' not supported.")
 
 

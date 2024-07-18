@@ -15,7 +15,9 @@ def convert_message_params(
         content = message_param["content"]
         converted_content = []
         for part in content:
-            if part["type"] == "image":
+            if part["type"] == "text":
+                converted_content.append(part)
+            elif part["type"] == "image":
                 if part["media_type"] not in [
                     "image/jpeg",
                     "image/png",
@@ -37,7 +39,10 @@ def convert_message_params(
                     }
                 )
             else:
-                converted_content.append(part)
+                raise ValueError(
+                    "OpenAI currently only supports text and image modalities. "
+                    f"Modality provided: {part['type']}"
+                )
         converted_message_params.append(
             {"role": message_param["role"], "content": converted_content}
         )

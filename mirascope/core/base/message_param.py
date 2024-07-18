@@ -4,8 +4,12 @@ from typing import Literal
 
 from typing_extensions import TypedDict
 
-_PartType = Literal["text", "image", "images"]
 _Detail = Literal["auto", "low", "high"]
+
+
+class TextPart(TypedDict):
+    type: Literal["text"]
+    text: str
 
 
 class ImagePart(TypedDict):
@@ -15,13 +19,14 @@ class ImagePart(TypedDict):
     detail: _Detail | None
 
 
-class TextPart(TypedDict):
-    type: Literal["text"]
-    text: str
+class AudioPart(TypedDict):
+    type: Literal["audio"]
+    media_type: str
+    audio: bytes
 
 
 class BaseMessageParam(TypedDict):
     """A base class for message parameters."""
 
     role: str
-    content: list[TextPart | ImagePart]
+    content: list[TextPart | ImagePart | AudioPart]
