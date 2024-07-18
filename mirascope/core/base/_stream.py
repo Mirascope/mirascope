@@ -66,7 +66,6 @@ class BaseStream(
     )
     metadata: Metadata
     tool_types: list[type[_BaseToolT]] | None
-    message_param_type: type[_AssistantMessageParamT]
     call_response_type: type[_BaseCallResponseT]
     model: str
     prompt_template: str | None = None
@@ -91,7 +90,6 @@ class BaseStream(
         *,
         metadata: Metadata,
         tool_types: list[type[_BaseToolT]] | None,
-        message_param_type: type[_AssistantMessageParamT],
         call_response_type: type[_BaseCallResponseT],
         model: str,
         prompt_template: str,
@@ -104,7 +102,6 @@ class BaseStream(
         self.stream = stream
         self.metadata = metadata
         self.tool_types = tool_types
-        self.message_param_type = message_param_type
         self.call_response_type = call_response_type
         self.model = model
         self.prompt_template = prompt_template
@@ -212,7 +209,6 @@ _P = ParamSpec("_P")
 def stream_factory(
     *,
     TCallResponse: type[_BaseCallResponseT],
-    TMessageParamType: type[_AssistantMessageParamT],
     TStream: type[BaseStream],
     setup_call: SetupCall[
         _BaseClientT,
@@ -275,19 +271,15 @@ def stream_factory(
             )
 
             def generator():
-                nonlocal model
                 for chunk, tool in handle_stream(
                     create(stream=True, **call_kwargs), tool_types
                 ):
-                    if chunk.model is not None:
-                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
                 generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
-                message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
                 model=model,
                 prompt_template=prompt_template,
@@ -315,19 +307,15 @@ def stream_factory(
             )
 
             async def generator():
-                nonlocal model
                 async for chunk, tool in handle_stream_async(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
-                    if chunk.model is not None:
-                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
                 generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
-                message_param_type=TMessageParamType,
                 call_response_type=TCallResponse,
                 model=model,
                 prompt_template=prompt_template,

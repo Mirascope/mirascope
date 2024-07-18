@@ -1,7 +1,5 @@
 """The `groq_call` decorator for functions as LLM calls."""
 
-from groq.types.chat import ChatCompletionAssistantMessageParam
-
 from ..base import call_factory
 from ._utils import (
     get_json_output,
@@ -20,7 +18,6 @@ groq_call = call_factory(
     TCallResponse=GroqCallResponse,
     TCallResponseChunk=GroqCallResponseChunk,
     TDynamicConfig=GroqDynamicConfig,
-    TMessageParamType=ChatCompletionAssistantMessageParam,
     TToolType=GroqTool,
     TStream=GroqStream,
     TCallParams=GroqCallParams,

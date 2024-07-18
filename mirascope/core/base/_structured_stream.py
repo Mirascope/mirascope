@@ -16,63 +16,53 @@ from typing import (
 
 from pydantic import BaseModel
 
+from ._stream import BaseStream
 from ._utils import (
     BaseType,
     GetJsonOutput,
     SetupCall,
     extract_tool_return,
     get_fn_args,
+    get_metadata,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
+from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
 
+_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
-_AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 
-class BaseStructuredStream(Generic[_BaseCallResponseChunkT, _ResponseModelT]):
+class BaseStructuredStream(Generic[_ResponseModelT]):
     """A base class for streaming structured outputs from LLMs."""
 
-    stream: (
-        Generator[_BaseCallResponseChunkT, None, None]
-        | AsyncGenerator[_BaseCallResponseChunkT, None]
-    )
+    stream: BaseStream
     response_model: type[_ResponseModelT]
-    json_mode: bool
-    get_json_output: GetJsonOutput[_BaseCallResponseChunkT]
 
     def __init__(
         self,
-        stream: Generator[_BaseCallResponseChunkT, None, None]
-        | AsyncGenerator[_BaseCallResponseChunkT, None],
+        stream: BaseStream,
         *,
         response_model: type[_ResponseModelT],
-        json_mode: bool,
-        get_json_output: Callable,
     ):
         """Initializes an instance of `BaseStructuredStream`."""
         self.stream = stream
         self.response_model = response_model
-        self.json_mode = json_mode
-        self.get_json_output = get_json_output
 
     def __iter__(self) -> Generator[_ResponseModelT, None, None]:
         """Iterates over the stream and extracts structured outputs."""
-        assert isinstance(
-            self.stream, Generator
-        ), "Stream must be a generator for __iter__"
         json_output = ""
-        for chunk in self.stream:
-            json_output += self.get_json_output(chunk, self.json_mode)
+        for chunk, _ in self.stream:
+            json_output += chunk.content
             if json_output and json_output[0] != "{":
                 try:
                     json_start = json_output.index("{")
@@ -80,7 +70,7 @@ class BaseStructuredStream(Generic[_BaseCallResponseChunkT, _ResponseModelT]):
                 except ValueError:
                     json_output = ""
             if chunk.model is not None:
-                self.model = chunk.model
+                self.stream.model = chunk.model
             if json_output:
                 yield extract_tool_return(self.response_model, json_output, True)
         if json_output:
@@ -91,12 +81,9 @@ class BaseStructuredStream(Generic[_BaseCallResponseChunkT, _ResponseModelT]):
         """Iterates over the stream and extracts structured outputs."""
 
         async def generator():
-            assert isinstance(
-                self.stream, AsyncGenerator
-            ), "Stream must be an async generator for __aiter__"
             json_output = ""
-            async for chunk in self.stream:
-                json_output += self.get_json_output(chunk, self.json_mode)
+            async for chunk, _ in self.stream:
+                json_output += chunk.content
                 if json_output and json_output[0] != "{":
                     try:
                         json_start = json_output.index("{")
@@ -104,7 +91,7 @@ class BaseStructuredStream(Generic[_BaseCallResponseChunkT, _ResponseModelT]):
                     except ValueError:
                         json_output = ""
                 if chunk.model is not None:
-                    self.model = chunk.model
+                    self.stream.model = chunk.model
                 if json_output:
                     yield extract_tool_return(self.response_model, json_output, True)
             if json_output:
@@ -123,7 +110,9 @@ _P = ParamSpec("_P")
 
 def structured_stream_factory(
     *,
+    TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
+    TStream: type[BaseStream],
     TToolType: type[_BaseToolT],
     setup_call: SetupCall[
         _BaseClientT,
@@ -180,7 +169,7 @@ def structured_stream_factory(
             assert SetupCall.fn_is_sync(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = fn(*args, **kwargs)
-            create, _, _, _, call_kwargs = setup_call(
+            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                 model=model,
                 client=client,
                 fn=fn,
@@ -191,12 +180,31 @@ def structured_stream_factory(
                 call_params=call_params,
                 extract=True,
             )
-            stream = create(stream=True, **call_kwargs)
-            return BaseStructuredStream[_BaseCallResponseChunkT, _ResponseModelT](
-                (TCallResponseChunk(chunk=chunk) for chunk in stream),
+
+            def generator():
+                for chunk in create(stream=True, **call_kwargs):
+                    call_response_chunk = TCallResponseChunk(chunk=chunk)
+                    json_output = get_json_output(call_response_chunk, json_mode)
+                    call_response_chunk_type = type(call_response_chunk)
+                    setattr(call_response_chunk_type, "content", json_output)
+                    yield call_response_chunk_type(chunk=chunk), None
+
+            stream = TStream(
+                generator(),
+                metadata=get_metadata(fn, dynamic_config),
+                tool_types=tool_types,
+                call_response_type=TCallResponse,
+                model=model,
+                prompt_template=prompt_template,
+                fn_args=fn_args,
+                dynamic_config=dynamic_config,
+                messages=messages,
+                call_params=call_params,
+            )
+
+            return BaseStructuredStream[_ResponseModelT](
+                stream,
                 response_model=response_model,
-                json_mode=json_mode,
-                get_json_output=get_json_output,
             )
 
         async def inner_async(
@@ -205,7 +213,7 @@ def structured_stream_factory(
             assert SetupCall.fn_is_async(fn)
             fn_args = get_fn_args(fn, args, kwargs)
             dynamic_config = await fn(*args, **kwargs)
-            create, _, _, _, call_kwargs = setup_call(
+            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                 model=model,
                 client=client,
                 fn=fn,
@@ -216,12 +224,31 @@ def structured_stream_factory(
                 call_params=call_params,
                 extract=True,
             )
-            stream = await create(stream=True, **call_kwargs)
-            return BaseStructuredStream[_BaseCallResponseChunkT, _ResponseModelT](
-                (TCallResponseChunk(chunk=chunk) async for chunk in stream),
+
+            async def generator():
+                async for chunk in await create(stream=True, **call_kwargs):
+                    call_response_chunk = TCallResponseChunk(chunk=chunk)
+                    json_output = get_json_output(call_response_chunk, json_mode)
+                    call_response_chunk_type = type(call_response_chunk)
+                    setattr(call_response_chunk_type, "content", json_output)
+                    yield call_response_chunk_type(chunk=chunk), None
+
+            stream = TStream(
+                generator(),
+                metadata=get_metadata(fn, dynamic_config),
+                tool_types=tool_types,
+                call_response_type=TCallResponse,
+                model=model,
+                prompt_template=prompt_template,
+                fn_args=fn_args,
+                dynamic_config=dynamic_config,
+                messages=messages,
+                call_params=call_params,
+            )
+
+            return BaseStructuredStream[_ResponseModelT](
+                stream,
                 response_model=response_model,
-                json_mode=json_mode,
-                get_json_output=get_json_output,
             )
 
         return inner_async if is_async else inner

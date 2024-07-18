@@ -1,7 +1,5 @@
 """The `cohere_call` decorator for functions as LLM calls."""
 
-from cohere.types import ChatMessage
-
 from ..base import call_factory
 from ._utils import (
     get_json_output,
@@ -20,7 +18,6 @@ cohere_call = call_factory(
     TCallResponse=CohereCallResponse,
     TCallResponseChunk=CohereCallResponseChunk,
     TDynamicConfig=CohereDynamicConfig,
-    TMessageParamType=ChatMessage,
     TToolType=CohereTool,
     TStream=CohereStream,
     TCallParams=CohereCallParams,

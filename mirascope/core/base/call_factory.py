@@ -58,7 +58,6 @@ def call_factory(
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TDynamicConfig: type[_BaseDynamicConfigT],
-    TMessageParamType: type[_AssistantMessageParamT],
     TToolType: type[_BaseToolT],
     TStream: type[_BaseStreamT],
     TCallParams: type[_BaseCallParamsT],
@@ -251,7 +250,9 @@ def call_factory(
             if stream:
                 return partial(
                     structured_stream_factory(
+                        TCallResponse=TCallResponse,
                         TCallResponseChunk=TCallResponseChunk,
+                        TStream=TStream,
                         TToolType=TToolType,
                         setup_call=setup_call,
                         get_json_output=get_json_output,
@@ -280,7 +281,6 @@ def call_factory(
             return partial(
                 stream_factory(
                     TCallResponse=TCallResponse,
-                    TMessageParamType=TMessageParamType,
                     TStream=TStream,
                     setup_call=setup_call,
                     handle_stream=handle_stream,
