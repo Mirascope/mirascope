@@ -47,7 +47,7 @@ def _parse_parts(template: str) -> List[_Part]:
             special_type = split[i + 1]
             if special_type not in list(get_args(_PartType)):
                 raise ValueError(f"Template type '{special_type}' not supported.")
-            special_type = cast(_PartType, special_type)
+            special_type = cast(_PartType, special_type)  # type: ignore
             special_content = split[i + 2]
             parts.append(
                 _Part(
@@ -111,7 +111,7 @@ def _parse_image_options(options_str: str) -> _ImageOptions:
         if key == "detail":
             if value not in list(get_args(_Detail)):
                 raise ValueError(f"Invalid detail value: {value}")
-            value = cast(_Detail, value)
+            value = cast(_Detail, value)  # type: ignore
             options["detail"] = value
     return options
 
