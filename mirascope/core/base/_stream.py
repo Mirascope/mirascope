@@ -271,12 +271,9 @@ def stream_factory(
             )
 
             def generator():
-                nonlocal model
                 for chunk, tool in handle_stream(
                     create(stream=True, **call_kwargs), tool_types
                 ):
-                    if chunk.model is not None:
-                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
@@ -310,12 +307,9 @@ def stream_factory(
             )
 
             async def generator():
-                nonlocal model
                 async for chunk, tool in handle_stream_async(
                     await create(stream=True, **call_kwargs), tool_types
                 ):
-                    if chunk.model is not None:
-                        model = chunk.model
                     yield chunk, tool
 
             return TStream(
