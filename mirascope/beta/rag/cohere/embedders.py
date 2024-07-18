@@ -5,7 +5,7 @@ from typing import ClassVar, Optional, Union
 
 from cohere import AsyncClient, Client
 
-from ..rag import BaseEmbedder
+from ..embedders import BaseEmbedder
 from .embedding_params import CohereEmbeddingParams
 from .embedding_response import CohereEmbeddingResponse
 
@@ -26,7 +26,7 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
 
     ```python
     import os
-    from mirascope.beta.cohere import CohereEmbedder
+    from mirascope.beta.rag.cohere import CohereEmbedder
 
     os.environ["CO_API_KEY"] = "YOUR_COHERE_API_KEY"
 

@@ -2,12 +2,11 @@
 
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict
-
 from pinecone.config import Config
 from pinecone.core.client.api.manage_indexes_api import ManageIndexesApi
+from pydantic import BaseModel, ConfigDict
 
-from ..rag.vectorstore_params import BaseVectorStoreParams
+from ..vectorstore_params import BaseVectorStoreParams
 
 
 class ServerlessSpec(BaseModel):

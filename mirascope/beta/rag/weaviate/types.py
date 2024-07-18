@@ -2,12 +2,11 @@
 
 from typing import Any, Literal, Optional
 
+import weaviate.types as wt
 from pydantic import BaseModel, ConfigDict
 
-import weaviate.types as wt
-
-from ..rag.document import Document
-from ..rag.vectorstore_params import BaseVectorStoreParams
+from ..document import Document
+from ..vectorstore_params import BaseVectorStoreParams
 
 
 class WeaviateSettings(BaseModel):

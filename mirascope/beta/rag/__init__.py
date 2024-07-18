@@ -1,6 +1,7 @@
 """A module for interacting with Mirascope RAG."""
 
 from .chunkers import BaseChunker, TextChunker
+from .document import Document
 from .embedders import BaseEmbedder
 from .embedding_params import BaseEmbeddingParams
 from .embedding_response import BaseEmbeddingResponse

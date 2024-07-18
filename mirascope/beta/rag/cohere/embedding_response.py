@@ -1,10 +1,9 @@
 from typing import Literal
 
+from cohere.types import EmbedByTypeResponseEmbeddings, EmbedResponse
 from pydantic import SkipValidation
 
-from cohere.types import EmbedByTypeResponseEmbeddings, EmbedResponse
-
-from ..rag.embedding_response import BaseEmbeddingResponse
+from ..embedding_response import BaseEmbeddingResponse
 
 
 class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse]]):

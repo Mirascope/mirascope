@@ -6,8 +6,8 @@ import weaviate.classes as wvc
 from weaviate import WeaviateClient
 from weaviate.collections.collection import Collection
 
-from ..rag.document import Document
-from ..rag.vectorstores import BaseVectorStore
+from ..document import Document
+from ..vectorstores import BaseVectorStore
 from .types import (
     WeaviateParams,
     WeaviateQueryResult,
@@ -21,8 +21,8 @@ class WeaviateVectorStore(BaseVectorStore):
     Example:
 
     ```python
-    from mirascope.beta.weaviate.types import WeaviateSettings, WeaviateParams
-    from mirascope.beta.weaviate import WeaviateVectorStore
+    from mirascope.beta.rag.weaviate.types import WeaviateSettings, WeaviateParams
+    from mirascope.beta.rag.weaviate import WeaviateVectorStore
     from mirascope.beta.rag import TextChunker
 
 

@@ -5,9 +5,9 @@ from typing import Any, Callable, ClassVar, Optional, Union
 
 from pinecone import Index, Pinecone, QueryResponse
 
-from ..rag.document import Document
-from ..rag.embedding_response import BaseEmbeddingResponse
-from ..rag.vectorstores import BaseVectorStore
+from ..document import Document
+from ..embedding_response import BaseEmbeddingResponse
+from ..vectorstores import BaseVectorStore
 from .types import (
     PineconePodParams,
     PineconeQueryResult,
@@ -22,12 +22,12 @@ class PineconeVectorStore(BaseVectorStore):
     Example:
 
     ```python
-    from mirascope.beta.pinecone import (
+    from mirascope.beta.rag.pinecone import (
         PineconeServerlessParams,
         PineconeSettings,
         PineconeVectorStore,
     )
-    from mirascope.beta.openai import OpenAIEmbedder
+    from mirascope.beta.rag.openai import OpenAIEmbedder
     from mirascope.beta.rag import TextChunker
 
 

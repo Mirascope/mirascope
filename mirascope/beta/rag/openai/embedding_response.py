@@ -1,7 +1,7 @@
 from openai.types import Embedding
 from openai.types.create_embedding_response import CreateEmbeddingResponse
 
-from ..rag import BaseEmbeddingResponse
+from ..embedding_response import BaseEmbeddingResponse
 
 
 class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):

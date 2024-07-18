@@ -6,8 +6,8 @@ from typing import Any, ClassVar, Optional, Union, cast
 from chromadb import Collection, EphemeralClient, HttpClient, Metadata, PersistentClient
 from chromadb.api import ClientAPI
 
-from ..rag.document import Document
-from ..rag.vectorstores import BaseVectorStore
+from ..document import Document
+from ..vectorstores import BaseVectorStore
 from .types import ChromaParams, ChromaQueryResult, ChromaSettings
 
 
@@ -17,8 +17,8 @@ class ChromaVectorStore(BaseVectorStore):
     Example:
 
     ```python
-    from mirascope.beta.chroma import ChromaSettings, ChromaVectorStore
-    from mirascope.beta.openai import OpenAIEmbedder
+    from mirascope.beta.rag.chroma import ChromaSettings, ChromaVectorStore
+    from mirascope.beta.rag.openai import OpenAIEmbedder
     from mirascope.beta.rag import TextChunker
 
 
