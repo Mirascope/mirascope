@@ -1,6 +1,5 @@
 """This module provides a function to parse content parts from a prompt template."""
 
-import imghdr
 import re
 import urllib.request
 from typing import Any, List, cast, get_args
