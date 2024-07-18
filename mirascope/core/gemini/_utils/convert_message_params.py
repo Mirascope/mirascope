@@ -31,7 +31,9 @@ def convert_message_params(
             content = message_param["content"]
             converted_content = []
             for part in content:
-                if part["type"] == "image":
+                if part["type"] == "text":
+                    converted_content.append(part["text"])
+                elif part["type"] == "image":
                     if part["media_type"] not in [
                         "image/jpeg",
                         "image/png",
@@ -47,7 +49,22 @@ def convert_message_params(
                     image = PIL.Image.open(io.BytesIO(part["image"]))
                     converted_content.append(image)
                 else:
-                    converted_content.append(part["text"])
+                    if part["media_type"] not in [
+                        "audio/wav",
+                        "audio/mp3",
+                        "audio/aiff",
+                        "audio/aac",
+                        "audio/ogg",
+                        "audio/flac",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported audio media type: {part['media_type']}. "
+                            "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+                            "and FLAC audio file types."
+                        )
+                    converted_content.append(
+                        {"mime_type": part["media_type"], "data": part["audio"]}
+                    )
             converted_message_params.append({"role": role, "parts": converted_content})
             converted_message_params.append(
                 {"role": message_param["role"], "parts": converted_content}
