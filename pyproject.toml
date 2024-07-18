@@ -70,6 +70,12 @@ mkdocs-material = "^9.5.28"
 mkdocstrings = "^0.25.1"
 mkdocstrings-python = "^1.10.5"
 
+
+[tool.poetry.group.beta.dependencies]
+weaviate-client = "^4.6.5"
+chromadb = "^0.5.4"
+pinecone-client = "^4.1.2"
+
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
 

@@ -16,6 +16,16 @@ def convert_message_params(
         converted_content = []
         for part in content:
             if part["type"] == "image":
+                if part["media_type"] not in [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp",
+                ]:
+                    raise ValueError(
+                        f"Unsupported image media type: {part['media_type']}. Anthropic"
+                        " currently only supports JPEG, PNG, GIF, and WebP images."
+                    )
                 converted_content.append(
                     {
                         "type": "image",

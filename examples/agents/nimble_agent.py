@@ -5,6 +5,7 @@ This example demonstrates how to use Nimble as a tool to search for products on 
 import os
 
 import requests
+from pydantic import BaseModel
 
 from mirascope.core import openai
 
@@ -46,7 +47,11 @@ def nimble_amazon(question: str):
     return products
 
 
-@openai.call(model="gpt-4o", tools=[nimble_amazon], tool_choice="required")
+@openai.call(
+    model="gpt-4o",
+    tools=[nimble_amazon],
+    call_params={"tool_choice": "required"},
+)
 def amazon_searcher(question: str):
     """
     SYSTEM:
@@ -56,6 +61,14 @@ def amazon_searcher(question: str):
     USER:
     {question}
     """
+
+
+class Products(BaseModel):
+    product_name: str
+    price: str
+    asin: str
+    rating: str
+    product_url: str
 
 
 @openai.call(model="gpt-4o")
@@ -78,4 +91,4 @@ results = amazon_searcher(question=question)
 if tool := results.tool:
     products = tool.call()
     response = product_recommender(products=products, question=question)
-    print(response.content)
+    print(response)

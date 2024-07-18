@@ -1,6 +1,5 @@
 """This module provides a function to parse content parts from a prompt template."""
 
-import imghdr
 import re
 import urllib.request
 from typing import Any, List, cast, get_args
@@ -21,6 +20,15 @@ class _ImageOptions(TypedDict, total=False):
 
 
 def _parse_parts(template: str) -> List[_Part]:
+    # \{ and \} match the literal curly braces.
+    #
+    # ([^:{}]+) captures one or more characters that are not : or { or }.
+    # This captures the type (e.g., "image" or "audio").
+    #
+    # : matches the literal colon separating the type from the content.
+    #
+    # ([^{}]+) captures one or more characters that are not { or }.
+    # This captures the content after the colon.
     pattern = r"\{([^:{}]+):([^{}]+)\}"
     split = re.split(pattern, template)
     parts: List[_Part] = []
@@ -41,6 +49,33 @@ def _parse_parts(template: str) -> List[_Part]:
     return parts
 
 
+def _get_image_type(image_data: bytes) -> str:
+    if image_data.startswith(b"\xff\xd8\xff"):
+        return "jpeg"
+    elif image_data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    elif image_data.startswith(b"GIF87a") or image_data.startswith(b"GIF89a"):
+        return "gif"
+    elif image_data.startswith(b"RIFF") and image_data[8:12] == b"WEBP":
+        return "webp"
+    elif image_data[4:12] in (
+        b"ftypmif1",
+        b"ftypmsf1",
+        b"ftypheic",
+        b"ftypheix",
+        b"ftyphevc",
+        b"ftyphevx",
+    ):
+        # HEIF and HEIC files start with 'ftyp' followed by specific codes
+        if image_data[4:8] == b"ftyp":
+            subtype = image_data[8:12]
+            if subtype in (b"heic", b"heix"):
+                return "heic"
+            elif subtype in (b"mif1", b"msf1", b"hevc", b"hevx"):
+                return "heif"
+    raise ValueError("Unsupported image type")
+
+
 def _load_and_encode_image(source: str) -> tuple[str, bytes]:
     try:
         if source.startswith(("http://", "https://")):
@@ -50,7 +85,7 @@ def _load_and_encode_image(source: str) -> tuple[str, bytes]:
             with open(source, "rb") as f:
                 image_data = f.read()
 
-        image_type = f"image/{imghdr.what(None, h=image_data)}"
+        image_type = f"image/{_get_image_type(image_data)}"
         return image_type, image_data
     except Exception as e:
         raise ValueError(f"Failed to load or encode image from {source}: {str(e)}")
