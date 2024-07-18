@@ -68,7 +68,7 @@ def parse_content(link: str) -> str:
 class GoogleBot(BaseModel):
     history: list[ChatCompletionMessageParam] = []
 
-    @openai.call(model="gpt-3.5-turbo", tools=[google_search], tool_choice="auto")
+    @openai.call(model="gpt-3.5-turbo", tools=[google_search])
     def _step(self, question: str):
         """
         SYSTEM:
