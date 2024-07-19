@@ -1,4 +1,4 @@
-"""Tests for the get_template_values function in the _utils module."""
+"""Tests the `_utils.get_template_values` module."""
 
 from pydantic import BaseModel
 

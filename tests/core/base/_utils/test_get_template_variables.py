@@ -1,4 +1,4 @@
-"""Tests for the get_template_variables function in the _utils module."""
+"""Tests the `_utils.get_template_variables` module."""
 
 from mirascope.core.base._utils.get_template_variables import get_template_variables
 
