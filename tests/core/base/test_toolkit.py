@@ -33,7 +33,7 @@ def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> 
 
         @toolkit_tool
         def format_book(self, title: str, author: str) -> str:
-            """Returns the title and author of a book nicely formatted.
+            """Returns formatted title and author.
 
             Reading level: {self.reading_level}
             """
@@ -46,7 +46,7 @@ def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> 
     assert tool._name() == expected_name
     assert (
         tool._description()
-        == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+        == "Returns formatted title and author.\n\nReading level: beginner"
     )
     assert (
         tool(title="The Name of the Wind", author="Rothfuss, Patrick").call()  # type: ignore
@@ -55,7 +55,7 @@ def test_toolkit(mock_namespaces, namespace: str | None, expected_name: str) -> 
 
 
 def test_toolkit_multiple_method(mock_namespaces) -> None:
-    """Toolkits with multiple toolkit_tool methods should be created correctly."""
+    """Tests that multiple `toolkit_tool` methods are created correctly."""
 
     def dummy_decorator(func):
         return func
@@ -69,7 +69,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
 
         @toolkit_tool
         def format_book(self, title: str, author: str) -> str:
-            """Returns the title and author of a book nicely formatted.
+            """Returns formatted title and author.
 
             Reading level: {self.reading_level}
             """
@@ -77,7 +77,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
 
         @toolkit_tool
         def format_world_book(self, title: str, author: str, genre: str) -> str:
-            """Returns the title, author, and genre of a book nicely formatted.
+            """Returns formatted title, author, and genre.
 
             Reading level: {self.reading_level}
             language: {self.language}
@@ -96,7 +96,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
     assert tools[0]._name() == "book_tools_format_book"
     assert (
         tools[0]._description()
-        == "Returns the title and author of a book nicely formatted.\n\nReading level: beginner"
+        == "Returns formatted title and author.\n\nReading level: beginner"
     )
     assert (
         tools[0](title="The Name of the Wind", author="Rothfuss, Patrick").call()  # type: ignore
@@ -105,7 +105,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
     assert tools[1]._name() == "book_tools_format_world_book"
     assert (
         tools[1]._description()
-        == "Returns the title, author, and genre of a book nicely formatted.\n\nReading level: beginner\n"
+        == "Returns formatted title, author, and genre.\n\nReading level: beginner\n"
         "language: spanish"
     )
     assert (
@@ -119,7 +119,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
 
 
 def test_toolkit_tool_method_not_found() -> None:
-    """When a toolkit_tool method is not found, a ValueError should be raised."""
+    """Tests that a ValueError is raised when there's no `toolkit_tool` method."""
 
     def dummy_decorator(func):
         return func
@@ -147,7 +147,7 @@ def test_toolkit_tool_method_not_found() -> None:
 
 
 def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
-    """Check if toolkit_tool method has non-self variable, a ValueError should be raised."""
+    """Tests that a ValueError is raised when non-self template variables are used."""
 
     with pytest.raises(
         ValueError,
@@ -172,11 +172,12 @@ def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
 
 
 def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
-    """Check if toolkit_tool method has no exists variable, a ValueError should be raised."""
+    """Tests that a ValueError is raised when a template variable doesn't exist."""
 
     with pytest.raises(
         ValueError,
-        match="The toolkit_tool method template variable self.not_exists is not found in the class",
+        match="The toolkit_tool method template variable self.not_exists is not found "
+        "in the class",
     ):
 
         class BookRecommendationToolKit(BaseToolKit):
@@ -196,7 +197,7 @@ def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
 
 
 def test_toolkit_namespace_already_used(mock_namespaces) -> None:
-    """Check if toolkit_tool namespace is already used, a ValueError should be raised."""
+    """Tests that a ValueError is raised when the namespace is already used."""
 
     mock_namespaces.add("book_tools")
     with pytest.raises(ValueError, match="The namespace book_tools is already used"):
@@ -205,3 +206,16 @@ def test_toolkit_namespace_already_used(mock_namespaces) -> None:
             """A toolkit for recommending books."""
 
             __namespace__: ClassVar[str | None] = "book_tools"
+
+
+def test_toolkit_tool_method_has_no_docstring(mock_namespaces) -> None:
+    """Tests that a ValueError is raised when `toolkit_tool` method has no docstring."""
+
+    with pytest.raises(
+        ValueError, match="The toolkit_tool method must have a docstring"
+    ):
+
+        class BookRecommendationToolKit(BaseToolKit):
+            @toolkit_tool
+            def format_book(self, title: str, author: str) -> str:
+                return f"{title} by {author}"

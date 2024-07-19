@@ -4,11 +4,12 @@ from .base_type import BaseType, is_base_type
 from .convert_base_model_to_base_tool import convert_base_model_to_base_tool
 from .convert_base_type_to_base_tool import convert_base_type_to_base_tool
 from .convert_function_to_base_tool import convert_function_to_base_tool
-from .create_base_type_with_response import create_base_type_with_response
 from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 from .extract_tool_return import extract_tool_return
 from .format_template import format_template
+from .get_audio_type import get_audio_type
 from .get_fn_args import get_fn_args
+from .get_image_type import get_image_type
 from .get_metadata import get_metadata
 from .get_possible_user_message_param import get_possible_user_message_param
 from .get_template_values import get_template_values
@@ -37,12 +38,13 @@ __all__ = [
     "convert_base_type_to_base_tool",
     "convert_function_to_base_tool",
     "CreateFn",
-    "create_base_type_with_response",
     "DEFAULT_TOOL_DOCSTRING",
     "extract_tool_return",
     "format_template",
     "GetJsonOutput",
+    "get_audio_type",
     "get_fn_args",
+    "get_image_type",
     "get_metadata",
     "get_possible_user_message_param",
     "get_template_values",

@@ -23,7 +23,7 @@ def parse_prompt_messages(
     messages = []
     re_roles = "|".join([role.upper() for role in roles] + ["MESSAGES"])
     for match in re.finditer(rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)", template):
-        role, content_template = match.group(1).lower(), match.group(2)
+        role, content_template = match.group(1).lower(), match.group(2).strip()
         template_variables = get_template_variables(content_template)
         if role == "messages":
             if template_variables[0].startswith("self"):
