@@ -138,9 +138,7 @@ class BaseStream(
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
-        if not tool_calls:
-            tool_calls = None
-        self.message_param = self._construct_message_param(tool_calls, content)
+        self.message_param = self._construct_message_param(tool_calls or None, content)
 
     def __aiter__(
         self,
@@ -171,9 +169,9 @@ class BaseStream(
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
-            if not tool_calls:
-                tool_calls = None
-            self.message_param = self._construct_message_param(tool_calls, content)
+            self.message_param = self._construct_message_param(
+                tool_calls or None, content
+            )
 
         return generator()
 

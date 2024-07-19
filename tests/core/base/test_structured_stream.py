@@ -166,3 +166,47 @@ async def test_structured_stream_factory_async(
     async for chunk, tool in handle_stream(generator(), None):
         assert hasattr(chunk, "content") and getattr(chunk, "content") == "json_output"
         assert tool is None
+
+
+@patch(
+    "mirascope.core.base._structured_stream.extract_tool_return", new_callable=MagicMock
+)
+@pytest.mark.asyncio
+async def test_base_structured_stream(mock_extract_tool_return: MagicMock) -> None:
+    """Tests the `BaseStructuredStream` class."""
+    mock_extract_tool_return.return_value = "tool"
+
+    mock_chunk0 = MagicMock()
+    mock_chunk0.content = "Here is some "
+    mock_chunk0.model = "updated_model"
+
+    mock_chunk1 = MagicMock()
+    mock_chunk1.content = 'json: {"title": "title"}'
+
+    base_stream = MagicMock()
+    base_stream.__iter__.return_value = (
+        t for t in [(mock_chunk0, None), (mock_chunk1, None)]
+    )
+
+    async def generator(self):
+        yield mock_chunk0, None
+        yield mock_chunk1, None
+
+    base_stream.__aiter__ = generator
+    structured_stream = BaseStructuredStream(
+        stream=base_stream, response_model=MagicMock
+    )
+    for i, output in enumerate(structured_stream):
+        assert output == "tool"
+        mock_extract_tool_return.assert_called_once_with(
+            MagicMock, '{"title": "title"}', True if i == 0 else False
+        )
+        mock_extract_tool_return.reset_mock()
+    i = 0
+    async for output in structured_stream:
+        assert output == "tool"
+        mock_extract_tool_return.assert_called_with(
+            MagicMock, '{"title": "title"}', True if i == 0 else False
+        )
+        mock_extract_tool_return.reset_mock()
+        i += 1

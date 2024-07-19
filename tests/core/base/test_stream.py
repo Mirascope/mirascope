@@ -153,3 +153,65 @@ async def test_stream_factory_async(
         extract=False,
     )
     mock_create.assert_called_once_with(stream=True, **mock_call_kwargs)
+
+
+@patch(
+    "mirascope.core.base._stream.get_possible_user_message_param",
+    new_callable=MagicMock,
+)
+@patch.multiple(BaseStream, __abstractmethods__=set())
+@pytest.mark.asyncio
+async def test_base_stream(mock_get_possible_user_message_param: MagicMock) -> None:
+    """Tests the `BaseStream` class."""
+    mock_construct_message_param = MagicMock()
+    mock_construct_message_param.return_value = "mock_message_param"
+    setattr(BaseStream, "_construct_message_param", mock_construct_message_param)
+    call_response_type = MagicMock
+    mock_tool_message_params = MagicMock()
+    setattr(call_response_type, "tool_message_params", mock_tool_message_params)
+
+    mock_chunk = MagicMock()
+    mock_chunk.content = "content"
+    mock_chunk.input_tokens = 1
+    mock_chunk.output_tokens = 2
+    mock_chunk.model = "updated_model"
+
+    mock_tool = MagicMock()
+    mock_tool.tool_call = "tool_call"
+    setattr(mock_tool, "call", lambda: "tool_call_response")
+
+    stream = BaseStream(
+        stream=(t for t in [(mock_chunk, mock_tool)]),
+        metadata={},
+        tool_types=[],
+        call_response_type=call_response_type,
+        model="model",
+        prompt_template="prompt_template",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+    )  # type: ignore
+    assert (
+        stream.user_message_param == mock_get_possible_user_message_param.return_value
+    )
+    assert [t for t in stream] == [(mock_chunk, mock_tool)]
+    mock_construct_message_param.assert_called_once_with(["tool_call"], "content")
+    assert stream.message_param == "mock_message_param"
+    assert stream.model == "updated_model"
+
+    async def generator():
+        yield mock_chunk, mock_tool
+
+    stream.stream, stream.message_param = generator(), None
+    stream_response, tools_and_outputs = [], []
+    async for chunk, tool in stream:
+        stream_response.append((chunk, tool))
+        tools_and_outputs.append((tool, tool.call()))  # type: ignore
+    assert stream_response == [(mock_chunk, mock_tool)]
+    mock_construct_message_param.assert_called_with(["tool_call"], "content")
+    assert stream.message_param == "mock_message_param"
+    assert stream.model == "updated_model"
+
+    assert stream.tool_message_params(tools_and_outputs)
+    mock_tool_message_params.assert_called_once_with(tools_and_outputs)
