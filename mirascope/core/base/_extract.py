@@ -1,20 +1,17 @@
 """The `extract_factory` method for generating provider specific create decorators."""
 
-import datetime
 import inspect
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
 
 from pydantic import BaseModel, ValidationError
 
+from ._create import create_factory
 from ._utils import (
     BaseType,
     GetJsonOutput,
     SetupCall,
     extract_tool_return,
-    get_fn_args,
-    get_metadata,
-    get_possible_user_message_param,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -49,6 +46,10 @@ def extract_factory(
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
+    create_decorator = create_factory(
+        TCallResponse=TCallResponse, setup_call=setup_call
+    )
+
     @overload
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT],
@@ -79,40 +80,20 @@ def extract_factory(
     ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
         tool = setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)
+        create_inner_kwargs = {
+            "model": model,
+            "tools": [tool],
+            "output_parser": None,
+            "json_mode": json_mode,
+            "client": client,
+            "call_params": call_params,
+        }
 
         @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert SetupCall.fn_is_sync(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=[tool],
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=True,
-            )
-            start_time = datetime.datetime.now().timestamp() * 1000
-            response = create(stream=False, **call_kwargs)
-            end_time = datetime.datetime.now().timestamp() * 1000
-            call_response = TCallResponse(
-                metadata=get_metadata(fn, dynamic_config),
-                response=response,
-                tool_types=tool_types,
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_kwargs,
-                user_message_param=get_possible_user_message_param(messages),
-                start_time=start_time,
-                end_time=end_time,
-            )
-            call_response._model = model
+            create_inner = create_decorator(fn=fn, **create_inner_kwargs)
+            call_response = create_inner(*args, **kwargs)
             json_output = get_json_output(call_response, json_mode)
             try:
                 output = extract_tool_return(response_model, json_output, False)
@@ -126,38 +107,14 @@ def extract_factory(
         @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert SetupCall.fn_is_async(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = await fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=[tool],
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=True,
-            )
-            start_time = datetime.datetime.now().timestamp() * 1000
-            response = await create(stream=False, **call_kwargs)
-            end_time = datetime.datetime.now().timestamp() * 1000
-            call_response = TCallResponse(
-                metadata=get_metadata(fn, dynamic_config),
-                response=response,
-                tool_types=tool_types,
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_kwargs,
-                user_message_param=get_possible_user_message_param(messages),
-                start_time=start_time,
-                end_time=end_time,
-            )
-            call_response._model = model
+            create_inner = create_decorator(fn=fn, **create_inner_kwargs)
+            call_response = await create_inner(*args, **kwargs)
             json_output = get_json_output(call_response, json_mode)
-            output = extract_tool_return(response_model, json_output, False)
+            try:
+                output = extract_tool_return(response_model, json_output, False)
+            except ValidationError as e:
+                e._response = call_response  # type: ignore
+                raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
             return output  # type: ignore

@@ -50,8 +50,8 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
 
     def __init__(
         self,
-        stream: BaseStream,
         *,
+        stream: BaseStream,
         response_model: type[_ResponseModelT],
     ):
         """Initializes an instance of `BaseStructuredStream`."""
@@ -190,7 +190,7 @@ def structured_stream_factory(
                     yield call_response_chunk_type(chunk=chunk), None
 
             stream = TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
@@ -203,7 +203,7 @@ def structured_stream_factory(
             )
 
             return BaseStructuredStream[_ResponseModelT](
-                stream,
+                stream=stream,
                 response_model=response_model,
             )
 
@@ -234,7 +234,7 @@ def structured_stream_factory(
                     yield call_response_chunk_type(chunk=chunk), None
 
             stream = TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
@@ -247,7 +247,7 @@ def structured_stream_factory(
             )
 
             return BaseStructuredStream[_ResponseModelT](
-                stream,
+                stream=stream,
                 response_model=response_model,
             )
 

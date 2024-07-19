@@ -82,12 +82,12 @@ class BaseStream(
 
     def __init__(
         self,
+        *,
         stream: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]
         | AsyncGenerator[
             tuple[_BaseCallResponseChunkT, _BaseToolT | None],
             None,
         ],
-        *,
         metadata: Metadata,
         tool_types: list[type[_BaseToolT]] | None,
         call_response_type: type[_BaseCallResponseT],
@@ -277,7 +277,7 @@ def stream_factory(
                     yield chunk, tool
 
             return TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
@@ -313,7 +313,7 @@ def stream_factory(
                     yield chunk, tool
 
             return TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
