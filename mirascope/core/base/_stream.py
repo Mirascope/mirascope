@@ -73,6 +73,7 @@ class BaseStream(
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
     call_params: _BaseCallParamsT
+    call_kwargs: dict[str, Any]
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
@@ -97,6 +98,7 @@ class BaseStream(
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
+        call_kwargs: dict[str, Any],
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
@@ -109,6 +111,7 @@ class BaseStream(
         self.dynamic_config = dynamic_config
         self.messages = messages
         self.call_params = call_params
+        self.call_kwargs = call_kwargs
         self.user_message_param = get_possible_user_message_param(messages)  # type: ignore
 
     def __iter__(
@@ -285,6 +288,7 @@ def stream_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
+                call_kwargs=call_kwargs,
             )
 
         @wraps(fn)
@@ -321,6 +325,7 @@ def stream_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
+                call_kwargs=call_kwargs,
             )
 
         return inner_async if is_async else inner

@@ -21,6 +21,7 @@ def test_base_call_response():
         dynamic_config=None,
         messages=[],
         call_params={},
+        call_kwargs={},
         user_message_param=None,
         start_time=0,
         end_time=0,

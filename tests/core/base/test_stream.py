@@ -70,6 +70,7 @@ def test_stream_factory_sync(
     assert stream.dynamic_config == dynamic_config
     assert stream.messages == mock_messages
     assert stream.call_params == mock_stream_decorator_kwargs["call_params"]
+    assert stream.call_kwargs == mock_call_kwargs
 
     mock_setup_call.assert_called_once_with(
         model=mock_stream_decorator_kwargs["model"],
@@ -140,6 +141,7 @@ async def test_stream_factory_async(
     assert stream.dynamic_config == dynamic_config
     assert stream.messages == mock_messages
     assert stream.call_params == mock_stream_decorator_kwargs["call_params"]
+    assert stream.call_kwargs == mock_call_kwargs
 
     mock_setup_call_async.assert_called_once_with(
         model=mock_stream_decorator_kwargs["model"],
@@ -191,6 +193,7 @@ async def test_base_stream(mock_get_possible_user_message_param: MagicMock) -> N
         dynamic_config=None,
         messages=[],
         call_params={},
+        call_kwargs={},
     )  # type: ignore
     assert (
         stream.user_message_param == mock_get_possible_user_message_param.return_value

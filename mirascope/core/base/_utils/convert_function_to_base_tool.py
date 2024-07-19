@@ -119,7 +119,7 @@ def convert_function_to_base_tool(
         return await call(self)
 
     if inspect.iscoroutinefunction(fn):
-        setattr(model, "call_async", call_async)
+        setattr(model, "call", call_async)
     else:
         setattr(model, "call", call)
     return update_abstractmethods(model)

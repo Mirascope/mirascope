@@ -71,6 +71,7 @@ def test_create_factory_sync(
     assert output.fn_args == fn_args
     assert output.messages == mock_messages
     assert output.call_params == mock_create_decorator_kwargs["call_params"]
+    assert output.call_kwargs == mock_call_kwargs
     assert (
         output.user_message_param == mock_get_possible_user_message_param.return_value
     )
@@ -135,6 +136,7 @@ async def test_create_factory_async(
     assert output.fn_args == fn_args
     assert output.messages == mock_messages
     assert output.call_params == mock_create_decorator_kwargs["call_params"]
+    assert output.call_kwargs == mock_call_kwargs
     assert (
         output.user_message_param == mock_get_possible_user_message_param.return_value
     )
