@@ -16,14 +16,12 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ._stream import BaseStream
+from ._stream import BaseStream, stream_factory
 from ._utils import (
     BaseType,
     GetJsonOutput,
     SetupCall,
     extract_tool_return,
-    get_fn_args,
-    get_metadata,
     setup_extract_tool,
 )
 from .call_params import BaseCallParams
@@ -161,49 +159,53 @@ def structured_stream_factory(
         _P,
         Iterable[_ResponseModelT] | Awaitable[AsyncIterable[_ResponseModelT]],
     ]:
+        def handle_stream(
+            stream: Generator[_ResponseChunkT, None, None],
+            tool_types: list[type[_BaseToolT]] | None,
+        ):
+            for chunk in stream:
+                call_response_chunk = TCallResponseChunk(chunk=chunk)
+                json_output = get_json_output(call_response_chunk, json_mode)
+                call_response_chunk_type = type(call_response_chunk)
+                setattr(call_response_chunk_type, "content", json_output)
+                yield call_response_chunk_type(chunk=chunk), None
+
+        async def handle_stream_async(
+            stream: AsyncGenerator[_ResponseChunkT, None],
+            tool_types: list[type[_BaseToolT]] | None,
+        ):
+            async for chunk in stream:
+                call_response_chunk = TCallResponseChunk(chunk=chunk)
+                json_output = get_json_output(call_response_chunk, json_mode)
+                call_response_chunk_type = type(call_response_chunk)
+                setattr(call_response_chunk_type, "content", json_output)
+                yield call_response_chunk_type(chunk=chunk), None
+
+        stream_decorator = stream_factory(
+            TCallResponse=TCallResponse,
+            TStream=TStream,
+            setup_call=setup_call,
+            handle_stream=handle_stream,
+            handle_stream_async=handle_stream_async,
+        )
+
         tool = setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)
+        stream_decorator_kwargs = {
+            "model": model,
+            "tools": [tool],
+            "json_mode": json_mode,
+            "client": client,
+            "call_params": call_params,
+        }
 
         @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
             assert SetupCall.fn_is_sync(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=[tool],
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=True,
-            )
-
-            def generator():
-                for chunk in create(stream=True, **call_kwargs):
-                    call_response_chunk = TCallResponseChunk(chunk=chunk)
-                    json_output = get_json_output(call_response_chunk, json_mode)
-                    call_response_chunk_type = type(call_response_chunk)
-                    setattr(call_response_chunk_type, "content", json_output)
-                    yield call_response_chunk_type(chunk=chunk), None
-
-            stream = TStream(
-                stream=generator(),
-                metadata=get_metadata(fn, dynamic_config),
-                tool_types=tool_types,
-                call_response_type=TCallResponse,
-                model=model,
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_params,
-            )
-
             return BaseStructuredStream[_ResponseModelT](
-                stream=stream,
+                stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                    *args, **kwargs
+                ),
                 response_model=response_model,
             )
 
@@ -211,43 +213,10 @@ def structured_stream_factory(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> AsyncIterable[_ResponseModelT]:
             assert SetupCall.fn_is_async(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = await fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=[tool],
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=True,
-            )
-
-            async def generator():
-                async for chunk in await create(stream=True, **call_kwargs):
-                    call_response_chunk = TCallResponseChunk(chunk=chunk)
-                    json_output = get_json_output(call_response_chunk, json_mode)
-                    call_response_chunk_type = type(call_response_chunk)
-                    setattr(call_response_chunk_type, "content", json_output)
-                    yield call_response_chunk_type(chunk=chunk), None
-
-            stream = TStream(
-                stream=generator(),
-                metadata=get_metadata(fn, dynamic_config),
-                tool_types=tool_types,
-                call_response_type=TCallResponse,
-                model=model,
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_params,
-            )
-
             return BaseStructuredStream[_ResponseModelT](
-                stream=stream,
+                stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                    *args, **kwargs
+                ),
                 response_model=response_model,
             )
 

@@ -45,7 +45,6 @@ def extract_factory(
     get_json_output: GetJsonOutput[_BaseCallResponseT],
 ):
     """Returns the wrapped function with the provider specific interfaces."""
-
     create_decorator = create_factory(
         TCallResponse=TCallResponse, setup_call=setup_call
     )
@@ -80,7 +79,7 @@ def extract_factory(
     ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
         tool = setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)
-        create_inner_kwargs = {
+        create_decorator_kwargs = {
             "model": model,
             "tools": [tool],
             "output_parser": None,
@@ -92,8 +91,9 @@ def extract_factory(
         @wraps(fn)
         def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert SetupCall.fn_is_sync(fn)
-            create_inner = create_decorator(fn=fn, **create_inner_kwargs)
-            call_response = create_inner(*args, **kwargs)
+            call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
+                *args, **kwargs
+            )
             json_output = get_json_output(call_response, json_mode)
             try:
                 output = extract_tool_return(response_model, json_output, False)
@@ -107,8 +107,9 @@ def extract_factory(
         @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
             assert SetupCall.fn_is_async(fn)
-            create_inner = create_decorator(fn=fn, **create_inner_kwargs)
-            call_response = await create_inner(*args, **kwargs)
+            call_response = await create_decorator(fn=fn, **create_decorator_kwargs)(
+                *args, **kwargs
+            )
             json_output = get_json_output(call_response, json_mode)
             try:
                 output = extract_tool_return(response_model, json_output, False)
