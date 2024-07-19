@@ -9,7 +9,6 @@ from typing import (
     Iterable,
     Literal,
     NoReturn,
-    ParamSpec,
     TypeVar,
     overload,
 )
@@ -49,8 +48,6 @@ _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
-_AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
-_P = ParamSpec("_P")
 
 
 def call_factory(

@@ -73,6 +73,7 @@ class BaseStream(
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
     call_params: _BaseCallParamsT
+    call_kwargs: dict[str, Any]
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
@@ -82,12 +83,12 @@ class BaseStream(
 
     def __init__(
         self,
+        *,
         stream: Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]
         | AsyncGenerator[
             tuple[_BaseCallResponseChunkT, _BaseToolT | None],
             None,
         ],
-        *,
         metadata: Metadata,
         tool_types: list[type[_BaseToolT]] | None,
         call_response_type: type[_BaseCallResponseT],
@@ -97,6 +98,7 @@ class BaseStream(
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
+        call_kwargs: dict[str, Any],
     ):
         """Initializes an instance of `BaseStream`."""
         self.stream = stream
@@ -109,6 +111,7 @@ class BaseStream(
         self.dynamic_config = dynamic_config
         self.messages = messages
         self.call_params = call_params
+        self.call_kwargs = call_kwargs
         self.user_message_param = get_possible_user_message_param(messages)  # type: ignore
 
     def __iter__(
@@ -138,9 +141,7 @@ class BaseStream(
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
-        if not tool_calls:
-            tool_calls = None
-        self.message_param = self._construct_message_param(tool_calls, content)
+        self.message_param = self._construct_message_param(tool_calls or None, content)
 
     def __aiter__(
         self,
@@ -171,9 +172,9 @@ class BaseStream(
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
-            if not tool_calls:
-                tool_calls = None
-            self.message_param = self._construct_message_param(tool_calls, content)
+            self.message_param = self._construct_message_param(
+                tool_calls or None, content
+            )
 
         return generator()
 
@@ -277,7 +278,7 @@ def stream_factory(
                     yield chunk, tool
 
             return TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
@@ -287,6 +288,7 @@ def stream_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
+                call_kwargs=call_kwargs,
             )
 
         @wraps(fn)
@@ -313,7 +315,7 @@ def stream_factory(
                     yield chunk, tool
 
             return TStream(
-                generator(),
+                stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
                 tool_types=tool_types,
                 call_response_type=TCallResponse,
@@ -323,6 +325,7 @@ def stream_factory(
                 dynamic_config=dynamic_config,
                 messages=messages,
                 call_params=call_params,
+                call_kwargs=call_kwargs,
             )
 
         return inner_async if is_async else inner

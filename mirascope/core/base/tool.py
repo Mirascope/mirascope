@@ -2,7 +2,7 @@
 
 import inspect
 from abc import abstractmethod
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -12,12 +12,13 @@ from . import _utils
 class BaseTool(BaseModel):
     """A class for defining tools for LLM calls."""
 
+    __custom_name__: ClassVar[str] = ""
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def _name(cls) -> str:
         """Returns the name of the tool."""
-        return cls.__name__
+        return cls.__custom_name__ if cls.__custom_name__ else cls.__name__
 
     @classmethod
     def _description(cls) -> str:
@@ -40,9 +41,4 @@ class BaseTool(BaseModel):
     @abstractmethod
     def call(self) -> Any:
         """The method to call the tool."""
-        ...  # pragma: no cover
-
-    @abstractmethod
-    async def call_async(self) -> Any:
-        """The method to call the tool asynchronously."""
         ...  # pragma: no cover
