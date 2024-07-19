@@ -3,11 +3,8 @@
 from contextlib import contextmanager
 from typing import (
     Any,
-    Awaitable,
     Callable,
     Generator,
-    ParamSpec,
-    TypeVar,
 )
 
 import logfire
@@ -17,13 +14,10 @@ from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
 
-_P = ParamSpec("_P")
-_R = TypeVar("_R", bound=BaseCallResponse | BaseStream | BaseModel)
-
 
 @contextmanager
 def custom_context_manager(
-    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
+    fn: Callable[..., Any] | Callable[..., Any],
 ) -> Generator[logfire.LogfireSpan, Any, None]:
     metadata = fn.__annotations__.get("metadata", {})
     tags = getattr(metadata, "tags", {})
@@ -128,10 +122,11 @@ def handle_base_model(
         span_data |= get_call_response_span_data(response)
         output |= get_output(response)
         output["response_model"] = result
-        span_data["output"] = output
     elif isinstance(result, BaseStructuredStream):
         span_data = get_stream_span_data(result.stream)
-        output["response_model"] = result.response_model
+        output |= span_data.get("output", {})
+        output["response_model"] = result.constructed_response_model
+    span_data["output"] = output
     span_data["async"] = False
     logfire_span.set_attributes(span_data)
 
@@ -175,6 +170,6 @@ async def handle_base_model_async(
         span_data["output"] = output
     elif isinstance(result, BaseStructuredStream):
         span_data = get_stream_span_data(result.stream)
-        output["response_model"] = result.response_model
+        output["response_model"] = result.constructed_response_model
     span_data["async"] = True
     logfire_span.set_attributes(span_data)
