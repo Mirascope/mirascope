@@ -124,8 +124,8 @@ async def test_stream_factory_async(
 
     stream: BaseStream = await decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
     stream_response = []
-    async for chunk, tool in stream.stream:  # type: ignore
-        stream_response.append((chunk, tool))
+    async for t in stream.stream:  # type: ignore
+        stream_response.append(t)
     assert (
         stream_response == mock_handle_stream_async.return_value.__aiter__.return_value
     )  # type: ignore

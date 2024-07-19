@@ -72,6 +72,7 @@ def test_extract_factory_sync(
         client=mock_extract_decorator_kwargs["client"],
         call_params=mock_extract_decorator_kwargs["call_params"],
     )
+    mock_create_inner.assert_called_once_with(genre="fantasy", topic="magic")
     mock_get_json_output.assert_called_once_with(
         mock_create_inner.return_value, mock_extract_decorator_kwargs["json_mode"]
     )
