@@ -140,6 +140,8 @@ def test_handle_stream(mock_chunks: list[ChatCompletionChunk]) -> None:
     result = [
         t for t in handle_stream((c for c in mock_chunks), tool_types=[FormatBook])
     ]
+    # Check we get three tuples back.
+    # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
     assert len(result) == 3
     assert result[0][1] is None
     assert (
@@ -167,6 +169,8 @@ async def test_handle_stream_async(mock_chunks: list[ChatCompletionChunk]) -> No
     result = []
     async for t in handle_stream_async(generator(), tool_types=[FormatBook]):
         result.append(t)
+    # Check we get three tuples back.
+    # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
     assert len(result) == 3
     assert result[0][1] is None
     assert (
