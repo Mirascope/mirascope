@@ -53,14 +53,14 @@ def test_setup_call_with_dynamic_config() -> None:
         author: str
 
         def call(self):
-            return f"{self.title} by {self.author}"
+            """Format book tool call method."""
 
         @classmethod
         def tool_schema(cls):
             return {"type": "function", "name": cls._name()}
 
     def format_book(title: str, author: str):
-        return f"{title} by {author}"
+        """Format book tool."""
 
     dynamic_config: BaseDynamicConfig = {
         "metadata": {"tags": {"version:0001"}},

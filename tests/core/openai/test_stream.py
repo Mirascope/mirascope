@@ -29,8 +29,8 @@ def test_openai_stream() -> None:
         title: str
         author: str
 
-        def call(self) -> str:
-            return f"{self.title} by {self.author}"
+        def call(self):
+            """Dummy call."""
 
     tool_call = ChoiceDeltaToolCall(
         index=0,
