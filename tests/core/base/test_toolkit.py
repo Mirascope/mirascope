@@ -87,7 +87,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
         @dummy_decorator
         def dummy_method(self):
             """dummy method"""
-            return "dummy"
+            return "dummy"  # pragma: no cover
 
     toolkit = BookRecommendationToolKit(reading_level="beginner", language="spanish")
     tools = toolkit.create_tools()
@@ -138,12 +138,12 @@ def test_toolkit_tool_method_not_found() -> None:
 
                 Reading level: {self.reading_level}
                 """
-                return f"{title} by {author}"
+                return f"{title} by {author}"  # pragma: no cover
 
             @dummy_decorator
             def dummy_method(self):
                 """dummy method"""
-                return "dummy"
+                return "dummy"  # pragma: no cover
 
 
 def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
@@ -168,7 +168,7 @@ def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
 
                 Reading level: {reading_level}
                 """
-                return f"{title} by {author}"
+                return f"{title} by {author}"  # pragma: no cover
 
 
 def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
@@ -193,7 +193,7 @@ def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:
 
                 Reading level: {self.not_exists}
                 """
-                return f"{title} by {author}"
+                return f"{title} by {author}"  # pragma: no cover
 
 
 def test_toolkit_namespace_already_used(mock_namespaces) -> None:
@@ -218,4 +218,4 @@ def test_toolkit_tool_method_has_no_docstring(mock_namespaces) -> None:
         class BookRecommendationToolKit(BaseToolKit):
             @toolkit_tool
             def format_book(self, title: str, author: str) -> str:
-                return f"{title} by {author}"
+                return f"{title} by {author}"  # pragma: no cover

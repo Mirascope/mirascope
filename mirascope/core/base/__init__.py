@@ -1,7 +1,7 @@
 """Mirascope Base Classes."""
 
 from . import _partial, _utils
-from .call_factory import call_factory
+from ._call_factory import call_factory
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk

@@ -53,11 +53,8 @@ def test_structured_stream_factory_sync(
         **mock_structured_stream_decorator_kwargs,
     )
 
-    dynamic_config = MagicMock()
-
     def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
-        return dynamic_config
 
     structured_stream: BaseStructuredStream = decorator(fn)(
         genre="fantasy",  # type: ignore
@@ -122,11 +119,8 @@ async def test_structured_stream_factory_async(
         **mock_structured_stream_decorator_kwargs,
     )
 
-    dynamic_config = MagicMock()
-
     async def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
-        return dynamic_config
 
     structured_stream: BaseStructuredStream = await decorator(fn)(
         genre="fantasy",  # type: ignore
