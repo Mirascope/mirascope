@@ -1,4 +1,4 @@
-"""Fixtures for the core.base module tests."""
+"""Shared fixtures for the base module tests."""
 
 from unittest.mock import AsyncMock, MagicMock
 

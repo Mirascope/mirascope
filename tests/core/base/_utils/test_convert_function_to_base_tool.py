@@ -65,7 +65,7 @@ def test_convert_function_to_base_tool_with_protected_namespace_field() -> None:
     """Tests `convert_function_to_base_tool` with a protected namespace field."""
 
     def format_book(model_title: str):
-        return model_title
+        """Tool with protected name model_*"""
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
     assert "aliased_model_title" in tool_type.model_fields
@@ -98,7 +98,7 @@ def test_convert_function_to_base_tool_missing_type_annotation() -> None:
     """Tests `convert_function_to_base_tool` with a missing a type annotation."""
 
     def format_book(title):
-        return title
+        """Tool with missing type annotation."""
 
     with pytest.raises(ValueError):
         convert_function_to_base_tool(format_book, BaseTool)
@@ -113,7 +113,6 @@ def test_convert_function_to_base_tool_incorrect_parameter_name() -> None:
         Args:
             titles: The title of the book.
         """
-        return title
 
     with pytest.raises(ValueError):
         convert_function_to_base_tool(format_book, BaseTool)
@@ -128,7 +127,6 @@ def test_convert_function_to_base_tool_missing_parameter_description() -> None:
         Args:
             title:
         """
-        return title
 
     with pytest.raises(ValueError):
         convert_function_to_base_tool(format_book, BaseTool)

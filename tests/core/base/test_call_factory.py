@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mirascope.core.base.call_factory import call_factory
+from mirascope.core.base._call_factory import call_factory
 
 
 @pytest.fixture()
@@ -25,8 +25,8 @@ def mock_call_factory_kwargs() -> dict:
     }
 
 
-@patch("mirascope.core.base.call_factory.create_factory", new_callable=MagicMock)
-@patch("mirascope.core.base.call_factory.partial", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.create_factory", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.partial", new_callable=MagicMock)
 def test_call_factory_create(
     mock_partial: MagicMock,
     mock_create_factory: MagicMock,
@@ -52,8 +52,8 @@ def test_call_factory_create(
     )
 
 
-@patch("mirascope.core.base.call_factory.stream_factory", new_callable=MagicMock)
-@patch("mirascope.core.base.call_factory.partial", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.stream_factory", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.partial", new_callable=MagicMock)
 def test_call_factory_stream(
     mock_partial: MagicMock,
     mock_stream_factory: MagicMock,
@@ -81,8 +81,8 @@ def test_call_factory_stream(
     )
 
 
-@patch("mirascope.core.base.call_factory.extract_factory", new_callable=MagicMock)
-@patch("mirascope.core.base.call_factory.partial", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.extract_factory", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.partial", new_callable=MagicMock)
 def test_call_factory_extract(
     mock_partial: MagicMock,
     mock_extract_factory: MagicMock,
@@ -110,9 +110,10 @@ def test_call_factory_extract(
 
 
 @patch(
-    "mirascope.core.base.call_factory.structured_stream_factory", new_callable=MagicMock
+    "mirascope.core.base._call_factory.structured_stream_factory",
+    new_callable=MagicMock,
 )
-@patch("mirascope.core.base.call_factory.partial", new_callable=MagicMock)
+@patch("mirascope.core.base._call_factory.partial", new_callable=MagicMock)
 def test_call_factory_structured_stream(
     mock_partial: MagicMock,
     mock_structured_stream_factory: MagicMock,

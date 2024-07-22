@@ -53,11 +53,8 @@ def test_extract_factory_sync(
         **mock_extract_decorator_kwargs,
     )
 
-    dynamic_config = MagicMock()
-
     def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
-        return dynamic_config
 
     output = decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
     mock_create_factory.assert_called_once_with(
@@ -124,11 +121,8 @@ async def test_extract_factory_async(
         **mock_extract_decorator_kwargs,
     )
 
-    dynamic_config = MagicMock()
-
     async def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
-        return dynamic_config
 
     output = await decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
     mock_create_factory.assert_called_once_with(

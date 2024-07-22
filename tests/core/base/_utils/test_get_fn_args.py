@@ -7,7 +7,7 @@ def test_get_fn_args() -> None:
     """Tests the `get_fn_args` function."""
 
     def fn(a: int, b: str, c: list[int], d: dict[str, str]) -> None:
-        pass
+        """Dummy fn."""
 
     args = (1, "2", [3, 4], {"5": "6"})
     kwargs = {}
