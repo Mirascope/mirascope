@@ -62,7 +62,7 @@ def get_call_response_attributes(result: BaseCallResponse) -> dict[str, Attribut
 
     return {
         "gen_ai.system": result.prompt_template if result.prompt_template else "",
-        "gen_ai.request.model": result.model if result.model else "",
+        "gen_ai.request.model": result.call_kwargs.get("model", ""),
         "gen_ai.request.max_tokens": max_tokens,
         "gen_ai.request.temperature": temperature,
         "gen_ai.request.top_p": top_p,
@@ -130,7 +130,7 @@ def get_stream_attributes(stream: BaseStream) -> dict[str, AttributeValue]:
     top_p = getattr(stream.call_params, "top_p", 0)
     return {
         "gen_ai.system": stream.prompt_template if stream.prompt_template else "",
-        "gen_ai.request.model": stream.model if stream.model else "",
+        "gen_ai.request.model": stream.call_kwargs.get("model", ""),
         "gen_ai.request.max_tokens": max_tokens,
         "gen_ai.request.temperature": temperature,
         "gen_ai.request.top_p": top_p,
