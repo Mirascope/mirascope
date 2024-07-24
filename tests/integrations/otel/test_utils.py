@@ -28,7 +28,9 @@ class MyCallResponse(BaseCallResponse):
 
     @property
     def tools(self) -> list[BaseTool]:
-        return [FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")]
+        return [
+            FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")
+        ]  # pragma: no cover
 
 
 patch.multiple(MyCallResponse, __abstractmethods__=set()).start()
@@ -40,7 +42,7 @@ class MyStream(BaseStream):
 
     @property
     def cost(self):
-        return 10
+        return 10  # pragma: no cover
 
 
 @patch("mirascope.integrations.otel._utils.get_tracer", new_callable=MagicMock)
@@ -569,5 +571,5 @@ async def test_handle_base_structured_stream_async(
         == Foo(bar="baz").model_dump_json()
     )
     result.constructed_response_model = "test"
-    _utils.handle_base_model(result, span)
+    await _utils.handle_base_model_async(result, span)
     assert add_event.call_args_list[3][1]["attributes"]["gen_ai.completion"] == "test"

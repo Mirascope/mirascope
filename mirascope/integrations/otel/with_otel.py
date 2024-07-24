@@ -1,10 +1,8 @@
 """Mirascope x OpenTelemetry Integration."""
 
 from typing import (
-    AsyncIterable,
     Awaitable,
     Callable,
-    Iterable,
     ParamSpec,
     TypeVar,
 )
@@ -13,6 +11,7 @@ from pydantic import BaseModel
 
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
+from ...core.base._structured_stream import BaseStructuredStream
 from ..middleware_factory import middleware_decorator
 from ._utils import (
     custom_context_manager,
@@ -27,14 +26,15 @@ from ._utils import (
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
-_IterableT = TypeVar("_IterableT", bound=Iterable)
-_AsyncIterableT = TypeVar("_AsyncIterableT", bound=AsyncIterable)
+_BaseStructuredStreamT = TypeVar("_BaseStructuredStreamT", bound=BaseStructuredStream)
 _P = ParamSpec("_P")
-SyncFunc = Callable[_P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _IterableT]
-AsyncFunc = Callable[
-    _P, Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _AsyncIterableT]
+SyncFunc = Callable[
+    _P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT
 ]
-_T = TypeVar("_T")
+AsyncFunc = Callable[
+    _P,
+    Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT],
+]
 
 
 def with_otel(

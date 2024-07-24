@@ -30,7 +30,7 @@ class WeatherBroadcaster(BaseModel):
             return f"I'm not sure what the weather is like in {location}"
 
     @openai.call(model="gpt-4o")
-    def _step(self, question: str):
+    def _step(self, question: str) -> openai.OpenAIDynamicConfig:
         """
         MESSAGES: {self.history}
         USER: {question}

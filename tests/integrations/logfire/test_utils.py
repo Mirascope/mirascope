@@ -1,4 +1,3 @@
-from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -7,6 +6,7 @@ from pydantic import BaseModel, Field
 from mirascope.core.base._stream import BaseStream
 from mirascope.core.base._structured_stream import BaseStructuredStream
 from mirascope.core.base.call_response import BaseCallResponse
+from mirascope.core.base.metadata import Metadata
 from mirascope.core.base.tool import BaseTool
 from mirascope.integrations.logfire import _utils
 
@@ -48,9 +48,7 @@ def test_logfire_custom_context_manager(mock_logfire: MagicMock) -> None:
     """Tests the `custom_context_manager` context manager."""
     mock_fn = MagicMock()
     mock_fn.__name__ = "mock_fn"
-    mock_metadata = MagicMock()
-    mock_metadata.tags = {"tag1", "tag2"}
-    mock_fn.__annotations__ = {"metadata": mock_metadata}
+    mock_fn.__annotations__ = {"metadata": Metadata(tags={"tag1", "tag2"})}
 
     with _utils.custom_context_manager(mock_fn):
         mock_logfire.assert_called_once()

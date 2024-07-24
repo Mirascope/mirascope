@@ -1,10 +1,8 @@
 """Mirascope x Langfuse Integration."""
 
 from typing import (
-    AsyncIterable,
     Awaitable,
     Callable,
-    Iterable,
     ParamSpec,
     TypeVar,
 )
@@ -22,25 +20,28 @@ from ._utils import get_call_response_observation, get_stream_observation
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
-_IterableT = TypeVar("_IterableT", bound=Iterable)
-_AsyncIterableT = TypeVar("_AsyncIterableT", bound=AsyncIterable)
+_BaseStructuredStreamT = TypeVar("_BaseStructuredStreamT", bound=BaseStructuredStream)
 _P = ParamSpec("_P")
-SyncFunc = Callable[_P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _IterableT]
+SyncFunc = Callable[
+    _P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT
+]
 AsyncFunc = Callable[
-    _P, Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _AsyncIterableT]
+    _P,
+    Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT],
 ]
 _T = TypeVar("_T")
+
+
+class ModelUsage(BaseModel):
+    input: int | float | None
+    output: int | float | None
+    unit: str
 
 
 def with_langfuse(
     fn: SyncFunc | AsyncFunc,
 ) -> SyncFunc | AsyncFunc:
     """Wraps a Mirascope function with Langfuse."""
-
-    class ModelUsage(BaseModel):
-        input: int | float | None
-        output: int | float | None
-        unit: str
 
     def handle_call_response(result: BaseCallResponse, context: None):
         langfuse_context.update_current_observation(
@@ -62,10 +63,29 @@ def with_langfuse(
         )
 
     def handle_base_model(result: BaseModel | BaseStructuredStream, context: None):
-        if result._response is not None:  # type: ignore
+        if isinstance(result, BaseModel):
             response: BaseCallResponse = result._response  # type: ignore
-            handle_call_response(response, None)
-        langfuse_context.update_current_observation(output=result)
+            langfuse_context.update_current_observation(
+                **get_call_response_observation(response, fn),
+                usage=ModelUsage(
+                    input=response.input_tokens,
+                    output=response.output_tokens,
+                    unit="TOKENS",
+                ),
+                output=result,
+            )
+        elif isinstance(result, BaseStructuredStream):
+            stream: BaseStream = result.stream
+            usage = ModelUsage(
+                input=stream.input_tokens,
+                output=stream.output_tokens,
+                unit="TOKENS",
+            )
+            langfuse_context.update_current_observation(
+                **get_stream_observation(stream, fn),
+                usage=usage,
+                output=result.constructed_response_model,
+            )
 
     async def handle_call_response_async(result: BaseCallResponse, context: None):
         handle_call_response(result, None)

@@ -13,14 +13,15 @@ from pydantic import BaseModel
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
+from ...core.base.metadata import Metadata
 
 
 @contextmanager
 def custom_context_manager(
     fn: Callable[..., Any] | Callable[..., Any],
 ) -> Generator[logfire.LogfireSpan, Any, None]:
-    metadata = fn.__annotations__.get("metadata", {})
-    tags = getattr(metadata, "tags", {})
+    metadata: Metadata = fn.__annotations__.get("metadata", {})
+    tags = metadata.get("tags", [])
     with logfire.with_settings(custom_scope_suffix="mirascope", tags=list(tags)).span(
         fn.__name__
     ) as logfire_span:
