@@ -21,7 +21,7 @@ def with_hyperdx(cls):
                 BatchSpanProcessor(
                     OTLPSpanExporter(
                         endpoint="https://in-otel.hyperdx.io/v1/traces",
-                        headers={"authorization": os.getenv("HYPERDX_API_KEY")},
+                        headers={"authorization": os.getenv("HYPERDX_API_KEY", "")},
                     )
                 )
             ]

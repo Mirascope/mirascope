@@ -9,6 +9,7 @@ from typing import (
     ParamSpec,
     TypeVar,
     cast,
+    overload,
 )
 
 from pydantic import BaseModel
@@ -39,13 +40,59 @@ def default_context_manager(
     yield None
 
 
+@overload
+def middleware_decorator(
+    fn: SyncFunc,
+    *,
+    custom_context_manager: Callable[
+        [SyncFunc], AbstractContextManager[_T]
+    ] = default_context_manager,
+    custom_decorator: Callable | None = None,
+    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
+    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
+    | None = None,
+    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
+    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    | None = None,
+    handle_base_model: Callable[[BaseModel | BaseStructuredStream, _T | None], None]
+    | None = None,
+    handle_base_model_async: Callable[
+        [BaseModel | BaseStructuredStream, _T | None], Awaitable[None]
+    ]
+    | None = None,
+) -> SyncFunc: ...  # pragma: no cover
+
+
+@overload
+def middleware_decorator(
+    fn: AsyncFunc,
+    *,
+    custom_context_manager: Callable[
+        [AsyncFunc], AbstractContextManager[_T]
+    ] = default_context_manager,
+    custom_decorator: Callable | None = None,
+    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
+    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
+    | None = None,
+    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
+    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    | None = None,
+    handle_base_model: Callable[[BaseModel | BaseStructuredStream, _T | None], None]
+    | None = None,
+    handle_base_model_async: Callable[
+        [BaseModel | BaseStructuredStream, _T | None], Awaitable[None]
+    ]
+    | None = None,
+) -> AsyncFunc: ...  # pragma: no cover
+
+
 def middleware_decorator(
     fn: SyncFunc | AsyncFunc,
     *,
     custom_context_manager: Callable[
         [SyncFunc | AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
-    custom_decorator: SyncFunc | None = None,
+    custom_decorator: Callable | None = None,
     handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
     handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
     | None = None,
