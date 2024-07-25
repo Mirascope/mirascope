@@ -161,10 +161,7 @@ def middleware_decorator(
         result = fn(*args, **kwargs)
         if isinstance(result, BaseCallResponse) and handle_call_response is not None:
             with custom_context_manager(fn) as context:
-                if context is None:
-                    handle_call_response(result, fn, None)
-                else:
-                    handle_call_response(result, fn, context)
+                handle_call_response(result, fn, context)
         elif isinstance(result, BaseStream):
             original_iter = result.__iter__
 
@@ -174,10 +171,7 @@ def middleware_decorator(
                     for chunk, tool in original_iter():
                         yield chunk, tool
                     if handle_stream is not None:
-                        if context is None:
-                            handle_stream(result, fn, None)
-                        else:
-                            handle_stream(result, fn, context)
+                        handle_stream(result, fn, context)
 
             result.__class__.__iter__ = (
                 custom_decorator(new_stream_iter)
@@ -186,11 +180,8 @@ def middleware_decorator(
             )
         elif isinstance(result, BaseModel) and handle_base_model is not None:
             with custom_context_manager(fn) as context:
-                if context is not None:
-                    handle_base_model(result, fn, context)
-                else:
-                    handle_base_model(result, fn, None)
-        elif isinstance(result, BaseStructuredStream) and handle_base_model is not None:
+                handle_base_model(result, fn, None)
+        elif isinstance(result, BaseStructuredStream):
             original_iter = result.__iter__
 
             def new_iter(self):
@@ -199,10 +190,7 @@ def middleware_decorator(
                     for chunk in original_iter():
                         yield chunk
                     if handle_structured_stream is not None:
-                        if context is None:
-                            handle_structured_stream(result, fn, None)
-                        else:
-                            handle_structured_stream(result, fn, context)
+                        handle_structured_stream(result, fn, context)
 
             result.__class__.__iter__ = (
                 custom_decorator(new_iter) if custom_decorator else new_iter
@@ -217,10 +205,7 @@ def middleware_decorator(
             and handle_call_response_async is not None
         ):
             with custom_context_manager(fn) as context:
-                if context is None:
-                    await handle_call_response_async(result, fn, None)
-                else:
-                    await handle_call_response_async(result, fn, context)
+                await handle_call_response_async(result, fn, context)
         elif isinstance(result, BaseStream):
             original_aiter = result.__aiter__
 
@@ -230,10 +215,7 @@ def middleware_decorator(
                         async for chunk, tool in original_aiter():
                             yield chunk, tool
                         if handle_stream_async is not None:
-                            if context is None:
-                                await handle_stream_async(result, fn, None)
-                            else:
-                                await handle_stream_async(result, fn, context)
+                            await handle_stream_async(result, fn, context)
 
                 return generator()
 
@@ -244,10 +226,7 @@ def middleware_decorator(
             )
         elif isinstance(result, BaseModel) and handle_base_model_async is not None:
             with custom_context_manager(fn) as context:
-                if context is None:
-                    await handle_base_model_async(result, fn, None)
-                else:
-                    await handle_base_model_async(result, fn, context)
+                await handle_base_model_async(result, fn, context)
         elif isinstance(result, BaseStructuredStream):
             original_aiter = result.__aiter__
 
@@ -257,12 +236,7 @@ def middleware_decorator(
                         async for chunk in original_aiter():
                             yield chunk
                         if handle_structured_stream_async is not None:
-                            if context is None:
-                                await handle_structured_stream_async(result, fn, None)
-                            else:
-                                await handle_structured_stream_async(
-                                    result, fn, context
-                                )
+                            await handle_structured_stream_async(result, fn, context)
 
                 return generator()
 

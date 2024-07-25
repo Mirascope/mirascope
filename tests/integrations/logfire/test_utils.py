@@ -78,80 +78,7 @@ def test_get_call_response_span_data():
             }
         ],
         call_params={"tool_choice": "required"},
-        call_kwargs={
-            "tool_choice": "required",
-            "tools": [
-                {
-                    "function": {
-                        "name": "FormatBook",
-                        "description": "Returns the title and author of a book nicely formatted.",
-                        "parameters": {
-                            "$defs": {
-                                "ChatCompletionMessageToolCall": {
-                                    "additionalProperties": True,
-                                    "properties": {
-                                        "id": {"title": "Id", "type": "string"},
-                                        "function": {"$ref": "#/$defs/Function"},
-                                        "type": {
-                                            "const": "function",
-                                            "enum": ["function"],
-                                            "title": "Type",
-                                            "type": "string",
-                                        },
-                                    },
-                                    "required": ["id", "function", "type"],
-                                    "title": "ChatCompletionMessageToolCall",
-                                    "type": "object",
-                                },
-                                "Function": {
-                                    "additionalProperties": True,
-                                    "properties": {
-                                        "arguments": {
-                                            "title": "Arguments",
-                                            "type": "string",
-                                        },
-                                        "name": {"title": "Name", "type": "string"},
-                                    },
-                                    "required": ["arguments", "name"],
-                                    "title": "Function",
-                                    "type": "object",
-                                },
-                            },
-                            "properties": {
-                                "tool_call": {
-                                    "$ref": "#/$defs/ChatCompletionMessageToolCall"
-                                },
-                                "title": {
-                                    "examples": ["The Name of the Wind"],
-                                    "title": "Title",
-                                    "type": "string",
-                                },
-                                "author": {
-                                    "examples": ["Rothfuss, Patrick"],
-                                    "title": "Author",
-                                    "type": "string",
-                                },
-                            },
-                            "required": ["tool_call", "title", "author"],
-                            "type": "object",
-                        },
-                    },
-                    "type": "function",
-                }
-            ],
-            "model": "gpt-4o",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Recommend a nonfiction book for me to read.",
-                        }
-                    ],
-                }
-            ],
-        },
+        call_kwargs={},
         user_message_param={
             "role": "user",
             "content": [
@@ -227,22 +154,7 @@ def test_get_tool_calls():
             }
         ],
         call_params={"tool_choice": "required"},
-        call_kwargs={
-            "tool_choice": "required",
-            "tools": [],
-            "model": "gpt-4o",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Recommend a nonfiction book for me to read.",
-                        }
-                    ],
-                }
-            ],
-        },
+        call_kwargs={},
         user_message_param={
             "role": "user",
             "content": [
