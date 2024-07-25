@@ -313,7 +313,8 @@ def test_handle_call_response(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
 ):
-    assert _utils.handle_call_response(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_call_response(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     result.tools = [
@@ -322,7 +323,7 @@ def test_handle_call_response(
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_call_response(result, span)
+    _utils.handle_call_response(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(result)
     assert mock_get_call_response_attributes.return_value["async"] is False
@@ -344,7 +345,8 @@ async def test_handle_call_response_async(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
 ):
-    assert await _utils.handle_call_response_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_call_response_async(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     result.tools = [
@@ -353,7 +355,7 @@ async def test_handle_call_response_async(
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_call_response_async(result, span)
+    await _utils.handle_call_response_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(result)
     assert mock_get_call_response_attributes.return_value["async"] is True
@@ -374,13 +376,14 @@ def test_handle_stream(
     mock_set_stream_event_attributes: MagicMock,
     mock_get_stream_attributes: MagicMock,
 ):
-    assert _utils.handle_stream(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_stream(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_stream(result, span)
+    _utils.handle_stream(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_stream_attributes.assert_called_once_with(result)
     assert mock_get_stream_attributes.return_value["async"] is False
@@ -402,13 +405,14 @@ async def test_handle_stream_async(
     mock_set_stream_event_attributes: MagicMock,
     mock_get_stream_attributes: MagicMock,
 ):
-    assert await _utils.handle_stream_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_stream_async(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_stream_async(result, span)
+    await _utils.handle_stream_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_stream_attributes.assert_called_once_with(result)
     assert mock_get_stream_attributes.return_value["async"] is True
@@ -423,7 +427,8 @@ async def test_handle_stream_async(
 def test_handle_base_model(
     mock_get_call_response_attributes: MagicMock,
 ):
-    assert _utils.handle_base_model(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_base_model(MagicMock(), mock_fn, None) is None
 
     result = MagicMock(spec=BaseModel)
     response = MagicMock()
@@ -434,7 +439,7 @@ def test_handle_base_model(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_base_model(result, span)
+    _utils.handle_base_model(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(response)
     assert mock_get_call_response_attributes.return_value["async"] is False
@@ -456,10 +461,11 @@ def test_handle_base_model(
     new_callable=MagicMock,
     return_value={},
 )
-def test_handle_base_structured_stream(
+def test_handle_structured_stream(
     mock_get_stream_attributes: MagicMock,
 ):
-    assert _utils.handle_base_model(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_structured_stream(MagicMock(), mock_fn, None) is None
 
     class Foo(BaseModel):
         bar: str
@@ -474,7 +480,7 @@ def test_handle_base_structured_stream(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_base_model(result, span)
+    _utils.handle_structured_stream(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_stream_attributes.assert_called_once_with(response)
     assert mock_get_stream_attributes.return_value["async"] is False
@@ -490,7 +496,7 @@ def test_handle_base_structured_stream(
         == Foo(bar="baz").model_dump_json()
     )
     result.constructed_response_model = "test"
-    _utils.handle_base_model(result, span)
+    _utils.handle_structured_stream(result, mock_fn, span)
     assert add_event.call_args_list[3][1]["attributes"]["gen_ai.completion"] == "test"
 
 
@@ -503,7 +509,8 @@ def test_handle_base_structured_stream(
 async def test_handle_base_model_async(
     mock_get_call_response_attributes: MagicMock,
 ):
-    assert await _utils.handle_base_model_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_base_model_async(MagicMock(), mock_fn, None) is None
 
     result = MagicMock(spec=BaseModel)
     response = MagicMock()
@@ -514,7 +521,7 @@ async def test_handle_base_model_async(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_base_model_async(result, span)
+    await _utils.handle_base_model_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(response)
     assert mock_get_call_response_attributes.return_value["async"] is True
@@ -537,10 +544,13 @@ async def test_handle_base_model_async(
     return_value={},
 )
 @pytest.mark.asyncio
-async def test_handle_base_structured_stream_async(
+async def test_handle_structured_stream_async(
     mock_get_stream_attributes: MagicMock,
 ):
-    assert await _utils.handle_base_model_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert (
+        await _utils.handle_structured_stream_async(MagicMock(), mock_fn, None) is None
+    )
 
     class Foo(BaseModel):
         bar: str
@@ -555,7 +565,7 @@ async def test_handle_base_structured_stream_async(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_base_model_async(result, span)
+    await _utils.handle_structured_stream_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_stream_attributes.assert_called_once_with(response)
     assert mock_get_stream_attributes.return_value["async"] is True
@@ -571,5 +581,5 @@ async def test_handle_base_structured_stream_async(
         == Foo(bar="baz").model_dump_json()
     )
     result.constructed_response_model = "test"
-    await _utils.handle_base_model_async(result, span)
+    await _utils.handle_structured_stream_async(result, mock_fn, span)
     assert add_event.call_args_list[3][1]["attributes"]["gen_ai.completion"] == "test"

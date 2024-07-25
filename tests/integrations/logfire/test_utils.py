@@ -297,7 +297,8 @@ def test_handle_call_response(
     mock_get_call_response_span_data: MagicMock,
     mock_get_output: MagicMock,
 ):
-    assert _utils.handle_call_response(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_call_response(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     result.tools = [
@@ -306,7 +307,7 @@ def test_handle_call_response(
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_call_response(result, span)
+    _utils.handle_call_response(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_output.assert_called_once_with(result)
     mock_get_tool_calls.assert_called_once_with(result)
@@ -330,7 +331,8 @@ async def test_handle_call_response_async(
     mock_get_call_response_span_data: MagicMock,
     mock_get_output: MagicMock,
 ):
-    assert await _utils.handle_call_response_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_call_response_async(MagicMock(), mock_fn, None) is None
 
     result = MagicMock()
     result.tools = [
@@ -339,7 +341,7 @@ async def test_handle_call_response_async(
     span = MagicMock()
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_call_response_async(result, span)
+    await _utils.handle_call_response_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_output.assert_called_once_with(result)
     mock_get_tool_calls.assert_called_once_with(result)
@@ -356,12 +358,13 @@ async def test_handle_call_response_async(
     return_value={},
 )
 def test_handle_stream(mock_get_stream_span_data: MagicMock):
-    assert _utils.handle_stream(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_stream(MagicMock(), mock_fn, None) is None
 
     stream = MagicMock()
     span = MagicMock()
     span.set_attributes = MagicMock()
-    _utils.handle_stream(stream, span)
+    _utils.handle_stream(stream, mock_fn, span)
     mock_get_stream_span_data.assert_called_once_with(stream)
     call_args = span.set_attributes.call_args[0][0]
     assert call_args["async"] is False
@@ -375,12 +378,13 @@ def test_handle_stream(mock_get_stream_span_data: MagicMock):
 )
 @pytest.mark.asyncio
 async def test_handle_stream_async(mock_get_stream_span_data: MagicMock):
-    assert await _utils.handle_stream_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_stream_async(MagicMock(), mock_fn, None) is None
 
     stream = MagicMock()
     span = MagicMock()
     span.set_attributes = MagicMock()
-    await _utils.handle_stream_async(stream, span)
+    await _utils.handle_stream_async(stream, mock_fn, span)
     mock_get_stream_span_data.assert_called_once_with(stream)
     call_args = span.set_attributes.call_args[0][0]
     assert call_args["async"] is True
@@ -397,22 +401,17 @@ async def test_handle_stream_async(mock_get_stream_span_data: MagicMock):
     new_callable=MagicMock,
     return_value={},
 )
-@patch(
-    "mirascope.integrations.logfire._utils.get_stream_span_data",
-    new_callable=MagicMock,
-    return_value={},
-)
 def test_handle_base_model(
-    mock_get_stream_span_data: MagicMock,
     mock_get_output: MagicMock,
     mock_get_call_response_span_data: MagicMock,
 ):
-    assert _utils.handle_base_model(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert _utils.handle_base_model(MagicMock(), mock_fn, None) is None
 
     base_model_result = MagicMock(spec=BaseModel)
     base_model_result._response = MagicMock(spec=BaseCallResponse)
     span = MagicMock()
-    _utils.handle_base_model(base_model_result, span)
+    _utils.handle_base_model(base_model_result, mock_fn, span)
     mock_get_call_response_span_data.assert_called_once_with(
         base_model_result._response
     )
@@ -420,10 +419,23 @@ def test_handle_base_model(
     assert mock_get_call_response_span_data.return_value["async"] is False
     assert mock_get_output.return_value["response_model"] == base_model_result
 
+
+@patch(
+    "mirascope.integrations.logfire._utils.get_stream_span_data",
+    new_callable=MagicMock,
+    return_value={},
+)
+def test_handle_structured_stream(
+    mock_get_stream_span_data: MagicMock,
+):
+    mock_fn = MagicMock()
+    assert _utils.handle_structured_stream(MagicMock(), mock_fn, None) is None
+
+    span = MagicMock()
     base_structured_stream_result = MagicMock(spec=BaseStructuredStream)
     base_structured_stream_result.constructed_response_model = MagicMock(spec=BaseModel)
     base_structured_stream_result.stream = MagicMock(spec=BaseStream)
-    _utils.handle_base_model(base_structured_stream_result, span)
+    _utils.handle_structured_stream(base_structured_stream_result, mock_fn, span)
     mock_get_stream_span_data.assert_called_once_with(
         base_structured_stream_result.stream
     )
@@ -443,23 +455,18 @@ def test_handle_base_model(
     new_callable=MagicMock,
     return_value={},
 )
-@patch(
-    "mirascope.integrations.logfire._utils.get_stream_span_data",
-    new_callable=MagicMock,
-    return_value={},
-)
 @pytest.mark.asyncio
 async def test_handle_base_model_async(
-    mock_get_stream_span_data: MagicMock,
     mock_get_output: MagicMock,
     mock_get_call_response_span_data: MagicMock,
 ):
-    assert await _utils.handle_base_model_async(MagicMock(), None) is None
+    mock_fn = MagicMock()
+    assert await _utils.handle_base_model_async(MagicMock(), mock_fn, None) is None
 
     base_model_result = MagicMock(spec=BaseModel)
     base_model_result._response = MagicMock(spec=BaseCallResponse)
     span = MagicMock()
-    await _utils.handle_base_model_async(base_model_result, span)
+    await _utils.handle_base_model_async(base_model_result, mock_fn, span)
     mock_get_call_response_span_data.assert_called_once_with(
         base_model_result._response
     )
@@ -467,10 +474,29 @@ async def test_handle_base_model_async(
     assert mock_get_call_response_span_data.return_value["async"] is True
     assert mock_get_output.return_value["response_model"] == base_model_result
 
+
+@patch(
+    "mirascope.integrations.logfire._utils.get_stream_span_data",
+    new_callable=MagicMock,
+    return_value={},
+)
+@pytest.mark.asyncio
+async def test_structured_stream_async(
+    mock_get_stream_span_data: MagicMock,
+):
+    mock_fn = MagicMock()
+    assert (
+        await _utils.handle_structured_stream_async(MagicMock(), mock_fn, None) is None
+    )
+
+    span = MagicMock()
+
     base_structured_stream_result = MagicMock(spec=BaseStructuredStream)
     base_structured_stream_result.constructed_response_model = MagicMock(spec=BaseModel)
     base_structured_stream_result.stream = MagicMock(spec=BaseStream)
-    await _utils.handle_base_model_async(base_structured_stream_result, span)
+    await _utils.handle_structured_stream_async(
+        base_structured_stream_result, mock_fn, span
+    )
     mock_get_stream_span_data.assert_called_once_with(
         base_structured_stream_result.stream
     )

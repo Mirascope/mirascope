@@ -48,16 +48,32 @@ def middleware_decorator(
         [SyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
     custom_decorator: Callable | None = None,
-    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
-    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
+    handle_call_response: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
-    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    handle_call_response_async: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
     | None = None,
-    handle_base_model: Callable[[BaseModel | BaseStructuredStream, _T | None], None]
+    handle_stream: Callable[[BaseStream, SyncFunc | AsyncFunc, _T | None], None]
+    | None = None,
+    handle_stream_async: Callable[
+        [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
     | None = None,
     handle_base_model_async: Callable[
-        [BaseModel | BaseStructuredStream, _T | None], Awaitable[None]
+        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_structured_stream: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], None
+    ]
+    | None = None,
+    handle_structured_stream_async: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
 ) -> SyncFunc: ...  # pragma: no cover
@@ -71,16 +87,32 @@ def middleware_decorator(
         [AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
     custom_decorator: Callable | None = None,
-    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
-    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
+    handle_call_response: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
-    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    handle_call_response_async: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
     | None = None,
-    handle_base_model: Callable[[BaseModel | BaseStructuredStream, _T | None], None]
+    handle_stream: Callable[[BaseStream, SyncFunc | AsyncFunc, _T | None], None]
+    | None = None,
+    handle_stream_async: Callable[
+        [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
     | None = None,
     handle_base_model_async: Callable[
-        [BaseModel | BaseStructuredStream, _T | None], Awaitable[None]
+        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_structured_stream: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], None
+    ]
+    | None = None,
+    handle_structured_stream_async: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
 ) -> AsyncFunc: ...  # pragma: no cover
@@ -93,16 +125,32 @@ def middleware_decorator(
         [SyncFunc | AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
     custom_decorator: Callable | None = None,
-    handle_call_response: Callable[[BaseCallResponse, _T | None], None] | None = None,
-    handle_call_response_async: Callable[[BaseCallResponse, _T | None], Awaitable[None]]
+    handle_call_response: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_stream: Callable[[BaseStream, _T | None], None] | None = None,
-    handle_stream_async: Callable[[BaseStream, _T | None], Awaitable[None]]
+    handle_call_response_async: Callable[
+        [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
     | None = None,
-    handle_base_model: Callable[[BaseModel | BaseStructuredStream, _T | None], None]
+    handle_stream: Callable[[BaseStream, SyncFunc | AsyncFunc, _T | None], None]
+    | None = None,
+    handle_stream_async: Callable[
+        [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
     | None = None,
     handle_base_model_async: Callable[
-        [BaseModel | BaseStructuredStream, _T | None], Awaitable[None]
+        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    ]
+    | None = None,
+    handle_structured_stream: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], None
+    ]
+    | None = None,
+    handle_structured_stream_async: Callable[
+        [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
 ) -> SyncFunc | AsyncFunc:
@@ -114,9 +162,9 @@ def middleware_decorator(
         if isinstance(result, BaseCallResponse) and handle_call_response is not None:
             with custom_context_manager(fn) as context:
                 if context is None:
-                    handle_call_response(result, None)
+                    handle_call_response(result, fn, None)
                 else:
-                    handle_call_response(result, context)
+                    handle_call_response(result, fn, context)
         elif isinstance(result, BaseStream):
             original_iter = result.__iter__
 
@@ -127,9 +175,9 @@ def middleware_decorator(
                         yield chunk, tool
                     if handle_stream is not None:
                         if context is None:
-                            handle_stream(result, None)
+                            handle_stream(result, fn, None)
                         else:
-                            handle_stream(result, context)
+                            handle_stream(result, fn, context)
 
             result.__class__.__iter__ = (
                 custom_decorator(new_stream_iter)
@@ -139,9 +187,9 @@ def middleware_decorator(
         elif isinstance(result, BaseModel) and handle_base_model is not None:
             with custom_context_manager(fn) as context:
                 if context is not None:
-                    handle_base_model(result, context)
+                    handle_base_model(result, fn, context)
                 else:
-                    handle_base_model(result, None)
+                    handle_base_model(result, fn, None)
         elif isinstance(result, BaseStructuredStream) and handle_base_model is not None:
             original_iter = result.__iter__
 
@@ -150,11 +198,11 @@ def middleware_decorator(
                 with custom_context_manager(fn) as context:
                     for chunk in original_iter():
                         yield chunk
-                    if handle_base_model is not None:
+                    if handle_structured_stream is not None:
                         if context is None:
-                            handle_base_model(result, None)
+                            handle_structured_stream(result, fn, None)
                         else:
-                            handle_base_model(result, context)
+                            handle_structured_stream(result, fn, context)
 
             result.__class__.__iter__ = (
                 custom_decorator(new_iter) if custom_decorator else new_iter
@@ -170,9 +218,9 @@ def middleware_decorator(
         ):
             with custom_context_manager(fn) as context:
                 if context is None:
-                    await handle_call_response_async(result, None)
+                    await handle_call_response_async(result, fn, None)
                 else:
-                    await handle_call_response_async(result, context)
+                    await handle_call_response_async(result, fn, context)
         elif isinstance(result, BaseStream):
             original_aiter = result.__aiter__
 
@@ -183,9 +231,9 @@ def middleware_decorator(
                             yield chunk, tool
                         if handle_stream_async is not None:
                             if context is None:
-                                await handle_stream_async(result, None)
+                                await handle_stream_async(result, fn, None)
                             else:
-                                await handle_stream_async(result, context)
+                                await handle_stream_async(result, fn, context)
 
                 return generator()
 
@@ -197,9 +245,9 @@ def middleware_decorator(
         elif isinstance(result, BaseModel) and handle_base_model_async is not None:
             with custom_context_manager(fn) as context:
                 if context is None:
-                    await handle_base_model_async(result, None)
+                    await handle_base_model_async(result, fn, None)
                 else:
-                    await handle_base_model_async(result, context)
+                    await handle_base_model_async(result, fn, context)
         elif isinstance(result, BaseStructuredStream):
             original_aiter = result.__aiter__
 
@@ -208,11 +256,13 @@ def middleware_decorator(
                     with custom_context_manager(fn) as context:
                         async for chunk in original_aiter():
                             yield chunk
-                        if handle_base_model_async is not None:
+                        if handle_structured_stream_async is not None:
                             if context is None:
-                                await handle_base_model_async(result, None)
+                                await handle_structured_stream_async(result, fn, None)
                             else:
-                                await handle_base_model_async(result, context)
+                                await handle_structured_stream_async(
+                                    result, fn, context
+                                )
 
                 return generator()
 

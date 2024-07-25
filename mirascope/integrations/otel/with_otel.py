@@ -21,6 +21,8 @@ from ._utils import (
     handle_call_response_async,
     handle_stream,
     handle_stream_async,
+    handle_structured_stream,
+    handle_structured_stream_async,
 )
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -51,4 +53,6 @@ def with_otel(
         handle_stream_async=handle_stream_async,
         handle_base_model=handle_base_model,
         handle_base_model_async=handle_base_model_async,
+        handle_structured_stream=handle_structured_stream,
+        handle_structured_stream_async=handle_structured_stream_async,
     )
