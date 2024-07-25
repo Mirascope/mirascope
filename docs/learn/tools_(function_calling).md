@@ -40,7 +40,7 @@ class FormatBook(BaseTool):
     author: str = Field(..., description="The author of the book in all caps.")
     
     def call(self) -> str:
-        return f"{title} by {author}"
+        return f"{self.title} by {self.author}"
 ```
 
 ## Tools via Dynamic Configuration

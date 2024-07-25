@@ -31,7 +31,9 @@ class FormatBook(BaseTool):
         return f"{self.title} by {self.author}"
 
 
-@openai.call(model="gpt-4o", tools=[FormatBook], tool_choice="required")
+@openai.call(
+    model="gpt-4o", tools=[FormatBook], call_params={"tool_choice": "required"}
+)
 def recommend_book():
     """Recommend a nonfiction book for me to read."""
 

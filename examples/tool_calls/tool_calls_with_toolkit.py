@@ -23,7 +23,9 @@ class BookRecommendationToolKit(BaseToolKit):
 
 
 @openai.call(model="gpt-4o")
-def recommend_book(genre: str, reading_level: Literal["beginner", "advanced"]):
+def recommend_book(
+    genre: str, reading_level: Literal["beginner", "advanced"]
+) -> openai.OpenAIDynamicConfig:
     """Recommend a {genre} book."""
     toolkit = BookRecommendationToolKit(reading_level=reading_level)
     return {"tools": toolkit.create_tools()}
