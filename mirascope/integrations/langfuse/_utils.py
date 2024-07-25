@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
-from ...core.base.metadata import Metadata
+from ...core.base._utils import get_metadata
 
 
 class ModelUsage(BaseModel):
@@ -16,7 +16,7 @@ class ModelUsage(BaseModel):
 
 
 def get_call_response_observation(result: BaseCallResponse, fn: Callable):
-    metadata: Metadata = fn.__annotations__.get("metadata", {})
+    metadata = get_metadata(fn, {})
     tags = metadata.get("tags", [])
     return {
         "name": f"{fn.__name__} with {result.model}",
@@ -29,7 +29,7 @@ def get_call_response_observation(result: BaseCallResponse, fn: Callable):
 
 
 def get_stream_observation(stream: BaseStream, fn: Callable):
-    metadata: Metadata = fn.__annotations__.get("metadata", {})
+    metadata = get_metadata(fn, {})
     tags = metadata.get("tags", [])
 
     return {

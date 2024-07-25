@@ -7,7 +7,7 @@ _T = TypeVar("_T")
 
 def get_possible_user_message_param(messages: list[_T]) -> _T | None:
     """Get the possible most recent user message."""
-    if len(messages) == 0:
+    if not messages:
         return None
     most_recent_message = messages[-1]
     if (

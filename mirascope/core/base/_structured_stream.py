@@ -74,11 +74,10 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
                 yield extract_tool_return(self.response_model, json_output, True)
         if json_output:
             json_output = json_output[: json_output.rfind("}") + 1]
-        extracted_response_model = extract_tool_return(
+        self.constructed_response_model = extract_tool_return(
             self.response_model, json_output, False
         )
-        self.constructed_response_model = extracted_response_model
-        yield extracted_response_model
+        yield self.constructed_response_model
 
     def __aiter__(self) -> AsyncGenerator[_ResponseModelT, None]:
         """Iterates over the stream and extracts structured outputs."""
@@ -99,11 +98,10 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
                     yield extract_tool_return(self.response_model, json_output, True)
             if json_output:
                 json_output = json_output[: json_output.rfind("}") + 1]
-            extracted_response_model = extract_tool_return(
+            self.constructed_response_model = extract_tool_return(
                 self.response_model, json_output, False
             )
-            self.constructed_response_model = extracted_response_model
-            yield extracted_response_model
+            yield self.constructed_response_model
 
         return generator()
 
