@@ -59,35 +59,7 @@ def test_logfire_custom_context_manager(mock_logfire: MagicMock) -> None:
 
 
 def test_get_call_response_span_data():
-    call_response = MyCallResponse(
-        metadata={"tags": {"version:0001"}},
-        response="hello world",
-        tool_types=[],
-        prompt_template="Recommend a {genre} book for me to read.",
-        fn_args={"genre": "nonfiction"},
-        dynamic_config={"computed_fields": {"genre": "nonfiction"}},
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Recommend a nonfiction book for me to read.",
-                    }
-                ],
-            }
-        ],
-        call_params={"tool_choice": "required"},
-        call_kwargs={},
-        user_message_param={
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "Recommend a nonfiction book for me to read."}
-            ],
-        },
-        start_time=100,
-        end_time=200,
-    )  # type: ignore
+    call_response = MagicMock()
     result = _utils.get_call_response_span_data(call_response)
     assert result["async"] is False
     assert result["call_params"] == call_response.call_params
@@ -137,30 +109,15 @@ def test_get_stream_span_data():
 def test_get_tool_calls():
     call_response = MyCallResponse(
         metadata={"tags": {"version:0001"}},
-        response="hello world",
+        response="test response",
         tool_types=[],
-        prompt_template="Recommend a {genre} book for me to read.",
-        fn_args={"genre": "nonfiction"},
-        dynamic_config={"computed_fields": {"genre": "nonfiction"}},
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Recommend a nonfiction book for me to read.",
-                    }
-                ],
-            }
-        ],
-        call_params={"tool_choice": "required"},
+        prompt_template="test prompt",
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params={},
         call_kwargs={},
-        user_message_param={
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "Recommend a nonfiction book for me to read."}
-            ],
-        },
+        user_message_param={},
         start_time=100,
         end_time=200,
     )  # type: ignore
