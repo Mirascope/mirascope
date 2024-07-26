@@ -42,6 +42,10 @@ def calculate_cost(
             "prompt": 0.000_015,
             "completion": 0.000_075,
         },
+        "claude-3-5-sonnet-20240620": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+        },
     }
 
     if input_tokens is None or output_tokens is None:

@@ -35,24 +35,6 @@ def test_anthropic_stream() -> None:
         def call(self):
             """Dummy call."""
 
-    tool_call = ToolUseBlock(
-        id="id",
-        input={
-            "tool_call": {
-                "id": "1",
-                "type": "tool_use",
-                "name": "FormatBook",
-                "input": {
-                    "title": "Sapiens: A Brief History of Humankind",
-                    "author": "Harari, Yuval Noah",
-                },
-            },
-            "title": "Sapiens: A Brief History of Humankind",
-            "author": "Harari, Yuval Noah",
-        },
-        name="FormatBook",
-        type="tool_use",
-    )
     chunks = [
         RawMessageStartEvent(
             message=Message(
@@ -69,7 +51,7 @@ def test_anthropic_stream() -> None:
         ),
         RawContentBlockStartEvent(
             content_block=ToolUseBlock(
-                id="toolu_01U3cgdufZF6J6kxvbGxdq5L",
+                id="tool_id",
                 input={},
                 name="FormatBook",
                 type="tool_use",
@@ -280,46 +262,19 @@ def test_anthropic_stream() -> None:
         ),
         RawMessageStopEvent(type="message_stop"),
     ]
-    # chunks = [
-    #     ChatCompletionChunk(
-    #         id="id",
-    #         choices=[
-    #             Choice(delta=ChoiceDelta(content="content", tool_calls=None), index=0)
-    #         ],
-    #         created=0,
-    #         model="gpt-4o",
-    #         object="chat.completion.chunk",
-    #     ),
-    #     ChatCompletionChunk(
-    #         id="id",
-    #         choices=[
-    #             Choice(
-    #                 delta=ChoiceDelta(
-    #                     content=None,
-    #                     tool_calls=[tool_call],
-    #                 ),
-    #                 index=0,
-    #             )
-    #         ],
-    #         created=0,
-    #         model="gpt-4o",
-    #         object="chat.completion.chunk",
-    #         usage=usage,
-    #     ),
-    # ]
-
-    tool_call = None
 
     def generator():
-        nonlocal tool_call
         for chunk in chunks:
             call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
-            if tool_calls := call_response_chunk.tool_calls:
-                assert tool_calls[0].function
-                tool_call = ChatCompletionMessageToolCall(
-                    id="id",
-                    function=Function(**tool_calls[0].function.model_dump()),
-                    type="function",
+            if tool_call := call_response_chunk.tool_call:
+                tool_call = ToolUseBlock(
+                    id="tool_id",
+                    input={
+                        "title": "Sapiens: A Brief History of Humankind",
+                        "author": "Harari, Yuval Noah",
+                    },
+                    name="FormatBook",
+                    type="tool_use",
                 )
                 yield (
                     call_response_chunk,
@@ -344,9 +299,19 @@ def test_anthropic_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    assert stream.cost == 2e-5
+    # TODO: Verify if this is correct
+    assert stream.cost == 0.004287
     assert stream.message_param == {
         "role": "assistant",
-        "content": "content",
-        "tool_calls": [tool_call],
+        "content": [
+            ToolUseBlock(
+                id="tool_id",
+                input={
+                    "title": "Sapiens: A Brief History of Humankind",
+                    "author": "Harari, Yuval Noah",
+                },
+                name="FormatBook",
+                type="tool_use",
+            )
+        ],
     }

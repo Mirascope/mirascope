@@ -1,6 +1,12 @@
 """This module contains the `AnthropicCallResponse` class."""
 
-from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
+from anthropic.types import (
+    Message,
+    MessageParam,
+    ToolResultBlockParam,
+    ToolUseBlock,
+    Usage,
+)
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
@@ -70,6 +76,16 @@ class AnthropicCallResponse(
         """Returns the finish reasons of the response."""
         return [str(self.response.stop_reason)]
 
+    @property
+    def tool_calls(self) -> list[ToolUseBlock] | None:
+        if not self.tool_types:
+            return None
+        tool_calls = []
+        for tool_call in self.response.content:
+            if tool_call.type == "tool_use":
+                tool_calls.append(tool_call)
+        return tool_calls
+
     @computed_field
     @property
     def tools(self) -> list[AnthropicTool] | None:
@@ -78,17 +94,14 @@ class AnthropicCallResponse(
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
         """
-        if not self.tool_types:
+        if not self.tool_types or not self.tool_calls:
             return None
 
         extracted_tools = []
-        for tool_call in self.response.content:
-            if tool_call.type != "tool_use":
-                continue
+        for tool_call in self.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.name == tool_type._name():
-                    tool = tool_type.from_tool_call(tool_call)
-                    extracted_tools.append(tool)
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
 
         return extracted_tools
