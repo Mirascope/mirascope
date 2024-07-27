@@ -1,0 +1,101 @@
+"""Tests the `anthropic._utils.get_json_output` module."""
+
+import pytest
+from anthropic.types import (
+    Message,
+    MessageParam,
+    TextBlock,
+    ToolResultBlockParam,
+    ToolUseBlock,
+    Usage,
+)
+
+from mirascope.core.anthropic._utils.get_json_output import get_json_output
+from mirascope.core.anthropic.call_params import AnthropicCallParams
+from mirascope.core.anthropic.call_response import AnthropicCallResponse
+from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
+
+
+def test_get_json_output_call_response() -> None:
+    """Tests the `get_json_output` function with a call response."""
+    usage = Usage(input_tokens=1, output_tokens=1)
+    text = TextBlock(
+        type="text",
+        text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+    )
+    completion = Message(
+        id="id",
+        content=[text],
+        model="claude-3-5-sonnet-20240620",
+        role="assistant",
+        stop_reason="end_turn",
+        stop_sequence=None,
+        type="message",
+        usage=usage,
+    )
+    call_response = AnthropicCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    assert (
+        get_json_output(call_response, json_mode=True)
+        == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+    )
+    assert (
+        get_json_output(call_response, json_mode=False)
+        == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+    )
+
+    completion.content[0] = ToolUseBlock(
+        id="id", input=None, name="FormatBook", type="tool_use"
+    )
+    with pytest.raises(
+        ValueError, match="No tool call or JSON object found in response."
+    ):
+        get_json_output(call_response, json_mode=False)
+
+
+# def test_get_json_output_call_response_chunk() -> None:
+#     """Tests the `get_json_output` function with a call response chunk."""
+#     tool_call = ChoiceDeltaToolCall(
+#         index=0,
+#         id="id",
+#         function=ChoiceDeltaToolCallFunction(
+#             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+#             name="function",
+#         ),
+#         type="function",
+#     )
+#     choices = [
+#         ChunkChoice(
+#             delta=ChoiceDelta(content="json_output", tool_calls=[tool_call]),
+#             index=0,
+#             finish_reason="stop",
+#         )
+#     ]
+#     chunk = ChatCompletionChunk(
+#         id="id",
+#         choices=choices,
+#         created=0,
+#         model="gpt-4o",
+#         object="chat.completion.chunk",
+#     )
+#     call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
+#     assert get_json_output(call_response_chunk, json_mode=True) == "json_output"
+#     assert (
+#         get_json_output(call_response_chunk, json_mode=False)
+#         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+#     )
+
+#     chunk.choices[0].delta.tool_calls = None
+#     assert get_json_output(call_response_chunk, json_mode=False) == ""

@@ -38,14 +38,14 @@ def test_anthropic_stream() -> None:
     chunks = [
         RawMessageStartEvent(
             message=Message(
-                id="msg_01XRLekeRGvokAb5q5p7rSna",
+                id="id",
                 content=[],
                 model="claude-3-5-sonnet-20240620",
                 role="assistant",
                 stop_reason=None,
                 stop_sequence=None,
                 type="message",
-                usage=Usage(input_tokens=559, output_tokens=12),
+                usage=Usage(input_tokens=1, output_tokens=1),
             ),
             type="message_start",
         ),
@@ -258,7 +258,7 @@ def test_anthropic_stream() -> None:
         RawMessageDeltaEvent(
             delta=Delta(stop_reason="tool_use", stop_sequence=None),
             type="message_delta",
-            usage=MessageDeltaUsage(output_tokens=162),
+            usage=MessageDeltaUsage(output_tokens=1),
         ),
         RawMessageStopEvent(type="message_stop"),
     ]
@@ -300,7 +300,7 @@ def test_anthropic_stream() -> None:
     for _ in stream:
         pass
     # TODO: Verify if this is correct
-    assert stream.cost == 0.004287
+    assert stream.cost == 3.3e-05
     assert stream.message_param == {
         "role": "assistant",
         "content": [
