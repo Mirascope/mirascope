@@ -15,7 +15,11 @@ def get_json_output(
             json_start = content.index("{")
             json_end = content.rfind("}")
             return content[json_start : json_end + 1]
-        elif (block := response.response.content[0]) and block.type == "tool_use":
+        elif (
+            (block := response.response.content[0])
+            and block.type == "tool_use"
+            and block.input is not None
+        ):
             return json.dumps(block.input)
         raise ValueError("No tool call or JSON object found in response.")
     else:
@@ -25,6 +29,7 @@ def get_json_output(
             response.chunk.type == "content_block_delta"
             and (delta := response.chunk.delta)
             and delta.type == "input_json_delta"
+            and delta.partial_json
         ):
             return delta.partial_json
         return ""

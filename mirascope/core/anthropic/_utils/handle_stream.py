@@ -3,7 +3,7 @@
 import json
 from collections.abc import AsyncGenerator, Generator
 
-from anthropic.types import MessageStreamEvent, TextBlock, ToolUseBlock
+from anthropic.types import MessageStreamEvent, ToolUseBlock
 
 from ..call_response_chunk import AnthropicCallResponseChunk
 from ..tool import AnthropicTool
@@ -44,7 +44,9 @@ def _handle_chunk(
                 current_tool_type = tool_type
                 break
         if current_tool_type is None:
-            raise RuntimeError(f"Unknown tool type in stream: {content_block.name}.")
+            raise RuntimeError(
+                f"Unknown tool type in stream: {content_block.name}."
+            )  # pragma: no cover
         return (
             "",
             None,
@@ -65,47 +67,23 @@ def handle_stream(
     tool_types: list[type[AnthropicTool]] | None,
 ) -> Generator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
-    current_text_block = TextBlock(text="", type="text")
     current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
-    current_tool_type, content, buffer = None, [], ""
+    current_tool_type, buffer = None, ""
     for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
             buffer, chunk, current_tool_call, current_tool_type, tool_types
         )
-        if tool is not None:
-            yield AnthropicCallResponseChunk(chunk=chunk), tool
-            if current_text_block.text:
-                content.append(current_text_block)
-                current_text_block = TextBlock(text="", type="text")
-            content.append(tool.tool_call)
-        else:
-            yield AnthropicCallResponseChunk(chunk=chunk), None
-            if hasattr(chunk, "content_block") and hasattr(
-                (content_block := getattr(chunk, "content_block")), "text"
-            ):
-                current_text_block.text += getattr(content_block, "text")
+        yield AnthropicCallResponseChunk(chunk=chunk), tool
 
 
 async def handle_stream_async(
     stream: AsyncGenerator[MessageStreamEvent, None],
     tool_types: list[type[AnthropicTool]] | None,
 ) -> AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None]:
-    current_text_block = TextBlock(text="", type="text")
     current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
-    current_tool_type, content, buffer = None, [], ""
+    current_tool_type, buffer = None, ""
     async for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
             buffer, chunk, current_tool_call, current_tool_type, tool_types
         )
-        if tool is not None:
-            yield AnthropicCallResponseChunk(chunk=chunk), tool
-            if current_text_block.text:
-                content.append(current_text_block)
-                current_text_block = TextBlock(text="", type="text")
-            content.append(tool.tool_call)
-        else:
-            yield AnthropicCallResponseChunk(chunk=chunk), None
-            if hasattr(chunk, "content_block") and hasattr(
-                (content_block := getattr(chunk, "content_block")), "text"
-            ):
-                current_text_block.text += getattr(content_block, "text")
+        yield AnthropicCallResponseChunk(chunk=chunk), tool

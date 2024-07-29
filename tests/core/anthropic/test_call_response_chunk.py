@@ -1,21 +1,13 @@
 """Tests the `anthropic.call_response_chunk` module."""
 
 from anthropic.types import (
-    InputJsonDelta,
     Message,
-    MessageDeltaUsage,
     RawContentBlockDeltaEvent,
-    RawContentBlockStartEvent,
-    RawContentBlockStopEvent,
-    RawMessageDeltaEvent,
     RawMessageStartEvent,
-    RawMessageStopEvent,
     TextBlock,
     TextDelta,
-    ToolUseBlock,
     Usage,
 )
-from anthropic.types.raw_message_delta_event import Delta
 
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
 

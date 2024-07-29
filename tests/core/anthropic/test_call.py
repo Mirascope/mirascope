@@ -15,13 +15,13 @@ from mirascope.core.anthropic.tool import AnthropicTool
 def test_anthropic_call() -> None:
     """Tests the `anthropic_call` decorator."""
 
-    if "mirascope.core.anthropic.call" in sys.modules:
-        del sys.modules["mirascope.core.anthropic.call"]
+    if "mirascope.core.anthropic._call" in sys.modules:
+        del sys.modules["mirascope.core.anthropic._call"]
 
     with patch(
         "mirascope.core.base.call_factory", new_callable=MagicMock
     ) as mock_call_factory:
-        import mirascope.core.anthropic.call  # noqa: F401
+        import mirascope.core.anthropic._call  # noqa: F401
 
         mock_call_factory.assert_called_once_with(
             TCallResponse=AnthropicCallResponse,

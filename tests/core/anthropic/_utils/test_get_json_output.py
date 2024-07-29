@@ -2,10 +2,11 @@
 
 import pytest
 from anthropic.types import (
+    InputJsonDelta,
     Message,
-    MessageParam,
+    RawContentBlockDeltaEvent,
     TextBlock,
-    ToolResultBlockParam,
+    TextDelta,
     ToolUseBlock,
     Usage,
 )
@@ -51,6 +52,13 @@ def test_get_json_output_call_response() -> None:
         get_json_output(call_response, json_mode=True)
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
     )
+    completion.content[0] = ToolUseBlock(
+        type="tool_use",
+        id="id",
+        input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+        name="FormatBook",
+    )
+
     assert (
         get_json_output(call_response, json_mode=False)
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
@@ -59,43 +67,37 @@ def test_get_json_output_call_response() -> None:
     completion.content[0] = ToolUseBlock(
         id="id", input=None, name="FormatBook", type="tool_use"
     )
+
     with pytest.raises(
         ValueError, match="No tool call or JSON object found in response."
     ):
         get_json_output(call_response, json_mode=False)
 
 
-# def test_get_json_output_call_response_chunk() -> None:
-#     """Tests the `get_json_output` function with a call response chunk."""
-#     tool_call = ChoiceDeltaToolCall(
-#         index=0,
-#         id="id",
-#         function=ChoiceDeltaToolCallFunction(
-#             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
-#             name="function",
-#         ),
-#         type="function",
-#     )
-#     choices = [
-#         ChunkChoice(
-#             delta=ChoiceDelta(content="json_output", tool_calls=[tool_call]),
-#             index=0,
-#             finish_reason="stop",
-#         )
-#     ]
-#     chunk = ChatCompletionChunk(
-#         id="id",
-#         choices=choices,
-#         created=0,
-#         model="gpt-4o",
-#         object="chat.completion.chunk",
-#     )
-#     call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
-#     assert get_json_output(call_response_chunk, json_mode=True) == "json_output"
-#     assert (
-#         get_json_output(call_response_chunk, json_mode=False)
-#         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
-#     )
+def test_get_json_output_call_response_chunk() -> None:
+    """Tests the `get_json_output` function with a call response chunk."""
+    tool_call = InputJsonDelta(
+        type="input_json_delta",
+        partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+    )
+    chunk = RawContentBlockDeltaEvent(
+        index=0,
+        delta=TextDelta(
+            text="json_output",
+            type="text_delta",
+        ),
+        type="content_block_delta",
+    )
+    call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
+    assert get_json_output(call_response_chunk, json_mode=True) == "json_output"
+    chunk.delta = tool_call
+    assert (
+        get_json_output(call_response_chunk, json_mode=False)
+        == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+    )
+    chunk.delta = InputJsonDelta(
+        type="input_json_delta",
+        partial_json="",
+    )
 
-#     chunk.choices[0].delta.tool_calls = None
-#     assert get_json_output(call_response_chunk, json_mode=False) == ""
+    assert get_json_output(call_response_chunk, json_mode=False) == ""
