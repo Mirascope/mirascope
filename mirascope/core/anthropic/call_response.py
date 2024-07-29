@@ -1,6 +1,12 @@
 """This module contains the `AnthropicCallResponse` class."""
 
-from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
+from anthropic.types import (
+    Message,
+    MessageParam,
+    ToolResultBlockParam,
+    ToolUseBlock,
+    Usage,
+)
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
@@ -82,13 +88,12 @@ class AnthropicCallResponse(
             return None
 
         extracted_tools = []
-        for tool_call in self.response.content:
-            if tool_call.type != "tool_use":
+        for content in self.response.content:
+            if content.type != "tool_use":
                 continue
             for tool_type in self.tool_types:
-                if tool_call.name == tool_type._name():
-                    tool = tool_type.from_tool_call(tool_call)
-                    extracted_tools.append(tool)
+                if content.name == tool_type._name():
+                    extracted_tools.append(tool_type.from_tool_call(content))
                     break
 
         return extracted_tools

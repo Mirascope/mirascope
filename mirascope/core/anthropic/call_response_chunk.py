@@ -4,8 +4,10 @@ from anthropic.types import (
     MessageDeltaUsage,
     MessageStartEvent,
     MessageStreamEvent,
+    RawContentBlockStartEvent,
     RawMessageDeltaEvent,
     RawMessageStartEvent,
+    ToolUseBlock,
     Usage,
 )
 
