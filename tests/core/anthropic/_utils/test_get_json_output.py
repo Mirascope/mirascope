@@ -95,9 +95,10 @@ def test_get_json_output_call_response_chunk() -> None:
         get_json_output(call_response_chunk, json_mode=False)
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
     )
-    chunk.delta = InputJsonDelta(
-        type="input_json_delta",
-        partial_json="",
+    chunk.delta = TextDelta(
+        type="text_delta",
+        text="",
     )
+    chunk.type
 
     assert get_json_output(call_response_chunk, json_mode=False) == ""

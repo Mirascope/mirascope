@@ -50,7 +50,6 @@ def test_anthropic_call_response() -> None:
     assert call_response.model == "claude-3-5-sonnet-20240620"
     assert call_response.id == "id"
     assert call_response.finish_reasons == ["end_turn"]
-    assert call_response.tool_calls is None
     assert call_response.tools is None
     assert call_response.tool is None
     assert call_response.usage == usage
@@ -75,9 +74,10 @@ def test_anthropic_call_response_with_tools() -> None:
         name="FormatBook",
         type="tool_use",
     )
+    content = TextBlock(text="content", type="text")
     completion = Message(
         id="id",
-        content=[tool_call],
+        content=[tool_call, content],
         model="claude",
         role="assistant",
         stop_reason="end_turn",
@@ -99,7 +99,6 @@ def test_anthropic_call_response_with_tools() -> None:
         start_time=0,
         end_time=0,
     )
-    assert call_response.tool_calls == [tool_call]
     tools = call_response.tools
     tool = call_response.tool
     assert tools and len(tools) == 1 and tools[0] == tool

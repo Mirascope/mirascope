@@ -86,7 +86,9 @@ def test_anthropic_stream() -> None:
     def generator():
         for chunk in chunks:
             call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
-            if tool_call := call_response_chunk.tool_call:
+            if isinstance(call_response_chunk.chunk, RawContentBlockStartEvent) and (
+                tool_call := call_response_chunk.chunk.content_block
+            ):
                 tool_call = ToolUseBlock(
                     id="tool_id",
                     input={
@@ -119,7 +121,6 @@ def test_anthropic_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    # TODO: Verify if this is correct
     assert stream.cost == 3.3e-05
     assert stream.message_param == {
         "role": "assistant",

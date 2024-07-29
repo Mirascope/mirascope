@@ -38,31 +38,11 @@ def test_anthropic_tool() -> None:
         name="FormatBook",
         description="Returns the title and author nicely formatted.",
         input_schema={
-            "$defs": {
-                "ToolUseBlock": {
-                    "additionalProperties": True,
-                    "properties": {
-                        "id": {"title": "Id", "type": "string"},
-                        "input": {"title": "Input"},
-                        "name": {"title": "Name", "type": "string"},
-                        "type": {
-                            "const": "tool_use",
-                            "enum": ["tool_use"],
-                            "title": "Type",
-                            "type": "string",
-                        },
-                    },
-                    "required": ["id", "input", "name", "type"],
-                    "title": "ToolUseBlock",
-                    "type": "object",
-                }
-            },
             "properties": {
-                "tool_call": {"$ref": "#/$defs/ToolUseBlock"},
                 "title": {"title": "Title", "type": "string"},
                 "author": {"title": "Author", "type": "string"},
             },
-            "required": ["tool_call", "title", "author"],
+            "required": ["title", "author"],
             "type": "object",
         },
     )

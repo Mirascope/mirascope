@@ -76,16 +76,6 @@ class AnthropicCallResponse(
         """Returns the finish reasons of the response."""
         return [str(self.response.stop_reason)]
 
-    @property
-    def tool_calls(self) -> list[ToolUseBlock] | None:
-        if not self.tool_types:
-            return None
-        tool_calls = []
-        for tool_call in self.response.content:
-            if tool_call.type == "tool_use":
-                tool_calls.append(tool_call)
-        return tool_calls
-
     @computed_field
     @property
     def tools(self) -> list[AnthropicTool] | None:
@@ -94,14 +84,16 @@ class AnthropicCallResponse(
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls:
+        if not self.tool_types:
             return None
 
         extracted_tools = []
-        for tool_call in self.tool_calls:
+        for content in self.response.content:
+            if content.type != "tool_use":
+                continue
             for tool_type in self.tool_types:
-                if tool_call.name == tool_type._name():
-                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                if content.name == tool_type._name():
+                    extracted_tools.append(tool_type.from_tool_call(content))
                     break
 
         return extracted_tools

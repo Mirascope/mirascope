@@ -66,5 +66,4 @@ def setup_call(
     if client is None:
         client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
     create = client.messages.create
-
     return create, prompt_template, messages, tool_types, call_kwargs

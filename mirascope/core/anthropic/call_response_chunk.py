@@ -69,13 +69,6 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         return None
 
     @property
-    def tool_call(self) -> ToolUseBlock | None:
-        """Returns the tool use block if the chunk is a tool use block."""
-        if isinstance(self.chunk, RawContentBlockStartEvent):
-            if self.chunk.content_block.type == "tool_use":
-                return self.chunk.content_block
-
-    @property
     def usage(self) -> Usage | MessageDeltaUsage | None:
         """Returns the usage of the message."""
         if isinstance(self.chunk, MessageStartEvent):

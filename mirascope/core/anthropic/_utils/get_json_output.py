@@ -29,7 +29,6 @@ def get_json_output(
             response.chunk.type == "content_block_delta"
             and (delta := response.chunk.delta)
             and delta.type == "input_json_delta"
-            and delta.partial_json
         ):
             return delta.partial_json
         return ""

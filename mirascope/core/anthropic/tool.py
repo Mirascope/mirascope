@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 
 from anthropic.types import ToolParam, ToolUseBlock
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
@@ -12,7 +13,7 @@ from ..base import BaseTool
 class AnthropicTool(BaseTool):
     """A class for defining tools for Anthropic LLM calls."""
 
-    tool_call: ToolUseBlock
+    tool_call: SkipJsonSchema[ToolUseBlock]
 
     @classmethod
     def tool_schema(cls) -> ToolParam:

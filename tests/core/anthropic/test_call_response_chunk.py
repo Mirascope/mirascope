@@ -40,7 +40,6 @@ def test_anthropic_call_response_chunk() -> None:
     assert call_response_chunk_0.model == "claude-3-5-sonnet-20240620"
     assert call_response_chunk_0.id == "id"
     assert call_response_chunk_0.finish_reasons == ["end_turn"]
-    assert call_response_chunk_0.tool_call is None
     assert call_response_chunk_0.usage == usage
     assert call_response_chunk_0.input_tokens == 1
     assert call_response_chunk_0.output_tokens == 1
