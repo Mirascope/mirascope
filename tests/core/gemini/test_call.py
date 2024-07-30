@@ -12,7 +12,7 @@ from mirascope.core.gemini.stream import GeminiStream
 from mirascope.core.gemini.tool import GeminiTool
 
 
-def test_openai_call() -> None:
+def test_gemini_call() -> None:
     """Tests the `gemini_call` decorator."""
 
     if "mirascope.core.gemini._call" in sys.modules:

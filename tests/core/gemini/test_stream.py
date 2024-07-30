@@ -1,4 +1,4 @@
-"""Tests the `openai.stream` module."""
+"""Tests the `gemini.stream` module."""
 
 from google.ai.generativelanguage import (
     Candidate,
