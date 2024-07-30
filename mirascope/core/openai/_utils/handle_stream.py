@@ -20,7 +20,11 @@ def _handle_chunk(
     type[OpenAITool] | None,
 ]:
     """Handles a chunk of the stream."""
-    if not tool_types or not (tool_calls := chunk.choices[0].delta.tool_calls):
+    if (
+        not tool_types
+        or not chunk.choices
+        or not (tool_calls := chunk.choices[0].delta.tool_calls)
+    ):
         return None, current_tool_call, current_tool_type
 
     tool_call = tool_calls[0]
@@ -69,7 +73,7 @@ def handle_stream(
     )
     current_tool_type = None
     for chunk in stream:
-        if not tool_types or not chunk.choices[0].delta.tool_calls:
+        if not tool_types or not chunk.choices or not chunk.choices[0].delta.tool_calls:
             if current_tool_type:
                 yield (
                     OpenAICallResponseChunk(chunk=chunk),

@@ -1,11 +1,6 @@
 """This module contains the `MistralCallResponseChunk` class."""
 
-from mistralai.models.chat_completion import (
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
-    DeltaMessage,
-    ToolCall,
-)
+from mistralai.models.chat_completion import ChatCompletionStreamResponse
 from mistralai.models.common import UsageInfo
 
 from ..base import BaseCallResponseChunk
@@ -35,24 +30,18 @@ class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamRespons
     '''
 
     @property
-    def choices(self) -> list[ChatCompletionResponseStreamChoice]:
-        """Returns the array of chat completion choices."""
-        return self.chunk.choices
-
-    @property
-    def choice(self) -> ChatCompletionResponseStreamChoice:
-        """Returns the 0th choice."""
-        return self.choices[0]
-
-    @property
-    def delta(self) -> DeltaMessage:
-        """Returns the delta of the 0th choice."""
-        return self.choice.delta
-
-    @property
     def content(self) -> str:
         """Returns the content of the delta."""
-        return self.delta.content if self.delta.content is not None else ""
+        delta = self.chunk.choices[0].delta
+        return delta.content if delta.content is not None else ""
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        return [
+            choice.finish_reason if choice.finish_reason else ""
+            for choice in self.chunk.choices
+        ]
 
     @property
     def model(self) -> str:
@@ -63,19 +52,6 @@ class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamRespons
     def id(self) -> str:
         """Returns the id of the response."""
         return self.chunk.id
-
-    @property
-    def finish_reasons(self) -> list[str]:
-        """Returns the finish reasons of the response."""
-        return [
-            choice.finish_reason if choice.finish_reason else ""
-            for choice in self.choices
-        ]
-
-    @property
-    def tool_calls(self) -> list[ToolCall] | None:
-        """Returns the partial tool calls for the 0th choice message."""
-        return self.delta.tool_calls
 
     @property
     def usage(self) -> UsageInfo | None:

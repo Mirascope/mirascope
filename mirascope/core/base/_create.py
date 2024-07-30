@@ -106,7 +106,7 @@ def create_factory(
             output = TCallResponse(
                 metadata=get_metadata(fn, dynamic_config),
                 response=response,
-                tool_types=tool_types,
+                tool_types=tool_types,  # type: ignore
                 prompt_template=prompt_template,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,
@@ -144,7 +144,7 @@ def create_factory(
             output = TCallResponse(
                 metadata=get_metadata(fn, dynamic_config),
                 response=response,
-                tool_types=tool_types,
+                tool_types=tool_types,  # type: ignore
                 prompt_template=prompt_template,
                 fn_args=fn_args,
                 dynamic_config=dynamic_config,

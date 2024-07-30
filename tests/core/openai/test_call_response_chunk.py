@@ -39,14 +39,10 @@ def test_openai_call_response_chunk() -> None:
         usage=usage,
     )
     call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
-    assert call_response_chunk.choices == choices
-    assert call_response_chunk.choice == choices[0]
-    assert call_response_chunk.delta == choices[0].delta
     assert call_response_chunk.content == "content"
+    assert call_response_chunk.finish_reasons == ["stop"]
     assert call_response_chunk.model == "gpt-4o"
     assert call_response_chunk.id == "id"
-    assert call_response_chunk.finish_reasons == ["stop"]
-    assert call_response_chunk.tool_calls == [tool_call]
     assert call_response_chunk.usage == usage
     assert call_response_chunk.input_tokens == 1
     assert call_response_chunk.output_tokens == 1
@@ -63,8 +59,7 @@ def test_openai_call_response_chunk_no_choices_or_usage() -> None:
         usage=None,
     )
     call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
-    assert call_response_chunk.delta is None
+    assert call_response_chunk.content == ""
     assert call_response_chunk.usage is None
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
-    assert call_response_chunk.tool_calls is None

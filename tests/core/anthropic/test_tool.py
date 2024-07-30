@@ -29,8 +29,9 @@ def test_anthropic_tool() -> None:
     )
 
     tool = FormatBook.from_tool_call(tool_call)
-    assert isinstance(tool, FormatBook)
     assert isinstance(tool, BaseTool)
+    assert isinstance(tool, AnthropicTool)
+    assert isinstance(tool, FormatBook)
     assert tool.title == "The Name of the Wind"
     assert tool.author == "Patrick Rothfuss"
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"

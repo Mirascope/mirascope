@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from google.generativeai.protos import FunctionCall, FunctionResponse  # type: ignore
+from google.generativeai.protos import FunctionResponse  # type: ignore
 from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
     ContentDict,
@@ -52,6 +52,68 @@ class GeminiCallResponse(
 
     _provider = "gemini"
 
+    @property
+    def content(self) -> str:
+        """Returns the contained string content for the 0th choice."""
+        return self.response.candidates[0].content.parts[0].text
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        finish_reasons = [
+            "FINISH_REASON_UNSPECIFIED",
+            "STOP",
+            "MAX_TOKENS",
+            "SAFETY",
+            "RECITATION",
+            "OTHER",
+        ]
+
+        return [
+            finish_reasons[candidate.finish_reason]
+            for candidate in self.response.candidates
+        ]
+
+    @property
+    def model(self) -> str:
+        """Returns the model name.
+
+        google.generativeai does not return model, so we return the model provided by
+        the user.
+        """
+        return self._model
+
+    @property
+    def id(self) -> Optional[str]:
+        """Returns the id of the response.
+
+        google.generativeai does not return an id
+        """
+        return None
+
+    @property
+    def usage(self) -> None:
+        """Returns the usage of the chat completion.
+
+        google.generativeai does not have Usage, so we return None
+        """
+        return None
+
+    @property
+    def input_tokens(self) -> None:
+        """Returns the number of input tokens."""
+        return None
+
+    @property
+    def output_tokens(self) -> None:
+        """Returns the number of output tokens."""
+        return None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+
     @computed_field
     @property
     def message_param(self) -> ContentDict:
@@ -65,17 +127,9 @@ class GeminiCallResponse(
         if self.tool_types is None:
             return None
 
-        if self.finish_reasons[0] != "STOP":
-            raise RuntimeError(
-                "Generation stopped before the stop sequence. "
-                "This is likely due to a limit on output tokens that is too low. "
-                "Note that this could also indicate no tool is beind called, so we "
-                "recommend that you check the output of the call to confirm."
-                f"Finish Reason: {self.finish_reasons[0]}"
-            )
-
         extracted_tools = []
-        for tool_call in self.tool_calls:
+        for part in self.response.candidates[0].content.parts:
+            tool_call = part.function_call
             for tool_type in self.tool_types:
                 if tool_call.name == tool_type._name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
@@ -105,72 +159,3 @@ class GeminiCallResponse(
             FunctionResponse(name=tool._name(), response={"result": output})
             for tool, output in tools_and_outputs
         ]
-
-    @property
-    def tool_calls(self) -> list[FunctionCall]:
-        """Returns the tool calls for the 0th candidate content."""
-        return [
-            part.function_call for part in self.response.candidates[0].content.parts
-        ]
-
-    @property
-    def content(self) -> str:
-        """Returns the contained string content for the 0th choice."""
-        return self.response.candidates[0].content.parts[0].text
-
-    @property
-    def id(self) -> Optional[str]:
-        """Returns the id of the response.
-
-        google.generativeai does not return an id
-        """
-        return None
-
-    @property
-    def finish_reasons(self) -> list[str]:
-        """Returns the finish reasons of the response."""
-        finish_reasons = [
-            "FINISH_REASON_UNSPECIFIED",
-            "STOP",
-            "MAX_TOKENS",
-            "SAFETY",
-            "RECITATION",
-            "OTHER",
-        ]
-
-        return [
-            finish_reasons[candidate.finish_reason]
-            for candidate in self.response.candidates
-        ]
-
-    @property
-    def model(self) -> str:
-        """Returns the model name.
-
-        google.generativeai does not return model, so we return the model provided by
-        the user.
-        """
-        return self._model
-
-    @property
-    def usage(self) -> None:
-        """Returns the usage of the chat completion.
-
-        google.generativeai does not have Usage, so we return None
-        """
-        return None
-
-    @property
-    def input_tokens(self) -> None:
-        """Returns the number of input tokens."""
-        return None
-
-    @property
-    def output_tokens(self) -> None:
-        """Returns the number of output tokens."""
-        return None
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

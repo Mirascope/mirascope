@@ -1,5 +1,7 @@
 """Get JSON output from a Gemini response."""
 
+import json
+
 from ..call_response import GeminiCallResponse
 from ..call_response_chunk import GeminiCallResponseChunk
 
@@ -11,8 +13,12 @@ def get_json_output(
     if isinstance(response, GeminiCallResponse):
         if json_mode and response.content:
             return response.content
-        elif tool_calls := response.tool_calls:
-            return tool_calls[0].function_call.args
+        elif tool_calls := [
+            part.function_call
+            for part in response.response.parts
+            if part.function_call.args
+        ]:
+            return json.dumps({k: v for k, v in tool_calls[0].args.items()})
         else:
             raise ValueError("No tool call or JSON object found in response.")
     elif not json_mode:

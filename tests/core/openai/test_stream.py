@@ -76,7 +76,7 @@ def test_openai_stream() -> None:
         nonlocal tool_call
         for chunk in chunks:
             call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
-            if tool_calls := call_response_chunk.tool_calls:
+            if tool_calls := call_response_chunk.chunk.choices[0].delta.tool_calls:
                 assert tool_calls[0].function
                 tool_call = ChatCompletionMessageToolCall(
                     id="id",

@@ -32,8 +32,9 @@ def test_openai_tool() -> None:
     )
 
     tool = FormatBook.from_tool_call(tool_call)
-    assert isinstance(tool, FormatBook)
     assert isinstance(tool, BaseTool)
+    assert isinstance(tool, OpenAITool)
+    assert isinstance(tool, FormatBook)
     assert tool.title == "The Name of the Wind"
     assert tool.author == "Patrick Rothfuss"
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"

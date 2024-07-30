@@ -1,3 +1,5 @@
+"""This module contains the `GeminiCallResponseChunk` class."""
+
 from google.generativeai.types import GenerateContentResponse  # type: ignore
 
 from ..base import BaseCallResponseChunk
@@ -41,14 +43,6 @@ class GeminiCallResponseChunk(BaseCallResponseChunk[GenerateContentResponse]):
         return self.chunk.candidates[0].content.parts[0].text
 
     @property
-    def id(self) -> str | None:
-        """Returns the id of the response.
-
-        google.generativeai does not return an id
-        """
-        return None
-
-    @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         finish_reasons = [
@@ -70,6 +64,14 @@ class GeminiCallResponseChunk(BaseCallResponseChunk[GenerateContentResponse]):
         """Returns the model name.
 
         google.generativeai does not return model, so we return None
+        """
+        return None
+
+    @property
+    def id(self) -> str | None:
+        """Returns the id of the response.
+
+        google.generativeai does not return an id
         """
         return None
 
