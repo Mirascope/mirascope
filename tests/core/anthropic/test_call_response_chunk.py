@@ -37,13 +37,16 @@ def test_anthropic_call_response_chunk() -> None:
     ]
     call_response_chunk_0 = AnthropicCallResponseChunk(chunk=chunks[0])
     call_response_chunk_1 = AnthropicCallResponseChunk(chunk=chunks[1])
+    assert call_response_chunk_0.finish_reasons == ["end_turn"]
     assert call_response_chunk_0.model == "claude-3-5-sonnet-20240620"
     assert call_response_chunk_0.id == "id"
-    assert call_response_chunk_0.finish_reasons == ["end_turn"]
     assert call_response_chunk_0.usage == usage
     assert call_response_chunk_0.input_tokens == 1
     assert call_response_chunk_0.output_tokens == 1
     assert call_response_chunk_1.content == "content"
-    assert call_response_chunk_1.id is None
     assert call_response_chunk_1.finish_reasons is None
-    assert str(call_response_chunk_1) == "content"
+    assert call_response_chunk_1.model is None
+    assert call_response_chunk_1.id is None
+    assert call_response_chunk_1.usage is None
+    assert call_response_chunk_1.input_tokens is None
+    assert call_response_chunk_1.output_tokens is None

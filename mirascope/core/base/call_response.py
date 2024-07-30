@@ -68,33 +68,13 @@ class BaseCallResponse(
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    @computed_field
-    @property
-    @abstractmethod
-    def message_param(self) -> Any:
-        """Returns the assistant's response as a message parameter."""
-        ...  # pragma: no cover
+    @field_serializer("tool_types")
+    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+        return [{"type": "function", "name": tool._name()} for tool in tool_types or []]
 
-    @computed_field
-    @property
-    @abstractmethod
-    def tools(self) -> list[_BaseToolT] | None:
-        """Returns the tools for the 0th choice message."""
-        ...  # pragma: no cover
-
-    @property
-    @abstractmethod
-    def tool(self) -> _BaseToolT | None:
-        """Returns the 0th tool for the 0th choice message."""
-        ...  # pragma: no cover
-
-    @classmethod
-    @abstractmethod
-    def tool_message_params(
-        cls, tools_and_outputs: list[tuple[_BaseToolT, Any]]
-    ) -> list[Any]:
-        """Returns the tool message parameters for tool call results."""
-        ...  # pragma: no cover
+    def __str__(self) -> str:
+        """Returns the string content of the response."""
+        return self.content
 
     @property
     @abstractmethod
@@ -166,10 +146,30 @@ class BaseCallResponse(
         """
         ...  # pragma: no cover
 
-    @field_serializer("tool_types")
-    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
-        return [{"type": "function", "name": tool._name()} for tool in tool_types or []]
+    @computed_field
+    @property
+    @abstractmethod
+    def message_param(self) -> Any:
+        """Returns the assistant's response as a message parameter."""
+        ...  # pragma: no cover
 
-    def __str__(self) -> str:
-        """Returns the string content of the response."""
-        return self.content
+    @computed_field
+    @property
+    @abstractmethod
+    def tools(self) -> list[_BaseToolT] | None:
+        """Returns the tools for the 0th choice message."""
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
+    def tool(self) -> _BaseToolT | None:
+        """Returns the 0th tool for the 0th choice message."""
+        ...  # pragma: no cover
+
+    @classmethod
+    @abstractmethod
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[_BaseToolT, Any]]
+    ) -> list[Any]:
+        """Returns the tool message parameters for tool call results."""
+        ...  # pragma: no cover

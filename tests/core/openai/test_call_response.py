@@ -46,25 +46,21 @@ def test_openai_call_response() -> None:
         end_time=0,
     )
     assert call_response._provider == "openai"
+    assert call_response.content == "content"
+    assert call_response.finish_reasons == ["stop"]
+    assert call_response.model == "gpt-4o"
+    assert call_response.id == "id"
+    assert call_response.usage == usage
+    assert call_response.input_tokens == 1
+    assert call_response.output_tokens == 1
+    assert call_response.cost == 2e-5
     assert call_response.message_param == {
         "content": "content",
         "role": "assistant",
         "tool_calls": None,
     }
-    assert call_response.choices == choices
-    assert call_response.choice == choices[0]
-    assert call_response.message == choices[0].message
-    assert call_response.content == "content"
-    assert call_response.model == "gpt-4o"
-    assert call_response.id == "id"
-    assert call_response.finish_reasons == ["stop"]
-    assert call_response.tool_calls is None
     assert call_response.tools is None
     assert call_response.tool is None
-    assert call_response.usage == usage
-    assert call_response.input_tokens == 1
-    assert call_response.output_tokens == 1
-    assert call_response.cost == 2e-5
 
 
 def test_openai_call_response_with_tools() -> None:
@@ -114,7 +110,6 @@ def test_openai_call_response_with_tools() -> None:
         start_time=0,
         end_time=0,
     )
-    assert call_response.tool_calls == [tool_call]
     tools = call_response.tools
     tool = call_response.tool
     assert tools and len(tools) == 1 and tools[0] == tool

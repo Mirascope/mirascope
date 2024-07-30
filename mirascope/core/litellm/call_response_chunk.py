@@ -1,11 +1,9 @@
 """This module contains the `LiteLLMCallResponseChunk` class."""
 
+from typing import cast
+
 from litellm.batches.main import ModelResponse
-from openai.types.chat.chat_completion_chunk import (
-    Choice,
-    ChoiceDelta,
-    ChoiceDeltaToolCall,
-)
+from openai.types.chat.chat_completion_chunk import Choice
 from openai.types.completion_usage import CompletionUsage
 
 from ..base import BaseCallResponseChunk
@@ -15,8 +13,8 @@ class LiteLLMCallResponseChunk(BaseCallResponseChunk[ModelResponse]):
     '''A convenience wrapper around the LiteLLM `ChatCompletionChunk` streamed chunks.
 
     When calling the LiteLLM API using a function decorated with `openai_call` and
-    `stream` set to `True`, the stream will contain `LiteLLMResponseChunk` instances with
-    properties that allow for more convenient access to commonly used attributes.
+    `stream` set to `True`, the stream will contain `LiteLLMResponseChunk` instances
+    with properties that allow for more convenient access to commonly used attributes.
 
     Example:
 
@@ -35,28 +33,17 @@ class LiteLLMCallResponseChunk(BaseCallResponseChunk[ModelResponse]):
     '''
 
     @property
-    def choices(self) -> list[Choice]:
-        """Returns the array of chat completion choices."""
-        return self.chunk.choices  # type: ignore
-
-    @property
-    def choice(self) -> Choice:
-        """Returns the 0th choice."""
-        return self.choices[0]
-
-    @property
-    def delta(self) -> ChoiceDelta | None:
-        """Returns the delta for the 0th choice."""
-        if self.choices:
-            return self.choices[0].delta
-        return None
-
-    @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        return (
-            self.delta.content if self.delta is not None and self.delta.content else ""
-        )
+        delta = None
+        if self.chunk.choices:
+            delta = cast(list[Choice], self.chunk.choices)[0].delta
+        return delta.content if delta is not None and delta.content else ""
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        return [str(choice.finish_reason) for choice in self.chunk.choices]
 
     @property
     def model(self) -> str | None:
@@ -67,25 +54,6 @@ class LiteLLMCallResponseChunk(BaseCallResponseChunk[ModelResponse]):
     def id(self) -> str:
         """Returns the id of the response."""
         return self.chunk.id
-
-    @property
-    def finish_reasons(self) -> list[str]:
-        """Returns the finish reasons of the response."""
-        return [str(choice.finish_reason) for choice in self.chunk.choices]
-
-    @property
-    def tool_calls(self) -> list[ChoiceDeltaToolCall] | None:
-        """Returns the partial tool calls for the 0th choice message.
-
-        The first `list[ChoiceDeltaToolCall]` will contain the name of the tool and
-        index, and subsequent `list[ChoiceDeltaToolCall]`s will contain the arguments
-        which will be strings that need to be concatenated with future
-        `list[ChoiceDeltaToolCall]`s to form a complete JSON tool calls. The last
-        `list[ChoiceDeltaToolCall]` will be None indicating end of stream.
-        """
-        if self.delta:
-            return self.delta.tool_calls
-        return None
 
     @property
     def usage(self) -> CompletionUsage | None:

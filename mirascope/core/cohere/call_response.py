@@ -4,13 +4,8 @@ from typing import Any
 
 from cohere.types import (
     ApiMetaBilledUnits,
-    ChatCitation,
-    ChatDocument,
     ChatMessage,
-    ChatSearchQuery,
-    ChatSearchResult,
     NonStreamedChatResponse,
-    ToolCall,
     ToolResult,
 )
 from pydantic import SkipValidation, computed_field
@@ -55,20 +50,15 @@ class CohereCallResponse(
 
     _provider = "cohere"
 
-    @computed_field
-    @property
-    def message_param(self) -> ChatMessage:
-        """Returns the assistant's response as a message parameter."""
-        return ChatMessage(
-            message=self.response.text,
-            tool_calls=self.response.tool_calls,
-            role="assistant",  # type: ignore
-        )
-
     @property
     def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
         return self.response.text
+
+    @property
+    def finish_reasons(self) -> list[str] | None:
+        """Returns the finish reasons of the response."""
+        return [str(self.response.finish_reason)]
 
     @property
     def model(self) -> str:
@@ -84,34 +74,40 @@ class CohereCallResponse(
         return self.response.generation_id
 
     @property
-    def finish_reasons(self) -> list[str] | None:
-        """Returns the finish reasons of the response."""
-        return [str(self.response.finish_reason)]
+    def usage(self) -> ApiMetaBilledUnits | None:
+        """Returns the usage of the response."""
+        if self.response.meta:
+            return self.response.meta.billed_units
+        return None
 
     @property
-    def search_queries(self) -> list[ChatSearchQuery] | None:
-        """Returns the search queries for the 0th choice message."""
-        return self.response.search_queries
+    def input_tokens(self) -> float | None:
+        """Returns the number of input tokens."""
+        if self.usage:
+            return self.usage.input_tokens
+        return None
 
     @property
-    def search_results(self) -> list[ChatSearchResult] | None:
-        """Returns the search results for the 0th choice message."""
-        return self.response.search_results
+    def output_tokens(self) -> float | None:
+        """Returns the number of output tokens."""
+        if self.usage:
+            return self.usage.output_tokens
+        return None
 
     @property
-    def documents(self) -> list[ChatDocument] | None:
-        """Returns the documents for the 0th choice message."""
-        return self.response.documents
+    def cost(self) -> float | None:
+        """Returns the cost of the response."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
+    @computed_field
     @property
-    def citations(self) -> list[ChatCitation] | None:
-        """Returns the citations for the 0th choice message."""
-        return self.response.citations
-
-    @property
-    def tool_calls(self) -> list[ToolCall] | None:
-        """Returns the tool calls for the 0th choice message."""
-        return self.response.tool_calls
+    def message_param(self) -> ChatMessage:
+        """Returns the assistant's response as a message parameter."""
+        return ChatMessage(
+            message=self.response.text,
+            tool_calls=self.response.tool_calls,
+            role="assistant",  # type: ignore
+        )
 
     @computed_field
     @property
@@ -121,11 +117,11 @@ class CohereCallResponse(
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls:
+        if not self.tool_types or not self.response.tool_calls:
             return None
 
         extracted_tools = []
-        for tool_call in self.tool_calls:
+        for tool_call in self.response.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.name == tool_type._name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
@@ -155,29 +151,3 @@ class CohereCallResponse(
             {"call": tool.tool_call, "outputs": output}  # type: ignore
             for tool, output in tools_and_outputs
         ]
-
-    @property
-    def usage(self) -> ApiMetaBilledUnits | None:
-        """Returns the usage of the response."""
-        if self.response.meta:
-            return self.response.meta.billed_units
-        return None
-
-    @property
-    def input_tokens(self) -> float | None:
-        """Returns the number of input tokens."""
-        if self.usage:
-            return self.usage.input_tokens
-        return None
-
-    @property
-    def output_tokens(self) -> float | None:
-        """Returns the number of output tokens."""
-        if self.usage:
-            return self.usage.output_tokens
-        return None
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the response."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

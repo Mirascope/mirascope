@@ -1,11 +1,6 @@
 """This module contains the `MistralCallResponse` class."""
 
-from mistralai.models.chat_completion import (
-    ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatMessage,
-    ToolCall,
-)
+from mistralai.models.chat_completion import ChatCompletionResponse, ChatMessage
 from mistralai.models.common import UsageInfo
 from pydantic import computed_field
 
@@ -49,34 +44,18 @@ class MistralCallResponse(
 
     _provider = "mistral"
 
-    @computed_field
-    @property
-    def message_param(self) -> ChatMessage:
-        """Returns the assistants's response as a message parameter."""
-        return self.message
-
-    @property
-    def choices(self) -> list[ChatCompletionResponseChoice]:
-        """Returns the array of chat completion choices."""
-        return self.response.choices
-
-    @property
-    def choice(self) -> ChatCompletionResponseChoice:
-        """Returns the 0th choice."""
-        return self.choices[0]
-
-    @property
-    def message(self) -> ChatMessage:
-        """Returns the message of the chat completion for the 0th choice."""
-        return self.choice.message
-
     @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
-        content = self.message.content
-        # We haven't seen the `list[str]` response type in practice, so for now we
-        # return the first item in the list
-        return content if isinstance(content, str) else content[0]
+        return self.response.choices[0].message.content
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        return [
+            choice.finish_reason if choice.finish_reason else ""
+            for choice in self.response.choices
+        ]
 
     @property
     def model(self) -> str:
@@ -89,17 +68,30 @@ class MistralCallResponse(
         return self.response.id
 
     @property
-    def finish_reasons(self) -> list[str]:
-        """Returns the finish reasons of the response."""
-        return [
-            choice.finish_reason if choice.finish_reason else ""
-            for choice in self.choices
-        ]
+    def usage(self) -> UsageInfo:
+        """Returns the usage of the chat completion."""
+        return self.response.usage
 
     @property
-    def tool_calls(self) -> list[ToolCall] | None:
-        """Returns the tool calls for the 0th choice message."""
-        return self.message.tool_calls
+    def input_tokens(self) -> int:
+        """Returns the number of input tokens."""
+        return self.usage.prompt_tokens
+
+    @property
+    def output_tokens(self) -> int | None:
+        """Returns the number of output tokens."""
+        return self.usage.completion_tokens
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+
+    @computed_field
+    @property
+    def message_param(self) -> ChatMessage:
+        """Returns the assistants's response as a message parameter."""
+        return self.response.choices[0].message
 
     @computed_field
     @property
@@ -109,11 +101,12 @@ class MistralCallResponse(
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        if not self.tool_types or not self.tool_calls:
+        tool_calls = self.response.choices[0].message.tool_calls
+        if not self.tool_types or not tool_calls:
             return None
 
         extracted_tools = []
-        for tool_call in self.tool_calls:
+        for tool_call in tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.function.name == tool_type._name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
@@ -147,23 +140,3 @@ class MistralCallResponse(
             )
             for tool, output in tools_and_outputs
         ]
-
-    @property
-    def usage(self) -> UsageInfo:
-        """Returns the usage of the chat completion."""
-        return self.response.usage
-
-    @property
-    def input_tokens(self) -> int:
-        """Returns the number of input tokens."""
-        return self.usage.prompt_tokens
-
-    @property
-    def output_tokens(self) -> int | None:
-        """Returns the number of output tokens."""
-        return self.usage.completion_tokens
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)

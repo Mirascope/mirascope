@@ -16,7 +16,9 @@ def convert_message_params(
         if (role := message_param["role"]) == "system":
             content = message_param["content"]
             if len(content) != 1 or content[0]["type"] != "text":
-                raise ValueError("System message must have a single text part.")
+                raise ValueError(
+                    "System message must have a single text part."
+                )  # pragma: no cover
             converted_message_params += [
                 {
                     "role": "user",
@@ -66,7 +68,4 @@ def convert_message_params(
                         {"mime_type": part["media_type"], "data": part["audio"]}
                     )
             converted_message_params.append({"role": role, "parts": converted_content})
-            converted_message_params.append(
-                {"role": message_param["role"], "parts": converted_content}
-            )
     return converted_message_params

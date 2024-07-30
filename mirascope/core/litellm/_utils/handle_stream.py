@@ -1,9 +1,11 @@
 """Handles the stream of completion chunks."""
 
 from collections.abc import AsyncGenerator, Generator
+from typing import cast
 
 from litellm.batches.main import ModelResponse
 from openai.types.chat import ChatCompletionMessageToolCall
+from openai.types.chat.chat_completion_chunk import Choice
 from openai.types.chat.chat_completion_message_tool_call import Function
 
 from ..call_response_chunk import LiteLLMCallResponseChunk
@@ -21,7 +23,11 @@ def _handle_chunk(
     type[LiteLLMTool] | None,
 ]:
     """Handles a chunk of the stream."""
-    if not tool_types or not (tool_calls := chunk.choices[0].delta.tool_calls):  # type: ignore
+    if (
+        not tool_types
+        or not chunk.choices
+        or not (tool_calls := cast(list[Choice], chunk.choices)[0].delta.tool_calls)
+    ):
         return None, current_tool_call, current_tool_type
 
     tool_call = tool_calls[0]

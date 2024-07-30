@@ -42,20 +42,20 @@ def test_anthropic_call_response() -> None:
         end_time=0,
     )
     assert call_response._provider == "anthropic"
-    assert call_response.message_param == {
-        "content": [{"text": "content", "type": "text"}],
-        "role": "assistant",
-    }
     assert call_response.content == "content"
+    assert call_response.finish_reasons == ["end_turn"]
     assert call_response.model == "claude-3-5-sonnet-20240620"
     assert call_response.id == "id"
-    assert call_response.finish_reasons == ["end_turn"]
-    assert call_response.tools is None
-    assert call_response.tool is None
     assert call_response.usage == usage
     assert call_response.input_tokens == 1
     assert call_response.output_tokens == 1
     assert call_response.cost == 1.8e-5
+    assert call_response.message_param == {
+        "content": [{"text": "content", "type": "text"}],
+        "role": "assistant",
+    }
+    assert call_response.tools is None
+    assert call_response.tool is None
 
 
 def test_anthropic_call_response_with_tools() -> None:

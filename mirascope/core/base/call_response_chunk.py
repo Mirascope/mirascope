@@ -25,6 +25,10 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
+    def __str__(self) -> str:
+        """Returns the string content of the chunk."""
+        return self.content
+
     @property
     @abstractmethod
     def content(self) -> str:
@@ -40,6 +44,15 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
 
     @property
     @abstractmethod
+    def finish_reasons(self) -> list[str] | None:
+        """Should return the finish reasons of the response.
+
+        If there is no finish reason, this method must return None.
+        """
+        ...  # pragma: no cover
+
+    @property
+    @abstractmethod
     def model(self) -> str | None:
         """Should return the name of the response model."""
         ...  # pragma: no cover
@@ -48,15 +61,6 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
     @abstractmethod
     def id(self) -> str | None:
         """Should return the id of the response."""
-        ...  # pragma: no cover
-
-    @property
-    @abstractmethod
-    def finish_reasons(self) -> list[str] | None:
-        """Should return the finish reasons of the response.
-
-        If there is no finish reason, this method must return None.
-        """
         ...  # pragma: no cover
 
     @property
@@ -85,7 +89,3 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
         If there is no output_tokens, this method must return None.
         """
         ...  # pragma: no cover
-
-    def __str__(self) -> str:
-        """Returns the string content of the chunk."""
-        return self.content

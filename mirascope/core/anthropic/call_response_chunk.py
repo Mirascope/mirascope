@@ -4,10 +4,8 @@ from anthropic.types import (
     MessageDeltaUsage,
     MessageStartEvent,
     MessageStreamEvent,
-    RawContentBlockStartEvent,
     RawMessageDeltaEvent,
     RawMessageStartEvent,
-    ToolUseBlock,
     Usage,
 )
 
@@ -48,6 +46,13 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         )
 
     @property
+    def finish_reasons(self) -> list[str] | None:
+        """Returns the finish reason of the response."""
+        if isinstance(self.chunk, RawMessageStartEvent):
+            return [str(self.chunk.message.stop_reason)]
+        return None
+
+    @property
     def model(self) -> str | None:
         """Returns the name of the response model."""
         if isinstance(self.chunk, MessageStartEvent):
@@ -59,13 +64,6 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         """Returns the id of the response."""
         if isinstance(self.chunk, MessageStartEvent):
             return self.chunk.message.id
-        return None
-
-    @property
-    def finish_reasons(self) -> list[str] | None:
-        """Returns the finish reason of the response."""
-        if isinstance(self.chunk, RawMessageStartEvent):
-            return [str(self.chunk.message.stop_reason)]
         return None
 
     @property
@@ -90,7 +88,3 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         if self.usage:
             return self.usage.output_tokens
         return None
-
-    def __str__(self) -> str:
-        """Returns the string content of the chunk."""
-        return self.content

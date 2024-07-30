@@ -280,7 +280,7 @@ def stream_factory(
             return TStream(
                 stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
-                tool_types=tool_types,
+                tool_types=tool_types,  # type: ignore
                 call_response_type=TCallResponse,
                 model=model,
                 prompt_template=prompt_template,
@@ -317,7 +317,7 @@ def stream_factory(
             return TStream(
                 stream=generator(),
                 metadata=get_metadata(fn, dynamic_config),
-                tool_types=tool_types,
+                tool_types=tool_types,  # type: ignore
                 call_response_type=TCallResponse,
                 model=model,
                 prompt_template=prompt_template,
