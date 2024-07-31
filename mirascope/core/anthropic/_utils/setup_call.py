@@ -1,7 +1,7 @@
 """This module contains the setup_call function for the Anthropic API."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, cast
 
 from anthropic import (
     Anthropic,
@@ -13,7 +13,7 @@ from anthropic import (
 )
 from anthropic.types import Message, MessageParam
 
-from ...base import BaseTool, TextPart, _utils
+from ...base import BaseMessageParam, BaseTool, TextPart, _utils
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig
 from ..tool import AnthropicTool
@@ -47,20 +47,26 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, AnthropicTool, call_params
     )
+    messages = cast(list[BaseMessageParam | MessageParam], messages)
+    messages = convert_message_params(messages)
+
     if messages[0]["role"] == "system":
         call_kwargs["system"] = messages.pop(0)["content"]
 
     if json_mode:
-        json_mode_part: TextPart = {
-            "type": "text",
-            "text": _utils.json_mode_content(tool_types[0] if tool_types else None),
-        }
-        messages[-1]["content"].append(json_mode_part)
+        json_mode_content = _utils.json_mode_content(
+            tool_types[0] if tool_types else None
+        )
+        if isinstance(messages[-1]["content"], str):
+            messages[-1]["content"] += json_mode_content
+        else:
+            messages[-1]["content"] = list(messages[-1]["content"]) + [
+                {"type": "text", "text": json_mode_content}
+            ]
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
-    messages = convert_message_params(messages)
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:

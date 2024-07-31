@@ -3,40 +3,43 @@
 import io
 
 import PIL.Image
-from google.generativeai.types import ContentsType
+from google.generativeai.types import ContentDict
 
 from ...base import BaseMessageParam
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam],
-) -> list[ContentsType]:
+    message_params: list[BaseMessageParam | ContentDict],
+) -> list[ContentDict]:
     converted_message_params = []
     for message_param in message_params:
-        if (role := message_param["role"]) == "system":
-            content = message_param["content"]
-            if len(content) != 1 or content[0]["type"] != "text":
+        if not isinstance(message_param, BaseMessageParam):
+            converted_message_params.append(message_param)
+        elif (role := message_param.role) == "system":
+            content = message_param.content
+            if not isinstance(message_param.content, str):
                 raise ValueError(
-                    "System message must have a single text part."
+                    "System message content must be a single text string."
                 )  # pragma: no cover
             converted_message_params += [
                 {
                     "role": "user",
-                    "parts": [content[0]["text"]],
+                    "parts": [message_param.content],
                 },
                 {
                     "role": "model",
                     "parts": ["Ok! I will adhere to this system message."],
                 },
             ]
+        elif isinstance((content := message_param.content), str):
+            converted_message_params.append({"role": "user", "parts": [content]})
         else:
-            content = message_param["content"]
             converted_content = []
             for part in content:
-                if part["type"] == "text":
-                    converted_content.append(part["text"])
-                elif part["type"] == "image":
-                    if part["media_type"] not in [
+                if part.type == "text":
+                    converted_content.append(part.text)
+                elif part.type == "image":
+                    if part.media_type not in [
                         "image/jpeg",
                         "image/png",
                         "image/webp",
@@ -44,14 +47,14 @@ def convert_message_params(
                         "image/heif",
                     ]:
                         raise ValueError(
-                            f"Unsupported image media type: {part['media_type']}. "
+                            f"Unsupported image media type: {part.media_type}. "
                             "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
                             "and HEIF images."
                         )
-                    image = PIL.Image.open(io.BytesIO(part["image"]))
+                    image = PIL.Image.open(io.BytesIO(part.image))
                     converted_content.append(image)
                 else:
-                    if part["media_type"] not in [
+                    if part.media_type not in [
                         "audio/wav",
                         "audio/mp3",
                         "audio/aiff",
@@ -60,12 +63,12 @@ def convert_message_params(
                         "audio/flac",
                     ]:
                         raise ValueError(
-                            f"Unsupported audio media type: {part['media_type']}. "
+                            f"Unsupported audio media type: {part.media_type}. "
                             "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
                             "and FLAC audio file types."
                         )
                     converted_content.append(
-                        {"mime_type": part["media_type"], "data": part["audio"]}
+                        {"mime_type": part.media_type, "data": part.audio}
                     )
             converted_message_params.append({"role": role, "parts": converted_content})
     return converted_message_params

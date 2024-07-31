@@ -76,7 +76,7 @@ def test_setup_call_json_mode(
     mock_utils.setup_call = mock_base_setup_call
     mock_utils.json_mode_content = MagicMock()
     mock_base_setup_call.return_value[1] = [
-        {"role": "user", "content": [{"type": "text", "text": "test"}]}
+        {"role": "user", "parts": [{"type": "text", "text": "test"}]}
     ]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
@@ -91,10 +91,7 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert messages[-1]["content"][-1] == {  # type: ignore
-        "type": "text",
-        "text": mock_utils.json_mode_content.return_value,
-    }
+    assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
     assert "tools" not in call_kwargs
 
 

@@ -6,6 +6,7 @@ from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
 from .dynamic_config import MistralDynamicConfig
+from .stream import MistralStream
 from .tool import MistralTool
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "MistralCallParams",
     "MistralCallResponse",
     "MistralCallResponseChunk",
+    "MistralStream",
     "MistralTool",
     "mistral_call",
 ]

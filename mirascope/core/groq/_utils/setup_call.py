@@ -1,12 +1,12 @@
 """This module contains the setup_call function for Groq tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, cast
 
 from groq import AsyncGroq, Groq
 from groq.types.chat import ChatCompletion, ChatCompletionMessageParam
 
-from ...base import BaseTool, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import GroqCallParams
 from ..dynamic_config import GroqDynamicConfig
 from ..tool import GroqTool
@@ -34,6 +34,7 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, GroqTool, call_params
     )
+    messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:
         call_kwargs["response_format"] = {"type": "json_object"}
@@ -41,7 +42,12 @@ def setup_call(
             tool_types[0] if tool_types else None
         )
         if messages[-1]["role"] == "user":
-            messages[-1]["content"] += json_mode_content  # type: ignore
+            if isinstance(messages[-1]["content"], str):
+                messages[-1]["content"] += json_mode_content
+            else:
+                messages[-1]["content"] = list(messages[-1]["content"]) + [
+                    {"type": "text", "text": json_mode_content}
+                ]
         else:
             messages.append({"role": "user", "content": json_mode_content})
         call_kwargs.pop("tools", None)

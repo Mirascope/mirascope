@@ -5,6 +5,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from mirascope.core.base._utils.parse_content_template import parse_content_template
+from mirascope.core.base.message_param import (
+    AudioPart,
+    BaseMessageParam,
+    ImagePart,
+    TextPart,
+)
 
 
 def test_parse_content_template() -> None:
@@ -12,16 +18,10 @@ def test_parse_content_template() -> None:
     assert parse_content_template("user", "", {}) is None
     template = "This is a {var1} template with {var2} variables."
     values = {"var1": "test", "var2": "two"}
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "This is a test template with two variables."}
-        ],
-    }
+    expected = BaseMessageParam(
+        role="user", content="This is a test template with two variables."
+    )
     assert parse_content_template("user", template, values) == expected
-
-    with pytest.raises(ValueError, match="Template type 'unknown' not supported."):
-        parse_content_template("user", "{unknown:url}", {})
 
 
 @patch("mirascope.core.base._utils.parse_content_template.open", new_callable=MagicMock)
@@ -35,62 +35,45 @@ def test_parse_content_template_images(
     setattr(mock_response, "read", lambda: image_data)
     mock_urlopen.return_value.__enter__.return_value = mock_response
     mock_open.return_value.__enter__.return_value = mock_response
-    template = "Analyze this image: {image:url}"
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Analyze this image:"},
-            {
-                "type": "image",
-                "media_type": "image/jpeg",
-                "image": image_data,
-                "detail": None,
-            },
+    template = "Analyze this image: {url:image}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this image:"),
+            ImagePart(
+                type="image", media_type="image/jpeg", image=image_data, detail=None
+            ),
         ],
-    }
+    )
     assert parse_content_template("user", template, {"url": "https://"}) == expected
     assert parse_content_template("user", template, {"url": "./image.jpg"}) == expected
     assert parse_content_template("user", template, {"url": image_data}) == expected
 
-    template = "Analyze this image: {image:url,detail:low}"
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Analyze this image:"},
-            {
-                "type": "image",
-                "media_type": "image/jpeg",
-                "image": image_data,
-                "detail": "low",
-            },
+    template = "Analyze this image: {url:image(detail=low)}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this image:"),
+            ImagePart(
+                type="image", media_type="image/jpeg", image=image_data, detail="low"
+            ),
         ],
-    }
+    )
     assert parse_content_template("user", template, {"url": "https://"}) == expected
 
-    with pytest.raises(ValueError, match="Invalid detail value: standard"):
-        parse_content_template(
-            "user", "{image:url,detail:standard}", {"url": "https://"}
-        )
-
-    template = "Analyze these images: {images:urls}"
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Analyze these images:"},
-            {
-                "type": "image",
-                "media_type": "image/jpeg",
-                "image": image_data,
-                "detail": None,
-            },
-            {
-                "type": "image",
-                "media_type": "image/jpeg",
-                "image": image_data,
-                "detail": None,
-            },
+    template = "Analyze these images: {urls:images}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze these images:"),
+            ImagePart(
+                type="image", media_type="image/jpeg", image=image_data, detail=None
+            ),
+            ImagePart(
+                type="image", media_type="image/jpeg", image=image_data, detail=None
+            ),
         ],
-    }
+    )
     assert (
         parse_content_template("user", template, {"urls": ["https://", "https://."]})
         == expected
@@ -124,39 +107,27 @@ def test_parse_content_template_audio(
     setattr(mock_response, "read", lambda: audio_data)
     mock_urlopen.return_value.__enter__.return_value = mock_response
     mock_open.return_value.__enter__.return_value = mock_response
-    template = "Analyze this audio: {audio:url}"
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Analyze this audio:"},
-            {
-                "type": "audio",
-                "media_type": "audio/mp3",
-                "audio": audio_data,
-            },
+    template = "Analyze this audio: {url:audio}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this audio:"),
+            AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
         ],
-    }
+    )
     assert parse_content_template("user", template, {"url": "https://"}) == expected
     assert parse_content_template("user", template, {"url": "./audio.mp3"}) == expected
     assert parse_content_template("user", template, {"url": audio_data}) == expected
 
-    template = "Analyze these audio files: {audios:urls}"
-    expected = {
-        "role": "user",
-        "content": [
-            {"type": "text", "text": "Analyze these audio files:"},
-            {
-                "type": "audio",
-                "media_type": "audio/mp3",
-                "audio": audio_data,
-            },
-            {
-                "type": "audio",
-                "media_type": "audio/mp3",
-                "audio": audio_data,
-            },
+    template = "Analyze these audio files: {urls:audios}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze these audio files:"),
+            AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
+            AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
         ],
-    }
+    )
     assert (
         parse_content_template("user", template, {"urls": ["https://", "https://."]})
         == expected

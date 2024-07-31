@@ -19,7 +19,7 @@ def format_template(template: str, attrs: dict[str, Any]) -> str:
 
     """
     dedented_template = inspect.cleandoc(template).strip()
-    template_vars = get_template_variables(dedented_template)
+    template_vars = get_template_variables(dedented_template, True)
 
     values = get_template_values(template_vars, attrs)
 

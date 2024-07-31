@@ -55,7 +55,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     @property
     def usage(self) -> CompletionUsage | None:
         """Returns the usage of the chat completion."""
-        if self.chunk.usage:
+        if hasattr(self.chunk, "usage") and self.chunk.usage:
             return self.chunk.usage
         return None
 

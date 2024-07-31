@@ -2,6 +2,7 @@
 
 from mirascope.core.base._utils.setup_call import setup_call
 from mirascope.core.base.dynamic_config import BaseDynamicConfig
+from mirascope.core.base.message_param import BaseMessageParam
 from mirascope.core.base.prompt import prompt_template
 from mirascope.core.base.tool import BaseTool
 
@@ -23,10 +24,7 @@ def test_setup_call() -> None:
 
     assert template == "Recommend a {genre} book."
     assert messages == [
-        {
-            "role": "user",
-            "content": [{"type": "text", "text": "Recommend a fantasy book."}],
-        }
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
     ]
     assert tool_types is None
     assert call_kwargs == {"arg": "value"}
@@ -78,10 +76,7 @@ def test_setup_call_with_dynamic_config() -> None:
 
     assert template == "Recommend a {genre} book."
     assert messages == [
-        {
-            "role": "user",
-            "content": [{"type": "text", "text": "Recommend a fantasy book."}],
-        }
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
     ]
     assert tool_types and len(tool_types) == 2
     tool0, tool1 = tool_types

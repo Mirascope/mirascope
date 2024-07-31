@@ -2,7 +2,7 @@
 
 import re
 import urllib.request
-from typing import Any, List, Literal, cast, get_args
+from typing import Any, Literal, cast
 
 from typing_extensions import TypedDict
 
@@ -11,7 +11,6 @@ from ..message_param import (
     BaseMessageParam,
     ImagePart,
     TextPart,
-    _Detail,
 )
 from .format_template import format_template
 from .get_audio_type import get_audio_type
@@ -23,37 +22,39 @@ _PartType = Literal["text", "image", "images", "audio", "audios"]
 class _Part(TypedDict):
     template: str
     type: _PartType
+    options: dict[str, str] | None
 
 
-class _ImageOptions(TypedDict, total=False):
-    detail: _Detail
-
-
-def _parse_parts(template: str) -> List[_Part]:
+def _parse_parts(template: str) -> list[_Part]:
     # \{ and \} match the literal curly braces.
     #
-    # ([^:{}]+) captures one or more characters that are not : or { or }.
-    # This captures the type (e.g., "image" or "audio").
+    # ([^:{}]+) captures one or more characters that are not { or } or :.
+    # This captures the content before the colon.
     #
     # : matches the literal colon separating the type from the content.
     #
-    # ([^{}]+) captures one or more characters that are not { or }.
-    # This captures the content after the colon.
-    pattern = r"\{([^:{}]+):([^{}]+)\}"
+    # (image|images|audio|audios) captures the supported special type after the colon.
+    #
+    # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
+    pattern = r"\{([^:{}]+):(image|images|audio|audios)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
-    parts: List[_Part] = []
-    for i in range(0, len(split), 3):
+    parts: list[_Part] = []
+    for i in range(0, len(split), 4):
         if split[i]:
-            parts.append(_Part(template=split[i], type="text"))
-        if i + 2 < len(split):
-            special_type = split[i + 1]
-            if special_type not in list(get_args(_PartType)):
-                raise ValueError(f"Template type '{special_type}' not supported.")
-            special_type = cast(_PartType, special_type)  # type: ignore
-            special_content = split[i + 2]
+            parts.append(_Part(template=split[i], type="text", options=None))
+        if i + 3 < len(split):
+            special_content = split[i + 1]
+            special_type = cast(_PartType, split[i + 2])
+            special_options = split[i + 3]
+            if special_options is not None:
+                options: dict[str, str] = {}
+                for option in special_options.split(","):
+                    key, value = option.split("=")
+                    options[key] = value
+                special_options = options
             parts.append(
                 _Part(
-                    template=f"{{{special_type}:{special_content}}}", type=special_type
+                    template=special_content, type=special_type, options=special_options
                 )
             )
     return parts
@@ -78,74 +79,58 @@ def _load_media(source: str | bytes) -> bytes:
         )  # pragma: no cover
 
 
-def _parse_image_options(options_str: str) -> _ImageOptions:
-    options: _ImageOptions = {}
-    for option in options_str.split(","):
-        if not option:
-            continue
-        key, value = option.split(":")
-        if key == "detail":
-            if value not in list(get_args(_Detail)):
-                raise ValueError(f"Invalid detail value: {value}")
-            value = cast(_Detail, value)  # type: ignore
-            options["detail"] = value
-    return options
-
-
-def _construct_image_part(source: str | bytes, options: list[str]) -> ImagePart:
-    options_dict = _parse_image_options(",".join(options))
+def _construct_image_part(
+    source: str | bytes, options: dict[str, str] | None
+) -> ImagePart:
     image = _load_media(source)
-    return {
-        "type": "image",
-        "media_type": f"image/{get_image_type(image)}",
-        "image": image,
-        "detail": options_dict.get("detail"),
-    }
+    detail = None
+    if options:
+        detail = options.get("detail", None)
+    return ImagePart(
+        type="image",
+        media_type=f"image/{get_image_type(image)}",
+        image=image,
+        detail=detail,
+    )
 
 
 def _construct_audio_part(source: str | bytes) -> AudioPart:
     # Note: audio does not currently support additional options, at least for now.
     audio = _load_media(source)
-    return {
-        "type": "audio",
-        "media_type": f"audio/{get_audio_type(audio)}",
-        "audio": audio,
-    }
+    return AudioPart(
+        type="audio", media_type=f"audio/{get_audio_type(audio)}", audio=audio
+    )
 
 
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> List[TextPart | ImagePart | AudioPart]:
+) -> list[TextPart] | list[ImagePart] | list[AudioPart]:
     if part["type"] == "image":
-        path_key, *options = part["template"][7:-1].split(",")
-        source = attrs[path_key]
-        return [_construct_image_part(attrs[path_key], options)] if source else []
+        source = attrs[part["template"]]
+        return [_construct_image_part(source, part["options"])] if source else []
     elif part["type"] == "images":
-        path_key, *options = part["template"][8:-1].split(",")
-        sources = attrs[path_key]
+        sources = attrs[part["template"]]
         if not isinstance(sources, list):
             raise ValueError(
-                f"When using 'images' template, '{path_key}' must be a list."
+                f"When using 'images' template, '{part['template']}' must be a list."
             )
         return (
-            [_construct_image_part(source, options) for source in sources]
+            [_construct_image_part(source, part["options"]) for source in sources]
             if sources
             else []
         )
     elif part["type"] == "audio":
-        path_key = part["template"][7:-1]
-        source = attrs[path_key]
+        source = attrs[part["template"]]
         return [_construct_audio_part(source)] if source else []
     elif part["type"] == "audios":
-        path_key = part["template"][8:-1]
-        sources = attrs[path_key]
+        sources = attrs[part["template"]]
         if not isinstance(sources, list):
             raise ValueError(
-                f"When using 'audios' template, '{path_key}' must be a list."
+                f"When using 'audios' template, '{part['template']}' must be a list."
             )
         return [_construct_audio_part(source) for source in sources] if sources else []
     else:  # text type
-        return [{"type": "text", "text": format_template(part["template"], attrs)}]
+        return [TextPart(type="text", text=format_template(part["template"], attrs))]
 
 
 def parse_content_template(
@@ -155,6 +140,12 @@ def parse_content_template(
     if not template:
         return None
 
-    parts = _parse_parts(template)
-    content = [item for part in parts for item in _construct_parts(part, attrs)]
-    return {"role": role, "content": content}
+    parts = [
+        item
+        for part in _parse_parts(template)
+        for item in _construct_parts(part, attrs)
+    ]
+
+    if len(parts) == 1 and parts[0].type == "text":
+        return BaseMessageParam(role=role, content=parts[0].text)
+    return BaseMessageParam(role=role, content=parts)

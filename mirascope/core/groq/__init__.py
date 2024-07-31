@@ -6,6 +6,7 @@ from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk
 from .dynamic_config import GroqDynamicConfig
+from .stream import GroqStream
 from .tool import GroqTool
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "GroqCallParams",
     "GroqCallResponse",
     "GroqCallResponseChunk",
+    "GroqStream",
     "GroqTool",
     "groq_call",
 ]

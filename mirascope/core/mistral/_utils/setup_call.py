@@ -1,7 +1,7 @@
 """This module contains the setup_call function for Mistral tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, cast
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -13,7 +13,7 @@ from mistralai.models.chat_completion import (
     ToolChoice,
 )
 
-from ...base import BaseTool, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
@@ -42,6 +42,7 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, MistralTool, call_params
     )
+    messages = cast(list[BaseMessageParam | ChatMessage], messages)
     messages = convert_message_params(messages)
     if json_mode:
         call_kwargs["response_format"] = ResponseFormat(

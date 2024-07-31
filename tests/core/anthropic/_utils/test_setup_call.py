@@ -115,6 +115,21 @@ def test_setup_call_json_mode(
     }
     assert "tools" not in call_kwargs
 
+    mock_utils.json_mode_content.return_value = "\n\njson"
+    mock_base_setup_call.return_value[1] = [{"role": "user", "content": "test"}]
+    _, _, messages, _, call_kwargs = setup_call(
+        model="claude-3-5-sonnet-20240620",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,
+        call_params={"max_tokens": 1000},
+        extract=False,
+    )
+    assert messages[-1]["content"] == "test\n\njson"  # type: ignore
+
 
 @patch(
     "mirascope.core.anthropic._utils.setup_call.convert_message_params",
