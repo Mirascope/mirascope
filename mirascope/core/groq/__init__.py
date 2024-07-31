@@ -1,7 +1,7 @@
 """The Mirascope Groq Module."""
 
-from .call import groq_call
-from .call import groq_call as call
+from ._call import groq_call
+from ._call import groq_call as call
 from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk

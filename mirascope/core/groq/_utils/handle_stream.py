@@ -44,8 +44,12 @@ def _handle_chunk(
         if current_tool_type is None:
             raise RuntimeError(
                 f"Unknown tool type in stream: {tool_call.function.name}"
-            )
-        if previous_tool_call.id and previous_tool_type is not None:
+            )  # pragma: no cover
+        if (
+            previous_tool_call.id
+            and previous_tool_call.function.arguments
+            and previous_tool_type is not None
+        ):
             return (
                 previous_tool_type.from_tool_call(previous_tool_call),
                 current_tool_call,

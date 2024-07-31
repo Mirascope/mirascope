@@ -10,30 +10,26 @@ def calculate_cost(
 
     https://wow.groq.com/
 
-    Model                   Input               Output
-    llama2-70b-4096         $0.70 / 1M tokens   $0.80 / 1M tokens
-    llama2-7b-2048          $0.10 / 1M tokens   $0.10 / 1M tokens
-    mixtral-8x7b-32768      $0.27 / 1M tokens   $0.27 / 1M tokens
-    gemma-7b-it             $0.10 / 1M tokens   $0.10 / 1M tokens
-    llama3-70b-8192         $0.59 / 1M tokens   $0.79 / 1M tokens
-    llama3-8b-8192          $0.05 / 1M tokens   $0.10 / 1M tokens
+    Model                                  Input               Output
+    llama-3.1-405b-reasoning               N/A                 N/A
+    llama-3.1-70b-versatile                N/A                 N/A
+    llama-3.1-8b-instant                   N/A                 N/A
+    llama3-groq-70b-8192-tool-use-preview  $0.89 / 1M tokens   $0.89 / 1M tokens
+    llama3-groq-8b-8192-tool-use-preview   $0.19 / 1M tokens   $0.19 / 1M tokens
+    llama3-70b-8192                        $0.59 / 1M tokens   $0.79 / 1M tokens
+    llama3-8b-8192                         $0.05 / 1M tokens   $0.08 / 1M tokens
+    mixtral-8x7b-32768                     $0.27 / 1M tokens   $0.27 / 1M tokens
+    gemma-7b-it                            $0.07 / 1M tokens   $0.07 / 1M tokens
+    gemma2-9b-it                           $0.20 / 1M tokens   $0.20 / 1M tokens
     """
     pricing = {
-        "llama2-70b-4096": {
-            "prompt": 0.000_000_7,
-            "completion": 0.000_000_8,
+        "llama3-groq-70b-8192-tool-use-preview": {
+            "prompt": 0.000_000_89,
+            "completion": 0.000_000_89,
         },
-        "llama2-7b-2048": {
-            "prompt": 0.000_000_1,
-            "completion": 0.000_000_1,
-        },
-        "mixtral-8x7b-32768": {
-            "prompt": 0.000_000_27,
-            "completion": 0.000_000_27,
-        },
-        "gemma-7b-it": {
-            "prompt": 0.000_000_1,
-            "completion": 0.000_000_1,
+        "llama3-groq-8b-8192-tool-use-preview": {
+            "prompt": 0.000_000_19,
+            "completion": 0.000_000_19,
         },
         "llama3-70b-8192": {
             "prompt": 0.000_000_59,
@@ -41,7 +37,19 @@ def calculate_cost(
         },
         "llama3-8b-8192": {
             "prompt": 0.000_000_05,
-            "completion": 0.000_000_10,
+            "completion": 0.000_000_08,
+        },
+        "mixtral-8x7b-32768": {
+            "prompt": 0.000_000_24,
+            "completion": 0.000_000_24,
+        },
+        "gemma-7b-it": {
+            "prompt": 0.000_000_07,
+            "completion": 0.000_000_07,
+        },
+        "gemma2-9b-it": {
+            "prompt": 0.000_000_2,
+            "completion": 0.000_000_2,
         },
     }
 
