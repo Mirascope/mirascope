@@ -6,6 +6,7 @@ from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
+from .stream import AnthropicStream
 from .tool import AnthropicTool
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "AnthropicCallParams",
     "AnthropicCallResponse",
     "AnthropicCallResponseChunk",
+    "AnthropicStream",
     "AnthropicTool",
     "anthropic_call",
 ]

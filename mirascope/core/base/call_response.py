@@ -51,7 +51,7 @@ class BaseCallResponse(
     """
 
     metadata: Metadata
-    response: _ResponseT
+    response: SkipValidation[_ResponseT]
     tool_types: list[type[_BaseToolT]] | None = None
     prompt_template: str | None
     fn_args: dict[str, Any]

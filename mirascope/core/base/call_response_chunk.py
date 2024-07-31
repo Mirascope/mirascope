@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, SkipValidation
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 
@@ -21,7 +21,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
         cost: The cost of the completion in dollars.
     """
 
-    chunk: _ChunkT
+    chunk: SkipValidation[_ChunkT]
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
