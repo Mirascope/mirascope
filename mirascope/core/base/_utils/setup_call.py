@@ -24,7 +24,7 @@ def setup_call(
     call_params: BaseCallParams,
 ) -> tuple[
     str,
-    list[BaseMessageParam],
+    list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
     dict[str, Any],
 ]:

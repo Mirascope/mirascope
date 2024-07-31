@@ -1,31 +1,31 @@
 """Tests the `openai._utils.convert_message_params` function."""
 
 import pytest
+from openai.types.chat import ChatCompletionMessageParam
 
-from mirascope.core.base import BaseMessageParam
+from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart
 from mirascope.core.openai._utils.convert_message_params import convert_message_params
 
 
 def test_convert_message_params() -> None:
     """Tests the `convert_message_params` function."""
 
-    message_params: list[BaseMessageParam] = [
+    message_params: list[BaseMessageParam | ChatCompletionMessageParam] = [
         {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "image",
-                    "media_type": "image/jpeg",
-                    "image": b"image",
-                    "detail": "auto",
-                }
+        BaseMessageParam(role="user", content="Hello"),
+        BaseMessageParam(
+            role="user",
+            content=[
+                ImagePart(
+                    type="image", media_type="image/jpeg", image=b"image", detail="auto"
+                )
             ],
-        },
+        ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
         {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
+        {"role": "user", "content": "Hello"},
         {
             "role": "user",
             "content": [
@@ -47,17 +47,17 @@ def test_convert_message_params() -> None:
     ):
         convert_message_params(
             [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image",
-                            "media_type": "image/svg",
-                            "image": b"image",
-                            "detail": "auto",
-                        }
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        ImagePart(
+                            type="image",
+                            media_type="image/svg",
+                            image=b"image",
+                            detail="auto",
+                        )
                     ],
-                }
+                )
             ]
         )
 
@@ -68,11 +68,11 @@ def test_convert_message_params() -> None:
     ):
         convert_message_params(
             [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "audio", "media_type": "audio/mp3", "audio": b"audio"}
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        AudioPart(type="audio", media_type="audio/mp3", audio=b"audio")
                     ],
-                }
+                )
             ]
         )

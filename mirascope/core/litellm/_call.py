@@ -1,29 +1,31 @@
 """The `litellm_call` decorator for functions as LLM calls."""
 
 from ..base import call_factory
-from ._utils import (
+from ..openai import (
+    OpenAICallParams,
+    OpenAICallResponse,
+    OpenAICallResponseChunk,
+    OpenAIDynamicConfig,
+    OpenAIStream,
+    OpenAITool,
+)
+from ..openai._utils import (
     get_json_output,
     handle_stream,
     handle_stream_async,
-    setup_call,
 )
-from .call_params import LiteLLMCallParams
-from .call_response import LiteLLMCallResponse
-from .call_response_chunk import LiteLLMCallResponseChunk
-from .dynamic_config import LiteLLMDynamicConfig
-from .stream import LiteLLMStream
-from .tool import LiteLLMTool
+from ._utils import setup_call
 
 litellm_call = call_factory(
-    TCallResponse=LiteLLMCallResponse,
-    TCallResponseChunk=LiteLLMCallResponseChunk,
-    TDynamicConfig=LiteLLMDynamicConfig,
-    TToolType=LiteLLMTool,
-    TStream=LiteLLMStream,
-    TCallParams=LiteLLMCallParams,
-    default_call_params=LiteLLMCallParams(),
+    TCallResponse=OpenAICallResponse,
+    TCallResponseChunk=OpenAICallResponseChunk,
+    TDynamicConfig=OpenAIDynamicConfig,
+    TToolType=OpenAITool,
+    TStream=OpenAIStream,
+    TCallParams=OpenAICallParams,
+    default_call_params=OpenAICallParams(),
     setup_call=setup_call,  # type: ignore
-    get_json_output=get_json_output,
+    get_json_output=get_json_output,  # type: ignore
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
 )
@@ -47,7 +49,7 @@ Args:
     model: The LiteLLM model to use in the API call.
     stream: Whether to stream the response from the API call.
     tools: The tools to use in the LiteLLM API call.
-    **call_params: The `LiteLLMCallParams` call parameters to use in the API call.
+    **call_params: The `OpenAICallParams` call parameters to use in the API call.
 
 Returns:
     The decorator for turning a typed function into an LiteLLM API call.

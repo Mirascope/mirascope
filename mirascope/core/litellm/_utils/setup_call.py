@@ -8,28 +8,26 @@ from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
+from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
 from ...openai._utils import setup_call as setup_call_openai
-from ..call_params import LiteLLMCallParams
-from ..dynamic_config import LiteLLMDynamicConfig
-from ..tool import LiteLLMTool
 
 
 def setup_call(
     *,
     model: str,
     client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[..., LiteLLMDynamicConfig | Awaitable[LiteLLMDynamicConfig]],
+    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: LiteLLMDynamicConfig,
+    dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: LiteLLMCallParams,
+    call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
     str,
     list[ChatCompletionMessageParam],
-    list[type[LiteLLMTool]] | None,
+    list[type[OpenAITool]] | None,
     dict[str, Any],
 ]:
     _, prompt_template, messages, tool_types, call_kwargs = setup_call_openai(

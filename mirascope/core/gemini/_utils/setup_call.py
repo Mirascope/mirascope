@@ -1,16 +1,16 @@
 """This module contains the setup_call function, which is used to set up the"""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, cast
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
-    ContentsType,
+    ContentDict,
     GenerateContentResponse,
 )
 
-from ...base import BaseTool, TextPart, _utils
+from ...base import BaseMessageParam, BaseTool, TextPart, _utils
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
@@ -32,29 +32,28 @@ def setup_call(
     Callable[..., GenerateContentResponse]
     | Callable[..., Awaitable[AsyncGenerateContentResponse]],
     str,
-    list[ContentsType],
+    list[ContentDict],
     list[type[GeminiTool]] | None,
     dict[str, Any],
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, GeminiTool, call_params
     )
+    messages = cast(list[BaseMessageParam | ContentDict], messages)
+    messages = convert_message_params(messages)
     if json_mode:
         generation_config = call_kwargs.get("generation_config", {})
         generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = generation_config
-        json_mode_part: TextPart = {
-            "type": "text",
-            "text": _utils.json_mode_content(tool_types[0] if tool_types else None),
-        }
-        messages[-1]["content"].append(json_mode_part)
+        messages[-1]["parts"].append(
+            _utils.json_mode_content(tool_types[0] if tool_types else None)
+        )
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         tool_config = call_kwargs.get("tool_config", {})
         tool_config["function_calling_config"] = {"mode": "auto"}
         call_kwargs["tool_config"] = tool_config
-    messages = convert_message_params(messages)
     call_kwargs |= {"contents": messages}
 
     if client is None:

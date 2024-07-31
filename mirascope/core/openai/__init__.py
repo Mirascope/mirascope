@@ -6,6 +6,7 @@ from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dynamic_config import OpenAIDynamicConfig
+from .stream import OpenAIStream
 from .tool import OpenAITool
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "OpenAICallParams",
     "OpenAICallResponse",
     "OpenAICallResponseChunk",
+    "OpenAIStream",
     "OpenAITool",
     "openai_call",
 ]

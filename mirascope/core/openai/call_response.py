@@ -8,7 +8,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 from openai.types.completion_usage import CompletionUsage
-from pydantic import computed_field
+from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
@@ -47,6 +47,8 @@ class OpenAICallResponse(
     #> Sure! I would recommend...
     ```
     '''
+
+    response: SkipValidation[ChatCompletion]
 
     _provider = "openai"
 

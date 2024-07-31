@@ -1,12 +1,12 @@
 """This module contains the setup_call function for Cohere tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, cast
 
 from cohere import AsyncClient, Client
 from cohere.types import ChatMessage, NonStreamedChatResponse
 
-from ...base import BaseTool, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import CohereCallParams
 from ..dynamic_config import CohereDynamicConfig
 from ..tool import CohereTool
@@ -35,6 +35,7 @@ def setup_call(
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, CohereTool, call_params
     )
+    messages = cast(list[BaseMessageParam | ChatMessage], messages)
     messages = convert_message_params(messages)
 
     preamble = ""

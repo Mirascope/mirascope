@@ -2,6 +2,7 @@
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.completion_usage import CompletionUsage
+from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
 
@@ -29,6 +30,8 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     ```
     '''
 
+    chunk: SkipValidation[ChatCompletionChunk]
+
     @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
@@ -55,7 +58,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     @property
     def usage(self) -> CompletionUsage | None:
         """Returns the usage of the chat completion."""
-        if self.chunk.usage:
+        if hasattr(self.chunk, "usage") and self.chunk.usage:
             return self.chunk.usage
         return None
 
