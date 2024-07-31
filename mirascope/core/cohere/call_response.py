@@ -1,8 +1,5 @@
 """This module contains the `CohereCallResponse` class."""
 
-from functools import cached_property
-from typing import Any
-
 from cohere.types import (
     ApiMetaBilledUnits,
     ChatMessage,
@@ -144,19 +141,13 @@ class CohereCallResponse(
     @classmethod
     def tool_message_params(
         cls,
-        tools_and_outputs: list[
-            tuple[CohereTool, list[dict[str, Any]] | dict[str, Any] | str]
-        ],
+        tools_and_outputs: list[tuple[CohereTool, str]],
     ) -> list[ToolResult]:
         """Returns the tool message parameters for tool call results."""
         return [
             ToolResult(
                 call=tool.tool_call,
-                outputs=[output]
-                if isinstance(output, dict)
-                else output
-                if isinstance(output, list)
-                else [{"output": output}],
+                outputs=[{"output": output}],
             )
             for tool, output in tools_and_outputs
         ]

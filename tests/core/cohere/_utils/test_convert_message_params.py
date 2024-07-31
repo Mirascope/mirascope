@@ -17,7 +17,6 @@ def test_convert_message_params() -> None:
             role="user",
             content=[
                 TextPart(type="text", text="Hello"),
-                TextPart(type="text", text="Hello"),
             ],
         ),
     ]

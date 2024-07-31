@@ -20,13 +20,12 @@ def convert_message_params(
                 )
             )
         else:
-            if content[0].type != "text":
+            if len(content) != 1 or content[0].type != "text":
                 raise ValueError("Cohere does not currently support multimodalities.")
-            if len(content) > 1:
-                converted_message_params.append(
-                    ChatMessage(
-                        role=message_param.role.upper(),  # type: ignore
-                        message=content[0].text,
-                    )
+            converted_message_params.append(
+                ChatMessage(
+                    role=message_param.role.upper(),  # type: ignore
+                    message=content[0].text,
                 )
+            )
     return converted_message_params
