@@ -21,6 +21,8 @@ class CohereTool(BaseTool):
         model_schema.pop("title", None)
         model_schema.pop("description", None)
         parameter_definitions = None
+        if model_schema["properties"]:
+            model_schema["parameters"] = model_schema
         if "parameters" in model_schema:
             if "$defs" in model_schema["parameters"]:
                 raise ValueError(
@@ -50,5 +52,5 @@ class CohereTool(BaseTool):
     def from_tool_call(cls, tool_call: ToolCall) -> CohereTool:
         """Constructs an `CohereTool` instance from a `tool_call`."""
         model_json = tool_call.parameters
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)

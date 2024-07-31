@@ -1,7 +1,7 @@
 """The Mirascope Cohere Module."""
 
-from .call import cohere_call
-from .call import cohere_call as call
+from ._call import cohere_call
+from ._call import cohere_call as call
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
