@@ -9,6 +9,8 @@ from mirascope.core.base._utils.get_possible_user_message_param import (
 
 def test_get_possible_user_message_param() -> None:
     """Tests the `get_possible_user_message_param` function."""
+    assert get_possible_user_message_param([]) is None
+
     messages = [{"role": "user", "text": "Hello, world!"}]
     assert get_possible_user_message_param(messages) == messages[0]
 

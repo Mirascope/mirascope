@@ -2,31 +2,29 @@
 
 from typing import Literal
 
-from typing_extensions import TypedDict
-
-_Detail = Literal["auto", "low", "high"]
+from pydantic import BaseModel
 
 
-class TextPart(TypedDict):
+class TextPart(BaseModel):
     type: Literal["text"]
     text: str
 
 
-class ImagePart(TypedDict):
+class ImagePart(BaseModel):
     type: Literal["image"]
     media_type: str
     image: bytes
-    detail: _Detail | None
+    detail: str | None
 
 
-class AudioPart(TypedDict):
+class AudioPart(BaseModel):
     type: Literal["audio"]
     media_type: str
     audio: bytes
 
 
-class BaseMessageParam(TypedDict):
+class BaseMessageParam(BaseModel):
     """A base class for message parameters."""
 
     role: str
-    content: list[TextPart | ImagePart | AudioPart]
+    content: str | list[TextPart | ImagePart | AudioPart]

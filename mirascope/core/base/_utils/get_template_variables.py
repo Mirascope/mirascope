@@ -1,9 +1,24 @@
 """This module provides a function to get the variables in a template string."""
 
 from string import Formatter
+from typing import Literal, overload
 
 
-def get_template_variables(template: str) -> list[str]:
+@overload
+def get_template_variables(
+    template: str, include_format_spec: Literal[True]
+) -> list[tuple[str, str | None]]: ...  # pragma: no cover
+
+
+@overload
+def get_template_variables(
+    template: str, include_format_spec: Literal[False]
+) -> list[str]: ...  # pragma: no cover
+
+
+def get_template_variables(
+    template: str, include_format_spec: bool
+) -> list[str] | list[tuple[str, str | None]]:
     """Returns the variables in the given template string.
 
     Args:
@@ -12,4 +27,11 @@ def get_template_variables(template: str) -> list[str]:
     Returns:
         The variables in the template string.
     """
-    return [var for _, var, _, _ in Formatter().parse(template) if var is not None]
+    if include_format_spec:
+        return [
+            (var, format_spec)
+            for _, var, format_spec, _ in Formatter().parse(template)
+            if var
+        ]
+    else:
+        return [var for _, var, _, _ in Formatter().parse(template) if var]

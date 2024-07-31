@@ -24,8 +24,8 @@ def parse_prompt_messages(
     re_roles = "|".join([role.upper() for role in roles] + ["MESSAGES"])
     for match in re.finditer(rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)", template):
         role, content_template = match.group(1).lower(), match.group(2).strip()
-        template_variables = get_template_variables(content_template)
         if role == "messages":
+            template_variables = get_template_variables(content_template, False)
             if template_variables[0].startswith("self"):
                 if "self" not in attrs:
                     raise ValueError(
@@ -36,8 +36,8 @@ def parse_prompt_messages(
                 attr = attrs[template_variables[0]]
             if attr is None or not isinstance(attr, list):
                 raise ValueError(
-                    f"MESSAGES keyword used with attribute `{template_variables[0]}`, "
-                    "which is not a `list` of messages."
+                    f"MESSAGES keyword used with attribute `{template_variables[0]}`"
+                    ", which is not a `list` of messages."
                 )
             messages += attr
         else:

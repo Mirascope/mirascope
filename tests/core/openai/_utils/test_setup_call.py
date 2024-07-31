@@ -85,9 +85,9 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert messages[-1]["content"][-1] == {  # type: ignore
-        "type": "text",
-        "text": mock_utils.json_mode_content.return_value,
+    assert messages[-1] == {
+        "role": "user",
+        "content": mock_utils.json_mode_content.return_value,
     }
     assert "tools" not in call_kwargs
 
@@ -105,14 +105,11 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert messages[-1] == {  # type: ignore
+    assert isinstance(messages[-1], dict) and "content" in messages[-1]
+
+    assert messages[-1] == {
         "role": "user",
-        "content": [
-            {
-                "type": "text",
-                "text": mock_utils.json_mode_content.return_value,
-            }
-        ],
+        "content": mock_utils.json_mode_content.return_value,
     }
 
 

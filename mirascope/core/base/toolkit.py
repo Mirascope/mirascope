@@ -96,13 +96,13 @@ class BaseToolKit(BaseModel, ABC):
                 raise ValueError("The toolkit_tool method must have a docstring")
 
             dedented_template = inspect.cleandoc(template)
-            template_vars = get_template_variables(dedented_template)
+            template_vars = get_template_variables(dedented_template, False)
 
             for var in template_vars:
                 if not var.startswith("self."):
                     raise ValueError(
-                        "The toolkit_tool method must use self. prefix in template variables "
-                        "when creating tools dynamically"
+                        "The toolkit_tool method must use self. prefix in template "
+                        "variables when creating tools dynamically"
                     )
 
                 self_var = var[5:]
@@ -111,7 +111,8 @@ class BaseToolKit(BaseModel, ABC):
                 if self_var in cls.model_fields or hasattr(cls, self_var):
                     continue
                 raise ValueError(
-                    f"The toolkit_tool method template variable {var} is not found in the class"
+                    f"The toolkit_tool method template variable {var} is not found in "
+                    "the class"
                 )
 
             cls._toolkit_tool_methods.append(
