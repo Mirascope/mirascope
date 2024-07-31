@@ -2,6 +2,7 @@
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.completion_usage import CompletionUsage
+from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
 
@@ -28,6 +29,8 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     #> Sure! I would recommend...
     ```
     '''
+
+    chunk: SkipValidation[ChatCompletionChunk]
 
     @property
     def content(self) -> str:
