@@ -12,7 +12,7 @@ from ..base import BaseTool
 class CohereTool(BaseTool):
     """A class for defining tools for Cohere LLM calls."""
 
-    tool_call: SkipJsonSchema[SkipValidation[ToolCall]]
+    tool_call: SkipValidation[SkipJsonSchema[ToolCall]]
 
     @classmethod
     def tool_schema(cls) -> Tool:
@@ -25,7 +25,7 @@ class CohereTool(BaseTool):
             model_schema["parameters"] = model_schema
         if "parameters" in model_schema:
             if "$defs" in model_schema["parameters"]:
-                raise ValueError(
+                raise ValueError(  # pragma: no cover
                     "Unfortunately Cohere's chat API cannot handle nested structures "
                     "with $defs."
                 )
@@ -51,6 +51,6 @@ class CohereTool(BaseTool):
     @classmethod
     def from_tool_call(cls, tool_call: ToolCall) -> CohereTool:
         """Constructs an `CohereTool` instance from a `tool_call`."""
-        model_json = tool_call.parameters
-        model_json["tool_call"] = tool_call
+        model_json = {**tool_call.parameters}
+        model_json["tool_call"] = tool_call.dict()
         return cls.model_validate(model_json)
