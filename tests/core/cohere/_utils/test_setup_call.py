@@ -39,6 +39,8 @@ def test_setup_call(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
+    mock_chat.__name__ = "chat"
+    mock_chat_stream.__name__ = "chat_stream"
     mock_utils.setup_call = mock_base_setup_call
     system_message = "system"
     preamble_message = "preamble"

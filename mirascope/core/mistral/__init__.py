@@ -1,7 +1,7 @@
 """The Mirascope Mistral Module."""
 
-from .call import mistral_call
-from .call import mistral_call as call
+from ._call import mistral_call
+from ._call import mistral_call as call
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk

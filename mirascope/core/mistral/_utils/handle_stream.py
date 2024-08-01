@@ -29,7 +29,7 @@ def _handle_chunk(
 
     tool_call = tool_calls[0]
     # Reset on new tool
-    if tool_call.id and tool_call.function is not None:
+    if tool_call.id != "null" and tool_call.function is not None:
         previous_tool_call = current_tool_call.model_copy()
         previous_tool_type = current_tool_type
         current_tool_call = ToolCall(
@@ -48,7 +48,7 @@ def _handle_chunk(
         if current_tool_type is None:
             raise RuntimeError(
                 f"Unknown tool type in stream: {tool_call.function.name}"
-            )
+            )  # pragma: no cover
         if previous_tool_call.id and previous_tool_type is not None:
             return (
                 previous_tool_type.from_tool_call(previous_tool_call),

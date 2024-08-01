@@ -46,10 +46,10 @@ def setup_call(
                 messages[-1]["content"] += json_mode_content
             else:
                 messages[-1]["content"] = list(messages[-1]["content"]) + [
-                    {"type": "text", "text": json_mode_content}
+                    {"type": "text", "text": json_mode_content.strip()}
                 ]
         else:
-            messages.append({"role": "user", "content": json_mode_content})
+            messages.append({"role": "user", "content": json_mode_content.strip()})
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."

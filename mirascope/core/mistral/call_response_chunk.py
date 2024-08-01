@@ -32,8 +32,10 @@ class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamRespons
     @property
     def content(self) -> str:
         """Returns the content of the delta."""
-        delta = self.chunk.choices[0].delta
-        return delta.content if delta.content is not None else ""
+        delta = None
+        if self.chunk.choices:
+            delta = self.chunk.choices[0].delta
+        return delta.content if delta is not None and delta.content is not None else ""
 
     @property
     def finish_reasons(self) -> list[str]:

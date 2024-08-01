@@ -6,6 +6,7 @@ from typing import Any
 
 import jiter
 from mistralai.models.chat_completion import ToolCall
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
@@ -13,7 +14,7 @@ from ..base import BaseTool
 class MistralTool(BaseTool):
     """A class for defining tools for Mistral LLM calls."""
 
-    tool_call: ToolCall
+    tool_call: SkipJsonSchema[ToolCall]
 
     @classmethod
     def tool_schema(cls) -> dict[str, Any]:
