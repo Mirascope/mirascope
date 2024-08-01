@@ -63,6 +63,8 @@ class CohereCallResponseChunk(
         """Returns the id of the response."""
         if isinstance(self.chunk, StreamedChatResponse_StreamStart):
             return self.chunk.generation_id
+        elif isinstance(self.chunk, StreamedChatResponse_StreamEnd):
+            return self.chunk.response.generation_id
         return None
 
     @property
