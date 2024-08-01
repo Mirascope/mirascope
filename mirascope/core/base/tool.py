@@ -1,12 +1,16 @@
 """This module defines the base class for tools used in LLM calls."""
 
+from __future__ import annotations
+
 import inspect
 from abc import abstractmethod
-from typing import Any, ClassVar
+from typing import Any, Callable, ClassVar, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
 from . import _utils
+
+_BaseToolT = TypeVar("_BaseToolT")
 
 
 class BaseTool(BaseModel):
@@ -42,3 +46,22 @@ class BaseTool(BaseModel):
     def call(self) -> Any:
         """The method to call the tool."""
         ...  # pragma: no cover
+
+    @classmethod
+    def type_from_fn(cls: _BaseToolT, fn: Callable) -> _BaseToolT:
+        """Returns this tool type converted from a function."""
+        return _utils.convert_function_to_base_tool(fn, cls)  # type: ignore
+
+    @classmethod
+    def type_from_base_model_type(
+        cls: _BaseToolT, tool_type: type[BaseModel]
+    ) -> _BaseToolT:
+        """Returns this tool type converted from a given base tool type."""
+        return _utils.convert_base_model_to_base_tool(tool_type, cls)  # type: ignore
+
+    @classmethod
+    def type_from_base_type(
+        cls: _BaseToolT, schema: type[_utils.BaseType]
+    ) -> _BaseToolT:
+        """Returns this tool type converted from a base type."""
+        return _utils.convert_base_type_to_base_tool(schema, cls)  # type: ignore
