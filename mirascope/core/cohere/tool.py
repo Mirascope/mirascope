@@ -17,14 +17,10 @@ class CohereTool(BaseTool):
     @classmethod
     def tool_schema(cls) -> Tool:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
-        model_schema = cls.model_json_schema()
-        model_schema.pop("title", None)
-        model_schema.pop("description", None)
+        model_schema = cls.model_tool_schema()
         parameter_definitions = None
-        if model_schema["properties"]:
-            model_schema["parameters"] = model_schema
-        if "parameters" in model_schema:
-            if "$defs" in model_schema["parameters"]:
+        if "properties" in model_schema:
+            if "$defs" in model_schema["properties"]:
                 raise ValueError(  # pragma: no cover
                     "Unfortunately Cohere's chat API cannot handle nested structures "
                     "with $defs."
@@ -35,12 +31,10 @@ class CohereTool(BaseTool):
                     if "description" in prop_schema
                     else None,
                     type=prop_schema["type"],
-                    required="required" in model_schema["parameters"]
-                    and prop in model_schema["parameters"]["required"],
+                    required="required" in model_schema
+                    and prop in model_schema["required"],
                 )
-                for prop, prop_schema in model_schema["parameters"][
-                    "properties"
-                ].items()
+                for prop, prop_schema in model_schema["properties"].items()
             }
         return Tool(
             name=cls._name(),

@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from mirascope.core.base import BaseToolKit, toolkit, toolkit_tool
+from mirascope.core.base import BaseToolKit, toolkit_tool
 
 
 @pytest.fixture

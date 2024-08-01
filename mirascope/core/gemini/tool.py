@@ -22,10 +22,7 @@ class GeminiTool(BaseTool):
     @classmethod
     def tool_schema(cls) -> Tool:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
-        model_schema = cls.model_json_schema()
-        model_schema.pop("title", None)
-        model_schema.pop("description", None)
-
+        model_schema = cls.model_tool_schema()
         fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
         if model_schema["properties"]:
             fn["parameters"] = model_schema  # type: ignore
@@ -47,7 +44,7 @@ class GeminiTool(BaseTool):
                 prop: {
                     key: value
                     for key, value in handle_enum_schema(prop_schema).items()
-                    if key != "title" and key != "default"
+                    if key != "default"
                 }
                 for prop, prop_schema in fn["parameters"]["properties"].items()
             }

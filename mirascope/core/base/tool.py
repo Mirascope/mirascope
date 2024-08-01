@@ -48,6 +48,30 @@ class BaseTool(BaseModel):
         ...  # pragma: no cover
 
     @classmethod
+    def model_tool_schema(cls) -> dict[str, Any]:
+        """Returns the model_json_schema modified for reduced token usage."""
+        model_schema = cls.model_json_schema()
+        model_schema.pop("title", None)
+        model_schema.pop("description", None)
+
+        def remove_schema_titles(obj):
+            if isinstance(obj, dict):
+                # Remove the 'title' key only if it's a direct child of a schema object
+                if "type" in obj or "$ref" in obj or "properties" in obj:
+                    obj.pop("title", None)
+
+                # Recursively process nested objects
+                for key, value in list(obj.items()):
+                    obj[key] = remove_schema_titles(value)
+            elif isinstance(obj, list):
+                # Recursively process list items
+                return [remove_schema_titles(item) for item in obj]
+
+            return obj
+
+        return remove_schema_titles(model_schema)
+
+    @classmethod
     def type_from_fn(cls: _BaseToolT, fn: Callable) -> _BaseToolT:
         """Returns this tool type converted from a function."""
         return _utils.convert_function_to_base_tool(fn, cls)  # type: ignore
