@@ -17,7 +17,7 @@ from groq.types.chat.chat_completion_message_tool_call import (
     Function,
 )
 
-from mirascope.core.groq._utils.get_json_output import get_json_output
+from mirascope.core.groq._utils._get_json_output import get_json_output
 from mirascope.core.groq.call_response import GroqCallResponse
 from mirascope.core.groq.call_response_chunk import GroqCallResponseChunk
 

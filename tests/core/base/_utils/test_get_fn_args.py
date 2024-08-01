@@ -1,6 +1,6 @@
 """Tests the `_utils.get_fn_args` module."""
 
-from mirascope.core.base._utils.get_fn_args import get_fn_args
+from mirascope.core.base._utils._get_fn_args import get_fn_args
 
 
 def test_get_fn_args() -> None:

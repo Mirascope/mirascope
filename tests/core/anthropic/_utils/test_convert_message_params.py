@@ -3,7 +3,7 @@
 import pytest
 from anthropic.types import MessageParam
 
-from mirascope.core.anthropic._utils.convert_message_params import (
+from mirascope.core.anthropic._utils._convert_message_params import (
     convert_message_params,
 )
 from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart

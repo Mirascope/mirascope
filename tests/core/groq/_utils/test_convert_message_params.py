@@ -4,7 +4,7 @@ import pytest
 from groq.types.chat import ChatCompletionMessageParam
 
 from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
-from mirascope.core.groq._utils.convert_message_params import convert_message_params
+from mirascope.core.groq._utils._convert_message_params import convert_message_params
 
 
 def test_convert_message_params() -> None:

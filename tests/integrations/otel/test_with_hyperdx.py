@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mirascope.integrations.otel.with_hyperdx import with_hyperdx
+from mirascope.integrations.otel._with_hyperdx import with_hyperdx
 
 
 @pytest.fixture
@@ -13,23 +13,23 @@ def mock_env_variable():
 
 
 @patch(
-    "mirascope.integrations.otel.with_hyperdx.with_otel",
+    "mirascope.integrations.otel._with_hyperdx.with_otel",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.otel.with_hyperdx.trace",
+    "mirascope.integrations.otel._with_hyperdx.trace",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.otel.with_hyperdx.configure",
+    "mirascope.integrations.otel._with_hyperdx.configure",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.otel.with_hyperdx.BatchSpanProcessor",
+    "mirascope.integrations.otel._with_hyperdx.BatchSpanProcessor",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.otel.with_hyperdx.OTLPSpanExporter", new_callable=MagicMock
+    "mirascope.integrations.otel._with_hyperdx.OTLPSpanExporter", new_callable=MagicMock
 )
 def test_with_hyperdx(
     mock_otlp_span_exporter: MagicMock,

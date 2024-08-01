@@ -2,7 +2,7 @@
 
 import pytest
 
-from mirascope.core.base._utils.get_audio_type import get_audio_type
+from mirascope.core.base._utils._get_audio_type import get_audio_type
 
 WAV_DATA = b"RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\x00\x00\x00\x00"
 

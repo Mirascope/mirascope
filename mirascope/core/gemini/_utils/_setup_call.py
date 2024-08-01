@@ -14,7 +14,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
-from .convert_message_params import convert_message_params
+from ._convert_message_params import convert_message_params
 
 
 def setup_call(

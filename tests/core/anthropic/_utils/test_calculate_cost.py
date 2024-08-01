@@ -1,6 +1,6 @@
 """Tests the `anthropic._utils.calculate_cost` function."""
 
-from mirascope.core.anthropic._utils.calculate_cost import calculate_cost
+from mirascope.core.anthropic._utils._calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

@@ -11,7 +11,7 @@ from mistralai.models.chat_completion import (
     ToolType,
 )
 
-from mirascope.core.mistral._utils.handle_stream import (
+from mirascope.core.mistral._utils._handle_stream import (
     handle_stream,
     handle_stream_async,
 )

@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from mirascope.core.base._utils.extract_tool_return import extract_tool_return
+from mirascope.core.base._utils._extract_tool_return import extract_tool_return
 
 
 def test_extract_tool_return() -> None:

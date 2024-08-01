@@ -1,6 +1,6 @@
 """Tests the `_utils.json_mode_content` module."""
 
-from mirascope.core.base._utils.json_mode_content import json_mode_content
+from mirascope.core.base._utils._json_mode_content import json_mode_content
 from mirascope.core.base.tool import BaseTool
 
 

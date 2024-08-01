@@ -4,8 +4,8 @@ from typing import Annotated, TypeVar, get_args, get_origin
 
 from pydantic import BaseModel, create_model
 
-from .base_type import BaseType
-from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
+from ._base_type import BaseType
+from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 

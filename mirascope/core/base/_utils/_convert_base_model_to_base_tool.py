@@ -6,7 +6,7 @@ from typing import Any, TypeVar, cast
 
 from pydantic import BaseModel, create_model
 
-from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
+from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 

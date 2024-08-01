@@ -9,7 +9,7 @@ from groq.types.chat.chat_completion_chunk import (
     ChoiceDeltaToolCallFunction,
 )
 
-from mirascope.core.groq._utils.handle_stream import (
+from mirascope.core.groq._utils._handle_stream import (
     handle_stream,
     handle_stream_async,
 )

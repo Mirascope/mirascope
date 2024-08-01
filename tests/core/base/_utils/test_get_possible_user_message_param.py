@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from mirascope.core.base._utils.get_possible_user_message_param import (
+from mirascope.core.base._utils._get_possible_user_message_param import (
     get_possible_user_message_param,
 )
 

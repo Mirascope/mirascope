@@ -14,7 +14,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import OpenAITool
-from .convert_message_params import convert_message_params
+from ._convert_message_params import convert_message_params
 
 
 def setup_call(

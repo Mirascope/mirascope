@@ -11,7 +11,7 @@ from anthropic.types import (
     Usage,
 )
 
-from mirascope.core.anthropic._utils.get_json_output import get_json_output
+from mirascope.core.anthropic._utils._get_json_output import get_json_output
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk

@@ -9,7 +9,7 @@ from cohere.types import (
     ToolCall,
 )
 
-from mirascope.core.cohere._utils.get_json_output import get_json_output
+from mirascope.core.cohere._utils._get_json_output import get_json_output
 from mirascope.core.cohere.call_response import CohereCallResponse
 from mirascope.core.cohere.call_response_chunk import CohereCallResponseChunk
 

@@ -2,7 +2,7 @@
 
 import pytest
 
-from mirascope.core.base._utils.get_image_type import get_image_type
+from mirascope.core.base._utils._get_image_type import get_image_type
 
 JPEG_DATA = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x02\x01\x00e\x00e\x00\x00\xff\xe1\x10>Exif\x00\x00"
 

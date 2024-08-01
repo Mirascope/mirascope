@@ -3,7 +3,7 @@
 import pytest
 from pydantic import BaseModel
 
-from mirascope.core.base._utils.get_template_values import get_template_values
+from mirascope.core.base._utils._get_template_values import get_template_values
 
 
 def test_get_template_values() -> None:

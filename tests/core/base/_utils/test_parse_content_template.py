@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mirascope.core.base._utils.parse_content_template import parse_content_template
+from mirascope.core.base._utils._parse_content_template import parse_content_template
 from mirascope.core.base.message_param import (
     AudioPart,
     BaseMessageParam,
@@ -24,7 +24,9 @@ def test_parse_content_template() -> None:
     assert parse_content_template("user", template, values) == expected
 
 
-@patch("mirascope.core.base._utils.parse_content_template.open", new_callable=MagicMock)
+@patch(
+    "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
+)
 @patch("urllib.request.urlopen", new_callable=MagicMock)
 def test_parse_content_template_images(
     mock_urlopen: MagicMock, mock_open: MagicMock
@@ -96,7 +98,9 @@ def test_parse_content_template_images(
         parse_content_template("user", template, {"urls": None})
 
 
-@patch("mirascope.core.base._utils.parse_content_template.open", new_callable=MagicMock)
+@patch(
+    "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
+)
 @patch("urllib.request.urlopen", new_callable=MagicMock)
 def test_parse_content_template_audio(
     mock_urlopen: MagicMock, mock_open: MagicMock

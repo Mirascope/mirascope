@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 from mirascope.integrations.otel import _utils
-from mirascope.integrations.otel.with_otel import with_otel
+from mirascope.integrations.otel._with_otel import with_otel
 
 
 @patch(
-    "mirascope.integrations.otel.with_otel.middleware_decorator",
+    "mirascope.integrations.otel._with_otel.middleware_decorator",
     new_callable=MagicMock,
 )
 def test_with_otel(mock_middleware_decorator: MagicMock) -> None:

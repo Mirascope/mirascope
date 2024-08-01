@@ -7,9 +7,9 @@ from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
 from ..tool import BaseTool
-from .convert_base_model_to_base_tool import convert_base_model_to_base_tool
-from .convert_function_to_base_tool import convert_function_to_base_tool
-from .parse_prompt_messages import parse_prompt_messages
+from ._convert_base_model_to_base_tool import convert_base_model_to_base_tool
+from ._convert_function_to_base_tool import convert_function_to_base_tool
+from ._parse_prompt_messages import parse_prompt_messages
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)

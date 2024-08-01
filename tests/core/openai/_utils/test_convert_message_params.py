@@ -4,7 +4,7 @@ import pytest
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
-from mirascope.core.openai._utils.convert_message_params import convert_message_params
+from mirascope.core.openai._utils._convert_message_params import convert_message_params
 
 
 def test_convert_message_params() -> None:

@@ -16,7 +16,8 @@ from opentelemetry.sdk.trace.export import (
 )
 from pydantic import BaseModel
 
-from mirascope.integrations.otel import configure, with_otel
+from mirascope.integrations.otel._utils import configure
+from mirascope.integrations.otel._with_otel import with_otel
 
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream

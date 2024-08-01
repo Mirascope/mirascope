@@ -10,7 +10,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import CohereCallParams
 from ..dynamic_config import CohereDynamicConfig
 from ..tool import CohereTool
-from .convert_message_params import convert_message_params
+from ._convert_message_params import convert_message_params
 
 
 def setup_call(

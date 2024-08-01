@@ -1,6 +1,6 @@
 """Tests the `_utils.get_template_variables` module."""
 
-from mirascope.core.base._utils.get_template_variables import get_template_variables
+from mirascope.core.base._utils._get_template_variables import get_template_variables
 
 
 def test_get_template_variables() -> None:

@@ -10,7 +10,7 @@ from cohere.types import (
     ToolCall,
 )
 
-from mirascope.core.cohere._utils.handle_stream import (
+from mirascope.core.cohere._utils._handle_stream import (
     handle_stream,
     handle_stream_async,
 )

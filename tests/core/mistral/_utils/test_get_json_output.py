@@ -14,7 +14,7 @@ from mistralai.models.chat_completion import (
 )
 from mistralai.models.common import UsageInfo
 
-from mirascope.core.mistral._utils.get_json_output import get_json_output
+from mirascope.core.mistral._utils._get_json_output import get_json_output
 from mirascope.core.mistral.call_response import MistralCallResponse
 from mirascope.core.mistral.call_response_chunk import MistralCallResponseChunk
 

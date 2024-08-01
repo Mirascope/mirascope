@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from mistralai.models.chat_completion import ChatMessage, ToolChoice
 
-from mirascope.core.mistral._utils.setup_call import setup_call
+from mirascope.core.mistral._utils._setup_call import setup_call
 from mirascope.core.mistral.tool import MistralTool
 
 
@@ -18,18 +18,18 @@ def mock_base_setup_call() -> MagicMock:
 
 
 @patch(
-    "mirascope.core.mistral._utils.setup_call.MistralClient.chat_stream",
+    "mirascope.core.mistral._utils._setup_call.MistralClient.chat_stream",
     return_value=MagicMock(),
 )
 @patch(
-    "mirascope.core.mistral._utils.setup_call.MistralClient.chat",
+    "mirascope.core.mistral._utils._setup_call.MistralClient.chat",
     return_value=MagicMock(),
 )
 @patch(
-    "mirascope.core.mistral._utils.setup_call.convert_message_params",
+    "mirascope.core.mistral._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.mistral._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.mistral._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -67,10 +67,10 @@ def test_setup_call(
 
 
 @patch(
-    "mirascope.core.mistral._utils.setup_call.convert_message_params",
+    "mirascope.core.mistral._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.mistral._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.mistral._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_json_mode(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -116,10 +116,10 @@ def test_setup_call_json_mode(
 
 
 @patch(
-    "mirascope.core.mistral._utils.setup_call.convert_message_params",
+    "mirascope.core.mistral._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.mistral._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.mistral._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_extract(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,

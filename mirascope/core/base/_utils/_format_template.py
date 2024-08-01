@@ -3,8 +3,8 @@
 import inspect
 from typing import Any
 
-from .get_template_values import get_template_values
-from .get_template_variables import get_template_variables
+from ._get_template_values import get_template_values
+from ._get_template_variables import get_template_variables
 
 
 def format_template(template: str, attrs: dict[str, Any]) -> str:

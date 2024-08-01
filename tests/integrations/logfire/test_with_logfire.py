@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 from mirascope.integrations.logfire import _utils
-from mirascope.integrations.logfire.with_logfire import with_logfire
+from mirascope.integrations.logfire._with_logfire import with_logfire
 
 
 @patch(
-    "mirascope.integrations.logfire.with_logfire.middleware_decorator",
+    "mirascope.integrations.logfire._with_logfire.middleware_decorator",
     new_callable=MagicMock,
 )
 def test_with_logfire(mock_middleware_decorator: MagicMock) -> None:

@@ -1,14 +1,14 @@
 from unittest.mock import MagicMock, patch
 
-from mirascope.integrations.langfuse.with_langfuse import with_langfuse
+from mirascope.integrations.langfuse._with_langfuse import with_langfuse
 
 
 @patch(
-    "mirascope.integrations.langfuse.with_langfuse.middleware_decorator",
+    "mirascope.integrations.langfuse._with_langfuse.middleware_decorator",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse.with_langfuse.observe",
+    "mirascope.integrations.langfuse._with_langfuse.observe",
     new_callable=MagicMock,
 )
 def test_with_langfuse(

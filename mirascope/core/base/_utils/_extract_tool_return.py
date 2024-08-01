@@ -6,8 +6,8 @@ import jiter
 from pydantic import BaseModel
 
 from .._partial import partial
-from .base_type import BaseType, is_base_type
-from .convert_base_type_to_base_tool import convert_base_type_to_base_tool
+from ._base_type import BaseType, is_base_type
+from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
 
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 

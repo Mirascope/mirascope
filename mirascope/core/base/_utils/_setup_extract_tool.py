@@ -4,9 +4,9 @@ from typing import TypeVar
 
 from pydantic import BaseModel
 
-from .convert_base_model_to_base_tool import convert_base_model_to_base_tool
-from .convert_base_type_to_base_tool import convert_base_type_to_base_tool
-from .base_type import BaseType, is_base_type
+from ._base_type import BaseType, is_base_type
+from ._convert_base_model_to_base_tool import convert_base_model_to_base_tool
+from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 

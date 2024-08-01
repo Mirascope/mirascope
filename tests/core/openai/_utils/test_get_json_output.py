@@ -17,7 +17,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
     Function,
 )
 
-from mirascope.core.openai._utils.get_json_output import get_json_output
+from mirascope.core.openai._utils._get_json_output import get_json_output
 from mirascope.core.openai.call_response import OpenAICallResponse
 from mirascope.core.openai.call_response_chunk import OpenAICallResponseChunk
 

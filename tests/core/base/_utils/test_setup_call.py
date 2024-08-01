@@ -1,6 +1,6 @@
 """Tests the `_utils.setup_call` function."""
 
-from mirascope.core.base._utils.setup_call import setup_call
+from mirascope.core.base._utils._setup_call import setup_call
 from mirascope.core.base.dynamic_config import BaseDynamicConfig
 from mirascope.core.base.message_param import BaseMessageParam
 from mirascope.core.base.prompt import prompt_template

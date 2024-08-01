@@ -2,10 +2,10 @@
 
 from typing import Annotated
 
-from mirascope.core.base._utils.convert_base_type_to_base_tool import (
+from mirascope.core.base._utils._convert_base_type_to_base_tool import (
     convert_base_type_to_base_tool,
 )
-from mirascope.core.base._utils.default_tool_docstring import DEFAULT_TOOL_DOCSTRING
+from mirascope.core.base._utils._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 from mirascope.core.base.tool import BaseTool
 
 

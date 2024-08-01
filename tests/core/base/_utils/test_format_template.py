@@ -2,15 +2,15 @@
 
 from unittest.mock import MagicMock, patch
 
-from mirascope.core.base._utils.format_template import format_template
+from mirascope.core.base._utils._format_template import format_template
 
 
 @patch(
-    "mirascope.core.base._utils.format_template.get_template_values",
+    "mirascope.core.base._utils._format_template.get_template_values",
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.core.base._utils.format_template.get_template_variables",
+    "mirascope.core.base._utils._format_template.get_template_variables",
     new_callable=MagicMock,
 )
 def test_format_template(

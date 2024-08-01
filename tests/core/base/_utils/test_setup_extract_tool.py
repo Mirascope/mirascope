@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from mirascope.core.base._utils.setup_extract_tool import setup_extract_tool
+from mirascope.core.base._utils._setup_extract_tool import setup_extract_tool
 from mirascope.core.base.tool import BaseTool
 
 

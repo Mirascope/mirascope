@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from anthropic import Anthropic
 
-from mirascope.core.anthropic._utils.setup_call import setup_call
+from mirascope.core.anthropic._utils._setup_call import setup_call
 from mirascope.core.anthropic.tool import AnthropicTool
 
 
@@ -19,10 +19,10 @@ def mock_base_setup_call() -> MagicMock:
 
 
 @patch(
-    "mirascope.core.anthropic._utils.setup_call.convert_message_params",
+    "mirascope.core.anthropic._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.anthropic._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.anthropic._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -58,7 +58,7 @@ def test_setup_call(
     assert inspect.signature(create) == inspect.signature(Anthropic().messages.create)
 
 
-@patch("mirascope.core.anthropic._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.anthropic._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_system_message(
     mock_utils: MagicMock, mock_base_setup_call: MagicMock
 ) -> None:
@@ -81,10 +81,10 @@ def test_setup_call_system_message(
 
 
 @patch(
-    "mirascope.core.anthropic._utils.setup_call.convert_message_params",
+    "mirascope.core.anthropic._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.anthropic._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.anthropic._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_json_mode(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -132,10 +132,10 @@ def test_setup_call_json_mode(
 
 
 @patch(
-    "mirascope.core.anthropic._utils.setup_call.convert_message_params",
+    "mirascope.core.anthropic._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.anthropic._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.anthropic._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_extract(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,

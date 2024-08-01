@@ -5,11 +5,12 @@ from unittest.mock import MagicMock, patch
 
 from litellm import completion
 
-from mirascope.core.litellm._utils.setup_call import setup_call
+from mirascope.core.litellm._utils._setup_call import setup_call
 
 
 @patch(
-    "mirascope.core.litellm._utils.setup_call.setup_call_openai", new_callable=MagicMock
+    "mirascope.core.litellm._utils._setup_call.setup_call_openai",
+    new_callable=MagicMock,
 )
 def test_setup_call(
     mock_setup_call_openai: MagicMock,

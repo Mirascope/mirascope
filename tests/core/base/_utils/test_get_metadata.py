@@ -1,6 +1,6 @@
 """Tests the `_utils.get_metadata` module."""
 
-from mirascope.core.base._utils.get_metadata import get_metadata
+from mirascope.core.base._utils._get_metadata import get_metadata
 from mirascope.core.base.metadata import Metadata
 from mirascope.core.base.prompt import BasePrompt, metadata
 

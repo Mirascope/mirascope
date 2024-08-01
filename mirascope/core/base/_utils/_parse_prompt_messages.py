@@ -6,8 +6,8 @@ from typing import Any, TypeVar
 from pydantic import BaseModel
 
 from ..message_param import BaseMessageParam
-from .get_template_variables import get_template_variables
-from .parse_content_template import parse_content_template
+from ._get_template_variables import get_template_variables
+from ._parse_content_template import parse_content_template
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 

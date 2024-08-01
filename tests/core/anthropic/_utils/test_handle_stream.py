@@ -21,7 +21,7 @@ from anthropic.types import (
 )
 from anthropic.types.raw_message_delta_event import Delta
 
-from mirascope.core.anthropic._utils.handle_stream import (
+from mirascope.core.anthropic._utils._handle_stream import (
     _handle_chunk,
     handle_stream,
     handle_stream_async,

@@ -4,7 +4,7 @@ import pytest
 from mistralai.models.chat_completion import ChatMessage
 
 from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
-from mirascope.core.mistral._utils.convert_message_params import convert_message_params
+from mirascope.core.mistral._utils._convert_message_params import convert_message_params
 
 
 def test_convert_message_params() -> None:

@@ -4,11 +4,11 @@ from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-from mirascope.core.base._utils.parse_prompt_messages import parse_prompt_messages
+from mirascope.core.base._utils._parse_prompt_messages import parse_prompt_messages
 
 
 @patch(
-    "mirascope.core.base._utils.parse_prompt_messages.parse_content_template",
+    "mirascope.core.base._utils._parse_prompt_messages.parse_content_template",
     new_callable=MagicMock,
 )
 def test_parse_prompt_messages(mock_parse_content_template: MagicMock) -> None:

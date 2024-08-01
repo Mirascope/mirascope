@@ -12,9 +12,9 @@ from ..message_param import (
     ImagePart,
     TextPart,
 )
-from .format_template import format_template
-from .get_audio_type import get_audio_type
-from .get_image_type import get_image_type
+from ._format_template import format_template
+from ._get_audio_type import get_audio_type
+from ._get_image_type import get_image_type
 
 _PartType = Literal["text", "image", "images", "audio", "audios"]
 

@@ -7,7 +7,7 @@ from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
-from .default_tool_docstring import DEFAULT_TOOL_DOCSTRING
+from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 

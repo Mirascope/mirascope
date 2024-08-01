@@ -11,7 +11,7 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
 
-from mirascope.core.gemini._utils.handle_stream import (
+from mirascope.core.gemini._utils._handle_stream import (
     handle_stream,
     handle_stream_async,
 )

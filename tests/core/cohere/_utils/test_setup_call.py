@@ -8,7 +8,7 @@ import pytest
 from cohere import NonStreamedChatResponse
 from cohere.types import ChatMessage
 
-from mirascope.core.cohere._utils.setup_call import setup_call
+from mirascope.core.cohere._utils._setup_call import setup_call
 from mirascope.core.cohere.tool import CohereTool
 
 os.environ["CO_API_KEY"] = "test"
@@ -23,14 +23,15 @@ def mock_base_setup_call() -> MagicMock:
 
 
 @patch(
-    "mirascope.core.cohere._utils.setup_call.Client.chat_stream", new_callable=MagicMock
-)
-@patch("mirascope.core.cohere._utils.setup_call.Client.chat", new_callable=MagicMock)
-@patch(
-    "mirascope.core.cohere._utils.setup_call.convert_message_params",
+    "mirascope.core.cohere._utils._setup_call.Client.chat_stream",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.cohere._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.cohere._utils._setup_call.Client.chat", new_callable=MagicMock)
+@patch(
+    "mirascope.core.cohere._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.cohere._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -93,10 +94,10 @@ def test_setup_call(
 
 
 @patch(
-    "mirascope.core.cohere._utils.setup_call.convert_message_params",
+    "mirascope.core.cohere._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.cohere._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.cohere._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_json_mode(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -130,10 +131,10 @@ def test_setup_call_json_mode(
 
 
 @patch(
-    "mirascope.core.cohere._utils.setup_call.convert_message_params",
+    "mirascope.core.cohere._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
 )
-@patch("mirascope.core.cohere._utils.setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.cohere._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_extract(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,

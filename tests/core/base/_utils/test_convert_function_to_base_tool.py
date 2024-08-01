@@ -2,7 +2,7 @@
 
 import pytest
 
-from mirascope.core.base._utils.convert_function_to_base_tool import (
+from mirascope.core.base._utils._convert_function_to_base_tool import (
     convert_function_to_base_tool,
 )
 from mirascope.core.base.tool import BaseTool

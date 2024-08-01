@@ -17,7 +17,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
-from .convert_message_params import convert_message_params
+from ._convert_message_params import convert_message_params
 
 
 def setup_call(

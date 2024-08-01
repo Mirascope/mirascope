@@ -4,7 +4,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel
 
-from mirascope.core.base._utils.base_type import is_base_type
+from mirascope.core.base._utils._base_type import is_base_type
 
 
 def test_is_base_type() -> None:
