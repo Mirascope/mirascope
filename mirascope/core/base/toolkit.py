@@ -108,7 +108,7 @@ class BaseToolKit(BaseModel, ABC):
 
             for var in template_vars:
                 if not var.startswith("self."):
-                    # Skip template variables that so not start with self as they may
+                    # Skip template variables that do not start with self as they may
                     # be later templated e.g. if using a call as a tool.
                     continue
 
