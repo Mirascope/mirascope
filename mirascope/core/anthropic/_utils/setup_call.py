@@ -13,7 +13,7 @@ from anthropic import (
 )
 from anthropic.types import Message, MessageParam
 
-from ...base import BaseMessageParam, BaseTool, TextPart, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig
 from ..tool import AnthropicTool

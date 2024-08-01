@@ -10,7 +10,7 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse,
 )
 
-from ...base import BaseMessageParam, BaseTool, TextPart, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
