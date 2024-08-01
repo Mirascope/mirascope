@@ -40,8 +40,8 @@ def test_anthropic_tool() -> None:
         description="Returns the title and author nicely formatted.",
         input_schema={
             "properties": {
-                "title": {"title": "Title", "type": "string"},
-                "author": {"title": "Author", "type": "string"},
+                "title": {"type": "string"},
+                "author": {"type": "string"},
             },
             "required": ["title", "author"],
             "type": "object",

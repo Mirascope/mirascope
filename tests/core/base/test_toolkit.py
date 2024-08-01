@@ -146,29 +146,24 @@ def test_toolkit_tool_method_not_found() -> None:
                 return "dummy"  # pragma: no cover
 
 
-def test_toolkit_tool_method_has_non_self_var(mock_namespaces) -> None:
-    """Tests that a ValueError is raised when non-self template variables are used."""
+def test_toolkit_tool_method_with_non_self_var(mock_namespaces) -> None:
+    """Tests that non-self temlate variables are preserved through tool creation."""
 
-    with pytest.raises(
-        ValueError,
-        match="The toolkit_tool method must use self. prefix in template variables "
-        "when creating tools dynamically",
-    ):
+    class BookRecommendationToolKit(BaseToolKit):
+        """A toolkit for recommending books."""
 
-        class BookRecommendationToolKit(BaseToolKit):
-            """A toolkit for recommending books."""
+        __namespace__: ClassVar[str | None] = "book_tools"
+        reading_level: Literal["beginner", "advanced"]
 
-            __namespace__: ClassVar[str | None] = "book_tools"
-            reading_level: Literal["beginner", "advanced"]
-            language: Literal["english", "spanish", "french"]
+        @toolkit_tool
+        def format_book(self, title: str, author: str) -> str:
+            """Reading Level: {self.reading_level}, Non-Self Template Var: {foo}"""
+            return f"{title} by {author}"  # pragma: no cover
 
-            @toolkit_tool
-            def format_book(self, title: str, author: str) -> str:
-                """Returns the title and author of a book nicely formatted.
-
-                Reading level: {reading_level}
-                """
-                return f"{title} by {author}"  # pragma: no cover
+    tool = BookRecommendationToolKit(reading_level="beginner").create_tools()[0]
+    assert (
+        tool._description() == "Reading Level: beginner, Non-Self Template Var: {foo}"
+    )
 
 
 def test_toolkit_tool_method_has_no_exists_var(mock_namespaces) -> None:

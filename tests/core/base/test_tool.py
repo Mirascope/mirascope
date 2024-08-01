@@ -1,6 +1,9 @@
 """Tests for the `tool` module."""
 
+from abc import update_abstractmethods
+
 import pytest
+from pydantic import BaseModel
 
 from mirascope.core.base._utils import DEFAULT_TOOL_DOCSTRING
 from mirascope.core.base.tool import BaseTool
@@ -60,3 +63,66 @@ def test_base_tool_custom_name() -> None:
         __custom_name__ = "format_book"
 
     assert FormatBook._name() == "format_book"
+
+
+def test_base_tool_model_tool_schema() -> None:
+    """Tests the `BaseTool.model_tool_schema` class method."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    class FormatBook(BaseTool):
+        book: Book
+        genre: str
+
+    assert FormatBook.model_tool_schema() == {
+        "$defs": {
+            "Book": {
+                "properties": {
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                },
+                "required": ["title", "author"],
+                "type": "object",
+            }
+        },
+        "properties": {"book": {"$ref": "#/$defs/Book"}, "genre": {"type": "string"}},
+        "required": ["book", "genre"],
+        "type": "object",
+    }
+
+    print(FormatBook.model_tool_schema())
+
+
+def test_base_tool_type_conversion() -> None:
+    """Tests the `BaseTool.type_from...` class methods."""
+
+    def format_book(title: str, author: str) -> str:
+        return f"{title} by {author}"
+
+    tool_type = BaseTool.type_from_fn(format_book)
+    assert tool_type.__name__ == "format_book"
+    tool = tool_type(title="The Name of the Wind", author="Patrick Rothfuss")  # type: ignore
+    assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
+
+    class FormatBook(BaseModel):
+        title: str
+        author: str
+
+        def call(self) -> str:
+            return f"{self.title} by {self.author}"
+
+    tool_type = BaseTool.type_from_base_model_type(FormatBook)
+    assert tool_type.__name__ == "FormatBook"
+    tool = tool_type(title="The Name of the Wind", author="Patrick Rothfuss")  # type: ignore
+    assert isinstance(tool, BaseTool)
+    assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
+
+    tool_type = BaseTool.type_from_base_type(str)
+    setattr(tool_type, "call", lambda self: self.value)
+    update_abstractmethods(tool_type)
+    assert tool_type.__name__ == "str"
+    tool = tool_type(value="The Name of the Wind")  # type: ignore
+    assert tool.call() == "The Name of the Wind"
+    assert isinstance(tool, BaseTool)

@@ -18,12 +18,8 @@ class AnthropicTool(BaseTool):
     @classmethod
     def tool_schema(cls) -> ToolParam:
         """Constructs a `ToolParam` tool schema from the `BaseModel` schema defined."""
-        model_schema = cls.model_json_schema()
-        model_schema.pop("title", None)
-        model_schema.pop("description", None)
-
         return ToolParam(
-            input_schema=model_schema,
+            input_schema=cls.model_tool_schema(),
             name=cls._name(),
             description=cls._description(),
         )

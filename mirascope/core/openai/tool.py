@@ -21,14 +21,10 @@ class OpenAITool(BaseTool):
     @classmethod
     def tool_schema(cls) -> ChatCompletionToolParam:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
-        model_schema = cls.model_json_schema()
-        model_schema.pop("title", None)
-        model_schema.pop("description", None)
-
         fn = FunctionDefinition(name=cls._name(), description=cls._description())
+        model_schema = cls.model_tool_schema()
         if model_schema["properties"]:
             fn["parameters"] = model_schema
-
         return ChatCompletionToolParam(function=fn, type="function")
 
     @classmethod

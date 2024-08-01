@@ -41,8 +41,8 @@ def test_mistral_tool() -> None:
             "description": "Returns the title and author nicely formatted.",
             "parameters": {
                 "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
                 },
                 "required": ["title", "author"],
                 "type": "object",
