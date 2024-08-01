@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import inspect
 from abc import abstractmethod
-from typing import Any, Callable, ClassVar, TypeVar
+from typing import Any, Callable, ClassVar, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 
@@ -54,7 +54,7 @@ class BaseTool(BaseModel):
         model_schema.pop("title", None)
         model_schema.pop("description", None)
 
-        def remove_schema_titles(obj: dict[str, Any]) -> dict[str, Any]:
+        def remove_schema_titles(obj):
             if isinstance(obj, dict):
                 # Remove the 'title' key only if it's a direct child of a schema object
                 if "type" in obj or "$ref" in obj or "properties" in obj:
@@ -69,7 +69,7 @@ class BaseTool(BaseModel):
 
             return obj
 
-        return remove_schema_titles(model_schema)
+        return cast(dict[str, Any], remove_schema_titles(model_schema))
 
     @classmethod
     def type_from_fn(cls: _BaseToolT, fn: Callable) -> _BaseToolT:
