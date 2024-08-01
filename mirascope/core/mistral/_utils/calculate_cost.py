@@ -35,7 +35,8 @@ def calculate_cost(
     except KeyError:
         return None
 
-    completion_cost = input_tokens * model_pricing["completion"]
-    total_cost = output_tokens + completion_cost
+    prompt_cost = input_tokens * model_pricing["prompt"]
+    completion_cost = output_tokens * model_pricing["completion"]
+    total_cost = prompt_cost + completion_cost
 
     return total_cost

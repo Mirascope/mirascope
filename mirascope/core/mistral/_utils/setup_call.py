@@ -54,7 +54,7 @@ def setup_call(
         if messages[-1].role == "user":
             messages[-1].content += json_mode_content
         else:
-            messages.append(ChatMessage(role="user", content=json_mode_content))
+            messages.append(ChatMessage(role="user", content=json_mode_content.strip()))
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."

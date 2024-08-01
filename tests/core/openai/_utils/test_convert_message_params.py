@@ -3,7 +3,7 @@
 import pytest
 from openai.types.chat import ChatCompletionMessageParam
 
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart
+from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
 from mirascope.core.openai._utils.convert_message_params import convert_message_params
 
 
@@ -16,9 +16,10 @@ def test_convert_message_params() -> None:
         BaseMessageParam(
             role="user",
             content=[
+                TextPart(type="text", text="Hello"),
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
-                )
+                ),
             ],
         ),
     ]
@@ -29,13 +30,14 @@ def test_convert_message_params() -> None:
         {
             "role": "user",
             "content": [
+                {"type": "text", "text": "Hello"},
                 {
                     "type": "image_url",
                     "image_url": {
                         "url": "data:image/jpeg;base64,aW1hZ2U=",
                         "detail": "auto",
                     },
-                }
+                },
             ],
         },
     ]

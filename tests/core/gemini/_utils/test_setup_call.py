@@ -81,7 +81,7 @@ def test_setup_call_json_mode(
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
-        model="gpt-4o",
+        model="gemini-flash-1.5",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -108,7 +108,7 @@ def test_setup_call_extract(
     """Tests the `setup_call` function with extraction."""
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
-        model="gpt-4o",
+        model="gemini-flash-1.5",
         client=None,
         fn=MagicMock(),
         fn_args={},
