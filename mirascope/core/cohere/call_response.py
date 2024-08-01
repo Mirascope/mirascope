@@ -1,7 +1,5 @@
 """This module contains the `CohereCallResponse` class."""
 
-from typing import Any
-
 from cohere.types import (
     ApiMetaBilledUnits,
     ChatMessage,
@@ -119,14 +117,12 @@ class CohereCallResponse(
         """
         if not self.tool_types or not self.response.tool_calls:
             return None
-
-        extracted_tools = []
+        extracted_tools: list[CohereTool] = []
         for tool_call in self.response.tool_calls:
             for tool_type in self.tool_types:
                 if tool_call.name == tool_type._name():
                     extracted_tools.append(tool_type.from_tool_call(tool_call))
                     break
-
         return extracted_tools
 
     @computed_field
@@ -144,10 +140,14 @@ class CohereCallResponse(
 
     @classmethod
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[CohereTool, list[dict[str, Any]]]]
+        cls,
+        tools_and_outputs: list[tuple[CohereTool, str]],
     ) -> list[ToolResult]:
         """Returns the tool message parameters for tool call results."""
         return [
-            {"call": tool.tool_call, "outputs": output}  # type: ignore
+            ToolResult(
+                call=tool.tool_call,
+                outputs=[{"output": output}],
+            )
             for tool, output in tools_and_outputs
         ]

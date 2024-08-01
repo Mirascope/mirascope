@@ -50,8 +50,12 @@ def setup_call(
     if len(messages) > 1:
         call_kwargs["chat_history"] = messages[:-1]
     if json_mode:
-        messages[-1].message += _utils.json_mode_content(
-            tool_types[0] if tool_types else None
+        # Cannot mutate ChatMessage in place
+        messages[-1] = ChatMessage(
+            role=messages[-1].role,  # type: ignore
+            message=messages[-1].message
+            + _utils.json_mode_content(tool_types[0] if tool_types else None),
+            tool_calls=messages[-1].tool_calls,
         )
         call_kwargs.pop("tools", None)
     elif extract:
