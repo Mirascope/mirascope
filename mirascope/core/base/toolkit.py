@@ -72,12 +72,20 @@ class BaseToolKit(BaseModel, ABC):
 
     def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
-        return [
-            convert_function_to_base_tool(
-                method, BaseTool, template.format(self=self), self.__namespace__
+        tools = []
+        for method, template_vars, template in self._toolkit_tool_methods:
+            for var in template_vars:
+                if var.startswith("self."):
+                    continue
+                # Replace non-self template variables with escaped double brackets so
+                # that templating `self` results in a future templateable string.
+                template = template.replace(f"{{{var}}}", f"{{{{{var}}}}}")
+            tools.append(
+                convert_function_to_base_tool(
+                    method, BaseTool, template.format(self=self), self.__namespace__
+                )
             )
-            for method, template_vars, template in self._toolkit_tool_methods
-        ]
+        return tools
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
@@ -100,10 +108,9 @@ class BaseToolKit(BaseModel, ABC):
 
             for var in template_vars:
                 if not var.startswith("self."):
-                    raise ValueError(
-                        "The toolkit_tool method must use self. prefix in template "
-                        "variables when creating tools dynamically"
-                    )
+                    # Skip template variables that so not start with self as they may
+                    # be later templated e.g. if using a call as a tool.
+                    continue
 
                 self_var = var[5:]
 
