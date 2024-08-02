@@ -7,7 +7,7 @@ authors = [
     "William Bakst <william@mirascope.io>",
     "Brendan Kao <brendan@mirascope.io>",
 ]
-readme = "docs/README.md"
+readme = "README.md"
 packages = [{ include = "mirascope" }]
 repository = "https://github.com/Mirascope/mirascope"
 
@@ -36,8 +36,7 @@ pillow = { version = "^10.4.0", optional = true }
 [tool.poetry.extras]
 anthropic = ["anthropic"]
 cohere = ["cohere"]
-gemini = ["google-generativeai"]
-gemini-vision = ["google-generativeai", "pillow"]
+gemini = ["google-generativeai", "pillow"]
 groq = ["groq"]
 tenacity = ["tenacity"]
 hyperdx = ["hyperdx-opentelemetry"]

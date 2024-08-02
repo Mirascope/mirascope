@@ -4,6 +4,7 @@ from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCallParam,
+    ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
 
@@ -22,6 +23,7 @@ class OpenAIStream(
         OpenAICallResponseChunk,
         ChatCompletionUserMessageParam,
         ChatCompletionAssistantMessageParam,
+        ChatCompletionToolMessageParam,
         ChatCompletionMessageParam,
         OpenAITool,
         OpenAIDynamicConfig,

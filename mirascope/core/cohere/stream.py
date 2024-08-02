@@ -18,6 +18,7 @@ class CohereStream(
         ChatMessage,
         ChatMessage,
         ChatMessage,
+        ChatMessage,
         CohereTool,
         CohereDynamicConfig,
         CohereCallParams,
