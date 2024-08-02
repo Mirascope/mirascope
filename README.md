@@ -68,9 +68,8 @@ pip install "mirascope[openai]==1.0.0-b5"     # e.g. `openai.call`
 pip install "mirascope[anthropic]==1.0.0-b5"  # e.g. `anthropic.call`
 ```
 
-!!! note
-
-    Mirascope v1 is currently in a beta pre-release and requires the specific tag to download the version matching this documentation.
+> [!NOTE]
+> Mirascope v1 is currently in a beta pre-release and requires the specific tag to download the version matching this documentation.
 
 ## Primitives
 
