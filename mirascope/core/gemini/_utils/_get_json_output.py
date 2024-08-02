@@ -2,6 +2,8 @@
 
 import json
 
+from proto.marshal.collections import RepeatedComposite
+
 from ..call_response import GeminiCallResponse
 from ..call_response_chunk import GeminiCallResponseChunk
 
@@ -18,7 +20,14 @@ def get_json_output(
             for part in response.response.parts
             if part.function_call.args
         ]:
-            return json.dumps({k: v for k, v in tool_calls[0].args.items()})
+            return json.dumps(
+                {
+                    k: v
+                    if not isinstance(v, RepeatedComposite)
+                    else [item for item in v]
+                    for k, v in tool_calls[0].args.items()
+                }
+            )
         else:
             raise ValueError("No tool call or JSON object found in response.")
     elif not json_mode:
