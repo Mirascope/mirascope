@@ -19,6 +19,7 @@ class GeminiStream(
         ContentDict,
         ContentDict,
         ContentDict,
+        ContentDict,
         GeminiTool,
         GeminiDynamicConfig,
         GeminiCallParams,

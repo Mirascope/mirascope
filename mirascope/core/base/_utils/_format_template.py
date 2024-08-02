@@ -23,4 +23,4 @@ def format_template(template: str, attrs: dict[str, Any]) -> str:
 
     values = get_template_values(template_vars, attrs)
 
-    return dedented_template.format(**values)
+    return dedented_template.format(**values).strip()

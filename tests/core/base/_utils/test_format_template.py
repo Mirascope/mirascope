@@ -22,6 +22,7 @@ def test_format_template(
     mock_get_template_values.return_value = attrs
     template = """
     Recommend a {genre} book.
+    
     """
     formatted_template = format_template(template, attrs)
     assert formatted_template == "Recommend a fantasy book."

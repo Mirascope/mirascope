@@ -93,7 +93,7 @@ plugins:
 
 nav:
   - Get Started:
-      - "README.md"
+      - "index.md"
       - Philosophy: "PHILOSOPHY.md"
       - Supported Providers: "SUPPORTED_PROVIDERS.md"
   - Learn:

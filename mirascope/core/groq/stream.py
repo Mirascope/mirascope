@@ -4,6 +4,7 @@ from groq.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCallParam,
+    ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
 
@@ -22,6 +23,7 @@ class GroqStream(
         GroqCallResponseChunk,
         ChatCompletionUserMessageParam,
         ChatCompletionAssistantMessageParam,
+        ChatCompletionToolMessageParam,
         ChatCompletionMessageParam,
         GroqTool,
         GroqDynamicConfig,

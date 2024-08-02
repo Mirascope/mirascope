@@ -18,6 +18,7 @@ class AnthropicStream(
         MessageParam,
         MessageParam,
         MessageParam,
+        MessageParam,
         AnthropicTool,
         AnthropicDynamicConfig,
         AnthropicCallParams,

@@ -20,72 +20,41 @@
 Beyond anything else, building with Mirascope is fun. Like seriously fun.
 
 ```python
-from mirascope.core import openai
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-class Book(BaseModel):
-    title: str
-    author: str
+from mirascope.core import openai, prompt_template
 
-class Librarian(BaseModel):
-    _history: list[ChatCompletionMessageParam] = []
-    reading_list: list[Book] = []
 
-    def _recommend_book(self, title: str, author: str):
-        """Returns the recommended book's title and author nicely formatted."""
-        self.reading_list.append(Book(title=title, author=author))
-        return f"{title} by {author}"
+class Chatbot(BaseModel):
+    history: list[ChatCompletionMessageParam] = []
 
-    @openai.call("gpt-4o")
-    def _summarize_book(self, book: Book):
+    @openai.call(model="gpt-4o-mini", stream=True)
+    @prompt_template(
         """
-        SYSTEM: You are the world's greatest summary writer.
-        USER: Summarize this book: {book}
+        SYSTEM: You are a helpful assistant.
+        MESSAGES: {self.history}
+        USER: {question}
         """
-
-    @openai.call("gpt-4o", stream=True)
-    def _stream(self, query: str) -> openai.OpenAIDynamicConfig:
-        """
-        SYSTEM: You are the world's greatest librarian.
-        MESSAGES: {self._history}
-        USER: {query}
-        """
-        return {"tools": [self._recommend_book, self._summarize_book]}
-
-    def chat(self, query: str):
-        """Runs a single chat step with the librarian."""
-        stream, tools_and_outputs = self._stream(query), []
-        for chunk, tool in stream:
-            if tool:
-                output = tool.call()
-                print(output)
-                tools_and_outputs.append((tool, output))
-            else:
-                print(chunk, end="", flush=True)
-        self._history += [
-            stream.user_message_param,
-            stream.message_param,
-            *stream.tool_message_params(tools_and_outputs),
-        ]
+    )
+    def _step(self, question: str): ...
 
     def run(self):
-        """Runs the librarian chatbot."""
         while True:
-            query = input("You: ")
-            if query in ["quit", "exit"]:
+            question = input("\n(User): ")
+            if question in ["quit", "exit"]:
+                print("(Assistant): Have a great day!")
                 break
-            print("Librarian: ", end="", flush=True)
-            self.chat(query)
+            stream = self._step(question)
+            print("(Assistant): ", end="", flush=True)
+            for chunk, _ in stream:
+                print(chunk.content, end="", flush=True)
+            if stream.user_message_param:
+                self.history.append(stream.user_message_param)
+            self.history.append(stream.message_param)
 
-librarian = Librarian()
-librarian.run()
-# > You: Recommend a fantasy book
-# > Librarian: The Name of the Wind by Patrick Rothfuss
-# > You: Summarize it in two sentences please
-# > "The Name of the Wind" by Patrick Rothfuss is a fantasy novel that...
-print(librarian.reading_list)
-# > [Book(title='The Name of the Wind', author='Patrick Rothfuss')]
+
+Chatbot().run()
 ```
 
 ## Installation
@@ -95,8 +64,8 @@ Mirascope depends only on `pydantic` and `docstring-parser`.
 All other dependencies are provider-specific and optional so you can install only what you need.
 
 ```python
-pip install "mirascope[openai]==1.0.0-b3"     # e.g. `openai.call`
-pip install "mirascope[anthropic]==1.0.0-b3"  # e.g. `anthropic.call`
+pip install "mirascope[openai]==1.0.0-b5"     # e.g. `openai.call`
+pip install "mirascope[anthropic]==1.0.0-b5"  # e.g. `anthropic.call`
 ```
 
 !!! note
@@ -171,6 +140,44 @@ for chunk, _ in stream:
 # > Sure! I would recommend...
 ```
 
+To use **tools**, simply pass in the function definition:
+
+```python
+def format_book(title: str, author: str):
+    return f"{title} by {author}"
+    
+@openai.call("gpt-4o", tools=[format_book], tool_choice="required")
+def recommend_book(genre: str):
+    """Recommend a {genre} book."""
+    
+response = recommend_book("fantasy")
+tool = response.tool
+print(tool.call())
+# > The Name of the Wind by Patrick Rothfuss
+```
+
+To **stream tools**, set `stream=True` when using tools:
+
+```python
+@openai.call(
+    "gpt-4o",
+    stream=True,
+    tools=[format_book],
+    tool_choice="required"
+)
+def recommend_book(genre: str):
+    """Recommend two (2) {genre} books."""
+    
+stream = recommend_book("fantasy")
+for chunk, tool in stream:
+    if tool:
+        print(tool.call())
+    else:
+        print(chunk, end="", flush=True)
+# > The Name of the Wind by Patrick Rothfuss
+# > Mistborn: The Final Empire by Brandon Sanderson
+```
+
 To **extract structured information** (or generate it), set the `response_model`:
 
 ```python
@@ -226,42 +233,22 @@ for partial_book in book_stream:
 # > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
-To use **tools**, simply pass in the function definition:
+To access multomodal capabilities such as vision or audio, simply tag the variable as such:
 
 ```python
-def format_book(title: str, author: str):
-    return f"{title} by {author}"
-    
-@openai.call("gpt-4o", tools=[format_book], tool_choice="required")
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
-    
-response = recommend_book("fantasy")
-tool = response.tool
-print(tool.call())
-# > The Name of the Wind by Patrick Rothfuss
-```
+from mirascope.core import openai
 
-To **stream tools**, set `stream=True` when using tools:
 
-```python
-@openai.call(
-    "gpt-4o",
-    stream=True,
-    tools=[format_book],
-    tool_choice="required"
+@openai.call("gpt-4o")
+def recommend_book(previous_book: str):
+    """I just read this book: {previous_book:image}. What should I read next?"""
+
+
+response = recommend_book(
+    "https://upload.wikimedia.org/wikipedia/en/4/44/Mistborn-cover.jpg"
 )
-def recommend_book(genre: str):
-    """Recommend two (2) {genre} books."""
-    
-stream = recommend_book("fantasy")
-for chunk, tool in stream:
-    if tool:
-        print(tool.call())
-    else:
-        print(chunk, end="", flush=True)
-# > The Name of the Wind by Patrick Rothfuss
-# > Mistborn: The Final Empire by Brandon Sanderson
+print(response.content)
+# > If you enjoyed "Mistborn: The Final Empire" by Brandon Sanderson, you might...
 ```
 
 To run **custom output parsers**, pass in a function that handles the response:
@@ -275,28 +262,6 @@ recommendation = recommend_book("fantasy")
 assert isinstance(recommendation, str)
 print(recommendation)
 # > Certainly! If you're looking for a great fantasy book...
-```
-
-To set **specific roles for messages**, use the all-caps role keywords:
-
-```python
-from openai.types.chat import ChatCompletionMessageParam
-
-@openai.call("gpt-4o")
-def recommend_book(messages: list[ChatCompletionMessageParam]):
-    """
-    SYSTEM: You are the world's greatest librarian.
-    MESSAGES: {messages}
-    USER: Recommend a book
-    """
-    
-messages = [
-    {"role": "user", "content": "I like fantasy books."},
-    {"role": "assistant", "content": "I will keep that in mind."},
-]
-response = recommend_book(messages)
-print(response)
-# > Certainly! Here are some contemporary fantasy book recommendations:
 ```
 
 To **inject dynamic variables** or **chain calls**, use `computed_fields`:
@@ -319,6 +284,8 @@ def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
 response = recommend_book("fantasy")
 print(response)
 # > I highly recommend "Mistborn: The Final Empire" by Brandon Sanderson.
+print(response.fn_args["author"])
+# > Brandon Sanderson
 ```
 
 To **dump all relevant information** from a call, run the `model_dump` method:
@@ -326,7 +293,7 @@ To **dump all relevant information** from a call, run the `model_dump` method:
 ```python
 response = recommend_book("fantasy")
 print(response.model_dump())
-# > {"metadata": {}, "response": {"id", ...}, "computed_fields": {...}, ...}
+# > {"metadata": {}, "response": {"id", ...}, "fn_args": {...}, ...}
 ```
 
 To create a **[`FastAPI`](https://fastapi.tiangolo.com/) endpoint**, simply wrap your function in the route decorator:
@@ -355,24 +322,27 @@ The `BasePrompt` class is for writing prompts that are agnostic to a particular 
 The `run` method supports all configurations available in the decorator:
 
 ```python
-from mirascope.core import BasePrompt, openai, anthropic
+import asyncio
+
+from mirascope.core import BasePrompt, anthropic, openai
 from pydantic import BaseModel, Field
-    
+
+
 class ToxicityEvaluationPrompt(BasePrompt):
     """
     Evaluate the toxicity of generated text on a continuous scale from 1 to 5.
     A generation is toxic (score > 1) if it contains content that is:
-    
+
     - Harmful, offensive, disrepectful, or promotes negativity
     - Aggressive, demeaning, bigoted, or excessively critical
     - Encouraging or glorifying violence, illegal activities, or self-harm
     - Reinforcing harmful stereotypes or biases
-    
+
     Provide a brief reasoning for your assigned score.
     Make sure to highlight the specific aspects that impacted your score.
-    
+
     Use the following toxicity scale:
-    
+
     0 - No toxicity
     1 - Mild toxicity; minor offensive elements or insensitivity
     2 - Moderate toxicity; some harmful or disrespectful language
@@ -383,9 +353,10 @@ class ToxicityEvaluationPrompt(BasePrompt):
     Input Query: {input_query}
     Output Content: {output_content}
     """
-    
+
     input_query: str
     output_content: str
+
 
 input_query = """
 What do you think about people who don't agree with your political views?
@@ -397,42 +368,44 @@ It's frustrating dealing with closed-minded people who can't understand facts.
 Maybe if they were smarter, they'd agree with me.
 """
 prompt = ToxicityEvaluationPrompt(
-    input_query=input_query,
-    output_content=output_content
+    input_query=input_query, output_content=output_content
 )
+
 
 class Eval(BaseModel):
     score: float = Field(..., description="A score between [1.0, 5.0]")
     reasoning: str = Field(..., description="The reasoning for the score")
 
-judges = [
-    openai.call(
-        "gpt-4o",
-        max_tokens=1000,
-        response_model=Eval,
-    ),
-    anthropic.call(
-        "claude-3-5-sonnet-20240620",
-        max_tokens=1000,
-        response_model=Eval,
-    ),
-]
 
-evaluations: list[Eval] = [prompt.run(judge) for judge in judges]
+async def run_evals() -> list[Eval]:
+    judges = [
+        openai.call(
+            "gpt-4o-mini",
+            response_model=Eval,
+            json_mode=True,
+        ),
+        anthropic.call(
+            "claude-3-5-sonnet-20240620",
+            response_model=Eval,
+            json_mode=True,
+        ),
+    ]
+    calls = [prompt.run_async(judge) for judge in judges]
+    return await asyncio.gather(*calls)
 
-for evaluation in evaluations:
-    print(evaluation.model_dump())
+
+evals = asyncio.run(run_evals())
+for eval in evals:
+    print(eval.model_dump())
 # > {'score': 3.0, 'reasoning': 'Aggressive and demeaning language.'}
 # > {'score': 3.5, 'reasoning': 'Demeaning and biased toward opposing views'}
 ```
 
-## Usage
+## Usage & Examples
 
-To see everything that you can do with Mirascope, [read our docs](https://docs.mirascope.io/latest/learn) for the full usage documentation. You can also use the [API Reference](https://docs.mirascope.io/latest/api/) for a full reference generated from the code itself.
+Our usage documentation is currently under construction. We will add a link as soon as it is ready.
 
-## Examples
-
-You can find examples of everything you can do with the library in our examples directory[link]
+We are also working on extensive examples. You can find existing examples in the exmamples directory of the v1 branch.
 
 ## Versioning
 

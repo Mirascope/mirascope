@@ -18,6 +18,7 @@ class MistralStream(
         ChatMessage,
         ChatMessage,
         ChatMessage,
+        ChatMessage,
         MistralTool,
         MistralDynamicConfig,
         MistralCallParams,

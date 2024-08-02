@@ -36,6 +36,7 @@ _BaseCallResponseChunkT = TypeVar(
 )
 _UserMessageParamT = TypeVar("_UserMessageParamT")
 _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
+_ToolMessageParamT = TypeVar("_ToolMessageParamT")
 _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -48,6 +49,7 @@ class BaseStream(
         _BaseCallResponseChunkT,
         _UserMessageParamT,
         _AssistantMessageParamT,
+        _ToolMessageParamT,
         _MessageParamT,
         _BaseToolT,
         _BaseDynamicConfigT,
@@ -191,7 +193,7 @@ class BaseStream(
         """Constructs the assistant message."""
         ...  # pragma: no cover
 
-    def tool_message_params(self, tools_and_outputs):
+    def tool_message_params(self, tools_and_outputs) -> list[_ToolMessageParamT]:
         """Returns the tool message parameters for tool call results."""
         return self.call_response_type.tool_message_params(tools_and_outputs)
 
