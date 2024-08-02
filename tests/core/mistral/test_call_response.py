@@ -29,7 +29,7 @@ def test_mistral_call_response() -> None:
         id="id",
         choices=choices,
         created=0,
-        model="mistral-large",
+        model="mistral-large-latest",
         object="",
         usage=usage,
     )
@@ -50,12 +50,12 @@ def test_mistral_call_response() -> None:
     assert call_response._provider == "mistral"
     assert call_response.content == "content"
     assert call_response.finish_reasons == ["stop"]
-    assert call_response.model == "mistral-large"
+    assert call_response.model == "mistral-large-latest"
     assert call_response.id == "id"
     assert call_response.usage == usage
     assert call_response.input_tokens == 1
     assert call_response.output_tokens == 1
-    assert call_response.cost == 3.2e-5
+    assert call_response.cost == 1.2e-5
     assert call_response.message_param == ChatMessage(
         role="assistant", content="content"
     )
@@ -93,7 +93,7 @@ def test_mistral_call_response_with_tools() -> None:
             )
         ],
         created=0,
-        model="mistral-large",
+        model="mistral-large-latest",
         object="",
         usage=UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )

@@ -42,7 +42,7 @@ def test_get_json_output_call_response() -> None:
         id="id",
         object="",
         created=0,
-        model="mistral-large",
+        model="mistral-large-latest",
         choices=choices,
         usage=UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2),
     )
@@ -93,7 +93,7 @@ def test_get_json_output_call_response_chunk() -> None:
     ]
     chunk = ChatCompletionStreamResponse(
         id="id",
-        model="mistral-large",
+        model="mistral-large-latest",
         choices=choices,
         created=0,
         object=None,

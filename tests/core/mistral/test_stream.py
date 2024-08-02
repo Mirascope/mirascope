@@ -50,7 +50,7 @@ def test_mistral_stream() -> None:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -66,7 +66,7 @@ def test_mistral_stream() -> None:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
             usage=usage,
         ),
@@ -97,7 +97,7 @@ def test_mistral_stream() -> None:
         metadata={},
         tool_types=[FormatBook],
         call_response_type=MistralCallResponse,
-        model="mistral-large",
+        model="mistral-large-latest",
         prompt_template="",
         fn_args={},
         dynamic_config=None,
@@ -108,7 +108,7 @@ def test_mistral_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    assert stream.cost == 3.2e-5
+    assert stream.cost == 1.2e-5
     assert tool_call is not None
     assert stream.message_param == ChatMessage(
         role="assistant", content="content", tool_calls=[tool_call]
