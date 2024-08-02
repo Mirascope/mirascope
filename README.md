@@ -87,7 +87,7 @@ Every provider we support has a corresponding `call` decorator for **turning a f
 ```python
 from mirascope.core import openai
 
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -101,7 +101,7 @@ If you don't like the idea of using a docstring as the prompt, use the `@prompt_
 ```python
 from mirascope.core import openai, prompt_template
 
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 @prompt_template("Recommend a {genre} book.""")
 def recommend_book(genre: str):
     """This function recommends a book using the OpenAI API."""
@@ -118,7 +118,7 @@ import asyncio
 
 from mirascope.core import openai
 
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 async def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -130,7 +130,7 @@ print(response)
 To **stream the response**, set `stream=True`:
 
 ```python
-@openai.call("gpt-4o", stream=True)
+@openai.call("gpt-4o-mini", stream=True)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -146,7 +146,7 @@ To use **tools**, simply pass in the function definition:
 def format_book(title: str, author: str):
     return f"{title} by {author}"
     
-@openai.call("gpt-4o", tools=[format_book], tool_choice="required")
+@openai.call("gpt-4o-mini", tools=[format_book], tool_choice="required")
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -160,7 +160,7 @@ To **stream tools**, set `stream=True` when using tools:
 
 ```python
 @openai.call(
-    "gpt-4o",
+    "gpt-4o-mini",
     stream=True,
     tools=[format_book],
     tool_choice="required"
@@ -187,7 +187,7 @@ class Book(BaseModel):
     title: str
     author: str
     
-@openai.call("gpt-4o", response_model=Book)
+@openai.call("gpt-4o-mini", response_model=Book)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -206,7 +206,7 @@ class Book(BaseModel):
     title: str
     author: str
     
-@openai.call("gpt-4o", response_model=Book, json_mode=True)
+@openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -219,7 +219,7 @@ print(book)
 To **stream structured information**, set `stream=True` and `response_model`:
 
 ```python
-@openai.call("gpt-4o", stream=True, response_model=Book)
+@openai.call("gpt-4o-mini", stream=True, response_model=Book)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -239,7 +239,7 @@ To access multomodal capabilities such as vision or audio, simply tag the variab
 from mirascope.core import openai
 
 
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 def recommend_book(previous_book: str):
     """I just read this book: {previous_book:image}. What should I read next?"""
 
@@ -254,7 +254,7 @@ print(response.content)
 To run **custom output parsers**, pass in a function that handles the response:
 
 ```python
-@openai.call("gpt-4o", output_parser=str)  # runs `str(response)`
+@openai.call("gpt-4o-mini", output_parser=str)  # runs `str(response)`
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
     
@@ -267,14 +267,14 @@ print(recommendation)
 To **inject dynamic variables** or **chain calls**, use `computed_fields`:
 
 ```python
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 def recommend_author(genre: str):
     """
     Recommend an author that writes the best {genre} books.
     Give me just their name.
     """
     
-@openai.call("gpt-4o")
+@openai.call("gpt-4o-mini")
 def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
     """
     Recommend a {genre} book written by {author}
@@ -310,7 +310,7 @@ class Book(BaseModel):
     author: str
 
 @app.route("/recommend_book")
-@openai.call("gpt-4o", response_model=Book)
+@openai.call("gpt-4o-mini", response_model=Book)
 def recommend_book(genre: str):
     """Recommend a {genre} book."""
 ```
