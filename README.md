@@ -233,7 +233,7 @@ for partial_book in book_stream:
 # > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
-To access multomodal capabilities such as vision or audio, simply tag the variable as such:
+To access **multomodal capabilities** such as **vision** or **audio**, simply tag the variable as such:
 
 ```python
 from mirascope.core import openai
