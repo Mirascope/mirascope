@@ -41,7 +41,7 @@ def test_setup_call(
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-        model="mistral-large",
+        model="mistral-large-latest",
         client=None,
         fn=fn,
         fn_args={},
@@ -53,7 +53,7 @@ def test_setup_call(
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
-    assert "model" in call_kwargs and call_kwargs["model"] == "mistral-large"
+    assert "model" in call_kwargs and call_kwargs["model"] == "mistral-large-latest"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
     mock_base_setup_call.assert_called_once_with(fn, {}, None, None, MistralTool, {})
     mock_convert_message_params.assert_called_once_with(
@@ -85,7 +85,7 @@ def test_setup_call_json_mode(
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
-        model="mistral-large",
+        model="mistral-large-latest",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -102,7 +102,7 @@ def test_setup_call_json_mode(
         ChatMessage(role="assistant", content="test"),
     ]
     _, _, messages, _, call_kwargs = setup_call(
-        model="mistral-large",
+        model="mistral-large-latest",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -128,7 +128,7 @@ def test_setup_call_extract(
     """Tests the `setup_call` function with extraction."""
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
-        model="mistral-large",
+        model="mistral-large-latest",
         client=None,
         fn=MagicMock(),
         fn_args={},

@@ -33,14 +33,14 @@ def test_mistral_call_response_chunk() -> None:
         id="id",
         choices=choices,
         created=0,
-        model="mistral-large",
+        model="mistral-large-latest",
         object="",
         usage=usage,
     )
     call_response_chunk = MistralCallResponseChunk(chunk=chunk)
     assert call_response_chunk.content == "content"
     assert call_response_chunk.finish_reasons == ["stop"]
-    assert call_response_chunk.model == "mistral-large"
+    assert call_response_chunk.model == "mistral-large-latest"
     assert call_response_chunk.id == "id"
     assert call_response_chunk.usage == usage
     assert call_response_chunk.input_tokens == 1
@@ -53,7 +53,7 @@ def test_mistral_call_response_chunk_no_choices_or_usage() -> None:
         id="id",
         choices=[],
         created=0,
-        model="mistral-large",
+        model="mistral-large-latest",
         object="chat.completion.chunk",
         usage=None,
     )

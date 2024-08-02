@@ -59,7 +59,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -75,7 +75,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -91,7 +91,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -107,7 +107,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -123,7 +123,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
         ChatCompletionStreamResponse(
@@ -136,7 +136,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
                 )
             ],
             created=0,
-            model="mistral-large",
+            model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
     ]
