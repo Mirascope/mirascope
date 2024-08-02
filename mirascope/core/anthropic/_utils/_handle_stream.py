@@ -1,8 +1,8 @@
 """Utilities for handling a stream of messages."""
 
-import json
 from collections.abc import AsyncGenerator, Generator
 
+import jiter
 from anthropic.types import MessageStreamEvent, ToolUseBlock
 
 from ..call_response_chunk import AnthropicCallResponseChunk
@@ -26,7 +26,7 @@ def _handle_chunk(
         return buffer, None, current_tool_call, current_tool_type
 
     if chunk.type == "content_block_stop" and current_tool_type and buffer:
-        current_tool_call.input = json.loads(buffer)
+        current_tool_call.input = jiter.from_json(buffer.encode())
         return (
             "",
             current_tool_type.from_tool_call(current_tool_call),

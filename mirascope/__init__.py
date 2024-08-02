@@ -1,9 +1,14 @@
 """Mirascope package."""
 
 import importlib.metadata
+from contextlib import suppress
 
-from . import core, integrations
+with suppress(ImportError):
+    from . import core as core
+
+with suppress(ImportError):
+    from . import integrations as integrations
 
 __version__ = importlib.metadata.version("mirascope")
 
-__all__ = ["__version__", "core", "integrations"]
+__all__ = ["core", "integrations", "__version__"]

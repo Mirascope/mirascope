@@ -1,8 +1,8 @@
 import inspect
-import json
 from abc import update_abstractmethods
 from typing import Any, Callable, TypeVar, cast, get_type_hints
 
+import jiter
 from docstring_parser import parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
@@ -46,7 +46,7 @@ def convert_function_to_base_tool(
         docstring = parse(func_doc)
         for example in docstring.examples or []:
             if example.description:
-                examples.append(json.loads(example.description))
+                examples.append(jiter.from_json(example.description.encode()))
 
     field_definitions = {}
     hints = get_type_hints(fn)

@@ -1792,7 +1792,7 @@ i18n = ["Babel (>=2.7)"]
 name = "jiter"
 version = "0.5.0"
 description = "Fast iterable JSON parser."
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "jiter-0.5.0-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:b599f4e89b3def9a94091e6ee52e1d7ad7bc33e238ebb9c4c63f211d74822c3f"},
@@ -4925,4 +4925,4 @@ tenacity = ["tenacity"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "af59a0f47085c8e2a2bf436f1457e6b123f4831226c1141a2255a57f05406f1b"
+content-hash = "5af1cafe52c1104232ee41c18900911cb32435bc3a4b1e5526dcce60dfeb16cf"
