@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirascope"
-version = "1.0.0-b4"
+version = "1.0.0-b5"
 description = "NEEDS DESCRIPTION"
 license = "MIT"
 authors = [
