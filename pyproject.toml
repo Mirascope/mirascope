@@ -7,7 +7,7 @@ authors = [
     "William Bakst <william@mirascope.io>",
     "Brendan Kao <brendan@mirascope.io>",
 ]
-readme = "docs/README.md"
+readme = "README.md"
 packages = [{ include = "mirascope" }]
 repository = "https://github.com/Mirascope/mirascope"
 
