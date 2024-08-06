@@ -12,6 +12,16 @@ This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifi
 
     While traditional validation tools like type checkers or Pydantic are limited to hardcoded rules (such as variable types or arithmetic), LLMs allow for much more nuanced and complex validation. This approach can be particularly useful for validating natural language inputs or complex data structures where traditional rule-based validation falls short.
 
+## Setup
+
+To set up our environment, first let's install all of the packages we will use:
+
+```shell
+pip install "mirascope[anthropic,tenacity]"
+```
+
+Make sure to also set your `ANTHROPIC_API_KEY` if you haven't already.
+
 ## Basic LLM Validation
 
 Let's start with a simple example of using an LLM to check for spelling and grammatical errors in a text snippet:
@@ -51,6 +61,7 @@ We can use Pydantic's [`AfterValidator`](ADD LINK) to integrate our LLM-based va
 
 ```python
 from typing import Annotated
+
 from pydantic import BaseModel, AfterValidator, Field, ValidationError
 
 
@@ -81,7 +92,7 @@ except ValidationError as e:
 
 ## Reinsert Validation Errors For Improved Performance
 
-One powerful technique for enhancing LLM generations is to automatically reinsert validation errors into subsequent calls. This approach allows the LLM to learn from its previous mistakes as few-shot examples and improve it's output in real-time. We can achieve this using Mirascope's integration with [Tenacity](ADD LINK), which collects `ValidationError` messages for easy insertion into the prompt.
+One powerful technique for enhancing LLM generations is to automatically reinsert validation errors into subsequent calls. This approach allows the LLM to learn from its previous mistakes as few-shot examples and improve it's output in real-time. We can achieve this using Mirascope's integration with Tenacity, which collects `ValidationError` messages for easy insertion into the prompt.
 
 ```python
 from typing import Annotated

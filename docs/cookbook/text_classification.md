@@ -12,6 +12,16 @@ This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifi
 
     Text Classification is a fundamental task in Natural Language Processing (NLP), with applications ranging from spam detection and sentiment analysis to content categorization and intent recognition. Large Language Models (LLMs) have revolutionized this field, making sophisticated classification tasks accessible through simple API calls and thoughtful prompt engineering.
 
+## Setup
+
+To set up our environment, first let's install all of the packages we will use:
+
+```shell
+pip install "mirascope[openai]"
+```
+
+Make sure to also set your `OPENAI_API_KEY` if you haven't already.
+
 ## Binary Classification
 
 Binary classification involves categorizing text into one of two classes. We'll demonstrate this by creating a spam detector that classifies text as either spam or not spam.

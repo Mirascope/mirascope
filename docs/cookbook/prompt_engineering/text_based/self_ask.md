@@ -12,6 +12,16 @@ This recipe demonstrates how to implement the Self-Ask technique using Large Lan
 
     [Self-Ask](https://arxiv.org/pdf/2210.03350) is a prompt engineering technique introduced in 2022. It outperforms other methods like chain-of-thought reasoning across multiple benchmarks. The technique involves prompting the LLM to consider whether follow-up questions are needed, then answer those questions before arriving at a final answer. This approach can significantly improve the accuracy and depth of the LLM's responses, especially for complex queries.
 
+## Setup
+
+To set up our environment, first let's install all of the packages we will use:
+
+```shell
+pip install "mirascope[openai]" numpy scikit-learn
+```
+
+Make sure to also set your `OPENAI_API_KEY` if you haven't already.
+
 ## Implementing Self-Ask with Few-Shot Learning
 
 To implement Self-Ask, we'll use few-shot learning by providing examples as conversations messages that demonstrate the technique. We'll structure these examples and incorporate them into our LLM call.
