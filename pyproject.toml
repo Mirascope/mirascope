@@ -76,6 +76,10 @@ weaviate-client = "^4.6.5"
 chromadb = "^0.5.4"
 pinecone-client = "^4.1.2"
 
+
+[tool.poetry.group.cookbook.dependencies]
+scikit-learn = "^1.5.1"
+
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
 
