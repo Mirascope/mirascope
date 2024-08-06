@@ -4,7 +4,7 @@ This recipe demonstrates how to implement the Self-Ask technique using Large Lan
 
 ??? info "Key Concepts"
 
-    - [Pydantic](ADD LINK)
+    - [Writing Prompts](ADD LINK)
     - [Calls](ADD LINK)
     - [Response Model](ADD LINK)
 
@@ -28,30 +28,17 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 
     [self_ask.py](ADD LINK)
 
-To implement Self-Ask, we'll use few-shot learning by providing examples as conversations messages that demonstrate the technique. We'll structure these examples and incorporate them into our LLM call.
+To implement Self-Ask, we'll use few-shot learning examples that demonstrate the technique, taking advantage of Mirascope's `lists` format spec convenience to inject the examples into the LLM call's prompt.
 
-First, let's define a model for our few-shot examples:
+First, let's define a structure for our few-shot examples:
 
 ```python
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionUserMessageParam,
-)
-from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 
-class FewShotExample(BaseModel):
+class FewShotExample(TypedDict):
     question: str
     answer: str
-
-    def messages(
-        self,
-    ) -> tuple[ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam]:
-        """Returns a user -> assistant message pair as a chat turn example."""
-        return (
-            {"role": "user", "content": self.question},
-            {"role": "assistant", "content": self.answer},
-        )
 ```
 
 Next, we'll create an LLM call function that can incorporate `FewShotExample` instances:
@@ -63,17 +50,17 @@ from mirascope.core import openai, prompt_template
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
-    MESSAGES: {example_prompts}
-    USER: {query}
+    Examples:
+    {examples:lists}
+
+    Query: {query}
     """
 )
-def self_ask_query(
-    query: str, examples: list[FewShotExample]
-) -> openai.OpenAIDynamicConfig:
+def self_ask(query: str, examples: list[FewShotExample]) -> openai.OpenAIDynamicConfig:
     return {
         "computed_fields": {
-            "example_prompts": [
-                message for example in examples for message in example.messages()
+            "examples": [
+                [example["question"], example["answer"]] for example in examples
             ]
         }
     }
@@ -200,8 +187,8 @@ def select_relevant_examples(
     query: str, examples: list[FewShotExample], n: int = 3
 ) -> list[FewShotExample]:
     """Select the most relevant examples based on cosine similarity."""
-    vectorizer = TfidfVectorizer().fit([ex.question for ex in examples] + [query])
-    example_vectors = vectorizer.transform([ex.question for ex in examples])
+    vectorizer = TfidfVectorizer().fit([ex["question"] for ex in examples] + [query])
+    example_vectors = vectorizer.transform([ex["question"] for ex in examples])
     query_vector = vectorizer.transform([query])
 
     similarities = cosine_similarity(query_vector, example_vectors)[0]
@@ -213,27 +200,28 @@ def select_relevant_examples(
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
-    MESSAGES: {example_prompts}
-    USER: {query}
+    Examples:
+    {examples:lists}
+
+    Query: {query}
     """
 )
-def dynamic_self_ask_query(
+def dynamic_self_ask(
     query: str, examples: list[FewShotExample], n: int = 3
 ) -> openai.OpenAIDynamicConfig:
     relevant_examples = select_relevant_examples(query, examples, n)
     return {
         "computed_fields": {
-            "example_prompts": [
-                message
+            "examples": [
+                [example["question"], example["answer"]]
                 for example in relevant_examples
-                for message in example.messages()
             ]
         }
     }
 
 
 query = "What was the primary language spoken by the inventor of the phonograph?"
-response = dynamic_self_ask_query(query=query, examples=few_shot_examples, n=2)
+response = dynamic_self_ask(query=query, examples=few_shot_examples, n=2)
 print(response.content)
 # > Are follow up questions needed here: Yes.
 #   Follow up: Who invented the phonograph?
@@ -244,7 +232,7 @@ print(response.content)
 ```
 
 In this enhanced version we define a `select_relevant_examples` function that uses TF-IDF vectorization and cosine similarity to find the most relevant examples for a given query.
-The `dynamic_self_ask_query` function now selects relevant examples before including them in the prompt.
+The `dynamic_self_ask` function now selects relevant examples before including them in the prompt.
 
 This approach has several benefits:
 

@@ -1,42 +1,29 @@
 import inspect
 
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionUserMessageParam,
-)
-from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 from mirascope.core import openai, prompt_template
 
 
-class FewShotExample(BaseModel):
+class FewShotExample(TypedDict):
     question: str
     answer: str
-
-    def messages(
-        self,
-    ) -> tuple[ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam]:
-        """Returns a user -> assistant message pair as a chat turn example."""
-        return (
-            {"role": "user", "content": self.question},
-            {"role": "assistant", "content": self.answer},
-        )
 
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
-    MESSAGES: {example_prompts}
-    USER: {query}
+    Examples:
+    {examples:lists}
+
+    Query: {query}
     """
 )
-def self_ask_query(
-    query: str, examples: list[FewShotExample]
-) -> openai.OpenAIDynamicConfig:
+def self_ask(query: str, examples: list[FewShotExample]) -> openai.OpenAIDynamicConfig:
     return {
         "computed_fields": {
-            "example_prompts": [
-                message for example in examples for message in example.messages()
+            "examples": [
+                [example["question"], example["answer"]] for example in examples
             ]
         }
     }
@@ -111,7 +98,7 @@ few_shot_examples = [
 ]
 
 query = "The birth country of Jayantha Ketagoda left the British Empire when?"
-response = self_ask_query(query=query, examples=few_shot_examples)
+response = self_ask(query=query, examples=few_shot_examples)
 print(response.content)
 # > Are follow up questions needed here: Yes.
 #   Follow up: What is the birth country of Jayantha Ketagoda?
@@ -120,7 +107,7 @@ print(response.content)
 #   Intermediate answer: Sri Lanka, formerly known as Ceylon, gained independence from the British Empire on February 4, 1948.
 #   So the final answer is: February 4, 1948.
 
-response = self_ask_query(query=query, examples=[])
+response = self_ask(query=query, examples=[])
 print(response.content)
 # > Jayantha Ketagoda was born in Sri Lanka, which was known as Ceylon during the
 #   British colonial period. Ceylon gained independence from the British Empire on

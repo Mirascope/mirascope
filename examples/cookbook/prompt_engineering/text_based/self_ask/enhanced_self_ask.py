@@ -1,37 +1,24 @@
 import inspect
 
 import numpy as np
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionUserMessageParam,
-)
-from pydantic import BaseModel
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from typing_extensions import TypedDict
 
 from mirascope.core import openai, prompt_template
 
 
-class FewShotExample(BaseModel):
+class FewShotExample(TypedDict):
     question: str
     answer: str
-
-    def messages(
-        self,
-    ) -> tuple[ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam]:
-        """Returns a user -> assistant message pair as a chat turn example."""
-        return (
-            {"role": "user", "content": self.question},
-            {"role": "assistant", "content": self.answer},
-        )
 
 
 def select_relevant_examples(
     query: str, examples: list[FewShotExample], n: int = 3
 ) -> list[FewShotExample]:
     """Select the most relevant examples based on cosine similarity."""
-    vectorizer = TfidfVectorizer().fit([ex.question for ex in examples] + [query])
-    example_vectors = vectorizer.transform([ex.question for ex in examples])
+    vectorizer = TfidfVectorizer().fit([ex["question"] for ex in examples] + [query])
+    example_vectors = vectorizer.transform([ex["question"] for ex in examples])
     query_vector = vectorizer.transform([query])
 
     similarities = cosine_similarity(query_vector, example_vectors)[0]
@@ -43,20 +30,21 @@ def select_relevant_examples(
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
-    MESSAGES: {example_prompts}
-    USER: {query}
+    Examples:
+    {examples:lists}
+
+    Query: {query}
     """
 )
-def dynamic_self_ask_query(
+def dynamic_self_ask(
     query: str, examples: list[FewShotExample], n: int = 3
 ) -> openai.OpenAIDynamicConfig:
     relevant_examples = select_relevant_examples(query, examples, n)
     return {
         "computed_fields": {
-            "example_prompts": [
-                message
+            "examples": [
+                [example["question"], example["answer"]]
                 for example in relevant_examples
-                for message in example.messages()
             ]
         }
     }
@@ -132,7 +120,7 @@ few_shot_examples = [
 
 
 query = "What was the primary language spoken by the inventor of the phonograph?"
-response = dynamic_self_ask_query(query=query, examples=few_shot_examples, n=2)
+response = dynamic_self_ask(query=query, examples=few_shot_examples, n=2)
 print(response.content)
 # > Are follow up questions needed here: Yes.
 #   Follow up: Who invented the phonograph?

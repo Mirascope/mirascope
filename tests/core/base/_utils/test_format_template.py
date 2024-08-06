@@ -42,3 +42,22 @@ def test_format_template_with_none_attrs() -> None:
     """
     formatted_template = format_template(template, attrs)
     assert formatted_template == "Recommend a book."
+
+
+def test_format_template_with_list_format_spec() -> None:
+    """Tests the `format_template` function with list format spec."""
+    attrs = {"genres": ["fantasy", "scifi"]}
+
+    template = "Recommend a {genres} book."
+    formatted_template = format_template(template, attrs)
+    assert formatted_template == "Recommend a ['fantasy', 'scifi'] book."
+
+    template = """
+    Recommend books from one of the following genres:
+    {genres:list}
+    """
+    formatted_template = format_template(template, attrs)
+    assert (
+        formatted_template
+        == "Recommend books from one of the following genres:\nfantasy\nscifi"
+    )

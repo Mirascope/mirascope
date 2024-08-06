@@ -23,4 +23,7 @@ def format_template(template: str, attrs: dict[str, Any]) -> str:
 
     values = get_template_values(template_vars, attrs)
 
+    # Remove any special format specs that are actually invalid normally
+    dedented_template = dedented_template.replace(":lists", "").replace(":list", "")
+
     return dedented_template.format(**values).strip()
