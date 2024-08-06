@@ -125,19 +125,21 @@ def test_anthropic_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost == 3.3e-05
+
+    format_book = FormatBook.from_tool_call(
+        ToolUseBlock(
+            id="tool_id",
+            input={
+                "title": "Sapiens: A Brief History of Humankind",
+                "author": "Harari, Yuval Noah",
+            },
+            name="FormatBook",
+            type="tool_use",
+        )
+    )
     assert stream.message_param == {
         "role": "assistant",
-        "content": [
-            ToolUseBlockParam(
-                id="tool_id",
-                input={
-                    "title": "Sapiens: A Brief History of Humankind",
-                    "author": "Harari, Yuval Noah",
-                },
-                name="FormatBook",
-                type="tool_use",
-            )
-        ],
+        "content": [format_book.tool_call.model_dump()],
     }
 
 
