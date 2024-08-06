@@ -38,7 +38,7 @@ class AnthropicStream(
     def _construct_message_param(
         self, tool_calls: list[ToolUseBlock] | None = None, content: str | None = None
     ) -> MessageParam:
-        """Returns the tool message parameters for tool call results."""
+        """Constructs the message parameter for the assistant."""
         message_param_tool_calls = []
         if tool_calls:
             message_param_tool_calls: list[ToolUseBlockParam] = [

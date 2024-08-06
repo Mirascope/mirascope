@@ -47,6 +47,7 @@ class OpenAIStream(
         tool_calls: list[ChatCompletionMessageToolCall] | None = None,
         content: str | None = None,
     ) -> ChatCompletionAssistantMessageParam:
+        """Constructs the message parameter for the assistant."""
         message_param = ChatCompletionMessage(
             role="assistant",
             content=content,
