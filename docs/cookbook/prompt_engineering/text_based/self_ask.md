@@ -1,12 +1,12 @@
 # Self-Ask: Enhancing LLM Reasoning with Follow-Up Questions
 
-!!! info inline end "Concepts Covered"
+This recipe demonstrates how to implement the Self-Ask technique using Large Language Models (LLMs). Self-Ask is a prompt engineering method that enhances an LLM's reasoning capabilities by encouraging it to ask and answer follow-up questions before providing a final answer. Mirascope makes the implementation simple, reusable, and extensible.
+
+??? info "Key Concepts"
 
     - [Pydantic](ADD LINK)
     - [Calls](ADD LINK)
     - [Response Model](ADD LINK)
-
-This recipe demonstrates how to implement the Self-Ask technique using Large Language Models (LLMs). Self-Ask is a prompt engineering method that enhances an LLM's reasoning capabilities by encouraging it to ask and answer follow-up questions before providing a final answer. Mirascope makes the implementation simple, reusable, and extensible.
 
 !!! note "Background"
 

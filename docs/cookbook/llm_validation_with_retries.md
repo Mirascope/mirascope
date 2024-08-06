@@ -1,12 +1,12 @@
 # LLM Validation With Retries
 
-!!! info inline end "Concepts Covered"
+This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically Anthropic's Claude 3.5 Sonnet -- to perform automated validation on any value. We'll cover how to use **LLMs for complex validation tasks**, how to integrate this with Pydantic's validation system, and how to leverage [Tenacity](ADD LINK) to automatically **reinsert validation errors** back into an LLM call to **improve results**.
+
+??? info "Key Concepts"
 
     - [Calls](ADD LINK)
     - [Response Model](ADD LINK)
     - [Tenacity Integration](ADD LINK)
-
-This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically Anthropic's Claude 3.5 Sonnet -- to perform automated validation on any value. We'll cover how to use **LLMs for complex validation tasks**, how to integrate this with Pydantic's validation system, and how to leverage [Tenacity](ADD LINK) to automatically **reinsert validation errors** back into an LLM call to **improve results**.
 
 !!! note "Background"
 

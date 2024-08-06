@@ -1,12 +1,12 @@
 # Text Classification with LLMs
 
-!!! info inline end "Concepts Covered"
+This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically the OpenAI API -- to perform text classification tasks. We'll cover both **binary classification**, **multi-class classification**, and **classification with reasoning**, providing you with the tools to tackle a wide range of real-world text analysis problems.
+
+??? info "Key Concepts"
 
     - [Calls](ADD LINK)
-    
-    - [Response Model](ADD LINK)
 
-This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically the OpenAI API -- to perform text classification tasks. We'll cover both **binary classification**, **multi-class classification**, and **classification with reasoning**, providing you with the tools to tackle a wide range of real-world text analysis problems.
+    - [Response Model](ADD LINK)
 
 !!! note "Background"
 
