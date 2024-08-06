@@ -24,6 +24,10 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 
 ## Implementing Self-Ask with Few-Shot Learning
 
+!!! note ""
+
+    [self_ask.py](ADD LINK)
+
 To implement Self-Ask, we'll use few-shot learning by providing examples as conversations messages that demonstrate the technique. We'll structure these examples and incorporate them into our LLM call.
 
 First, let's define a model for our few-shot examples:
@@ -164,6 +168,10 @@ print(response.content)
 ```
 
 ## Enhancing Self-Ask Implementation
+
+!!! note ""
+
+    [enhanced_self_ask.py](ADD LINK)
 
 To further improve our Self-Ask implementation, consider the following enhancements:
 

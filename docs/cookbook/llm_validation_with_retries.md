@@ -24,6 +24,10 @@ Make sure to also set your `ANTHROPIC_API_KEY` if you haven't already.
 
 ## Basic LLM Validation
 
+!!! note ""
+
+    [basic_validation.py](ADD LINK)
+
 Let's start with a simple example of using an LLM to check for spelling and grammatical errors in a text snippet:
 
 ```python
@@ -56,6 +60,10 @@ assert response.has_errors
 ```
 
 ## Pydantic's AfterValidator
+
+!!! note ""
+
+    [after_validator.py](ADD LINK)
 
 We can use Pydantic's [`AfterValidator`](ADD LINK) to integrate our LLM-based validation directly into a Pydantic model:
 
@@ -91,6 +99,10 @@ except ValidationError as e:
 ```
 
 ## Reinsert Validation Errors For Improved Performance
+
+!!! note ""
+
+    [validation_errors_with_retries.py](ADD LINK)
 
 One powerful technique for enhancing LLM generations is to automatically reinsert validation errors into subsequent calls. This approach allows the LLM to learn from its previous mistakes as few-shot examples and improve it's output in real-time. We can achieve this using Mirascope's integration with Tenacity, which collects `ValidationError` messages for easy insertion into the prompt.
 
