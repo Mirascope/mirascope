@@ -77,7 +77,7 @@ class BaseStream(
     call_params: _BaseCallParamsT
     call_kwargs: dict[str, Any]
     user_message_param: _UserMessageParamT | None = None
-    message_param: _AssistantMessageParamT
+    message_param: _AssistantMessageParamT | None = None
     input_tokens: int | float | None = None
     output_tokens: int | float | None = None
 
@@ -196,6 +196,11 @@ class BaseStream(
     def tool_message_params(self, tools_and_outputs) -> list[_ToolMessageParamT]:
         """Returns the tool message parameters for tool call results."""
         return self.call_response_type.tool_message_params(tools_and_outputs)
+
+    @abstractmethod
+    def construct_call_response(self) -> _BaseCallResponseT:
+        """Constructs the call response."""
+        ...
 
 
 _BaseCallResponseChunkT = TypeVar(
