@@ -36,7 +36,7 @@ def test_openai_stream() -> None:
         def call(self):
             """Dummy call."""
 
-    tool_call = ChoiceDeltaToolCall(
+    tool_call_delta = ChoiceDeltaToolCall(
         index=0,
         id="id",
         function=ChoiceDeltaToolCallFunction(
@@ -64,7 +64,7 @@ def test_openai_stream() -> None:
                 ChunkChoice(
                     delta=ChoiceDelta(
                         content=None,
-                        tool_calls=[tool_call],
+                        tool_calls=[tool_call_delta],
                     ),
                     index=0,
                 )
@@ -76,10 +76,7 @@ def test_openai_stream() -> None:
         ),
     ]
 
-    tool_call = None
-
     def generator():
-        nonlocal tool_call
         for chunk in chunks:
             call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
             if tool_calls := call_response_chunk.chunk.choices[0].delta.tool_calls:
@@ -113,10 +110,21 @@ def test_openai_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost == 2e-5
+
+    format_book = FormatBook.from_tool_call(
+        ChatCompletionMessageToolCall(
+            id="id",
+            function=Function(
+                arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+                name="FormatBook",
+            ),
+            type="function",
+        )
+    )
     assert stream.message_param == {
         "role": "assistant",
         "content": "content",
-        "tool_calls": [tool_call.model_dump()],  # type: ignore
+        "tool_calls": [format_book.tool_call.model_dump()],
     }
 
 
