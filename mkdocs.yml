@@ -118,6 +118,7 @@ nav:
               - call_response: "api/core/anthropic/call_response.md"
               - call: "api/core/anthropic/call.md"
               - dynamic_config: "api/core/anthropic/dynamic_config.md"
+              - stream: "api/core/anthropic/stream.md"
               - tool: "api/core/anthropic/tool.md"
           - base:
               - "api/core/base/index.md"
@@ -138,6 +139,7 @@ nav:
               - call_response: "api/core/cohere/call_response.md"
               - call: "api/core/cohere/call.md"
               - dynamic_config: "api/core/cohere/dynamic_config.md"
+              - stream: "api/core/cohere/stream.md"
               - tool: "api/core/cohere/tool.md"
           - gemini:
               - "api/core/gemini/index.md"
@@ -146,6 +148,7 @@ nav:
               - call_response: "api/core/gemini/call_response.md"
               - call: "api/core/gemini/call.md"
               - dynamic_config: "api/core/gemini/dynamic_config.md"
+              - stream: "api/core/gemini/stream.md"
               - tool: "api/core/gemini/tool.md"
           - groq:
               - "api/core/groq/index.md"
@@ -154,15 +157,11 @@ nav:
               - call_response: "api/core/groq/call_response.md"
               - call: "api/core/groq/call.md"
               - dynamic_config: "api/core/groq/dynamic_config.md"
+              - stream: "api/core/groq/stream.md"
               - tool: "api/core/groq/tool.md"
           - litellm:
               - "api/core/litellm/index.md"
-              - call_params: "api/core/litellm/call_params.md"
-              - call_response_chunk: "api/core/litellm/call_response_chunk.md"
-              - call_response: "api/core/litellm/call_response.md"
               - call: "api/core/litellm/call.md"
-              - dynamic_config: "api/core/litellm/dynamic_config.md"
-              - tool: "api/core/litellm/tool.md"
           - mistral:
               - "api/core/mistral/index.md"
               - call_params: "api/core/mistral/call_params.md"
@@ -170,6 +169,7 @@ nav:
               - call_response: "api/core/mistral/call_response.md"
               - call: "api/core/mistral/call.md"
               - dynamic_config: "api/core/mistral/dynamic_config.md"
+              - stream: "api/core/mistral/stream.md"
               - tool: "api/core/mistral/tool.md"
           - openai:
               - "api/core/openai/index.md"
@@ -178,14 +178,13 @@ nav:
               - call_response: "api/core/openai/call_response.md"
               - call: "api/core/openai/call.md"
               - dynamic_config: "api/core/openai/dynamic_config.md"
+              - stream: "api/core/openai/stream.md"
               - tool: "api/core/openai/tool.md"
       - integrations:
           - "api/integrations/index.md"
-          - hyperdx: "api/integrations/hyperdx.md"
           - langfuse: "api/integrations/langfuse.md"
           - logfire: "api/integrations/logfire.md"
           - otel: "api/integrations/otel.md"
           - tenacity: "api/integrations/tenacity.md"
-          - utils: "api/integrations/utils.md"
   - Help: "HELP.md"
   - Contributing: "CONTRIBUTING.md"
