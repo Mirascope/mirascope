@@ -11,7 +11,6 @@ from openai.types.chat import (
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
-    Function,
 )
 
 from ..base._stream import BaseStream
@@ -54,7 +53,7 @@ class OpenAIStream(
         )
         if tool_calls:
             message_param.tool_calls = tool_calls
-        return message_param.model_dump()  # type: ignore
+        return message_param.model_dump(exclude={"function_call"})  # type: ignore
 
     def construct_call_response(self) -> OpenAICallResponse:
         if self.message_param is None:
@@ -73,7 +72,7 @@ class OpenAIStream(
                 Choice(
                     finish_reason="stop",
                     index=0,
-                    message=ChatCompletionMessage(**message),
+                    message=ChatCompletionMessage.model_validate(message),
                 )
             ],
             created=0,

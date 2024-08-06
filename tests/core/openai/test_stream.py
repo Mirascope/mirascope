@@ -116,7 +116,7 @@ def test_openai_stream() -> None:
     assert stream.message_param == {
         "role": "assistant",
         "content": "content",
-        "tool_calls": [tool_call],
+        "tool_calls": [tool_call.model_dump()],  # type: ignore
     }
 
 
@@ -245,23 +245,15 @@ def test_construct_call_response():
         end_time=0,
     )
     constructed_call_response = stream.construct_call_response()
-    original_call_response = call_response
-    assert constructed_call_response._provider == original_call_response._provider
-    assert constructed_call_response.content == original_call_response.content
-    assert (
-        constructed_call_response.finish_reasons
-        == original_call_response.finish_reasons
-    )
-    assert constructed_call_response.model == original_call_response.model
-    assert constructed_call_response.id == original_call_response.id
-    assert constructed_call_response.usage == original_call_response.usage
-    assert constructed_call_response.input_tokens == original_call_response.input_tokens
-    assert (
-        constructed_call_response.output_tokens == original_call_response.output_tokens
-    )
-    assert constructed_call_response.cost == original_call_response.cost
-    assert (
-        constructed_call_response.message_param == original_call_response.message_param
-    )
-    assert constructed_call_response.tools == original_call_response.tools
-    assert constructed_call_response.tool == original_call_response.tool
+    assert constructed_call_response._provider == call_response._provider
+    assert constructed_call_response.content == call_response.content
+    assert constructed_call_response.finish_reasons == call_response.finish_reasons
+    assert constructed_call_response.model == call_response.model
+    assert constructed_call_response.id == call_response.id
+    assert constructed_call_response.usage == call_response.usage
+    assert constructed_call_response.input_tokens == call_response.input_tokens
+    assert constructed_call_response.output_tokens == call_response.output_tokens
+    assert constructed_call_response.cost == call_response.cost
+    assert constructed_call_response.message_param == call_response.message_param
+    assert constructed_call_response.tools == call_response.tools
+    assert constructed_call_response.tool == call_response.tool
