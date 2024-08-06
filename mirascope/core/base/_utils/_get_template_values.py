@@ -26,15 +26,15 @@ def get_template_values(
             values[var] = attrs.get(var)
             continue
         elif format_spec in ["list", "lists"]:
+            value = attrs[var]
             if format_spec == "list":
-                if not isinstance(attrs[var], list):
+                if not isinstance(value, list):
                     raise ValueError(
                         f"Template variable '{var}' must be a list when using the "
                         "'list' format spec."
                     )
                 values[var] = "\n".join([str(item) for item in attrs[var]])
             else:
-                value = attrs[var]
                 if not isinstance(value, list) or (
                     value and not all(isinstance(item, list) for item in value)
                 ):
@@ -43,11 +43,8 @@ def get_template_values(
                         "the 'lists' format spec."
                     )
                 values[var] = "\n\n".join(
-                    [
-                        "\n".join([str(subitem) for subitem in item])
-                        for item in attrs[var]
-                    ]
+                    ["\n".join([str(subitem) for subitem in item]) for item in value]
                 )
         else:
-            values[var] = str(attrs[var])
+            values[var] = str(attrs[var]) if attrs[var] is not None else ""
     return values

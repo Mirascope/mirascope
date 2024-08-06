@@ -130,7 +130,10 @@ def _construct_parts(
             )
         return [_construct_audio_part(source) for source in sources] if sources else []
     else:  # text type
-        return [TextPart(type="text", text=format_template(part["template"], attrs))]
+        template = part["template"].strip()
+        if not template:
+            return []
+        return [TextPart(type="text", text=format_template(template, attrs))]
 
 
 def parse_content_template(
@@ -145,6 +148,9 @@ def parse_content_template(
         for part in _parse_parts(template)
         for item in _construct_parts(part, attrs)
     ]
+
+    if not parts:
+        return None
 
     if len(parts) == 1 and parts[0].type == "text":
         return BaseMessageParam(role=role, content=parts[0].text)

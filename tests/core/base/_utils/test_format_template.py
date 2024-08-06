@@ -30,3 +30,15 @@ def test_format_template(
         "Recommend a {genre} book.", True
     )
     mock_get_template_values.assert_called_once_with([("genre", None)], attrs)
+
+
+def test_format_template_with_none_attrs() -> None:
+    """Tests the `format_template` function with `None` template variables."""
+    attrs = {"genre": None}
+    template = """
+    Recommend a book.
+
+    {genre}
+    """
+    formatted_template = format_template(template, attrs)
+    assert formatted_template == "Recommend a book."
