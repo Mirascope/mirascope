@@ -154,10 +154,8 @@ few_shot_examples = [
 Finally, we can use our Self-Ask implementation:
 
 ```python
-response = self_ask_query(
-    query="The birth country of Jayantha Ketagoda left the British Empire when?",
-    examples=few_shot_examples,
-)
+query = "The birth country of Jayantha Ketagoda left the British Empire when?"
+response = self_ask_query(query=query, examples=few_shot_examples)
 print(response.content)
 # > Are follow up questions needed here: Yes.
 #   Follow up: What is the birth country of Jayantha Ketagoda?
@@ -165,6 +163,16 @@ print(response.content)
 #   Follow up: When did Sri Lanka leave the British Empire?
 #   Intermediate answer: Sri Lanka, formerly known as Ceylon, gained independence from the British Empire on February 4, 1948.
 #   So the final answer is: February 4, 1948.
+```
+
+Let's compare this to asking the same question with no few-shot examples:
+
+```python
+response = self_ask_query(query=query, examples=[])
+print(response.content)
+# > Jayantha Ketagoda was born in Sri Lanka, which was known as Ceylon during the
+#   British colonial period. Ceylon gained independence from the British Empire on
+#   February 4, 1948.
 ```
 
 ## Enhancing Self-Ask Implementation

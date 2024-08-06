@@ -30,7 +30,9 @@ class FewShotExample(BaseModel):
     USER: {query}
     """
 )
-def call(query: str, examples: list[FewShotExample]) -> openai.OpenAIDynamicConfig:
+def self_ask_query(
+    query: str, examples: list[FewShotExample]
+) -> openai.OpenAIDynamicConfig:
     return {
         "computed_fields": {
             "example_prompts": [
@@ -108,12 +110,18 @@ few_shot_examples = [
     ),
 ]
 
-
-response = call(
-    query="The birth country of Jayantha Ketagoda left the British Empire when?",
-    examples=few_shot_examples,
-)
+query = "The birth country of Jayantha Ketagoda left the British Empire when?"
+response = self_ask_query(query=query, examples=few_shot_examples)
 print(response.content)
-# > Jayantha Ketagoda is from Sri Lanka. Sri Lanka, formerly known as Ceylon, gained
-#   independence from the British Empire on February 4, 1948. So, the final answer is:
+# > Are follow up questions needed here: Yes.
+#   Follow up: What is the birth country of Jayantha Ketagoda?
+#   Intermediate answer: Jayantha Ketagoda is from Sri Lanka.
+#   Follow up: When did Sri Lanka leave the British Empire?
+#   Intermediate answer: Sri Lanka, formerly known as Ceylon, gained independence from the British Empire on February 4, 1948.
+#   So the final answer is: February 4, 1948.
+
+response = self_ask_query(query=query, examples=[])
+print(response.content)
+# > Jayantha Ketagoda was born in Sri Lanka, which was known as Ceylon during the
+#   British colonial period. Ceylon gained independence from the British Empire on
 #   February 4, 1948.
