@@ -61,30 +61,21 @@ class OpenAIStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )
-        stream_tool_calls = self.message_param.get("tool_calls", [])
-        message = ChatCompletionMessage(
-            content=self.message_param.get("content", ""),
-            role=self.message_param["role"],
-        )
-        if stream_tool_calls:
-            tool_calls = []
-            for stream_tool_call in stream_tool_calls:
-                function_dict = stream_tool_call["function"]
-                tool_calls.append(
-                    ChatCompletionMessageToolCall(
-                        id=stream_tool_call["id"],
-                        function=Function(
-                            arguments=function_dict["arguments"],
-                            name=function_dict["name"],
-                        ),
-                        type="function",
-                    )
-                )
-            message.tool_calls = tool_calls
+        message = {
+            "role": self.message_param["role"],
+            "content": self.message_param.get("content", ""),
+            "tool_calls": self.message_param.get("tool_calls", []),
+        }
         completion = ChatCompletion(
             id="id",
             model=self.model,
-            choices=[Choice(finish_reason="stop", index=0, message=message)],
+            choices=[
+                Choice(
+                    finish_reason="stop",
+                    index=0,
+                    message=ChatCompletionMessage(**message),
+                )
+            ],
             created=0,
             object="chat.completion",
         )
