@@ -1,6 +1,5 @@
 """Tests the `_utils.parse_prompt_messages` function."""
 
-from tkinter import NO
 from unittest.mock import MagicMock, call, patch
 
 import pytest
