@@ -105,6 +105,14 @@ nav:
   - Cookbook:
       - "cookbook/index.md"
       - Text Classification: "cookbook/text_classification.md"
+      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - Prompt Engineering:
+          - "cookbook/prompt_engineering/index.md"
+          - Text-Based:
+              - "cookbook/prompt_engineering/text_based/index.md"
+              - Self-Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
+          - Chaining:
+              - "cookbook/prompt_engineering/chaining/index.md"
   - Integrations:
       - "integrations/index.md"
   - API Reference:
