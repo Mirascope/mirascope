@@ -6,7 +6,10 @@ from google.ai.generativelanguage import (
     FunctionCall,
     GenerateContentResponse,
 )
-from google.generativeai.types import ContentDict
+from google.generativeai.types import (
+    ContentDict,
+    ContentsType,  # type: ignore
+)
 from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
@@ -27,7 +30,7 @@ class GeminiStream(
         ContentDict,
         ContentDict,
         ContentDict,
-        ContentDict,
+        ContentsType,
         GeminiTool,
         GeminiDynamicConfig,
         GeminiCallParams,
@@ -47,14 +50,17 @@ class GeminiStream(
         """Constructs the message parameter for the assistant.
         Gemini currently does not support tool calls for streaming.
         """
-        return {"role": "model", "parts": [{"text": content}]}  # type: ignore
+        return {
+            "role": "model",
+            "parts": [{"text": content}] + (tool_calls or []),  # type: ignore
+        }
 
     def construct_call_response(self) -> GeminiCallResponse:
         """Constructs the call response from a consumed GeminiStream."""
         if self.message_param is None:
-            raise ValueError(  # pragma: no cover
+            raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )
+            )  # pragma: no cover
         response = GenerateContentResponseType.from_response(
             GenerateContentResponse(
                 candidates=[
@@ -77,7 +83,7 @@ class GeminiStream(
             prompt_template=self.prompt_template,
             fn_args=self.fn_args if self.fn_args else {},
             dynamic_config=self.dynamic_config,
-            messages=self.messages,  # type: ignore
+            messages=self.messages,
             call_params=self.call_params,
             call_kwargs=self.call_kwargs,
             user_message_param=self.user_message_param,

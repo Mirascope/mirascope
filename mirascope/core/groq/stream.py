@@ -60,9 +60,9 @@ class GroqStream(
     def construct_call_response(self) -> GroqCallResponse:
         """Constructs the call response from a consumed GroqStream."""
         if self.message_param is None:
-            raise ValueError(  # pragma: no cover
+            raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )
+            )  # pragma: no cover
         message = {
             "role": self.message_param["role"],
             "content": self.message_param.get("content", ""),

@@ -49,9 +49,9 @@ class MistralStream(
     def construct_call_response(self) -> MistralCallResponse:
         """Constructs the call response from a consumed MistralStream."""
         if self.message_param is None:
-            raise ValueError(  # pragma: no cover
+            raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )
+            )  # pragma: no cover
         usage = UsageInfo(prompt_tokens=0, completion_tokens=0, total_tokens=0)
         if self.input_tokens:
             usage.prompt_tokens = int(self.input_tokens)
