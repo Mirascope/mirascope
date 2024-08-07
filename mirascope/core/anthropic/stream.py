@@ -1,7 +1,5 @@
 """The `AnthropicStream` class for convenience around streaming LLM calls."""
 
-from typing import Literal
-
 from anthropic.types import Message, MessageParam, TextBlock, ToolUseBlock, Usage
 from anthropic.types.content_block import ContentBlock
 from anthropic.types.text_block_param import TextBlockParam
