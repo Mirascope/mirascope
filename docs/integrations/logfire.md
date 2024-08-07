@@ -1,6 +1,6 @@
 # Logfire
 
-[Logfire](https://docs.pydantic.dev/logfire/), a new tool from Pydantic, is built on OpenTelemetry. As Mirascope is also built on Pydantic, it's appropriate for us to ensure seamless integration with them.
+[Logfire](https://docs.pydantic.dev/logfire/), a new tool from Pydantic, is built on OpenTelemetry. Since Pydantic powers many of Mirascope's features, it's appropriate for us to ensure seamless integration with them.
 
 ## How to use Logfire with Mirascope
 
@@ -10,13 +10,13 @@ pip install logfire
 from mirascope.integrations.logfire import with_logfire
 ```
 
-`with_logfire` is a decorator that can be used on all Mirascope classes to automatically log both Mirascope calls and also all our [supported LLM providers](https://docs.mirascope.io/latest/SUPPORTED_PROVIDERS/).
+`with_logfire` is a decorator that can be used on all Mirascope functions to automatically log all our [supported LLM providers](ADD LINK).
 
 ## Examples
 
 ### Call
 
-A Mirascope call:
+A Mirascope call with tools:
 
 ```python
 import logfire
@@ -31,10 +31,12 @@ def format_book(title: str, author: str):
 
 @with_logfire
 @anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
-@prompt_template("""Recommend a {genre} book.""")
+@prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...
 
-recommend_book("fantasy")
+print(recommend_book("fantasy"))
+# > Certainly! I'd be happy to recommend a fantasy book for you. To provide a specific recommendation, I'll need to use the available tool
+#   to format the book information correctly. Let me suggest a popular and widely acclaimed fantasy novel for you.
 ```
 
 This will give you:
@@ -63,12 +65,15 @@ logfire.configure()
     stream=True,
     call_params={"stream_options": {"include_usage": True}},
 )
-@prompt_template("""Recommend a {genre} book.""")
+@prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...
 
 
 for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
+# > I recommend "The Name of the Wind" by Patrick Rothfuss. It’s the first book in the "Kingkiller Chronicle" series and follows the story of Kvothe, a legendary figure 
+#   who recounts his life story, filled with magic, music, and adventure. The writing is lyrical, the world-building is rich, and the character development is deeply 
+#   engaging. If you enjoy a mix of storytelling and intricate world creation, this book is a great choice!
 ```
 
 For some providers, certain `call_params` will need to be set in order for usage to be tracked.
@@ -96,10 +101,11 @@ class Book(BaseModel):
 
 @with_logfire
 @openai.call(model="gpt-4o-mini", response_model=Book)
-@prompt_template("""Recommend a {genre} book.""")
+@prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...
 
-recommend_book("fantasy")
+print(recommend_book("fantasy"))
+# > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
 This will give you:
@@ -135,7 +141,7 @@ class Book(BaseModel):
 @app.post("/")
 @with_logfire
 @openai.call(model="gpt-4o-mini", response_model=Book)
-@prompt_template("""Recommend a {genre} book.""")
+@prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...
 ```
 
@@ -156,7 +162,7 @@ logfire.configure()
 logfire.instrument_openai(client)
 
 @openai.call(model="gpt-4o-mini", client=client)
-@prompt_template("""Recommend a {genre} book.""")
+@prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...
 
 
