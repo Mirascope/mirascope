@@ -116,6 +116,7 @@ nav:
   - Integrations:
       - "integrations/index.md"
       - "integrations/logfire.md"
+      - "integrations/langfuse.md"
   - API Reference:
       - "api/index.md"
       - core:

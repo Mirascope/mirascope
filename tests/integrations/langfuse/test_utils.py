@@ -31,22 +31,6 @@ def test_get_call_response_observation():
     assert call_response_observation["output"] == "test_content"
 
 
-def test_get_stream_observation():
-    """Tests the `get_stream_observation` function."""
-    mock_stream = MagicMock(spec=BaseStream)
-    mock_stream.model = "test_model"
-    mock_stream.prompt_template = "test_prompt_template"
-    mock_stream.message_param = {"role": "assistant", "content": "test_content"}
-    mock_fn = MagicMock(__name__="mock_fn")
-    mock_fn.__annotations__ = {"metadata": Metadata(tags={"tag1"})}
-    stream_observation = _utils.get_stream_observation(mock_stream, mock_fn)
-    assert stream_observation["name"] == "mock_fn with test_model"
-    assert stream_observation["input"] == "test_prompt_template"
-    assert stream_observation["tags"] == {"tag1"}
-    assert stream_observation["model"] == "test_model"
-    assert stream_observation["output"] == "test_content"
-
-
 @patch(
     "mirascope.integrations.langfuse._utils.langfuse_context.update_current_observation",
     new_callable=MagicMock,
@@ -94,8 +78,6 @@ async def test_handle_call_response_async(
     mock_fn = MagicMock(__name__="mock_fn")
 
     result = MagicMock(spec=BaseCallResponse)
-    result.input_tokens = 1
-    result.output_tokens = 2
     await _utils.handle_call_response_async(result, mock_fn, None)
     mock_get_call_response_observation.assert_called_once_with(result, mock_fn)
     mock_update_current_observation.assert_called_once_with(
@@ -113,23 +95,29 @@ async def test_handle_call_response_async(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_stream_observation",
+    "mirascope.integrations.langfuse._utils.get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_stream(
-    mock_get_stream_observation: MagicMock,
+    mock_get_call_response_observation: MagicMock,
     mock_update_current_observation: MagicMock,
 ) -> None:
-    """Tests the `handle_strea` function."""
+    """Tests the `handle_stream` function."""
     mock_fn = MagicMock(__name__="mock_fn")
 
     result = MagicMock(spec=BaseStream)
-    result.input_tokens = 1
-    result.output_tokens = 2
+    mock_construct_call_response = MagicMock()
+    mock_construct_call_response_return_value = MagicMock()
+    mock_construct_call_response.return_value = (
+        mock_construct_call_response_return_value
+    )
+    result.construct_call_response = mock_construct_call_response
     _utils.handle_stream(result, mock_fn, None)
-    mock_get_stream_observation.assert_called_once_with(result, mock_fn)
+    mock_get_call_response_observation.assert_called_once_with(
+        mock_construct_call_response(), mock_fn
+    )
     mock_update_current_observation.assert_called_once_with(
-        **mock_get_stream_observation.return_value,
+        **mock_construct_call_response_return_value,
         usage=ModelUsage(
             input=result.input_tokens,
             output=result.output_tokens,
@@ -139,34 +127,19 @@ def test_handle_stream(
 
 
 @patch(
-    "mirascope.integrations.langfuse._utils.langfuse_context.update_current_observation",
-    new_callable=MagicMock,
-)
-@patch(
-    "mirascope.integrations.langfuse._utils.get_stream_observation",
+    "mirascope.integrations.langfuse._utils.handle_stream",
     new_callable=MagicMock,
 )
 @pytest.mark.asyncio
 async def test_handle_stream_async(
-    mock_get_stream_observation: MagicMock,
-    mock_update_current_observation: MagicMock,
+    mock_handle_stream: MagicMock,
 ) -> None:
     """Tests the `handle_stream_async` function."""
     mock_fn = MagicMock(__name__="mock_fn")
 
     result = MagicMock(spec=BaseStream)
-    result.input_tokens = 1
-    result.output_tokens = 2
     await _utils.handle_stream_async(result, mock_fn, None)
-    mock_get_stream_observation.assert_called_once_with(result, mock_fn)
-    mock_update_current_observation.assert_called_once_with(
-        **mock_get_stream_observation.return_value,
-        usage=ModelUsage(
-            input=result.input_tokens,
-            output=result.output_tokens,
-            unit="TOKENS",
-        ),
-    )
+    mock_handle_stream.assert_called_once_with(result, mock_fn, None)
 
 
 @patch(
@@ -177,11 +150,11 @@ async def test_handle_stream_async(
     "mirascope.integrations.langfuse._utils.get_call_response_observation",
     new_callable=MagicMock,
 )
-def test_handle_base_model(
+def test_handle_response_model(
     mock_get_call_response_observation: MagicMock,
     mock_update_current_observation: MagicMock,
 ) -> None:
-    """Tests the `handle_base_model` function."""
+    """Tests the `handle_response_model` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseModel)
     result.input_tokens = 1
@@ -189,7 +162,7 @@ def test_handle_base_model(
     response = MagicMock(spec=BaseCallResponse)
     result._response = response
 
-    _utils.handle_base_model(result, mock_fn, None)
+    _utils.handle_response_model(result, mock_fn, None)
     mock_get_call_response_observation.assert_called_once_with(response, mock_fn)
     mock_update_current_observation.assert_called_once_with(
         **mock_get_call_response_observation.return_value,
@@ -206,12 +179,29 @@ def test_handle_base_model(
     "mirascope.integrations.langfuse._utils.langfuse_context.update_current_observation",
     new_callable=MagicMock,
 )
+def test_handle_response_model_base_type(
+    mock_update_current_observation: MagicMock,
+) -> None:
+    """Tests the `handle_response_model` function with `BaseType` result."""
+    mock_fn = MagicMock(__name__="mock_fn")
+    result = MagicMock(spec=str)
+
+    _utils.handle_response_model(result, mock_fn, None)
+    mock_update_current_observation.assert_called_once_with(
+        output=result,
+    )
+
+
 @patch(
-    "mirascope.integrations.langfuse._utils.get_stream_observation",
+    "mirascope.integrations.langfuse._utils.langfuse_context.update_current_observation",
+    new_callable=MagicMock,
+)
+@patch(
+    "mirascope.integrations.langfuse._utils.get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_structured_stream(
-    mock_get_stream_observation: MagicMock,
+    mock_get_call_response_observation: MagicMock,
     mock_update_current_observation: MagicMock,
 ) -> None:
     """Tests the `handle_structured_stream` function."""
@@ -222,11 +212,18 @@ def test_handle_structured_stream(
     result.constructed_response_model = MagicMock()
     stream = MagicMock(spec=BaseStream)
     result.stream = stream
-
+    mock_construct_call_response = MagicMock()
+    mock_construct_call_response_return_value = MagicMock()
+    mock_construct_call_response.return_value = (
+        mock_construct_call_response_return_value
+    )
+    stream.construct_call_response = mock_construct_call_response
     _utils.handle_structured_stream(result, mock_fn, None)
-    mock_get_stream_observation.assert_called_once_with(stream, mock_fn)
+    mock_get_call_response_observation.assert_called_once_with(
+        mock_construct_call_response(), mock_fn
+    )
     mock_update_current_observation.assert_called_once_with(
-        **mock_get_stream_observation.return_value,
+        **mock_construct_call_response_return_value,
         usage=ModelUsage(
             input=stream.input_tokens,
             output=stream.output_tokens,
@@ -245,11 +242,11 @@ def test_handle_structured_stream(
     new_callable=MagicMock,
 )
 @pytest.mark.asyncio
-async def test_handle_base_model_async(
+async def test_handle_response_model_async(
     mock_get_call_response_observation: MagicMock,
     mock_update_current_observation: MagicMock,
 ) -> None:
-    """Tests the `handle_base_model` function."""
+    """Tests the `handle_response_model` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseModel)
     result.input_tokens = 1
@@ -257,7 +254,7 @@ async def test_handle_base_model_async(
     response = MagicMock(spec=BaseCallResponse)
     result._response = response
 
-    await _utils.handle_base_model_async(result, mock_fn, None)
+    await _utils.handle_response_model_async(result, mock_fn, None)
     mock_get_call_response_observation.assert_called_once_with(response, mock_fn)
     mock_update_current_observation.assert_called_once_with(
         **mock_get_call_response_observation.return_value,
@@ -271,35 +268,16 @@ async def test_handle_base_model_async(
 
 
 @patch(
-    "mirascope.integrations.langfuse._utils.langfuse_context.update_current_observation",
-    new_callable=MagicMock,
-)
-@patch(
-    "mirascope.integrations.langfuse._utils.get_stream_observation",
+    "mirascope.integrations.langfuse._utils.handle_structured_stream",
     new_callable=MagicMock,
 )
 @pytest.mark.asyncio
 async def test_handle_structured_stream_async(
-    mock_get_stream_observation: MagicMock,
-    mock_update_current_observation: MagicMock,
+    mock_handle_structured_stream: MagicMock,
 ) -> None:
     """Tests the `handle_structured_stream_async` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseStructuredStream)
-    result.input_tokens = 1
-    result.output_tokens = 2
-    result.constructed_response_model = MagicMock()
-    stream = MagicMock(spec=BaseStream)
-    result.stream = stream
 
     await _utils.handle_structured_stream_async(result, mock_fn, None)
-    mock_get_stream_observation.assert_called_once_with(stream, mock_fn)
-    mock_update_current_observation.assert_called_once_with(
-        **mock_get_stream_observation.return_value,
-        usage=ModelUsage(
-            input=stream.input_tokens,
-            output=stream.output_tokens,
-            unit="TOKENS",
-        ),
-        output=result.constructed_response_model,
-    )
+    mock_handle_structured_stream.assert_called_once_with(result, mock_fn, None)
