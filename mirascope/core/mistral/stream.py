@@ -45,6 +45,7 @@ class MistralStream(
         return message_param
 
     def construct_call_response(self) -> MistralCallResponse:
+        """Constructs the call response from a consumed MistralStream."""
         if self.message_param is None:
             raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."

@@ -47,6 +47,7 @@ class CohereStream(
         )
 
     def construct_call_response(self) -> CohereCallResponse:
+        """Constructs the call response from a consumed CohereStream."""
         if self.message_param is None:
             raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."

@@ -57,6 +57,7 @@ class OpenAIStream(
         return message_param.model_dump(exclude={"function_call"})  # type: ignore
 
     def construct_call_response(self) -> OpenAICallResponse:
+        """Constructs the call response from a consumed OpenAIStream."""
         if self.message_param is None:
             raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."

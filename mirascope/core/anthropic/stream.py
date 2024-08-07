@@ -59,6 +59,7 @@ class AnthropicStream(
         }
 
     def construct_call_response(self) -> AnthropicCallResponse:
+        """Constructs the call response from a consumed AnthropicStream."""
         if self.message_param is None:
             raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."

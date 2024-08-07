@@ -50,6 +50,7 @@ class GeminiStream(
         return {"role": "model", "parts": [{"text": content}]}  # type: ignore
 
     def construct_call_response(self) -> GeminiCallResponse:
+        """Constructs the call response from a consumed GeminiStream."""
         if self.message_param is None:
             raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."
