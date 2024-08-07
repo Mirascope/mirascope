@@ -22,6 +22,7 @@ from .tool import BaseTool
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
@@ -54,29 +55,37 @@ def extract_factory(
         fn: Callable[_P, _BaseDynamicConfigT],
         model: str,
         response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT]: ...  # pragma: no cover
+    ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...  # pragma: no cover
 
     @overload
     def decorator(
         fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[_ResponseModelT]]: ...  # pragma: no cover
+    ) -> Callable[
+        _P, Awaitable[_ResponseModelT | _ParsedOutputT]
+    ]: ...  # pragma: no cover
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
+    ) -> Callable[
+        _P,
+        _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
+    ]:
         tool = setup_extract_tool(response_model, TToolType)
         is_async = inspect.iscoroutinefunction(fn)
         create_decorator_kwargs = {
@@ -102,7 +111,7 @@ def extract_factory(
                 raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            return output  # type: ignore
+            return output if not output_parser else output_parser(output)  # type: ignore
 
         @wraps(fn)
         async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
@@ -118,7 +127,7 @@ def extract_factory(
                 raise e
             if isinstance(output, BaseModel):
                 output._response = call_response  # type: ignore
-            return output  # type: ignore
+            return output if not output_parser else output_parser(output)  # type: ignore
 
         return inner_async if is_async else inner
 
