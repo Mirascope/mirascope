@@ -80,16 +80,19 @@ class OpenAIStream(
             "content": self.message_param.get("content", ""),
             "tool_calls": self.message_param.get("tool_calls", []),
         }
-        usage = CompletionUsage(
-            prompt_tokens=0,
-            completion_tokens=0,
-            total_tokens=0,
-        )
-        if self.input_tokens:
-            usage.prompt_tokens = int(self.input_tokens)
-        if self.output_tokens:
-            usage.completion_tokens = int(self.output_tokens)
-        usage.total_tokens = usage.prompt_tokens + usage.completion_tokens
+        if not self.input_tokens and not self.output_tokens:
+            usage = None
+        else:
+            usage = CompletionUsage(
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+            )
+            if self.input_tokens:
+                usage.prompt_tokens = int(self.input_tokens)
+            if self.output_tokens:
+                usage.completion_tokens = int(self.output_tokens)
+            usage.total_tokens = usage.prompt_tokens + usage.completion_tokens
         completion = ChatCompletion(
             id=self.id if self.id else "",
             model=self.model,

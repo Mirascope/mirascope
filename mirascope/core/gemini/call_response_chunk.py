@@ -50,7 +50,6 @@ class GeminiCallResponseChunk(
     @property
     def finish_reasons(self) -> list[Candidate.FinishReason]:
         """Returns the finish reasons of the response."""
-
         return [candidate.finish_reason for candidate in self.chunk.candidates]
 
     @property

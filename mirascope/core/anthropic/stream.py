@@ -71,10 +71,10 @@ class AnthropicStream(
         if self.output_tokens:
             usage.output_tokens = int(self.output_tokens)
 
-        message_param: list[ContentBlock] = []
+        content_blocks: list[ContentBlock] = []
 
         if isinstance(self.message_param["content"], str):
-            message_param.append(
+            content_blocks.append(
                 TextBlock(text=self.message_param["content"], type="text")
             )
         else:
@@ -84,12 +84,12 @@ class AnthropicStream(
                 )
 
                 if content_type == "text":
-                    message_param.append(TextBlock.model_validate(content))
+                    content_blocks.append(TextBlock.model_validate(content))
                 elif content_type == "tool_use":
-                    message_param.append(ToolUseBlock.model_validate(content))
+                    content_blocks.append(ToolUseBlock.model_validate(content))
         completion = Message(
             id=self.id if self.id else "",
-            content=message_param,
+            content=content_blocks,
             model=self.model,
             role="assistant",
             stop_reason=self.finish_reasons[0] if self.finish_reasons else None,
