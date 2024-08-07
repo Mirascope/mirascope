@@ -44,8 +44,13 @@ class AnthropicStream(
         message_param_tool_calls = []
         if tool_calls:
             message_param_tool_calls: list[ToolUseBlockParam] = [
-                tool_call.model_dump()
-                for tool_call in tool_calls  # type: ignore
+                ToolUseBlockParam(
+                    id=tool_call.id,
+                    input=tool_call.input,
+                    name=tool_call.name,
+                    type="tool_use",
+                )
+                for tool_call in tool_calls
             ]
         return {
             "role": "assistant",
