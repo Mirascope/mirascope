@@ -10,8 +10,8 @@ from mirascope.core.base.tool import BaseTool
 def test_setup_call() -> None:
     """Tests the `setup_call` function."""
 
-    def fn(genre: str):
-        """Recommend a {genre} book."""
+    @prompt_template("Recommend a {genre} book.")
+    def fn(genre: str): ...
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -67,8 +67,8 @@ def test_setup_call_with_dynamic_config() -> None:
         "call_params": {"arg": "value"},
     }
 
-    def fn():
-        """Recommend a {genre} book."""
+    @prompt_template("Recommend a {genre} book.")
+    def fn(): ...
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn, {}, dynamic_config, None, FormatBook, {}

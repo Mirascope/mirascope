@@ -92,8 +92,6 @@ def test_base_tool_model_tool_schema() -> None:
         "type": "object",
     }
 
-    print(FormatBook.model_tool_schema())
-
 
 def test_base_tool_type_conversion() -> None:
     """Tests the `BaseTool.type_from...` class methods."""

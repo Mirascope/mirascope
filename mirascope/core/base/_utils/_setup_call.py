@@ -9,6 +9,7 @@ from ..message_param import BaseMessageParam
 from ..tool import BaseTool
 from ._convert_base_model_to_base_tool import convert_base_model_to_base_tool
 from ._convert_function_to_base_tool import convert_function_to_base_tool
+from ._get_prompt_template import get_prompt_template
 from ._parse_prompt_messages import parse_prompt_messages
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
@@ -39,7 +40,7 @@ def setup_call(
             call_kwargs |= dynamic_call_params
 
     if not messages:
-        prompt_template = fn.__annotations__.get("prompt_template", inspect.getdoc(fn))
+        prompt_template = get_prompt_template(fn)
         assert prompt_template is not None, "The function must have a docstring."
         if computed_fields:
             fn_args |= computed_fields
