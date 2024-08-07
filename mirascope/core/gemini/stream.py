@@ -7,7 +7,6 @@ from google.ai.generativelanguage import (
     Content,
     FunctionCall,
     GenerateContentResponse,
-    Part,
 )
 from google.generativeai.types import (
     ContentDict,
