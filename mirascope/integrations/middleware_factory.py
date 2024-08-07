@@ -14,6 +14,8 @@ from typing import (
 
 from pydantic import BaseModel
 
+from mirascope.core.base._utils._base_type import BaseType
+
 from ..core.base._stream import BaseStream
 from ..core.base._structured_stream import BaseStructuredStream
 from ..core.base.call_response import BaseCallResponse
@@ -21,14 +23,17 @@ from ..core.base.call_response import BaseCallResponse
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStructuredStreamT = TypeVar("_BaseStructuredStreamT", bound=BaseStructuredStream)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
-_BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+ResponseModel = BaseModel | BaseType
 _P = ParamSpec("_P")
 SyncFunc = Callable[
-    _P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT
+    _P, _BaseCallResponseT | _BaseStreamT | _ResponseModelT | _BaseStructuredStreamT
 ]
 AsyncFunc = Callable[
     _P,
-    Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT],
+    Awaitable[
+        _BaseCallResponseT | _BaseStreamT | _ResponseModelT | _BaseStructuredStreamT
+    ],
 ]
 _T = TypeVar("_T")
 
@@ -62,10 +67,12 @@ def middleware_decorator(
         [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
-    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
+    handle_response_model: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_base_model_async: Callable[
-        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    handle_response_model_async: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
     handle_structured_stream: Callable[
@@ -101,10 +108,12 @@ def middleware_decorator(
         [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
-    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
+    handle_response_model: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_base_model_async: Callable[
-        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    handle_response_model_async: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
     handle_structured_stream: Callable[
@@ -139,10 +148,12 @@ def middleware_decorator(
         [BaseStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
-    handle_base_model: Callable[[BaseModel, SyncFunc | AsyncFunc, _T | None], None]
+    handle_response_model: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], None
+    ]
     | None = None,
-    handle_base_model_async: Callable[
-        [BaseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
+    handle_response_model_async: Callable[
+        [ResponseModel, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
     handle_structured_stream: Callable[
@@ -178,9 +189,9 @@ def middleware_decorator(
                 if custom_decorator
                 else new_stream_iter
             )
-        elif isinstance(result, BaseModel) and handle_base_model is not None:
+        elif isinstance(result, ResponseModel) and handle_response_model is not None:
             with custom_context_manager(fn) as context:
-                handle_base_model(result, fn, None)
+                handle_response_model(result, fn, context)
         elif isinstance(result, BaseStructuredStream):
             original_iter = result.__iter__
 
@@ -224,9 +235,12 @@ def middleware_decorator(
                 if custom_decorator
                 else new_aiter_stream
             )
-        elif isinstance(result, BaseModel) and handle_base_model_async is not None:
+        elif (
+            isinstance(result, ResponseModel)
+            and handle_response_model_async is not None
+        ):
             with custom_context_manager(fn) as context:
-                await handle_base_model_async(result, fn, context)
+                await handle_response_model_async(result, fn, context)
         elif isinstance(result, BaseStructuredStream):
             original_aiter = result.__aiter__
 

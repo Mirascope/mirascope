@@ -115,6 +115,7 @@ nav:
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
   - Integrations:
       - "integrations/index.md"
+      - "integrations/logfire.md"
   - API Reference:
       - "api/index.md"
       - core:
