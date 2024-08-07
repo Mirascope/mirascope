@@ -129,6 +129,8 @@ def test_openai_stream() -> None:
 
 
 def test_construct_call_response():
+    """Tests the `OpenAIStream.construct_call_response` method."""
+
     class FormatBook(OpenAITool):
         """Returns the title and author nicely formatted."""
 
@@ -255,3 +257,43 @@ def test_construct_call_response():
     )
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.response == call_response.response
+
+
+def test_construct_call_response_no_usage():
+    """Tests the `OpenAIStream.construct_call_response` method with no usage."""
+    chunks = [
+        ChatCompletionChunk(
+            id="id",
+            choices=[
+                ChunkChoice(
+                    delta=ChoiceDelta(content="content", tool_calls=None), index=0
+                )
+            ],
+            created=0,
+            model="gpt-4o",
+            object="chat.completion.chunk",
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = OpenAIStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=OpenAICallResponse,
+        model="gpt-4o",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "content": "content"}],
+        call_params={},
+        call_kwargs={},
+    )
+    for _ in stream:
+        pass
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response.usage is None

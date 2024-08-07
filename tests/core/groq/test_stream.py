@@ -126,6 +126,8 @@ def test_groq_stream() -> None:
 
 
 def test_construct_call_response():
+    """Tests the `GroqStream.construct_call_response` method."""
+
     class FormatBook(GroqTool):
         """Returns the title and author nicely formatted."""
 
@@ -255,3 +257,44 @@ def test_construct_call_response():
     )
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.response == call_response.response
+
+
+def test_construct_call_response_no_usage():
+    """Tests the `GroqStream.construct_call_response` method with no usage."""
+    chunks = [
+        ChatCompletionChunk(
+            id="id",
+            choices=[
+                ChoiceChunk(
+                    delta=ChoiceDelta(content="content", tool_calls=None), index=0
+                )
+            ],
+            created=0,
+            model="gpt-4o",
+            object="chat.completion.chunk",
+            x_groq=None,
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = GroqCallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = GroqStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=GroqCallResponse,
+        model="gpt-4o",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "content": "content"}],
+        call_params={},
+        call_kwargs={},
+    )
+    for _ in stream:
+        pass
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response.usage is None
