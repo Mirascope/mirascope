@@ -5,13 +5,13 @@ from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessage,
     ChatCompletionMessageParam,
+    ChatCompletionMessageToolCall,
+    ChatCompletionMessageToolCallParam,
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
 from openai.types.chat.chat_completion import Choice
-from openai.types.chat.chat_completion_message_tool_call import (
-    ChatCompletionMessageToolCall,
-)
+from openai.types.chat.chat_completion_message_tool_call_param import Function
 
 from ..base._stream import BaseStream
 from ._utils import calculate_cost
@@ -48,13 +48,22 @@ class OpenAIStream(
         content: str | None = None,
     ) -> ChatCompletionAssistantMessageParam:
         """Constructs the message parameter for the assistant."""
-        message_param = ChatCompletionMessage(
-            role="assistant",
-            content=content,
+        message_param = ChatCompletionAssistantMessageParam(
+            role="assistant", content=content
         )
         if tool_calls:
-            message_param.tool_calls = tool_calls
-        return message_param.model_dump(exclude={"function_call"})  # type: ignore
+            message_param["tool_calls"] = [
+                ChatCompletionMessageToolCallParam(
+                    type="function",
+                    function=Function(
+                        arguments=tool_call.function.arguments,
+                        name=tool_call.function.name,
+                    ),
+                    id=tool_call.id,
+                )
+                for tool_call in tool_calls
+            ]
+        return message_param
 
     def construct_call_response(self) -> OpenAICallResponse:
         """Constructs the call response from a consumed OpenAIStream."""
