@@ -1,5 +1,7 @@
 """The `AnthropicStream` class for convenience around streaming LLM calls."""
 
+from typing import Literal
+
 from anthropic.types import Message, MessageParam, TextBlock, ToolUseBlock, Usage
 from anthropic.types.content_block import ContentBlock
 from anthropic.types.text_block_param import TextBlockParam
@@ -53,8 +55,8 @@ class AnthropicStream(
 
     def construct_call_response(self) -> AnthropicCallResponse:
         if self.message_param is None:
-            raise ValueError(
-                "No stream response, check if the stream 1s been consumed."
+            raise ValueError(  # pragma: no cover
+                "No stream response, check if the stream has been consumed."
             )
         usage = Usage(input_tokens=0, output_tokens=0)
         if self.input_tokens:
@@ -64,25 +66,26 @@ class AnthropicStream(
 
         message_param: list[ContentBlock] = []
 
-        for content in self.message_param["content"]:
-            if isinstance(content, str):
-                message_param.append(TextBlock(text=content, type="text"))
-                continue
-
-            content_type = (
-                content.type if isinstance(content, BaseModel) else content["type"]
+        if isinstance(self.message_param["content"], str):
+            message_param.append(
+                TextBlock(text=self.message_param["content"], type="text")
             )
+        else:
+            for content in self.message_param["content"]:
+                content_type = (
+                    content.type if isinstance(content, BaseModel) else content["type"]
+                )
 
-            if content_type == "text":
-                message_param.append(TextBlock.model_validate(content))
-            elif content_type == "tool_use":
-                message_param.append(ToolUseBlock.model_validate(content))
+                if content_type == "text":
+                    message_param.append(TextBlock.model_validate(content))
+                elif content_type == "tool_use":
+                    message_param.append(ToolUseBlock.model_validate(content))
         completion = Message(
-            id="id",
+            id=self.id if self.id else "",
             content=message_param,
             model=self.model,
             role="assistant",
-            stop_reason="end_turn",
+            stop_reason=self.finish_reasons[0] if self.finish_reasons else None,  # type: ignore
             stop_sequence=None,
             type="message",
             usage=usage,
@@ -98,6 +101,6 @@ class AnthropicStream(
             call_params=self.call_params,
             call_kwargs=self.call_kwargs,
             user_message_param=self.user_message_param,
-            start_time=0,
-            end_time=0,
+            start_time=self.start_time,
+            end_time=self.end_time,
         )

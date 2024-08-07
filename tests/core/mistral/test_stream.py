@@ -1,10 +1,13 @@
 """Tests the `mistral.stream` module."""
 
 from mistralai.models.chat_completion import (
+    ChatCompletionResponse,
+    ChatCompletionResponseChoice,
     ChatCompletionResponseStreamChoice,
     ChatCompletionStreamResponse,
     ChatMessage,
     DeltaMessage,
+    FinishReason,
     FunctionCall,
     ToolCall,
     ToolType,
@@ -30,7 +33,7 @@ def test_mistral_stream() -> None:
         def call(self):
             """Dummy call."""
 
-    tool_call = ToolCall(
+    tool_call_delta = ToolCall(
         id="id",
         function=FunctionCall(
             name="FormatBook",
@@ -60,7 +63,7 @@ def test_mistral_stream() -> None:
                     index=0,
                     delta=DeltaMessage(
                         content=None,
-                        tool_calls=[tool_call],
+                        tool_calls=[tool_call_delta],
                     ),
                     finish_reason=None,
                 )
@@ -72,10 +75,7 @@ def test_mistral_stream() -> None:
         ),
     ]
 
-    tool_call = None
-
     def generator():
-        nonlocal tool_call
         for chunk in chunks:
             call_response_chunk = MistralCallResponseChunk(chunk=chunk)
             if tool_calls := call_response_chunk.chunk.choices[0].delta.tool_calls:
@@ -109,7 +109,159 @@ def test_mistral_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost == 1.2e-5
-    assert tool_call is not None
-    assert stream.message_param == ChatMessage(
-        role="assistant", content="content", tool_calls=[tool_call]
+
+    format_book = FormatBook.from_tool_call(
+        ToolCall(
+            id="id",
+            function=FunctionCall(
+                name="FormatBook",
+                arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+            ),
+            type=ToolType.function,
+        )
     )
+    assert format_book.tool_call is not None
+    assert stream.message_param == ChatMessage(
+        role="assistant",
+        content="content",
+        tool_calls=[format_book.tool_call],
+    )
+
+
+def test_construct_call_response():
+    class FormatBook(MistralTool):
+        """Returns the title and author nicely formatted."""
+
+        title: str
+        author: str
+
+        def call(self):
+            """Dummy call."""
+
+    tool_call_delta = ToolCall(
+        id="id",
+        function=FunctionCall(
+            name="FormatBook",
+            arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+        ),
+        type=ToolType.function,
+    )
+    usage = UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2)
+    chunks = [
+        ChatCompletionStreamResponse(
+            id="id",
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    delta=DeltaMessage(content="content", tool_calls=None),
+                    index=0,
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
+        ChatCompletionStreamResponse(
+            id="id",
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(
+                        content=None,
+                        tool_calls=[tool_call_delta],
+                    ),
+                    finish_reason=FinishReason.stop,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+            usage=usage,
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = MistralCallResponseChunk(chunk=chunk)
+            if tool_calls := call_response_chunk.chunk.choices[0].delta.tool_calls:
+                assert tool_calls[0].function
+                tool_call = ToolCall(
+                    id="id",
+                    function=FunctionCall(**tool_calls[0].function.model_dump()),
+                    type=ToolType.function,
+                )
+                yield (
+                    call_response_chunk,
+                    FormatBook.from_tool_call(tool_call),
+                )
+            else:
+                yield call_response_chunk, None
+
+    stream = MistralStream(
+        stream=generator(),
+        metadata={},
+        tool_types=[FormatBook],
+        call_response_type=MistralCallResponse,
+        model="mistral-large-latest",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+    )
+
+    for _ in stream:
+        pass
+
+    tool_call = ToolCall(
+        id="id",
+        function=FunctionCall(
+            name="FormatBook",
+            arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+        ),
+        type=ToolType.function,
+    )
+    completion = ChatCompletionResponse(
+        id="id",
+        choices=[
+            ChatCompletionResponseChoice(
+                finish_reason=FinishReason.stop,
+                index=0,
+                message=ChatMessage(
+                    role="assistant", content="content", tool_calls=[tool_call]
+                ),
+            )
+        ],
+        created=0,
+        model="mistral-large-latest",
+        object="",
+        usage=UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2),
+    )
+    call_response = MistralCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=[FormatBook],
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response._provider == call_response._provider
+    assert constructed_call_response.content == call_response.content
+    assert constructed_call_response.finish_reasons == call_response.finish_reasons
+    assert constructed_call_response.model == call_response.model
+    assert constructed_call_response.id == call_response.id
+    assert constructed_call_response.usage == call_response.usage
+    assert constructed_call_response.input_tokens == call_response.input_tokens
+    assert constructed_call_response.output_tokens == call_response.output_tokens
+    assert constructed_call_response.cost == call_response.cost
+    assert constructed_call_response.message_param == call_response.message_param
+    assert constructed_call_response.tools == call_response.tools
+    assert constructed_call_response.tool == call_response.tool

@@ -1,5 +1,6 @@
 """This module contains the base classes for streaming responses from LLMs."""
 
+import datetime
 import inspect
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Generator
@@ -80,6 +81,10 @@ class BaseStream(
     message_param: _AssistantMessageParamT | None = None
     input_tokens: int | float | None = None
     output_tokens: int | float | None = None
+    id: str | None = None
+    finish_reasons: list[str] | None = None
+    start_time: float = 0
+    end_time: float = 0
 
     _provider: ClassVar[str] = "NO PROVIDER"
 
@@ -124,6 +129,7 @@ class BaseStream(
             self.stream, Generator
         ), "Stream must be a generator for __iter__"
         content, tool_calls = "", []
+        self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
             content += chunk.content
             if chunk.input_tokens is not None:
@@ -140,9 +146,14 @@ class BaseStream(
                 )
             if chunk.model is not None:
                 self.model = chunk.model
+            if chunk.id is not None:
+                self.id = chunk.id
+            if chunk.finish_reasons is not None:
+                self.finish_reasons = chunk.finish_reasons
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
+        self.end_time = datetime.datetime.now().timestamp() * 1000
         self.message_param = self._construct_message_param(tool_calls or None, content)
 
     def __aiter__(
@@ -200,7 +211,7 @@ class BaseStream(
     @abstractmethod
     def construct_call_response(self) -> _BaseCallResponseT:
         """Constructs the call response."""
-        ...
+        ...  # pragma: no cover
 
 
 _BaseCallResponseChunkT = TypeVar(

@@ -47,18 +47,20 @@ class GeminiStream(
         """Constructs the message parameter for the assistant.
         Gemini currently does not support tool calls for streaming.
         """
-        return {"role": "model", "parts": [Part(text=content)]}
+        return {"role": "model", "parts": [{"text": content}]}  # type: ignore
 
     def construct_call_response(self) -> GeminiCallResponse:
         if self.message_param is None:
-            raise ValueError(
-                "The `message_param` attribute must be set before constructing the call response."
+            raise ValueError(  # pragma: no cover
+                "No stream response, check if the stream has been consumed."
             )
         response = GenerateContentResponseType.from_response(
             GenerateContentResponse(
                 candidates=[
                     Candidate(
-                        finish_reason=1,
+                        finish_reason=self.finish_reasons[0]
+                        if self.finish_reasons
+                        else 1,
                         content=Content(
                             role=self.message_param["role"],
                             parts=self.message_param["parts"],
@@ -78,6 +80,6 @@ class GeminiStream(
             call_params=self.call_params,
             call_kwargs=self.call_kwargs,
             user_message_param=self.user_message_param,
-            start_time=0,
-            end_time=0,
+            start_time=self.start_time,
+            end_time=self.end_time,
         )

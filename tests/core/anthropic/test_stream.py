@@ -16,7 +16,6 @@ from anthropic.types import (
     Usage,
 )
 from anthropic.types.raw_message_delta_event import Delta
-from anthropic.types.tool_use_block_param import ToolUseBlockParam
 
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
@@ -160,7 +159,7 @@ def test_construct_call_response():
                 content=[],
                 model="claude-3-5-sonnet-20240620",
                 role="assistant",
-                stop_reason=None,
+                stop_reason="end_turn",
                 stop_sequence=None,
                 type="message",
                 usage=Usage(input_tokens=1, output_tokens=1),
@@ -301,3 +300,52 @@ def test_construct_call_response():
     assert constructed_call_response.message_param == call_response.message_param
     assert constructed_call_response.tools == call_response.tools
     assert constructed_call_response.tool == call_response.tool
+
+
+def test_construct_call_response_string_content():
+    """Tests the `construct_call_response` method handles string message_param.
+    This should never occur since we convert all string message_param to TextBlock.
+    """
+    chunks = [
+        RawMessageStartEvent(
+            message=Message(
+                id="id",
+                content=[],
+                model="claude-3-5-sonnet-20240620",
+                role="assistant",
+                stop_reason="end_turn",
+                stop_sequence=None,
+                type="message",
+                usage=Usage(input_tokens=1, output_tokens=1),
+            ),
+            type="message_start",
+        )
+    ]
+
+    def generator():  # pragma: no cover
+        for chunk in chunks:
+            call_response_chunk = AnthropicCallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = AnthropicStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=AnthropicCallResponse,
+        model="claude-3-5-sonnet-20240620",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "content": "content"}],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+    )
+    stream.message_param = {
+        "role": "assistant",
+        "content": "content",
+    }
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response.message_param == {
+        "role": "assistant",
+        "content": [{"text": "content", "type": "text"}],
+    }

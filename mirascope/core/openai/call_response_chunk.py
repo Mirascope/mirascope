@@ -43,7 +43,11 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
-        return [str(choice.finish_reason) for choice in self.chunk.choices]
+        return [
+            str(choice.finish_reason)
+            for choice in self.chunk.choices
+            if choice.finish_reason
+        ]
 
     @property
     def model(self) -> str:

@@ -41,8 +41,9 @@ class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamRespons
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [
-            choice.finish_reason if choice.finish_reason else ""
+            choice.finish_reason
             for choice in self.chunk.choices
+            if choice.finish_reason
         ]
 
     @property

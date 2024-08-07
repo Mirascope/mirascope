@@ -58,7 +58,7 @@ class OpenAIStream(
 
     def construct_call_response(self) -> OpenAICallResponse:
         if self.message_param is None:
-            raise ValueError(
+            raise ValueError(  # pragma: no cover
                 "No stream response, check if the stream has been consumed."
             )
         message = {
@@ -67,11 +67,13 @@ class OpenAIStream(
             "tool_calls": self.message_param.get("tool_calls", []),
         }
         completion = ChatCompletion(
-            id="id",
+            id=self.id if self.id else "",
             model=self.model,
             choices=[
                 Choice(
-                    finish_reason="stop",
+                    finish_reason=self.finish_reasons[0]
+                    if self.finish_reasons
+                    else "stop",  # type: ignore
                     index=0,
                     message=ChatCompletionMessage.model_validate(message),
                 )
@@ -90,6 +92,6 @@ class OpenAIStream(
             call_params=self.call_params,
             call_kwargs=self.call_kwargs,
             user_message_param=self.user_message_param,
-            start_time=0,
-            end_time=0,
+            start_time=self.start_time,
+            end_time=self.end_time,
         )

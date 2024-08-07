@@ -48,7 +48,10 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
     @property
     def finish_reasons(self) -> list[str] | None:
         """Returns the finish reason of the response."""
-        if isinstance(self.chunk, RawMessageStartEvent):
+        if (
+            isinstance(self.chunk, RawMessageStartEvent)
+            and self.chunk.message.stop_reason
+        ):
             return [str(self.chunk.message.stop_reason)]
         return None
 
