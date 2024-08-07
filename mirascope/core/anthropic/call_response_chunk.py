@@ -1,6 +1,7 @@
 """This module contains the `AnthropicCallResponseChunk` class."""
 
 from anthropic.types import (
+    Message,
     MessageDeltaUsage,
     MessageStartEvent,
     MessageStreamEvent,
@@ -11,8 +12,12 @@ from anthropic.types import (
 
 from ..base import BaseCallResponseChunk
 
+FinishReason = Message.__annotations__["stop_reason"]
 
-class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
+
+class AnthropicCallResponseChunk(
+    BaseCallResponseChunk[MessageStreamEvent, FinishReason]
+):
     '''A convenience wrapper around the Anthropic `ChatCompletionChunk` streamed chunks.
 
     When calling the Anthropic API using a function decorated with `anthropic_call` and
@@ -46,9 +51,12 @@ class AnthropicCallResponseChunk(BaseCallResponseChunk[MessageStreamEvent]):
         )
 
     @property
-    def finish_reasons(self) -> list[str] | None:
+    def finish_reasons(self) -> list[FinishReason] | None:
         """Returns the finish reason of the response."""
-        if isinstance(self.chunk, RawMessageStartEvent):
+        if (
+            isinstance(self.chunk, RawMessageStartEvent)
+            and self.chunk.message.stop_reason
+        ):
             return [str(self.chunk.message.stop_reason)]
         return None
 

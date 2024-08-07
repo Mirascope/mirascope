@@ -1,5 +1,6 @@
 """This module contains the base classes for streaming responses from LLMs."""
 
+import datetime
 import inspect
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Generator
@@ -41,6 +42,7 @@ _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_FinishReason = TypeVar("_FinishReason")
 
 
 class BaseStream(
@@ -54,6 +56,7 @@ class BaseStream(
         _BaseToolT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
+        _FinishReason,
     ],
     ABC,
 ):
@@ -77,9 +80,13 @@ class BaseStream(
     call_params: _BaseCallParamsT
     call_kwargs: dict[str, Any]
     user_message_param: _UserMessageParamT | None = None
-    message_param: _AssistantMessageParamT
+    message_param: _AssistantMessageParamT | None = None
     input_tokens: int | float | None = None
     output_tokens: int | float | None = None
+    id: str | None = None
+    finish_reasons: list[_FinishReason] | None = None
+    start_time: float = 0
+    end_time: float = 0
 
     _provider: ClassVar[str] = "NO PROVIDER"
 
@@ -124,6 +131,7 @@ class BaseStream(
             self.stream, Generator
         ), "Stream must be a generator for __iter__"
         content, tool_calls = "", []
+        self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
             content += chunk.content
             if chunk.input_tokens is not None:
@@ -140,9 +148,14 @@ class BaseStream(
                 )
             if chunk.model is not None:
                 self.model = chunk.model
+            if chunk.id is not None:
+                self.id = chunk.id
+            if chunk.finish_reasons is not None:
+                self.finish_reasons = chunk.finish_reasons
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
+        self.end_time = datetime.datetime.now().timestamp() * 1000
         self.message_param = self._construct_message_param(tool_calls or None, content)
 
     def __aiter__(
@@ -196,6 +209,11 @@ class BaseStream(
     def tool_message_params(self, tools_and_outputs) -> list[_ToolMessageParamT]:
         """Returns the tool message parameters for tool call results."""
         return self.call_response_type.tool_message_params(tools_and_outputs)
+
+    @abstractmethod
+    def construct_call_response(self) -> _BaseCallResponseT:
+        """Constructs the call response."""
+        ...  # pragma: no cover
 
 
 _BaseCallResponseChunkT = TypeVar(

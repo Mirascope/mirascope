@@ -48,6 +48,7 @@ def get_stream_span_data(stream: BaseStream) -> dict:
         content = stream.message_param.get("content", "") or stream.message_param.get(
             "message", ""
         )
+
     return {
         "messages": [stream.user_message_param],
         "call_params": stream.call_params,
