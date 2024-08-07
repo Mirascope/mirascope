@@ -48,15 +48,7 @@ def get_stream_span_data(stream: BaseStream) -> dict:
         content = stream.message_param.get("content", "") or stream.message_param.get(
             "message", ""
         )
-    output: dict[str, Any] = {
-        "content": content,
-    }
-    if cost := stream.cost:
-        output["cost"] = cost
-    if input_tokens := stream.input_tokens:
-        output["input_tokens"] = input_tokens
-    if output_tokens := stream.output_tokens:
-        output["output_tokens"] = output_tokens
+
     return {
         "messages": [stream.user_message_param],
         "call_params": stream.call_params,
@@ -65,7 +57,7 @@ def get_stream_span_data(stream: BaseStream) -> dict:
         "provider": stream._provider,
         "prompt_template": stream.prompt_template,
         "template_variables": stream.fn_args,
-        "output": output,
+        "output": {"cost": stream.cost, "content": content},
     }
 
 
