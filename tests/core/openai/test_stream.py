@@ -1,5 +1,6 @@
 """Tests the `openai.stream` module."""
 
+import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_chunk import (
@@ -106,6 +107,12 @@ def test_openai_stream() -> None:
         call_params={},
         call_kwargs={},
     )
+
+    with pytest.raises(
+        ValueError, match="No stream response, check if the stream has been consumed."
+    ):
+        stream.construct_call_response()
+
     assert stream.cost is None
     for _ in stream:
         pass

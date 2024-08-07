@@ -10,7 +10,7 @@ from typing import (
 import logfire
 from pydantic import BaseModel
 
-from ...core.base import BaseCallResponse
+from ...core.base import BaseCallResponse, _utils
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
 from ...core.base.metadata import Metadata
@@ -20,7 +20,7 @@ from ...core.base.metadata import Metadata
 def custom_context_manager(
     fn: Callable,
 ) -> Generator[logfire.LogfireSpan, Any, None]:
-    metadata: Metadata = fn.__annotations__.get("metadata", {})
+    metadata: Metadata = _utils.get_metadata(fn, None)
     tags = metadata.get("tags", [])
     with logfire.with_settings(custom_scope_suffix="mirascope", tags=list(tags)).span(
         fn.__name__

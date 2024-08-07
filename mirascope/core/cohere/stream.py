@@ -50,10 +50,10 @@ class CohereStream(
 
     def construct_call_response(self) -> CohereCallResponse:
         """Constructs the call response from a consumed CohereStream."""
-        if self.message_param is None:
+        if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )  # pragma: no cover
+            )
         if not self.input_tokens and not self.output_tokens:
             meta = None
         else:
