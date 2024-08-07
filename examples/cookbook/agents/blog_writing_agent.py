@@ -21,6 +21,7 @@ class OpenAIAgent(BaseModel):
     def run(self, prompt: str) -> str:
         stream = self._step(prompt)
         result, tools_and_outputs = "", []
+
         for chunk, tool in stream:
             if tool:
                 tools_and_outputs.append((tool, tool.call()))

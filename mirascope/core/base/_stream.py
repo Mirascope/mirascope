@@ -80,7 +80,7 @@ class BaseStream(
     call_params: _BaseCallParamsT
     call_kwargs: dict[str, Any]
     user_message_param: _UserMessageParamT | None = None
-    message_param: _AssistantMessageParamT | None = None
+    message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
     output_tokens: int | float | None = None
     id: str | None = None
