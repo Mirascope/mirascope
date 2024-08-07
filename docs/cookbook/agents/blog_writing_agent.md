@@ -295,7 +295,7 @@ There are a few things worth noting here:
 
 ## Agent Executor
 
-Now we just need to put it all together into our `AgentExecutor` class, write out `_step` function, and run it!
+Now we just need to put it all together into our `AgentExecutor` class, write our `_step` function, and run it!
 
 ```python
 class AgentExecutor(OpenAIAgent):
