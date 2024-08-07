@@ -1,13 +1,16 @@
 """This module contains the `OpenAICallResponseChunk` class."""
 
 from openai.types.chat import ChatCompletionChunk
+from openai.types.chat.chat_completion_chunk import Choice
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
 
+FinishReason = Choice.__annotations__["finish_reason"]
 
-class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
+
+class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishReason]):
     '''A convenience wrapper around the OpenAI `ChatCompletionChunk` streamed chunks.
 
     When calling the OpenAI API using a function decorated with `openai_call` and
@@ -41,10 +44,10 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
         return delta.content if delta is not None and delta.content else ""
 
     @property
-    def finish_reasons(self) -> list[str]:
+    def finish_reasons(self) -> list[FinishReason]:
         """Returns the finish reasons of the response."""
         return [
-            str(choice.finish_reason)
+            choice.finish_reason
             for choice in self.chunk.choices
             if choice.finish_reason
         ]

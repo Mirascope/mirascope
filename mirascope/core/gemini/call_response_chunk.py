@@ -1,11 +1,16 @@
 """This module contains the `GeminiCallResponseChunk` class."""
 
-from google.generativeai.types import GenerateContentResponse  # type: ignore
+from google.ai.generativelanguage import Candidate
+from google.generativeai.types import (  # type: ignore
+    GenerateContentResponse,
+)
 
 from ..base import BaseCallResponseChunk
 
 
-class GeminiCallResponseChunk(BaseCallResponseChunk[GenerateContentResponse]):
+class GeminiCallResponseChunk(
+    BaseCallResponseChunk[GenerateContentResponse, Candidate.FinishReason]
+):
     """Convenience wrapper around chat completion streaming chunks.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via
@@ -43,21 +48,10 @@ class GeminiCallResponseChunk(BaseCallResponseChunk[GenerateContentResponse]):
         return self.chunk.candidates[0].content.parts[0].text
 
     @property
-    def finish_reasons(self) -> list[str]:
+    def finish_reasons(self) -> list[Candidate.FinishReason]:
         """Returns the finish reasons of the response."""
-        finish_reasons = [
-            "FINISH_REASON_UNSPECIFIED",
-            "STOP",
-            "MAX_TOKENS",
-            "SAFETY",
-            "RECITATION",
-            "OTHER",
-        ]
 
-        return [
-            finish_reasons[candidate.finish_reason]
-            for candidate in self.chunk.candidates
-        ]
+        return [candidate.finish_reason for candidate in self.chunk.candidates]
 
     @property
     def model(self) -> None:

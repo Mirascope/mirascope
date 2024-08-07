@@ -3,6 +3,7 @@
 from cohere import StreamedChatResponse_StreamEnd, StreamedChatResponse_StreamStart
 from cohere.types import (
     ApiMetaBilledUnits,
+    ChatStreamEndEventFinishReason,
     StreamedChatResponse,
     StreamedChatResponse_TextGeneration,
 )
@@ -12,7 +13,9 @@ from ..base import BaseCallResponseChunk
 
 
 class CohereCallResponseChunk(
-    BaseCallResponseChunk[SkipValidation[StreamedChatResponse]]
+    BaseCallResponseChunk[
+        SkipValidation[StreamedChatResponse], ChatStreamEndEventFinishReason
+    ]
 ):
     '''A convenience wrapper around the Cohere `ChatCompletionChunk` streamed chunks.
 
@@ -44,10 +47,10 @@ class CohereCallResponseChunk(
         return ""
 
     @property
-    def finish_reasons(self) -> list[str] | None:
+    def finish_reasons(self) -> list[ChatStreamEndEventFinishReason] | None:
         """Returns the finish reasons of the response."""
         if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
-            return [str(self.chunk.finish_reason)]
+            return [self.chunk.finish_reason]
         return None
 
     @property

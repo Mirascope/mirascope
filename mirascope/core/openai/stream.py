@@ -22,6 +22,8 @@ from .call_response_chunk import OpenAICallResponseChunk
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
 
+FinishReason = Choice.__annotations__["finish_reason"]
+
 
 class OpenAIStream(
     BaseStream[
@@ -34,6 +36,7 @@ class OpenAIStream(
         OpenAITool,
         OpenAIDynamicConfig,
         OpenAICallParams,
+        FinishReason,
     ]
 ):
     _provider = "openai"
@@ -94,7 +97,7 @@ class OpenAIStream(
                 Choice(
                     finish_reason=self.finish_reasons[0]
                     if self.finish_reasons
-                    else "stop",  # type: ignore
+                    else "stop",
                     index=0,
                     message=ChatCompletionMessage.model_validate(message),
                 )

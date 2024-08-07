@@ -16,6 +16,8 @@ from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig
 from .tool import AnthropicTool
 
+FinishReason = Message.__annotations__["stop_reason"]
+
 
 class AnthropicStream(
     BaseStream[
@@ -28,6 +30,7 @@ class AnthropicStream(
         AnthropicTool,
         AnthropicDynamicConfig,
         AnthropicCallParams,
+        FinishReason,
     ]
 ):
     _provider = "anthropic"
@@ -91,7 +94,7 @@ class AnthropicStream(
             content=message_param,
             model=self.model,
             role="assistant",
-            stop_reason=self.finish_reasons[0] if self.finish_reasons else None,  # type: ignore
+            stop_reason=self.finish_reasons[0] if self.finish_reasons else None,
             stop_sequence=None,
             type="message",
             usage=usage,

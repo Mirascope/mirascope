@@ -4,6 +4,7 @@ from cohere.types import (
     ApiMeta,
     ApiMetaBilledUnits,
     ChatMessage,
+    ChatStreamEndEventFinishReason,
     NonStreamedChatResponse,
     ToolCall,
 )
@@ -28,6 +29,7 @@ class CohereStream(
         CohereTool,
         CohereDynamicConfig,
         CohereCallParams,
+        ChatStreamEndEventFinishReason,
     ]
 ):
     _provider = "cohere"

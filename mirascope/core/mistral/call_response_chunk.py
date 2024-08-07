@@ -1,12 +1,14 @@
 """This module contains the `MistralCallResponseChunk` class."""
 
-from mistralai.models.chat_completion import ChatCompletionStreamResponse
+from mistralai.models.chat_completion import ChatCompletionStreamResponse, FinishReason
 from mistralai.models.common import UsageInfo
 
 from ..base import BaseCallResponseChunk
 
 
-class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamResponse]):
+class MistralCallResponseChunk(
+    BaseCallResponseChunk[ChatCompletionStreamResponse, FinishReason]
+):
     '''A convenience wrapper around the Mistral `ChatCompletionChunk` streamed chunks.
 
     When calling the Mistral API using a function decorated with `mistral_call` and
@@ -38,7 +40,7 @@ class MistralCallResponseChunk(BaseCallResponseChunk[ChatCompletionStreamRespons
         return delta.content if delta is not None and delta.content is not None else ""
 
     @property
-    def finish_reasons(self) -> list[str]:
+    def finish_reasons(self) -> list[FinishReason]:
         """Returns the finish reasons of the response."""
         return [
             choice.finish_reason

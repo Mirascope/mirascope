@@ -5,7 +5,6 @@ from google.ai.generativelanguage import (
     Content,
     FunctionCall,
     GenerateContentResponse,
-    Part,
 )
 from google.generativeai.types import ContentDict
 from google.generativeai.types import (  # type: ignore
@@ -32,6 +31,7 @@ class GeminiStream(
         GeminiTool,
         GeminiDynamicConfig,
         GeminiCallParams,
+        Candidate.FinishReason,
     ]
 ):
     _provider = "gemini"
@@ -61,7 +61,7 @@ class GeminiStream(
                     Candidate(
                         finish_reason=self.finish_reasons[0]
                         if self.finish_reasons
-                        else 1,
+                        else Candidate.FinishReason.STOP,
                         content=Content(
                             role=self.message_param["role"],
                             parts=self.message_param["parts"],

@@ -42,6 +42,7 @@ _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_FinishReason = TypeVar("_FinishReason")
 
 
 class BaseStream(
@@ -55,6 +56,7 @@ class BaseStream(
         _BaseToolT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
+        _FinishReason,
     ],
     ABC,
 ):
@@ -82,7 +84,7 @@ class BaseStream(
     input_tokens: int | float | None = None
     output_tokens: int | float | None = None
     id: str | None = None
-    finish_reasons: list[str] | None = None
+    finish_reasons: list[_FinishReason] | None = None
     start_time: float = 0
     end_time: float = 0
 

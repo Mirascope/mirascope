@@ -20,6 +20,8 @@ from .call_response_chunk import GroqCallResponseChunk
 from .dynamic_config import GroqDynamicConfig
 from .tool import GroqTool
 
+FinishReason = Choice.__annotations__["finish_reason"]
+
 
 class GroqStream(
     BaseStream[
@@ -32,6 +34,7 @@ class GroqStream(
         GroqTool,
         GroqDynamicConfig,
         GroqCallParams,
+        FinishReason,
     ]
 ):
     _provider = "groq"
@@ -82,7 +85,7 @@ class GroqStream(
                 Choice(
                     finish_reason=self.finish_reasons[0]
                     if self.finish_reasons and self.finish_reasons[0]
-                    else "stop",  # type: ignore
+                    else "stop",
                     index=0,
                     message=ChatCompletionMessage.model_validate(message),
                 )

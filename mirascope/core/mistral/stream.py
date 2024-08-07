@@ -4,6 +4,7 @@ from mistralai.models.chat_completion import (
     ChatCompletionResponse,
     ChatCompletionResponseChoice,
     ChatMessage,
+    FinishReason,
 )
 from mistralai.models.common import UsageInfo
 
@@ -27,6 +28,7 @@ class MistralStream(
         MistralTool,
         MistralDynamicConfig,
         MistralCallParams,
+        FinishReason,
     ]
 ):
     _provider = "mistral"
@@ -62,7 +64,7 @@ class MistralStream(
                 ChatCompletionResponseChoice(
                     finish_reason=self.finish_reasons[0]
                     if self.finish_reasons
-                    else None,  # type: ignore
+                    else None,
                     index=0,
                     message=self.message_param,
                 )
