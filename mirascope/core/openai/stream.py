@@ -12,6 +12,7 @@ from openai.types.chat import (
 )
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_message_tool_call_param import Function
+from openai.types.completion_usage import CompletionUsage
 
 from ..base._stream import BaseStream
 from ._utils import calculate_cost
@@ -76,6 +77,16 @@ class OpenAIStream(
             "content": self.message_param.get("content", ""),
             "tool_calls": self.message_param.get("tool_calls", []),
         }
+        usage = CompletionUsage(
+            prompt_tokens=0,
+            completion_tokens=0,
+            total_tokens=0,
+        )
+        if self.input_tokens:
+            usage.prompt_tokens = int(self.input_tokens)
+        if self.output_tokens:
+            usage.completion_tokens = int(self.output_tokens)
+        usage.total_tokens = usage.prompt_tokens + usage.completion_tokens
         completion = ChatCompletion(
             id=self.id if self.id else "",
             model=self.model,
@@ -90,6 +101,7 @@ class OpenAIStream(
             ],
             created=0,
             object="chat.completion",
+            usage=usage,
         )
         return OpenAICallResponse(
             metadata=self.metadata,

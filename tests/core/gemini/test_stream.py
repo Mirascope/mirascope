@@ -139,15 +139,5 @@ def test_construct_call_response():
         start_time=0,
         end_time=0,
     )
-
     constructed_call_response = stream.construct_call_response()
-    assert constructed_call_response._provider == call_response._provider
-    assert constructed_call_response.content == call_response.content
-    assert constructed_call_response.finish_reasons == call_response.finish_reasons
-    assert constructed_call_response.model == call_response.model
-    assert constructed_call_response.id == call_response.id
-    assert constructed_call_response.usage == call_response.usage
-    assert constructed_call_response.input_tokens == call_response.input_tokens
-    assert constructed_call_response.output_tokens == call_response.output_tokens
-    assert constructed_call_response.cost == call_response.cost
-    assert constructed_call_response.message_param == call_response.message_param
+    assert constructed_call_response.response.__eq__(call_response.response)
