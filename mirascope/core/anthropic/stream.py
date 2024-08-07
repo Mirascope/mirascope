@@ -65,11 +65,10 @@ class AnthropicStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )  # pragma: no cover
-        usage = Usage(input_tokens=0, output_tokens=0)
-        if self.input_tokens:
-            usage.input_tokens = int(self.input_tokens)
-        if self.output_tokens:
-            usage.output_tokens = int(self.output_tokens)
+        usage = Usage(
+            input_tokens=int(self.input_tokens or 0),
+            output_tokens=int(self.output_tokens or 0),
+        )
 
         content_blocks: list[ContentBlock] = []
 

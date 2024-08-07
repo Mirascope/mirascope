@@ -52,12 +52,11 @@ class MistralStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )  # pragma: no cover
-        usage = UsageInfo(prompt_tokens=0, completion_tokens=0, total_tokens=0)
-        if self.input_tokens:
-            usage.prompt_tokens = int(self.input_tokens)
-        if self.output_tokens:
-            usage.completion_tokens = int(self.output_tokens)
-        usage.total_tokens = usage.prompt_tokens + (usage.completion_tokens or 0)
+        usage = UsageInfo(
+            prompt_tokens=int(self.input_tokens or 0),
+            completion_tokens=int(self.output_tokens or 0),
+            total_tokens=int(self.input_tokens or 0) + int(self.output_tokens or 0),
+        )
         completion = ChatCompletionResponse(
             id=self.id if self.id else "",
             choices=[

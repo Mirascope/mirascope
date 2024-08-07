@@ -72,15 +72,10 @@ class GroqStream(
             usage = None
         else:
             usage = CompletionUsage(
-                prompt_tokens=0,
-                completion_tokens=0,
-                total_tokens=0,
+                prompt_tokens=int(self.input_tokens or 0),
+                completion_tokens=int(self.output_tokens or 0),
+                total_tokens=int(self.input_tokens or 0) + int(self.output_tokens or 0),
             )
-            if self.input_tokens:
-                usage.prompt_tokens = int(self.input_tokens)
-            if self.output_tokens:
-                usage.completion_tokens = int(self.output_tokens)
-            usage.total_tokens = usage.prompt_tokens + usage.completion_tokens
         completion = ChatCompletion(
             id=self.id if self.id else "",
             model=self.model,

@@ -1,10 +1,13 @@
 """The `GeminiStream` class for convenience around streaming LLM calls."""
 
+from typing import cast
+
 from google.ai.generativelanguage import (
     Candidate,
     Content,
     FunctionCall,
     GenerateContentResponse,
+    Part,
 )
 from google.generativeai.types import (
     ContentDict,
@@ -13,6 +16,7 @@ from google.generativeai.types import (
 from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
+from google.generativeai.types.content_types import PartType
 
 from ..base._stream import BaseStream
 from ._utils import calculate_cost
@@ -47,12 +51,10 @@ class GeminiStream(
     def _construct_message_param(
         self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
     ) -> ContentDict:
-        """Constructs the message parameter for the assistant.
-        Gemini currently does not support tool calls for streaming.
-        """
+        """Constructs the message parameter for the assistant."""
         return {
             "role": "model",
-            "parts": [{"text": content}] + (tool_calls or []),  # type: ignore
+            "parts": cast(list[PartType], [{"text": content}] + (tool_calls or [])),
         }
 
     def construct_call_response(self) -> GeminiCallResponse:
