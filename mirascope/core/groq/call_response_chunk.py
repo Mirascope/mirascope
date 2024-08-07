@@ -1,12 +1,15 @@
 """This module contains the `GroqCallResponseChunk` class."""
 
 from groq.types.chat import ChatCompletionChunk
+from groq.types.chat.chat_completion import Choice
 from groq.types.completion_usage import CompletionUsage
 
 from ..base import BaseCallResponseChunk
 
+FinishReason = Choice.__annotations__["finish_reason"]
 
-class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
+
+class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishReason]):
     '''A convenience wrapper around the Groq `ChatCompletionChunk` streamed chunks.
 
     When calling the Groq API using a function decorated with `groq_call` and
@@ -38,9 +41,15 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk]):
         return delta.content if delta is not None and delta.content else ""
 
     @property
-    def finish_reasons(self) -> list[str]:
+    def finish_reasons(
+        self,
+    ) -> list[FinishReason]:
         """Returns the finish reasons of the response."""
-        return [str(choice.finish_reason) for choice in self.chunk.choices]
+        return [
+            choice.finish_reason
+            for choice in self.chunk.choices
+            if choice.finish_reason
+        ]
 
     @property
     def model(self) -> str:
