@@ -126,3 +126,42 @@ def test_construct_call_response():
         end_time=0,
     )
     assert constructed_call_response.response == call_response.response
+
+
+def test_construct_call_response_no_usage():
+    """Tests the `GroqStream.construct_call_response` method with no usage."""
+    chunks = [
+        StreamedChatResponse_StreamStart(generation_id="id"),
+        StreamedChatResponse_TextGeneration(
+            text="content",
+        ),
+        StreamedChatResponse_StreamEnd(
+            finish_reason="COMPLETE",
+            response=NonStreamedChatResponse(
+                generation_id="id", text="content", meta=None
+            ),
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = CohereCallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = CohereStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=CohereCallResponse,
+        model="command-r-plus",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[ChatMessage(role="CHATBOT", message="content")],  # type: ignore
+        call_params={},
+        call_kwargs={},
+    )
+    for _ in stream:
+        pass
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response.usage is None
