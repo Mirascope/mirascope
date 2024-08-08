@@ -47,8 +47,6 @@ def test_handle_call_response(
     mock_fn = MagicMock(__name__="mock_fn")
 
     result = MagicMock(spec=BaseCallResponse)
-    result.input_tokens = 1
-    result.output_tokens = 2
     _utils.handle_call_response(result, mock_fn, None)
     mock_get_call_response_observation.assert_called_once_with(result, mock_fn)
     mock_update_current_observation.assert_called_once_with(
@@ -157,8 +155,6 @@ def test_handle_response_model(
     """Tests the `handle_response_model` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseModel)
-    result.input_tokens = 1
-    result.output_tokens = 2
     response = MagicMock(spec=BaseCallResponse)
     result._response = response
 
@@ -207,8 +203,6 @@ def test_handle_structured_stream(
     """Tests the `handle_structured_stream` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseStructuredStream)
-    result.input_tokens = 1
-    result.output_tokens = 2
     result.constructed_response_model = MagicMock()
     stream = MagicMock(spec=BaseStream)
     result.stream = stream
@@ -249,8 +243,6 @@ async def test_handle_response_model_async(
     """Tests the `handle_response_model` function."""
     mock_fn = MagicMock(__name__="mock_fn")
     result = MagicMock(spec=BaseModel)
-    result.input_tokens = 1
-    result.output_tokens = 2
     response = MagicMock(spec=BaseCallResponse)
     result._response = response
 

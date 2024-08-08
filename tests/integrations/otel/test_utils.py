@@ -37,17 +37,9 @@ patch.multiple(MyCallResponse, __abstractmethods__=set()).start()
 patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
 
-class MyStream(BaseStream):
-    _provider = "test"
-
-    @property
-    def cost(self):
-        return 10  # pragma: no cover
-
-
 @patch("mirascope.integrations.otel._utils.get_tracer", new_callable=MagicMock)
 def test_custom_context_manager(mock_get_tracer: MagicMock):
-    # Create a mock span and set the return value for the tracer's method
+    """Tests the `custom_context_manager` function."""
     mock_fn = MagicMock(__name__="dummy_function")
     mock_span = MagicMock(name="MockSpan")
     mock_tracer = MagicMock()
@@ -55,7 +47,6 @@ def test_custom_context_manager(mock_get_tracer: MagicMock):
     mock_span.__enter__.return_value = mock_span
     mock_get_tracer.return_value = mock_tracer
 
-    # Use the context manager and assert the span is yielded
     with _utils.custom_context_manager(mock_fn) as span:
         mock_get_tracer.assert_called_once_with("otel")
         assert span is mock_span
@@ -74,6 +65,7 @@ def test_configure_no_processor(
     mock_set_tracer_provider: MagicMock,
     mock_get_tracer: MagicMock,
 ):
+    """Tests the `configure` function with no processors."""
     mock_add_span_processor = MagicMock()
     mock_tracer_provider.return_value.add_span_processor = mock_add_span_processor
     _utils.configure(None)
@@ -97,6 +89,7 @@ def test_configure_with_processors(
     mock_set_tracer_provider: MagicMock,
     mock_get_tracer: MagicMock,
 ):
+    """Tests the `configure` function with processors."""
     processors: list = [MagicMock()]
     mock_add_span_processor = MagicMock()
     mock_tracer_provider.return_value.add_span_processor = mock_add_span_processor
@@ -108,6 +101,7 @@ def test_configure_with_processors(
 
 
 def test_get_call_response_attributes():
+    """Tests the `get_call_response_attributes` function."""
     call_response = MyCallResponse(
         metadata={"tags": {"version:0001"}},
         response="hello world",
@@ -156,6 +150,7 @@ def test_get_call_response_attributes():
 
 
 def test_set_call_response_event_attributes():
+    """Tests the `set_call_response_event_attributes` function."""
     result = MagicMock()
     result.user_message_param = {"role": "user", "content": "user_content"}
     result.message_param = {"role": "assistant", "content": "assistant_content"}
@@ -175,52 +170,6 @@ def test_set_call_response_event_attributes():
     ] == json.dumps(result.message_param)
 
 
-def test_set_stream_event_attributes():
-    result = MagicMock()
-    result.user_message_param = {"role": "user", "content": "user_content"}
-    result.message_param = {"role": "assistant", "content": "assistant_content"}
-    span = MagicMock()
-    add_event = MagicMock()
-    span.add_event = add_event
-
-    _utils.set_stream_event_attributes(result, span)
-    assert add_event.call_count == 2
-    assert add_event.call_args_list[0][0][0] == "gen_ai.content.prompt"
-    assert add_event.call_args_list[0][1]["attributes"]["gen_ai.prompt"] == json.dumps(
-        result.user_message_param
-    )
-    assert add_event.call_args_list[1][0][0] == "gen_ai.content.completion"
-    assert add_event.call_args_list[1][1]["attributes"][
-        "gen_ai.completion"
-    ] == json.dumps(result.message_param)
-
-
-def test_get_stream_attributes():
-    stream = MagicMock()
-    stream.prompt_template = "Recommend a {genre} book for me to read."
-    stream.model = "foo-123"
-    stream.call_params = {
-        "max_tokens": 1,
-        "temperature": 1,
-        "top_p": 1,
-    }
-    stream.call_kwargs = {
-        "model": "foo",
-    }
-    stream.output_tokens = 1
-    stream.input_tokens = 1
-
-    result = _utils.get_stream_attributes(stream)
-    assert result["gen_ai.system"] == stream.prompt_template
-    assert result["gen_ai.request.model"] == stream.call_kwargs.get("model")
-    assert result["gen_ai.request.max_tokens"] == 0
-    assert result["gen_ai.request.temperature"] == 0
-    assert result["gen_ai.request.top_p"] == 0
-    assert result["gen_ai.response.model"] == stream.model
-    assert result["gen_ai.usage.completion_tokens"] == stream.output_tokens
-    assert result["gen_ai.usage.prompt_tokens"] == stream.input_tokens
-
-
 @patch(
     "mirascope.integrations.otel._utils.get_call_response_attributes",
     new_callable=MagicMock,
@@ -235,6 +184,7 @@ def test_handle_call_response(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_call_response` function."""
     mock_fn = MagicMock()
     assert _utils.handle_call_response(MagicMock(), mock_fn, None) is None
 
@@ -267,6 +217,7 @@ async def test_handle_call_response_async(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_call_response_async` function."""
     mock_fn = MagicMock()
     assert await _utils.handle_call_response_async(MagicMock(), mock_fn, None) is None
 
@@ -285,60 +236,38 @@ async def test_handle_call_response_async(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_stream_attributes",
+    "mirascope.integrations.otel._utils.get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.otel._utils.set_stream_event_attributes",
+    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 def test_handle_stream(
-    mock_set_stream_event_attributes: MagicMock,
-    mock_get_stream_attributes: MagicMock,
+    mock_set_call_response_event_attributes: MagicMock,
+    mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_stream` function."""
     mock_fn = MagicMock()
     assert _utils.handle_stream(MagicMock(), mock_fn, None) is None
 
-    result = MagicMock()
     span = MagicMock()
     set_attributes = MagicMock()
+    result = MagicMock(spec=BaseStream)
+    mock_construct_call_response = MagicMock()
+    result.construct_call_response = mock_construct_call_response
     span.set_attributes = set_attributes
     _utils.handle_stream(result, mock_fn, span)
     assert set_attributes.call_count == 1
-    mock_get_stream_attributes.assert_called_once_with(result)
-    assert mock_get_stream_attributes.return_value["async"] is False
-    mock_set_stream_event_attributes.assert_called_once_with(result, span)
-
-
-@patch(
-    "mirascope.integrations.otel._utils.get_stream_attributes",
-    new_callable=MagicMock,
-    return_value={},
-)
-@patch(
-    "mirascope.integrations.otel._utils.set_stream_event_attributes",
-    new_callable=MagicMock,
-    return_value={},
-)
-@pytest.mark.asyncio
-async def test_handle_stream_async(
-    mock_set_stream_event_attributes: MagicMock,
-    mock_get_stream_attributes: MagicMock,
-):
-    mock_fn = MagicMock()
-    assert await _utils.handle_stream_async(MagicMock(), mock_fn, None) is None
-
-    result = MagicMock()
-    span = MagicMock()
-    set_attributes = MagicMock()
-    span.set_attributes = set_attributes
-    await _utils.handle_stream_async(result, mock_fn, span)
-    assert set_attributes.call_count == 1
-    mock_get_stream_attributes.assert_called_once_with(result)
-    assert mock_get_stream_attributes.return_value["async"] is True
-    mock_set_stream_event_attributes.assert_called_once_with(result, span)
+    mock_get_call_response_attributes.assert_called_once_with(
+        mock_construct_call_response()
+    )
+    assert mock_get_call_response_attributes.return_value["async"] is False
+    mock_set_call_response_event_attributes.assert_called_once_with(
+        mock_construct_call_response(), span
+    )
 
 
 @patch(
@@ -346,11 +275,48 @@ async def test_handle_stream_async(
     new_callable=MagicMock,
     return_value={},
 )
-def test_handle_base_model(
+@patch(
+    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
+    new_callable=MagicMock,
+    return_value={},
+)
+@pytest.mark.asyncio
+async def test_handle_stream_async(
+    mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_stream_async` function."""
     mock_fn = MagicMock()
-    assert _utils.handle_base_model(MagicMock(), mock_fn, None) is None
+    assert await _utils.handle_stream_async(MagicMock(), mock_fn, None) is None
+
+    span = MagicMock()
+    set_attributes = MagicMock()
+    result = MagicMock(spec=BaseStream)
+    mock_construct_call_response = MagicMock()
+    result.construct_call_response = mock_construct_call_response
+    span.set_attributes = set_attributes
+    await _utils.handle_stream_async(result, mock_fn, span)
+    assert set_attributes.call_count == 1
+    mock_get_call_response_attributes.assert_called_once_with(
+        mock_construct_call_response()
+    )
+    assert mock_get_call_response_attributes.return_value["async"] is True
+    mock_set_call_response_event_attributes.assert_called_once_with(
+        mock_construct_call_response(), span
+    )
+
+
+@patch(
+    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    new_callable=MagicMock,
+    return_value={},
+)
+def test_handle_response_model(
+    mock_get_call_response_attributes: MagicMock,
+):
+    """Tests the `handle_response_model` function with `BaseModel` result."""
+    mock_fn = MagicMock()
+    assert _utils.handle_response_model(MagicMock(), mock_fn, None) is None
 
     result = MagicMock(spec=BaseModel)
     response = MagicMock()
@@ -361,7 +327,7 @@ def test_handle_base_model(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    _utils.handle_base_model(result, mock_fn, span)
+    _utils.handle_response_model(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(response)
     assert mock_get_call_response_attributes.return_value["async"] is False
@@ -378,14 +344,34 @@ def test_handle_base_model(
     )
 
 
+def test_handle_response_model_base_type():
+    """Tests the `handle_response_model` function with `BaseType` result."""
+    mock_fn = MagicMock()
+    result = b"foo"
+    span = MagicMock()
+    add_event = MagicMock()
+    span.add_event = add_event
+    set_attributes = MagicMock()
+    span.set_attributes = set_attributes
+    _utils.handle_response_model(result, mock_fn, span)
+    assert set_attributes.call_count == 1
+    set_attributes.assert_called_once_with({"async": False})
+    assert add_event.call_count == 1
+    assert add_event.call_args_list[0][0][0] == "gen_ai.content.completion"
+    assert add_event.call_args_list[0][1]["attributes"]["gen_ai.completion"] == str(
+        result
+    )
+
+
 @patch(
-    "mirascope.integrations.otel._utils.get_stream_attributes",
+    "mirascope.integrations.otel._utils.get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 def test_handle_structured_stream(
-    mock_get_stream_attributes: MagicMock,
+    mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_structured_stream` function."""
     mock_fn = MagicMock()
     assert _utils.handle_structured_stream(MagicMock(), mock_fn, None) is None
 
@@ -397,6 +383,8 @@ def test_handle_structured_stream(
     result.stream = response
     result.constructed_response_model = Foo(bar="baz")
     response.user_message_param = {"role": "user", "content": "user_content"}
+    mock_construct_call_response = MagicMock()
+    response.construct_call_response = mock_construct_call_response
     span = MagicMock()
     add_event = MagicMock()
     span.add_event = add_event
@@ -404,8 +392,10 @@ def test_handle_structured_stream(
     span.set_attributes = set_attributes
     _utils.handle_structured_stream(result, mock_fn, span)
     assert set_attributes.call_count == 1
-    mock_get_stream_attributes.assert_called_once_with(response)
-    assert mock_get_stream_attributes.return_value["async"] is False
+    mock_get_call_response_attributes.assert_called_once_with(
+        mock_construct_call_response()
+    )
+    assert mock_get_call_response_attributes.return_value["async"] is False
 
     assert add_event.call_count == 2
     assert add_event.call_args_list[0][0][0] == "gen_ai.content.prompt"
@@ -428,11 +418,12 @@ def test_handle_structured_stream(
     return_value={},
 )
 @pytest.mark.asyncio
-async def test_handle_base_model_async(
+async def test_handle_response_model_async(
     mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_response_model_async` function with `BaseModel` result."""
     mock_fn = MagicMock()
-    assert await _utils.handle_base_model_async(MagicMock(), mock_fn, None) is None
+    assert await _utils.handle_response_model_async(MagicMock(), mock_fn, None) is None
 
     result = MagicMock(spec=BaseModel)
     response = MagicMock()
@@ -443,7 +434,7 @@ async def test_handle_base_model_async(
     span.add_event = add_event
     set_attributes = MagicMock()
     span.set_attributes = set_attributes
-    await _utils.handle_base_model_async(result, mock_fn, span)
+    await _utils.handle_response_model_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
     mock_get_call_response_attributes.assert_called_once_with(response)
     assert mock_get_call_response_attributes.return_value["async"] is True
@@ -460,15 +451,36 @@ async def test_handle_base_model_async(
     )
 
 
+@pytest.mark.asyncio
+async def test_handle_response_model_async_base_type():
+    """Tests the `handle_response_model_async` function with `BaseType` result."""
+    mock_fn = MagicMock()
+    result = b"foo"
+    span = MagicMock()
+    add_event = MagicMock()
+    span.add_event = add_event
+    set_attributes = MagicMock()
+    span.set_attributes = set_attributes
+    await _utils.handle_response_model_async(result, mock_fn, span)
+    assert set_attributes.call_count == 1
+    set_attributes.assert_called_once_with({"async": True})
+    assert add_event.call_count == 1
+    assert add_event.call_args_list[0][0][0] == "gen_ai.content.completion"
+    assert add_event.call_args_list[0][1]["attributes"]["gen_ai.completion"] == str(
+        result
+    )
+
+
 @patch(
-    "mirascope.integrations.otel._utils.get_stream_attributes",
+    "mirascope.integrations.otel._utils.get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @pytest.mark.asyncio
 async def test_handle_structured_stream_async(
-    mock_get_stream_attributes: MagicMock,
+    mock_get_call_response_attributes: MagicMock,
 ):
+    """Tests the `handle_structured_stream_async` function."""
     mock_fn = MagicMock()
     assert (
         await _utils.handle_structured_stream_async(MagicMock(), mock_fn, None) is None
@@ -482,6 +494,8 @@ async def test_handle_structured_stream_async(
     result.stream = response
     result.constructed_response_model = Foo(bar="baz")
     response.user_message_param = {"role": "user", "content": "user_content"}
+    mock_construct_call_response = MagicMock()
+    response.construct_call_response = mock_construct_call_response
     span = MagicMock()
     add_event = MagicMock()
     span.add_event = add_event
@@ -489,8 +503,10 @@ async def test_handle_structured_stream_async(
     span.set_attributes = set_attributes
     await _utils.handle_structured_stream_async(result, mock_fn, span)
     assert set_attributes.call_count == 1
-    mock_get_stream_attributes.assert_called_once_with(response)
-    assert mock_get_stream_attributes.return_value["async"] is True
+    mock_get_call_response_attributes.assert_called_once_with(
+        mock_construct_call_response()
+    )
+    assert mock_get_call_response_attributes.return_value["async"] is True
 
     assert add_event.call_count == 2
     assert add_event.call_args_list[0][0][0] == "gen_ai.content.prompt"
