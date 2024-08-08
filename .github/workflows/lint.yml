@@ -12,7 +12,8 @@ on:
       - v1
 
 jobs:
-  tests:
+  lints:
+    name: Ruff and Pyright
     runs-on: ubuntu-latest
 
     steps:
