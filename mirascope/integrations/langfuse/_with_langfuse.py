@@ -16,10 +16,10 @@ from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ..middleware_factory import middleware_decorator
 from ._utils import (
-    handle_base_model,
-    handle_base_model_async,
     handle_call_response,
     handle_call_response_async,
+    handle_response_model,
+    handle_response_model_async,
     handle_stream,
     handle_stream_async,
     handle_structured_stream,
@@ -38,12 +38,9 @@ AsyncFunc = Callable[
     _P,
     Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT],
 ]
-_T = TypeVar("_T")
 
 
-def with_langfuse(
-    fn: SyncFunc | AsyncFunc,
-) -> SyncFunc | AsyncFunc:
+def with_langfuse(fn):
     """Wraps a Mirascope function with Langfuse."""
 
     return middleware_decorator(
@@ -58,8 +55,8 @@ def with_langfuse(
         handle_call_response_async=handle_call_response_async,
         handle_stream=handle_stream,
         handle_stream_async=handle_stream_async,
-        handle_base_model=handle_base_model,
-        handle_base_model_async=handle_base_model_async,
+        handle_response_model=handle_response_model,
+        handle_response_model_async=handle_response_model_async,
         handle_structured_stream=handle_structured_stream,
         handle_structured_stream_async=handle_structured_stream_async,
     )

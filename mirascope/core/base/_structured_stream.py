@@ -216,6 +216,7 @@ def structured_stream_factory(
                 response_model=response_model,
             )
 
+        @wraps(fn)
         async def inner_async(
             *args: _P.args, **kwargs: _P.kwargs
         ) -> AsyncIterable[_ResponseModelT]:

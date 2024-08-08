@@ -134,24 +134,7 @@ class BaseStream(
         self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
             content += chunk.content
-            if chunk.input_tokens is not None:
-                self.input_tokens = (
-                    chunk.input_tokens
-                    if not self.input_tokens
-                    else self.input_tokens + chunk.input_tokens
-                )
-            if chunk.output_tokens is not None:
-                self.output_tokens = (
-                    chunk.output_tokens
-                    if not self.output_tokens
-                    else self.output_tokens + chunk.output_tokens
-                )
-            if chunk.model is not None:
-                self.model = chunk.model
-            if chunk.id is not None:
-                self.id = chunk.id
-            if chunk.finish_reasons is not None:
-                self.finish_reasons = chunk.finish_reasons
+            self._update_properties(chunk)
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
@@ -170,20 +153,7 @@ class BaseStream(
             content, tool_calls = "", []
             async for chunk, tool in self.stream:
                 content += chunk.content
-                if chunk.input_tokens is not None:
-                    self.input_tokens = (
-                        chunk.input_tokens
-                        if not self.input_tokens
-                        else self.input_tokens + chunk.input_tokens
-                    )
-                if chunk.output_tokens is not None:
-                    self.output_tokens = (
-                        chunk.output_tokens
-                        if not self.output_tokens
-                        else self.output_tokens + chunk.output_tokens
-                    )
-                if chunk.model is not None:
-                    self.model = chunk.model
+                self._update_properties(chunk)
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
@@ -192,6 +162,27 @@ class BaseStream(
             )
 
         return generator()
+
+    def _update_properties(self, chunk: _BaseCallResponseChunkT):
+        """Updates the properties of the stream."""
+        if chunk.input_tokens is not None:
+            self.input_tokens = (
+                chunk.input_tokens
+                if not self.input_tokens
+                else self.input_tokens + chunk.input_tokens
+            )
+        if chunk.output_tokens is not None:
+            self.output_tokens = (
+                chunk.output_tokens
+                if not self.output_tokens
+                else self.output_tokens + chunk.output_tokens
+            )
+        if chunk.model is not None:
+            self.model = chunk.model
+        if chunk.id is not None:
+            self.id = chunk.id
+        if chunk.finish_reasons is not None:
+            self.finish_reasons = chunk.finish_reasons
 
     @property
     @abstractmethod

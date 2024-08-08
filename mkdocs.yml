@@ -118,6 +118,11 @@ nav:
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
   - Integrations:
       - "integrations/index.md"
+      - "integrations/logfire.md"
+      - "integrations/langfuse.md"
+      - OpenTelemetry:
+          - "integrations/opentelemetry/index.md"
+          - "integrations/opentelemetry/hyperdx.md"
   - API Reference:
       - "api/index.md"
       - core:

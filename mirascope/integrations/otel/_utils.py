@@ -18,6 +18,8 @@ from opentelemetry.trace.span import Span
 from opentelemetry.util.types import Attributes, AttributeValue
 from pydantic import BaseModel
 
+from mirascope.core.base._utils._base_type import BaseType
+
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
@@ -97,23 +99,6 @@ def set_call_response_event_attributes(result: BaseCallResponse, span: Span) -> 
     )
 
 
-def set_stream_event_attributes(stream: BaseStream, span: Span) -> None:
-    prompt_attributes = {
-        "gen_ai.prompt": json.dumps(stream.user_message_param),
-    }
-    completion_attributes: Attributes = {
-        "gen_ai.completion": json.dumps(stream.message_param),
-    }
-    span.add_event(
-        "gen_ai.content.prompt",
-        attributes=prompt_attributes,
-    )
-    span.add_event(
-        "gen_ai.content.completion",
-        attributes=completion_attributes,
-    )
-
-
 def handle_call_response(result: BaseCallResponse, fn: Callable, span: Span | None):
     if span is None:
         return
@@ -124,52 +109,43 @@ def handle_call_response(result: BaseCallResponse, fn: Callable, span: Span | No
     set_call_response_event_attributes(result, span)
 
 
-def get_stream_attributes(stream: BaseStream) -> dict[str, AttributeValue]:
-    max_tokens = getattr(stream.call_params, "max_tokens", 0)
-    temperature = getattr(stream.call_params, "temperature", 0)
-    top_p = getattr(stream.call_params, "top_p", 0)
-    return {
-        "gen_ai.system": stream.prompt_template if stream.prompt_template else "",
-        "gen_ai.request.model": stream.call_kwargs.get("model", ""),
-        "gen_ai.request.max_tokens": max_tokens,
-        "gen_ai.request.temperature": temperature,
-        "gen_ai.request.top_p": top_p,
-        "gen_ai.response.model": stream.model,
-        "gen_ai.usage.completion_tokens": stream.output_tokens
-        if stream.output_tokens
-        else "",
-        "gen_ai.usage.prompt_tokens": stream.input_tokens
-        if stream.input_tokens
-        else "",
-    }
-
-
 def handle_stream(stream: BaseStream, fn: Callable, span: Span | None):
     if span is None:
         return
-    attributes = get_stream_attributes(stream)
+    constructed_call_response = stream.construct_call_response()
+    attributes = get_call_response_attributes(constructed_call_response)
     attributes["async"] = False
     span.set_attributes(attributes)
-    set_stream_event_attributes(stream, span)
+    set_call_response_event_attributes(constructed_call_response, span)
 
 
-def handle_base_model(result: BaseModel, fn: Callable, span: Span | None):
+def handle_response_model(
+    result: BaseModel | BaseType, fn: Callable, span: Span | None
+):
     if span is None:
         return
-    response: BaseCallResponse = result._response  # type: ignore
-    attributes = get_call_response_attributes(response)
-    attributes["async"] = False
-    span.set_attributes(attributes)
-    prompt_attributes = {
-        "gen_ai.prompt": json.dumps(response.user_message_param),
-    }
-    completion_attributes: Attributes = {
-        "gen_ai.completion": result.model_dump_json(),
-    }
-    span.add_event(
-        "gen_ai.content.prompt",
-        attributes=prompt_attributes,
-    )
+    if isinstance(result, BaseModel):
+        response: BaseCallResponse = result._response  # type: ignore
+        attributes = get_call_response_attributes(response)
+        attributes["async"] = False
+        span.set_attributes(attributes)
+        prompt_attributes = {
+            "gen_ai.prompt": json.dumps(response.user_message_param),
+        }
+        completion_attributes: Attributes = {
+            "gen_ai.completion": result.model_dump_json(),
+        }
+        span.add_event(
+            "gen_ai.content.prompt",
+            attributes=prompt_attributes,
+        )
+    else:
+        span.set_attributes({"async": False})
+        if not isinstance(result, str | int | float | bool):
+            result = str(result)
+        completion_attributes: Attributes = {
+            "gen_ai.completion": result,
+        }
     span.add_event(
         "gen_ai.content.completion",
         attributes=completion_attributes,
@@ -181,7 +157,7 @@ def handle_structured_stream(
 ):
     if span is None:
         return
-    attributes = get_stream_attributes(result.stream)
+    attributes = get_call_response_attributes(result.stream.construct_call_response())
     attributes["async"] = False
     span.set_attributes(attributes)
     prompt_attributes = {
@@ -219,29 +195,40 @@ async def handle_call_response_async(
 async def handle_stream_async(stream: BaseStream, fn: Callable, span: Span | None):
     if span is None:
         return
-    attributes = get_stream_attributes(stream)
+    constructed_call_response = stream.construct_call_response()
+    attributes = get_call_response_attributes(constructed_call_response)
     attributes["async"] = True
     span.set_attributes(attributes)
-    set_stream_event_attributes(stream, span)
+    set_call_response_event_attributes(constructed_call_response, span)
 
 
-async def handle_base_model_async(result: BaseModel, fn: Callable, span: Span | None):
+async def handle_response_model_async(
+    result: BaseModel | BaseType, fn: Callable, span: Span | None
+):
     if span is None:
         return
-    response: BaseCallResponse = result._response  # type: ignore
-    attributes = get_call_response_attributes(response)
-    attributes["async"] = True
-    span.set_attributes(attributes)
-    prompt_attributes = {
-        "gen_ai.prompt": json.dumps(response.user_message_param),
-    }
-    completion_attributes: Attributes = {
-        "gen_ai.completion": result.model_dump_json(),
-    }
-    span.add_event(
-        "gen_ai.content.prompt",
-        attributes=prompt_attributes,
-    )
+    if isinstance(result, BaseModel):
+        response: BaseCallResponse = result._response  # type: ignore
+        attributes = get_call_response_attributes(response)
+        attributes["async"] = True
+        span.set_attributes(attributes)
+        prompt_attributes = {
+            "gen_ai.prompt": json.dumps(response.user_message_param),
+        }
+        completion_attributes: Attributes = {
+            "gen_ai.completion": result.model_dump_json(),
+        }
+        span.add_event(
+            "gen_ai.content.prompt",
+            attributes=prompt_attributes,
+        )
+    else:
+        span.set_attributes({"async": True})
+        if not isinstance(result, str | int | float | bool):
+            result = str(result)
+        completion_attributes: Attributes = {
+            "gen_ai.completion": result,
+        }
     span.add_event(
         "gen_ai.content.completion",
         attributes=completion_attributes,
@@ -253,7 +240,7 @@ async def handle_structured_stream_async(
 ):
     if span is None:
         return
-    attributes = get_stream_attributes(result.stream)
+    attributes = get_call_response_attributes(result.stream.construct_call_response())
     attributes["async"] = True
     span.set_attributes(attributes)
     prompt_attributes = {
