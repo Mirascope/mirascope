@@ -40,7 +40,7 @@ def test_logfire_custom_context_manager(mock_logfire: MagicMock) -> None:
     """Tests the `custom_context_manager` context manager."""
     mock_fn = MagicMock()
     mock_fn.__name__ = "mock_fn"
-    mock_fn.__annotations__ = {"metadata": Metadata(tags={"tag1", "tag2"})}
+    setattr(mock_fn, "_metadata", Metadata(tags={"tag1", "tag2"}))
 
     with _utils.custom_context_manager(mock_fn):
         mock_logfire.assert_called_once()

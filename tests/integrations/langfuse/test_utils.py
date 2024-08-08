@@ -19,7 +19,7 @@ def test_get_call_response_observation():
     mock_result.response = "test_response"
     mock_result.message_param = {"role": "assistant", "content": "test_content"}
     mock_fn = MagicMock(__name__="mock_fn")
-    mock_fn.__annotations__ = {"metadata": Metadata(tags={"tag1"})}
+    setattr(mock_fn, "_metadata", Metadata(tags={"tag1"}))
     call_response_observation = _utils.get_call_response_observation(
         mock_result, mock_fn
     )

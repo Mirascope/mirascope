@@ -48,10 +48,10 @@ class MistralStream(
 
     def construct_call_response(self) -> MistralCallResponse:
         """Constructs the call response from a consumed MistralStream."""
-        if self.message_param is None:
+        if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )  # pragma: no cover
+            )
         usage = UsageInfo(
             prompt_tokens=int(self.input_tokens or 0),
             completion_tokens=int(self.output_tokens or 0),

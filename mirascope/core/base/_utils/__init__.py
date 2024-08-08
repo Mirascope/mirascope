@@ -12,6 +12,7 @@ from ._get_fn_args import get_fn_args
 from ._get_image_type import get_image_type
 from ._get_metadata import get_metadata
 from ._get_possible_user_message_param import get_possible_user_message_param
+from ._get_prompt_template import get_prompt_template
 from ._get_template_values import get_template_values
 from ._get_template_variables import get_template_variables
 from ._json_mode_content import json_mode_content
@@ -47,6 +48,7 @@ __all__ = [
     "get_image_type",
     "get_metadata",
     "get_possible_user_message_param",
+    "get_prompt_template",
     "get_template_values",
     "get_template_variables",
     "HandleStream",

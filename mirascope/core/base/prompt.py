@@ -1,6 +1,5 @@
 """The `BasePrompt` class for better prompt engineering."""
 
-import inspect
 from typing import (
     Any,
     AsyncIterable,
@@ -15,7 +14,7 @@ from typing import (
 from pydantic import BaseModel
 
 from ._stream import BaseStream
-from ._utils import BaseType, format_template
+from ._utils import BaseType, format_template, get_metadata, get_prompt_template
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
@@ -54,26 +53,16 @@ class BasePrompt(BaseModel):
     ```
     """
 
-    @classmethod
-    def _prompt_template(cls) -> str:
-        """Returns the prompt template."""
-        return cls.__annotations__.get("prompt_template", cls.__doc__)
-
-    @classmethod
-    def _metadata(cls) -> set[str]:
-        """Returns the prompt's metadata."""
-        return cls.__annotations__.get("metadata", {})
-
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return format_template(self._prompt_template(), self.model_dump())
+        return format_template(get_prompt_template(self), self.model_dump())
 
     def dump(self) -> dict[str, Any]:
         """Dumps the contents of the prompt into a dictionary."""
         return {
-            "metadata": self._metadata(),
+            "metadata": get_metadata(self, None),
             "prompt": str(self),
-            "template": inspect.cleandoc(self._prompt_template()),
+            "template": get_prompt_template(self),
             "inputs": self.model_dump(),
         }
 
@@ -137,7 +126,7 @@ class BasePrompt(BaseModel):
         namespace = {}
         exec(f"def fn({args_str}): ...", namespace)
         fn = namespace["fn"]
-        return decorator(prompt_template(self._prompt_template())(fn))(**kwargs)
+        return decorator(prompt_template(get_prompt_template(self))(fn))(**kwargs)
 
     @overload
     def run_async(
@@ -204,7 +193,7 @@ class BasePrompt(BaseModel):
         namespace = {}
         exec(f"async def fn({args_str}): ...", namespace)
         fn = namespace["fn"]
-        return decorator(prompt_template(self._prompt_template())(fn))(**kwargs)
+        return decorator(prompt_template(get_prompt_template(self))(fn))(**kwargs)
 
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
@@ -222,7 +211,7 @@ def prompt_template(template: str):
     def inner(
         prompt: type[_BasePromptT] | Callable[_P, _R],
     ) -> type[_BasePromptT] | Callable[_P, _R]:
-        prompt.__annotations__["prompt_template"] = template
+        setattr(prompt, "_prompt_template", template)
         return prompt
 
     return inner
@@ -266,7 +255,7 @@ def metadata(metadata: Metadata):
         prompt: type[_BasePromptT] | Callable[_P, _R],
     ) -> type[_BasePromptT] | Callable[_P, _R]:
         """Updates the `metadata` class attribute to the given value."""
-        prompt.__annotations__["metadata"] = metadata
+        setattr(prompt, "_metadata", metadata)
         return prompt
 
     return inner

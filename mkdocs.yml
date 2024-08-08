@@ -113,6 +113,9 @@ nav:
               - "cookbook/prompt_engineering/chaining/index.md"
       - Text Classification: "cookbook/text_classification.md"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - Agents:
+          - "cookbook/agents/index.md"
+          - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
   - Integrations:
       - "integrations/index.md"
       - "integrations/logfire.md"

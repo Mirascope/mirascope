@@ -1,5 +1,6 @@
 """Tests for the `base_prompt` module."""
 
+import os
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -11,9 +12,8 @@ from mirascope.core import BasePrompt, metadata, prompt_template
 def test_base_prompt() -> None:
     """Tests the `BasePrompt` class."""
 
+    @prompt_template("Recommend a {genre} book.")
     class BookRecommendationPrompt(BasePrompt):
-        """Recommend a {genre} book."""
-
         genre: str
 
     prompt = BookRecommendationPrompt(genre="fantasy")
@@ -29,9 +29,8 @@ def test_base_prompt() -> None:
 def test_base_prompt_with_computed_fields() -> None:
     """Tests the `BasePrompt` class with list and list[list] computed fields."""
 
+    @prompt_template("Recommend a {genre} book.")
     class BookRecommendationPrompt(BasePrompt):
-        """Recommend a {genre} book."""
-
         @computed_field
         @property
         def genre(self) -> str:
@@ -48,9 +47,8 @@ def test_base_prompt_run() -> None:
     mock_decorator.return_value = mock_call_fn
     mock_call_fn.return_value = "response"
 
+    @prompt_template("Recommend a {genre} book.")
     class BookRecommendationPrompt(BasePrompt):
-        """Recommend a {genre} book."""
-
         genre: str
 
     prompt = BookRecommendationPrompt(genre="fantasy")
@@ -61,10 +59,8 @@ def test_base_prompt_run() -> None:
     mock_decorator.assert_called_once()
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
-    assert "prompt_template" in decorator_arg.__annotations__
-    assert (
-        decorator_arg.__annotations__["prompt_template"] == "Recommend a {genre} book."
-    )
+    assert hasattr(decorator_arg, "_prompt_template")
+    assert getattr(decorator_arg, "_prompt_template") == "Recommend a {genre} book."
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")
@@ -77,9 +73,8 @@ async def test_base_prompt_run_async() -> None:
     mock_decorator.return_value = mock_call_fn
     mock_call_fn.return_value = "response"
 
+    @prompt_template("Recommend a {genre} book.")
     class BookRecommendationPrompt(BasePrompt):
-        """Recommend a {genre} book."""
-
         genre: str
 
     prompt = BookRecommendationPrompt(genre="fantasy")
@@ -90,32 +85,35 @@ async def test_base_prompt_run_async() -> None:
     mock_decorator.assert_called_once()
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
-    assert "prompt_template" in decorator_arg.__annotations__
-    assert (
-        decorator_arg.__annotations__["prompt_template"] == "Recommend a {genre} book."
-    )
+    assert hasattr(decorator_arg, "_prompt_template")
+    assert getattr(decorator_arg, "_prompt_template") == "Recommend a {genre} book."
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")
 
 
-def test_prompt_template_decorator() -> None:
+def test_prompt_template_docstring() -> None:
     """Tests the `prompt_template` decorator on a `BasePrompt`."""
 
-    @prompt_template("Recommend a {genre} book.")
+    os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "ENABLED"
+
     class BookRecommendationPrompt(BasePrompt):
+        """Recommend a {genre} book."""
+
         genre: str
 
     prompt = BookRecommendationPrompt(genre="fantasy")
     assert str(prompt) == "Recommend a fantasy book."
+
+    os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "DISABLED"
 
 
 def test_metadata_decorator() -> None:
     """Tests the `metadata` decorator on a `BasePrompt`."""
 
     @metadata({"tags": {"version:0001"}})
-    class BookRecommendationPrompt(BasePrompt):
-        """Recommend a book."""
+    @prompt_template("Recommend a book.")
+    class BookRecommendationPrompt(BasePrompt): ...
 
     prompt = BookRecommendationPrompt()
     assert prompt.dump()["metadata"] == {"tags": {"version:0001"}}

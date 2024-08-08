@@ -177,12 +177,13 @@ def call_factory(
         stream: Literal[False] = False,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
-        output_parser: Callable[[TCallResponse], _ParsedOutputT]
-        | Callable[[TCallResponseChunk], _ParsedOutputT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams = default_call_params,
-    ) -> NoReturn: ...  # pragma: no cover
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -207,7 +208,9 @@ def call_factory(
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
-        | Callable[[TCallResponseChunk], _ParsedOutputT],
+        | Callable[[TCallResponseChunk], _ParsedOutputT]
+        | Callable[[_ResponseModelT], _ParsedOutputT]
+        | None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams = default_call_params,
@@ -221,6 +224,7 @@ def call_factory(
         response_model: type[_ResponseModelT] | None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT]
         | Callable[[TCallResponseChunk], _ParsedOutputT]
+        | Callable[[_ResponseModelT], _ParsedOutputT]
         | None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
@@ -240,8 +244,6 @@ def call_factory(
     ]:
         if stream and output_parser:
             raise ValueError("Cannot use `output_parser` with `stream=True`.")
-        if response_model and output_parser:
-            raise ValueError("Cannot use both `response_model` and `output_parser`.")
 
         if response_model:
             if stream:
@@ -270,6 +272,7 @@ def call_factory(
                     ),
                     model=model,
                     response_model=response_model,
+                    output_parser=output_parser,
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,

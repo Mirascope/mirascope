@@ -58,10 +58,10 @@ class GeminiStream(
 
     def construct_call_response(self) -> GeminiCallResponse:
         """Constructs the call response from a consumed GeminiStream."""
-        if self.message_param is None:
+        if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
-            )  # pragma: no cover
+            )
         response = GenerateContentResponseType.from_response(
             GenerateContentResponse(
                 candidates=[
