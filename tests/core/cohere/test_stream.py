@@ -62,3 +62,106 @@ def test_cohere_stream() -> None:
         message="content",
         tool_calls=None,
     )
+
+
+def test_construct_call_response():
+    chunks = [
+        StreamedChatResponse_StreamStart(generation_id="id"),
+        StreamedChatResponse_TextGeneration(
+            text="content",
+        ),
+        StreamedChatResponse_StreamEnd(
+            finish_reason="COMPLETE",
+            response=NonStreamedChatResponse(
+                generation_id="id",
+                text="content",
+                meta=ApiMeta(
+                    billed_units=ApiMetaBilledUnits(input_tokens=1, output_tokens=1)
+                ),
+            ),
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = CohereCallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = CohereStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=CohereCallResponse,
+        model="command-r-plus",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[ChatMessage(role="CHATBOT", message="content")],  # type: ignore
+        call_params={},
+        call_kwargs={},
+    )
+    assert stream.cost is None
+    for _ in stream:
+        pass
+    constructed_call_response = stream.construct_call_response()
+    usage = ApiMetaBilledUnits(input_tokens=1, output_tokens=1)
+    completion = NonStreamedChatResponse(
+        generation_id="id",
+        text="content",
+        finish_reason="COMPLETE",
+        meta=ApiMeta(billed_units=usage),
+    )
+    call_response = CohereCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    assert constructed_call_response.response == call_response.response
+
+
+def test_construct_call_response_no_usage():
+    """Tests the `GroqStream.construct_call_response` method with no usage."""
+    chunks = [
+        StreamedChatResponse_StreamStart(generation_id="id"),
+        StreamedChatResponse_TextGeneration(
+            text="content",
+        ),
+        StreamedChatResponse_StreamEnd(
+            finish_reason="COMPLETE",
+            response=NonStreamedChatResponse(
+                generation_id="id", text="content", meta=None
+            ),
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            call_response_chunk = CohereCallResponseChunk(chunk=chunk)
+            yield call_response_chunk, None
+
+    stream = CohereStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=CohereCallResponse,
+        model="command-r-plus",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[ChatMessage(role="CHATBOT", message="content")],  # type: ignore
+        call_params={},
+        call_kwargs={},
+    )
+    for _ in stream:
+        pass
+    constructed_call_response = stream.construct_call_response()
+    assert constructed_call_response.usage is None

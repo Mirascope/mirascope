@@ -1,7 +1,21 @@
 """The `GeminiStream` class for convenience around streaming LLM calls."""
 
-from google.ai.generativelanguage import FunctionCall
-from google.generativeai.types import ContentDict
+from typing import cast
+
+from google.ai.generativelanguage import (
+    Candidate,
+    Content,
+    FunctionCall,
+    GenerateContentResponse,
+)
+from google.generativeai.types import (
+    ContentDict,
+    ContentsType,  # type: ignore
+)
+from google.generativeai.types import (  # type: ignore
+    GenerateContentResponse as GenerateContentResponseType,
+)
+from google.generativeai.types.content_types import PartType
 
 from ..base._stream import BaseStream
 from ._utils import calculate_cost
@@ -19,10 +33,11 @@ class GeminiStream(
         ContentDict,
         ContentDict,
         ContentDict,
-        ContentDict,
+        ContentsType,
         GeminiTool,
         GeminiDynamicConfig,
         GeminiCallParams,
+        Candidate.FinishReason,
     ]
 ):
     _provider = "gemini"
@@ -35,7 +50,44 @@ class GeminiStream(
     def _construct_message_param(
         self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
     ) -> ContentDict:
+        """Constructs the message parameter for the assistant."""
         return {
             "role": "model",
-            "parts": [{"type": "text", "text": content}] + (tool_calls or []),
+            "parts": cast(list[PartType], [{"text": content}] + (tool_calls or [])),
         }
+
+    def construct_call_response(self) -> GeminiCallResponse:
+        """Constructs the call response from a consumed GeminiStream."""
+        if self.message_param is None:
+            raise ValueError(
+                "No stream response, check if the stream has been consumed."
+            )  # pragma: no cover
+        response = GenerateContentResponseType.from_response(
+            GenerateContentResponse(
+                candidates=[
+                    Candidate(
+                        finish_reason=self.finish_reasons[0]
+                        if self.finish_reasons
+                        else Candidate.FinishReason.STOP,
+                        content=Content(
+                            role=self.message_param["role"],
+                            parts=self.message_param["parts"],
+                        ),
+                    )
+                ]
+            )
+        )
+        return GeminiCallResponse(
+            metadata=self.metadata,
+            response=response,
+            tool_types=self.tool_types,
+            prompt_template=self.prompt_template,
+            fn_args=self.fn_args if self.fn_args else {},
+            dynamic_config=self.dynamic_config,
+            messages=self.messages,
+            call_params=self.call_params,
+            call_kwargs=self.call_kwargs,
+            user_message_param=self.user_message_param,
+            start_time=self.start_time,
+            end_time=self.end_time,
+        )

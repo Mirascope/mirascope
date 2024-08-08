@@ -30,7 +30,7 @@ def test_gemini_call_response_chunk() -> None:
     )
     call_response_chunk = GeminiCallResponseChunk(chunk=chunk)
     assert call_response_chunk.content == "The author is Patrick Rothfuss"
-    assert call_response_chunk.finish_reasons == ["STOP"]
+    assert call_response_chunk.finish_reasons == [Candidate.FinishReason.STOP]
     assert call_response_chunk.model is None
     assert call_response_chunk.id is None
     assert call_response_chunk.usage is None

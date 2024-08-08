@@ -37,7 +37,7 @@ def get_stream_observation(stream: BaseStream, fn: Callable):
         "input": stream.prompt_template,
         "tags": tags,
         "model": stream.model,
-        "output": stream.message_param.get("content", None),
+        "output": stream.message_param.get("content", None),  # type: ignore
     }
 
 

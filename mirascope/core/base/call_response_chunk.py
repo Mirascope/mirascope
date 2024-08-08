@@ -8,9 +8,10 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, ConfigDict
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
+_FinishReasonT = TypeVar("_FinishReasonT", bound=Any)
 
 
-class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
+class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
     """A base abstract interface for LLM streaming response chunks.
 
     Attributes:
@@ -44,7 +45,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT], ABC):
 
     @property
     @abstractmethod
-    def finish_reasons(self) -> list[str] | None:
+    def finish_reasons(self) -> list[_FinishReasonT] | None:
         """Should return the finish reasons of the response.
 
         If there is no finish reason, this method must return None.
