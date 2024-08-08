@@ -105,7 +105,7 @@ def test_handle_stream(
 
     result = MagicMock(spec=BaseStream)
     mock_construct_call_response = MagicMock()
-    mock_construct_call_response_return_value = MagicMock()
+    mock_construct_call_response_return_value = {}
     mock_construct_call_response.return_value = (
         mock_construct_call_response_return_value
     )
@@ -207,7 +207,7 @@ def test_handle_structured_stream(
     stream = MagicMock(spec=BaseStream)
     result.stream = stream
     mock_construct_call_response = MagicMock()
-    mock_construct_call_response_return_value = MagicMock()
+    mock_construct_call_response_return_value = {}
     mock_construct_call_response.return_value = (
         mock_construct_call_response_return_value
     )
