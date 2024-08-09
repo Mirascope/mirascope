@@ -11,7 +11,7 @@ For the purposes of explaining how prompt templates work, we will use:
 - `@prompt_template`: a decorator for attaching a prompt template to a function or class
 - `BasePrompt`: a base class for writing provider-agnostic prompts.
 
-We will cover `BasePrompt` in more detail later. For now, all you need to know is that we inject fields with names that match template variables, and we've implemented the `__str__` method for easily viewing how template variables get injected:
+We will cover `BasePrompt` in more detail later. For now, all you need to know is that we inject fields with names that match template variables and that we've implemented the `__str__` method for easily viewing how template variables get injected:
 
 ```python
 from mirascope.core import BasePrompt, prompt_template
@@ -381,7 +381,9 @@ print(prompt.dump()['metadata'])
 
 !!! note "Adding Additional Fields"
 
-    Although `Metadata` is a `TypedDict` with only the `tags` key, there is nothing stopping you from adding additional keys. The only issue is that this will throw a type error, which you can ignore. If there are particular keys you find yourself using frequently, let us know so we can add it!
+    Although `Metadata` is a `TypedDict` with only the `tags` key, there is nothing stopping you from adding additional keys. The only issue is that this will throw a type error, which you can ignore. We recommend ignoring the specific error. For example, if you're using pyright you should add `# pyright: ignore [reportArgumentType]`.
+    
+    If there are particular keys you find yourself using frequently, let us know so we can add them!
 
 ### Running Prompts
 
