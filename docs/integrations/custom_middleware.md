@@ -145,7 +145,7 @@ These functions will be called after making a mirascope call with `response_mode
 from typing import Callable
 from pydantic import BaseModel
 
-from mirascope.core.base._utils._base_type import BaseType
+from mirascope.core.base import BaseType
 
 def handle_response_model(
     response_model: BaseModel | BaseType, fn: Callable, session: Session | None

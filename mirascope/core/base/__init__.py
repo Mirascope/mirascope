@@ -2,6 +2,7 @@
 
 from . import _partial, _utils
 from ._call_factory import call_factory
+from ._utils import BaseType
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -22,6 +23,7 @@ __all__ = [
     "BasePrompt",
     "BaseTool",
     "BaseToolKit",
+    "BaseType",
     "call_factory",
     "ImagePart",
     "metadata",
