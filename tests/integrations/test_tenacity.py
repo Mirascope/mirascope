@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 from pydantic import BaseModel, ValidationError
 from tenacity import RetryCallState
 
-from mirascope.integrations.tenacity import collect_validation_errors
+from mirascope.integrations.tenacity import collect_errors
 
 
-def test_collect_validation_errors():
+def test_collect_errors():
     validation_error = None
     try:
 
@@ -21,5 +21,5 @@ def test_collect_validation_errors():
     mock_retry_state.outcome = outcome
     mock_retry_state.kwargs = {}
     outcome.exception.return_value = validation_error
-    collect_validation_errors(mock_retry_state)
-    assert mock_retry_state.kwargs["validation_errors"] == [validation_error]
+    collect_errors(ValidationError)(mock_retry_state)
+    assert mock_retry_state.kwargs["errors"] == [validation_error]

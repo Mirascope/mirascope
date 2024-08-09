@@ -1,10 +1,13 @@
 from typing import Annotated
 
+from dotenv import load_dotenv
 from pydantic import AfterValidator, BaseModel, Field, ValidationError
 from tenacity import retry, stop_after_attempt
 
 from mirascope.core import anthropic, prompt_template
-from mirascope.integrations.tenacity import collect_validation_errors
+from mirascope.integrations.tenacity import collect_errors
+
+load_dotenv()
 
 
 class SpellingAndGrammarCheck(BaseModel):
@@ -38,7 +41,7 @@ class GrammarCheck(BaseModel):
     explanation: str = Field(description="Explanation of the corrections made")
 
 
-@retry(stop=stop_after_attempt(3), after=collect_validation_errors)
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
 @anthropic.call(
     "claude-3-5-sonnet-20240620", response_model=GrammarCheck, json_mode=True
 )
@@ -54,13 +57,9 @@ class GrammarCheck(BaseModel):
     """
 )
 def correct_grammar(
-    text: str, *, validation_errors: list[str] | None = None
+    text: str, *, errors: list[ValidationError] | None = None
 ) -> anthropic.AnthropicDynamicConfig:
-    previous_errors = (
-        f"Previous Errors: {validation_errors}"
-        if validation_errors
-        else "No previous errors."
-    )
+    previous_errors = f"Previous Errors: {errors}" if errors else "No previous errors."
     return {"computed_fields": {"previous_errors": previous_errors}}
 
 
