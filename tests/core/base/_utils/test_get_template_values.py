@@ -39,7 +39,7 @@ def test_get_template_values() -> None:
         "self": {"var0": "value0"},
         "book": book,
         "var1": "value1",
-        "var2": "['value2', 'value3']",
+        "var2": ["value2", "value3"],
         "var3": "value2\nvalue3",
         "var4": "",
         "var5": "value4\nvalue5\n\nvalue6\nvalue7",

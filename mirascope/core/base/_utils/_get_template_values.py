@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from ._base_type import is_base_type
+
 
 def get_template_values(
     template_variables: list[tuple[str, str | None]], attrs: dict[str, Any]
@@ -36,7 +38,8 @@ def get_template_values(
                 values[var] = "\n".join([str(item) for item in attrs[var]])
             else:
                 if not isinstance(value, list) or (
-                    value and not all(isinstance(item, list) for item in value)
+                    value
+                    and not all(isinstance(item, (list, tuple, set)) for item in value)
                 ):
                     raise ValueError(
                         f"Template variable '{var}' must be a list of lists when using "
@@ -46,5 +49,5 @@ def get_template_values(
                     ["\n".join([str(subitem) for subitem in item]) for item in value]
                 )
         else:
-            values[var] = str(attrs[var]) if attrs[var] is not None else ""
+            values[var] = attrs[var] if attrs[var] is not None else ""
     return values
