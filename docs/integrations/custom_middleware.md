@@ -74,7 +74,7 @@ All the handlers will be wrapped by this context manager. The `fn` argument will
 
 ### `handle_call_response` and `handle_call_response_async`
 
-These functions will be called after making a mirascope call with the following signature:
+These functions must have the following signature (where async should be async) and will be called after making a standard Mirascope call. Here is a sample implementation of the sync version:
 
 ```python
 from typing import Callable
@@ -99,14 +99,16 @@ def handle_call_response(
 ```
 
 The first argument will be a Mirascope `CallResponse` of the provider you are using.
+
 The second argument is the same `fn` argument as the one used in `custom_context_manager`.
+
 The third argument is the yielded object of your `custom_context_manager`, in this case a SQLModel Session object. If no `custom_context_manager` is used, this value is `None`.
 
 `handle_call_response_async` is the same as `handle_call_response` but using an `async` function.
 
 ### `handle_stream` and `handle_stream_async`
 
-These functions will be called after streaming a Mirascope call with the following signature:
+These functions must have the following signature (where async should be async) and will be called after streaming a Mirascope call. Here is a sample implementation of the sync version:
 
 ```python
 from typing import Callable
@@ -132,6 +134,7 @@ def handle_stream(
 ```
 
 The first argument will be a Mirascope `Stream` of the provider you are using.
+
 The `Stream` object has a method `construct_call_response` which will construct a Mirascope `BaseCallResponse` object. You can also use the properties set on the Stream object.
 See `handle_call_response` section for information regarding the other arguments.
 
@@ -139,7 +142,7 @@ One thing to note for `handle_stream` is that it will not be called until after 
 
 ### `handle_response_model` and `handle_response_model_async`
 
-These functions will be called after making a mirascope call with `response_model` set with the following signature:
+These functions must have the following signature (where async should be async) and will be called after making a Mirascope call with `response_model` set. Here is a sample implementation of the sync version:
 
 ```python
 from typing import Callable
@@ -171,7 +174,8 @@ def handle_response_model(
     session.commit()
 ```
 
-The first argument will be a Pydantic `BaseModel` or Python primative depending on what type `response_model` is.
+The first argument will be a Pydantic `BaseModel` or Python primative depending on the type of `response_model`.
+
 See `handle_call_response` section for information regarding the other arguments.
 
 For `BaseModel` you can grab the `CallResponse` via `response_model._response`.
@@ -179,7 +183,7 @@ However for primatives `BaseType`, this information is not available so we use w
 
 ### `handle_structured_stream` and `handle_structured_stream_async`
 
-These functions will be called after streaming a mirascope call with `response_model` set with the following signature:
+These functions must have the following signature (where async should be async) and will be called after streaming a Mirascope call with `response_model` set. Here is a sample implementation of the sync version:
 
 ```python
 from typing import Callable
@@ -204,6 +208,7 @@ def handle_structured_stream(
 ```
 
 The first argument will be a Mirascope `StructuredStream` of the provider you are using.
+
 Like with `handle_stream`, `handle_structured_stream` will not be called until the `Generator` has been exhausted.
 
 ### `custom_decorator`
@@ -231,4 +236,4 @@ In this example, when `run` is finished, `handle_call_response` will be called t
 
 Now, any Mirascope call that uses the `with_saving` decorator will write to your database.
 
-If there is a library that you would like for us to integrate out-of-the-box, let us know in our [Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) community.
+If there is a library that you would like for us to integrate out-of-the-box, create a [GitHub Issue](https://github.com/Mirascope/mirascope/issues) or let us know in our [Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) community.
