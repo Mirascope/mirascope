@@ -95,7 +95,7 @@ async def compare_conditions(condition: str, condition_list: list[str]): ...
     thing at the end?
     """
 )
-async def compare_questions(original_problem: str, reconstructed_problem: str): ...
+def compare_questions(original_problem: str, reconstructed_problem: str): ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -129,12 +129,9 @@ async def fine_grained_comparison(
         compare_conditions(reconstructed_condition, original_conditions)
         for reconstructed_condition in reconstructed_conditions
     ]
-    question_comparison_task = [compare_questions(query, reconstructed_query)]
-    full_comparison = await asyncio.gather(
-        *(overlooking_tasks + hallucination_tasks + question_comparison_task)
-    )
+    full_comparison = await asyncio.gather(*(overlooking_tasks + hallucination_tasks))
 
-    question_misinterpretation = full_comparison[-1]
+    question_misinterpretation = compare_questions(query, reconstructed_query)
 
     overlooked_comparisons = [
         comparison
@@ -143,15 +140,15 @@ async def fine_grained_comparison(
     ]
     hallucination_comparisons = [
         comparison
-        for comparison in full_comparison[len(original_conditions) : -1]
+        for comparison in full_comparison[len(original_conditions) :]
         if not comparison.deducible
     ]
 
     # Fill out prompt depending on the comparisons
     if (
         not question_misinterpretation
-        and not overlooked_conditions
-        and not hallucination_conditions
+        and not overlooked_comparisons
+        and not hallucination_comparisons
     ):
         mistakes_prompt = """There are no mistakes in your interpretation of the prompt.
         Repeat your original solution verbatim."""
@@ -228,7 +225,7 @@ async def reverse_cot(query: str):
         reconstructed_query=reconstructed_query_response.content,
     )
     # Uncomment to see intermediate values
-    print(response.user_message_param["content"])
+    # print(response.user_message_param["content"])
     return response
 
 
