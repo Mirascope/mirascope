@@ -118,8 +118,13 @@ nav:
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
   - Integrations:
       - "integrations/index.md"
-      - Tenacity: "integrations/tenacity.md"
-      - Custom Middleware: "integrations/custom_middleware.md"
+      - "integrations/tenacity.md"
+      - "integrations/custom_middleware.md"
+      - "integrations/logfire.md"
+      - "integrations/langfuse.md"
+      - OpenTelemetry:
+          - "integrations/opentelemetry/index.md"
+          - "integrations/opentelemetry/hyperdx.md"
   - API Reference:
       - "api/index.md"
       - core:

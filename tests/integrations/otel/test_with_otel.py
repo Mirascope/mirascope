@@ -15,8 +15,10 @@ def test_with_otel(mock_middleware_decorator: MagicMock) -> None:
     mock_middleware_decorator.assert_called_once()
     call_args = mock_middleware_decorator.call_args[1]
     assert call_args["custom_context_manager"] == _utils.custom_context_manager
-    assert call_args["handle_base_model"] == _utils.handle_base_model
-    assert call_args["handle_base_model_async"] == _utils.handle_base_model_async
+    assert call_args["handle_response_model"] == _utils.handle_response_model
+    assert (
+        call_args["handle_response_model_async"] == _utils.handle_response_model_async
+    )
     assert call_args["handle_call_response"] == _utils.handle_call_response
     assert call_args["handle_call_response_async"] == _utils.handle_call_response_async
     assert call_args["handle_stream"] == _utils.handle_stream

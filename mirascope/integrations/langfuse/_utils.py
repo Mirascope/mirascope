@@ -3,6 +3,8 @@ from typing import Callable
 from langfuse.decorators import langfuse_context
 from pydantic import BaseModel
 
+from mirascope.core.base._utils._base_type import BaseType
+
 from ...core.base import BaseCallResponse
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
@@ -28,19 +30,6 @@ def get_call_response_observation(result: BaseCallResponse, fn: Callable):
     }
 
 
-def get_stream_observation(stream: BaseStream, fn: Callable):
-    metadata = get_metadata(fn, {})
-    tags = metadata.get("tags", [])
-
-    return {
-        "name": f"{fn.__name__} with {stream.model}",
-        "input": stream.prompt_template,
-        "tags": tags,
-        "model": stream.model,
-        "output": stream.message_param.get("content", None),  # type: ignore
-    }
-
-
 def handle_call_response(result: BaseCallResponse, fn: Callable, context: None):
     langfuse_context.update_current_observation(
         **get_call_response_observation(result, fn),
@@ -57,24 +46,29 @@ def handle_stream(stream: BaseStream, fn: Callable, context: None):
         unit="TOKENS",
     )
     langfuse_context.update_current_observation(
-        **get_stream_observation(stream, fn),
+        **get_call_response_observation(stream.construct_call_response(), fn),
         usage=usage,
     )
 
 
-def handle_base_model(
-    result: BaseModel | BaseStructuredStream, fn: Callable, context: None
-):
-    response: BaseCallResponse = result._response  # type: ignore
-    langfuse_context.update_current_observation(
-        **get_call_response_observation(response, fn),
-        usage=ModelUsage(
-            input=response.input_tokens,
-            output=response.output_tokens,
-            unit="TOKENS",
-        ),
-        output=result,
-    )
+def handle_response_model(result: BaseModel | BaseType, fn: Callable, context: None):
+    if isinstance(result, BaseModel):
+        response: BaseCallResponse = result._response  # type: ignore
+        call_response_observation = get_call_response_observation(response, fn)
+        call_response_observation.pop("output")
+        langfuse_context.update_current_observation(
+            **call_response_observation,
+            usage=ModelUsage(
+                input=response.input_tokens,
+                output=response.output_tokens,
+                unit="TOKENS",
+            ),
+            output=result,
+        )
+    else:
+        langfuse_context.update_current_observation(
+            output=result,
+        )
 
 
 def handle_structured_stream(result: BaseStructuredStream, fn: Callable, context: None):
@@ -85,7 +79,7 @@ def handle_structured_stream(result: BaseStructuredStream, fn: Callable, context
         unit="TOKENS",
     )
     langfuse_context.update_current_observation(
-        **get_stream_observation(stream, fn),
+        **get_call_response_observation(stream.construct_call_response(), fn),
         usage=usage,
         output=result.constructed_response_model,
     )
@@ -101,8 +95,10 @@ async def handle_stream_async(stream: BaseStream, fn: Callable, context: None):
     handle_stream(stream, fn, None)
 
 
-async def handle_base_model_async(result: BaseModel, fn: Callable, context: None):
-    handle_base_model(result, fn, None)
+async def handle_response_model_async(
+    result: BaseModel | BaseType, fn: Callable, context: None
+):
+    handle_response_model(result, fn, None)
 
 
 async def handle_structured_stream_async(

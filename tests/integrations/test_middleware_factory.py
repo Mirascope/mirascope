@@ -200,10 +200,12 @@ def test_middleware_decorator_base_model_sync():
     def sync_fn() -> Foo:
         return Foo(bar="bar", baz=1)
 
-    def handle_base_model(result, fn, context):
+    def handle_response_model(result, fn, context):
         assert isinstance(result, BaseModel)
 
-    decorate = middleware_decorator(sync_fn, handle_base_model=handle_base_model)
+    decorate = middleware_decorator(
+        sync_fn, handle_response_model=handle_response_model
+    )
     result = decorate()
     assert result.model_dump() == sync_fn().model_dump()
 
@@ -217,11 +219,11 @@ async def test_middleware_decorator_base_model_async():
     async def async_fn() -> Foo:
         return Foo(bar="bar", baz=1)
 
-    async def handle_base_model_async(result, fn, context):
+    async def handle_response_model_async(result, fn, context):
         assert isinstance(result, BaseModel)
 
     decorate = middleware_decorator(
-        async_fn, handle_base_model_async=handle_base_model_async
+        async_fn, handle_response_model_async=handle_response_model_async
     )
     result = await decorate()
     async_fn_result = await async_fn()

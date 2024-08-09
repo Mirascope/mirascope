@@ -27,8 +27,8 @@ def test_with_langfuse(
     )
     call_args = mock_middleware_decorator.call_args[1]
     assert call_args["custom_decorator"] == mock_observe.return_value
-    assert call_args["handle_base_model"] is not None
-    assert call_args["handle_base_model_async"] is not None
+    assert call_args["handle_response_model"] is not None
+    assert call_args["handle_response_model_async"] is not None
     assert call_args["handle_call_response"] is not None
     assert call_args["handle_call_response_async"] is not None
     assert call_args["handle_stream"] is not None
