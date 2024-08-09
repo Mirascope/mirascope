@@ -118,6 +118,8 @@ nav:
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
   - Integrations:
       - "integrations/index.md"
+      - Tenacity: "integrations/tenacity.md"
+      - Custom Middleware: "integrations/custom_middleware.md"
   - API Reference:
       - "api/index.md"
       - core:

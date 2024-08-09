@@ -5,8 +5,6 @@ from typing import Callable
 from pydantic import ValidationError
 from tenacity import RetryCallState
 
-ExceptionType = type[Exception] | tuple[type[Exception], ...]
-
 
 def collect_validation_errors(retry_state: RetryCallState) -> None:
     """Collect errors into a `validation_errors` kwarg of the wrapped function."""
@@ -22,16 +20,17 @@ def collect_validation_errors(retry_state: RetryCallState) -> None:
 
 
 def collect_errors(
-    error_types: list[ExceptionType],
+    *args: type[Exception],
 ) -> Callable[[RetryCallState], None]:
     def inner(retry_state: RetryCallState) -> None:
         """Collect errors into a `errors` kwarg of the wrapped function."""
         if (
             (outcome := retry_state.outcome)
             and (exception := outcome.exception())
-            and type(exception) in error_types
+            and type(exception) in args
         ):
             errors = retry_state.kwargs.pop("errors", [])
+            print(errors)
             retry_state.kwargs["errors"] = (
                 errors + [exception] if errors else [exception]
             )
