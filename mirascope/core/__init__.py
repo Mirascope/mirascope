@@ -4,6 +4,7 @@ from contextlib import suppress
 
 from . import base
 from .base import (
+    BaseMessageParam,
     BasePrompt,
     BaseTool,
     BaseToolKit,
@@ -38,6 +39,7 @@ with suppress(ImportError):
 __all__ = [
     "anthropic",
     "base",
+    "BaseMessageParam",
     "BasePrompt",
     "BaseTool",
     "BaseToolKit",

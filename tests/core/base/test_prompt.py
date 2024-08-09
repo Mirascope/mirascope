@@ -6,7 +6,8 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pydantic import computed_field
 
-from mirascope.core import BasePrompt, metadata, prompt_template
+from mirascope.core.base.message_param import BaseMessageParam
+from mirascope.core.base.prompt import BasePrompt, metadata, prompt_template
 
 
 def test_base_prompt() -> None:
@@ -24,6 +25,20 @@ def test_base_prompt() -> None:
         "template": "Recommend a {genre} book.",
         "inputs": {"genre": "fantasy"},
     }
+
+    @prompt_template(
+        """
+        SYSTEM: You are a helpful assistant.
+        USER: Please help me.
+        """
+    )
+    class MessagesPrompt(BasePrompt): ...
+
+    prompt = MessagesPrompt()
+    assert prompt.message_params() == [
+        BaseMessageParam(role="system", content="You are a helpful assistant."),
+        BaseMessageParam(role="user", content="Please help me."),
+    ]
 
 
 def test_base_prompt_with_computed_fields() -> None:

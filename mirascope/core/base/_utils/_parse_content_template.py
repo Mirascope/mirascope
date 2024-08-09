@@ -130,10 +130,10 @@ def _construct_parts(
             )
         return [_construct_audio_part(source) for source in sources] if sources else []
     else:  # text type
-        template = part["template"].strip()
-        if not template:
+        formatted_template = format_template(part["template"].strip(), attrs)
+        if not formatted_template:
             return []
-        return [TextPart(type="text", text=format_template(template, attrs))]
+        return [TextPart(type="text", text=formatted_template)]
 
 
 def parse_content_template(
