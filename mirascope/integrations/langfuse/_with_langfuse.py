@@ -1,19 +1,7 @@
 """Mirascope x Langfuse Integration."""
 
-from typing import (
-    Awaitable,
-    Callable,
-    ParamSpec,
-    TypeVar,
-)
-
 from langfuse.decorators import observe
-from pydantic import BaseModel
 
-from mirascope.core.base._structured_stream import BaseStructuredStream
-
-from ...core.base import BaseCallResponse
-from ...core.base._stream import BaseStream
 from ..middleware_factory import middleware_decorator
 from ._utils import (
     handle_call_response,
@@ -25,19 +13,6 @@ from ._utils import (
     handle_structured_stream,
     handle_structured_stream_async,
 )
-
-_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
-_BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
-_BaseStructuredStreamT = TypeVar("_BaseStructuredStreamT", bound=BaseStructuredStream)
-_P = ParamSpec("_P")
-SyncFunc = Callable[
-    _P, _BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT
-]
-AsyncFunc = Callable[
-    _P,
-    Awaitable[_BaseCallResponseT | _BaseStreamT | _BaseModelT | _BaseStructuredStreamT],
-]
 
 
 def with_langfuse(fn):

@@ -227,6 +227,11 @@ class Researcher(OpenAIAgent):
 The next step when writing a blog is to write an initial draft and critique it. We can then incorporate the feedback from the critique to iteratively improve the post. Let's make a call to an LLM to write this first draft as well as critique it:
 
 ```python
+from pydantic import ValidationError
+
+from mirascope.integrations.tenacity import collect_errors
+
+
 class InitialDraft(BaseModel):
     draft: str
     critique: str
@@ -237,7 +242,7 @@ def parse_initial_draft(response: InitialDraft) -> str:
 
 @retry(
     wait=wait_exponential(multiplier=1, min=4, max=10),
-    after=collect_validation_errors,
+    after=collect_errors(ValidationError),
 )
 @openai.call(
     "gpt-4o-mini", response_model=InitialDraft, output_parser=parse_initial_draft
@@ -265,7 +270,7 @@ def parse_initial_draft(response: InitialDraft) -> str:
     """
 )
 def _write_initial_draft(
-    self, prompt: str, *, validation_errors: list[str] | None = None
+    self, prompt: str, *, errors: list[ValidationError] | None = None
 ) -> openai.OpenAIDynamicConfig:
     """Writes the initial draft of a blog post along with a self-critique.
 
@@ -279,8 +284,8 @@ def _write_initial_draft(
     """
     return {
         "computed_fields": {
-            "previous_errors": f"Previous Errors: {validation_errors}"
-            if validation_errors
+            "previous_errors": f"Previous Errors: {errors}"
+            if errors
             else None
         }
     }
