@@ -355,7 +355,7 @@ print(prompt)
 
 !!! tip "Retrieving External Data"
 
-    Computed fields can be particularly useful when you want to inject information you retrieve from an external source. For example, perhaps you want to retrieve context from a document store to augment the generation with relevant information.
+    Computed fields can be particularly useful when you want to inject information you retrieve from an external source. For example, perhaps you want to retrieve context from a document store to augment the generation with relevant information (RAG).
 
 ### Metadata
 
@@ -420,6 +420,7 @@ We will begin covering these decorators in more detail in the [following section
 - Provider Comparison: Use `BasePrompt` to easily test the same prompt across different providers to compare performance and output quality.
 - Prompt Versioning: Utilize the metadata decorator to keep track of different versions of your prompts as you refine them.
 - Dynamic Content: Leverage `@computed_field` for injecting dynamic content or API calls into your prompts.
+- Cached Properties: Use `@functools.cached_property` to cache frequently used properties that you only want to compute once. 
 - Prompt Libraries: Build libraries of commonly used prompts that can be easily shared across projects or teams.
 
 Mastering `BasePrompt` is the first step towards building robust LLM applications with Mirascope that are flexible, reusable, and provider-agnostic.
