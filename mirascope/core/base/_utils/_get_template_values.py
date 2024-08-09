@@ -2,8 +2,6 @@
 
 from typing import Any
 
-from ._base_type import is_base_type
-
 
 def get_template_values(
     template_variables: list[tuple[str, str | None]], attrs: dict[str, Any]
