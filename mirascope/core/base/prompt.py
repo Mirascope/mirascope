@@ -14,9 +14,16 @@ from typing import (
 from pydantic import BaseModel
 
 from ._stream import BaseStream
-from ._utils import BaseType, format_template, get_metadata, get_prompt_template
+from ._utils import (
+    BaseType,
+    format_template,
+    get_metadata,
+    get_prompt_template,
+    parse_prompt_messages,
+)
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
+from .message_param import BaseMessageParam
 from .metadata import Metadata
 
 _P = ParamSpec("_P")
@@ -55,7 +62,26 @@ class BasePrompt(BaseModel):
 
     def __str__(self) -> str:
         """Returns the formatted template."""
-        return format_template(get_prompt_template(self), self.model_dump())
+        prompt_template = get_prompt_template(self)
+        prompt_template = (
+            prompt_template.replace(":images}", "}")
+            .replace(":image}", "}")
+            .replace(":audios", "}")
+            .replace(":audio}", "}")
+        )
+        return format_template(prompt_template, self.model_dump())
+
+    def message_params(self) -> list[BaseMessageParam]:
+        """Returns the list of parsed message parameters."""
+        return parse_prompt_messages(
+            roles=["system", "user", "assistant"],
+            template=get_prompt_template(self),
+            attrs={field: getattr(self, field) for field in self.model_fields},
+        )
+
+    def dynamic_config(self) -> BaseDynamicConfig:
+        """Returns the dynamic config of the prompt."""
+        return None
 
     def dump(self) -> dict[str, Any]:
         """Dumps the contents of the prompt into a dictionary."""
@@ -126,7 +152,11 @@ class BasePrompt(BaseModel):
         namespace = {}
         exec(f"def fn({args_str}): ...", namespace)
         fn = namespace["fn"]
-        return decorator(prompt_template(get_prompt_template(self))(fn))(**kwargs)
+        return decorator(
+            prompt_template(get_prompt_template(self))(
+                metadata(get_metadata(self, self.dynamic_config()))(fn)
+            )
+        )(**kwargs)
 
     @overload
     def run_async(

@@ -14,7 +14,7 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 def parse_prompt_messages(
     roles: list[str], template: str, attrs: dict[str, Any]
-) -> list[BaseMessageParam | Any]:
+) -> list[BaseMessageParam]:
     """Returns messages parsed from the provided prompt `template`.
 
     Raises:
