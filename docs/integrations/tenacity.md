@@ -12,26 +12,20 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from mirascope.core import anthropic, prompt_template
 
-def handle_internal_server_error(errors: list[InternalServerError]) -> None:
-    # Handle internal server errors
-    ...
-
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=4, max=10),
-    after=collect_errors(InternalServerError),
 )
 @anthropic.call(model="claude-3-5-sonnet-20240620")
 @prompt_template("What is your purpose?")
-def run(*, errors: list[InternalServerError] = []):
-    handle_internal_server_error(errors)
+def run(): ...
 
 
 print(run())
 ```
 
-Let's break this down. The most common situation is that the call goes through and runs like normal. In the chance that Anthropic is down, we can collect specified `InternalServiceError` using the `collect_errors` function that Mirascope provides. We will make the request again, after waiting for some time and in the meantime call the `handle_internal_server_error` function to inform end users that there's a service outage, or better, make a call to another provider.
+The most common situation is that the call goes through and runs like normal. In the chance that Anthropic is down or rate limit occurs, we will make the request again, after waiting for some time. After 3 attempts, we will get a `RetryError` that can further be handled.
 
 Let us take a look at a more common use-case for using Tenacity `retry`.
 Extracting structured information is not guaranteed and often time will lead to Pydantic a `ValidationError`. We can collect the list of `ValidationError` and feed it back into the LLM call to give better context for the next try:
@@ -72,7 +66,7 @@ class Book(BaseModel):
     """
 )
 def book_extractor(
-    book: str, *, errors: list[ValidationError] = []
+    book: str, *, errors: list[ValidationError] | None = None
 ) -> openai.OpenAIDynamicConfig:
     return {"computed_fields": {"previous_errors": errors}}
 

@@ -3,7 +3,27 @@
 ## How to write your own custom middleware for Mirascope
 
 `middleware_decorator` is a helper function to assist in helping you wrap any Mirascope call.
-We will be creating an example decorator `with_saving` that saves some metadata after a Mirascope call:
+We will be creating an example decorator `with_saving` that saves some metadata after a Mirascope call using [SQLModel](https://sqlmodel.tiangolo.com/). We will be using this table for demonstrative purposes in our example:
+
+```python
+from decimal import Decimal
+
+from sqlmodel import Field, SQLModel
+from sqlalchemy import JSON, Column
+
+class CallResponseTable(SQLModel, table=True):
+    """CallResponse model"""
+
+    __tablename__ = "call_response"
+    id: int | None = Field(default=None, primary_key=True)
+    function_name: str = Field(default="")
+    prompt_template: str | None = Field(default=None)
+    content: str | None = Field(default=None)
+    response_model: dict | None = Field(sa_column=Column(JSON), default=None)
+    cost: Decimal | None = Field(default=None)
+```
+
+This table should be adjusted and tailored to your needs depending on your SQL Dialect or requirements.
 
 ### Writing the decorator
 
@@ -30,6 +50,28 @@ def with_saving(fn):
 
 We will go over each of the different functions.
 
+### `custom_context_manager`
+
+We start off with the `custom_context_manager` function which will be relevant to all the handlers. You can define your own context manager where the yielded value is passed to each of the handlers.
+
+```python
+from contextlib import contextmanager
+from typing import Any, Callable, Generator
+
+from sqlmodel import Session
+
+@contextmanager
+def custom_context_manager(
+    fn: Callable,
+) -> Generator[Session, Any, None]:
+    engine = ...
+    print(f"Saving call: {fn.__name__}")
+    with Session(engine) as session:
+        yield session
+```
+
+All the handlers will be wrapped by this context manager. The `fn` argument will be your Mirascope call function.
+
 ### `handle_call_response` and `handle_call_response_async`
 
 These functions will be called after making a mirascope call with the following signature:
@@ -41,14 +83,24 @@ from mirascope.core.base import BaseCallResponse
 
 
 def handle_call_response(
-    result: BaseCallResponse, fn: Callable, context_manager: ContextManagerType | None
+    result: BaseCallResponse, fn: Callable, session: Session | None
 ):
-    # handle after call here
+    if not session:
+        raise ValueError('Session is not set.')
+
+    call_response_row = CallResponseTable(
+        function_name=fn.__name__,
+        content=result.content,
+        prompt_template=result.prompt_template,
+        cost=result.cost,
+    )
+    session.add(call_response_row)
+    session.commit()
 ```
 
 The first argument will be a Mirascope `CallResponse` of the provider you are using.
-The second argument will be your Mirascope call function.
-The third argument is the yielded object of your `custom_context_manager`
+The second argument is the same `fn` argument as the one used in `custom_context_manager`.
+The third argument is the yielded object of your `custom_context_manager`, in this case a SQLModel Session object. If no `custom_context_manager` is used, this value is `None`.
 
 `handle_call_response_async` is the same as `handle_call_response` but using an `async` function.
 
@@ -63,12 +115,24 @@ from mirascope.core.base._stream import BaseStream
 
 
 def handle_stream(
-    stream: BaseStream, fn: Callable, context_manager: ContextManagerType | None
+    stream: BaseStream, fn: Callable, session: Session | None
 ):
-    # handle after stream here
+    if not session:
+        raise ValueError('Session is not set.')
+
+    result = stream.construct_call_response()
+    call_response_row = CallResponseTable(
+        function_name=fn.__name__,
+        content=result.content,
+        prompt_template=result.prompt_template,
+        cost=result.cost,
+    )
+    session.add(call_response_row)
+    session.commit()
 ```
 
 The first argument will be a Mirascope `Stream` of the provider you are using.
+The `Stream` object has a method `construct_call_response` which will construct a Mirascope `BaseCallResponse` object. You can also use the properties set on the Stream object.
 See `handle_call_response` section for information regarding the other arguments.
 
 One thing to note for `handle_stream` is that it will not be called until after the `Generator` has been exhausted.
@@ -84,16 +148,34 @@ from pydantic import BaseModel
 from mirascope.core.base._utils._base_type import BaseType
 
 def handle_response_model(
-    response_model: BaseModel | BaseType, fn: Callable, context_manager: ContextManagerType | None
+    response_model: BaseModel | BaseType, fn: Callable, session: Session | None
 ):
-    # handle after call with response_model here
+    if not session:
+        raise ValueError('Session is not set.')
+
+    if isinstance(response_model, BaseModel):
+        result = response_model._response  # pyright: ignore[reportAttributeAccessIssue]
+        call_response_row = CallResponseTable(
+            function_name=fn.__name__,
+            response_model=response_model,
+            prompt_template=result.prompt_template,
+            cost=result.cost,
+        )
+    else:
+        call_response_row = CallResponseTable(
+            function_name=fn.__name__,
+            response_model=response_model,
+            prompt_template=fn._prompt_template,  # pyright: ignore[reportFunctionMemberAccess]
+        )
+    session.add(call_response_row)
+    session.commit()
 ```
 
 The first argument will be a Pydantic `BaseModel` or Python primative depending on what type `response_model` is.
 See `handle_call_response` section for information regarding the other arguments.
 
 For `BaseModel` you can grab the `CallResponse` via `response_model._response`.
-However for primatives `BaseType`, this information is not available.
+However for primatives `BaseType`, this information is not available so we use what we have access to. We recommend using a `BaseModel` for primitives when you need `CallResponse` data.
 
 ### `handle_structured_stream` and `handle_structured_stream_async`
 
@@ -105,49 +187,28 @@ from typing import Callable
 from mirascope.core.base._structured_stream import BaseStructuredStream
 
 def handle_structured_stream(
-    result: BaseStructuredStream,
-    fn: Callable,
-    context_manager: ContextManagerType | None,
+    structured_stream: BaseStructuredStream, fn: Callable, session: Session | None
 ):
+    if not session:
+        raise ValueError('Session is not set.')
+
+    result = structured_stream.stream.construct_call_response()
+    call_response_row = CallResponseTable(
+        function_name=fn.__name__,
+        content=result.content,
+        prompt_template=result.prompt_template,
+        cost=result.cost,
+    )
+    session.add(call_response_row)
+    session.commit()
 ```
 
 The first argument will be a Mirascope `StructuredStream` of the provider you are using.
 Like with `handle_stream`, `handle_structured_stream` will not be called until the `Generator` has been exhausted.
 
-### `custom_context_manager`
-
-You can define your own context manager where the yielded object is passed to each of the handlers.
-
-Here is an example using [SQLModel](https://sqlmodel.tiangolo.com/):
-
-```python
-from contextlib import contextmanager
-from typing import Any, Callable, Generator
-
-from sqlmodel import Session
-
-from mirascope.core.base import BaseCallResponse
-
-
-@contextmanager
-def custom_context_manager(
-    fn: Callable,
-) -> Generator[Session, Any, None]:
-    engine = ...
-    with Session(engine) as session:
-        yield session
-
-def handle_call_response(
-    result: BaseCallResponse, fn: Callable, session: Session | None
-):
-    # write to db 
-```
-
-In this example, the 3rd argument of your handler will be typed with the yielded `Session` and metadata can be written to your database of choice.
-
 ### `custom_decorator`
 
-There may be existing libraries that have a decorator implemented already. You can pass that decorator in to `custom_decorator` which will wrap the Mirascope call with that decorator.
+There may be existing libraries that have a decorator implemented already. You can pass that decorator in to `custom_decorator` which will wrap the Mirascope call with your custom decorator and will be called before `middleware_decorator`.
 
 ## How to use your newly created decorator
 
@@ -167,24 +228,6 @@ print(run())
 ```
 
 In this example, when `run` is finished, `handle_call_response` will be called to collect the response.
-
-```python
-from typing import Callable
-from sqlmodel import Session
-
-from mirascope.core.base import BaseCallResponse
-
-
-def handle_call_response(
-    result: BaseCallResponse, fn: Callable, session: Session | None
-):
-    # Assume you have a SQLModel CallResponseTable
-    if not session:
-        return
-
-    session.add(result)
-    session.commit()
-```
 
 Now, any Mirascope call that uses the `with_saving` decorator will write to your database.
 
