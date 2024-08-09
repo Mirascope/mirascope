@@ -93,6 +93,7 @@ def test_call_factory_extract(
     extract_kwargs = {
         "model": "model",
         "response_model": MagicMock,
+        "output_parser": None,
         "json_mode": False,
         "client": MagicMock(),
         "call_params": MagicMock(),
@@ -151,14 +152,3 @@ def test_call_decorator_invalid_output_parser_with_stream(
         ValueError, match="Cannot use `output_parser` with `stream=True`"
     ):
         call("model", stream=True, output_parser=MagicMock())
-
-
-def test_call_decorator_invalid_output_parser_with_response_model(
-    mock_call_factory_kwargs: dict,
-) -> None:
-    """Tests a ValueError is raised if `output_parser` and `response_model` are set."""
-    call = call_factory(**mock_call_factory_kwargs)
-    with pytest.raises(
-        ValueError, match="Cannot use both `response_model` and `output_parser`"
-    ):
-        call("model", response_model=MagicMock, output_parser=MagicMock())

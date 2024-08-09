@@ -58,6 +58,7 @@ def test_openai_call_response() -> None:
         "content": "content",
         "role": "assistant",
         "tool_calls": None,
+        "refusal": None,
     }
     assert call_response.tools is None
     assert call_response.tool is None

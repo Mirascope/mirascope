@@ -1,5 +1,6 @@
 """Tests the `groq.stream` module."""
 
+import pytest
 from groq.types.chat import (
     ChatCompletion,
     ChatCompletionChunk,
@@ -114,6 +115,12 @@ def test_groq_stream() -> None:
         call_params={},
         call_kwargs={},
     )
+
+    with pytest.raises(
+        ValueError, match="No stream response, check if the stream has been consumed."
+    ):
+        stream.construct_call_response()
+
     assert stream.cost is None
     for _ in stream:
         pass

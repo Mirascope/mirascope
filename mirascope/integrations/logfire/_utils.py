@@ -10,7 +10,9 @@ from typing import (
 import logfire
 from pydantic import BaseModel
 
-from ...core.base import BaseCallResponse
+from mirascope.core.base._utils._base_type import BaseType
+
+from ...core.base import BaseCallResponse, _utils
 from ...core.base._stream import BaseStream
 from ...core.base._structured_stream import BaseStructuredStream
 from ...core.base.metadata import Metadata
@@ -20,7 +22,7 @@ from ...core.base.metadata import Metadata
 def custom_context_manager(
     fn: Callable,
 ) -> Generator[logfire.LogfireSpan, Any, None]:
-    metadata: Metadata = fn.__annotations__.get("metadata", {})
+    metadata: Metadata = _utils.get_metadata(fn, None)
     tags = metadata.get("tags", [])
     with logfire.with_settings(custom_scope_suffix="mirascope", tags=list(tags)).span(
         fn.__name__
@@ -29,6 +31,15 @@ def custom_context_manager(
 
 
 def get_call_response_span_data(result: BaseCallResponse) -> dict:
+    output: dict[str, Any] = {}
+    if cost := result.cost:
+        output["cost"] = cost
+    if input_tokens := result.input_tokens:
+        output["input_tokens"] = input_tokens
+    if output_tokens := result.output_tokens:
+        output["output_tokens"] = output_tokens
+    if content := result.content:
+        output["content"] = content
     return {
         "async": False,
         "call_params": result.call_params,
@@ -39,25 +50,7 @@ def get_call_response_span_data(result: BaseCallResponse) -> dict:
         "template_variables": result.fn_args,
         "messages": result.messages,
         "response_data": result.response,
-    }
-
-
-def get_stream_span_data(stream: BaseStream) -> dict:
-    content = ""
-    if stream.message_param:
-        content = stream.message_param.get("content", "") or stream.message_param.get(
-            "message", ""
-        )
-
-    return {
-        "messages": [stream.user_message_param],
-        "call_params": stream.call_params,
-        "call_kwargs": stream.call_kwargs,
-        "model": stream.model,
-        "provider": stream._provider,
-        "prompt_template": stream.prompt_template,
-        "template_variables": stream.fn_args,
-        "output": {"cost": stream.cost, "content": content},
+        "output": output,
     }
 
 
@@ -76,31 +69,16 @@ def get_tool_calls(result: BaseCallResponse) -> list[dict] | None:
     return None
 
 
-def get_output(result: BaseCallResponse) -> dict[str, Any]:
-    output: dict[str, Any] = {}
-    if cost := result.cost:
-        output["cost"] = cost
-    if input_tokens := result.input_tokens:
-        output["input_tokens"] = input_tokens
-    if output_tokens := result.output_tokens:
-        output["output_tokens"] = output_tokens
-    if content := result.content:
-        output["content"] = content
-    return output
-
-
 def handle_call_response(
     result: BaseCallResponse, fn: Callable, logfire_span: logfire.LogfireSpan | None
 ):
     if logfire_span is None:
         return
-    output = get_output(result)
     span_data = get_call_response_span_data(result)
     span_data["async"] = False
     tool_calls = get_tool_calls(result)
     if tool_calls:
-        output["tool_calls"] = tool_calls
-    span_data["output"] = output
+        span_data["output"]["tool_calls"] = tool_calls
     logfire_span.set_attributes(span_data)
 
 
@@ -109,25 +87,48 @@ def handle_stream(
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
 ):
-    if logfire_span is None:
-        return
-    span_data = get_stream_span_data(stream)
-    span_data["async"] = False
-    logfire_span.set_attributes(span_data)
+    handle_call_response(stream.construct_call_response(), fn, logfire_span)
 
 
-def handle_base_model(
-    result: BaseModel, fn: Callable, logfire_span: logfire.LogfireSpan | None
+def set_response_model_output(
+    result: BaseModel | BaseType, output: dict[str, Any] = {}
+) -> None:
+    if isinstance(result, BaseModel):
+        output["response_model"] = {
+            "name": result.__class__.__name__,
+            "arguments": result.model_dump(),
+        }
+    else:
+        output["content"] = result
+
+
+def handle_response_model(
+    result: BaseModel | BaseType, fn: Callable, logfire_span: logfire.LogfireSpan | None
 ):
     if logfire_span is None:
         return
-    response: BaseCallResponse = result._response  # type: ignore
-    span_data = get_call_response_span_data(response)
-    output = get_output(response)
-    output["response_model"] = result
-    span_data["output"] = output
-    span_data["async"] = False
+    span_data: dict[str, Any] = {"output": {}, "async": False}
+    if isinstance(result, BaseModel):  # type: ignore
+        response: BaseCallResponse = result._response  # type: ignore
+        span_data |= get_call_response_span_data(response)
+    set_response_model_output(result, span_data["output"])
     logfire_span.set_attributes(span_data)
+
+
+def get_structured_stream_span_data(result: BaseStructuredStream) -> dict:
+    span_data = get_call_response_span_data(result.stream.construct_call_response())
+    output = span_data.get("output", {})
+    response_model = result.constructed_response_model
+    if isinstance(response_model, BaseModel):
+        output["response_model"] = {
+            "name": response_model.__class__.__name__,
+            "arguments": response_model.model_dump(),
+        }
+    else:
+        output["content"] = response_model
+    span_data["output"] = output
+
+    return span_data
 
 
 def handle_structured_stream(
@@ -135,10 +136,7 @@ def handle_structured_stream(
 ):
     if logfire_span is None:
         return
-    span_data = get_stream_span_data(result.stream)
-    output = span_data.get("output", {})
-    output["response_model"] = result.constructed_response_model
-    span_data["output"] = output
+    span_data = get_structured_stream_span_data(result)
     span_data["async"] = False
     logfire_span.set_attributes(span_data)
 
@@ -148,13 +146,11 @@ async def handle_call_response_async(
 ):
     if logfire_span is None:
         return
-    output = get_output(result)
     span_data = get_call_response_span_data(result)
     span_data["async"] = True
     tool_calls = get_tool_calls(result)
     if tool_calls:
-        output["tool_calls"] = tool_calls
-    span_data["output"] = output
+        span_data["output"]["tool_calls"] = tool_calls
     logfire_span.set_attributes(span_data)
 
 
@@ -163,27 +159,21 @@ async def handle_stream_async(
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
 ):
-    if logfire_span is None:
-        return
-    span_data = get_stream_span_data(stream)
-    span_data["async"] = True
-    logfire_span.set_attributes(span_data)
+    await handle_call_response_async(stream.construct_call_response(), fn, logfire_span)
 
 
-async def handle_base_model_async(
-    result: BaseModel,
+async def handle_response_model_async(
+    result: BaseModel | BaseType,
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
 ):
     if logfire_span is None:
         return
-    response: BaseCallResponse = result._response  # type: ignore
-    span_data = get_call_response_span_data(response)
-    output = get_output(response)
-    output["response_model"] = result
-    span_data["output"] = output
-    span_data["output"] = output
-    span_data["async"] = True
+    span_data: dict[str, Any] = {"output": {}, "async": True}
+    if isinstance(result, BaseModel):  # type: ignore
+        response: BaseCallResponse = result._response  # type: ignore
+        span_data |= get_call_response_span_data(response)
+    set_response_model_output(result, span_data["output"])
     logfire_span.set_attributes(span_data)
 
 
@@ -194,9 +184,6 @@ async def handle_structured_stream_async(
 ):
     if logfire_span is None:
         return
-    span_data = get_stream_span_data(result.stream)
-    output = span_data.get("output", {})
-    output["response_model"] = result.constructed_response_model
-    span_data["output"] = output
+    span_data = get_structured_stream_span_data(result)
     span_data["async"] = True
     logfire_span.set_attributes(span_data)

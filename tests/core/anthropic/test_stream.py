@@ -1,5 +1,6 @@
 """Tests the `anthropic.stream` module."""
 
+import pytest
 from anthropic.types import (
     InputJsonDelta,
     Message,
@@ -120,6 +121,12 @@ def test_anthropic_stream() -> None:
         call_params=AnthropicCallParams(max_tokens=1000),
         call_kwargs={},
     )
+
+    with pytest.raises(
+        ValueError, match="No stream response, check if the stream has been consumed."
+    ):
+        stream.construct_call_response()
+
     assert stream.cost is None
     for _ in stream:
         pass

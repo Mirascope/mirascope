@@ -15,6 +15,7 @@ def mock_extract_decorator_kwargs() -> dict:
     return {
         "model": "model",
         "response_model": MagicMock,
+        "output_parser": None,
         "json_mode": True,
         "client": MagicMock(),
         "call_params": MagicMock(),
