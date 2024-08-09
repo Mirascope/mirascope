@@ -97,7 +97,7 @@ def call(query: str):
     Answer:
     """
 )
-def stepback_call(query: str, num_examples: int) -> openai.OpenAIDynamicConfig:
+def stepback(query: str, num_examples: int) -> openai.OpenAIDynamicConfig:
     """Executes the flow of the Step-Back technique."""
     stepback_question = get_stepback_question(
         query=query, num_examples=num_examples
@@ -111,7 +111,7 @@ def stepback_call(query: str, num_examples: int) -> openai.OpenAIDynamicConfig:
 
 query = """Who is the highest paid player in the nba this season as of 2017"""
 
-print(stepback_call(query=query, num_examples=len(few_shot_examples)))
+print(stepback(query=query, num_examples=len(few_shot_examples)))
 # > The highest-paid player in the NBA during the 2017 season was Stephen Curry of the Golden State Warriors, earning approximately $34.7 million.
 
 
