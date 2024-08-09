@@ -68,6 +68,7 @@ def decomposed_prompting(query: str):
     problem = break_into_subproblems(query=query)
     # Uncomment to see intermediate responses
     # print(problem.subproblems)
+    response = None
     history: list[ChatCompletionMessageParam] = []
     for subproblem in problem.subproblems:
         history.append({"role": "user", "content": subproblem})

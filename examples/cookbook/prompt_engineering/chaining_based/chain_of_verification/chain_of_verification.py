@@ -76,7 +76,7 @@ async def cov_call(query: str) -> openai.OpenAIDynamicConfig:
 async def chain_of_verification(query: str):
     response = await cov_call(query=query)
     # Uncomment to see intermediate responses
-    print(response.user_message_param["content"])
+    # print(response.user_message_param["content"])
     return response
 
 
