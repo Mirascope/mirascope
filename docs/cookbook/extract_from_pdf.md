@@ -4,11 +4,9 @@ This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifi
 
 ??? info "Key Concepts"
 
-    - [Prompts](ADD LINK)
-
-    - [Calls](ADD LINK)
-
-    - [Response Model](ADD LINK)
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Response Models](../learn/response_models.md)
 
 !!! note "Background"
 
