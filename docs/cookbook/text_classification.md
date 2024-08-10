@@ -1,18 +1,30 @@
-# Text Classification with LLMs
+# Text Classification with Large Language Models
 
-This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically the OpenAI API -- to perform text classification tasks. We'll cover both **binary classification**, **multi-class classification**, and **classification with reasoning**, providing you with the tools to tackle a wide range of real-world text analysis problems.
+In this recipe we’ll explore using Mirascope to implement binary classification, multi-class classification, and various other extensions of these classification techniques — specifically using Python the OpenAI API. We will also compare these solutions with more traditional machine learning and Natural Language Processing (NLP) techniques.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
-    - [Calls](ADD LINK)
-
-    - [Response Model](ADD LINK)
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Response Models](../learn/response_models.md)
 
 !!! note "Background"
 
-    Text Classification is a fundamental task in Natural Language Processing (NLP), with applications ranging from spam detection and sentiment analysis to content categorization and intent recognition. Large Language Models (LLMs) have revolutionized this field, making sophisticated classification tasks accessible through simple API calls and thoughtful prompt engineering.
+    Text classification is a fundamental classification problem and NLP task that involves categorizing text documents into predefined classes or categories. Historically this has required training text classifiers through more traditional machine learning methods. Large Language Models (LLMs) have revolutionized this field, making sophisticated classification tasks accessible through simple API calls and thoughtful prompt engineering.
 
-## Setup
+## Key Concepts in Text Classification
+
+Before getting started, let’s cover some essential concepts in text classification:
+
+- **Binary Classification**: Categorizing text into one of two classes (e.g., spam or not spam)
+- **Multi-Class Classification**: Categorizing text into one of several classes (e.g., sentiment analysis)
+- **Large Language Models (LLMs)**: Advanced AI models trained on large datasets that are capable of ingesting text data and generating text data outputs, which we will access through provider API endpoints
+- **Natural Language Processing (NLP)**: A field of artificial intelligence focused on the interaction between computers and human language
+- **Deep Learning**: A machine learning subset focused on enabling systems to learn and improve from training datasets without explicit programming of behavior
+
+Text classification has become an indispensable tool, with applications spanning various industries and use cases, such as spam detection, sentiment analysis, content categorization, social media monitoring, medical text classification, and many more.
+
+## Setting Up Your Environment
 
 To set up our environment, first let's install all of the packages we will use:
 
@@ -22,7 +34,7 @@ pip install "mirascope[openai]"
 
 Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 
-## Binary Classification
+## Binary Classification: Spam Detection
 
 !!! note ""
 
@@ -44,7 +56,6 @@ from mirascope.core import openai, prompt_template
 )
 def classify_spam(text: str): ...
 
-
 text = "Would you like to buy some cheap viagra?"
 label = classify_spam(text)
 assert label is True   # This text is classified as spam
@@ -54,7 +65,7 @@ label = classify_spam(text)
 assert label is False  # This text is classified as not spam
 ```
 
-## Multi-Class Classification
+## Multi-Class Classification: Sentiment Analysis
 
 !!! note ""
 
@@ -62,7 +73,7 @@ assert label is False  # This text is classified as not spam
 
 Multi-class classification extends the concept to scenarios where we need to categorize text into one of several classes. We'll demonstrate this with a sentiment analysis task.
 
-First, we define an Enum to represent our sentiment labels:
+First, we define an `Enum` to represent our sentiment labels:
 
 ```python
 from enum import Enum
@@ -88,7 +99,6 @@ from mirascope.core import openai, prompt_template
 )
 def classify_sentiment(text: str): ...
 
-
 text = "I hate this product. It's terrible."
 label = classify_sentiment(text)
 assert label == Sentiment.NEGATIVE
@@ -110,7 +120,7 @@ assert label == Sentiment.POSITIVE
 
 So far we've demonstrated using simple types like `bool` and `Enum` for classification, but we can extend this approach using Pydantic's `BaseModel` class to extract additional information beyond just the classification label.
 
-For example, we can gain insight to the LLMs reasoning for the classified label simply by including a `reasoning` field in our response model and updating the prompt:
+For example, we can gain insight to the LLMs reasoning for the classified label simply by including a reasoning field in our response model and updating the prompt:
 
 ```python
 from mirascope.core import openai, prompt_template
@@ -186,11 +196,11 @@ else:
 
 !!! tip "Additional Real-World Examples"
 
-    - Content Moderation: Classify user-generated content as appropriate, inappropriate, or requiring manual review.
-    - Customer Support Triage: Categorize incoming support tickets by urgency or department.
-    - News Article Categorization: Classify news articles into topics (e.g. politics, sports, technology, etc).
-    - Intent Recognition: Identify user intent in chatbot interactions (e.g. make a purchase, ask for help, etc.).
-    - Email Classification: Sort emails into categories like personal, work-related, promotional, or urgent.
+    - **Content Moderation**: Classify user-generated content as appropriate, inappropriate, or requiring manual review.
+    - **Customer Support Triage**: Categorize incoming support tickets by urgency or department.
+    - **News Article Categorization**: Classify news articles into topics (e.g. politics, sports, technology, etc).
+    - **Intent Recognition**: Identify user intent in chatbot interactions (e.g. make a purchase, ask for help, etc.).
+    - **Email Classification**: Sort emails into categories like personal, work-related, promotional, or urgent.
 
 When adapting this recipe to your specific use-case, consider the following:
 
@@ -198,3 +208,25 @@ When adapting this recipe to your specific use-case, consider the following:
 - Experiment with different model providers and version to balance accuracy and speed.
 - Implement error handling and fallback mechanisms for cases where the model's classification is uncertain.
 - Consider using a combination of classifiers for more complex categorization tasks.
+
+## Comparison with Traditional Machine Learning Models
+
+Training text classification models requires a much more involved workflow:
+
+- Preprocessing:
+    - Read in data, clean and standardize it, and split it into training, validation, and test datasets
+- Feature Extraction:
+    - Basic: bag of words, TF-IDF
+    - Advanced: word embeddings, contextual embeddings
+- Classification Algorithm / Machine Learning Algorithm: 
+    - Basic: Naive Bayes, logistic regression, linear classifiers
+    - Advanced: Neural networks, transformers (e.g. BERT)
+- Model Training:
+    - Train on training data and validate on validation data, adjusting batch size and epochs.
+    - Things like activation layers and optimizers can greatly impact the quality of the final trained model
+- Model Evaluation:
+    - Evaluate model quality on the test dataset using metrics such as F1-score, recall, precision, accuracy — whichever metric best suits your use-case
+    
+Many frameworks such as TensorFlow and PyTorch make implementing such workflows easier, but it is still far more involved that the approach we showed in the beginning using Mirascope.
+
+If you’re interested in taking a deeper dive into this more traditional approach, the [TensorFlow IMDB Text Classification](https://www.tensorflow.org/tutorials/keras/text_classification_with_hub) tutorial is a great place to start.
