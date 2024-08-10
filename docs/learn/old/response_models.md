@@ -201,11 +201,11 @@ We provide a tenacity integration[link] for collecting validation errors on each
 ```python
 from typing import Annotated
 
-from pydantic import AfterValidator, BaseModel
+from pydantic import AfterValidator, BaseModel, ValidationError
 from tenacity import retry, stop_after_attempt
 
 from mirascope.core import openai
-from mirascope.integrations.tenacity import collect_validation_errors
+from mirascope.integrations.tenacity import collect_errors
 
 def is_all_caps(s: str) -> bool:
     assert s.isupper(), "Value is not all caps uppercase."
@@ -215,17 +215,17 @@ class Book(BaseModel):
     title: Annotated[str, AfterValidator(is_all_caps)]
     author: Annotated[str, AfterValidator(is_all_caps)]
 
-@retry(stop=stop_after_attempt(3), after=collect_validation_errors)
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
 @openai.call(model="gpt-4o", response_model=Book)
-def recommend_book(genre: str, *, validation_errors: list[str] | None = None):
+def recommend_book(genre: str, *, errors: list[ValidationError] | None = None):
     """
     {previous_errors}
     Recommend a {genre} book.
     """
     return {
         "computed_fields": {
-            "previous_errors": f"Previous errors: {validation_errors}"
-            if validation_errors
+            "previous_errors": f"Previous errors: {errors}"
+            if errors
             else ""
         }
     }
@@ -239,12 +239,12 @@ print(book)
 
 ### Validate and Retry Structured Streams
 
-When streaming structured responses, you’ll need to wrap the stream in a function if you want to use the `retry` decorator with `collect_validation_errors`:
+When streaming structured responses, you’ll need to wrap the stream in a function if you want to use the `retry` decorator with `collect_errors`:
 
 ```python
-@retry(stop=stop_after_attempt(3), after=collect_validation_errors)
-def stream_book(*, validation_errors: list[str] | None = None) -> Book:
-    book_stream = recommend_book("fantasy", validation_errors=validation_errors)
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
+def stream_book(*, errors: list[ValidationError] | None = None) -> Book:
+    book_stream = recommend_book("fantasy", errors=errors)
     for partial_book in book_stream:
         book = partial_book
         # do something with book

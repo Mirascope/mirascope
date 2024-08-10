@@ -125,6 +125,7 @@ nav:
       - Middleware: "integrations/middleware.md"
       - OpenTelemetry: "integrations/otel.md"
       - Tenacity: "integrations/tenacity.md"
+      - Custom Middleware: "integrations/custom_middleware.md"
   - API Reference:
       - Core:
           - "api/core/index.md"

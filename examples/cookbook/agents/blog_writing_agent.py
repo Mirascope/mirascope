@@ -5,11 +5,11 @@ import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 from openai.types.chat import ChatCompletionMessageParam
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from tenacity import retry, wait_exponential
 
 from mirascope.core import openai, prompt_template
-from mirascope.integrations.tenacity import collect_validation_errors
+from mirascope.integrations.tenacity import collect_errors
 
 
 class OpenAIAgent(BaseModel):
@@ -142,7 +142,7 @@ class AgentExecutor(OpenAIAgent):
 
     @retry(
         wait=wait_exponential(multiplier=1, min=4, max=10),
-        after=collect_validation_errors,
+        after=collect_errors(ValidationError),
     )
     @openai.call(
         "gpt-4o-mini", response_model=InitialDraft, output_parser=parse_initial_draft
@@ -170,7 +170,7 @@ class AgentExecutor(OpenAIAgent):
         """
     )
     def _write_initial_draft(
-        self, prompt: str, *, validation_errors: list[str] | None = None
+        self, prompt: str, *, errors: list[ValidationError] | None = None
     ) -> openai.OpenAIDynamicConfig:
         """Writes the initial draft of a blog post along with a self-critique.
 
@@ -184,9 +184,7 @@ class AgentExecutor(OpenAIAgent):
         """
         return {
             "computed_fields": {
-                "previous_errors": f"Previous Errors: {validation_errors}"
-                if validation_errors
-                else None
+                "previous_errors": f"Previous Errors: {errors}" if errors else None
             }
         }
 
