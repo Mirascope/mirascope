@@ -4,11 +4,11 @@ This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifi
 
 ??? info "Key Concepts"
 
-    - [Pydantic](ADD LINK)
+    - [Prompts](ADD LINK)
+
+    - [Calls](ADD LINK)
 
     - [Response Model](ADD LINK)
-    
-    - [Calls](ADD LINK)
 
 !!! note "Background"
 
@@ -33,7 +33,7 @@ import asyncio
 import fitz
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 class ResumeInfo(BaseModel):
     name: str = Field(..., description="The name of the person")
@@ -45,11 +45,13 @@ class ResumeInfo(BaseModel):
 
 
 @openai.call(model="gpt-4o", response_model=ResumeInfo)
-async def extract_resume_info(pdf_text: str):
+@prompt_template(
     """
     Extract the resume information from the pdf file.
     {pdf_text}
     """
+)
+async def extract_resume_info(pdf_text: str): ...
 
 
 async def convert_pdf_to_text(pdf_file_path: str) -> str:
@@ -94,14 +96,16 @@ async def convert_pdf_to_png(pdf_file_path: str) -> list[bytes]:
 Afterwards, we update our previously defined call function to take in image bytes and run:
 
 ```python
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini", response_model=ResumeInfo)
-async def extract_resume_info(pdf_imgs: list[bytes]):
+@prompt_template(
     """
     Extract the resume information from the pdf file.
-    {images:pdf_imgs}
+    {pdf_imgs::images}
     """
+)
+async def extract_resume_info(pdf_imgs: list[bytes]): ...
 
 async def convert_pdf_to_text(pdf_file_path: str) -> str:
     doc = fitz.open(pdf_file_path, filetype="pdf")
