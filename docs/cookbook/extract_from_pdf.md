@@ -72,7 +72,7 @@ async def run(pdf_file_paths: list[str]):
 asyncio.run(run(["resume.pdf"]))
 ```
 
-This script takes in multiple text PDF documents and extracts them into a `ResumeInfo` Pydantic model.
+This script takes in multiple text PDF documents and extracts them into a `ResumeInfo` Pydantic model. However, PDF documents contain not only text but images, tables, and more. In order to handle these more complex documents, we use Optical Character Recognition (OCR).
 
 ## Vision-Based Extraction
 
@@ -117,6 +117,8 @@ async def process_pdf(pdf_file_path: str) -> ResumeInfo:
 ```
 
 This approach converts the PDF to images, allowing the AI model to analyze the visual layout and content. It's particularly useful for PDFs with non-standard layouts or those containing charts and diagrams.
+
+Not all providers support vision, so be sure to check provider documentation.
 
 !!! tip "Additional Real-World Examples"
 
