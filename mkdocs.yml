@@ -115,6 +115,7 @@ nav:
       - Agents: "learn/agents.md"
   - Cookbook:
       - "cookbook/index.md"
+      - Text Classification: "cookbook/text_classification.md"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_llm_provider.md"
