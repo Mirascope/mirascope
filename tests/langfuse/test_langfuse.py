@@ -91,6 +91,7 @@ def test_cohere_call_call_with_langfuse(
 ) -> None:
     """Tests that `CohereCall.call` returns the expected response with langfuse."""
     mock_chat.return_value = fixture_non_streamed_response
+    mock_chat.__name__ = "chat"
 
     @with_langfuse
     class CohereTempCall(CohereCall):

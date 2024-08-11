@@ -20,6 +20,7 @@ def test_cohere_extractor_extract_tool(
 ) -> None:
     """Tests that the `CohereExtractor` class returns the expected model."""
     mock_chat.return_value = fixture_non_streamed_response
+    mock_chat.__name__ = "chat"
 
     class TempExtractor(CohereExtractor[Type[CohereTool]]):
         extract_schema: Type[CohereTool] = fixture_book_tool

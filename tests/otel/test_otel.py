@@ -147,7 +147,7 @@ async def test_cohere_call_call_async_with_otel(
 
     await my_call.call_async()
     span_list = fixture_capotel.exporter.get_finished_spans()
-    assert span_list[0].name == "cohere.wrapped with command-r-plus"
+    assert span_list[0].name == "cohere.AsyncMock with command-r-plus"
     assert span_list[1].name == "CohereTempCall.call_async"
 
 
