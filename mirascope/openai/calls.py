@@ -21,7 +21,6 @@ from openai.types.chat import (
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
 )
-from openai.types.chat.completion_create_params import ResponseFormat
 from tenacity import AsyncRetrying, Retrying
 
 from mirascope.base.ops_utils import (
@@ -288,19 +287,22 @@ class OpenAICall(
         """Overrides the `BaseCall._setup` for Anthropic specific setup."""
         kwargs, tool_types = self._setup(kwargs, OpenAITool)
         if (
-            self.call_params.response_format == ResponseFormat(type="json_object")
+            self.call_params.response_format
+            and self.call_params.response_format["type"] == "json_object"
             and tool_types
         ):
             kwargs.pop("tools")
         return kwargs, tool_types
 
     @overload
-    def _setup_openai_client(self, client_type: type[OpenAI]) -> OpenAI:
-        ...  # pragma: no cover
+    def _setup_openai_client(
+        self, client_type: type[OpenAI]
+    ) -> OpenAI: ...  # pragma: no cover
 
     @overload
-    def _setup_openai_client(self, client_type: type[AsyncOpenAI]) -> AsyncOpenAI:
-        ...  # pragma: no cover
+    def _setup_openai_client(
+        self, client_type: type[AsyncOpenAI]
+    ) -> AsyncOpenAI: ...  # pragma: no cover
 
     def _setup_openai_client(
         self, client_type: Union[type[OpenAI], type[AsyncOpenAI]]
@@ -326,7 +328,8 @@ class OpenAICall(
         tool_types: Optional[list[type[OpenAITool]]],
     ) -> list[ChatCompletionMessageParam]:
         if (
-            self.call_params.response_format == ResponseFormat(type="json_object")
+            self.call_params.response_format
+            and self.call_params.response_format["type"] == "json_object"
             and tool_types
         ):
             messages.append(
