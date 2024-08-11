@@ -228,10 +228,7 @@ class GroqCall(
     ]:
         """Overrides the `BaseCall._setup` for Groq specific setup."""
         kwargs, tool_types = self._setup(kwargs, GroqTool)
-        if (
-            self.call_params.response_format == ResponseFormat(type="json_object")
-            and tool_types
-        ):
+        if self.call_params.response_format == {"type": "json_object"} and tool_types:
             kwargs.pop("tools")
         return kwargs, tool_types
 
@@ -240,10 +237,7 @@ class GroqCall(
         messages: list[ChatCompletionMessageParam],
         tool_types: Optional[list[type[GroqTool]]],
     ) -> list[ChatCompletionMessageParam]:
-        if (
-            self.call_params.response_format == ResponseFormat(type="json_object")
-            and tool_types
-        ):
+        if self.call_params.response_format == {"type": "json_object"} and tool_types:
             messages.append(
                 ChatCompletionUserMessageParam(
                     role="user",

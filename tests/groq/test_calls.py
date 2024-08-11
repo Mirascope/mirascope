@@ -165,7 +165,7 @@ def test_groq_call_call_with_tools_json_mode(
         call_params = GroqCallParams(
             model="llama2-70b-4096",
             tools=[fixture_book_tool],
-            response_format=ResponseFormat(type="json_object"),
+            response_format={"type": "json_object"},
         )
 
     call_with_tools = CallWithTools()
@@ -179,7 +179,7 @@ def test_groq_call_call_with_tools_json_mode(
                 content=_json_mode_content(tool_type=fixture_book_tool),
             )
         ],
-        response_format=ResponseFormat(type="json_object"),
+        response_format={"type": "json_object"},
         stream=False,
     )
     assert response.tool_types == [fixture_book_tool]

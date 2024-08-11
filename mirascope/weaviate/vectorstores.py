@@ -1,16 +1,19 @@
-from ..rag.vectorstores import BaseVectorStore
+from functools import cached_property
 from typing import Any, ClassVar, Union
+
 import weaviate
+import weaviate.classes as wvc
 from weaviate import WeaviateClient
+from weaviate.collections.collection import Collection
+
 from mirascope.weaviate.types import (
-    WeaviateSettings,
     WeaviateParams,
     WeaviateQueryResult,
+    WeaviateSettings,
 )
-from functools import cached_property
+
 from ..rag.types import Document
-import weaviate.classes as wvc
-from weaviate.collections.collection import Collection
+from ..rag.vectorstores import BaseVectorStore
 
 
 class WeaviateVectorStore(BaseVectorStore):
@@ -51,8 +54,10 @@ class WeaviateVectorStore(BaseVectorStore):
             documents = text
 
         if len(documents) < 2:
-            return self._index.data.insert(
-                properties={"text": documents[0].text}, uuid=documents[0].id, **kwargs
+            return self._index.data.insert(  # type: ignore
+                properties={"text": documents[0].text},
+                uuid=documents[0].id,
+                **kwargs,
             )
 
         data_objects = list()
@@ -62,7 +67,7 @@ class WeaviateVectorStore(BaseVectorStore):
             )
             data_objects.append(data_object)
 
-        return self._index.data.insert_many(data_objects)
+        return self._index.data.insert_many(data_objects)  # type: ignore
 
     def retrieve(self, text: str, **kwargs: Any) -> WeaviateQueryResult:
         """Queries the vectorstore for closest match"""
@@ -95,7 +100,7 @@ class WeaviateVectorStore(BaseVectorStore):
             vectorstore_params = self.vectorstore_params.model_copy(
                 update={"name": self.index_name}
             )
-        if self._client.collections.exists(self.index_name):
-            return self._client.collections.get(self.index_name)
+        if self._client.collections.exists(self.index_name):  # type: ignore
+            return self._client.collections.get(self.index_name)  # type: ignore
 
         return self._client.collections.create(**vectorstore_params.kwargs())

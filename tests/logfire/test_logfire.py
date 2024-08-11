@@ -89,12 +89,12 @@ async def test_tool_call_with_logfire(
     exporter = capfire.exporter
     expected_span_names = [
         "MyCohereCall.call (pending)",
-        "cohere.wrapped with command-r-plus (pending)",
-        "cohere.wrapped with command-r-plus",
+        "cohere.mock_create_async with command-r-plus (pending)",
+        "cohere.mock_create_async with command-r-plus",
         "MyCohereCall.call",
         "MyCohereCall.call_async (pending)",
-        "cohere.wrapped with command-r-plus (pending)",
-        "cohere.wrapped with command-r-plus",
+        "cohere.mock_create with command-r-plus (pending)",
+        "cohere.mock_create with command-r-plus",
         "MyCohereCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]
@@ -143,13 +143,14 @@ def test_cohere_call_call_with_logfire(
 ) -> None:
     """Tests that `CohereCall.call` returns the expected response with logfire."""
     mock_chat.return_value = fixture_non_streamed_response
+    mock_chat.__name__ = "chat"
     my_call = CohereTempCall()
     my_call.call()
     exporter = capfire.exporter
     expected_span_names = [
         "CohereTempCall.call (pending)",
-        "cohere.wrapped with command-r-plus (pending)",
-        "cohere.wrapped with command-r-plus",
+        "cohere.chat with command-r-plus (pending)",
+        "cohere.chat with command-r-plus",
         "CohereTempCall.call",
     ]
     span_names = [span.name for span in exporter.exported_spans]
@@ -171,8 +172,8 @@ async def test_cohere_call_call_async_with_logfire(
     exporter = capfire.exporter
     expected_span_names = [
         "CohereTempCall.call_async (pending)",
-        "cohere.wrapped with command-r-plus (pending)",
-        "cohere.wrapped with command-r-plus",
+        "cohere.AsyncMock with command-r-plus (pending)",
+        "cohere.AsyncMock with command-r-plus",
         "CohereTempCall.call_async",
     ]
     span_names = [span.name for span in exporter.exported_spans]

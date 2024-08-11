@@ -33,6 +33,7 @@ def test_cohere_call_call(
 ) -> None:
     """Tests that `CohereCall.call` returns the expected response."""
     mock_chat.return_value = fixture_non_streamed_response
+    mock_chat.__name__ = "chat"
     wrapper = MagicMock()
     wrapper.return_value = Client(api_key="test")
 
@@ -66,6 +67,7 @@ def test_cohere_call_call_with_tools(
 ) -> None:
     """Tests that `CohereCall.call` works with tools."""
     mock_chat.return_value = fixture_cohere_response_with_tools
+    mock_chat.__name__ = "chat"
 
     class TempCall(CohereCall):
         prompt_template = ""
@@ -89,6 +91,7 @@ async def test_cohere_call_call_async(
 ) -> None:
     """Tests that `CohereCall.call_async` returns the expected response."""
     mock_chat.return_value = fixture_non_streamed_response
+    mock_chat.__name__ = "chat"
     wrapper_async = MagicMock()
     wrapper_async.return_value = AsyncClient(api_key="test")
 
@@ -111,6 +114,7 @@ def test_cohere_call_stream(
 ) -> None:
     """Tests that `CohereCall.stream` returns the expected response."""
     mock_chat_stream.return_value = fixture_cohere_response_chunks
+    mock_chat_stream.__name__ = "chat_stream"
     wrapper = MagicMock()
     wrapper.return_value = Client(api_key="test")
 
@@ -133,6 +137,8 @@ async def test_cohere_call_stream_async(
     fixture_cohere_async_response_chunks,
 ):
     """Tests `CohereCall.stream_async` returns expected response."""
+    mock_chat_stream.return_value = fixture_cohere_async_response_chunks
+    mock_chat_stream.__name__ = "chat_stream"
     wrapper_async = MagicMock()
     wrapper_async.return_value = AsyncClient(api_key="test")
 
@@ -142,7 +148,6 @@ async def test_cohere_call_stream_async(
 
         configuration = BaseConfig(client_wrappers=[wrapper_async])
 
-    mock_chat_stream.return_value = fixture_cohere_async_response_chunks
     temp_call = TempCall()
     stream = CohereAsyncStream(temp_call.stream_async())
 

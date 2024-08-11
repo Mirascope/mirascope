@@ -42,6 +42,7 @@ def test_openai_call_response(fixture_chat_completion: ChatCompletion):
         "role": "assistant",
         "content": choices[0].message.content,
         "tool_calls": None,
+        "refusal": None,
     }
     assert response.choices == choices
     assert response.choice == choices[0]
@@ -433,7 +434,7 @@ def test_openai_tool_stream_no_tool_types(
         yield OpenAICallResponseChunk(
             chunk=fixture_chat_completion_chunk_with_tools,
             tool_types=None,
-            response_format=ResponseFormat(type="json_object"),
+            response_format={"type": "json_object"},
         )
 
     tools = list(OpenAIToolStream.from_stream(generator(), allow_partial=True))

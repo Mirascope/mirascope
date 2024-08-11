@@ -191,7 +191,7 @@ class OpenAICallResponse(BaseCallResponse[ChatCompletion, OpenAITool]):
                 )
             ]
 
-        if self.response_format == ResponseFormat(type="json_object"):
+        if self.response_format == {"type": "json_object"}:
             return reconstruct_tools_from_content()
 
         if not self.tool_calls:
