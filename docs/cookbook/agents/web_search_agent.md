@@ -63,6 +63,8 @@ def web_search(text: str) -> str:
 
 We are grabbing the first 5 results that best match our user query and retriving their URLs, for parsing and use BeautifulSoup to assist in extracting all paragraph tags in the HTML.
 
+Depending on your use-case, you may want to let the LLM decide which urls to use by separating search and parsing into two separate tools.
+
 Now that our tool is setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
 
 ## Add Q&A Functionality
@@ -172,6 +174,6 @@ print(WebAssistant().run("What are the top 5 smartphones of 2024?"))
 When adapting this recipe, consider:
 
 - Optimizing the search by utilizing `async` to increase parallelism.
-- Convert `parse_webpage` to a tool, so the LLM can determine whether the information is useful.
-- Add `response_model` for more specialized agents with known outputs for structured information.
+- Separate `web_search` into `serp_tool` and `parse_web` tools, so the LLM can pick and choose which url to parse.
+- When targetting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
 - Implement a feedback loop so the LLM can rewrite the query for better search results.
