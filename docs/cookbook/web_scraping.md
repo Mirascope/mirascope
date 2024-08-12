@@ -17,50 +17,14 @@ In this recipe we’ll explore using Mirascope to get structured information fro
 To set up our environment, first let's install all of the packages we will use:
 
 ```shell
-pip install "mirascope[openai]"
-pip install bs4
-pip install duckduckgo-search
+pip install "mirascope[openai]", bs4, duckduckgo-search
 ```
 
 Make sure to also set your `OPENAI_API_KEY` if you haven't already. We are using `duckduckgo-search` since it does not require an API key, but feel free to use Google Search API or other search engine APIs.
 
-## Implementing the `Agent`
-
-The first step is to create a WebAssistant that first conducts a web search based on the user's query. This assistant then formulates an answer using the retrieved information, enabling the LLM to provide up-to-date responses to a broader range of questions.
-
-```python
-from openai.types.chat import ChatCompletionMessageParam
-from pydantic import BaseModel
-
-from mirascope.core import openai, prompt_template
-
-class WebAssistant(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
-
-    @openai.call(model="gpt-4o")
-    @prompt_template(
-        """
-        SYSTEM:
-        You are an expert web searcher. Your task is to answer the user's question using the provided tools.
-        Use the tool `web_search` once to gather the required information.
-        After using the tool, provide a comprehensive answer to the user's question based on the information you retrieved.
-
-        MESSAGES:
-        {self.history}
-
-        USER:
-        {question}
-        """
-    )
-    def _step(self, question: str): ...
-```
-
-The `WebAssistant` will first check the web for relevant search results, before digging deeper into each web page for information to help answer the user's question.
-Note that we have not defined the `web_search` tool yet, so let's do that next.
-
 ## Add DuckDuckGo Tool
 
-Now that we have created our prompt, let’s go ahead and add our web search tool:
+The first step is to create a `WebAssistant` that first conducts a web search based on the user's query. Let’s go ahead and add our web search tool:
 
 ```python
 import inspect
@@ -86,7 +50,7 @@ def web_search(text: str) -> str:
 We are grabbing the first 5 results that best match our user query and retriving their URLs, for parsing:
 
 ```python
-def parse_webpage(self, link: str) -> str:
+def parse_webpage(link: str) -> str:
     """Parse the paragraphs of the webpage found at `link`.
 
     Args:
@@ -103,51 +67,17 @@ def parse_webpage(self, link: str) -> str:
         return f"{type(e)}: Failed to parse content from URL"
 ```
 
-We use BeautifulSoup to assist in extracting all paragraph tags in the HTML. Now that our tool is setup, we can proceed to implement the Q&A functionality of our Agent.
+We use BeautifulSoup to assist in extracting all paragraph tags in the HTML. Now that our tool is setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
 
 ## Add Q&A Functionality
 
+Now that we have our tools we can now create our prompt_template and `_step` function. We engineer the prompt to first use our `web_search` tool and then answer the user question based on the retrived content:
+
 ```python
-import requests
-from bs4 import BeautifulSoup
-from duckduckgo_search import DDGS
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
 from mirascope.core import openai, prompt_template
-
-
-def web_search(text: str) -> str:
-    """Search the web for the given text.
-
-    Args:
-        text: The text to search for.
-
-    Returns:
-        Parsed paragraphs of each of the webpages, separated by newlines.
-    """
-    try:
-        results = DDGS(proxy=None).text(text, max_results=5)
-        return "\n\n".join([parse_webpage(result["href"]) for result in results])
-    except Exception as e:
-        return f"{type(e)}: Failed to search the web for text"
-
-
-def parse_webpage(link: str) -> str:
-    """Parse the paragraphs of the webpage found at `link`.
-
-    Args:
-        link: The URL of the webpage.
-
-    Returns:
-        The parsed paragraphs of the webpage, separated by newlines.
-    """
-    try:
-        response = requests.get(link)
-        soup = BeautifulSoup(response.content, "html.parser")
-        return "\n".join([p.text for p in soup.find_all("p")])
-    except Exception as e:
-        return f"{type(e)}: Failed to parse content from URL"
 
 
 class WebAssistant(BaseModel):
@@ -172,7 +102,7 @@ class WebAssistant(BaseModel):
 
 ```
 
-We updated our `@openai.call()` to include our `web_search` tool and also added `stream=True` to provide a more responsive user experience. We can now create our `run` function which will call our `_step` function until it answers the users question.
+We set our `@openai.call()` to `stream=True` to provide a more responsive user experience. We can now create our `run` function which will call our `_step` function, which will loop until it answers the users question.
 
 ```python
 def run(self, prompt: str) -> str:
