@@ -27,12 +27,12 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already. We are using
 The first step is to create a `WebAssistant` that first conducts a web search based on the user's query. Let’s go ahead and add our web search tool:
 
 ```python
-import inspect
-
+import requests
+from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 
 def web_search(text: str) -> str:
-    """Search the web for the given text.
+    """Search the web for the given text and parse the paragraphs of the results.
 
     Args:
         text: The text to search for.
@@ -41,33 +41,29 @@ def web_search(text: str) -> str:
         Parsed paragraphs of each of the webpages, separated by newlines.
     """
     try:
+        # Search the web for the given text
         results = DDGS(proxy=None).text(text, max_results=5)
-        return "\n\n".join([parse_webpage(result["href"]) for result in results])
+        
+        # Parse the paragraphs of each resulting webpage
+        parsed_results = []
+        for result in results:
+            link = result["href"]
+            try:
+                response = requests.get(link)
+                soup = BeautifulSoup(response.content, "html.parser")
+                parsed_results.append("\n".join([p.text for p in soup.find_all("p")]))
+            except Exception as e:
+                parsed_results.append(f"{type(e)}: Failed to parse content from URL {link}")
+        
+        return "\n\n".join(parsed_results)
+    
     except Exception as e:
         return f"{type(e)}: Failed to search the web for text"
 ```
 
-We are grabbing the first 5 results that best match our user query and retriving their URLs, for parsing:
+We are grabbing the first 5 results that best match our user query and retriving their URLs, for parsing and use BeautifulSoup to assist in extracting all paragraph tags in the HTML.
 
-```python
-def parse_webpage(link: str) -> str:
-    """Parse the paragraphs of the webpage found at `link`.
-
-    Args:
-        link: The URL of the webpage.
-
-    Returns:
-        The parsed paragraphs of the webpage, separated by newlines.
-    """
-    try:
-        response = requests.get(link)
-        soup = BeautifulSoup(response.content, "html.parser")
-        return "\n".join([p.text for p in soup.find_all("p")])
-    except Exception as e:
-        return f"{type(e)}: Failed to parse content from URL"
-```
-
-We use BeautifulSoup to assist in extracting all paragraph tags in the HTML. Now that our tool is setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
+Now that our tool is setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
 
 ## Add Q&A Functionality
 
