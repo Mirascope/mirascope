@@ -417,12 +417,52 @@ We will begin covering these decorators in more detail in the [following section
 
     While `BasePrompt` is provider-agnostic, some features (like multi-modal inputs) may not be supported by all providers. We try to maximize support across providers, but you should always check the provider's capabilities when using more advanced features.
 
+## Docstring Prompt Templates
+
+While the `@prompt_template` decorator is the recommended way to define prompt templates, Mirascope also supports using class and function docstrings as prompt templates. This feature is disabled by default to prevent unintended use of docstrings as templates. To enable this feature, you need to set the `MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE` environment variable to `"ENABLED"`.
+
+Once enabled, you can use the class or function's docstring as the prompt template:
+
+```python
+import os
+from mirascope.core import BasePrompt, openai
+
+# Enable docstring prompt templates
+os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "ENABLED"
+
+
+class BookRecommendationPrompt(BasePrompt):
+    """Recommend a {genre} book"""
+
+    genre: str
+
+
+prompt = BookRecommendationPrompt(genre="fantasy")
+print(prompt)
+# > Recommend a fantasy book
+
+
+@openai.call(model="gpt-4o-mini")
+def recommend_book(genre: str, age_group: str):
+    """Recommend a {genre} book"""
+    ...
+
+
+response = recommend_book("mystery")
+print(response.content)
+# > Here's a recommendation for a fantasy book: ...
+```
+
+!!! warning
+
+    Using docstrings as prompt templates can make your code less explicit and harder to maintain. It's generally recommended to use the `@prompt_template` decorator for clarity and separation of concerns. Enable this feature at your own risk.
+
 ## Best Practices and Use Cases
 
 - Provider Comparison: Use `BasePrompt` to easily test the same prompt across different providers to compare performance and output quality.
 - Prompt Versioning: Utilize the metadata decorator to keep track of different versions of your prompts as you refine them.
 - Dynamic Content: Leverage `@computed_field` for injecting dynamic content or API calls into your prompts.
-- Cached Properties: Use `@functools.cached_property` to cache frequently used properties that you only want to compute once. 
+- Cached Properties: Use `@functools.cached_property` to cache frequently used properties that you only want to compute once.
 - Prompt Libraries: Build libraries of commonly used prompts that can be easily shared across projects or teams.
 
 Mastering `BasePrompt` is the first step towards building robust LLM applications with Mirascope that are flexible, reusable, and provider-agnostic.
