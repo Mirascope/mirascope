@@ -43,7 +43,7 @@ print(response)
 
 When adapting this recipe to your specific use-case, consider the following:
 
-    - Refine your prompts to provide clear instructions and relevant context for your caption generation task.
-    - Experiment with different model providers and version to balance accuracy and speed.
-    - Use multiple model providers to evaluate results for accuracy.
-    - Use `async` for multiple images and run the calls in parallel.
+- Refine your prompts to provide clear instructions and relevant context for your caption generation task.
+- Experiment with different model providers and version to balance accuracy and speed.
+- Use multiple model providers to evaluate results for accuracy.
+- Use `async` for multiple images and run the calls in parallel.
