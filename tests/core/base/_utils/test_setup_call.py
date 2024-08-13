@@ -12,7 +12,7 @@ def test_setup_call() -> None:
 
     @prompt_template("Recommend a {genre} book.")
     def fn(genre: str):
-        ...
+        ...  # pragma: no cover
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -70,7 +70,7 @@ def test_setup_call_with_dynamic_config() -> None:
 
     @prompt_template("Recommend a {genre} book.")
     def fn():
-        ...
+        ...  # pragma: no cover
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn, {}, dynamic_config, None, FormatBook, {}

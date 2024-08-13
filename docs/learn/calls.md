@@ -226,7 +226,7 @@ except OpenAIError as e:
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base `Exception` instead of provider-specific exceptions.
 
-## Best Practices and Use Cases
+## Best Practices
 
 - Provider Flexibility: Design functions to be provider-agnostic, allowing easy switching between different LLM providers for comparison or fallback strategies.
 - Provider-Specific Prompts: Tailor prompts to leverage unique features of specific providers when needed, using provider-specific `call` decorators. For example, Anthropic is known to handle prompts with XML particularly well.
