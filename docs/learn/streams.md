@@ -94,7 +94,7 @@ except OpenAIError as e:
 
     The initial response when calling an LLM function with `stream=True` will return a generator. This means that any errors that may occur during streaming will not occur until you actually iterate through the generator, which is why we wrap the generation loop in the try/except and not just the call to `recommend_book`.
 
-## Best Practices and Use Cases
+## Best Practices
 
 - Real-time Feedback: Use streaming for applications where users benefit from seeing results immediately, such as chatbots or writing assistants.
 - Progress Indicators: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.

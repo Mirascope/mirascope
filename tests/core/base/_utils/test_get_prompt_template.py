@@ -32,7 +32,7 @@ def test_get_prompt_template() -> None:
     os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "DISABLED"
 
     def fn():
-        ...
+        ...  # pragma: no cover
 
     with pytest.raises(ValueError, match="No prompt template set!"):
         get_prompt_template(fn)

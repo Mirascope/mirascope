@@ -457,7 +457,7 @@ print(response.content)
 
     Using docstrings as prompt templates can make your code less explicit and harder to maintain. It's generally recommended to use the `@prompt_template` decorator for clarity and separation of concerns. Enable this feature at your own risk.
 
-## Best Practices and Use Cases
+## Best Practices
 
 - Provider Comparison: Use `BasePrompt` to easily test the same prompt across different providers to compare performance and output quality.
 - Prompt Versioning: Utilize the metadata decorator to keep track of different versions of your prompts as you refine them.
