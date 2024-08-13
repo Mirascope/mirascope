@@ -218,7 +218,7 @@ Training text classification models requires a much more involved workflow:
 - Feature Extraction:
     - Basic: bag of words, TF-IDF
     - Advanced: word embeddings, contextual embeddings
-- Classification Algorithm / Machine Learning Algorithm: 
+- Classification Algorithm / Machine Learning Algorithm:
     - Basic: Naive Bayes, logistic regression, linear classifiers
     - Advanced: Neural networks, transformers (e.g. BERT)
 - Model Training:
