@@ -117,6 +117,7 @@ nav:
       - "cookbook/index.md"
       - Text Classification: "cookbook/text_classification.md"
       - Extract from PDF: "cookbook/extract_from_pdf.md"
+      - Knowledge Graph: "cookbook/knowledge_graph.md"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_llm_provider.md"
