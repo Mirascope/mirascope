@@ -82,6 +82,8 @@ scikit-learn = "^1.5.1"
 duckduckgo-search = "^6.2.6"
 requests = "^2.32.3"
 beautifulsoup4 = "^4.12.3"
+matplotlib = "^3.9.1"
+networkx= "^3.2.1"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
