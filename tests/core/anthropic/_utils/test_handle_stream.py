@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from anthropic.types import (
-    InputJsonDelta,
+    InputJSONDelta,
     Message,
     MessageDeltaUsage,
     MessageStreamEvent,
@@ -78,7 +78,7 @@ def mock_chunks() -> list[MessageStreamEvent]:
             type="content_block_start",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(
+            delta=InputJSONDelta(
                 partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
                 type="input_json_delta",
             ),

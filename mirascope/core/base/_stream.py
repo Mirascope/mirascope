@@ -132,7 +132,7 @@ class BaseStream(
         assert isinstance(
             self.stream, Generator
         ), "Stream must be a generator for __iter__"
-        tool_calls = []
+        self.content, tool_calls = "", []
         self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
             self._update_properties(chunk)
@@ -148,6 +148,7 @@ class BaseStream(
         self,
     ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]:
         """Iterates over the stream and stores useful information."""
+        self.content = ""
 
         async def generator():
             assert isinstance(

@@ -2,7 +2,7 @@
 
 import pytest
 from anthropic.types import (
-    InputJsonDelta,
+    InputJSONDelta,
     Message,
     MessageDeltaUsage,
     RawContentBlockDeltaEvent,
@@ -63,12 +63,12 @@ def test_anthropic_stream() -> None:
             type="content_block_start",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(partial_json="", type="input_json_delta"),
+            delta=InputJSONDelta(partial_json="", type="input_json_delta"),
             index=0,
             type="content_block_delta",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(
+            delta=InputJSONDelta(
                 partial_json='{"'
                 'title": "Sapiens: A Brief History of Humankind", '
                 '"author": "Harari, Yuval Noah"}',
@@ -184,12 +184,12 @@ def test_construct_call_response():
             type="content_block_start",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(partial_json="", type="input_json_delta"),
+            delta=InputJSONDelta(partial_json="", type="input_json_delta"),
             index=0,
             type="content_block_delta",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(
+            delta=InputJSONDelta(
                 partial_json='{"'
                 'title": "Sapiens: A Brief History of Humankind", '
                 '"author": "Harari, Yuval Noah"}',

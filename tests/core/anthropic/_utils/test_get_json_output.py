@@ -2,7 +2,7 @@
 
 import pytest
 from anthropic.types import (
-    InputJsonDelta,
+    InputJSONDelta,
     Message,
     RawContentBlockDeltaEvent,
     TextBlock,
@@ -76,7 +76,7 @@ def test_get_json_output_call_response() -> None:
 
 def test_get_json_output_call_response_chunk() -> None:
     """Tests the `get_json_output` function with a call response chunk."""
-    tool_call = InputJsonDelta(
+    tool_call = InputJSONDelta(
         type="input_json_delta",
         partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
     )
