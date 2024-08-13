@@ -3,7 +3,8 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("""{query}""")
-def call(query: str): ...
+def call(query: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -17,7 +18,8 @@ def call(query: str): ...
     {response}
     """
 )
-def evaluate_response(query: str, response: str): ...
+def evaluate_response(query: str, response: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")

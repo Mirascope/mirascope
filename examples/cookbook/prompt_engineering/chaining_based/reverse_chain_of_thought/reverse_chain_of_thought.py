@@ -8,7 +8,8 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("{query} Let's think step by step.")
-def zero_shot_cot(query: str): ...
+def zero_shot_cot(query: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -21,7 +22,8 @@ def zero_shot_cot(query: str): ...
     {response}
     """
 )
-def reconstruct_query(response: str): ...
+def reconstruct_query(response: str):
+    ...
 
 
 class Decomposition(BaseModel):
@@ -45,7 +47,8 @@ class Decomposition(BaseModel):
     {query}
     """
 )
-async def decompose_query(query: str): ...
+async def decompose_query(query: str):
+    ...
 
 
 class Comparison(BaseModel):
@@ -80,7 +83,8 @@ class Comparison(BaseModel):
     Please illustrate your reason and answer True or False.
     """
 )
-async def compare_conditions(condition: str, condition_list: list[str]): ...
+async def compare_conditions(condition: str, condition_list: list[str]):
+    ...
 
 
 @openai.call(
@@ -95,7 +99,8 @@ async def compare_conditions(condition: str, condition_list: list[str]): ...
     thing at the end?
     """
 )
-def compare_questions(original_problem: str, reconstructed_problem: str): ...
+def compare_questions(original_problem: str, reconstructed_problem: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")

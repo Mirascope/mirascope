@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 import pytest
 from anthropic.types import (
-    InputJsonDelta,
     Message,
     MessageDeltaUsage,
     MessageStreamEvent,
@@ -19,6 +18,16 @@ from anthropic.types import (
     ToolUseBlock,
     Usage,
 )
+
+try:
+    from anthropic.types import (
+        InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+except ImportError:
+    from anthropic.types import (
+        InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+
 from anthropic.types.raw_message_delta_event import Delta
 
 from mirascope.core.anthropic._utils._handle_stream import (
@@ -78,7 +87,7 @@ def mock_chunks() -> list[MessageStreamEvent]:
             type="content_block_start",
         ),
         RawContentBlockDeltaEvent(
-            delta=InputJsonDelta(
+            delta=InputJSONDelta(
                 partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
                 type="input_json_delta",
             ),

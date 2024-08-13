@@ -17,7 +17,8 @@ class PromptVariations(BaseModel):
     Prompt: {prompt}
     """
 )
-def get_prompt_variations(prompt: str, num_prompts: int): ...
+def get_prompt_variations(prompt: str, num_prompts: int):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -27,7 +28,8 @@ def get_prompt_variations(prompt: str, num_prompts: int): ...
     {query}
     """
 )
-async def zero_shot_cot(query: str): ...
+async def zero_shot_cot(query: str):
+    ...
 
 
 class ResponseDetails(BaseModel):
@@ -54,7 +56,8 @@ class ResponseDetails(BaseModel):
     is correct.
     """
 )
-async def evaluate_response(query: str, response: str): ...
+async def evaluate_response(query: str, response: str):
+    ...
 
 
 async def diverse(query: str, num_variations: int):
@@ -80,9 +83,9 @@ async def diverse(query: str, num_variations: int):
     for eval_response in eval_responses:
         if eval_response.solution_number not in response_scores:
             response_scores[eval_response.solution_number] = 0
-        response_scores[eval_response.solution_number] += (
-            eval_response.correctness_probability
-        )
+        response_scores[
+            eval_response.solution_number
+        ] += eval_response.correctness_probability
     # print(response_scores)
     best_response = max(response_scores, key=response_scores.get)  # type: ignore
     return best_response
