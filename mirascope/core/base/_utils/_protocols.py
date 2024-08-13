@@ -36,50 +36,55 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncRespo
     @overload
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT]
-    ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
+    ) -> Callable[_P, _ResponseT]:
+        ...  # pragma: no cover
 
     @overload
     def __call__(
         self, fn: Callable[_P, Awaitable[_BaseDynamicConfigT]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]:
+        ...  # pragma: no cover
 
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
-    ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+    ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]:
+        ...  # pragma: no cover
 
 
 class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
     def __call__(
         self, *, stream: Literal[False] = False, **kwargs: Any
-    ) -> Awaitable[_ResponseT]: ...  # pragma: no cover
+    ) -> Awaitable[_ResponseT]:
+        ...  # pragma: no cover
 
     @overload
     def __call__(
         self, *, stream: Literal[True] = True, **kwargs: Any
-    ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]: ...  # pragma: no cover
+    ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]:
+        ...  # pragma: no cover
 
     def __call__(
         self, *, stream: bool = False, **kwargs: Any
-    ) -> Awaitable[
-        _ResponseT | AsyncGenerator[_ResponseChunkT, None]
-    ]: ...  # pragma: no cover
+    ) -> Awaitable[_ResponseT | AsyncGenerator[_ResponseChunkT, None]]:
+        ...  # pragma: no cover
 
 
 class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
-    def __call__(
-        self, *, stream: Literal[False] = False, **kwargs: Any
-    ) -> _ResponseT: ...  # pragma: no cover
+    def __call__(self, *, stream: Literal[False] = False, **kwargs: Any) -> _ResponseT:
+        ...  # pragma: no cover
 
     @overload
     def __call__(
         self, *, stream: Literal[True] = True, **kwargs: Any
-    ) -> Generator[_ResponseChunkT, None, None]: ...  # pragma: no cover
+    ) -> Generator[_ResponseChunkT, None, None]:
+        ...  # pragma: no cover
 
     def __call__(
         self, *, stream: bool = False, **kwargs: Any
-    ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...  # pragma: no cover
+    ) -> _ResponseT | Generator[_ResponseChunkT, None, None]:
+        ...  # pragma: no cover
 
 
 class SetupCall(
@@ -111,7 +116,8 @@ class SetupCall(
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
         dict[str, Any],
-    ]: ...  # pragma: no cover
+    ]:
+        ...  # pragma: no cover
 
     @overload
     def __call__(
@@ -132,7 +138,8 @@ class SetupCall(
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
         dict[str, Any],
-    ]: ...  # pragma: no cover
+    ]:
+        ...  # pragma: no cover
 
     def __call__(
         self,
@@ -153,7 +160,8 @@ class SetupCall(
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
         dict[str, Any],
-    ]: ...  # pragma: no cover
+    ]:
+        ...  # pragma: no cover
 
     @staticmethod
     def fn_is_sync(
@@ -175,9 +183,8 @@ class HandleStream(
         self,
         stream: Generator[_InvariantResponseChunkT, None, None],
         tool_types: list[type[_BaseToolT]] | None,
-    ) -> Generator[
-        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
-    ]: ...  # pragma: no cover
+    ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
+        ...  # pragma: no cover
 
 
 class HandleStreamAsync(
@@ -187,13 +194,13 @@ class HandleStreamAsync(
         self,
         stream: AsyncGenerator[_InvariantResponseChunkT, None],
         tool_types: list[type[_BaseToolT]] | None,
-    ) -> AsyncGenerator[
-        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
-    ]: ...  # pragma: no cover
+    ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]:
+        ...  # pragma: no cover
 
 
 class GetJsonOutput(Protocol[_R]):
-    def __call__(self, response: _R, json_mode: bool) -> str: ...  # pragma: no cover
+    def __call__(self, response: _R, json_mode: bool) -> str:
+        ...  # pragma: no cover
 
 
 class CalculateCost(Protocol):
@@ -202,4 +209,5 @@ class CalculateCost(Protocol):
         input_tokens: int | float | None,
         output_tokens: int | float | None,
         model: str,
-    ) -> float | None: ...  # pragma: no cover
+    ) -> float | None:
+        ...  # pragma: no cover

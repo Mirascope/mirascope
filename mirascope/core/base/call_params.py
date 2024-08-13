@@ -3,4 +3,5 @@
 from typing_extensions import TypedDict
 
 
-class BaseCallParams(TypedDict, total=False): ...  # pragma: no cover
+class BaseCallParams(TypedDict, total=False):
+    ...  # pragma: no cover

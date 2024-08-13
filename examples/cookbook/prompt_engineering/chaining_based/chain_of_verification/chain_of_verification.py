@@ -7,7 +7,8 @@ from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
 @prompt_template("{query}")
-def call(query: str): ...
+def call(query: str):
+    ...
 
 
 class VerificationQuestions(BaseModel):
@@ -33,12 +34,14 @@ class VerificationQuestions(BaseModel):
     {response}
     """
 )
-def get_verification_questions(query: str, response: str): ...
+def get_verification_questions(query: str, response: str):
+    ...
 
 
 @openai.call("gpt-4o-mini")
 @prompt_template("Concisely answer the following question: {query}")
-async def answer(query: str): ...
+async def answer(query: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")

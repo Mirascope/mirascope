@@ -69,6 +69,7 @@ class BaseStream(
             None,
         ]
     )
+    content: str
     metadata: Metadata
     tool_types: list[type[_BaseToolT]] | None
     call_response_type: type[_BaseCallResponseT]
@@ -110,6 +111,7 @@ class BaseStream(
         call_kwargs: dict[str, Any],
     ):
         """Initializes an instance of `BaseStream`."""
+        self.content = ""
         self.stream = stream
         self.metadata = metadata
         self.tool_types = tool_types
@@ -130,41 +132,43 @@ class BaseStream(
         assert isinstance(
             self.stream, Generator
         ), "Stream must be a generator for __iter__"
-        content, tool_calls = "", []
+        self.content, tool_calls = "", []
         self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
-            content += chunk.content
             self._update_properties(chunk)
             if tool:
                 tool_calls.append(tool.tool_call)  # type: ignore
             yield chunk, tool
         self.end_time = datetime.datetime.now().timestamp() * 1000
-        self.message_param = self._construct_message_param(tool_calls or None, content)
+        self.message_param = self._construct_message_param(
+            tool_calls or None, self.content
+        )
 
     def __aiter__(
         self,
     ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]:
         """Iterates over the stream and stores useful information."""
+        self.content = ""
 
         async def generator():
             assert isinstance(
                 self.stream, AsyncGenerator
             ), "Stream must be an async generator for __aiter__"
-            content, tool_calls = "", []
+            tool_calls = []
             async for chunk, tool in self.stream:
-                content += chunk.content
                 self._update_properties(chunk)
                 if tool:
                     tool_calls.append(tool.tool_call)  # type: ignore
                 yield chunk, tool
             self.message_param = self._construct_message_param(
-                tool_calls or None, content
+                tool_calls or None, self.content
             )
 
         return generator()
 
     def _update_properties(self, chunk: _BaseCallResponseChunkT):
         """Updates the properties of the stream."""
+        self.content += chunk.content
         if chunk.input_tokens is not None:
             self.input_tokens = (
                 chunk.input_tokens
@@ -243,7 +247,8 @@ def stream_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream]: ...  # pragma: no cover
+    ) -> Callable[_P, TStream]:
+        ...  # pragma: no cover
 
     @overload
     def decorator(
@@ -253,7 +258,8 @@ def stream_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[TStream]]: ...  # pragma: no cover
+    ) -> Callable[_P, Awaitable[TStream]]:
+        ...  # pragma: no cover
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

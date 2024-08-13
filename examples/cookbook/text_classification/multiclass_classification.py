@@ -15,7 +15,8 @@ class Sentiment(Enum):
     Classify the sentiment of the following text: {text}
     """
 )
-def classify_sentiment(text: str): ...
+def classify_sentiment(text: str):
+    ...
 
 
 text = "I hate this product. It's terrible."

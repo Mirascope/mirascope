@@ -116,6 +116,7 @@ nav:
   - Cookbook:
       - "cookbook/index.md"
       - Text Classification: "cookbook/text_classification.md"
+      - Web Search Agent: "cookbook/agents/web_search_agent.md"
       - Extract from PDF: "cookbook/extract_from_pdf.md"
       - Knowledge Graph: "cookbook/knowledge_graph.md"
   - Integrations:

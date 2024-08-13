@@ -2,7 +2,6 @@
 
 import pytest
 from anthropic.types import (
-    InputJsonDelta,
     Message,
     RawContentBlockDeltaEvent,
     TextBlock,
@@ -10,6 +9,15 @@ from anthropic.types import (
     ToolUseBlock,
     Usage,
 )
+
+try:
+    from anthropic.types import (
+        InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+except ImportError:
+    from anthropic.types import (
+        InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
 
 from mirascope.core.anthropic._utils._get_json_output import get_json_output
 from mirascope.core.anthropic.call_params import AnthropicCallParams
@@ -76,7 +84,7 @@ def test_get_json_output_call_response() -> None:
 
 def test_get_json_output_call_response_chunk() -> None:
     """Tests the `get_json_output` function with a call response chunk."""
-    tool_call = InputJsonDelta(
+    tool_call = InputJSONDelta(
         type="input_json_delta",
         partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
     )

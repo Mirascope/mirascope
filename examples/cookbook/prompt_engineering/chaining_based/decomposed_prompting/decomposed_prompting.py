@@ -36,7 +36,8 @@ class Problem(BaseModel):
     {query}
     """
 )
-def break_into_subproblems(query: str): ...
+def break_into_subproblems(query: str):
+    ...
 
 
 def split(str: str) -> str:
@@ -61,7 +62,8 @@ def concat(strings: list[str]) -> str:
     MESSAGES: {history}
     """
 )
-def solve_next_step(history: list[ChatCompletionMessageParam], query: str): ...
+def solve_next_step(history: list[ChatCompletionMessageParam], query: str):
+    ...
 
 
 def decomposed_prompting(query: str):
