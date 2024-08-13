@@ -2,7 +2,6 @@
 
 import pytest
 from anthropic.types import (
-    InputJSONDelta,
     Message,
     RawContentBlockDeltaEvent,
     TextBlock,
@@ -10,6 +9,13 @@ from anthropic.types import (
     ToolUseBlock,
     Usage,
 )
+
+try:
+    from anthropic.types import (
+        InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+except ImportError:
+    from anthropic.types import InputJSONDelta
 
 from mirascope.core.anthropic._utils._get_json_output import get_json_output
 from mirascope.core.anthropic.call_params import AnthropicCallParams

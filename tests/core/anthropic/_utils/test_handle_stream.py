@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 import pytest
 from anthropic.types import (
-    InputJSONDelta,
     Message,
     MessageDeltaUsage,
     MessageStreamEvent,
@@ -19,6 +18,14 @@ from anthropic.types import (
     ToolUseBlock,
     Usage,
 )
+
+try:
+    from anthropic.types import (
+        InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+except ImportError:
+    from anthropic.types import InputJSONDelta
+
 from anthropic.types.raw_message_delta_event import Delta
 
 from mirascope.core.anthropic._utils._handle_stream import (
