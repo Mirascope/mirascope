@@ -23,7 +23,8 @@ class SentimentWithReasoning(BaseModel):
     Explain your reasoning for the classified sentiment.
     """
 )
-def classify_sentiment_with_reasoning(text: str): ...
+def classify_sentiment_with_reasoning(text: str):
+    ...
 
 
 text = "I would recommend this product if it were cheaper..."

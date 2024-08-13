@@ -10,7 +10,8 @@ from mirascope.core import openai, prompt_template
     {query}
     """
 )
-def cot_call(query: str): ...
+def cot_call(query: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -20,7 +21,8 @@ def cot_call(query: str): ...
     It's very important to my career.
     """
 )
-def emotion_prompting_call(query: str): ...
+def emotion_prompting_call(query: str):
+    ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -30,7 +32,8 @@ def emotion_prompting_call(query: str): ...
     Rephrase and expand the question, and respond.
     """
 )
-def rar_call(query: str): ...
+def rar_call(query: str):
+    ...
 
 
 class BestResponse(BaseModel):

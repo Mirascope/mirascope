@@ -15,7 +15,9 @@ try:
         InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
     )
 except ImportError:
-    from anthropic.types import InputJSONDelta
+    from anthropic.types import (
+        InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
 
 from mirascope.core.anthropic._utils._get_json_output import get_json_output
 from mirascope.core.anthropic.call_params import AnthropicCallParams

@@ -24,7 +24,9 @@ try:
         InputJsonDelta as InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
     )
 except ImportError:
-    from anthropic.types import InputJSONDelta
+    from anthropic.types import (
+        InputJSONDelta,  # pyright: ignore [reportAttributeAccessIssue]
+    )
 
 from anthropic.types.raw_message_delta_event import Delta
 

@@ -70,7 +70,8 @@ class Solution(BaseModel):
     {response}
     """
 )
-async def extract_number(response: str): ...
+async def extract_number(response: str):
+    ...
 
 
 def most_frequent(lst):
