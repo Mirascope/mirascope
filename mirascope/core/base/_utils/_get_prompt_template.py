@@ -19,6 +19,7 @@ def get_prompt_template(fn: Callable | BaseModel) -> str:
         raise ValueError("No prompt template set!")
     if docstring_prompt_enabled != "ENABLED":
         raise ValueError(
-            "You must explicitly enable docstring prompt templates by setting MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE=ENABLED."
+            "You must explicitly enable docstring prompt templates by setting "
+            "`MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE=ENABLED` in your environment."
         )
     return inspect.cleandoc(doc)

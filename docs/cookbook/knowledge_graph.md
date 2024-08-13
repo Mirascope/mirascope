@@ -5,9 +5,7 @@ Often times, data is messy and not always stored in a structured manner ready fo
 ??? info "Key Concepts"
 
     - [Calls](ADD LINK)
-    - [Tools](ADD LINK)
     - [Response Model](ADD LINK)
-    - [Agents](ADD LINK)
 
 !!! note "Background"
 
@@ -53,92 +51,71 @@ class KnowledgeGraph(BaseModel):
 
 Our `Edge` represents connections between nodes, with attributes for the source node, target node, and the relationship between them. While our `Node` defines nodes with an ID, type, and optional properties. Our `KnowledgeGraph` then aggregates these nodes and edges into a comprehensive knowledge graph.
 
-Now that we have our schema defined, it's time to create our Agent.
+Now that we have our schema defined, it's time to create our knowledge graph.
 
-## Creating the `Agent`
+## Creating the knowledge graph
 
-We first define a Pydantic `BaseModel` as our `Agent` with a `knowledge_graph` property. This will be the state of the agent. We first define our tool `_generate_knowledge_graph` which will create a knowledge graph based on our document and user query. We are taking this unstructured [Wikipedia](https://en.wikipedia.org/wiki/Large_language_model) article and creating a knowledge graph.
+We start off with engineering our prompt, prompting the LLM to create a knowledge graph based on the user query. Then we are taking a [Wikipedia](https://en.wikipedia.org/wiki/Large_language_model) article and converting the raw text into a structured knowledge graph.
 
 ```python
 from mirascope.core import openai, prompt_template
 
+@openai.call(model="gpt-4o-mini", response_model=KnowledgeGraph)
+@prompt_template(
+    """
+    SYSTEM:
+    Your job is to create a knowledge graph based on the text and user question.
+    
+    The article:
+    {text}
 
-class Agent(BaseModel):
-    knowledge_graph: KnowledgeGraph = KnowledgeGraph(nodes=[], edges=[])
+    Example:
+    John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
+    Node(id="John Doe", type="Person", properties={{"age": 30}})
+    Node(id="Jane Doe", type="Person", properties={{"age": 25}})
+    Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
 
-    @openai.call(model="gpt-4o-mini", response_model=KnowledgeGraph)
-    @prompt_template(
-        """
-        SYSTEM:
-        Your job is to create a knowledge graph based on the text and user question.
-        
-        The article:
-        {text}
+    USER:
+    {question}
+    """
+)
+def generate_knowledge_graph(
+    question: str, file_name: str
+) -> openai.OpenAIDynamicConfig:
+    text = ""
+    with open(file_name) as f:
+        text = f.read()
+    return {"computed_fields": {"text": text}}
 
-        Example:
-        John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
-        Node(id="John Doe", type="Person", properties={{"age": 30}})
-        Node(id="Jane Doe", type="Person", properties={{"age": 25}})
-        Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
-
-        USER:
-        {question}
-        """
-    )
-    def _generate_knowledge_graph(self, question: str) -> openai.OpenAIDynamicConfig:
-        text = ""
-        with open("wikipedia.txt") as f:
-            text = f.read()
-        return {"computed_fields": {"text": text}}
+question = "What are the pitfalls of using LLMs?"
+kg = generate_knowledge_graph(question, "PATH_TO_YOUR_FILE")
 ```
 
 We engineer our prompt by giving examples of how the properties should be filled out and use Mirascope's `DynamicConfig` to pass in the article. While it seems silly in this context, there may be multiple documents that you may want to conditionally pass in depending on the query. This can include text chunks from a Vector Store or data from a Database.
 
-After we defined our tool, it is time to create our `_step` function
+After we generated our knowledge graph, it is time to create our `run` function
 
 ```python
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
     SYSTEM:
-    Answer the following question based on the knowledge graph. 
-    First check if the knowledge graph contains the information needed to answer the question
-    If not, use the tool `_generate_knowledge_graph` to update the knowledge graph, then answer the question.
+    Answer the following question based on the knowledge graph.
 
     Knowledge Graph:
-    {self.knowledge_graph}
+    {knowledge_graph}
     
     USER:
     {question}
     """
 )
-def _step(self, question: str | None = None) -> openai.OpenAIDynamicConfig:
-    return {"tools": [self._generate_knowledge_graph]}
+def run(question: str, knowledge_graph: KnowledgeGraph): ...
 ```
 
-Again, our first step is to engineer our prompt. This time we prompt the LLM to use the tool to build a knowledge graph and use it to answer the user question. Since our tool is defined in our `Agent`, we once again use `DynamicConfig`, but this time to pass in our tool to the `_step` function.
-
-Our final step is to define our `run` function which will run the `_step` function until it builds a knowledge graph ready to answer the user question.
+We define a simple `run` function that answers the users query based on the knowledge graph. Combining knowledge graphs with semnatic search will lead to the LLM having better context to address complex questions.
 
 ```python
-def run(self, question: str | None = None):
-    result = self._step(question)
-    if tool := result.tool:
-        output = tool.call()
-        assert isinstance(output, KnowledgeGraph)
-        self.knowledge_graph.nodes += output.nodes
-        self.knowledge_graph.edges += output.edges
-        return self.run(question)
-    else:
-        return result.content
-```
-
-Once the LLM has all the information, it'll return the final output.
-
-```python
-question = "What are the pitfalls of using LLMs?"
-agent = Agent()
-result = agent.run(question)
+result = run(question, kg)
 print(result)
 # The knowledge graph contains information about the pitfalls of using LLMs. Based on the existing entries, the pitfalls include:
 #
@@ -154,7 +131,7 @@ print(result)
 
 ## Render your graph
 
-Optionally, to visualize the knowledge graph, we use networkx and matplotlib to draw the edges and nodes. 
+Optionally, to visualize the knowledge graph, we use networkx and matplotlib to draw the edges and nodes.
 
 ```python
 import matplotlib.pyplot as plt
@@ -207,5 +184,5 @@ When adapting this recipe, consider:
 - Combining knowledge graph with Text Embeddings for both structured search and semantic search, depending on your requirements.
 - Store your knowledge graph in a database / cache for faster retrieval.
 - Experiment with different LLM models, some may be better than others for generating the knowledge graph.
+- Turn the example into an Agentic workflow, giving it access to tools such as web search so the LLM can call tools to update its own knowledge graph to answer any question.
 - Adding Pydantic `AfterValidators` to prevent duplicate Node IDs.
-

@@ -26,80 +26,58 @@ class KnowledgeGraph(BaseModel):
     edges: list[Edge] = Field(..., description="List of edges in the knowledge graph")
 
 
-class Agent(BaseModel):
-    knowledge_graph: KnowledgeGraph = KnowledgeGraph(nodes=[], edges=[])
+question = "What are the pitfalls of using LLMs?"
 
-    @openai.call(model="gpt-4o-mini", response_model=KnowledgeGraph)
-    @prompt_template(
-        """
-        SYSTEM:
-        Your job is to create a knowledge graph based on the text and user question.
-        
-        The article:
-        {text}
 
-        Example:
-        John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
-        Node(id="John Doe", type="Person", properties={{"age": 30}})
-        Node(id="Jane Doe", type="Person", properties={{"age": 25}})
-        Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
+@openai.call(model="gpt-4o-mini", response_model=KnowledgeGraph)
+@prompt_template(
+    """
+    SYSTEM:
+    Your job is to create a knowledge graph based on the text and user question.
+    
+    The article:
+    {text}
 
-        USER:
-        {question}
-        """
-    )
-    def _generate_knowledge_graph(self, question: str) -> openai.OpenAIDynamicConfig:
-        text = ""
-        with open("wikipedia.txt") as f:
-            text = f.read()
-        return {"computed_fields": {"text": text}}
+    Example:
+    John and Jane Doe are siblings. Jane is 25 and 5 years younger than John.
+    Node(id="John Doe", type="Person", properties={{"age": 30}})
+    Node(id="Jane Doe", type="Person", properties={{"age": 25}})
+    Edge(source="John Doe", target="Jane Doe", relationship="Siblings")
 
-    @openai.call(model="gpt-4o-mini")
-    @prompt_template(
-        """
-        SYSTEM:
-        Answer the following question based on the knowledge graph. 
-        First check if the knowledge graph contains the information needed to answer the question
-        If not, use the tool `_generate_knowledge_graph` to update the knowledge graph, then answer the question.
+    USER:
+    {question}
+    """
+)
+def generate_knowledge_graph(
+    question: str, file_name: str
+) -> openai.OpenAIDynamicConfig:
+    text = ""
+    with open(file_name) as f:
+        text = f.read()
+    return {"computed_fields": {"text": text}}
 
-        Knowledge Graph:
-        {self.knowledge_graph}
-        
-        USER:
-        {question}
-        """
-    )
-    def _step(self, question: str | None = None) -> openai.OpenAIDynamicConfig:
-        return {"tools": [self._generate_knowledge_graph]}
 
-    def run(self, question: str | None = None):
-        result = self._step(question)
-        if tool := result.tool:
-            output = tool.call()
-            assert isinstance(output, KnowledgeGraph)
-            self.knowledge_graph.nodes += output.nodes
-            self.knowledge_graph.edges += output.edges
-            return self.run(question)
-        else:
-            return result.content
+kg = generate_knowledge_graph(question, "../wikipedia.txt")
 
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
     SYSTEM:
-    Answer the following question based on the text.
-    {text}
+    Answer the following question based on the knowledge graph.
+
+    Knowledge Graph:
+    {knowledge_graph}
     
     USER:
     {question}
     """
 )
-def answer_question_from_text(question: str) -> openai.OpenAIDynamicConfig:
-    text = ""
-    with open("wikipedia.txt") as f:
-        text = f.read()
-    return {"computed_fields": {"text": text}}
+def run(question: str, knowledge_graph: KnowledgeGraph): ...
+
+
+print(kg)
+print(run(question, kg))
 
 
 def render_graph(kg: KnowledgeGraph):
@@ -126,6 +104,4 @@ def render_graph(kg: KnowledgeGraph):
 
 
 question = "What are the pitfalls of using LLMs?"
-agent = Agent()
-result = agent.run(question)
-render_graph(agent.knowledge_graph)
+render_graph(kg)
