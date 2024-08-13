@@ -30,6 +30,10 @@ print(response.content)
 
 In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book recommendation for a user-specified genre. The call decorator transforms the `recommend_book` function into an LLM API call. The function arguments are automatically injected into the prompt defined in the [`@prompt_template`](./prompts.md#prompt-templates) decorator.
 
+!!! info "Function Body"
+
+    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. For now, you can safely ignore how we use the function body, which we cover in more detail in the documentation for [dynamic configuration](./dynamic_configuration.md).
+
 ## Supported Providers
 
 Mirascope's call decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
@@ -150,11 +154,11 @@ Any custom client is supported so long as it has the same API as the original ba
 
 ## Handling Responses
 
-When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific `CallResponse` object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
+When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific `BaseCallResponse` object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
 
 ### Common Response Properties and Methods
 
-All `CallResponse` objects share these common properties:
+All `BaseCallResponse` objects share these common properties:
 
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
@@ -186,7 +190,7 @@ There are also two common methods:
 
 ### Provider-Specific Response Details
 
-While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `CallResponse` object.
+While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `BaseCallResponse` object.
 
 ```python
 # Accessing OpenAI-specific chat completion details
@@ -194,7 +198,7 @@ completion = response.response
 print(f"Content: {completion.choices[0].message.content}")
 ```
 
-!!! note "Reasoning For Provider-Specific `CallResponse` Objects"
+!!! note "Reasoning For Provider-Specific `BaseCallResponse` Objects"
 
     The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
 
