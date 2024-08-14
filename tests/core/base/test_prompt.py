@@ -32,8 +32,7 @@ def test_base_prompt() -> None:
         USER: Please help me.
         """
     )
-    class MessagesPrompt(BasePrompt):
-        ...
+    class MessagesPrompt(BasePrompt): ...
 
     prompt = MessagesPrompt()
     assert prompt.message_params() == [
@@ -129,8 +128,7 @@ def test_metadata_decorator() -> None:
 
     @metadata({"tags": {"version:0001"}})
     @prompt_template("Recommend a book.")
-    class BookRecommendationPrompt(BasePrompt):
-        ...
+    class BookRecommendationPrompt(BasePrompt): ...
 
     prompt = BookRecommendationPrompt()
     assert prompt.dump()["metadata"] == {"tags": {"version:0001"}}

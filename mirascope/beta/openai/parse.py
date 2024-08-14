@@ -26,14 +26,12 @@ def parse(
     @overload
     def decorator(
         fn: Callable[_P, OpenAIDynamicConfig],
-    ) -> Callable[_P, _ResponseModelT]:
-        ...
+    ) -> Callable[_P, _ResponseModelT]: ...
 
     @overload
     def decorator(
         fn: Callable[_P, Awaitable[OpenAIDynamicConfig]],
-    ) -> Callable[_P, Awaitable[_ResponseModelT]]:
-        ...
+    ) -> Callable[_P, Awaitable[_ResponseModelT]]: ...
 
     def decorator(
         fn: Callable[_P, OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],

@@ -83,8 +83,7 @@ def middleware_decorator(
         [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
-) -> SyncFunc:
-    ...  # pragma: no cover
+) -> SyncFunc: ...  # pragma: no cover
 
 
 @overload
@@ -125,8 +124,7 @@ def middleware_decorator(
         [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
-) -> AsyncFunc:
-    ...  # pragma: no cover
+) -> AsyncFunc: ...  # pragma: no cover
 
 
 def middleware_decorator(
