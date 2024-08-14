@@ -1,7 +1,3 @@
-"""A slack bot agent that uses mirascope to generate responses to messages.
-This example has basic short term memory for when the app is running and resets on restart.
-"""
-
 import asyncio
 import os
 
@@ -10,7 +6,7 @@ from pydantic import BaseModel, ConfigDict
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 from slack_bolt.async_app import AsyncApp
 
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 SLACK_BOT_TOKEN = "xoxb-..."
@@ -25,8 +21,8 @@ class MiraBot(BaseModel):
         arbitrary_types_allowed=True,
     )
 
-    @openai.call_async(model="gpt-4o", temperature=0)
-    async def _step(self, input: str):
+    @openai.call(model="gpt-4o", call_params={"temperature": 0})
+    @prompt_template(
         """
         SYSTEM:
         You are an assistant that can help with a wide range of tasks and provide
@@ -37,6 +33,8 @@ class MiraBot(BaseModel):
         USER:
         {input}
         """
+    )
+    async def _step(self, input: str): ...
 
     async def register_event_handlers(self):
         @self.app.event("message")

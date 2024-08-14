@@ -1,12 +1,6 @@
-"""Iterative chaining by feeding the feedback back into the chain."""
-
-import os
-
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai
-
-os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
+from mirascope.core import openai, prompt_template
 
 
 class SummaryFeedback(BaseModel):
@@ -20,12 +14,12 @@ class SummaryFeedback(BaseModel):
 
 
 @openai.call(model="gpt-4o")
-def summarizer(original_text: str):
-    """Summarize the following text into one sentence: {original_text}"""
+@prompt_template("Summarize the following text into one sentence: {original_text}")
+def summarizer(original_text: str): ...
 
 
 @openai.call(model="gpt-4o", response_model=SummaryFeedback)
-def resummarizer(original_text: str, summary: str):
+@prompt_template(
     """
     Original Text: {original_text}
     Summary: {summary}
@@ -33,13 +27,15 @@ def resummarizer(original_text: str, summary: str):
     Critique the summary of the original text.
     Then rewrite the summary based on the critique. It must be one sentence.
     """
+)
+def resummarizer(original_text: str, summary: str): ...
 
 
 def rewrite_iteratively(original_text: str, summary: str, depth=2):
-    feedback = original_text
+    text = original_text
     for _ in range(depth):
-        feedback = resummarizer(original_text=feedback, summary=summary)
-    return feedback.rewritten_summary
+        text = resummarizer(original_text=text, summary=summary).rewritten_summary
+    return text
 
 
 original_text = """
