@@ -45,7 +45,7 @@ In this example, the `reading_level` is computed based on the `age` input, allow
 You can dynamically configure which tools are available to the LLM based on runtime conditions.
 
 ```python
-from mirascope.core import openai, BaseToolKit, toolkit_tool
+from mirascope.core import BaseToolKit, openai, prompt_template, toolkit_tool
 
 
 class BookToolkit(BaseToolKit):
@@ -71,12 +71,12 @@ if response.tool:
 
 This example demonstrates how to dynamically create and configure tools based on the input `genre`. This feature can also be particularly useful when you want to limit which tools you provide to the LLM based on input arguments, reducing the potential behavior paths the LLM can take.
 
-### Messages
+### Custom Messages
 
 You can completely override the default messages generated from the prompt template by providing custom messages.
 
 ```python
-from mirascope.core import openai, BaseMessageParam
+from mirascope.core import openai
 
 @openai.call("gpt-4o-mini")
 def recommend_book(genre: str, style: str) -> openai.OpenAIDynamicConfig:

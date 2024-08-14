@@ -55,7 +55,7 @@ from mirascope.core import anthropic, mistral, openai, prompt_template
 
 
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):å
+def recommend_book(genre: str):
     ...
 
 

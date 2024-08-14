@@ -31,11 +31,40 @@ def recommend_book(genre: str):
 
 book = recommend_book("science fiction")
 assert isinstance(book, Book)
-print(f"Title: {response.title}")
-print(f"Author: {response.author}")
+print(f"Title: {book.title}")
+print(f"Author: {book.author}")
 ```
 
 This approach works consistently across all supported providers in Mirascope.
+
+!!! tip "Original Response"
+
+    You can always access the original response through the `_response` property on the returned response model. However, this is a private attribute we've included for such access and is not an official property of the response model type, meaning that you'll need to ignore type errors when accessing the property.
+
+## Streaming Response Models
+
+If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
+
+```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@openai.call(model="gpt-4o-mini", response_model=Book, stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+book_stream = recommend_book("science fiction")
+for partial_book in book_stream:
+    print(partial_book)
+```
 
 ### Type Safety with Response Models
 

@@ -42,7 +42,7 @@ class Librarian(BaseModel):
             if query.lower() == "exit":
                 break
 
-            response = self._step(query)
+            response = self._call(query)
             print(f"Librarian: {response.content}")
 
             if response.user_message_param:

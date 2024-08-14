@@ -10,8 +10,7 @@ from mirascope.core import openai, prompt_template
 @prompt_template(
     "Answer the following question, going through it step by step: {query}"
 )
-async def zero_shot_cot(query: str):
-    ...
+async def zero_shot_cot(query: str): ...
 
 
 class ProblemInfo(BaseModel):
@@ -30,8 +29,7 @@ class ProblemInfo(BaseModel):
     Question: {query}
     """
 )
-def identify_key_info(query: str):
-    ...
+def identify_key_info(query: str): ...
 
 
 class MaskedPrompts(BaseModel):
@@ -72,8 +70,7 @@ async def mask_prompt(query: str) -> openai.OpenAIDynamicConfig:
     masked prompt: {masked_prompt}
     """
 )
-async def fill_in_value(solution: str, masked_prompt: str):
-    ...
+async def fill_in_value(solution: str, masked_prompt: str): ...
 
 
 class PromptComparison(BaseModel):

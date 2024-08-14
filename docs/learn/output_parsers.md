@@ -9,9 +9,8 @@ Output Parsers are functions that take the call response object as input and ret
 Here's a basic example of how to use an Output Parser:
 
 ```python
-from pydantic import BaseModel
-
 from mirascope.core import anthropic, prompt_template
+from pydantic import BaseModel
 
 
 class Book(BaseModel):
@@ -35,7 +34,6 @@ def recommend_book(genre: str):
 book = recommend_book("science fiction")
 print(f"Title: {book.title}")
 print(f"Author: {book.author}")
-
 ```
 
 In this example, the `parse_book_recommendation` function serves as an Output Parser, transforming the raw response into a structured `Book` instance.
@@ -107,7 +105,6 @@ if book:
     print(f"Summary: {book.summary}")
 else:
     print("Failed to parse the recommendation.")
-
 ```
 
 This example demonstrates how to create a custom XML parser that works with Anthropic's Claude model. The parser extracts structured information from the XML output, making it easy to work with the recommendation in your application.

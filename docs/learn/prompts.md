@@ -62,7 +62,7 @@ class BookRecommendationPrompt(BasePrompt):
     price: float
 
 
-prompt = Prompt(price=12.3456)
+prompt = BookRecommendationPrompt(price=12.3456)
 print(prompt)
 # > Recommend a book cheaper than $12.34
 ```
@@ -471,7 +471,7 @@ print(prompt)
 
 
 @openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str, age_group: str):
+def recommend_book(genre: str):
     """Recommend a {genre} book"""
     ...
 

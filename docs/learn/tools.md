@@ -33,6 +33,7 @@ Key points for class-based tool definitions:
 - Use Pydantic's `Field` for additional argument information:
 
 ```python
+from mirascope.core import BaseTool
 from pydantic import Field
 
 class FormatBook(BaseTool):
@@ -60,7 +61,16 @@ Function-based tools require type hints for arguments and must return a string. 
 Incorporate tools in your LLM calls by passing them to the `call` decorator:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseTool, openai, prompt_template
+
+
+class FormatBook(BaseTool):
+    title: str
+    author: str
+
+    def call(self) -> str:
+        return f"{self.title} by {self.author}"
+
 
 @openai.call("gpt-4o-mini", tools=[FormatBook])  # OR `tools=[format_book]`
 @prompt_template("Recommend a {genre} book")
@@ -90,6 +100,14 @@ All provider-specific `BaseTool` instances have a `tool_call` property for acces
 Mirascope supports streaming responses with tools, useful for long-running tasks or real-time updates:
 
 ```python
+from mirascope.core import openai, prompt_template
+
+
+def format_book(title: str, author: str) -> str:
+    """Format a book's title and author."""
+    return f"{title} by {author}"
+
+
 @openai.call(model="gpt-4", tools=[format_book], stream=True)
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str):
@@ -121,6 +139,8 @@ As `BaseTool` instances are `BaseModel` instances, they are validated on constru
 
 ```python
 from typing import Annotated
+
+from mirascope.core import BaseTool, openai, prompt_template
 from pydantic import AfterValidator, ValidationError
 
 
@@ -137,6 +157,12 @@ class FormatBook(BaseTool):
         return f"{self.title} by {self.author}"
 
 
+@openai.call(model="gpt-4", tools=[FormatBook])
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
 try:
     response = recommend_book("fantasy")
     if tool := response.tool:
@@ -150,6 +176,8 @@ except ValidationError as e:
     #     Assertion failed, Must be uppercase [type=assertion_error, input_value='The Name of the Wind', input_type=str]
     #       For further information visit https://errors.pydantic.dev/2.8/v/assertion_error
 ```
+
+You can also use `Annotated` to add custom validation when using functions as tools -- simply annotate the type hint of the function argument you want to validate.
 
 !!! tip "Reinserting Errors"
 
@@ -201,7 +229,8 @@ The `BaseToolKit` class allows organization of tools under a single namespace as
 
 ```python
 from typing import Literal
-from mirascope.core import BaseToolKit, toolkit_tool
+
+from mirascope.core import BaseToolKit, openai, prompt_template, toolkit_tool
 
 
 class BookTools(BaseToolKit):

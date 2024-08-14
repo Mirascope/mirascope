@@ -76,6 +76,14 @@ For a more thorough evaluation, you can use multiple models as a panel of judges
 
 ```python
 from mirascope.core import BasePrompt, anthropic, openai, prompt_template
+from pydantic import BaseModel, Field
+
+
+class Eval(BaseModel):
+    score: float = Field(..., description="A score between [0.0, 5.0]")
+    reasoning: str = Field(
+        ..., description="The reasoning for the score in 100 characters or less."
+    )
 
 
 @prompt_template(
@@ -196,6 +204,14 @@ Here's an example of a well-structured prompt for evaluating bias:
 
 ```python
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
+
+
+class Eval(BaseModel):
+    score: float = Field(..., description="A score between [0.0, 5.0]")
+    reasoning: str = Field(
+        ..., description="The reasoning for the score in 100 characters or less."
+    )
 
 
 @openai.call(model="gpt-4o", response_model=Eval)
