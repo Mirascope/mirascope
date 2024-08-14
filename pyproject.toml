@@ -134,7 +134,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.pyright]
-exclude = ["mirascope/beta", "examples/needs_update"]
+exclude = ["mirascope/beta", "examples/integrations/needs_update"]
 
 
 [build-system]
