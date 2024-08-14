@@ -122,6 +122,7 @@ nav:
       - Knowledge Graph: "cookbook/knowledge_graph.md"
       - Generating Captions: "cookbook/generating_captions.md"
       - Code Generation and Execution: "cookbook/code_generation_and_generation.md"
+      - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_llm_provider.md"
