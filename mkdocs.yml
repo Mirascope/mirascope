@@ -109,7 +109,7 @@ nav:
       - Dynamic Configuration: "learn/dynamic_configuration.md"
       - Chaining: "learn/chaining.md"
       - JSON Mode: "learn/json_mode.md"
-      - Response Model: "learn/response_model.md"
+      - Response Models: "learn/response_models.md"
       - Output Parsers: "learn/output_parsers.md"
       - Evals: "learn/evals.md"
       - Agents: "learn/agents.md"
