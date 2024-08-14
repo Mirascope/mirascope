@@ -270,11 +270,11 @@ Tools can enhance LLM applications in various ways:
 
 When working with tools in Mirascope:
 
-1. Provide clear, concise tool descriptions.
-2. Implement robust error handling.
-3. Use proper type annotations for safety and clarity.
-4. Optimize performance for resource-intensive operations.
-5. Consider provider-specific limitations and features.
+- Provide clear, concise tool descriptions.
+- Implement robust error handling.
+- Use proper type annotations for safety and clarity.
+- Optimize performance for resource-intensive operations.
+- Consider provider-specific limitations and features.
 
 Tools in Mirascope can significantly extend LLM capabilities, enabling more interactive and dynamic applications. By mastering tool definition, usage, and optimization across different providers, you can create sophisticated LLM-powered solutions that leverage external data and functionality.
 

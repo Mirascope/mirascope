@@ -104,12 +104,12 @@ This example demonstrates how to create a custom XML parser that works with Anth
 
 ## Best Practices
 
-1. **Align with Prompt Engineering**: Design your prompts to generate outputs that match your parser's expectations. This improves consistency and reliability.
-2. **Handle Parsing Errors**: Always implement error handling in your parsers. LLMs may occasionally produce outputs that don't conform to the expected structure.
-3. **Gradual Refinement**: Start with simple parsers and gradually increase complexity as you refine your prompts and understand the model's output patterns.
-4. **Provide Clear Instructions**: In your prompts, be explicit about the structure you expect the LLM to produce. This helps ensure the output is parseable.
-5. **Validate Parsed Output**: After parsing, validate the extracted information to ensure it meets your application's requirements.
-6. **Consider Fallback Strategies**: Implement fallback strategies for cases where parsing fails, such as requesting a reformatted response from the LLM. Check out our [tenacity integration](../integrations/tenacity.md) for more details on how to easily reinsert caught errors into subsequent retries.
+- **Align with Prompt Engineering**: Design your prompts to generate outputs that match your parser's expectations. This improves consistency and reliability.
+- **Handle Parsing Errors**: Always implement error handling in your parsers. LLMs may occasionally produce outputs that don't conform to the expected structure.
+- **Gradual Refinement**: Start with simple parsers and gradually increase complexity as you refine your prompts and understand the model's output patterns.
+- **Provide Clear Instructions**: In your prompts, be explicit about the structure you expect the LLM to produce. This helps ensure the output is parseable.
+- **Validate Parsed Output**: After parsing, validate the extracted information to ensure it meets your application's requirements.
+- **Consider Fallback Strategies**: Implement fallback strategies for cases where parsing fails, such as requesting a reformatted response from the LLM. Check out our [tenacity integration](../integrations/tenacity.md) for more details on how to easily reinsert caught errors into subsequent retries.
 
 ## Limitations and Considerations
 
