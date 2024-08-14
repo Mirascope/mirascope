@@ -82,9 +82,9 @@ In the above example, we are only catching errors for invalid JSON. There is alw
 
 JSON Mode is particularly useful in scenarios where you need to extract structured information from LLM responses, such as:
 
-1. Extracting specific details from text (e.g., names, dates, locations)
-2. Generating structured data for database entries
-3. Creating machine-readable summaries of documents
-4. Standardizing outputs for APIs or data pipelines
+- Extracting specific details from text (e.g., names, dates, locations)
+- Generating structured data for database entries
+- Creating machine-readable summaries of documents
+- Standardizing outputs for APIs or data pipelines
 
 By leveraging JSON Mode, you can create more robust and data-driven applications that efficiently process and utilize LLM outputs.

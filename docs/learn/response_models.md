@@ -86,11 +86,11 @@ For robust applications, consider implementing retry logic with validation error
 
 ## Best Practices
 
-1. **Use Clear Field Names**: Choose descriptive names for your model fields to guide the LLM's output.
-2. **Provide Field Descriptions**: Use Pydantic's `Field` with descriptions to give the LLM more context.
-3. **Start Simple**: Begin with basic types and gradually increase complexity as needed.
-4. **Handle Errors Gracefully**: Implement proper error handling and consider using retry mechanisms.
-5. **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
-6. **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
+- **Use Clear Field Names**: Choose descriptive names for your model fields to guide the LLM's output.
+- **Provide Field Descriptions**: Use Pydantic's `Field` with descriptions to give the LLM more context.
+- **Start Simple**: Begin with basic types and gradually increase complexity as needed.
+- **Handle Errors Gracefully**: Implement proper error handling and consider using retry mechanisms.
+- **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
+- **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
 
 By leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
