@@ -24,7 +24,7 @@ from mirascope.core import openai, prompt_template
 def generate_csv_data(num_datapoints: int): ...
 
 
-# print(generate_csv_data(5))
+print(generate_csv_data(5))
 
 
 class HomeAppliance(BaseModel):
@@ -125,5 +125,5 @@ class TV(BaseModel):
 def generate_tv_data(num_datapoints: int): ...
 
 
-# for tv in generate_tv_data(10):
-#     print(tv)
+for tv in generate_tv_data(10):
+    print(tv)
