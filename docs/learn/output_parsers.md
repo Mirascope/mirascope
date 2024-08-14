@@ -75,7 +75,8 @@ def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
 
 
 @anthropic.call(model="claude-3-5-sonnet-20240620", output_parser=parse_book_xml)
-@prompt_template("""
+@prompt_template(
+    """
     Recommend a {genre} book. Provide the information in the following XML format:
     <book>
         <title>Book Title</title>
@@ -85,8 +86,10 @@ def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
     </book>
                  
     Output ONLY the XML and no other text.
-""")
-def recommend_book(genre: str): ...
+    """
+)
+def recommend_book(genre: str):
+    ...
 
 
 book = recommend_book("science fiction")
