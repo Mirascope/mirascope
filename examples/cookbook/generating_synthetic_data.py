@@ -24,7 +24,7 @@ from mirascope.core import openai, prompt_template
 def generate_csv_data(num_datapoints: int): ...
 
 
-print(generate_csv_data(5))
+# print(generate_csv_data(5))
 
 
 class HomeAppliance(BaseModel):
@@ -56,10 +56,9 @@ class DataFrameGenerator(BaseModel):
     column_names: list[str] = Field(description="The names of the columns in data")
 
     def append_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df._append(
-            pd.DataFrame(self.data, columns=self.column_names), ignore_index=True
-        )  # type: ignore
-        return df
+        return pd.concat(
+            [df, pd.DataFrame(self.data, columns=self.column_names)], ignore_index=True
+        )
 
     def generate_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame(self.data, columns=self.column_names)
@@ -126,5 +125,5 @@ class TV(BaseModel):
 def generate_tv_data(num_datapoints: int): ...
 
 
-for tv in generate_tv_data(10):
-    print(tv)
+# for tv in generate_tv_data(10):
+#     print(tv)

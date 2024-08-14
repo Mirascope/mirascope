@@ -95,7 +95,7 @@ Since pandas is a common library for working with data, it’s also worth knowin
 
 ### Create a New `DataFrame`
 
-To create a new `DataFrame`, we define a `BaseModel` schema with a simple function to generate  `DataFrame` via a list of list of data and the column names. One might be tempted to use a tool call, which at first might appear to be simpler, but would be bad practice since a tool should pass back a string so it may be passed back into the chat. Note that there are many ways to initialize `DataFrame`s and this is just one of the many ways it can be implemented:
+To create a new `DataFrame`, we define a `BaseModel` schema with a simple function to generate  `DataFrame` via a list of list of data and the column names:
 
 ```python
 from typing import Any
@@ -152,10 +152,9 @@ class DataFrameGenerator(BaseModel):
     ...
 
     def append_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df._append(
-            pd.DataFrame(self.data, columns=self.column_names), ignore_index=True
-        )  # type: ignore
-        return df
+        return pd.concat(
+            [df, pd.DataFrame(self.data, columns=self.column_names)], ignore_index=True
+        )
         
 @openai.call(model="gpt-4o-mini", response_model=DataFrameGenerator)
 @prompt_template(
