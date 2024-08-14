@@ -20,10 +20,9 @@
 Beyond anything else, building with Mirascope is fun. Like seriously fun.
 
 ```python
+from mirascope.core import openai, prompt_template
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
-
-from mirascope.core import openai, prompt_template
 
 
 class Chatbot(BaseModel):
@@ -37,18 +36,19 @@ class Chatbot(BaseModel):
         USER: {question}
         """
     )
-    def _step(self, question: str): ...
+    def _call(self, question: str): ...
 
     def run(self):
         while True:
-            question = input("\n(User): ")
+            question = input("(User): ")
             if question in ["quit", "exit"]:
                 print("(Assistant): Have a great day!")
                 break
-            stream = self._step(question)
+            stream = self._call(question)
             print("(Assistant): ", end="", flush=True)
             for chunk, _ in stream:
                 print(chunk.content, end="", flush=True)
+            print("")
             if stream.user_message_param:
                 self.history.append(stream.user_message_param)
             self.history.append(stream.message_param)
