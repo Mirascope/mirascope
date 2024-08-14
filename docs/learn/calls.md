@@ -34,6 +34,8 @@ In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book rec
 
     In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. For now, you can safely ignore how we use the function body, which we cover in more detail in the documentation for [dynamic configuration](./dynamic_configuration.md).
 
+
+
 ## Supported Providers
 
 Mirascope's call decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
@@ -225,6 +227,36 @@ except OpenAIError as e:
 ```
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base `Exception` instead of provider-specific exceptions.
+
+### Type Safety and Proper Hints
+
+One of the primary benefits of Mirascope is the enhanced type safety and proper type hints provided by the `call` decorator. This feature ensures that your IDE and type checker can accurately infer the return types of your LLM calls based on the parameters you've set.
+
+For example:
+
+- When using a basic call, the output will be properly typed as the provider-specific call response.
+- When you set a `response_model`, the output will be properly typed as the `ResponseModelT` type of the `response_model` you passed in.
+- When streaming is enabled, the return type will reflect the stream type.
+- If you use an `output_parser`, the return type will match the parser's output type.
+
+This type safety extends across all the different settings of the `call` decorator, providing a robust development experience and helping to catch potential type-related errors early in the development process.
+
+```python
+from mirascope.core import openai
+
+
+@openai.call(model="gpt-4o-mini")
+def recommend_book(genre: str):
+    """Recommend a {genre} book."""
+
+
+recommendation = recommend_book("fantasy")
+# `recommendation` is properly typed as `OpenAICallResponse`
+print(f"Content: {recommendation.content}")
+print(f"Original Response: {recommendation.response}")
+```
+
+In this example, your IDE will provide proper autocompletion and type checking for `recommendation.content` and `recommendation.response`, enhancing code reliability and developer productivity.
 
 ## Best Practices
 

@@ -80,11 +80,12 @@ class BaseToolKit(BaseModel, ABC):
                 # Replace non-self template variables with escaped double brackets so
                 # that templating `self` results in a future templateable string.
                 template = template.replace(f"{{{var}}}", f"{{{{{var}}}}}")
-            tools.append(
-                convert_function_to_base_tool(
-                    method, BaseTool, template.format(self=self), self.__namespace__
-                )
+            converted_method = convert_function_to_base_tool(
+                method, BaseTool, template.format(self=self), self.__namespace__
             )
+            for key, value in self:
+                setattr(converted_method, key, value)
+            tools.append(converted_method)
         return tools
 
     @classmethod

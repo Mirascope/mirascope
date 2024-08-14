@@ -83,9 +83,10 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> LLMFunctionDecorator[TDynamicConfig, TCallResponse, TCallResponse]:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, TCallResponse, TCallResponse
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -97,9 +98,10 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -111,9 +113,8 @@ def call_factory(
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> NoReturn:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> NoReturn: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -125,9 +126,8 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -139,9 +139,8 @@ def call_factory(
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> NoReturn:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> NoReturn: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -153,9 +152,8 @@ def call_factory(
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> NoReturn:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> NoReturn: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -167,9 +165,10 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ResponseModelT, _ResponseModelT]:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ResponseModelT, _ResponseModelT
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -181,9 +180,10 @@ def call_factory(
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[
+        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -195,11 +195,10 @@ def call_factory(
         output_parser: None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
+        call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
-    ]:
-        ...  # pragma: no cover
+    ]: ...  # pragma: no cover
 
     @overload
     def base_call(
@@ -214,9 +213,8 @@ def call_factory(
         | None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
-    ) -> NoReturn:
-        ...  # pragma: no cover
+        call_params: TCallParams | None = None,
+    ) -> NoReturn: ...  # pragma: no cover
 
     def base_call(
         model: str,
@@ -230,7 +228,7 @@ def call_factory(
         | None = None,
         json_mode: bool = False,
         client: _BaseClientT | None = None,
-        call_params: TCallParams = default_call_params,
+        call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[
         TDynamicConfig,
         TCallResponse
@@ -246,6 +244,9 @@ def call_factory(
     ]:
         if stream and output_parser:
             raise ValueError("Cannot use `output_parser` with `stream=True`.")
+
+        if call_params is None:
+            call_params = default_call_params
 
         if response_model:
             if stream:
