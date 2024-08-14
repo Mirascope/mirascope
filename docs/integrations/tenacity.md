@@ -27,6 +27,8 @@ print(run())
 
 The most common situation is that the call goes through and runs like normal. In the chance that Anthropic is down or rate limit occurs, we will make the request again, after waiting for some time. After 3 attempts, we will get a `RetryError` that can further be handled.
 
+## Error Reinsertion
+
 Let us take a look at a more common use-case for using Tenacity `retry`.
 Extracting structured information is not guaranteed and often time will lead to Pydantic a `ValidationError`. We can collect the list of `ValidationError` and feed it back into the LLM call to give better context for the next try:
 

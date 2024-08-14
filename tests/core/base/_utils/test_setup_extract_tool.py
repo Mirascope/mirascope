@@ -14,8 +14,10 @@ def test_setup_extract_tool() -> None:
 
     tool_type = setup_extract_tool(Book, BaseTool)
     assert tool_type.__name__ == "Book"
-    assert tool_type.__base__ == BaseTool
+    assert tool_type.__base__ == Book
+    assert tool_type.__bases__ == (Book, BaseTool)
 
     tool_type = setup_extract_tool(str, BaseTool)
     assert tool_type.__name__ == "str"
     assert tool_type.__base__ == BaseTool
+    assert tool_type.__bases__ == (BaseTool,)

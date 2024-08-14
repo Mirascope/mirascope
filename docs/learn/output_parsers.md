@@ -28,7 +28,8 @@ def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> Book
     model="claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation
 )
 @prompt_template("Recommend a {genre} book in the format Title by Author")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str):
+    ...
 
 
 book = recommend_book("science fiction")
@@ -38,6 +39,12 @@ print(f"Author: {book.author}")
 ```
 
 In this example, the `parse_book_recommendation` function serves as an Output Parser, transforming the raw response into a structured `Book` instance.
+
+### Type Safety and Proper Hints
+
+When using output parsers with Mirascope's call decorator, you benefit from accurate type hints that reflect the parser's output type.
+
+In the above example, your IDE will recognize `book` as a `Book` instance, providing appropriate autocompletion and type checking. This enhances code reliability and helps catch potential type-related errors early in the development process.
 
 ## Custom XML Parser for Anthropic Claude
 

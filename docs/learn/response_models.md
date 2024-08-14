@@ -37,6 +37,12 @@ print(f"Author: {response.author}")
 
 This approach works consistently across all supported providers in Mirascope.
 
+### Type Safety with Response Models
+
+When using response models with Mirascope's `call` decorator, you benefit from enhanced type safety and accurate type hints. The decorator ensures that the return type of your function matches the response model you specify.
+
+In the above example, your IDE will provide proper autocompletion and type checking for `recommendation.title` and `recommendation.author`, enhancing code reliability and developer productivity.
+
 ## JSON Mode and Response Models
 
 When using Response Models, the default setting is `json_mode=False`, which will use [`Tools`](./tools.md) under the hood to perform the structured output extraction. However, for some providers setting `json_mode=True` enables support for field types that may not be supported by tools.

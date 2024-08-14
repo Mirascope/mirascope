@@ -40,7 +40,6 @@ def test_call_factory_create(
         "output_parser": MagicMock(),
         "json_mode": True,
         "client": MagicMock(),
-        "call_params": MagicMock(),
     }
     _ = call(**create_kwargs)
     mock_create_factory.assert_called_once_with(
@@ -48,7 +47,9 @@ def test_call_factory_create(
         setup_call=mock_call_factory_kwargs["setup_call"],
     )
     mock_partial.assert_called_once_with(
-        mock_create_factory.return_value, **create_kwargs
+        mock_create_factory.return_value,
+        **create_kwargs,
+        call_params=mock_call_factory_kwargs["default_call_params"],
     )
 
 
