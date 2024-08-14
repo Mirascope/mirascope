@@ -37,7 +37,8 @@ def convert_base_model_to_base_tool(
         **cast(dict[str, Any], field_definitions),
     )
     bases = list(tool_type.__bases__)
-    tool_type.__bases__ = tuple(bases) if model in bases else tuple(bases + [model])
+    # tool_type.__bases__ = tuple(bases) if model in bases else tuple(bases + [model])
+    tool_type.__bases__ = tuple(bases) if model in bases else tuple([model] + bases)
     for name, value in inspect.getmembers(model):
         if not hasattr(tool_type, name) or name in ["_name", "_description", "call"]:
             setattr(tool_type, name, value)
