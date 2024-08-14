@@ -1,9 +1,12 @@
 from typing import Any, Literal
 
 import pandas as pd
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
 from mirascope.core import openai, prompt_template
+
+load_dotenv()
 
 
 @openai.call(model="gpt-4o-mini")
@@ -56,12 +59,12 @@ class DataFrameGenerator(BaseModel):
     column_names: list[str] = Field(description="The names of the columns in data")
 
     def append_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        return pd.concat(
-            [df, pd.DataFrame(self.data, columns=self.column_names)], ignore_index=True
-        )
+        return pd.concat([df, self.generate_dataframe()], ignore_index=True)
 
     def generate_dataframe(self) -> pd.DataFrame:
-        return pd.DataFrame(self.data, columns=self.column_names)
+        return pd.DataFrame(
+            {name: column for name, column in zip(self.column_names, self.data)}
+        )
 
 
 @openai.call(model="gpt-4o-mini", response_model=DataFrameGenerator)
