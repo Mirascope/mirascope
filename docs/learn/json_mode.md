@@ -20,8 +20,6 @@ For providers with explicit support, Mirascope uses the native JSON Mode feature
 To enable JSON Mode, set `json_mode=True` when using the `call` decorator:
 
 ```python
-import json
-
 from mirascope.core import openai, prompt_template
 
 
@@ -62,11 +60,11 @@ While JSON Mode significantly improves the structure of model outputs, it's impo
 
 ```python
 import json
-from pydantic import ValidationError
 
 try:
     response = get_book_info("The Great Gatsby")
-    print(response.title)
+    json_obj = json.loads(response.content)
+    print(json_obj["author"])
 except json.JSONDecodeError:
     print("The model produced invalid JSON")
 ```
