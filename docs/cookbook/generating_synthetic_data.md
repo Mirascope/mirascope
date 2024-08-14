@@ -1,6 +1,6 @@
 # Generate Synthetic Data
 
-In this cookbook recipe, we go over how to generate synthetic data for LLMs, in this case, OpenAI’s `gpt-4o-mini`. When using LLMs to synthetically generate data, it is most useful to generate non-numerical data which isn’t strictly dependent on a defined probability distribution - in those cases, it will be far easier to define a distribution and generate these points directly using functions.
+In this cookbook recipe, we go over how to generate synthetic data for LLMs, in this case, OpenAI’s `gpt-4o-mini`. When using LLMs to synthetically generate data, it is most useful to generate non-numerical data which isn’t strictly dependent on a defined probability distribution - in those cases, it will be far easier to define a distribution and generate these points directly from the distribution.
 
 However, for:
 
@@ -8,15 +8,16 @@ However, for:
 - data that lists many items within a broad category
 - data which is language related
 
-and more, LLMs are far easier to use and yield better (or the only possible) results.
+and more, LLMs are far easier to use and yield better (or the only feasible) results.
 
 ??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)
-    - [Response Model](ADD LINK)
+    - [Response Models](../learn/response_models.md)
 
 !!! note "Background"
+
     Large Language Models (LLMs) have emerged as powerful tools for generating synthetic data, particularly for text-based applications. Compared to traditional synthetic data generation methods, LLMs can produce more diverse, contextually rich, and human-like textual data, often with less need for domain-specific rules or statistical modeling.
     
 ## Generate Data as CSV
@@ -210,8 +211,8 @@ class TV(BaseModel):
 )
 def generate_tv_data(num_datapoints: int): ...
 
-for _ in generate_tv_data(10):
-    print(_)
+for tv in generate_tv_data(10):
+    print(tv)
 # > size=32 price=399.99 tv_type='OLED'
 #   size=32 price=799.99 tv_type='QLED'
 #   size=42 price=599.99 tv_type='OLED'

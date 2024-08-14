@@ -4,8 +4,9 @@ In this recipe, we go over how to use LLMs to generate a descriptive caption set
 
 ??? info "Key Concepts"
 
-    - [Calls](ADD LINK)
-    - [Response Model](ADD LINK)
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Response Models](../learn/response_models.md)
 
 !!! note "Background"
 
@@ -15,7 +16,7 @@ In this recipe, we go over how to use LLMs to generate a descriptive caption set
 
     This recipe will only work for those which support images (OpenAI, Gemini, Anthropic) as of 8/13/2024. Be sure to check if your provider has multimodal support.
 
-With OpenAI’s multimodal capabilities, image inputs are treated just like text inputs, which means we can use it as context to ask questions or make requests. For the sake of reproducibility, we will get our image from a URL to save you the hassle of having to find and download an image. The image is [a public image from BBC Science of a wolf](https://www.sciencefocus.com/space/wolf-moon) in front of the moon (the link goes to the article, but use the URL of the actual image by right clicking the image and getting the image address).
+With OpenAI’s multimodal capabilities, image inputs are treated just like text inputs, which means we can use it as context to ask questions or make requests. For the sake of reproducibility, we will get our image from a URL to save you the hassle of having to find and download an image. The image is [a public image from BBC Science of a wolf](https://c02.purpledshub.com/uploads/sites/41/2023/01/How-to-see-the-Wolf-Moon-in-2023--4bb6bb7.jpg?w=1880&webp=1) in front of the moon.
 
 Since we can treat the image like any other text context, we can simply ask the model to caption the image:
 

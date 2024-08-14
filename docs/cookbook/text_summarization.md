@@ -1,6 +1,6 @@
 # Text Summarization
 
-In this recipe, we show some techniques to improve an LLM’s ability to summarize a long text from simple (e.g. `"Summarize this text: {text}..."`) to more complex prompting and chaining. We will use OpenAI’s GPT-4o-mini model (128k input token limit), but you can use any model you’d like to implement these summarization techniques, as long as they have a large context window.
+In this recipe, we show some techniques to improve an LLM’s ability to summarize a long text from simple (e.g. `"Summarize this text: {text}..."`) to more complex prompting and chaining techniques. We will use OpenAI’s GPT-4o-mini model (128k input token limit), but you can use any model you’d like to implement these summarization techniques, as long as they have a large context window.
 
 ??? info "Key Concepts"
 
@@ -9,6 +9,7 @@ In this recipe, we show some techniques to improve an LLM’s ability to summari
     - [Response Model](ADD LINK)
 
 !!! note "Background"
+
     Large Language Models (LLMs) have revolutionized text summarization by enabling more coherent and contextually aware abstractive summaries. Unlike earlier models that primarily extracted or rearranged existing sentences, LLMs can generate novel text that captures the essence of longer documents while maintaining readability and factual accuracy.
 
 ## Simple Call
@@ -71,7 +72,7 @@ One simple update we can make is to improve our prompt by providing an initial o
 
 ## Simple Call with Outline
 
-This prompt engineering technique is an example of Chain of Thought (CoT), forcing the model to write out its thinking process. It also involves little work and can be done by modifying the text of the single call. With an outline, the summary is less likely to lose the general structure of the text.
+This prompt engineering technique is an example of [Chain of Thought](ADD LINK) (CoT), forcing the model to write out its thinking process. It also involves little work and can be done by modifying the text of the single call. With an outline, the summary is less likely to lose the general structure of the text.
 
 ```python
 @openai.call(model="gpt-4o-mini")
@@ -315,4 +316,4 @@ When adapting this recipe to your specific use-case, consider the following:
     - Refine your prompts to provide clear instructions and relevant context for text summarization.
     - Experiment with different model providers and version to balance quality and speed.
     - Provide a feedback loop, use an LLM to evaluate the quality of the summary based on a criteria and feed that back into the prompt for refinement.
-    
+

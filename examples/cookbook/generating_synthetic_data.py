@@ -126,5 +126,5 @@ class TV(BaseModel):
 def generate_tv_data(num_datapoints: int): ...
 
 
-for _ in generate_tv_data(10):
-    print(_)
+for tv in generate_tv_data(10):
+    print(tv)
