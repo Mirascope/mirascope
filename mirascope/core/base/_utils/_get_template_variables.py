@@ -7,15 +7,13 @@ from typing import Literal, overload
 @overload
 def get_template_variables(
     template: str, include_format_spec: Literal[True]
-) -> list[tuple[str, str | None]]:
-    ...  # pragma: no cover
+) -> list[tuple[str, str | None]]: ...  # pragma: no cover
 
 
 @overload
 def get_template_variables(
     template: str, include_format_spec: Literal[False]
-) -> list[str]:
-    ...  # pragma: no cover
+) -> list[str]: ...  # pragma: no cover
 
 
 def get_template_variables(

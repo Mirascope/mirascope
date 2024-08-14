@@ -20,7 +20,7 @@ def recommend_book(genre: str):
     ...
 
 
-for chunk, _ recommend_book("fantasy"):
+for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
 ```
 
@@ -93,6 +93,12 @@ except OpenAIError as e:
 !!! info "When The Error Will Occur"
 
     The initial response when calling an LLM function with `stream=True` will return a generator. This means that any errors that may occur during streaming will not occur until you actually iterate through the generator, which is why we wrap the generation loop in the try/except and not just the call to `recommend_book`.
+
+### Type Safety with Streams
+
+Mirascope's `call` decorator provides proper type hints and safety when working with streams. When you enable streaming, the return type of your function will accurately reflect the stream type.
+
+Your IDE will recognize the response object when streaming as a provider-specific `BaseStream` instance and provide appropriate autocompletion and type checking for its methods and properties, improving your development experience when working with streamed LLM responses.
 
 ## Best Practices
 

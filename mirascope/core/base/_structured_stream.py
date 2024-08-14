@@ -140,8 +140,7 @@ def structured_stream_factory(
     ) -> Callable[
         _P,
         Iterable[_ResponseModelT],
-    ]:
-        ...  # pragma: no cover
+    ]: ...  # pragma: no cover
 
     @overload
     def decorator(
@@ -154,8 +153,7 @@ def structured_stream_factory(
     ) -> Callable[
         _P,
         Awaitable[AsyncIterable[_ResponseModelT]],
-    ]:
-        ...  # pragma: no cover
+    ]: ...  # pragma: no cover
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

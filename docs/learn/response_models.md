@@ -31,11 +31,46 @@ def recommend_book(genre: str):
 
 book = recommend_book("science fiction")
 assert isinstance(book, Book)
-print(f"Title: {response.title}")
-print(f"Author: {response.author}")
+print(f"Title: {book.title}")
+print(f"Author: {book.author}")
 ```
 
 This approach works consistently across all supported providers in Mirascope.
+
+!!! tip "Original Response"
+
+    You can always access the original response through the `_response` property on the returned response model. However, this is a private attribute we've included for such access and is not an official property of the response model type, meaning that you'll need to ignore type errors when accessing the property.
+
+## Streaming Response Models
+
+If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
+
+```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@openai.call(model="gpt-4o-mini", response_model=Book, stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+book_stream = recommend_book("science fiction")
+for partial_book in book_stream:
+    print(partial_book)
+```
+
+### Type Safety with Response Models
+
+When using response models with Mirascope's `call` decorator, you benefit from enhanced type safety and accurate type hints. The decorator ensures that the return type of your function matches the response model you specify.
+
+In the above example, your IDE will provide proper autocompletion and type checking for `recommendation.title` and `recommendation.author`, enhancing code reliability and developer productivity.
 
 ## JSON Mode and Response Models
 
@@ -86,11 +121,11 @@ For robust applications, consider implementing retry logic with validation error
 
 ## Best Practices
 
-1. **Use Clear Field Names**: Choose descriptive names for your model fields to guide the LLM's output.
-2. **Provide Field Descriptions**: Use Pydantic's `Field` with descriptions to give the LLM more context.
-3. **Start Simple**: Begin with basic types and gradually increase complexity as needed.
-4. **Handle Errors Gracefully**: Implement proper error handling and consider using retry mechanisms.
-5. **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
-6. **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
+- **Use Clear Field Names**: Choose descriptive names for your model fields to guide the LLM's output.
+- **Provide Field Descriptions**: Use Pydantic's `Field` with descriptions to give the LLM more context.
+- **Start Simple**: Begin with basic types and gradually increase complexity as needed.
+- **Handle Errors Gracefully**: Implement proper error handling and consider using retry mechanisms.
+- **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
+- **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
 
 By leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.

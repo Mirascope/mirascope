@@ -62,7 +62,7 @@ class BookRecommendationPrompt(BasePrompt):
     price: float
 
 
-prompt = Prompt(price=12.3456)
+prompt = BookRecommendationPrompt(price=12.3456)
 print(prompt)
 # > Recommend a book cheaper than $12.34
 ```
@@ -201,6 +201,34 @@ print(prompt.message_params())
 #     BaseMessageParam(role='assistant', content="I recommend 'The Name of the Wind' by Patrick Rothfuss"),
 #     BaseMessageParam(role='user', content='Anything similar you would recommend?')
 #   ]
+```
+
+### Inject Accessed Attributes
+
+When the fields of your class or arguments of your function are more complex objects with attributes, you can access and use these attributes directly in the prompt template:
+
+```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+class Librarian(BaseModel):
+    books: list[Book]
+
+    @openai.call("gpt-4o-mini")
+    @prompt_template(
+        """
+        SYSTEM: You can recommend the following books: {self.books}
+        USER: I just read {previous_book.title} by {previous_book.author}. What should I read next?
+        """
+    )
+    def recommend_book(self, previous_book: Book):
+        ...
 ```
 
 ### Empty Messages
@@ -443,7 +471,7 @@ print(prompt)
 
 
 @openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str, age_group: str):
+def recommend_book(genre: str):
     """Recommend a {genre} book"""
     ...
 

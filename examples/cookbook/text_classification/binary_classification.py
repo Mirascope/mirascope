@@ -3,8 +3,7 @@ from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini", response_model=bool)
 @prompt_template("Classify the following text as spam or not spam: {text}")
-def classify_spam(text: str):
-    ...
+def classify_spam(text: str): ...
 
 
 text = "Would you like to buy some cheap viagra?"

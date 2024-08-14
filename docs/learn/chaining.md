@@ -41,9 +41,9 @@ In this example, the `summarize_and_translate` function uses a computed field to
 
 ## Benefits of Chaining with Computed Fields
 
-1. **Traceability**: By using computed fields, each step's inputs and outputs are recorded in the final `model_dump()`, providing a clear trace of the entire chain's execution.
-2. **Flexibility**: You can easily modify or extend the chain by adding or changing computed fields.
-3. **Debugging**: The `model_dump()` method provides a comprehensive view of the chain's execution, making it easier to debug complex chains.
+- **Traceability**: By using computed fields, each step's inputs and outputs are recorded in the final `model_dump()`, providing a clear trace of the entire chain's execution.
+- **Flexibility**: You can easily modify or extend the chain by adding or changing computed fields.
+- **Debugging**: The `model_dump()` method provides a comprehensive view of the chain's execution, making it easier to debug complex chains.
 
 ## Chaining Without Computed Fields
 
@@ -55,19 +55,17 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-3.5-turbo")
 @prompt_template("Summarize this text: {text}")
-def summarize(text: str):
-    ...
+def summarize(text: str): ...
 
 
 @openai.call(model="gpt-3.5-turbo")
 @prompt_template("Translate this text to {language}: {summary}")
-def translate(summary: str, language: str):
-    ...
+def translate(summary: str, language: str): ...
 
 
 def summarize_and_translate(original_text: str):
     summary = summarize(original_text)
-    translation = translate_to_french(summary, "french")
+    translation = translate(summary.content, "french")
     return translation.content
 ```
 
@@ -90,12 +88,12 @@ Check out our [cookbook recipes on chaining](../cookbook/prompt_engineering/chai
 
 ## Best Practices
 
-1. **Use Computed Fields**: Leverage computed fields for better traceability and debugging.
-2. **Modular Design**: Break down complex tasks into smaller, reusable functions.
-3. **Error Handling**: Implement robust error handling at each step of your chain.
-4. **Use Response Models**: Structure your intermediate outputs for better type safety and easier processing. Check out the [`Response Models`](./response_models.md) documentation for more details.
-5. **Asynchronous Operations**: Utilize async programming for parallel processing when appropriate. Check out the [`Async`](./async.md) documentation for more details.
-6. **Testing**: Test each component of your chain individually as well as the entire chain.
-7. **Logging**: Use the `model_dump()` method to log the entire chain's execution for debugging and analysis. This pairs well with [custom middleware](../integrations/custom_middleware.md).
+- **Use Computed Fields**: Leverage computed fields for better traceability and debugging.
+- **Modular Design**: Break down complex tasks into smaller, reusable functions.
+- **Error Handling**: Implement robust error handling at each step of your chain.
+- **Use Response Models**: Structure your intermediate outputs for better type safety and easier processing. Check out the [`Response Models`](./response_models.md) documentation for more details.
+- **Asynchronous Operations**: Utilize async programming for parallel processing when appropriate. Check out the [`Async`](./async.md) documentation for more details.
+- **Testing**: Test each component of your chain individually as well as the entire chain.
+- **Logging**: Use the `model_dump()` method to log the entire chain's execution for debugging and analysis. This pairs well with [custom middleware](../integrations/custom_middleware.md).
 
 By mastering Mirascope's chaining techniques, you can create sophisticated LLM-powered applications that tackle complex, multi-step problems with greater accuracy, control, and traceability.

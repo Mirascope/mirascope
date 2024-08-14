@@ -11,8 +11,7 @@ from mirascope.core.base.prompt import BasePrompt, prompt_template
 def test_get_prompt_template() -> None:
     """Tests the `get_prompt_template` function."""
 
-    class Prompt(BasePrompt):
-        ...
+    class Prompt(BasePrompt): ...
 
     with pytest.raises(ValueError, match="No prompt template set!"):
         get_prompt_template(Prompt)
@@ -31,8 +30,7 @@ def test_get_prompt_template() -> None:
     assert get_prompt_template(PromptWithDocstring) == "docstring_prompt"
     os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "DISABLED"
 
-    def fn():
-        ...  # pragma: no cover
+    def fn(): ...  # pragma: no cover
 
     with pytest.raises(ValueError, match="No prompt template set!"):
         get_prompt_template(fn)

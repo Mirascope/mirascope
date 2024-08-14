@@ -16,8 +16,7 @@ class OpenAIAgent(BaseModel):
     history: list[ChatCompletionMessageParam] = []
 
     @abstractmethod
-    def _step(self, prompt: str) -> openai.OpenAIStream:
-        ...
+    def _step(self, prompt: str) -> openai.OpenAIStream: ...
 
     def run(self, prompt: str) -> str:
         stream = self._step(prompt)
