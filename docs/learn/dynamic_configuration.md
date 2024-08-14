@@ -93,7 +93,7 @@ print(response.content)
 
 When using custom messages, the prompt template is ignored and not required.
 
-!!! warn "No Longer Provider-Agnostic"
+!!! warning "No Longer Provider-Agnostic"
 
     When writing your own custom messages, these messages must be written specifically for the provider you are using. This makes switching providers more of a hassle; however, there may be new features that our prompt template parsing does not currently support, which you will always be able to access through custom messages.
 
@@ -140,10 +140,6 @@ print(response.content)
 ```
 
 This example demonstrates how to dynamically set the temperature based on a `creativity` input.
-
-## Interaction with Other Features
-
-Dynamic configuration works with all other argument settings in the `call` decorator, such as `stream`, `response_model`, and `output_parser`.
 
 ## Best Practices
 
