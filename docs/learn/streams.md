@@ -20,7 +20,7 @@ def recommend_book(genre: str):
     ...
 
 
-for chunk, _ recommend_book("fantasy"):
+for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
 ```
 
