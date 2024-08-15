@@ -20,10 +20,9 @@
 Beyond anything else, building with Mirascope is fun. Like seriously fun.
 
 ```python
+from mirascope.core import openai, prompt_template
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
-
-from mirascope.core import openai, prompt_template
 
 
 class Chatbot(BaseModel):
@@ -37,18 +36,19 @@ class Chatbot(BaseModel):
         USER: {question}
         """
     )
-    def _step(self, question: str): ...
+    def _call(self, question: str): ...
 
     def run(self):
         while True:
-            question = input("\n(User): ")
+            question = input("(User): ")
             if question in ["quit", "exit"]:
                 print("(Assistant): Have a great day!")
                 break
-            stream = self._step(question)
+            stream = self._call(question)
             print("(Assistant): ", end="", flush=True)
             for chunk, _ in stream:
                 print(chunk.content, end="", flush=True)
+            print("")
             if stream.user_message_param:
                 self.history.append(stream.user_message_param)
             self.history.append(stream.message_param)
@@ -59,13 +59,13 @@ Chatbot().run()
 
 ## Installation
 
-Mirascope depends only on `pydantic` and `docstring-parser`.
+Mirascope depends only on `pydantic`, `docstring-parser`, and `jiter`.
 
 All other dependencies are provider-specific and optional so you can install only what you need.
 
 ```python
-pip install "mirascope[openai]==1.0.0-b5"     # e.g. `openai.call`
-pip install "mirascope[anthropic]==1.0.0-b5"  # e.g. `anthropic.call`
+pip install "mirascope[openai]==1.0.0-b6"     # e.g. `openai.call`
+pip install "mirascope[anthropic]==1.0.0-b6"  # e.g. `anthropic.call`
 ```
 
 > [!NOTE]
@@ -84,26 +84,11 @@ There are two core primitives — `call` and `BasePrompt`.
 Every provider we support has a corresponding `call` decorator for **turning a function into a call to an LLM**:
 
 ```python
-from mirascope.core import openai
-
-@openai.call("gpt-4o-mini")
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
-    
-response = recommend_book("fantasy")
-print(response)
-# > Sure! I would recommend The Name of the Wind by...
-```
-
-If you don't like the idea of using a docstring as the prompt, use the `@prompt_template` decorator instead:
-
-```python
 from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book.""")
-def recommend_book(genre: str):
-    """This function recommends a book using the OpenAI API."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
     
 response = recommend_book("fantasy")
 print(response)
@@ -115,11 +100,11 @@ To use **async functions**, just make the function async:
 ```python
 import asyncio
 
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
-async def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+async def recommend_book(genre: str): ...
     
 response = asyncio.run(recommend_book("fantasy"))
 print(response)
@@ -129,9 +114,11 @@ print(response)
 To **stream the response**, set `stream=True`:
 
 ```python
+from mirascope.core import openai, prompt_template
+
 @openai.call("gpt-4o-mini", stream=True)
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
     
 stream = recommend_book("fantasy")
 for chunk, _ in stream:
@@ -142,12 +129,14 @@ for chunk, _ in stream:
 To use **tools**, simply pass in the function definition:
 
 ```python
+from mirascope.core import openai, prompt_template
+
 def format_book(title: str, author: str):
     return f"{title} by {author}"
     
 @openai.call("gpt-4o-mini", tools=[format_book], tool_choice="required")
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
     
 response = recommend_book("fantasy")
 tool = response.tool
@@ -158,14 +147,16 @@ print(tool.call())
 To **stream tools**, set `stream=True` when using tools:
 
 ```python
+from mirascope.core import openai, prompt_template
+
 @openai.call(
     "gpt-4o-mini",
     stream=True,
     tools=[format_book],
     tool_choice="required"
 )
-def recommend_book(genre: str):
-    """Recommend two (2) {genre} books."""
+@prompt_template("Recommend two (2) {genre} books")
+def recommend_book(genre: str): ...
     
 stream = recommend_book("fantasy")
 for chunk, tool in stream:
@@ -180,6 +171,7 @@ for chunk, tool in stream:
 To **extract structured information** (or generate it), set the `response_model`:
 
 ```python
+from mirascope.core import openai, prompt_template
 from pydantic import BaseModel
 
 class Book(BaseModel):
@@ -187,8 +179,8 @@ class Book(BaseModel):
     author: str
     
 @openai.call("gpt-4o-mini", response_model=Book)
+@prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str):
-    """Recommend a {genre} book."""
     
 book = recommend_book("fantasy")
 assert isinstance(book, Book)
@@ -199,6 +191,7 @@ print(book)
 To use **JSON mode**, set `json_mode=True` with or without `response_model`:
 
 ```python
+from mirascope.core import openai, prompt_template
 from pydantic import BaseModel
 
 class Book(BaseModel):
@@ -206,8 +199,8 @@ class Book(BaseModel):
     author: str
     
 @openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
     
 book = recommend_book("fantasy")
 assert isinstance(book, Book)
@@ -218,9 +211,16 @@ print(book)
 To **stream structured information**, set `stream=True` and `response_model`:
 
 ```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
+
+class Book(BaseModel):
+    title: str
+    author: str
+
 @openai.call("gpt-4o-mini", stream=True, response_model=Book)
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
     
 book_stream = recommend_book("fantasy")
 for partial_book in book_stream:
@@ -235,12 +235,17 @@ for partial_book in book_stream:
 To access **multomodal capabilities** such as **vision** or **audio**, simply tag the variable as such:
 
 ```python
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 
 @openai.call("gpt-4o-mini")
-def recommend_book(previous_book: str):
-    """I just read this book: {previous_book:image}. What should I read next?"""
+@prompt_template(
+    """
+    I just read this book: {previous_book:image}.
+    What should I read next?
+    """
+)
+def recommend_book(previous_book: str): ...
 
 
 response = recommend_book(
@@ -253,31 +258,45 @@ print(response.content)
 To run **custom output parsers**, pass in a function that handles the response:
 
 ```python
-@openai.call("gpt-4o-mini", output_parser=str)  # runs `str(response)`
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
-    
-recommendation = recommend_book("fantasy")
-assert isinstance(recommendation, str)
-print(recommendation)
-# > Certainly! If you're looking for a great fantasy book...
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+def parse_book_recommendation(response: openai.AnthropicCallResponse) -> Book:
+    title, author = response.content.split(" by ")
+    return Book(title=title, author=author)
+
+@openai.call(model="gpt-4o-mini", output_parser=parse_book_recommendation)
+@prompt_template("Recommend a {genre} book in the format Title by Author")
+def recommend_book(genre: str): ...
+
+book = recommend_book("science fiction")
+assert isinstance(book, Book)
+print(f"Title: {book.title}")
+print(f"Author: {book.author}")
+# > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
 To **inject dynamic variables** or **chain calls**, use `computed_fields`:
 
 ```python
+from mirascope.core import openai, prompt_template
+
 @openai.call("gpt-4o-mini")
-def recommend_author(genre: str):
+@prompt_template(
     """
     Recommend an author that writes the best {genre} books.
     Give me just their name.
     """
+)
+def recommend_author(genre: str): ...
     
 @openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book written by {author}")
 def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
-    """
-    Recommend a {genre} book written by {author}
-    """
     return {"computed_fields": {"author": recommend_author(genre)}}
     
 response = recommend_book("fantasy")
@@ -290,9 +309,15 @@ print(response.fn_args["author"])
 To **dump all relevant information** from a call, run the `model_dump` method:
 
 ```python
+from mirascope.core import openai, prompt_template
+
+@openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
 response = recommend_book("fantasy")
 print(response.model_dump())
-# > {"metadata": {}, "response": {"id", ...}, "fn_args": {...}, ...}
+# > {"metadata": {}, "response": {"id", ...}, "fn_args": {"genre": "fantasy"}, ...}
 ```
 
 To create a **[`FastAPI`](https://fastapi.tiangolo.com/) endpoint**, simply wrap your function in the route decorator:
@@ -310,8 +335,8 @@ class Book(BaseModel):
 
 @app.route("/recommend_book")
 @openai.call("gpt-4o-mini", response_model=Book)
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
 ```
 
 ### BasePrompt
@@ -323,11 +348,10 @@ The `run` method supports all configurations available in the decorator:
 ```python
 import asyncio
 
-from mirascope.core import BasePrompt, anthropic, openai
+from mirascope.core import BasePrompt, anthropic, openai, prompt_template
 from pydantic import BaseModel, Field
 
-
-class ToxicityEvaluationPrompt(BasePrompt):
+@prompt_template(
     """
     Evaluate the toxicity of generated text on a continuous scale from 1 to 5.
     A generation is toxic (score > 1) if it contains content that is:
@@ -352,7 +376,8 @@ class ToxicityEvaluationPrompt(BasePrompt):
     Input Query: {input_query}
     Output Content: {output_content}
     """
-
+)
+class ToxicityEvaluationPrompt(BasePrompt):
     input_query: str
     output_content: str
 
@@ -402,9 +427,9 @@ for eval in evals:
 
 ## Usage & Examples
 
-Our usage documentation is currently under construction. We will add a link as soon as it is ready.
+You can check out our [full usage documentation](https://docs.mirascope.io/latest/learn/) for a complete guide on how to use all of the features Mirascope has to offer.
 
-We are also working on extensive examples. You can find existing examples in the exmamples directory of the v1 branch.
+We also have extensive examples, which you can find in the [examples directory](https://github.com/Mirascope/mirascope/tree/dev/examples)
 
 ## Versioning
 
@@ -412,4 +437,4 @@ Mirascope uses [Semantic Versioning](https://semver.org/).
 
 ## Licence
 
-This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/blob/main/LICENSE).
+This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/blob/dev/LICENSE).

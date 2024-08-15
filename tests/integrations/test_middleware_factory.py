@@ -4,8 +4,8 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope.core.base import BaseCallResponse
-from mirascope.core.base._stream import BaseStream
-from mirascope.core.base._structured_stream import BaseStructuredStream
+from mirascope.core.base.stream import BaseStream
+from mirascope.core.base.structured_stream import BaseStructuredStream
 from mirascope.integrations.middleware_factory import (
     default_context_manager,
     middleware_decorator,

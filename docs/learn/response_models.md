@@ -39,7 +39,11 @@ This approach works consistently across all supported providers in Mirascope.
 
 !!! tip "Original Response"
 
-    You can always access the original response through the `_response` property on the returned response model. However, this is a private attribute we've included for such access and is not an official property of the response model type, meaning that you'll need to ignore type errors when accessing the property.
+    You can always access the original response through the `_response` property on the returned response model. However, this is a private attribute we've included for such access and is not an official property of the response model type, meaning that you'll need to ignore type errors when accessing the property and cast the property to get editor support on the original response object.
+
+    Example:
+    
+    `completion = cast(ChatCompletion, book._response)  # pyright: ignore [reportAttributeAccessIssue]`
 
 ## Streaming Response Models
 

@@ -1,4 +1,4 @@
-"""Tests the internal `_stream` module."""
+"""Tests the `stream` module."""
 
 from functools import partial
 from typing import cast
@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mirascope.core.base._stream import BaseStream, stream_factory
+from mirascope.core.base.stream import BaseStream, stream_factory
 
 
 @pytest.fixture()
@@ -21,7 +21,7 @@ def mock_stream_decorator_kwargs() -> dict:
     }
 
 
-@patch("mirascope.core.base._stream.get_metadata", new_callable=MagicMock)
+@patch("mirascope.core.base.stream.get_metadata", new_callable=MagicMock)
 def test_stream_factory_sync(
     mock_get_metadata: MagicMock,
     mock_setup_call: MagicMock,
@@ -86,7 +86,7 @@ def test_stream_factory_sync(
     mock_create.assert_called_once_with(stream=True, **mock_call_kwargs)
 
 
-@patch("mirascope.core.base._stream.get_metadata", new_callable=MagicMock)
+@patch("mirascope.core.base.stream.get_metadata", new_callable=MagicMock)
 @pytest.mark.asyncio
 async def test_stream_factory_async(
     mock_get_metadata: MagicMock,
@@ -158,7 +158,7 @@ async def test_stream_factory_async(
 
 
 @patch(
-    "mirascope.core.base._stream.get_possible_user_message_param",
+    "mirascope.core.base.stream.get_possible_user_message_param",
     new_callable=MagicMock,
 )
 @patch.multiple(BaseStream, __abstractmethods__=set())

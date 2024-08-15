@@ -127,14 +127,13 @@ nav:
       - Search with Sources: "cookbook/search_with_sources.md"
   - Integrations:
       - "integrations/index.md"
-      - Custom LLM Provider: "integrations/custom_llm_provider.md"
+      - Custom LLM Provider: "integrations/custom_provider.md"
       - HyperDX: "integrations/hyperdx.md"
       - Langfuse: "integrations/langfuse.md"
       - Logfire: "integrations/logfire.md"
       - Middleware: "integrations/middleware.md"
       - OpenTelemetry: "integrations/otel.md"
       - Tenacity: "integrations/tenacity.md"
-      - Custom Middleware: "integrations/custom_middleware.md"
   - API Reference:
       - Core:
           - "api/core/index.md"

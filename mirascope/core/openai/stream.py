@@ -14,7 +14,7 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_message_tool_call_param import Function
 from openai.types.completion_usage import CompletionUsage
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
