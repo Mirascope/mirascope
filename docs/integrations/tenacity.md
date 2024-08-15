@@ -2,6 +2,12 @@
 
 Making an API call to a provider can fail due to various reasons, such as rate limits, internal server errors, validation errors, and more. Mirascope combined with [Tenacity](https://tenacity.readthedocs.io/en/latest/) increases the chance for these requests to succeed or provides transparency to end users.
 
+You can install the necessary packages directly or using the `tenacity` extras flag:
+
+```python
+pip install "mirascope[tenacity]"
+```
+
 ## Usage with Mirascope
 
 ### Calls

@@ -2,7 +2,7 @@
 
 [Logfire](https://docs.pydantic.dev/logfire/), a new tool from Pydantic, is built on OpenTelemetry. Since Pydantic powers many of Mirascope's features, it's appropriate for us to ensure seamless integration with them.
 
-You can install the necessary packages using the `logfire` extras flag:
+You can install the necessary packages directly or using the `logfire` extras flag:
 
 ```python
 pip install "mirascope[logfire]"

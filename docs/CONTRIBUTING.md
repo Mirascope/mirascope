@@ -1,9 +1,3 @@
----
-hide:
-- navigation
-- toc
----
-
 # Contributing
 
 ## Setting Up Development Environment
@@ -15,7 +9,7 @@ To create a virtual environment for development, run the following in your shell
 ```sh
 pip install poetry
 poetry shell
-poetry install --with dev
+poetry install --all-extras --with dev
 ```
 
 Simply use `exit` to deactivate the environment. The next time you call `poetry shell` the environment will already be setup and ready to go.
@@ -73,18 +67,21 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     ```
 
 4. Test!
+
     - Add tests. Tests should be mirrored based on structure of the source.
 
     ```bash
     | - mirascope
-    |  | - openai
-    |  |  | - calls.py
+    |  | - core
+    |  |  | - openai
+    |  |  |  | - ...
     | - tests
-    |  | - openai
-    |  |  | - test_calls.py
+    |  | - core
+    |  |  | - openai
+    |  |  |  | - ...
     ```
   
-    - Run tests to make sure nothing broke
+    - Run tests to make sure nothing is broken
 
     ```shell
     poetry run pytest tests/
@@ -105,15 +102,10 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     ```
 
     - Open the printed URL to open a PR.
-
     - Fill in a detailed title and description.
-
     - Check box to allow edits from maintainers
-
     - Submit your PR for review. You can do this via Contribute in your fork repo.
-
     - Link the issue you selected or created under "Development"
-
     - We will review your contribution and add any comments to the PR. Commit any updates you make in response to comments and push them to the branch (they will be automatically included in the PR)
 
 ### Pull Requests
