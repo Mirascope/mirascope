@@ -4,7 +4,7 @@ import inspect
 from typing import Any, Awaitable, Callable
 
 from litellm import acompletion, completion
-from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
+from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
@@ -15,7 +15,7 @@ from ...openai._utils import setup_call as setup_call_openai
 def setup_call(
     *,
     model: str,
-    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
+    client: None,
     fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
@@ -32,7 +32,7 @@ def setup_call(
 ]:
     _, prompt_template, messages, tool_types, call_kwargs = setup_call_openai(
         model=model,
-        client=client,
+        client=OpenAI(api_key="NOT_USED"),
         fn=fn,
         fn_args=fn_args,
         dynamic_config=dynamic_config,
