@@ -15,6 +15,7 @@ And of course, Mirascope.
     - [Prompts](../../learn/prompts.md)
     - [Calls](../../learn/calls.md)
     - [Tools](../../learn/tools.md)
+    - [Dynamic Configuration](../../learn/dynamic_configuration.md)
     - [Agents](../../learn/agents.md)
 
 !!! note "Background"
