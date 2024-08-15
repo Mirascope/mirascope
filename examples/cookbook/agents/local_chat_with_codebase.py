@@ -2,15 +2,14 @@ import re
 
 from llama_index.core import (
     Settings,
-    # SimpleDirectoryReader,
-    # VectorStoreIndex,
+    SimpleDirectoryReader,
+    VectorStoreIndex,
     load_index_from_storage,
 )
 from llama_index.core.base.response.schema import Response
 from llama_index.core.postprocessor import LLMRerank
 from llama_index.core.storage import StorageContext
-
-# from llama_index.core.vector_stores import SimpleVectorStore
+from llama_index.core.vector_stores import SimpleVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from openai import OpenAI
@@ -22,11 +21,12 @@ Settings.llm = Ollama(model="llama3.1")
 Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
 # ONE TIME SETUP
-# documents = SimpleDirectoryReader("PATH/TO/YOUR/DOCS").load_data()
-# vector_store = SimpleVectorStore()
-# storage_context = StorageContext.from_defaults(vector_store=vector_store)
-# index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
-# index.storage_context.persist()
+documents = SimpleDirectoryReader("PATH/TO/YOUR/DOCS").load_data()
+vector_store = SimpleVectorStore()
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+index = VectorStoreIndex.from_documents(documents, storage_context=storage_context)
+index.storage_context.persist()
+# END ONE TIME SETUP
 
 storage_context = StorageContext.from_defaults(persist_dir="storage")
 loaded_index = load_index_from_storage(storage_context)
