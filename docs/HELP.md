@@ -1,62 +1,52 @@
----
-hide:
-- navigation
-- toc
----
+# Help
 
-# Getting help with Mirascope
+## Getting help with Mirascope
 
 If you need help getting started with **Mirascope** or with advanced usage, the following sources may be useful.
 
-## :simple-slack: Slack
+### :simple-slack: Slack
 
-The [Mirascope Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) is a great place to ask questions, and get help and chat about Mirascope.
+The [Mirascope Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) is a great place to ask questions and get help and chat about Mirascope.
 
-## :simple-github: GitHub Issues
+### :material-help: Usage Documentation
 
-The [Mirascope GitHub Issues](https://github.com/Mirascope/mirascope/issues) are a great place to ask questions, and give us feedback.
+The [Learn](./learn/index.md) documentation is the most complete guide on how to get started with **Mirascope**.
 
-## :material-help: Usage Documentation
+### :material-api: SDK API Documentation
 
-The [usage documentation](PHILOSOPHY.md) is the most complete guide on how to get started with **Mirascope**.
+The [API Reference](./api/index.md) give reference docs for the **Mirascope** library, auto-generated directly from the code so it's always up-to-date.
 
-## :material-api: SDK API Documentation
+### :simple-github: GitHub Issues
 
-The [API Reference](api/index.md) give reference docs for the **Mirascope** library, auto-generated directly from the code so it's always up-to-date.
+The [Mirascope GitHub Issues](https://github.com/Mirascope/mirascope/issues) are a great place to ask questions and give us feedback.
 
-## :material-email: Email
+### :material-email: Email
 
 You can also email us at [support@mirascope.io](mailto:support@mirascope.io) or [feedback@mirascope.io](mailto:feedback@mirascope.io).
 
 
-# How to help Mirascope
+## How *you* can help Mirascope
 
-## Star Mirascope on GitHub
+### Star Mirascope on GitHub
 
 ⭐️ You can "star" Mirascope on [GitHub](https://github.com/mirascope/mirascope) ⭐️
 
-## Connect with the authors
+### Connect with the authors
 
 -   Follow us on GitHub
-
     -   See other related Open Source projects that might help you with machine learning
-
 -   Follow William Bakst on [Twitter/X](https://twitter.com/WilliamBakst)
-
     -   Tell me how you use mirascope
     -   Hear about new announcements or releases
-
 -   Connect with William Bakst on [LinkedIn](https://www.linkedin.com/in/wbakst/)
-
     -   Give me any feedback or suggestions about what we're building
 
-## Post about Mirascope
+### Post about Mirascope
 
 -   Twitter, Reddit, Hackernews, LinkedIn, and others.
-
 -   We love to hear about how Mirascope has helped you and how you are using it.
 
-## Help Others
+### Help Others
 
 We are a kind and welcoming community that encourages you to help others with their questions on GitHub Issues or in our Slack Community.
 
@@ -71,7 +61,7 @@ We are a kind and welcoming community that encourages you to help others with th
     -   Give them solution or possibly an alternative that might be better than what original poster is trying to do
     -   Ask original poster to close the issue
 
-## Review Pull Requests
+### Review Pull Requests
 
 You are encouraged to review any pull requests. Here is a guideline on how to review a pull request:
 

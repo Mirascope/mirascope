@@ -2,7 +2,7 @@
 
 Mirascope provides out-of-the-box integration with [HyperDX](https://www.hyperdx.io/).
 
-You can install the necessary packages using the `hyperdx` extras flag:
+You can install the necessary packages directly or using the `hyperdx` extras flag:
 
 ```python
 pip install "mirascope[hyperdx]"

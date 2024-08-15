@@ -2,7 +2,7 @@
 
 Mirascope provides out-of-the-box integration with [OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/).
 
-You can install the necessary packages using the `opentelemetry` extras flag:
+You can install the necessary packages directly or using the `opentelemetry` extras flag:
 
 ```python
 pip install "mirascope[opentelemetry]"

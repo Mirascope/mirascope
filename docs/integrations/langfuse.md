@@ -2,7 +2,7 @@
 
 Mirascope provides out-of-the-box integration with [Langfuse](https://langfuse.com/).
 
-You can install the necessary packages using the `langfuse` extras flag:
+You can install the necessary packages directly or using the `langfuse` extras flag:
 
 ```python
 pip install "mirascope[langfuse]"
