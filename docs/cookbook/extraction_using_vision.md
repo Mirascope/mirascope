@@ -2,6 +2,16 @@
 
 This recipe shows how to use LLMs — in this case, OpenAI GPT-4o and Anthropic Claude 3.5 Sonnet — to extract an image into a structured output using Mirascope’s `response_model`.
 
+??? info "Key Concepts"
+
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Response Models](../learn/response_models.md)
+
+!!! note "Background"
+
+    Traditionally, extracting text from images was done using Optical Character Recognition (OCR). LLMs have greatly enhanced the ability to automatically extract and analyze complex information from documents, significantly improving efficiency and accuracy in data processing tasks, since they have the ability to comprehend context, semantics, and implications within that text.
+
 ## Creating the prompt
 
 There are differences between how providers handle their multimodal inputs. For example, OpenAI supports passing in images directly, whereas Anthropic requires the image to be base64 encoded. Mirascope eliminates the need to handle these providers differently and unifies the interface for you. For all providers that support multimodal, we can take advantage of Mirascope parsing and pass in the image directly via `{<variable_name>:image}`.
