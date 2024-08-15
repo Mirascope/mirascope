@@ -14,9 +14,9 @@ For this setup, we use Ollama but vLLM will also work.
 
 ??? info "Key Concepts"
 
-    - [Prompts](../learn/prompts.md)
-    - [Calls](../learn/calls.md)
-    - [Agents](../learn/agents.md)
+    - [Prompts](../../learn/prompts.md)
+    - [Calls](../../learn/calls.md)
+    - [Agents](../../learn/agents.md)
 
 ## Configuration
 

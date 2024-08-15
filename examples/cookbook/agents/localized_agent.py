@@ -1,10 +1,4 @@
-"""
-This example shows how to create a localized agent that recommends places to visit in
-a given location.
-"""
-
 import asyncio
-import os
 from datetime import datetime
 
 import aiohttp
@@ -12,9 +6,8 @@ import requests
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
-os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 NIMBLE_TOKEN = "YOUR_NIMBLE_API_KEY"
 
 
@@ -84,7 +77,7 @@ class LocalizedRecommender(BaseModel):
         results = []
         async with aiohttp.ClientSession() as session:
             tasks = [
-                self._nimble_google_maps_places(session, results.get("place_id"))
+                self._nimble_google_maps_places(session, results.get("place_id", ""))
                 for results in search_results
             ]
             results = await asyncio.gather(*tasks)
@@ -110,7 +103,7 @@ class LocalizedRecommender(BaseModel):
             return "No location found, ask me about a specific location."
 
     @openai.call(model="gpt-4o", stream=True)
-    async def _step(self, question: str) -> openai.OpenAIDynamicConfig:
+    @prompt_template(
         """
         SYSTEM: You are a local guide that recommends the best places to visit in a place.
         Use the `get_current_date` function to get the current date.
@@ -120,6 +113,8 @@ class LocalizedRecommender(BaseModel):
         MESSAGES: {self.history}
         USER: {question}
         """
+    )
+    async def _step(self, question: str) -> openai.OpenAIDynamicConfig:
         return {
             "tools": [
                 self._get_current_date,

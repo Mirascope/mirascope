@@ -2,14 +2,15 @@ import re
 
 from llama_index.core import (
     Settings,
-    SimpleDirectoryReader,
-    VectorStoreIndex,
+    # SimpleDirectoryReader,
+    # VectorStoreIndex,
     load_index_from_storage,
 )
 from llama_index.core.base.response.schema import Response
 from llama_index.core.postprocessor import LLMRerank
 from llama_index.core.storage import StorageContext
-from llama_index.core.vector_stores import SimpleVectorStore
+
+# from llama_index.core.vector_stores import SimpleVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from openai import OpenAI
