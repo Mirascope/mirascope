@@ -206,18 +206,7 @@ class BasePrompt(BaseModel):
             [Callable[..., Awaitable[BaseDynamicConfig]]],
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
-        *additional_decorators: Callable[
-            [
-                Callable[..., Awaitable[_BaseCallResponseT]]
-                | Callable[..., Awaitable[_BaseStreamT]]
-                | Callable[..., Awaitable[_ResponseModelT]]
-                | Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]]
-            ],
-            Callable[..., Awaitable[_BaseCallResponseT]]
-            | Callable[..., Awaitable[_BaseStreamT]]
-            | Callable[..., Awaitable[_ResponseModelT]]
-            | Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
-        ],
+        *additional_decorators: Callable[[_T], _T],
     ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
 
     def run_async(
