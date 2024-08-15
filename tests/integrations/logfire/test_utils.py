@@ -3,10 +3,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from pydantic import BaseModel, Field
 
-from mirascope.core.base._stream import BaseStream
-from mirascope.core.base._structured_stream import BaseStructuredStream
 from mirascope.core.base.call_response import BaseCallResponse
 from mirascope.core.base.metadata import Metadata
+from mirascope.core.base.stream import BaseStream
+from mirascope.core.base.structured_stream import BaseStructuredStream
 from mirascope.core.base.tool import BaseTool
 from mirascope.integrations.logfire import _utils
 

@@ -13,7 +13,6 @@ from typing import (
 
 from pydantic import BaseModel
 
-from ._stream import BaseStream
 from ._utils import (
     BaseType,
     format_template,
@@ -25,6 +24,7 @@ from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
 from .metadata import Metadata
+from .stream import BaseStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")

@@ -6,7 +6,7 @@ from anthropic.types.text_block_param import TextBlockParam
 from anthropic.types.tool_use_block_param import ToolUseBlockParam
 from pydantic import BaseModel
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse

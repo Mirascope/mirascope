@@ -6,9 +6,9 @@ from pydantic import BaseModel
 from mirascope.core.base._utils._base_type import BaseType
 
 from ...core.base import BaseCallResponse
-from ...core.base._stream import BaseStream
-from ...core.base._structured_stream import BaseStructuredStream
 from ...core.base._utils import get_metadata
+from ...core.base.stream import BaseStream
+from ...core.base.structured_stream import BaseStructuredStream
 
 
 class ModelUsage(BaseModel):

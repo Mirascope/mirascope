@@ -8,7 +8,7 @@ from mistralai.models.chat_completion import (
 )
 from mistralai.models.common import UsageInfo
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
