@@ -445,6 +445,32 @@ We will begin covering these decorators in more detail in the [following section
 
     While `BasePrompt` is provider-agnostic, some features (like multi-modal inputs) may not be supported by all providers. We try to maximize support across providers, but you should always check the provider's capabilities when using more advanced features.
 
+### Additional Decorators
+
+When you want to run additional decorators on top of the `call` decorator, simply supply the decorators as additional arguments to the run function. They will then be applied in the order in which they are provided. This is most commonly used in conjunction with [tenacity](../integrations/tenacity.md), [custom middleware](../integrations/middleware.md) and other [integrations](../integrations/index.md).
+
+```python
+from mirascope.core import BasePrompt, openai, prompt_template
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+
+@prompt_template("Recommend a {genre} book")
+class BookRecommendationPrompt(BasePrompt):
+    genre: str
+
+
+prompt = BookRecommendationPrompt(genre="fantasy")
+print(
+    prompt.run(
+        openai.call(model="gpt-4o-mini"),
+        retry(
+            stop=stop_after_attempt(3),
+            wait=wait_exponential(multiplier=1, min=4, max=10),
+        ),
+    ),
+)
+```
+
 ## Docstring Prompt Templates
 
 While the `@prompt_template` decorator is the recommended way to define prompt templates, Mirascope also supports using class and function docstrings as prompt templates. This feature is disabled by default to prevent unintended use of docstrings as templates. To enable this feature, you need to set the `MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE` environment variable to `"ENABLED"`.
