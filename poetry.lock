@@ -267,17 +267,6 @@ files = [
 ]
 
 [[package]]
-name = "backports-strenum"
-version = "1.3.1"
-description = "Base class for creating enumerated constants that are also subclasses of str"
-optional = false
-python-versions = ">=3.8.6,<3.11"
-files = [
-    {file = "backports_strenum-1.3.1-py3-none-any.whl", hash = "sha256:cdcfe36dc897e2615dc793b7d3097f54d359918fc448754a517e6f23044ccf83"},
-    {file = "backports_strenum-1.3.1.tar.gz", hash = "sha256:77c52407342898497714f0596e86188bb7084f89063226f4ba66863482f42414"},
-]
-
-[[package]]
 name = "bcrypt"
 version = "4.2.0"
 description = "Modern password hashing for your software and your servers"
@@ -340,17 +329,17 @@ lxml = ["lxml"]
 
 [[package]]
 name = "boto3"
-version = "1.34.160"
+version = "1.34.161"
 description = "The AWS SDK for Python"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.34.160-py3-none-any.whl", hash = "sha256:bf3153bf5d66be2bb2112edc94eb143c0cba3fb502c5591437bd1c54f57eb559"},
-    {file = "boto3-1.34.160.tar.gz", hash = "sha256:79450f92188a8b992b3d0b802028acadf448bc6fdde877c3262c9f94d74d1c7d"},
+    {file = "boto3-1.34.161-py3-none-any.whl", hash = "sha256:4ef285334a0edc3047e27a04caf00f7742e32c0f03a361101e768014ac5709dd"},
+    {file = "boto3-1.34.161.tar.gz", hash = "sha256:a872d8fdb3203c1eb0b12fa9e9d879e6f7fd02983a485f02189e6d5914ccd834"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.160,<1.35.0"
+botocore = ">=1.34.161,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -359,13 +348,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.160"
+version = "1.34.161"
 description = "Low-level, data-driven core of boto 3."
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.160-py3-none-any.whl", hash = "sha256:39bcf31318a062a8a9260bf7044131694ed18f019568d2eba0a22164fdca49bd"},
-    {file = "botocore-1.34.160.tar.gz", hash = "sha256:a5fd531c640fb2dc8b83f264efbb87a6e33b9c9f66ebbb1c61b42908f2786cac"},
+    {file = "botocore-1.34.161-py3-none-any.whl", hash = "sha256:6c606d2da6f62fde06880aff1190566af208875c29938b6b68741e607817975a"},
+    {file = "botocore-1.34.161.tar.gz", hash = "sha256:16381bfb786142099abf170ce734b95a402a3a7f8e4016358712ac333c5568b2"},
 ]
 
 [package.dependencies]
@@ -698,13 +687,13 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "cohere"
-version = "5.8.0"
+version = "5.8.1"
 description = ""
 optional = true
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "cohere-5.8.0-py3-none-any.whl", hash = "sha256:f87f709be6dfe3dce57bef0dd5e90924e8828fb8d334c96fc27663b6a7298c6b"},
-    {file = "cohere-5.8.0.tar.gz", hash = "sha256:c4e1ab064d66cc0170091f614b4ea22f55e079f2c7fe9e0de8752fd46f8d2a70"},
+    {file = "cohere-5.8.1-py3-none-any.whl", hash = "sha256:92362c651dfbfef8c5d34e95de394578d7197ed7875c6fcbf101e84b60db7fbd"},
+    {file = "cohere-5.8.1.tar.gz", hash = "sha256:4c0c4468f15f9ad7fb7af15cc9f7305cd6df51243d69e203682be87e9efa5071"},
 ]
 
 [package.dependencies]
@@ -1398,13 +1387,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.140.0"
+version = "2.141.0"
 description = "Google API Client Library for Python"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "google_api_python_client-2.140.0-py2.py3-none-any.whl", hash = "sha256:aeb4bb99e9fdd241473da5ff35464a0658fea0db76fe89c0f8c77ecfc3813404"},
-    {file = "google_api_python_client-2.140.0.tar.gz", hash = "sha256:0bb973adccbe66a3d0a70abe4e49b3f2f004d849416bfec38d22b75649d389d8"},
+    {file = "google_api_python_client-2.141.0-py2.py3-none-any.whl", hash = "sha256:43c05322b91791204465291b3852718fae38d4f84b411d8be847c4f86882652a"},
+    {file = "google_api_python_client-2.141.0.tar.gz", hash = "sha256:0f225b1f45d5a6f8c2a400f48729f5d6da9a81138e81e0478d61fdd8edf6563a"},
 ]
 
 [package.dependencies]
@@ -1565,17 +1554,16 @@ test = ["objgraph", "psutil"]
 
 [[package]]
 name = "griffe"
-version = "0.48.0"
+version = "0.49.0"
 description = "Signatures for entire Python programs. Extract the structure, the frame, the skeleton of your project, to generate API documentation or find breaking changes in your API."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "griffe-0.48.0-py3-none-any.whl", hash = "sha256:f944c6ff7bd31cf76f264adcd6ab8f3d00a2f972ae5cc8db2d7b6dcffeff65a2"},
-    {file = "griffe-0.48.0.tar.gz", hash = "sha256:f099461c02f016b6be4af386d5aa92b01fb4efe6c1c2c360dda9a5d0a863bb7f"},
+    {file = "griffe-0.49.0-py3-none-any.whl", hash = "sha256:c0d505f2a444ac342b22f4647d6444c8db64964b6a379c14f401fc467c0741a3"},
+    {file = "griffe-0.49.0.tar.gz", hash = "sha256:a7e1235c27d8139e0fd24a5258deef6061bc876a9fda8117a5cf7b53ee940a91"},
 ]
 
 [package.dependencies]
-backports-strenum = {version = ">=1.3", markers = "python_version < \"3.11\""}
 colorama = ">=0.4"
 
 [[package]]
@@ -1974,18 +1962,18 @@ testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs
 
 [[package]]
 name = "importlib-resources"
-version = "6.4.0"
+version = "6.4.2"
 description = "Read resources from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_resources-6.4.0-py3-none-any.whl", hash = "sha256:50d10f043df931902d4194ea07ec57960f66a80449ff867bfe782b4c486ba78c"},
-    {file = "importlib_resources-6.4.0.tar.gz", hash = "sha256:cdb2b453b8046ca4e3798eb1d84f3cce1446a0e8e7b5ef4efb600f19fc398145"},
+    {file = "importlib_resources-6.4.2-py3-none-any.whl", hash = "sha256:8bba8c54a8a3afaa1419910845fa26ebd706dc716dd208d9b158b4b6966f5c5c"},
+    {file = "importlib_resources-6.4.2.tar.gz", hash = "sha256:6cbfbefc449cc6e2095dd184691b7a12a04f40bc75dd4c55d31c34f174cdf57a"},
 ]
 
 [package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["jaraco.test (>=5.4)", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)", "zipp (>=3.17)"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)", "zipp (>=3.17)"]
 
 [[package]]
 name = "iniconfig"
@@ -2308,13 +2296,13 @@ openai = ["openai (>=0.27.8)"]
 
 [[package]]
 name = "litellm"
-version = "1.43.10"
+version = "1.43.13"
 description = "Library to easily interface with LLM API providers"
 optional = true
 python-versions = "!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8"
 files = [
-    {file = "litellm-1.43.10-py3-none-any.whl", hash = "sha256:3c55bcd58e698b9402f4182b19edd533bdc31cf388f04e16a780103b611aedcd"},
-    {file = "litellm-1.43.10.tar.gz", hash = "sha256:8017e7577ea0d34dc8177faadd2c251a12ba80be434aa64b968412dae8f5897b"},
+    {file = "litellm-1.43.13-py3-none-any.whl", hash = "sha256:47c27c1c1b394d6098c68eec637008b07a254dadc4b82206b1a9f960621a8776"},
+    {file = "litellm-1.43.13.tar.gz", hash = "sha256:b0273cbed3f7a35f197c98d92b1a13038b430e5e78d30db7d94d8237a3b98641"},
 ]
 
 [package.dependencies]
@@ -2737,17 +2725,17 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "mkdocstrings-python"
-version = "1.10.7"
+version = "1.10.8"
 description = "A Python handler for mkdocstrings."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "mkdocstrings_python-1.10.7-py3-none-any.whl", hash = "sha256:8999acb8e2cb6ae5edb844ce1ed6a5fcc14285f85cfd9df374d9a0f0be8a40b6"},
-    {file = "mkdocstrings_python-1.10.7.tar.gz", hash = "sha256:bfb5e29acfc69c9177d2b11c18d3127d16e553b8da9bb6d184e428d54795600b"},
+    {file = "mkdocstrings_python-1.10.8-py3-none-any.whl", hash = "sha256:bb12e76c8b071686617f824029cb1dfe0e9afe89f27fb3ad9a27f95f054dcd89"},
+    {file = "mkdocstrings_python-1.10.8.tar.gz", hash = "sha256:5856a59cbebbb8deb133224a540de1ff60bded25e54d8beacc375bb133d39016"},
 ]
 
 [package.dependencies]
-griffe = ">=0.48"
+griffe = ">=0.49"
 mkdocstrings = ">=0.25"
 
 [[package]]
@@ -3714,23 +3702,23 @@ test = ["coverage", "flake8", "freezegun (==0.3.15)", "mock (>=2.0.0)", "pylint"
 
 [[package]]
 name = "primp"
-version = "0.5.5"
+version = "0.6.0"
 description = "HTTP client that can impersonate web browsers, mimicking their headers and `TLS/JA3/JA4/HTTP2` fingerprints"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "primp-0.5.5-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:cff9792e8422424528c23574b5364882d68134ee2743f4a2ae6a765746fb3028"},
-    {file = "primp-0.5.5-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:78e13fc5d4d90d44a005dbd5dda116981828c803c86cf85816b3bb5363b045c8"},
-    {file = "primp-0.5.5-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3714abfda79d3f5c90a5363db58994afbdbacc4b94fe14e9e5f8ab97e7b82577"},
-    {file = "primp-0.5.5-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e54765900ee40eceb6bde43676d7e0b2e16ca1f77c0753981fe5e40afc0c2010"},
-    {file = "primp-0.5.5-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:66c7eecc5a55225c42cfb99af857df04f994f3dd0d327c016d3af5414c1a2242"},
-    {file = "primp-0.5.5-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:df262271cc1a41f4bf80d68396e967a27d7d3d3de355a3d016f953130e7a20be"},
-    {file = "primp-0.5.5-cp38-abi3-win_amd64.whl", hash = "sha256:8b424118d6bab6f9d4980d0f35d5ccc1213ab9f1042497c6ee11730f2f94a876"},
-    {file = "primp-0.5.5.tar.gz", hash = "sha256:8623e8a25fd686785296b12175f4173250a08db1de9ee4063282e262b94bf3f2"},
+    {file = "primp-0.6.0-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:e74173d87b232d276b0a64ce21717b993e2460677cb81d3289965a80f6675abd"},
+    {file = "primp-0.6.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:e7c2f0443afd3064efbe267e0515657173531bc89ee36ea21794edf08d931be9"},
+    {file = "primp-0.6.0-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:6e16aaab98bddea6fef90337e170fd2c232d399fb75d36dda53dd9f956cd9eeb"},
+    {file = "primp-0.6.0-cp38-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:f36ff625e1531f051bdad68d4cd8832ba8c7f1dec7b430af8206562b37656a28"},
+    {file = "primp-0.6.0-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:e941355ca729eb277613f9c5ee0b0f4273d3df9440a177dccc1780ad0c752858"},
+    {file = "primp-0.6.0-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:74585b3fb460dd13379b36d6c7ebc1efb24e92d21696476b93c4b97a2638f4ac"},
+    {file = "primp-0.6.0-cp38-abi3-win_amd64.whl", hash = "sha256:cf391210e28397ddbbbea7216c8fe72caa61a3a407e7faba351825ecf6ff3bec"},
+    {file = "primp-0.6.0.tar.gz", hash = "sha256:25ef0a1be619a621f197ed9d9768cedde2b4f1e8cd0764b609b06aa5773b4de9"},
 ]
 
 [package.extras]
-dev = ["pytest (>=8.1.1)"]
+dev = ["certifi", "pytest (>=8.1.1)"]
 
 [[package]]
 name = "proto-plus"
