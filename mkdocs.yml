@@ -94,7 +94,6 @@ plugins:
 nav:
   - Get Started:
       - "index.md"
-      - Tutorial: "TUTORIAL.md"
       - Why Use Mirascope: "WHY.md"
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
