@@ -107,11 +107,11 @@ class MirascopeBot(BaseModel):
         {question}
         """
     )
-    def _answer_question(self, context: str, question: str): ...
+    def _step(self, context: str, question: str): ...
 
     def _get_response(self, question: str):
         context = get_documents(question)
-        answer = self._answer_question(context, question)
+        answer = self._step(context, question)
         print("(Assistant):", answer.content)
         return
 

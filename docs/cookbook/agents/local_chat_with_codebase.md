@@ -72,6 +72,9 @@ We will be creating an Agent that will read Mirascope documentation called MiraB
 ```python
 import re
 
+from mirascope import openai, prompt_template
+
+
 def custom_parse_choice_select_answer_fn(
     answer: str, num_choices: int, raise_error: bool = False
 ) -> tuple[list[int], list[float]]:
@@ -131,7 +134,7 @@ class MirascopeBot(BaseModel):
         model="llama3.1",
         client=OpenAI(base_url="http://localhost:11434/v1", api_key="ollama"),
     )
-    def _answer_question(self, context: str, question: str):
+    @prompt_template(
         """
         SYSTEM:
         You are an AI Assistant that is an expert at answering questions about Mirascope.
@@ -143,10 +146,12 @@ class MirascopeBot(BaseModel):
         USER:
         {question}
         """
+    )
+    def _step(self, context: str, question: str): ...
 
     def _get_response(self, question: str):
         context = get_documents(question)
-        answer = self._answer_question(context, question)
+        answer = self._step(context, question)
         print("(Assistant):", answer.content)
         return
 
