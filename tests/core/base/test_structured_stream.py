@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from mirascope.core.base._structured_stream import (
+from mirascope.core.base.structured_stream import (
     BaseStructuredStream,
     structured_stream_factory,
 )
@@ -24,9 +24,9 @@ def mock_structured_stream_decorator_kwargs() -> dict:
 
 
 @patch(
-    "mirascope.core.base._structured_stream.setup_extract_tool", new_callable=MagicMock
+    "mirascope.core.base.structured_stream.setup_extract_tool", new_callable=MagicMock
 )
-@patch("mirascope.core.base._structured_stream.stream_factory", new_callable=MagicMock)
+@patch("mirascope.core.base.structured_stream.stream_factory", new_callable=MagicMock)
 def test_structured_stream_factory_sync(
     mock_stream_factory: MagicMock,
     mock_setup_extract_tool: MagicMock,
@@ -89,9 +89,9 @@ def test_structured_stream_factory_sync(
 
 
 @patch(
-    "mirascope.core.base._structured_stream.setup_extract_tool", new_callable=MagicMock
+    "mirascope.core.base.structured_stream.setup_extract_tool", new_callable=MagicMock
 )
-@patch("mirascope.core.base._structured_stream.stream_factory", new_callable=MagicMock)
+@patch("mirascope.core.base.structured_stream.stream_factory", new_callable=MagicMock)
 @pytest.mark.asyncio
 async def test_structured_stream_factory_async(
     mock_stream_factory: MagicMock,
@@ -163,7 +163,7 @@ async def test_structured_stream_factory_async(
 
 
 @patch(
-    "mirascope.core.base._structured_stream.extract_tool_return", new_callable=MagicMock
+    "mirascope.core.base.structured_stream.extract_tool_return", new_callable=MagicMock
 )
 @pytest.mark.asyncio
 async def test_base_structured_stream(mock_extract_tool_return: MagicMock) -> None:

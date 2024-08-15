@@ -2,22 +2,19 @@
 
 Mirascope provides out-of-the-box integration with [OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/).
 
-## How to use OpenTelemetry with Mirascope
+You can install the necessary packages using the `opentelemetry` extras flag:
 
 ```python
-pip install opentelemetry-api
-pip install opentelemetry-sdk
-
-from mirascope.integrations.otel import with_otel
+pip install "mirascope[opentelemetry]"
 ```
 
-`with_otel` is a decorator that can be used on all Mirascope functions to automatically log all our [supported LLM providers](ADD LINK).
+## How to use OpenTelemetry with Mirascope
 
-## Examples
+### Calls
 
-### Call
+The `with_otel` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md#supported-providers).
 
-A Mirascope call with tools:
+Here is a simple example using tools:
 
 ```python
 from mirascope.core import anthropic, prompt_template
@@ -25,17 +22,20 @@ from mirascope.integrations.otel import with_otel, configure
 
 configure()
 
-def format_book(title: str, author: str):
+
+def format_book(title: str, author: str) -> str:
     return f"{title} by {author}"
+
 
 @with_otel
 @anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
 @prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str):
+    ...
+
 
 print(recommend_book("fantasy"))
-# > Certainly! I'd be happy to recommend a fantasy book for you. To provide a specific recommendation, I'll need to use the available tool
-#   to format the book information correctly. Let me suggest a popular and widely acclaimed fantasy novel for you.
+# > Certainly! I'd be happy to recommend a fantasy book for you. To provide...
 ```
 
 This will give you:
@@ -102,12 +102,11 @@ This will give you:
 }
 ```
 
-### Stream
+### Streams
 
-Streaming a Mirascope call:
+You can capture streams exactly the same way:
 
 ```python
-
 from mirascope.core import openai, prompt_template
 from mirascope.integrations.otel import with_otel, configure
 
@@ -125,25 +124,26 @@ def recommend_book(genre: str): ...
 
 for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
-# > I recommend "The Name of the Wind" by Patrick Rothfuss. It’s the first book in the "Kingkiller Chronicle" series and follows the story of Kvothe, a legendary figure 
-#   who recounts his life story, filled with magic, music, and adventure. The writing is lyrical, the world-building is rich, and the character development is deeply 
-#   engaging. If you enjoy a mix of storytelling and intricate world creation, this book is a great choice!
+# > I recommend "The Name of the Wind" by Patrick Rothfuss. It’s the first book in the "Kingkiller Chronicle" series...
 ```
 
 For some providers, certain `call_params` will need to be set in order for usage to be tracked.
-Also note that the span will not be logged until the stream has been exhausted.
 
-### Response Model
+!!! note "Logged Only On Exhasution"
 
-A Mirascope call extracting structured information:
+    When logging streams, the span will not be logged until the stream has been exhausted. This is a function of how streaming works.
+
+### Response Models
+
+Setting `response_model` also behaves the exact same way:
 
 ```python
-from pydantic import BaseModel
-
 from mirascope.core import openai, prompt_template
 from mirascope.integrations.otel import with_otel, configure
+from pydantic import BaseModel
 
 configure()
+
 
 class Book(BaseModel):
     title: str
@@ -153,7 +153,9 @@ class Book(BaseModel):
 @with_otel
 @openai.call(model="gpt-4o-mini", response_model=Book)
 @prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str):
+    ...
+
 
 print(recommend_book("fantasy"))
 # > title='The Name of the Wind' author='Patrick Rothfuss'
@@ -220,11 +222,11 @@ This will give you all the information from call with a `response_model` output 
 }
 ```
 
-You can also set `stream=True` with the same rules as streaming a call.
+You can also set `stream=True` when using `response_model`, which has the same behavior as standard streaming.
 
 ## Sending to an observability tool
 
-Now, we want to send to an actual observability tool so that we can monitor our traces. There are many observability tools out there, but the majority of them can collect OpenTelemetry data. You can pass in processors as an argument of configure() so that you can send to an observability tool:
+Now, we want to send our spans to an actual observability tool so that we can monitor our traces. There are many observability tools out there, but the majority of them can collect OpenTelemetry data. You can pass in processors as an argument of configure() so that you can send the spans to the observability tool you choose:
 
 ```python
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -245,5 +247,5 @@ configure(
 )
 ```
 
-You should refer to your observability tool's documentation to find the endpoint. If there is an observability backend that you would like for us to integrate out-of-the-box, let us know in our [Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) community.
+You should refer to your observability tool's documentation to find the endpoint. If there is an observability backend that you would like for us to integrate out-of-the-box, create a [GitHub Issue](https://github.com/Mirascope/mirascope/issues) or let us know in our [Slack](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) community.
 

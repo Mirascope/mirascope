@@ -17,7 +17,7 @@ from google.generativeai.types import (  # type: ignore
 )
 from google.generativeai.types.content_types import PartType
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse

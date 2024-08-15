@@ -10,6 +10,8 @@ from .dynamic_config import BaseDynamicConfig
 from .message_param import AudioPart, BaseMessageParam, ImagePart, TextPart
 from .metadata import Metadata
 from .prompt import BasePrompt, metadata, prompt_template
+from .stream import BaseStream
+from .structured_stream import BaseStructuredStream
 from .tool import BaseTool
 from .toolkit import BaseToolKit, toolkit_tool
 
@@ -21,6 +23,8 @@ __all__ = [
     "BaseDynamicConfig",
     "BaseMessageParam",
     "BasePrompt",
+    "BaseStream",
+    "BaseStructuredStream",
     "BaseTool",
     "BaseToolKit",
     "BaseType",

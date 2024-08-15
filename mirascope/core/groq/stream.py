@@ -12,7 +12,7 @@ from groq.types.chat.chat_completion import Choice
 from groq.types.chat.chat_completion_message import ChatCompletionMessage
 from groq.types.completion_usage import CompletionUsage
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .call_response import GroqCallResponse

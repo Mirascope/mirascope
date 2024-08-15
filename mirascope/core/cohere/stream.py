@@ -9,7 +9,7 @@ from cohere.types import (
     ToolCall,
 )
 
-from ..base._stream import BaseStream
+from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse

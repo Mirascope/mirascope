@@ -86,6 +86,7 @@ matplotlib = "^3.9.1"
 networkx = "^3.2.1"
 pandas = "^2.2.2"
 slack-bolt = "^1.20.0"
+sqlmodel = "^0.0.21"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
