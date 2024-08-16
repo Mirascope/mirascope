@@ -12,7 +12,7 @@ theme:
     repo: fontawesome/brands/github
   features:
     - content.tabs.link
-    - content.code.annotation
+    - content.code.annotate
     - content.code.copy
     - content.code.link
     - navigation.footer

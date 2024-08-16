@@ -224,19 +224,19 @@ class Book(BaseModel):
     title: str
     author: str
 
+@prompt_template(
+    """
+    I just read {book.title} by {book.author}.
+    What should I read next?
+    """
+)
+class MyPrompt(BasePrompt):
+    book: Book
 
-class Librarian(BaseModel):
-    books: list[Book]
-
-    @openai.call("gpt-4o-mini")
-    @prompt_template(
-        """
-        SYSTEM: You can recommend the following books: {self.books}
-        USER: I just read {previous_book.title} by {previous_book.author}. What should I read next?
-        """
-    )
-    def recommend_book(self, previous_book: Book):
-        ...
+book = Book(title="The Great Gatsby", author="F. Scott Fitzgerald")
+my_prompt = MyPrompt(book=book)
+print(my_prompt.message_params())
+# > [BaseMessageParam(role="user", content="I just read The Great Gatsby by F. Scott Fitzgerald.\nWhat should I read next?")]
 ```
 
 ### Empty Messages
@@ -439,7 +439,7 @@ print(prompt.dump()['metadata'])
 
 One of the key benefits of `BasePrompt` is that it is provider-agnostic. You can use the same prompt with different LLM providers, making it easy to compare performance or switch providers.
 
-You can do this with the `run` and `run_async` methods that run the prompt using the configuration of a call decorator, which  For now, just know that the decorator is configuring a call to the LLM, and the return value of the `run` and `run_async` methods match that of the decorator:
+You can do this with the `run` and `run_async` methods that run the prompt using the configuration of a call decorator. For now, just know that the decorator is configuring a call to the LLM, and the return value of the `run` and `run_async` methods match that of the decorator:
 
 ```python
 from mirascope.core import BasePrompt, anthropic, openai, prompt_template

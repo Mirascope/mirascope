@@ -54,13 +54,13 @@ In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book rec
 
 Mirascope's call decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
 
-- OpenAI (and any provider with an OpenAI compatible endpoint)
-- Anthropic
-- Mistral
-- Gemini
-- Groq
-- Cohere
-- LiteLLM (for multi-provider support)
+- [OpenAI](https://openai.com/) (and any provider with an OpenAI compatible endpoint)
+- [Anthropic](https://www.anthropic.com/)
+- [Mistral](https://mistral.ai/)
+- [Gemini](https://gemini.google.com)
+- [Groq](https://groq.com/)
+- [Cohere](https://cohere.com/)
+- [LiteLLM](https://www.litellm.ai/) (for multi-provider support)
 
 To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same function:
 
@@ -271,20 +271,7 @@ For example:
 
 This type safety extends across all the different settings of the `call` decorator, providing a robust development experience and helping to catch potential type-related errors early in the development process.
 
-```python
-from mirascope.core import openai
-
-
-@openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str):
-    """Recommend a {genre} book."""
-
-
-recommendation = recommend_book("fantasy")
-# `recommendation` is properly typed as `OpenAICallResponse`
-print(f"Content: {recommendation.content}")
-print(f"Original Response: {recommendation.response}")
-```
+![calls-type-hint](../assets/calls-type-hint.png)
 
 In this example, your IDE will provide proper autocompletion and type checking for `recommendation.content` and `recommendation.response`, enhancing code reliability and developer productivity.
 
