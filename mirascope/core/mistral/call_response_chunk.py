@@ -1,4 +1,7 @@
-"""This module contains the `MistralCallResponseChunk` class."""
+"""This module contains the `MistralCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from mistralai.models.chat_completion import ChatCompletionStreamResponse, FinishReason
 from mistralai.models.common import UsageInfo

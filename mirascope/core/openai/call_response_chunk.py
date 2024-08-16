@@ -1,4 +1,7 @@
-"""This module contains the `OpenAICallResponseChunk` class."""
+"""This module contains the `OpenAICallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice

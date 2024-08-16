@@ -67,9 +67,9 @@ pytest-cov = "^4.1.0"
 mike = "^2.0.0"
 mkdocs = "^1.6.0"
 mkdocs-material = "^9.5.28"
-mkdocstrings = "^0.25.1"
+mkdocstrings = ">0.25.1,<1.0.0"
 mkdocstrings-python = "^1.10.5"
-mkdocs-embed-external-markdown = "^3.0.2"
+black = "^24.8.0"
 
 
 [tool.poetry.group.beta.dependencies]
@@ -139,7 +139,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.pyright]
-exclude = ["mirascope/beta", "examples/integrations/needs_update"]
+exclude = ["mirascope/beta"]
 
 
 [build-system]

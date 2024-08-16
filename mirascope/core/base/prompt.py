@@ -38,6 +38,8 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 class BasePrompt(BaseModel):
     """The base class for engineering prompts.
 
+    usage docs: learn/prompts.md#the-baseprompt-class
+
     This class is implemented as the base for all prompting needs. It is intended to
     work across various providers by providing a common prompt interface.
 
@@ -157,6 +159,8 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
+        usage docs: learn/prompts.md#running-prompts
+
         Example:
 
         ```python
@@ -255,6 +259,8 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
+        usage docs: learn/prompts.md#running-prompts
+
         Example:
 
         ```python
@@ -297,7 +303,31 @@ _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 
 
 def prompt_template(template: str):
-    """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`."""
+    """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
+
+    usage docs: learn/prompts.md#prompt-templates
+
+    Example:
+
+    ```python
+    from mirascope.core import openai, prompt_template
+
+
+    @openai.call("gpt-4o-mini")
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")
+    print(response.prompt_template)
+    print(response.fn_args)
+    ```
+
+    Returns:
+        decorator (Callable): The decorator function that updates the `_prompt_template`
+            attribute of the decorated input prompt or call.
+    """
 
     @overload
     def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...  # pragma: no cover
@@ -317,12 +347,32 @@ def prompt_template(template: str):
 def metadata(metadata: Metadata):
     """A decorator for adding metadata to a `BasePrompt` or `call`.
 
+    usage docs: learn/prompts.md#metadata
+
     Adding this decorator to a `BasePrompt` or `call` updates the `metadata` annotation
     to the given value. This is useful for adding metadata to a `BasePrompt` or `call`
     that can be used for logging or filtering.
 
+    Example:
+
+    ```python
+    from mirascope.core import metadata, openai, prompt_template
+
+
+    @openai.call("gpt-4o-mini")
+    @prompt_template("Recommend a {genre} book")
+    @metadata({"tags": {"version:0001", "books"}})
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")
+    print(response.metadata)
+    ```
+
     Returns:
-        Decorator function that updates the `metadata` attribute of the decorated input.
+        decorator (Callable): The decorator function that updates the `_metadata`
+            attribute of the decorated input prompt or call.
     """
 
     @overload

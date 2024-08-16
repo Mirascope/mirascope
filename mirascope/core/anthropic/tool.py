@@ -1,4 +1,7 @@
-"""The `OpenAITool` class for easy tool usage with OpenAI LLM calls."""
+"""The `OpenAITool` class for easy tool usage with OpenAI LLM calls.
+
+usage docs: learn/tools.md#using-tools-with-standard-calls
+"""
 
 from __future__ import annotations
 

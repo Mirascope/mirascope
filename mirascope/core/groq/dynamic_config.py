@@ -1,4 +1,7 @@
-"""This module defines the function return type for functions as LLM calls."""
+"""This module defines the function return type for functions as LLM calls.
+
+usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
+"""
 
 from groq.types.chat import ChatCompletionMessageParam
 

@@ -1,4 +1,7 @@
-"""The `CohereTool` class for easy tool usage with Cohere LLM calls."""
+"""The `CohereTool` class for easy tool usage with Cohere LLM calls.
+
+usage docs: learn/tools.md#using-tools-with-standard-calls
+"""
 
 from __future__ import annotations
 

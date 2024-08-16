@@ -1,4 +1,7 @@
-"""The `MistralStream` class for convenience around streaming LLM calls."""
+"""The `MistralStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,

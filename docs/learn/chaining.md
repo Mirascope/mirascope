@@ -84,7 +84,7 @@ Cons of not using computed fields:
 
 ## Advanced Chaining Techniques
 
-Check out our [cookbook recipes on chaining](../cookbook/prompt_engineering/chaining/index.md) to see examples of more advanced chaining techniques.
+Check out our [cookbook recipes on chaining](../cookbook/prompt_engineering/chaining_based/index.md) to see examples of more advanced chaining techniques.
 
 ## Best Practices
 
@@ -94,6 +94,6 @@ Check out our [cookbook recipes on chaining](../cookbook/prompt_engineering/chai
 - **Use Response Models**: Structure your intermediate outputs for better type safety and easier processing. Check out the [`Response Models`](./response_models.md) documentation for more details.
 - **Asynchronous Operations**: Utilize async programming for parallel processing when appropriate. Check out the [`Async`](./async.md) documentation for more details.
 - **Testing**: Test each component of your chain individually as well as the entire chain.
-- **Logging**: Use the `model_dump()` method to log the entire chain's execution for debugging and analysis. This pairs well with [custom middleware](../integrations/custom_middleware.md).
+- **Logging**: Use the `model_dump()` method to log the entire chain's execution for debugging and analysis. This pairs well with [custom middleware](../integrations/middleware.md).
 
 By mastering Mirascope's chaining techniques, you can create sophisticated LLM-powered applications that tackle complex, multi-step problems with greater accuracy, control, and traceability.

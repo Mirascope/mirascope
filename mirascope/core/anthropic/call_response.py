@@ -1,4 +1,7 @@
-"""This module contains the `AnthropicCallResponse` class."""
+"""This module contains the `AnthropicCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
 from pydantic import computed_field
