@@ -4,6 +4,10 @@ Prompts are the foundation of effective communication with Large Language Models
 
 ## Prompt Templates
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.prompt.prompt_template`](../api/core/base/prompt.md#mirascope.core.base.prompt.prompt_template)
+
 The primary means of writing prompts in Mirascope is through prompt templates, which are just formatted strings (as they should be) with a few additional conveniences. This allows you to define prompts such that they are dynamic and reusable.
 
 For the purposes of explaining how prompt templates work, we will use:
@@ -114,6 +118,10 @@ print(prompt)
 If there are any other such specifiers you would find useful, let us know!
 
 ### Message Roles
+
+??? api "API Documentation"
+
+    [`mirascope.core.base.message_param`](../api/core/base/message_param.md)
 
 By default, Mirascope treats the entire prompt as a single user message. However, you can use the `SYSTEM`, `USER`, and `ASSISTANT` keywords to specify different message roles, which we will parse into `BaseMessageParam` instances:
 
@@ -327,6 +335,10 @@ print(prompt.message_params())
 
 ## The `BasePrompt` Class
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.prompt.BasePrompt`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt)
+
 So far we've only used `BasePrompt` to demonstrate the functionality of Mirascope prompt templates; however, the class has much more to offer as a provider-agnostic base class for creating reusable prompts.
 
 It leverages Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/concepts/models/) for easy validation and serialization of prompt data as well as additional convenience around writing more complex template variables.
@@ -387,6 +399,10 @@ print(prompt)
 
 ### Metadata
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.prompt.metadata`](../api/core/base/prompt.md#mirascope.core.base.prompt.metadata)
+
 You can add metadata to your prompts using the `@metadata` decorator. This will attach a `Metadata` object, which is a simple `TypedDict` with a single typed key `tags: set[str]`.
 
 This can be useful for tracking versions, categories, or any other relevant information.
@@ -414,6 +430,12 @@ print(prompt.dump()['metadata'])
     If there are particular keys you find yourself using frequently, let us know so we can add them!
 
 ### Running Prompts
+
+??? api "API Documentation"
+
+    [`mirascope.core.base.prompt.BasePrompt.run`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt.run)
+
+    [`mirascope.core.base.prompt.BasePrompt.run_async`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt.run_async)
 
 One of the key benefits of `BasePrompt` is that it is provider-agnostic. You can use the same prompt with different LLM providers, making it easy to compare performance or switch providers.
 

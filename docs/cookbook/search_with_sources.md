@@ -14,11 +14,11 @@ We will need an API key for search:
 
 ??? tip "Mirascope Concepts Used"
 
-    - [Prompts](../../learn/prompts.md)
-    - [Calls](../../learn/calls.md)
-    - [Tools](../../learn/tools.md)
-    - [Chaining](../../learn/chaining.md)
-    - [Response Model](../../learn/response_models.md)
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Tools](../learn/tools.md)
+    - [Chaining](../learn/chaining.md)
+    - [Response Model](../learn/response_models.md)
 
 !!! note "Background"
 

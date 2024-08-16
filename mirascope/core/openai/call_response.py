@@ -1,4 +1,7 @@
-"""This module contains the `OpenAICallResponse` class."""
+"""This module contains the `OpenAICallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from openai.types.chat import (
     ChatCompletion,

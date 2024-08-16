@@ -1,4 +1,7 @@
-"""The `OpenAIStream` class for convenience around streaming LLM calls."""
+"""The `OpenAIStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from openai.types.chat import (
     ChatCompletion,

@@ -15,6 +15,22 @@ When you use a Mirascope LLM function decorator (e.g., `openai.call`), the decor
 
 ## Dynamic Configuration Options
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.dynamic_config`](../api/core/base/dynamic_config.md)
+
+    [`mirascope.core.anthropic.dynamic_config`](../api/core/anthropic/dynamic_config.md)
+    
+    [`mirascope.core.cohere.dynamic_config`](../api/core/cohere/dynamic_config.md)
+    
+    [`mirascope.core.gemini.dynamic_config`](../api/core/gemini/dynamic_config.md)
+    
+    [`mirascope.core.groq.dynamic_config`](../api/core/groq/dynamic_config.md)
+    
+    [`mirascope.core.mistral.dynamic_config`](../api/core/mistral/dynamic_config.md)
+    
+    [`mirascope.core.openai.dynamic_config`](../api/core/openai/dynamic_config.md)
+
 Each provider has its own dynamic configuration type (e.g., `openai.OpenAIDynamicConfig`). Here are the common options available across providers:
 
 ### Computed Fields
@@ -41,6 +57,12 @@ print(response.content)
 In this example, the `reading_level` is computed based on the `age` input, allowing for dynamic customization of the prompt.
 
 ### Tools
+
+??? api "API Documentation"
+
+    [`mirascope.core.base.tool`](../api/core/base/tool.md)
+
+    [`mirascope.core.base.toolkit`](../api/core/base/toolkit.md)
 
 You can dynamically configure which tools are available to the LLM based on runtime conditions.
 
@@ -99,6 +121,10 @@ When using custom messages, the prompt template is ignored and not required.
 
 ### Metadata
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.medata`](../api/core/base/metadata.md)
+
 You can dynamically add metadata to your LLM calls, which can be useful for logging, tracking, or categorizing responses.
 
 ```python
@@ -120,6 +146,20 @@ print(response.metadata)
 This example shows how to add dynamic tags based on the input genre.
 
 ### Call Parameters
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
+
+    [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
+
+    [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
+
+    [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
+
+    [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
+
+    [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
 
 You can adjust call parameters dynamically, allowing for fine-tuned control over the LLM's behavior.
 

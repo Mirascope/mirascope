@@ -12,6 +12,10 @@ Mirascope provides a provider-agnostic way to define tools, which can be used ac
 
 ### The `BaseTool` Class
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.tool`](../api/core/base/tool.md)
+
 The `BaseTool` class, built on Pydantic's `BaseModel`, offers a flexible way to define tools:
 
 ```python
@@ -86,6 +90,20 @@ else:
 ```
 
 The `response.tools` property returns a list of provider-specific tool instances (e.g. `OpenAITool`). Use `response.tool` to access just the first tool call.
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.tool`](../api/core/anthropic/tool.md)
+
+    [`mirascope.core.cohere.tool`](../api/core/cohere/tool.md)
+    
+    [`mirascope.core.gemini.tool`](../api/core/gemini/tool.md)
+    
+    [`mirascope.core.groq.tool`](../api/core/groq/tool.md)
+    
+    [`mirascope.core.mistral.tool`](../api/core/mistral/tool.md)
+    
+    [`mirascope.core.openai.tool`](../api/core/openai/tool.md)
 
 ### Accessing Original Tool Calls
 
@@ -224,6 +242,10 @@ def format_book(title: str, author: str) -> str:
 ```
 
 ## `BaseToolKit`
+
+??? api "API Documentation"
+
+    [`mirascope.core.base.toolkit`](../api/core/base/toolkit.md)
 
 The `BaseToolKit` class allows organization of tools under a single namespace as well as dynamic updating of tool schemas:
 

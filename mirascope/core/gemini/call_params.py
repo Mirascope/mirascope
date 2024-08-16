@@ -1,4 +1,4 @@
-"""The parameters to use when calling the Gemini API."""
+"""usage docs: learn/calls.md#provider-specific-parameters"""
 
 from __future__ import annotations
 
@@ -11,7 +11,16 @@ from ..base import BaseCallParams
 
 
 class GeminiCallParams(BaseCallParams):
-    """The parameters to use when calling the Gemini API."""
+    """The parameters to use when calling the Gemini API.
+
+    [Gemini API Reference](https://ai.google.dev/gemini-api/docs/text-generation?lang=python)
+
+    Attributes:
+        generation_config: ...
+        safety_settings: ...
+        request_options: ...
+        tool_config: ...
+    """
 
     generation_config: NotRequired[GenerationConfig]
     safety_settings: NotRequired[SafetySettingOptions]

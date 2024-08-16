@@ -1,4 +1,7 @@
-"""The `GeminiStream` class for convenience around streaming LLM calls."""
+"""The `GeminiStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from typing import cast
 

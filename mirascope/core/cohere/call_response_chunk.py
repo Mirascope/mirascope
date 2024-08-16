@@ -1,4 +1,7 @@
-"""This module contains the `CohereCallResponseChunk` class."""
+"""This module contains the `CohereCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from cohere import StreamedChatResponse_StreamEnd, StreamedChatResponse_StreamStart
 from cohere.types import (

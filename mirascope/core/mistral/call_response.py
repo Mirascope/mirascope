@@ -1,4 +1,7 @@
-"""This module contains the `MistralCallResponse` class."""
+"""This module contains the `MistralCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from mistralai.models.chat_completion import ChatCompletionResponse, ChatMessage
 from mistralai.models.common import UsageInfo

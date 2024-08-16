@@ -1,4 +1,7 @@
-"""This module defines the base class for tools used in LLM calls."""
+"""This module defines the base class for tools used in LLM calls.
+
+usage-docs: learn/tools.md#the-basetool-class
+"""
 
 from __future__ import annotations
 
@@ -14,7 +17,25 @@ _BaseToolT = TypeVar("_BaseToolT")
 
 
 class BaseTool(BaseModel):
-    """A class for defining tools for LLM calls."""
+    '''A class for defining tools for LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import BaseTool
+    from pydantic import Field
+
+
+    class FormatBook(BaseTool):
+        """Returns a nicely formatted book recommendation."""
+
+        title: str = Field(..., description="The title of the book.")
+        author: str = Field(..., description="The author of the book.")
+
+        def call(self) -> str:
+            return f"{self.title} by {self.author}"
+    ```
+    '''
 
     __custom_name__: ClassVar[str] = ""
     model_config = ConfigDict(arbitrary_types_allowed=True)

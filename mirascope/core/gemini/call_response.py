@@ -1,4 +1,7 @@
-"""This module contains the `GeminiCallResponse` class."""
+"""This module contains the `GeminiCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from typing import Optional
 
