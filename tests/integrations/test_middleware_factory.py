@@ -53,7 +53,7 @@ def test_middleware_decorator_call_response_sync():
     def handle_call_response(result, fn, context):
         assert isinstance(result, BaseCallResponse)
 
-    decorate = middleware_decorator(sync_fn, handle_call_response=handle_call_response)
+    decorate = middleware_decorator(handle_call_response=handle_call_response)(sync_fn)
     result = decorate()
     assert result.content == call_response.content
 
@@ -88,8 +88,8 @@ async def test_middleware_decorator_call_response_async():
         assert isinstance(result, BaseCallResponse)
 
     decorate = middleware_decorator(
-        async_fn, handle_call_response_async=handle_call_response_async
-    )
+        handle_call_response_async=handle_call_response_async
+    )(async_fn)
     result = await decorate()
     assert result.content == call_response.content
 
@@ -130,7 +130,7 @@ def test_middleware_decorator_stream_sync():
     def handle_stream(result, fn, context):
         assert isinstance(result, BaseStream)
 
-    decorate = middleware_decorator(sync_fn, handle_stream=handle_stream)
+    decorate = middleware_decorator(handle_stream=handle_stream)(sync_fn)
     result = decorate()
     result_chunks = []
     for chunk, _ in result:
@@ -182,7 +182,7 @@ async def test_middleware_decorator_stream_async():
     async def handle_stream_async(result, fn, context):
         assert isinstance(result, BaseStream)
 
-    decorate = middleware_decorator(async_fn, handle_stream_async=handle_stream_async)
+    decorate = middleware_decorator(handle_stream_async=handle_stream_async)(async_fn)
     result = await decorate()
     result_chunks = []
     async for chunk, _ in result:
@@ -203,8 +203,8 @@ def test_middleware_decorator_base_model_sync():
     def handle_response_model(result, fn, context):
         assert isinstance(result, BaseModel)
 
-    decorate = middleware_decorator(
-        sync_fn, handle_response_model=handle_response_model
+    decorate = middleware_decorator(handle_response_model=handle_response_model)(
+        sync_fn
     )
     result = decorate()
     assert result.model_dump() == sync_fn().model_dump()
@@ -223,8 +223,8 @@ async def test_middleware_decorator_base_model_async():
         assert isinstance(result, BaseModel)
 
     decorate = middleware_decorator(
-        async_fn, handle_response_model_async=handle_response_model_async
-    )
+        handle_response_model_async=handle_response_model_async
+    )(async_fn)
     result = await decorate()
     async_fn_result = await async_fn()
     assert result.model_dump() == async_fn_result.model_dump()
@@ -254,8 +254,8 @@ def test_middleware_decorator_structured_stream():
     def handle_structured_stream(result, fn, context):
         assert isinstance(result, BaseStructuredStream)
 
-    decorate = middleware_decorator(
-        sync_fn, handle_structured_stream=handle_structured_stream
+    decorate = middleware_decorator(handle_structured_stream=handle_structured_stream)(
+        sync_fn
     )
     for chunk in decorate():
         assert chunk.model_dump() == my_foo.model_dump()
@@ -291,7 +291,7 @@ async def test_middleware_decorator_structured_stream_async():
         assert isinstance(result, BaseStructuredStream)
 
     decorate = middleware_decorator(
-        async_fn, handle_structured_stream_async=handle_structured_stream_async
-    )
+        handle_structured_stream_async=handle_structured_stream_async
+    )(async_fn)
     async for chunk in await decorate():
         assert chunk.model_dump() == my_foo.model_dump()

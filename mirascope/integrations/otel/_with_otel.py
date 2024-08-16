@@ -14,11 +14,10 @@ from ._utils import (
 )
 
 
-def with_otel(fn):
+def with_otel():
     """Wraps a Mirascope function with OpenTelemetry."""
 
     return middleware_decorator(
-        fn,
         custom_context_manager=custom_context_manager,
         handle_call_response=handle_call_response,
         handle_call_response_async=handle_call_response_async,
