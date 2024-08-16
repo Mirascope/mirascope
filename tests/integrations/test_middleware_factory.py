@@ -6,9 +6,9 @@ from pydantic import BaseModel
 from mirascope.core.base import BaseCallResponse
 from mirascope.core.base.stream import BaseStream
 from mirascope.core.base.structured_stream import BaseStructuredStream
-from mirascope.integrations.middleware_factory import (
+from mirascope.integrations._middleware_factory import (
     default_context_manager,
-    middleware_decorator,
+    middleware_factory,
 )
 
 
@@ -25,7 +25,7 @@ def test_default_context_manager_async():
         assert result is None
 
 
-def test_middleware_decorator_call_response_sync():
+def test_middleware_factory_call_response_sync():
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
@@ -53,13 +53,13 @@ def test_middleware_decorator_call_response_sync():
     def handle_call_response(result, fn, context):
         assert isinstance(result, BaseCallResponse)
 
-    decorate = middleware_decorator(sync_fn, handle_call_response=handle_call_response)
+    decorate = middleware_factory(handle_call_response=handle_call_response)(sync_fn)
     result = decorate()
     assert result.content == call_response.content
 
 
 @pytest.mark.asyncio
-async def test_middleware_decorator_call_response_async():
+async def test_middleware_factory_call_response_async():
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
@@ -87,14 +87,14 @@ async def test_middleware_decorator_call_response_async():
     async def handle_call_response_async(result, fn, context):
         assert isinstance(result, BaseCallResponse)
 
-    decorate = middleware_decorator(
-        async_fn, handle_call_response_async=handle_call_response_async
-    )
+    decorate = middleware_factory(
+        handle_call_response_async=handle_call_response_async
+    )(async_fn)
     result = await decorate()
     assert result.content == call_response.content
 
 
-def test_middleware_decorator_stream_sync():
+def test_middleware_factory_stream_sync():
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     mock_chunk = MagicMock()
@@ -130,7 +130,7 @@ def test_middleware_decorator_stream_sync():
     def handle_stream(result, fn, context):
         assert isinstance(result, BaseStream)
 
-    decorate = middleware_decorator(sync_fn, handle_stream=handle_stream)
+    decorate = middleware_factory(handle_stream=handle_stream)(sync_fn)
     result = decorate()
     result_chunks = []
     for chunk, _ in result:
@@ -141,7 +141,7 @@ def test_middleware_decorator_stream_sync():
 
 
 @pytest.mark.asyncio
-async def test_middleware_decorator_stream_async():
+async def test_middleware_factory_stream_async():
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     mock_chunk = MagicMock()
@@ -182,7 +182,7 @@ async def test_middleware_decorator_stream_async():
     async def handle_stream_async(result, fn, context):
         assert isinstance(result, BaseStream)
 
-    decorate = middleware_decorator(async_fn, handle_stream_async=handle_stream_async)
+    decorate = middleware_factory(handle_stream_async=handle_stream_async)(async_fn)
     result = await decorate()
     result_chunks = []
     async for chunk, _ in result:
@@ -192,7 +192,7 @@ async def test_middleware_decorator_stream_async():
     assert my_stream.cost == result.cost
 
 
-def test_middleware_decorator_base_model_sync():
+def test_middleware_factory_base_model_sync():
     class Foo(BaseModel):
         bar: str
         baz: int
@@ -203,15 +203,13 @@ def test_middleware_decorator_base_model_sync():
     def handle_response_model(result, fn, context):
         assert isinstance(result, BaseModel)
 
-    decorate = middleware_decorator(
-        sync_fn, handle_response_model=handle_response_model
-    )
+    decorate = middleware_factory(handle_response_model=handle_response_model)(sync_fn)
     result = decorate()
     assert result.model_dump() == sync_fn().model_dump()
 
 
 @pytest.mark.asyncio
-async def test_middleware_decorator_base_model_async():
+async def test_middleware_factory_base_model_async():
     class Foo(BaseModel):
         bar: str
         baz: int
@@ -222,15 +220,15 @@ async def test_middleware_decorator_base_model_async():
     async def handle_response_model_async(result, fn, context):
         assert isinstance(result, BaseModel)
 
-    decorate = middleware_decorator(
-        async_fn, handle_response_model_async=handle_response_model_async
-    )
+    decorate = middleware_factory(
+        handle_response_model_async=handle_response_model_async
+    )(async_fn)
     result = await decorate()
     async_fn_result = await async_fn()
     assert result.model_dump() == async_fn_result.model_dump()
 
 
-def test_middleware_decorator_structured_stream():
+def test_middleware_factory_structured_stream():
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     class Foo(BaseModel):
@@ -254,15 +252,15 @@ def test_middleware_decorator_structured_stream():
     def handle_structured_stream(result, fn, context):
         assert isinstance(result, BaseStructuredStream)
 
-    decorate = middleware_decorator(
-        sync_fn, handle_structured_stream=handle_structured_stream
+    decorate = middleware_factory(handle_structured_stream=handle_structured_stream)(
+        sync_fn
     )
     for chunk in decorate():
         assert chunk.model_dump() == my_foo.model_dump()
 
 
 @pytest.mark.asyncio
-async def test_middleware_decorator_structured_stream_async():
+async def test_middleware_factory_structured_stream_async():
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     class Foo(BaseModel):
@@ -290,8 +288,8 @@ async def test_middleware_decorator_structured_stream_async():
     async def handle_structured_stream_async(result, fn, context):
         assert isinstance(result, BaseStructuredStream)
 
-    decorate = middleware_decorator(
-        async_fn, handle_structured_stream_async=handle_structured_stream_async
-    )
+    decorate = middleware_factory(
+        handle_structured_stream_async=handle_structured_stream_async
+    )(async_fn)
     async for chunk in await decorate():
         assert chunk.model_dump() == my_foo.model_dump()

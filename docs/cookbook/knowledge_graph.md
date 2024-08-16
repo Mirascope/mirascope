@@ -13,7 +13,6 @@ Often times, data is messy and not always stored in a structured manner ready fo
 
     While traditional Natural Language Processing (NLP) techniques have long been used in knowledge graphs to identify entities and relationships in unstructured text, Large Language Models (LLMs) have significantly improved this process. LLMs enhance the accuracy of entity identification and linking to knowledge graph entries, demonstrating superior ability to handle context and ambiguity compared to conventional NLP methods. 
 
-
 ## Setup
 
 ```python

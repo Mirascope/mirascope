@@ -17,7 +17,7 @@ class CohereCallResponseChunk(
         SkipValidation[StreamedChatResponse], ChatStreamEndEventFinishReason
     ]
 ):
-    '''A convenience wrapper around the Cohere `ChatCompletionChunk` streamed chunks.
+    """A convenience wrapper around the Cohere `ChatCompletionChunk` streamed chunks.
 
     When calling the Cohere API using a function decorated with `cohere_call` and
     `stream` set to `True`, the stream will contain `CohereResponseChunk` instances with
@@ -26,18 +26,21 @@ class CohereCallResponseChunk(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.cohere import cohere_call
 
-    @cohere_call(model="gpt-4o", stream=True)
+
+    @cohere_call("command-r-plus", stream=True)
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     stream = recommend_book("fantasy")  # response is an `CohereStream`
-    for chunk in stream:
+    for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     @property
     def content(self) -> str:

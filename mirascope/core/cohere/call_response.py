@@ -25,7 +25,7 @@ class CohereCallResponse(
         SkipValidation[ChatMessage],
     ]
 ):
-    '''A convenience wrapper around the Cohere `ChatCompletion` response.
+    """A convenience wrapper around the Cohere `ChatCompletion` response.
 
     When calling the Cohere API using a function decorated with `cohere_call`, the
     response will be an `CohereCallResponse` instance with properties that allow for
@@ -34,17 +34,20 @@ class CohereCallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.cohere import cohere_call
 
-    @cohere_call(model="gpt-4o")
+
+    @cohere_call("command-r-plus")
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     response = recommend_book("fantasy")  # response is an `CohereCallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     _provider = "cohere"
 
@@ -143,7 +146,15 @@ class CohereCallResponse(
         cls,
         tools_and_outputs: list[tuple[CohereTool, str]],
     ) -> list[ToolResult]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `ToolResult` parameters.
+        """
         return [
             ToolResult(
                 call=tool.tool_call,

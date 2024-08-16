@@ -27,7 +27,7 @@ class GroqCallResponse(
         ChatCompletionUserMessageParam,
     ]
 ):
-    '''A convenience wrapper around the Groq `ChatCompletion` response.
+    """A convenience wrapper around the Groq `ChatCompletion` response.
 
     When calling the Groq API using a function decorated with `groq_call`, the
     response will be an `GroqCallResponse` instance with properties that allow for
@@ -36,17 +36,20 @@ class GroqCallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.groq import groq_call
 
-    @groq_call(model="gpt-4o")
+
+    @groq_call("llama-3.1-8b-instant")
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     response = recommend_book("fantasy")  # response is an `GroqCallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     _provider = "groq"
 
@@ -134,7 +137,15 @@ class GroqCallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[GroqTool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `ChatCompletionToolMessageParam` parameters.
+        """
         return [
             ChatCompletionToolMessageParam(
                 role="tool",

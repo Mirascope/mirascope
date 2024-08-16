@@ -37,6 +37,27 @@ class GroqStream(
         FinishReason,
     ]
 ):
+    """A class for convenience around streaming Groq LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.groq import groq_call
+
+
+    @groq_call("llama-3.1-8b-instant", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    stream = recommend_book("fantasy")  # returns `GroqStream` instance
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
+    ```
+    """
+
     _provider = "groq"
 
     @property
@@ -58,7 +79,11 @@ class GroqStream(
         return message_param
 
     def construct_call_response(self) -> GroqCallResponse:
-        """Constructs the call response from a consumed GroqStream."""
+        """Constructs the call response from a consumed GroqStream.
+
+        Raises:
+            ValueError: if the stream has not yet been consumed.
+        """
         if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."

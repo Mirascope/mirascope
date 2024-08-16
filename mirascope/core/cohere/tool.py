@@ -10,13 +10,50 @@ from ..base import BaseTool
 
 
 class CohereTool(BaseTool):
-    """A class for defining tools for Cohere LLM calls."""
+    """A class for defining tools for Cohere LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.cohere import cohere_call
+
+
+    def format_book(title: str, author: str) -> str:
+        return f"{title} by {author}"
+
+
+    @cohere_call("command-r-plus", tools=[format_book])
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")
+    if tool := response.tool:  # returns an `CohereTool` instance
+        print(tool.call())
+    ```
+    """
 
     tool_call: SkipValidation[SkipJsonSchema[ToolCall]]
 
     @classmethod
     def tool_schema(cls) -> Tool:
-        """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
+        """Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+        Example:
+        ```python
+        from mirascope.core.cohere import CohereTool
+
+
+        def format_book(title: str, author: str) -> str:
+            return f"{title} by {author}"
+
+
+        tool_type = CohereTool.type_from_fn(format_book)
+        print(tool_type.tool_schema())  # prints the Cohere-specific tool schema
+        ```
+        """
         model_schema = cls.model_tool_schema()
         parameter_definitions = None
         if "properties" in model_schema:
@@ -44,7 +81,11 @@ class CohereTool(BaseTool):
 
     @classmethod
     def from_tool_call(cls, tool_call: ToolCall) -> CohereTool:
-        """Constructs an `CohereTool` instance from a `tool_call`."""
+        """Constructs an `CohereTool` instance from a `tool_call`.
+
+        Args:
+            tool_call: The Cohere tool call from which to construct this tool instance.
+        """
         model_json = {**tool_call.parameters}
         model_json["tool_call"] = tool_call.dict()
         return cls.model_validate(model_json)

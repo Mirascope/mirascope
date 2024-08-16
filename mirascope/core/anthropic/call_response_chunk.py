@@ -18,7 +18,7 @@ FinishReason = Message.__annotations__["stop_reason"]
 class AnthropicCallResponseChunk(
     BaseCallResponseChunk[MessageStreamEvent, FinishReason]
 ):
-    '''A convenience wrapper around the Anthropic `ChatCompletionChunk` streamed chunks.
+    """A convenience wrapper around the Anthropic `ChatCompletionChunk` streamed chunks.
 
     When calling the Anthropic API using a function decorated with `anthropic_call` and
     `stream` set to `True`, the stream will contain `AnthropicResponseChunk` instances
@@ -27,18 +27,21 @@ class AnthropicCallResponseChunk(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.anthropic import anthropic_call
 
-    @anthropic_call(model="claude-3-5-sonnet-20240620", stream=True)
+
+    @anthropic_call("claude-3-5-sonnet-20240620", stream=True)
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     stream = recommend_book("fantasy")  # response is an `AnthropicStream`
-    for chunk in stream:
+    for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     @property
     def content(self) -> str:

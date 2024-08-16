@@ -1,6 +1,6 @@
 """Mirascope x OpenTelemetry Integration."""
 
-from ..middleware_factory import middleware_decorator
+from .._middleware_factory import middleware_factory
 from ._utils import (
     custom_context_manager,
     handle_call_response,
@@ -14,11 +14,34 @@ from ._utils import (
 )
 
 
-def with_otel(fn):
-    """Wraps a Mirascope function with OpenTelemetry."""
+def with_otel():
+    """Wraps a Mirascope function with OpenTelemetry.
 
-    return middleware_decorator(
-        fn,
+    Example:
+
+    ```python
+    from mirascope.core import anthropic, prompt_template
+    from mirascope.integrations.otel import with_otel, configure
+
+    configure()
+
+
+    def format_book(title: str, author: str) -> str:
+        return f"{title} by {author}"
+
+
+    @with_otel()
+    @anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
+    @prompt_template("Recommend a {genre} book.")
+    def recommend_book(genre: str):
+        ...
+
+
+    print(recommend_book("fantasy"))
+    ```
+    """
+
+    return middleware_factory(
         custom_context_manager=custom_context_manager,
         handle_call_response=handle_call_response,
         handle_call_response_async=handle_call_response_async,

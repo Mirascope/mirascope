@@ -10,7 +10,7 @@ FinishReason = Choice.__annotations__["finish_reason"]
 
 
 class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishReason]):
-    '''A convenience wrapper around the Groq `ChatCompletionChunk` streamed chunks.
+    """A convenience wrapper around the Groq `ChatCompletionChunk` streamed chunks.
 
     When calling the Groq API using a function decorated with `groq_call` and
     `stream` set to `True`, the stream will contain `GroqResponseChunk` instances with
@@ -19,18 +19,21 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishRea
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.groq import groq_call
 
-    @groq_call(model="gpt-4o", stream=True)
+
+    @groq_call("llama-3.1-8b-instant", stream=True)
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     stream = recommend_book("fantasy")  # response is an `GroqStream`
-    for chunk in stream:
+    for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     @property
     def content(self) -> str:

@@ -1,3 +1,0 @@
-# mirascope core
-
-::: mirascope.core

@@ -27,7 +27,7 @@ anthropic_call = call_factory(
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,
 )
-'''A decorator for calling the Anthropic API with a typed function.
+"""A decorator for calling the Anthropic API with a typed function.
 
 This decorator is used to wrap a typed function that calls the Anthropic API. It
 parses the docstring of the wrapped function as the messages array and templates the
@@ -36,19 +36,30 @@ input arguments for the function into each message's template.
 Example:
 
 ```python
-@anthropic_call(model="claude-3-5-sonnet-20240620")
+from mirascope.core import prompt_template
+from mirascope.core.anthropic import anthropic_call
+
+
+@anthropic_call("claude-3-5-sonnet-20240620")
+@prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str):
-    """Recommend a {genre} book."""
+    ...
 
 response = recommend_book("fantasy")
+print(response.content)
 ```
 
 Args:
     model: The Anthropic model to use in the API call.
     stream: Whether to stream the response from the API call.
     tools: The tools to use in the Anthropic API call.
+    response_model: The response model into which the response should be structured.
+    output_parser: A function for parsing the call response whose value will be returned
+        in place of the original call response.
+    json_mode: Whether to use JSON Mode.
+    client: An optional custom client to use in place of the default client.
     **call_params: The `AnthropicCallParams` call parameters to use in the API call.
 
 Returns:
     The decorator for turning a typed function into an Anthropic API call.
-'''
+"""

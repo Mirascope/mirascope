@@ -21,24 +21,19 @@ class GeminiCallResponseChunk(
     Example:
 
     ```python
-    from mirascope.gemini import GeminiCall
+    from mirascope.core import prompt_template
+    from mirascope.core.gemini import gemini_call
 
 
-    class Math(GeminiCall):
-        prompt_template = "What is 1 + 2?"
+    @gemini_call("gemini-1.5-flash", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
 
 
-    content = ""
-    for chunk in Math().stream():
-        content += chunk.content
-        print(content)
-    #> 1
-    #  1 +
-    #  1 + 2
-    #  1 + 2 equals
-    #  1 + 2 equals
-    #  1 + 2 equals 3
-    #  1 + 2 equals 3.
+    stream = recommend_book("fantasy")  # response is an `GeminiStream`
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
     ```
     """
 

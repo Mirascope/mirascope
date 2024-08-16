@@ -28,7 +28,7 @@ class GeminiCallResponse(
         ContentDict,
     ]
 ):
-    '''Convenience wrapper around Gemini's `GenerateContentResponse`.
+    """Convenience wrapper around Gemini's `GenerateContentResponse`.
 
     When using Mirascope's convenience wrappers to interact with Gemini models via
     `GeminiCall`, responses using `GeminiCall.call()` will return a
@@ -38,17 +38,20 @@ class GeminiCallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.gemini import gemini_call
 
-    @gemini_call(model="gemini-1.5-pro")
+
+    @gemini_call("gemini-1.5-flash")
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     response = recommend_book("fantasy")  # response is an `GeminiCallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     _provider = "gemini"
 
@@ -154,7 +157,15 @@ class GeminiCallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[GeminiTool, object]]
     ) -> list[FunctionResponse]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `FunctionResponse` parameters.
+        """
         return [
             FunctionResponse(name=tool._name(), response={"result": output})
             for tool, output in tools_and_outputs
