@@ -17,7 +17,7 @@ This recipe shows how to take an incoming support ticket/call transcript then us
 
 ## Imitating a Company’s Database/Functionality
 
-!!! Note
+!!! note "Fake Data"
 
     For both privacy and functionality purposes, these data types and functions in *no way* represent how a company’s API should actually look like. However, extrapolate on these gross oversimplifications to see how the LLM would interact with the company’s API.
 
