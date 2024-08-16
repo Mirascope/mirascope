@@ -38,4 +38,14 @@ BaseDynamicConfig = (
     | DynamicConfigFull[_MessageParamT, _CallParamsT]
     | None
 )
-"""The base type in a function as an LLM call to return for dynamic configuration."""
+"""The base type in a function as an LLM call to return for dynamic configuration.
+
+Attributes:
+    metadata: Any metadata to include in call responses.
+    computed_fields: Fields to be computed and injected into the prompt template at
+        runtime.
+    tools: Tools to be provided to the LLM API call at runtime.
+    messages: Custom message parameters, which will override any other form of writing
+        prompts when used.
+    call_params: Call parameters to use when making the LLM API call.
+"""

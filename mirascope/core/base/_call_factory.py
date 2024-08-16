@@ -73,6 +73,31 @@ def call_factory(
         _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
 ):
+    """A factory method for creating provider-specific call decorators.
+
+    Args:
+        TCallResponse: The provider-specific `BaseCallResponse` type.
+        TCallResponseChunk: The provider-specific `BaseCallResponseChunk` type.
+        TDynamicConfig: The provider-specific `BaseDynamicConfig` type.
+        TToolType: The provider-specific `BaseTool` type.
+        TStream: The provider-specific `BaseStream` type.
+        TCallParams: The provider-specific `BaseCallParams` type.
+        default_call_params: The default call parameters to use, which must match the
+            `TCallParams` type if provided.
+        setup_call: The helper method for setting up a call, which returns the
+            configured create function, the prompt template, the list of
+            provider-specific messages, the list of provider-specific tool types, and
+            the finalized `call_kwargs` with which to make the API call with the create
+            function.
+        get_json_output: The helper method for getting JSON output from a call response.
+        handle_stream: The helper method for converting a provider's original stream
+            generator into a generator that returns tuples of `(chunk, tool)` where
+            `chunk` and `tool` are provider-specific `BaseCallResponseChunk` and
+            `BaseTool` instances, respectively.
+        handle_stream_async: The same helper method as `handle_stream` except for
+            handling asynchronous streaming.
+    """
+
     @overload
     def base_call(
         model: str,

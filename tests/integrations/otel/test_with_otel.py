@@ -5,15 +5,15 @@ from mirascope.integrations.otel._with_otel import with_otel
 
 
 @patch(
-    "mirascope.integrations.otel._with_otel.middleware_decorator",
+    "mirascope.integrations.otel._with_otel.middleware_factory",
     new_callable=MagicMock,
 )
-def test_with_otel(mock_middleware_decorator: MagicMock) -> None:
+def test_with_otel(mock_middleware_factory: MagicMock) -> None:
     """Tests the `with_otel` decorator."""
     mock_fn = MagicMock()
     with_otel()(mock_fn)
-    mock_middleware_decorator.assert_called_once()
-    call_args = mock_middleware_decorator.call_args[1]
+    mock_middleware_factory.assert_called_once()
+    call_args = mock_middleware_factory.call_args[1]
     assert call_args["custom_context_manager"] == _utils.custom_context_manager
     assert call_args["handle_response_model"] == _utils.handle_response_model
     assert (

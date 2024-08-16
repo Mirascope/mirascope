@@ -9,7 +9,7 @@ from mirascope.core import anthropic, prompt_template
 from mirascope.core.base import BaseCallResponse, BaseType
 from mirascope.core.base.stream import BaseStream
 from mirascope.core.base.structured_stream import BaseStructuredStream
-from mirascope.integrations import middleware_decorator
+from mirascope.integrations import middleware_factory
 
 engine = create_engine("sqlite:///database.db")
 
@@ -139,7 +139,7 @@ async def handle_structured_stream_async(
 def with_saving():
     """Saves some data after a Mirascope call."""
 
-    return middleware_decorator(
+    return middleware_factory(
         custom_context_manager=custom_context_manager,
         custom_decorator=None,
         handle_call_response=handle_call_response,

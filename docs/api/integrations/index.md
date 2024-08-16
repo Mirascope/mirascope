@@ -1,3 +1,0 @@
-# mirascope integrations
-
-::: mirascope.integrations

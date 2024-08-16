@@ -2,7 +2,7 @@
 
 from contextlib import suppress
 
-from .middleware_factory import middleware_decorator
+from ._middleware_factory import middleware_factory
 
 with suppress(ImportError):
     from . import logfire as logfire
@@ -17,4 +17,4 @@ with suppress(ImportError):
     from . import tenacity as tenacity
 
 
-__all__ = ["langfuse", "logfire", "middleware_decorator", "otel", "tenacity"]
+__all__ = ["langfuse", "logfire", "middleware_factory", "otel", "tenacity"]

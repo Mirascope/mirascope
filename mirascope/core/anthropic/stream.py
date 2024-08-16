@@ -31,6 +31,27 @@ class AnthropicStream(
         FinishReason,
     ]
 ):
+    """A class for convenience around streaming Anthropic LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.anthropic import anthropic_call
+
+
+    @anthropic_call("claude-3-5-sonnet-20240620", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    stream = recommend_book("fantasy")  # returns `AnthropicStream` instance
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
+    ```
+    """
+
     _provider = "anthropic"
 
     @property
@@ -60,7 +81,11 @@ class AnthropicStream(
         }
 
     def construct_call_response(self) -> AnthropicCallResponse:
-        """Constructs the call response from a consumed AnthropicStream."""
+        """Constructs the call response from a consumed AnthropicStream.
+
+        Raises:
+            ValueError: if the stream has not yet been consumed.
+        """
         if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."

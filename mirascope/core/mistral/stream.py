@@ -31,6 +31,27 @@ class MistralStream(
         FinishReason,
     ]
 ):
+    """A class for convenience around streaming Mistral LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.mistral import mistral_call
+
+
+    @mistral_call("mistral-large-latest", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    stream = recommend_book("fantasy")  # returns `MistralStream` instance
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
+    ```
+    """
+
     _provider = "mistral"
 
     @property
@@ -47,7 +68,11 @@ class MistralStream(
         return message_param
 
     def construct_call_response(self) -> MistralCallResponse:
-        """Constructs the call response from a consumed MistralStream."""
+        """Constructs the call response from a consumed MistralStream.
+
+        Raises:
+            ValueError: if the stream has not yet been consumed.
+        """
         if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."

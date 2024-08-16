@@ -40,6 +40,27 @@ class GeminiStream(
         Candidate.FinishReason,
     ]
 ):
+    """A class for convenience around streaming Gemini LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.gemini import gemini_call
+
+
+    @gemini_call("gemini-1.5-flash", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    stream = recommend_book("fantasy")  # returns `GeminiStream` instance
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
+    ```
+    """
+
     _provider = "gemini"
 
     @property
@@ -57,7 +78,11 @@ class GeminiStream(
         }
 
     def construct_call_response(self) -> GeminiCallResponse:
-        """Constructs the call response from a consumed GeminiStream."""
+        """Constructs the call response from a consumed GeminiStream.
+
+        Raises:
+            ValueError: if the stream has not yet been consumed.
+        """
         if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."

@@ -10,6 +10,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
+    - content.tabs.link
     - content.code.annotation
     - content.code.copy
     - content.code.link
@@ -89,6 +90,7 @@ plugins:
         python:
           options:
             show_root_heading: false
+            show_root_toc_entry: false
             docstring_style: google
 
 nav:
@@ -136,9 +138,7 @@ nav:
       - Tenacity: "integrations/tenacity.md"
   - API Reference:
       - Core:
-          - "api/core/index.md"
           - Anthropic:
-              - "api/core/anthropic/index.md"
               - call: "api/core/anthropic/call.md"
               - call_params: "api/core/anthropic/call_params.md"
               - call_response: "api/core/anthropic/call_response.md"
@@ -147,7 +147,6 @@ nav:
               - stream: "api/core/anthropic/stream.md"
               - tool: "api/core/anthropic/tool.md"
           - Base:
-              - "api/core/base/index.md"
               - call_factory: "api/core/base/call_factory.md"
               - call_params: "api/core/base/call_params.md"
               - call_response: "api/core/base/call_response.md"
@@ -156,10 +155,11 @@ nav:
               - message_param: "api/core/base/message_param.md"
               - metadata: "api/core/base/metadata.md"
               - prompt: "api/core/base/prompt.md"
+              - stream: "api/core/base/stream.md"
+              - structured_stream: "api/core/base/structured_stream.md"
               - tool: "api/core/base/tool.md"
               - toolkit: "api/core/base/toolkit.md"
           - Cohere:
-              - "api/core/cohere/index.md"
               - call: "api/core/cohere/call.md"
               - call_params: "api/core/cohere/call_params.md"
               - call_response: "api/core/cohere/call_response.md"
@@ -168,7 +168,6 @@ nav:
               - stream: "api/core/cohere/stream.md"
               - tool: "api/core/cohere/tool.md"
           - Gemini:
-              - "api/core/gemini/index.md"
               - call: "api/core/gemini/call.md"
               - call_params: "api/core/gemini/call_params.md"
               - call_response: "api/core/gemini/call_response.md"
@@ -177,7 +176,6 @@ nav:
               - stream: "api/core/gemini/stream.md"
               - tool: "api/core/gemini/tool.md"
           - Groq:
-              - "api/core/groq/index.md"
               - call: "api/core/groq/call.md"
               - call_params: "api/core/groq/call_params.md"
               - call_response: "api/core/groq/call_response.md"
@@ -186,10 +184,8 @@ nav:
               - stream: "api/core/groq/stream.md"
               - tool: "api/core/groq/tool.md"
           - LiteLLM:
-              - "api/core/litellm/index.md"
               - call: "api/core/litellm/call.md"
           - Mistral:
-              - "api/core/mistral/index.md"
               - call: "api/core/mistral/call.md"
               - call_params: "api/core/mistral/call_params.md"
               - call_response: "api/core/mistral/call_response.md"
@@ -198,7 +194,6 @@ nav:
               - stream: "api/core/mistral/stream.md"
               - tool: "api/core/mistral/tool.md"
           - OpenAI:
-              - "api/core/openai/index.md"
               - call: "api/core/openai/call.md"
               - call_params: "api/core/openai/call_params.md"
               - call_response: "api/core/openai/call_response.md"
@@ -207,8 +202,8 @@ nav:
               - stream: "api/core/openai/stream.md"
               - tool: "api/core/openai/tool.md"
       - Integrations:
-          - "api/integrations/index.md"
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
+          - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"

@@ -1,6 +1,6 @@
 # Writing your own Custom Middleware
 
-`middleware_decorator` is a helper function to assist in helping you wrap any Mirascope call.
+`middleware_factory` is a helper function to assist in helping you wrap any Mirascope call.
 We will be creating an example decorator `with_saving` that saves some metadata after a Mirascope call using [SQLModel](https://sqlmodel.tiangolo.com/). We will be using this table for demonstrative purposes in our example:
 
 ```python
@@ -26,12 +26,12 @@ This table should be adjusted and tailored to your needs depending on your SQL D
 ## Writing the decorator
 
 ```python
-from mirascope.integrations import middleware_decorator
+from mirascope.integrations import middleware_factory
 
 def with_saving():
     """Saves some data after a Mirascope call."""
 
-    return middleware_decorator(
+    return middleware_factory(
         custom_context_manager=custom_context_manager,
         custom_decorator=custom_decorator,
         handle_call_response=handle_call_response,
