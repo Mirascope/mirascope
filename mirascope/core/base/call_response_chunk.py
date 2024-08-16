@@ -16,10 +16,6 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
     Attributes:
         chunk: The original response chunk from whichever model response this wraps.
-        tool_types: The tool types sent in the LLM call if any.
-        user_message_param: The most recent message if it was a user message. Otherwise
-            `None`.
-        cost: The cost of the completion in dollars.
     """
 
     chunk: _ChunkT

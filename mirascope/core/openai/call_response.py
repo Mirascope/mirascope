@@ -27,7 +27,7 @@ class OpenAICallResponse(
         ChatCompletionUserMessageParam,
     ]
 ):
-    '''A convenience wrapper around the OpenAI `ChatCompletion` response.
+    """A convenience wrapper around the OpenAI `ChatCompletion` response.
 
     When calling the OpenAI API using a function decorated with `openai_call`, the
     response will be an `OpenAICallResponse` instance with properties that allow for
@@ -36,17 +36,20 @@ class OpenAICallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.openai import openai_call
 
-    @openai_call(model="gpt-4o")
+
+    @openai_call("gpt-4o")
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     response = recommend_book("fantasy")  # response is an `OpenAICallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     response: SkipValidation[ChatCompletion]
 
@@ -136,7 +139,15 @@ class OpenAICallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[OpenAITool, str]]
     ) -> list[ChatCompletionToolMessageParam]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `ChatCompletionToolMessageParam` parameters.
+        """
         return [
             ChatCompletionToolMessageParam(
                 role="tool",

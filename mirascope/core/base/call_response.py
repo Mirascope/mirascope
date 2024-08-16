@@ -41,13 +41,19 @@ class BaseCallResponse(
     """A base abstract interface for LLM call responses.
 
     Attributes:
+        metadata: The metadata pulled from the call that was made.
         response: The original response from whichever model response this wraps.
-        user_message_param: The most recent message if it was a user message. Otherwise
-            `None`.
-        tool_types: The tool types sent in the LLM call.
+        tool_types: The list of tool types used, if any.
+        prompt_template: The unformatted prompt template from the call that was made.
+        fn_args: The input arguments used when making the call.
+        dynamic_config: Dynamic configuration options, if any.
+        messages: The list of provider-specific messages used to make the API call.
+        call_params: The original call params set in the call decorator.
+        call_kwargs: The keyword arguments used to make the API call.
+        user_message_param: The most recent provider-specific message if it was a user
+            message. Otherwise `None`.
         start_time: The start time of the completion in ms.
         end_time: The end time of the completion in ms.
-        cost: The cost of the completion in dollars.
     """
 
     metadata: Metadata
@@ -171,5 +177,10 @@ class BaseCallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[_BaseToolT, Any]]
     ) -> list[Any]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+        """
         ...  # pragma: no cover

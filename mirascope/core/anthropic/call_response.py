@@ -20,7 +20,7 @@ class AnthropicCallResponse(
         MessageParam,
     ]
 ):
-    '''A convenience wrapper around the Anthropic `Message` response.
+    """A convenience wrapper around the Anthropic `Message` response.
 
     When calling the Anthropic API using a function decorated with `anthropic_call`, the
     response will be an `AnthropicCallResponse` instance with properties that allow for
@@ -29,17 +29,20 @@ class AnthropicCallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.anthropic import anthropic_call
 
-    @anthropic_call(model="claude-3-5-sonnet-20240620")
-    def recommend_book(genre: str):
-        """Recommend a {genre} book."""
 
-    response = recommend_book("fantasy")  # response is `AnthropicCallResponse` instance
+    @anthropic_call("claude-3-5-sonnet-20240620")
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")  # response is an `AnthropicCallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     _provider = "anthropic"
 
@@ -128,7 +131,15 @@ class AnthropicCallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[AnthropicTool, str]]
     ) -> list[MessageParam]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `MessageParam` parameters.
+        """
         return [
             {
                 "role": "user",

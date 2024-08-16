@@ -9,7 +9,7 @@ from ..base import BaseCallResponseChunk
 class MistralCallResponseChunk(
     BaseCallResponseChunk[ChatCompletionStreamResponse, FinishReason]
 ):
-    '''A convenience wrapper around the Mistral `ChatCompletionChunk` streamed chunks.
+    """A convenience wrapper around the Mistral `ChatCompletionChunk` streamed chunks.
 
     When calling the Mistral API using a function decorated with `mistral_call` and
     `stream` set to `True`, the stream will contain `MistralResponseChunk` instances with
@@ -18,18 +18,21 @@ class MistralCallResponseChunk(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.mistral import mistral_call
 
-    @mistral_call(model="gpt-4o", stream=True)
+
+    @mistral_call("mistral-large-latest", stream=True)
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     stream = recommend_book("fantasy")  # response is an `MistralStream`
-    for chunk in stream:
+    for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     @property
     def content(self) -> str:

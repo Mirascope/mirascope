@@ -44,21 +44,23 @@ class BasePrompt(BaseModel):
     Example:
 
     ```python
-    from mirascope.core import BasePrompt, metadata
+    from mirascope.core import BasePrompt, metadata, prompt_template
 
-    @metadata({"tags": {"version:0001"}})
+    @prompt_template("Recommend a {genre} book")
+    @metadata({"tags": {"version:0001", "books"}})
     class BookRecommendationPrompt(BasePrompt):
-        prompt_template = "Recommend a {genre} book."
-
         genre: str
 
     prompt = BookRecommendationPrompt(genre="fantasy")
 
-    prompt.messages()
-    #> [{"role": "user", "content": "Please recommend a fantasy book."}]
-
     print(prompt)
-    #> Please recommend a fantasy book.
+    # > Recommend a fantasy book
+
+    print(prompt.message_params())
+    # > [BaseMessageParam(role="user", content="Recommend a fantasy book")]
+
+    print(prompt.dump()["metadata"])
+    # > {"metadata": {"version:0001", "books"}}
     ```
     """
 
@@ -153,7 +155,24 @@ class BasePrompt(BaseModel):
     ) -> (
         _BaseCallResponseT | _BaseStreamT | _ResponseModelT | Iterable[_ResponseModelT]
     ):
-        """Returns the response of calling the API of the provided decorator."""
+        """Returns the response of calling the API of the provided decorator.
+
+        Example:
+
+        ```python
+        from mirascope.core import BasePrompt, openai, prompt_template
+
+
+        @prompt_template("Recommend a {genre} book")
+        class BookRecommendationPrompt(BasePrompt):
+            genre: str
+
+
+        prompt = BookRecommendationPrompt(genre="fantasy")
+        response = prompt.run(openai.call("gpt-4o-mini"))
+        print(response.content)
+        ```
+        """
         kwargs = self.model_dump()
         args_str = ", ".join(kwargs.keys())
         namespace, fn_name = {}, self.__class__.__name__
@@ -234,7 +253,30 @@ class BasePrompt(BaseModel):
         | Awaitable[_ResponseModelT]
         | Awaitable[AsyncIterable[_ResponseModelT]]
     ):
-        """Returns the response of calling the API of the provided decorator."""
+        """Returns the response of calling the API of the provided decorator.
+
+        Example:
+
+        ```python
+        import asyncio
+
+        from mirascope.core import BasePrompt, openai, prompt_template
+
+
+        @prompt_template("Recommend a {genre} book")
+        class BookRecommendationPrompt(BasePrompt):
+            genre: str
+
+
+        async def run():
+            prompt = BookRecommendationPrompt(genre="fantasy")
+            response = await prompt.run_async(openai.call("gpt-4o-mini"))
+            print(response.content)
+
+
+        asyncio.run(run())
+        ```
+        """
         kwargs = self.model_dump()
         args_str = ", ".join(kwargs.keys())
         namespace, fn_name = {}, self.__class__.__name__
@@ -278,23 +320,6 @@ def metadata(metadata: Metadata):
     Adding this decorator to a `BasePrompt` or `call` updates the `metadata` annotation
     to the given value. This is useful for adding metadata to a `BasePrompt` or `call`
     that can be used for logging or filtering.
-
-    Example:
-
-    ```python
-    from mirascope.core import BasePrompt, metadata
-
-    @metadata({"tags": {"version:0001", "books"}})
-    class BookRecommendationPrompt(BasePrompt):
-        prompt_template = "Recommend a {genre} book."
-
-        genre: str
-
-    prompt = BookRecommendationPrompt(genre="fantasy")
-
-    print(prompt.dump()["metadata"])
-    #> {"metadata": {"version:0001", "books"}}
-    ```
 
     Returns:
         Decorator function that updates the `metadata` attribute of the decorated input.

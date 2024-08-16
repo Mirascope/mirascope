@@ -39,6 +39,27 @@ class OpenAIStream(
         FinishReason,
     ]
 ):
+    """A class for convenience around streaming OpenAI LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.openai import openai_call
+
+
+    @openai_call("gpt-4o-mini", stream=True)
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    stream = recommend_book("fantasy")  # returns `OpenAIStream` instance
+    for chunk, _ in stream:
+        print(chunk.content, end="", flush=True)
+    ```
+    """
+
     _provider = "openai"
 
     @property
@@ -70,7 +91,11 @@ class OpenAIStream(
         return message_param
 
     def construct_call_response(self) -> OpenAICallResponse:
-        """Constructs the call response from a consumed OpenAIStream."""
+        """Constructs the call response from a consumed OpenAIStream.
+
+        Raises:
+            ValueError: if the stream has not yet been consumed.
+        """
         if not hasattr(self, "message_param"):
             raise ValueError(
                 "No stream response, check if the stream has been consumed."

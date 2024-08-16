@@ -15,13 +15,50 @@ from ..base import BaseTool
 
 
 class GeminiTool(BaseTool):
-    """A class for defining tools for Gemini LLM calls."""
+    """A class for defining tools for Gemini LLM calls.
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.gemini import gemini_call
+
+
+    def format_book(title: str, author: str) -> str:
+        return f"{title} by {author}"
+
+
+    @gemini_call("gemini-1.5-flash", tools=[format_book])
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")
+    if tool := response.tool:  # returns an `GeminiTool` instance
+        print(tool.call())
+    ```
+    """
 
     tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod
     def tool_schema(cls) -> Tool:
-        """Constructs a JSON Schema tool schema from the `BaseModel` schema defined."""
+        """Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+        Example:
+        ```python
+        from mirascope.core.gemini import GeminiTool
+
+
+        def format_book(title: str, author: str) -> str:
+            return f"{title} by {author}"
+
+
+        tool_type = GeminiTool.type_from_fn(format_book)
+        print(tool_type.tool_schema())  # prints the Gemini-specific tool schema
+        ```
+        """
         model_schema = cls.model_tool_schema()
         fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
         if model_schema["properties"]:
@@ -52,7 +89,11 @@ class GeminiTool(BaseTool):
 
     @classmethod
     def from_tool_call(cls, tool_call: FunctionCall) -> GeminiTool:
-        """Constructs an `GeminiTool` instance from a `tool_call`."""
+        """Constructs an `GeminiTool` instance from a `tool_call`.
+
+        Args:
+            tool_call: The Gemini tool call from which to construct this tool instance.
+        """
         if not tool_call.args:
             raise ValueError("Tool call doesn't have any arguments.")
         model_json: dict[str, Any] = {

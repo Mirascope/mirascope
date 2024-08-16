@@ -201,8 +201,15 @@ class BaseStream(
         """Constructs the assistant message."""
         ...  # pragma: no cover
 
-    def tool_message_params(self, tools_and_outputs) -> list[_ToolMessageParamT]:
-        """Returns the tool message parameters for tool call results."""
+    def tool_message_params(
+        self, tools_and_outputs: list[tuple[_BaseToolT, str]]
+    ) -> list[_ToolMessageParamT]:
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+        """
         return self.call_response_type.tool_message_params(tools_and_outputs)
 
     @abstractmethod

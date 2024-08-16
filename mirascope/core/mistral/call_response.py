@@ -21,7 +21,7 @@ class MistralCallResponse(
         ChatMessage,
     ]
 ):
-    '''A convenience wrapper around the Mistral `ChatCompletion` response.
+    """A convenience wrapper around the Mistral `ChatCompletion` response.
 
     When calling the Mistral API using a function decorated with `mistral_call`, the
     response will be an `MistralCallResponse` instance with properties that allow for
@@ -30,17 +30,20 @@ class MistralCallResponse(
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.mistral import mistral_call
 
-    @mistral_call(model="gpt-4o")
+
+    @mistral_call("mistral-largel-latest")
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     response = recommend_book("fantasy")  # response is an `MistralCallResponse` instance
     print(response.content)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     _provider = "mistral"
 
@@ -130,7 +133,15 @@ class MistralCallResponse(
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[MistralTool, str]]
     ) -> list[ChatMessage]:
-        """Returns the tool message parameters for tool call results."""
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `ChatMessage` parameters.
+        """
         return [
             ChatMessage(
                 role="tool",

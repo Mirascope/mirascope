@@ -2642,6 +2642,24 @@ markupsafe = ">=2.0.1"
 mkdocs = ">=1.1"
 
 [[package]]
+name = "mkdocs-embed-external-markdown"
+version = "3.0.2"
+description = "Mkdocs plugin that allow to inject external markdown or markdown section from given url"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "mkdocs-embed-external-markdown-3.0.2.tar.gz", hash = "sha256:9a3d14a9cc6efb4201175530f277e84da472a576772db264a3b19570cf266317"},
+    {file = "mkdocs_embed_external_markdown-3.0.2-py3-none-any.whl", hash = "sha256:82088296cfd117b36ef45b58b4342005727a1f891f0c429c21756215e89099d2"},
+]
+
+[package.dependencies]
+Jinja2 = ">=3.1.0"
+requests = ">=2.3.0"
+
+[package.extras]
+test = ["mkdocs (>=1.5.3)", "pytest (>=7.4.3)"]
+
+[[package]]
 name = "mkdocs-get-deps"
 version = "0.2.0"
 description = "MkDocs extension that lists all dependencies according to a mkdocs.yml file"
@@ -5709,4 +5727,4 @@ tenacity = ["tenacity"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "54c6498a2003a059c07f48df1859fb611a6959041f054849584ce8049f7dfc28"
+content-hash = "26cbe9109b450b8cbf4ed05aee6619f416e64c98239ff23f7549b0afd73d0fab"

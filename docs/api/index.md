@@ -1,3 +1,0 @@
-# mirascope api
-
-::: mirascope

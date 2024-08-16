@@ -11,7 +11,7 @@ FinishReason = Choice.__annotations__["finish_reason"]
 
 
 class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishReason]):
-    '''A convenience wrapper around the OpenAI `ChatCompletionChunk` streamed chunks.
+    """A convenience wrapper around the OpenAI `ChatCompletionChunk` streamed chunks.
 
     When calling the OpenAI API using a function decorated with `openai_call` and
     `stream` set to `True`, the stream will contain `OpenAIResponseChunk` instances with
@@ -20,18 +20,21 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
     Example:
 
     ```python
+    from mirascope.core import prompt_template
     from mirascope.core.openai import openai_call
 
-    @openai_call(model="gpt-4o", stream=True)
+
+    @openai_call("gpt-4o-mini", stream=True)
+    @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
-        """Recommend a {genre} book."""
+        ...
+
 
     stream = recommend_book("fantasy")  # response is an `OpenAIStream`
-    for chunk in stream:
+    for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
-    #> Sure! I would recommend...
     ```
-    '''
+    """
 
     chunk: SkipValidation[ChatCompletionChunk]
 
