@@ -11,7 +11,7 @@ class Book(BaseModel):
     author: str
 
 
-@with_otel
+@with_otel()
 @openai.call(model="gpt-4o-mini", response_model=Book)
 @prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str): ...

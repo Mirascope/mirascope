@@ -136,11 +136,10 @@ async def handle_structured_stream_async(
     handle_structured_stream(structured_stream, fn, session)
 
 
-def with_saving(fn):
+def with_saving():
     """Saves some data after a Mirascope call."""
 
     return middleware_decorator(
-        fn,
         custom_context_manager=custom_context_manager,
         custom_decorator=None,
         handle_call_response=handle_call_response,
@@ -154,7 +153,7 @@ def with_saving(fn):
     )
 
 
-@with_saving
+@with_saving()
 @anthropic.call(model="claude-3-5-sonnet-20240620")
 @prompt_template("What is your purpose?")
 def run(): ...
