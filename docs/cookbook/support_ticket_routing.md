@@ -12,13 +12,14 @@ This recipe shows how to take an incoming support ticket/call transcript then us
     - [Response Models](../learn/response_models.md)
 
 !!! note "Background"
+
     Traditional machine learning techniques like text classification were previously used to solve routing. LLMs have enhanced routing by being able to better interpret nuances of inquiries as well as using client history and knowledge of the product to make more informed decisions.
 
 ## Imitating a Company’s Database/Functionality
 
 !!! Note
 
-For both privacy and functionality purposes, these data types and functions in *no way* represent how a company’s API should actually look like. However, extrapolate on these gross oversimplifications to see how the LLM would interact with the company’s API.
+    For both privacy and functionality purposes, these data types and functions in *no way* represent how a company’s API should actually look like. However, extrapolate on these gross oversimplifications to see how the LLM would interact with the company’s API.
 
 ### User
 
