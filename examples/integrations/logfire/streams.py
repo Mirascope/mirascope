@@ -6,7 +6,7 @@ from mirascope.integrations.logfire import with_logfire
 logfire.configure()
 
 
-@with_logfire
+@with_logfire()
 @openai.call(
     model="gpt-4o-mini",
     stream=True,

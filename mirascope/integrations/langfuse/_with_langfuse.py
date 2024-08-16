@@ -15,17 +15,20 @@ from ._utils import (
 )
 
 
-def with_langfuse(fn):
+def custom_decorator(fn):
+    return observe(
+        name=fn.__name__,
+        as_type="generation",
+        capture_input=False,
+        capture_output=False,
+    )
+
+
+def with_langfuse():
     """Wraps a Mirascope function with Langfuse."""
 
     return middleware_decorator(
-        fn,
-        custom_decorator=observe(
-            name=fn.__name__,
-            as_type="generation",
-            capture_input=False,
-            capture_output=False,
-        ),
+        custom_decorator=custom_decorator,
         handle_call_response=handle_call_response,
         handle_call_response_async=handle_call_response_async,
         handle_stream=handle_stream,

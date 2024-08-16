@@ -4,7 +4,7 @@ from mirascope.integrations.otel import configure, with_otel
 configure()
 
 
-@with_otel
+@with_otel()
 @openai.call(
     model="gpt-4o-mini",
     stream=True,

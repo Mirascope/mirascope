@@ -13,7 +13,7 @@ from mirascope.integrations.otel._utils import configure
 from mirascope.integrations.otel._with_otel import with_otel
 
 
-def with_hyperdx(fn):
+def with_hyperdx():
     """Decorator to wrap a function with hyperdx."""
     provider = trace.get_tracer_provider()
     if not isinstance(provider, TracerProvider):
@@ -27,4 +27,4 @@ def with_hyperdx(fn):
                 )
             ]
         )
-    return with_otel(fn)
+    return with_otel()

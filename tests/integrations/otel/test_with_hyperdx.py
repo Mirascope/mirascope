@@ -42,8 +42,8 @@ def test_with_hyperdx(
     """Tests the `with_hyperdx` decorator."""
     mock_trace.get_tracer_provider.return_value = MagicMock()
     mock_fn = MagicMock()
-    with_hyperdx(mock_fn)
-    mock_with_otel.assert_called_once_with(mock_fn)
+    with_hyperdx()(mock_fn)
+    mock_with_otel.assert_called_once()
     mock_otlp_span_exporter.assert_called_once_with(
         endpoint="https://in-otel.hyperdx.io/v1/traces",
         headers={"authorization": "test-api-key"},

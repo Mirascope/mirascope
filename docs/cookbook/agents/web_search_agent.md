@@ -4,9 +4,9 @@ In this recipe we’ll explore using Mirascope to get structured information fro
 
 ??? tip "Mirascope Concepts Used"
 
-    - [Prompts](../learn/prompts.md)
-    - [Calls](../learn/calls.md)
-    - [Agents](../learn/agents.md)
+    - [Prompts](../../learn/prompts.md)
+    - [Calls](../../learn/calls.md)
+    - [Agents](../../learn/agents.md)
 
 !!! note "Background"
 
