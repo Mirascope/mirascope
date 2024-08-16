@@ -161,6 +161,7 @@ nav:
       - Agents:
           - "cookbook/agents/index.md"
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
+          - Generating SQL Agent: "cookbook/agents/generating_sql_agent.md"
       - Prompt Engineering:
           - "cookbook/prompt_engineering/index.md"
           - Text Based:
