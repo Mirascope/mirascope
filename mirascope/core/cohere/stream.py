@@ -1,4 +1,7 @@
-"""The `CohereStream` class for convenience around streaming LLM calls."""
+"""The `CohereStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from cohere.types import (
     ApiMeta,

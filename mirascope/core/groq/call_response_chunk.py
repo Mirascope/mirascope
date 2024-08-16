@@ -1,4 +1,7 @@
-"""This module contains the `GroqCallResponseChunk` class."""
+"""This module contains the `GroqCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from groq.types.chat import ChatCompletionChunk
 from groq.types.chat.chat_completion import Choice

@@ -1,4 +1,7 @@
-"""This module contains the `CohereCallResponse` class."""
+"""This module contains the `CohereCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from cohere.types import (
     ApiMetaBilledUnits,

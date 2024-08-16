@@ -1,5 +1,21 @@
 # Calls
 
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
+
+    [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
+
+    [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
+
+    [`mirascope.core.groq.call`](../api/core/groq/call.md)
+
+    [`mirascope.core.litellm.call`](../api/core/litellm/call.md)
+
+    [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
+
+    [`mirascope.core.openai.call`](../api/core/openai/call.md)
+
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
 The primary purpose of the call decorator is to:
@@ -33,8 +49,6 @@ In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book rec
 !!! info "Function Body"
 
     In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. For now, you can safely ignore how we use the function body, which we cover in more detail in the documentation for [dynamic configuration](./dynamic_configuration.md).
-
-
 
 ## Supported Providers
 
@@ -92,19 +106,21 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
 ## Provider-Specific Parameters
 
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
+
+    [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
+
+    [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
+
+    [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
+
+    [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
+
+    [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
+
 While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
-
-??? info "Provider API References"
-
-    For convenience, here are the current API reference links for all supported providers:
-
-    - [OpenAI](https://platform.openai.com/docs/api-reference/chat/create)
-    - [Anthropic](https://docs.anthropic.com/en/api/messages)
-    - [Mistral](https://docs.mistral.ai/api/)
-    - [Gemini](https://ai.google.dev/gemini-api/docs/text-generation?lang=python)
-    - [Groq](https://console.groq.com/docs/api-reference#chat-create)
-    - [Cohere](https://docs.cohere.com/reference/chat)
-    - LiteLLM (see OpenAI)
 
 For all providers, we have only included additional call parameters that are not already covered as shared arguments to the `call` decorator (e.g. `model`). We have also opted to exclude currently deprecated parameters entirely. However, since `call_params` is just a `TypedDict`, you can always include any additional keys at the expense of type errors (and potentially unknown behavior).
 
@@ -155,6 +171,20 @@ print(response.content)
 Any custom client is supported so long as it has the same API as the original base client.
 
 ## Handling Responses
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call_response`](../api/core/anthropic/call_response.md)
+
+    [`mirascope.core.cohere.call_response`](../api/core/cohere/call_response.md)
+
+    [`mirascope.core.gemini.call_response`](../api/core/gemini/call_response.md)
+
+    [`mirascope.core.groq.call_response`](../api/core/groq/call_response.md)
+
+    [`mirascope.core.mistral.call_response`](../api/core/mistral/call_response.md)
+
+    [`mirascope.core.openai.call_response`](../api/core/openai/call_response.md)
 
 When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific `BaseCallResponse` object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
 
