@@ -4,9 +4,10 @@ This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifi
 
 ??? info "Key Concepts"
 
-    - [Calls](ADD LINK)
-    - [Response Model](ADD LINK)
-    - [Tenacity Integration](ADD LINK)
+    - [Prompts](../learn/prompts.md)
+    - [Calls](../learn/calls.md)
+    - [Response Model](../learn/response_models.md)
+    - [Tenacity Integration](../integrations/tenacity.md)
 
 !!! note "Background"
 
@@ -65,7 +66,7 @@ assert response.has_errors
 
     [after_validator.py](ADD LINK)
 
-We can use Pydantic's [`AfterValidator`](ADD LINK) to integrate our LLM-based validation directly into a Pydantic model:
+We can use Pydantic's [`AfterValidator`](https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.AfterValidator) to integrate our LLM-based validation directly into a Pydantic model:
 
 ```python
 from typing import Annotated

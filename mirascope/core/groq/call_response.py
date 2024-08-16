@@ -1,4 +1,7 @@
-"""This module contains the `GroqCallResponse` class."""
+"""This module contains the `GroqCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
 
 from groq.types.chat import (
     ChatCompletion,

@@ -1,5 +1,19 @@
 # Streams
 
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.stream`](../api/core/anthropic/stream.md)
+
+    [`mirascope.core.cohere.stream`](../api/core/cohere/stream.md)
+
+    [`mirascope.core.gemini.stream`](../api/core/gemini/stream.md)
+
+    [`mirascope.core.groq.stream`](../api/core/groq/stream.md)
+
+    [`mirascope.core.mistral.stream`](../api/core/mistral/stream.md)
+
+    [`mirascope.core.openai.stream`](../api/core/openai/stream.md)
+
 Streaming is a powerful feature when using LLMs that allows you to process LLM responses in real-time as they are generated. This can be particularly useful for long-running tasks, providing immediate feedback to users, or implementing more responsive applications.
 
 !!! info "Supported Providers"
@@ -28,6 +42,22 @@ In this example, the recommendation will be printed to the console as it's being
 
 ## Handling Streamed Responses
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.call_response_chunk`](../api/core/base/call_response_chunk.md)
+
+    [`mirascope.core.anthropic.call_response_chunk`](../api/core/anthropic/call_response_chunk.md)
+
+    [`mirascope.core.cohere.call_response_chunk`](../api/core/cohere/call_response_chunk.md) 
+
+    [`mirascope.core.gemini.call_response_chunk`](../api/core/gemini/call_response_chunk.md)
+
+    [`mirascope.core.groq.call_response_chunk`](../api/core/groq/call_response_chunk.md) 
+
+    [`mirascope.core.mistral.call_response_chunk`](../api/core/mistral/call_response_chunk.md)
+
+    [`mirascope.core.openai.call_response_chunk`](../api/core/openai/call_response_chunk.md) 
+
 When streaming, the initial response will be a provider-specific `BaseStream` instance (e.g. `OpenAIStream`), which is a generator that yields tuples `(chunk, tool)` where `chunk` is a provider-specific `BaseCallResponseChunk` (e.g. `OpenAICallResponseChunk`) that wraps the original chunk in the provider's response. These objects provide a consistent interface across providers while still allowing access to provider-specific details.
 
 !!! note "Streaming Tools"
@@ -36,7 +66,7 @@ When streaming, the initial response will be a provider-specific `BaseStream` in
 
 ### Common Chunk Properties and Methods
 
-All CallResponseChunk objects share these common properties:
+All `BaseCallResponseChunk` objects share these common properties:
 
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.

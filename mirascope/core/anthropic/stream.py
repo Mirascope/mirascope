@@ -1,4 +1,7 @@
-"""The `AnthropicStream` class for convenience around streaming LLM calls."""
+"""The `AnthropicStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from anthropic.types import Message, MessageParam, TextBlock, ToolUseBlock, Usage
 from anthropic.types.content_block import ContentBlock

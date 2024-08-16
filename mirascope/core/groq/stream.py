@@ -1,4 +1,7 @@
-"""The `GroqStream` class for convenience around streaming LLM calls."""
+"""The `GroqStream` class for convenience around streaming LLM calls.
+
+usage docs: learn/streams.md
+"""
 
 from groq.types.chat import (
     ChatCompletion,

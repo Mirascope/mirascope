@@ -1,4 +1,7 @@
-"""This module contains the `AnthropicCallResponseChunk` class."""
+"""This module contains the `AnthropicCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from anthropic.types import (
     Message,
