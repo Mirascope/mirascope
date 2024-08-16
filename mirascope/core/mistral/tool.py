@@ -1,4 +1,7 @@
-"""The `MistralTool` class for easy tool usage with Mistral LLM calls."""
+"""The `MistralTool` class for easy tool usage with Mistral LLM calls.
+
+usage docs: learn/tools.md#using-tools-with-standard-calls
+"""
 
 from __future__ import annotations
 

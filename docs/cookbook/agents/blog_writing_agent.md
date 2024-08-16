@@ -4,13 +4,13 @@ This recipe demonstrates how to build an Agent Executor using Mirascope to autom
 
 ??? info "Key Concepts"
 
-    - [Writing Prompts](ADD LINK)
-    - [Calls](ADD LINK)
-    - [Streams](ADD LINK)
-    - [Tools](ADD LINK)
-    - [Response Model](ADD LINK)
-    - [Output Parser](ADD LINK)
-    - [Tenacity Integration](ADD LINK)
+    - [Prompts](../../learn/prompts.md)
+    - [Calls](../../learn/calls.md)
+    - [Streams](../../learn/streams.md)
+    - [Tools](../../learn/tools.md)
+    - [Response Model](../../learn/response_models.md)
+    - [Output Parser](../../learn/output_parsers.md)
+    - [Tenacity Integration](../../integrations/tenacity.md)
 
 !!! note "Background"
 

@@ -4,9 +4,9 @@ In this recipe, we show some techniques to improve an LLM’s ability to summari
 
 ??? info "Key Concepts"
 
-    - [Calls](ADD LINK)
-    - [Chaining](ADD LINK)
-    - [Response Model](ADD LINK)
+    - [Calls](../learn/calls.md)
+    - [Chaining](../learn/chaining.md)
+    - [Response Model](../learn/response_models.md)
 
 !!! note "Background"
 

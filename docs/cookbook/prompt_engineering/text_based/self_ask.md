@@ -4,9 +4,9 @@ This recipe demonstrates how to implement the Self-Ask technique using Large Lan
 
 ??? info "Key Concepts"
 
-    - [Writing Prompts](ADD LINK)
-    - [Calls](ADD LINK)
-    - [Response Model](ADD LINK)
+    - [Prompts](../../../learn/prompts.md)
+    - [Calls](../../../learn/calls.md)
+    - [Response Model](../../../learn/response_models.md)
 
 !!! note "Background"
 

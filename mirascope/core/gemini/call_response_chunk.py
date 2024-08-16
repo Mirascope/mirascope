@@ -1,4 +1,7 @@
-"""This module contains the `GeminiCallResponseChunk` class."""
+"""This module contains the `GeminiCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from google.ai.generativelanguage import Candidate
 from google.generativeai.types import (  # type: ignore

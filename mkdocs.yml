@@ -4,6 +4,7 @@ site_url: https://docs.mirascope.io/
 site_description: Mirascope is an intuitive approach to building with LLMs.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
+strict: true
 theme:
   name: material
   custom_dir: docs/overrides
@@ -88,10 +89,34 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
+          paths: [.]
           options:
+            members_order: source
+            separate_signature: true
+            filters: ["!^_"]
             show_root_heading: false
             show_root_toc_entry: false
             docstring_style: google
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            extensions:
+              - docs/plugins/griffe_doclinks.py
+          import:
+            - https://docs.python.org/3/objects.inv
+
+extra_css:
+  - "extra/tweaks.css"
+
+validation:
+  omitted_files: warn
+  absolute_links: relative_to_docs
+  # unrecognized_links: warn
+  not_found: warn
 
 nav:
   - Get Started:
@@ -123,10 +148,22 @@ nav:
       - Knowledge Graph: "cookbook/knowledge_graph.md"
       - Generating Captions: "cookbook/generating_captions.md"
       - Extraction using Vision: "cookbook/extraction_using_vision.md"
-      - Code Generation and Execution: "cookbook/code_generation_and_generation.md"
+      - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
       - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
       - Localized Agent: "cookbook/agents/localized_agent.md"
       - Search with Sources: "cookbook/search_with_sources.md"
+      - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
+      - Text Summaritzation: "cookbook/text_summarization.md"
+      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - Agents:
+          - "cookbook/agents/index.md"
+          - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
+      - Prompt Engineering:
+          - "cookbook/prompt_engineering/index.md"
+          - Text Based:
+              - "cookbook/prompt_engineering/text_based/index.md"
+              - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
+          - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_provider.md"
@@ -137,7 +174,9 @@ nav:
       - OpenTelemetry: "integrations/otel.md"
       - Tenacity: "integrations/tenacity.md"
   - API Reference:
+      - "api/index.md"
       - Core:
+          - "api/core/index.md"
           - Anthropic:
               - call: "api/core/anthropic/call.md"
               - call_params: "api/core/anthropic/call_params.md"
@@ -202,6 +241,7 @@ nav:
               - stream: "api/core/openai/stream.md"
               - tool: "api/core/openai/tool.md"
       - Integrations:
+          - "api/integrations/index.md"
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
           - Middleware: "api/integrations/middleware.md"

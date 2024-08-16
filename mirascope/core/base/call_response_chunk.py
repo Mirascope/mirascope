@@ -1,4 +1,7 @@
-"""This module contains the `BaseCallResponseChunk` class."""
+"""This module contains the `BaseCallResponseChunk` class.
+
+usage docs: learn/streams.md#handling-streamed-responses
+"""
 
 from __future__ import annotations
 
