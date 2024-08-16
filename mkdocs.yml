@@ -122,7 +122,7 @@ nav:
       - Generating Captions: "cookbook/generating_captions.md"
       - PII Scrubbing: "cookbook/pii_scrubbing.md"
       - Extraction using Vision: "cookbook/extraction_using_vision.md"
-      - Code Generation and Execution: "cookbook/code_generation_and_generation.md"
+      - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
       - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
       - Localized Agent: "cookbook/agents/localized_agent.md"
       - Search with Sources: "cookbook/search_with_sources.md"
