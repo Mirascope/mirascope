@@ -100,12 +100,14 @@ print(scrub_pii(PII_ARTICLE))
 ```
 
 !!! tip "Additional Real-World Applications"
-    **Medical Records**: Iterate on the above recipe and scrub any PII when sharing patient data for research.
-    **Legal Documents**: Court documents and legal filings frequently contain sensitive information that needs to be scrubbed before public release.
-    **Corporate Financial Reports**: Companies may need to scrub proprietary financial data or trade secrets when sharing reports with external auditors or regulators.
-    **Social Media Content Moderation**: Automatically scrub or blur out personal information like phone numbers or addresses posted in public comments.
+
+    - **Medical Records**: Iterate on the above recipe and scrub any PII when sharing patient data for research.
+    - **Legal Documents**: Court documents and legal filings frequently contain sensitive information that needs to be scrubbed before public release.
+    - **Corporate Financial Reports**: Companies may need to scrub proprietary financial data or trade secrets when sharing reports with external auditors or regulators.
+    - **Social Media Content Moderation**: Automatically scrub or blur out personal information like phone numbers or addresses posted in public comments.
 
 When adapting this recipe to your specific use-case, consider the following:
+
     - Use a larger model hosted on prem or in a private location to prevent data leaks.
     - Refine the prompts for specific types of information you want scrubbed.
     - Run the `check_if_pii_exists` call after scrubbing PII to check if all PII has been scrubbed.
