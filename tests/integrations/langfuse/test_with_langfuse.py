@@ -7,7 +7,7 @@ from mirascope.integrations.langfuse._with_langfuse import (
 
 
 @patch(
-    "mirascope.integrations.langfuse._with_langfuse.middleware_decorator",
+    "mirascope.integrations.langfuse._with_langfuse.middleware_factory",
     new_callable=MagicMock,
 )
 @patch(
@@ -15,14 +15,14 @@ from mirascope.integrations.langfuse._with_langfuse import (
     new_callable=MagicMock,
 )
 def test_with_langfuse(
-    mock_observe: MagicMock, mock_middleware_decorator: MagicMock
+    mock_observe: MagicMock, mock_middleware_factory: MagicMock
 ) -> None:
     """Tests the `with_langfuse` decorator."""
     mock_fn = MagicMock(__name__="mock_fn")
     mock_observe.return_value = MagicMock()
     with_langfuse()(mock_fn)
-    mock_middleware_decorator.assert_called_once()
-    call_args = mock_middleware_decorator.call_args[1]
+    mock_middleware_factory.assert_called_once()
+    call_args = mock_middleware_factory.call_args[1]
     assert call_args["custom_decorator"] is not None
     assert call_args["handle_response_model"] is not None
     assert call_args["handle_response_model_async"] is not None

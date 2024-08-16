@@ -46,7 +46,7 @@ def default_context_manager(
     yield None
 
 
-def middleware_decorator(
+def middleware_factory(
     custom_context_manager: Callable[
         [SyncFunc | AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
@@ -82,6 +82,43 @@ def middleware_decorator(
     ]
     | None = None,
 ) -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
+    '''A factory method for creating middleware decorators.
+
+    Example:
+
+    ```python
+    from mirascope.core import openai, prompt_template
+    from mirascope.integrations import middleware_factory
+
+    def with_saving():
+        """Saves some data after a Mirascope call."""
+
+        return middleware_factory(
+            custom_context_manager=custom_context_manager,
+            custom_decorator=custom_decorator,
+            handle_call_response=handle_call_response,
+            handle_call_response_async=handle_call_response_async,
+            handle_stream=handle_stream,
+            handle_stream_async=handle_stream_async,
+            handle_response_model=handle_response_model,
+            handle_response_model_async=handle_response_model_async,
+            handle_structured_stream=handle_structured_stream,
+            handle_structured_stream_async=handle_structured_stream_async,
+        )
+
+
+    @with_saving()
+    @openai.call("gpt-4o-mini")
+    @prompt_template("Recommend a {genre} book")
+    def recommend_book(genre: str):
+        ...
+
+
+    response = recommend_book("fantasy")  # `with_saving` automatically run
+    print(response.content)
+    ```
+    '''
+
     @overload
     def decorator(fn: Callable[_P, _R]) -> Callable[_P, _R]: ...
 

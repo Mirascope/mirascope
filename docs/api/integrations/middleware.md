@@ -1,3 +1,5 @@
 # mirascope.integrations.middleware
 
-::: mirascope.integrations.middleware_factory.middleware_decorator
+## `middleware_factory`
+
+::: mirascope.integrations._middleware_factory.middleware_factory
