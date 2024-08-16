@@ -156,6 +156,7 @@ nav:
       - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
       - Text Summaritzation: "cookbook/text_summarization.md"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - Query Plan: "cookbook/query_plan.md"
       - Agents:
           - "cookbook/agents/index.md"
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
