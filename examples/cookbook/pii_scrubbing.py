@@ -63,13 +63,13 @@ def check_if_pii_exists(article: str) -> openai.OpenAIDynamicConfig:
     {article}
     """
 )
-def redact_pii(article: str): ...
+def scrub_pii(article: str): ...
 
 
 def run():
     does_pii_exist = check_if_pii_exists(PII_ARTICLE)
     if does_pii_exist:
-        return redact_pii(PII_ARTICLE)
+        return scrub_pii(PII_ARTICLE)
     else:
         return "No PII found in the article."
 

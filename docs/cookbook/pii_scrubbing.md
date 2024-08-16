@@ -17,7 +17,7 @@ In this recipe, we go over how to detect Personal Identifiable Information, or P
 The first step is to grab the definition of PII for our prompt to use. Note that in this example we will be using US Labor Laws so be sure to use your countries definition. We can access the definition [here](https://www.dol.gov/general/ppii).
 
 ```python
-from mirascope.core import openai
+from mirascope.core import openai, prompt_template
 
 PII_DEFINITION = """Any representation of information that permits the identity of an individual 
 to whom the information applies to be reasonably inferred by either direct or indirect means. 
@@ -35,7 +35,7 @@ This information can be maintained in either paper, electronic or other media.
     json_mode=True,
     response_model=bool,
 )
-def check_if_pii_exists(article: str) -> openai.OpenAIDynamicConfig:
+@prompt_template(
     """
     SYSTEM:
     You are an expert at identifying personally identifiable information (PII).
@@ -48,6 +48,8 @@ def check_if_pii_exists(article: str) -> openai.OpenAIDynamicConfig:
     USER:
     {article}
     """
+)
+def check_if_pii_exists(article: str) -> openai.OpenAIDynamicConfig:
     return {"computed_fields": {"PII_DEFINITION": PII_DEFINITION}}
 ```
 
@@ -76,7 +78,7 @@ For articles that are flagged as containing PII, we now need to redact that info
     model="llama3.1",
     client=OpenAI(base_url="http://localhost:11434/v1", api_key="ollama"),
 )
-def redact_pii(article: str):
+@prompt_template(
     """
     SYSTEM:
     You are an expert at redacting personally identifiable information (PII).
@@ -88,10 +90,22 @@ def redact_pii(article: str):
     USER:
     {article}
     """
+)
+def scrub_pii(article: str): ...
 
-print(redact_pii(PII_ARTICLE))
+print(scrub_pii(PII_ARTICLE))
 # Here's the redacted article:
 
 # John Doe, born on [DATE_OF_BIRTH], resides at a location in [CITY/TOWN]. His [IDENTIFYING_DOCUMENT] number is [NUMBER_SOMEWHERE]. He can be reached at [PHONE_NUMBER].
 ```
 
+!!! tip "Additional Real-World Applications"
+    **Medical Records**: Iterate on the above recipe and scrub any PII when sharing patient data for research.
+    **Legal Documents**: Court documents and legal filings frequently contain sensitive information that needs to be scrubbed before public release.
+    **Corporate Financial Reports**: Companies may need to scrub proprietary financial data or trade secrets when sharing reports with external auditors or regulators.
+    **Social Media Content Moderation**: Automatically scrub or blur out personal information like phone numbers or addresses posted in public comments.
+
+When adapting this recipe to your specific use-case, consider the following:
+    - Use a larger model hosted on prem or in a private location to prevent data leaks.
+    - Refine the prompts for specific types of information you want scrubbed.
+    - Run the `check_if_pii_exists` call after scrubbing PII to check if all PII has been scrubbed.
