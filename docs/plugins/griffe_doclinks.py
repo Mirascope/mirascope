@@ -8,10 +8,10 @@ from __future__ import annotations
 import ast
 import logging
 import re
+import sys
 import traceback
-from functools import partial
 from pathlib import Path
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse
 
 from griffe import Extension, ObjectNode
 from griffe import Object as GriffeObject
@@ -32,7 +32,8 @@ def safe_regex_search(pattern: str, string: str, flags: int = 0) -> re.Match | N
 
 
 def find_heading(content: str, slug: str, file_path: Path) -> tuple[str, int]:
-    for m in safe_regex_search(r"^#+ (.+)", content, flags=re.M):
+    results = safe_regex_search(r"^#+ (.+)", content, flags=re.M)
+    for m in results or []:
         heading = m.group(1)
         h_slug = slugifier(heading, "-")
         if h_slug == slug:
@@ -68,7 +69,7 @@ def insert_or_update_api_section(file_path: Path, api_link: str, obj_path: str) 
                 content = f"{api_section}{content}"
 
         file_path.write_text(content)
-    except Exception as e:
+    except Exception:
         # logger.error(f"Error in insert_or_update_api_section: {str(e)}")
         logger.debug(traceback.format_exc())
 
@@ -137,7 +138,7 @@ def update_links(obj: GriffeObject) -> None:
 
 
 class UpdateDocstringsExtension(Extension):
-    def on_instance(self, *, node: ast.AST | ObjectNode, obj: GriffeObject) -> None:
+    def on_instance(self, *, node: ast.AST | ObjectNode, obj: GriffeObject) -> None:  # type: ignore
         try:
             if not obj.is_alias and obj.docstring is not None:
                 update_links(obj)
@@ -147,9 +148,6 @@ class UpdateDocstringsExtension(Extension):
 
 
 # Add a hook to catch and log any unhandled exceptions
-import sys
-
-
 def exception_handler(exctype, value, tb):
     logger.error("Unhandled exception:", exc_info=(exctype, value, tb))
 
