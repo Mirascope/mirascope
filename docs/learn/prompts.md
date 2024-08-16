@@ -224,19 +224,19 @@ class Book(BaseModel):
     title: str
     author: str
 
-@prompt_template("I just read {book.title} by {book.author}. What should I read next?")
+@prompt_template(
+    """
+    I just read {book.title} by {book.author}.
+    What should I read next?
+    """
+)
 class MyPrompt(BasePrompt):
     book: Book
 
 book = Book(title="The Great Gatsby", author="F. Scott Fitzgerald")
 my_prompt = MyPrompt(book=book)
 print(my_prompt.message_params())
-# > [
-#       BaseMessageParam(
-#           role="user",
-#           content="I just read The Great Gatsby by F. Scott Fitzgerald. What should I read next?",
-#       )
-#   ]
+# > [BaseMessageParam(role="user", content="I just read The Great Gatsby by F. Scott Fitzgerald.\nWhat should I read next?")]
 ```
 
 ### Empty Messages

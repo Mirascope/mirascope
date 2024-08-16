@@ -20,6 +20,7 @@ For providers with explicit support, Mirascope uses the native JSON Mode feature
 To enable JSON Mode, set `json_mode=True` when using the `call` decorator:
 
 ```python
+import json
 from mirascope.core import openai, prompt_template
 
 
@@ -36,7 +37,7 @@ def get_book_info(book_title: str):
 
 
 response = get_book_info("The Great Gatsby")
-print(response.content)
+print(json.loads(response.content))
 # > {"author": "F. Scott Fitzgerald", "date_published": "1925", "genre": "Tragedy"}
 ```
 
