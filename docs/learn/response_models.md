@@ -68,6 +68,19 @@ def recommend_book(genre: str):
 book_stream = recommend_book("science fiction")
 for partial_book in book_stream:
     print(partial_book)
+# title=None author=None
+# title=None author=None
+# title='' author=None
+# title='D' author=None
+# title='Dune' author=None
+# title='Dune' author=None
+# title='Dune' author=None
+# title='Dune' author=''
+# title='Dune' author='Frank'
+# title='Dune' author='Frank Herbert'
+# title='Dune' author='Frank Herbert'
+# title='Dune' author='Frank Herbert'
+# title='Dune' author='Frank Herbert'
 ```
 
 ### Type Safety with Response Models

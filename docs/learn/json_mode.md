@@ -37,6 +37,7 @@ def get_book_info(book_title: str):
 
 response = get_book_info("The Great Gatsby")
 print(response.content)
+# > {"author": "F. Scott Fitzgerald", "date_published": "1925", "genre": "Tragedy"}
 ```
 
 This will instruct the model to return its response in JSON format.
