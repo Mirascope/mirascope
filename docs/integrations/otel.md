@@ -27,7 +27,7 @@ def format_book(title: str, author: str) -> str:
     return f"{title} by {author}"
 
 
-@with_otel
+@with_otel()
 @anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
 @prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str):
@@ -112,7 +112,7 @@ from mirascope.integrations.otel import with_otel, configure
 
 configure()
 
-@with_otel
+@with_otel()
 @openai.call(
     model="gpt-4o-mini",
     stream=True,
@@ -150,7 +150,7 @@ class Book(BaseModel):
     author: str
 
 
-@with_otel
+@with_otel()
 @openai.call(model="gpt-4o-mini", response_model=Book)
 @prompt_template("Recommend a {genre} book.")
 def recommend_book(genre: str):
