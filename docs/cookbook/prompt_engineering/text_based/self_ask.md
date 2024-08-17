@@ -1,12 +1,12 @@
 # Self-Ask: Enhancing LLM Reasoning with Follow-Up Questions
 
-This recipe demonstrates how to implement the Self-Ask technique using Large Language Models (LLMs). Self-Ask is a prompt engineering method that enhances an LLM's reasoning capabilities by encouraging it to ask and answer follow-up questions before providing a final answer. Mirascope makes the implementation simple, reusable, and extensible.
+This recipe demonstrates how to implement the Self-Ask technique using Large Language Models (LLMs) with Mirascope. Self-Ask is a prompt engineering method that enhances an LLM's reasoning capabilities by encouraging it to ask and answer follow-up questions before providing a final answer. We'll explore both a basic implementation and an enhanced version with dynamic example selection.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../../../learn/prompts.md)
     - [Calls](../../../learn/calls.md)
-    - [Response Model](../../../learn/response_models.md)
+    - [Dynamic Configuration](../../../learn/dynamic_configuration.md)
 
 !!! note "Background"
 
@@ -22,30 +22,19 @@ pip install "mirascope[openai]" numpy scikit-learn
 
 Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 
-## Implementing Self-Ask with Few-Shot Learning
+## Basic Self-Ask Implementation
 
-!!! note ""
-
-    [self_ask.py](ADD LINK)
-
-To implement Self-Ask, we'll use few-shot learning examples that demonstrate the technique, taking advantage of Mirascope's `lists` format spec convenience to inject the examples into the LLM call's prompt.
-
-First, let's define a structure for our few-shot examples:
+Let's start with a basic implementation of Self-Ask using few-shot learning examples:
 
 ```python
+import inspect
 from typing_extensions import TypedDict
 
+from mirascope.core import openai, prompt_template
 
 class FewShotExample(TypedDict):
     question: str
     answer: str
-```
-
-Next, we'll create an LLM call function that can incorporate `FewShotExample` instances:
-
-```python
-from mirascope.core import openai, prompt_template
-
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
@@ -64,11 +53,8 @@ def self_ask(query: str, examples: list[FewShotExample]) -> openai.OpenAIDynamic
             ]
         }
     }
-```
 
-Now, let's define our few-shot examples:
-
-```python
+# Define few-shot examples
 few_shot_examples = [
     FewShotExample(
         question="When does monsoon season end in the state the area code 575 is located?",
@@ -83,64 +69,9 @@ few_shot_examples = [
             """
         ),
     ),
-    FewShotExample(
-        question="What is the current official currency in the country where Ineabelle Diaz is a citizen?",
-        answer=inspect.cleandoc(
-            """
-            Are follow up questions needed here: Yes.
-            Follow up: Which country is Ineabelle Diaz a citizen of?
-            Intermediate answer: Ineabelle Diaz is from Peurto Rico, which is in the United States of America.
-            Follow up: What is the current official currency in the United States of America?
-            Intermediate answer: The current official currency in the United States is the United States dollar.
-            So the final answer is: United States dollar.
-            """
-        ),
-    ),
-    FewShotExample(
-        question="Where was the person who founded the American Institute of Public Opinion in 1935 born?",
-        answer=inspect.cleandoc(
-            """
-            Are follow up questions needed here: Yes.
-            Follow up: Who founded the American Institute of Public Opinion in 1935?
-            Intermediate answer: George Gallup.
-            Follow up: Where was George Gallup born?
-            Intermediate answer: George Gallup was born in Jefferson, Iowa.
-            So the final answer is: Jefferson.
-            """
-        ),
-    ),
-    FewShotExample(
-        question="What language is used by the director of Tiffany Memorandum?",
-        answer=inspect.cleandoc(
-            """
-            Are follow up questions needed here: Yes.
-            Follow up: Who directed the movie called Tiffany Memorandum?
-            Intermediate answer: Sergio Grieco.
-            Follow up: What language is used by Sergio Grieco?
-            Intermediate answer: Sergio Grieco speaks Italian.
-            So the final answer is: Italian.
-            """
-        ),
-    ),
-    FewShotExample(
-        question="What is the sports team the person played for who scored the first touchdown in Superbowl 1?",
-        answer=inspect.cleandoc(
-            """
-            Are follow up questions needed here: Yes.
-            Follow up: Which player scored the first touchdown in Superbowl 1?
-            Intermediate answer: Max McGee.
-            Follow up: Which sports team did Max McGee play for?
-            Intermediate answer: Max McGee played for the Green Bay Packers.
-            So the final answer is: Green Bay Packers.
-            """
-        ),
-    ),
+    # ... (add more examples here)
 ]
-```
 
-Finally, we can use our Self-Ask implementation:
-
-```python
 query = "The birth country of Jayantha Ketagoda left the British Empire when?"
 response = self_ask(query=query, examples=few_shot_examples)
 print(response.content)
@@ -152,36 +83,16 @@ print(response.content)
 #   So the final answer is: February 4, 1948.
 ```
 
-Let's compare this to asking the same question with no few-shot examples:
+This basic implementation demonstrates how to use few-shot learning with Self-Ask. The `self_ask` function takes a query and a list of examples, then uses Mirascope's `OpenAIDynamicConfig` to inject the examples into the prompt.
+
+## Enhanced Self-Ask with Dynamic Example Selection
+
+Now, let's improve our implementation by adding dynamic example selection:
 
 ```python
-response = self_ask(query=query, examples=[])
-print(response.content)
-# > Jayantha Ketagoda was born in Sri Lanka, which was known as Ceylon during the
-#   British colonial period. Ceylon gained independence from the British Empire on
-#   February 4, 1948.
-```
-
-## Enhancing Self-Ask Implementation
-
-!!! note ""
-
-    [enhanced_self_ask.py](ADD LINK)
-
-To further improve our Self-Ask implementation, consider the following enhancements:
-
-- Dynamic example selection: Choose relevant few-shot examples based on the input query.
-- Fallback mechanism: Implement a fallback to standard querying if Self-Ask doesn't improve the result.
-- Result validation: Add a step to validate the final answer against the initial query.
-
-Here's an example of how you might implement dynamic example selection:
-
-```python
-from mirascope.core import openai, prompt_template
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-
 
 def select_relevant_examples(
     query: str, examples: list[FewShotExample], n: int = 3
@@ -195,7 +106,6 @@ def select_relevant_examples(
     most_similar_indices = np.argsort(similarities)[-n:][::-1]
 
     return [examples[i] for i in most_similar_indices]
-
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
@@ -219,7 +129,7 @@ def dynamic_self_ask(
         }
     }
 
-
+# Use the enhanced Self-Ask implementation
 query = "What was the primary language spoken by the inventor of the phonograph?"
 response = dynamic_self_ask(query=query, examples=few_shot_examples, n=2)
 print(response.content)
@@ -231,16 +141,17 @@ print(response.content)
 #   So the final answer is: English.
 ```
 
-In this enhanced version we define a `select_relevant_examples` function that uses TF-IDF vectorization and cosine similarity to find the most relevant examples for a given query.
-The `dynamic_self_ask` function now selects relevant examples before including them in the prompt.
+This enhanced version introduces the `select_relevant_examples` function, which uses TF-IDF vectorization and cosine similarity to find the most relevant examples for a given query. The `dynamic_self_ask` function then selects these relevant examples before including them in the prompt.
 
-This approach has several benefits:
+## Benefits and Considerations
 
-- It reduces the prompt size by only including the most relevant examples.
-- It potentially improves the quality of the response by focusing on the most applicable few-shot examples.
-- It allows for a larger pool of examples to be maintained without always including all of them in every query.
+The enhanced Self-Ask implementation offers several advantages:
 
-When implementing this enhancement, consider:
+1. Reduced prompt size by including only the most relevant examples.
+2. Potentially improved response quality by focusing on the most applicable few-shot examples.
+3. Ability to maintain a larger pool of examples without always including all of them in every query.
+
+When implementing this technique, consider:
 
 - Balancing the number of selected examples with the desired prompt length and model context window.
 - Experimenting with different similarity metrics or embedding techniques for example selection.
@@ -260,3 +171,5 @@ When adapting this recipe to your specific use-case, consider:
 - Experimenting with different prompts and example formats to optimize the Self-Ask process.
 - Implementing a feedback loop to continuously improve the quality of the Self-Ask responses.
 - Combining Self-Ask with other techniques like chain-of-thought for even more powerful reasoning capabilities.
+
+By leveraging Mirascope's `call` decorator and `prompt_template`, you can easily implement and customize the Self-Ask technique to enhance your LLM's reasoning capabilities across a wide range of applications.

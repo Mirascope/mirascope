@@ -2,7 +2,7 @@
 
 This recipe shows how to use LLMs — in this case, OpenAI GPT-4o and Anthropic Claude 3.5 Sonnet — to extract an image into a structured output using Mirascope’s `response_model`.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

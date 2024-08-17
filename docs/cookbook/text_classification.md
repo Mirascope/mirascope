@@ -36,10 +36,6 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 
 ## Binary Classification: Spam Detection
 
-!!! note ""
-
-    [binary_classification.py](ADD LINK)
-
 Binary classification involves categorizing text into one of two classes. We'll demonstrate this by creating a spam detector that classifies text as either spam or not spam.
 
 For binary classification, we can extract a boolean value by setting `response_model=bool` and prompting the model to classify the text:
@@ -66,10 +62,6 @@ assert label is False  # This text is classified as not spam
 ```
 
 ## Multi-Class Classification: Sentiment Analysis
-
-!!! note ""
-
-    [multiclass_classification.py](ADD LINK)
 
 Multi-class classification extends the concept to scenarios where we need to categorize text into one of several classes. We'll demonstrate this with a sentiment analysis task.
 
@@ -114,10 +106,6 @@ assert label == Sentiment.POSITIVE
 
 ## Classification with Reasoning
 
-!!! note ""
-
-    [classification_with_reasoning.py](ADD LINK)
-
 So far we've demonstrated using simple types like `bool` and `Enum` for classification, but we can extend this approach using Pydantic's `BaseModel` class to extract additional information beyond just the classification label.
 
 For example, we can gain insight to the LLMs reasoning for the classified label simply by including a reasoning field in our response model and updating the prompt:
@@ -154,10 +142,6 @@ print(f"Reasoning: {response.reasoning}")
 ```
 
 ## Handling Uncertainty
-
-!!! note ""
-
-    [handling_uncertainty.py](ADD LINK)
 
 When dealing with LLMs for classification tasks, it's important to account for cases where the model might be uncertain about its prediction. We can modify our approach to include a certainty score and handle cases where the model's confidence is below a certain threshold.
 

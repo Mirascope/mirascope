@@ -2,7 +2,7 @@
 
 This recipe shows how to use LLMs — in this case, Anthropic’s Claude 3.5 Sonnet — to create a query plan. Using a query plan is a great way to get more accurate results by breaking down a complex question into multiple smaller questions.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

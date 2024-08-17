@@ -166,6 +166,6 @@ print(run("What is the average price of a house in the United States?"))
     - **Technical Documentation**: Generate code snippets and docs referencing official documentation.
 
 When adapting this recipe, consider:
-    - Adding [Tenacity](ADD LINK) `retry` for more a consistent extraction.
+    - Adding [Tenacity](https://tenacity.readthedocs.io/en/latest/) `retry` for more a consistent extraction.
     - Use an LLM with web search tool to evaluate whether the answer produced is in the source.
     - Experiment with different model providers and version for quality and accuracy of results.

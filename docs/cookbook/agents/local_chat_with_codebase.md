@@ -12,7 +12,7 @@ pip install llama-index, llama-index-llms-ollama, llama-index-embeddings-hugging
 
 For this setup, we use Ollama but vLLM will also work.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../../learn/prompts.md)
     - [Calls](../../learn/calls.md)

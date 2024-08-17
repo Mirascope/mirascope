@@ -2,7 +2,7 @@
 
 Often times, data is messy and not always stored in a structured manner ready for use by an LLM. In this recipe, we show how to create a knowledge graph from an unstructured document using common python libraries and Mirascope using OpenAI GPT-4o-mini.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Dynamic Configuration](../learn/dynamic_configuration.md)

@@ -2,7 +2,7 @@
 
 In this recipe, we go over how to detect Personal Identifiable Information, or PII and redact it from your source. Whether your source is from a database, a document, or spreadsheet, it is important prevent PII from leaving your system. We will be using Ollama for data privacy.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

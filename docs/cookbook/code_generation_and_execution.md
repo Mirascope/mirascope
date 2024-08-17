@@ -2,7 +2,7 @@
 
 In this recipe, we will be using OpenAI GPT-4o-mini to use write code to solve problems it would otherwise have issues solving. 
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

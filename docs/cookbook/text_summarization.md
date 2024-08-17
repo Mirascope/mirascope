@@ -2,7 +2,7 @@
 
 In this recipe, we show some techniques to improve an LLM’s ability to summarize a long text from simple (e.g. `"Summarize this text: {text}..."`) to more complex prompting and chaining techniques. We will use OpenAI’s GPT-4o-mini model (128k input token limit), but you can use any model you’d like to implement these summarization techniques, as long as they have a large context window.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Calls](../learn/calls.md)
     - [Chaining](../learn/chaining.md)
@@ -72,7 +72,7 @@ One simple update we can make is to improve our prompt by providing an initial o
 
 ## Simple Call with Outline
 
-This prompt engineering technique is an example of [Chain of Thought](ADD LINK) (CoT), forcing the model to write out its thinking process. It also involves little work and can be done by modifying the text of the single call. With an outline, the summary is less likely to lose the general structure of the text.
+This prompt engineering technique is an example of [Chain of Thought](https://www.promptingguide.ai/techniques/cot) (CoT), forcing the model to write out its thinking process. It also involves little work and can be done by modifying the text of the single call. With an outline, the summary is less likely to lose the general structure of the text.
 
 ```python
 @openai.call(model="gpt-4o-mini")

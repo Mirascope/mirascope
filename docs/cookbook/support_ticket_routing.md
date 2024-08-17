@@ -2,7 +2,7 @@
 
 This recipe shows how to take an incoming support ticket/call transcript then use an LLM to summarize the issue and route it to the correct person.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

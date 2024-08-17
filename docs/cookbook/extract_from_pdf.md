@@ -2,7 +2,7 @@
 
 This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically the OpenAI API -- to extract pages and content from PDF files. We'll cover single PDF document as well as multiple PDF files and also use OCR to extract text from scanned documents.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

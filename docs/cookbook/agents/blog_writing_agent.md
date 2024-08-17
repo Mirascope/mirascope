@@ -2,7 +2,7 @@
 
 This recipe demonstrates how to build an Agent Executor using Mirascope to automate the process of researching and writing a blog post. We'll create a system that combines a researcher agent and a writer tool, orchestrated by an executor agent.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../../learn/prompts.md)
     - [Calls](../../learn/calls.md)
@@ -63,10 +63,6 @@ pip install "mirascope[openai]" requests beautifulsoup4 duckduckgo-search tenaci
 ```
 
 Make sure to also set your `OPENAI_API_KEY` if you haven't already.
-
-!!! note
-
-    All of the code for this cookbook can be found in [blog_writing_agent.py](ADD LINK)
 
 ## Implementing the `BaseAgent`
 

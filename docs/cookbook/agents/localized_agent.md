@@ -10,7 +10,7 @@ We will need an API key for :
 
 And of course, Mirascope.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../../learn/prompts.md)
     - [Calls](../../learn/calls.md)

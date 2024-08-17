@@ -2,7 +2,7 @@
 
 In this recipe, we go over how to do semantic document segmentation. Topics and themes of articles can frequently be dispersed across multiple sections or even separate files. We will be using OpenAI GPT-4o-mini to break down an article into topics and themes.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)

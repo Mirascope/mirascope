@@ -1,8 +1,8 @@
 # LLM Validation With Retries
 
-This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically Anthropic's Claude 3.5 Sonnet -- to perform automated validation on any value. We'll cover how to use **LLMs for complex validation tasks**, how to integrate this with Pydantic's validation system, and how to leverage [Tenacity](ADD LINK) to automatically **reinsert validation errors** back into an LLM call to **improve results**.
+This recipe demonstrates how to leverage Large Language Models (LLMs) -- specifically Anthropic's Claude 3.5 Sonnet -- to perform automated validation on any value. We'll cover how to use **LLMs for complex validation tasks**, how to integrate this with Pydantic's validation system, and how to leverage [Tenacity](https://tenacity.readthedocs.io/en/latest/) to automatically **reinsert validation errors** back into an LLM call to **improve results**.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)
@@ -24,10 +24,6 @@ pip install "mirascope[anthropic,tenacity]"
 Make sure to also set your `ANTHROPIC_API_KEY` if you haven't already.
 
 ## Basic LLM Validation
-
-!!! note ""
-
-    [basic_validation.py](ADD LINK)
 
 Let's start with a simple example of using an LLM to check for spelling and grammatical errors in a text snippet:
 
@@ -61,10 +57,6 @@ assert response.has_errors
 ```
 
 ## Pydantic's AfterValidator
-
-!!! note ""
-
-    [after_validator.py](ADD LINK)
 
 We can use Pydantic's [`AfterValidator`](https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.AfterValidator) to integrate our LLM-based validation directly into a Pydantic model:
 
@@ -100,10 +92,6 @@ except ValidationError as e:
 ```
 
 ## Reinsert Validation Errors For Improved Performance
-
-!!! note ""
-
-    [validation_errors_with_retries.py](ADD LINK)
 
 One powerful technique for enhancing LLM generations is to automatically reinsert validation errors into subsequent calls. This approach allows the LLM to learn from its previous mistakes as few-shot examples and improve it's output in real-time. We can achieve this using Mirascope's integration with Tenacity, which collects `ValidationError` messages for easy insertion into the prompt.
 

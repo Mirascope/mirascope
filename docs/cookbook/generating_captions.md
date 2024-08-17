@@ -2,7 +2,7 @@
 
 In this recipe, we go over how to use LLMs to generate a descriptive caption set of tags for an image with OpenAI’s `gpt-4o-mini`.
 
-??? info "Key Concepts"
+??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)
