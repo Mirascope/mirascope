@@ -81,6 +81,8 @@ There are two core primitives — `call` and `BasePrompt`.
 
 ### Call
 
+![call decorator typing](./docs/assets/call_decorator_typing.gif)
+
 Every provider we support has a corresponding `call` decorator for **turning a function into a call to an LLM**:
 
 ```python
