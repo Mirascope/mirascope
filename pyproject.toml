@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "mirascope"
 version = "1.0.0"
-description = "NEEDS DESCRIPTION"
+description = "LLM abstractions that aren't obstructions"
 license = "MIT"
 authors = [
     "William Bakst <william@mirascope.io>",
