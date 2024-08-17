@@ -26,6 +26,10 @@ Mirascope addresses these pain points with a philosophy centered on transparency
     - **Type Safety**: Catch errors before runtime with our comprehensive type annotations.
     - **Intuitive API**: Our API is designed to be predictable and easy to learn, following Python best practices.
 
+This video is just one example of the many benefits Mirascope provides developers:
+
+<video src="https://github.com/user-attachments/assets/174acc23-a026-4754-afd3-c4ca570a9dde" controls="controls" style="max-width: 730px;"></video>
+
 ## Who Should Use Mirascope?
 
 Mirascope is ideal for:

@@ -64,12 +64,9 @@ Mirascope depends only on `pydantic`, `docstring-parser`, and `jiter`.
 All other dependencies are provider-specific and optional so you can install only what you need.
 
 ```python
-pip install "mirascope[openai]==1.0.0-b6"     # e.g. `openai.call`
-pip install "mirascope[anthropic]==1.0.0-b6"  # e.g. `anthropic.call`
+pip install "mirascope[openai]"     # e.g. `openai.call`
+pip install "mirascope[anthropic]"  # e.g. `anthropic.call`
 ```
-
-> [!NOTE]
-> Mirascope v1 is currently in a beta pre-release and requires the specific tag to download the version matching this documentation.
 
 ## Primitives
 
