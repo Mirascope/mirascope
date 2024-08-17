@@ -2,88 +2,126 @@
 
 Mirascope provides out-of-the-box integration with [Langfuse](https://langfuse.com/).
 
-## How to use Langfuse with Mirascope
+You can install the necessary packages directly or using the `langfuse` extras flag:
 
 ```python
-from mirascope.langfuse import with_langfuse
+pip install "mirascope[langfuse]"
 ```
 
-`with_langfuse` is a decorator that can be used on all Mirascope classes to automatically log both Mirascope calls and also all our supported LLM providers.
+## How to use Langfuse with Mirascope
 
-## Examples
+### Calls
 
-### Call
+The `with_langfuse` decorator can be used on all Mirascope functions to automatically log calls across all of our [supported LLM providers](../learn/calls.md#supported-providers).
 
-This is a basic call example but will work with all our call functions, `call`, `stream`, `call_async`, `stream_async`.
+Here is a simple example using tools:
 
 ```python
-import os
-from mirascope.langfuse import with_langfuse
-from mirascope.anthropic import AnthropicCall
-
-os.environ["LANGFUSE_SECRET_KEY"] = "sk-lf-..."
-os.environ["LANGFUSE_PUBLIC_KEY"] = "pk-lf-..."
-os.environ["LANGFUSE_HOST"] = "https://cloud.langfuse.com"
+from mirascope.core import anthropic, prompt_template
+from mirascope.integrations.langfuse import with_langfuse
 
 
-@with_langfuse
-class BookRecommender(AnthropicCall):
-    prompt_template = "Please recommend some {genre} books"
-
-    genre: str
+def format_book(title: str, author: str):
+    return f"{title} by {author}"
 
 
-recommender = BookRecommender(genre="fantasy")
-response = recommender.call()  # this will automatically get logged with langfuse
-print(response.content)
-#> Here are some recommendations for great fantasy book series: ...
+@with_langfuse()
+@anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
+
+
+print(recommend_book("fantasy"))
+# > Certainly! I'd be happy to recommend a fantasy book...
 ```
 
 This will give you:
 
-* A trace around the AnthropicCall.call() that captures items like the prompt template, and input/output attributes and more.
+* A trace around the `recommend_book` function that captures items like the prompt template, and input/output attributes and more.
 * Human-readable display of the conversation with the agent
 * Details of the response, including the number of tokens used
 
-![langfuse-screenshot-mirascope-anthropic-call](../assets/langfuse-screenshot-mirascope-anthropic-call.png)
+![langfuse-call-tool](../assets/langfuse-call-tool.png)
 
-## Extract
+### Streams
+
+You can capture streams exactly the same way:
 
 ```python
-import os
-from mirascope.langfuse import with_langfuse
-from mirascope.openai import OpenAIExtractor
-
-os.environ["LANGFUSE_SECRET_KEY"] = "sk-lf-..."
-os.environ["LANGFUSE_PUBLIC_KEY"] = "pk-lf-..."
-os.environ["LANGFUSE_HOST"] = "https://cloud.langfuse.com"
-
-class TaskDetails(BaseModel):
-    description: str
-    due_date: str
-    priority: Literal["low", "normal", "high"]
+from mirascope.core import openai, prompt_template
+from mirascope.integrations.langfuse import with_langfuse
 
 
-@with_langfuse
-class TaskExtractor(OpenAIExtractor[TaskDetails]):
-    extract_schema: Type[TaskDetails] = TaskDetails
-    prompt_template = """
-    Extract the task details from the following task:
-    {task}
-    """
+@with_langfuse()
+@openai.call(
+    model="gpt-4o-mini",
+    stream=True,
+    call_params={"stream_options": {"include_usage": True}},
+)
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
 
-    task: str
 
-
-task = "Submit quarterly report by next Friday. Task is high priority."
-task_details = TaskExtractor(
-    task=task
-).extract()  # this will be logged automatically with langfuse
-assert isinstance(task_details, TaskDetails)
-print(task_details)
-# > description='Submit quarterly report' due_date='next Friday' priority='high'
+for chunk, _ in recommend_book("fantasy"):
+    print(chunk.content, end="", flush=True)
+# > I recommend **"The Name of the Wind"** by Patrick Rothfuss. It's the first book...
 ```
 
-This will give you the same view as you would get from using `langfuse.openai`. We will be adding more extraction support for other providers soon.
+For some providers, certain `call_params` will need to be set in order for usage to be tracked.
 
-![langfuse-screenshot-mirascope-openai-extractor](../assets/langfuse-screenshot-mirascope-openai-extractor.png)
+!!! note "Logged Only On Exhasution"
+
+    When logging streams, the span will not be logged until the stream has been exhausted. This is a function of how streaming works.
+
+### Response Models
+
+Setting `response_model` also behaves the exact same way:
+
+```python
+from mirascope.core import openai, prompt_template
+from mirascope.integrations.langfuse import with_langfuse
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@with_langfuse()
+@openai.call(model="gpt-4o-mini", response_model=Book)
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
+
+
+print(recommend_book("fantasy"))
+# > title='The Name of the Wind' author='Patrick Rothfuss'
+```
+
+This will give you all the information from call with a `response_model` output. You can also set `stream=True` when using `response_model`, which has the same behavior as standard streaming.
+
+![langfuse-response-model](../assets/langfuse-response-model.png)
+
+## Using Langfuse directly with Mirascope
+
+If you choose not to use our `with_langfuse` decorator, you can use Langfuse's wrapper of the OpenAI client.
+
+Here is an example Mirascope call using `langfuse.openai`:
+
+```python
+from langfuse.openai import OpenAI
+from mirascope.core import openai, prompt_template
+
+
+@openai.call(model="gpt-4o-mini", client=OpenAI())
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
+
+
+print(recommend_book("fantasy"))
+# > I recommend **"The Name of the Wind"** by Patrick Rothfuss. It's the first book...
+```

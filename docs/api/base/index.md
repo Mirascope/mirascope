@@ -1,3 +1,0 @@
-# base
-
-::: mirascope.base

@@ -1,3 +1,0 @@
-# anthropic
-
-::: mirascope.anthropic

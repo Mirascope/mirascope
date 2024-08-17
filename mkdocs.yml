@@ -4,13 +4,15 @@ site_url: https://docs.mirascope.io/
 site_description: Mirascope is an intuitive approach to building with LLMs.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
+strict: true
 theme:
   name: material
   custom_dir: docs/overrides
   icon:
     repo: fontawesome/brands/github
   features:
-    - content.code.annotation
+    - content.tabs.link
+    - content.code.annotate
     - content.code.copy
     - content.code.link
     - navigation.footer
@@ -87,115 +89,168 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
+          paths: [.]
           options:
+            members_order: source
+            separate_signature: true
+            filters: ["!^_"]
             show_root_heading: false
+            show_root_toc_entry: false
             docstring_style: google
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            extensions:
+              - docs/plugins/griffe_doclinks.py
+          import:
+            - https://docs.python.org/3/objects.inv
+
+extra_css:
+  - "extra/tweaks.css"
+
+validation:
+  omitted_files: warn
+  absolute_links: relative_to_docs
+  unrecognized_links: warn
+  not_found: warn
 
 nav:
-  - Get Started: "README.md"
-  - Concepts:
-      - Philosophy: "concepts/philosophy.md"
-      - Writing Prompts: "concepts/writing_prompts.md"
-      - Generating content: "concepts/generating_content.md"
-      - Streaming generated content: "concepts/streaming_generated_content.md"
-      - Chaining calls: "concepts/chaining_calls.md"
-      - Retries: "concepts/retries.md"
-      - Chat History: "concepts/chat_history.md"
-      - Tools (Function Calling): "concepts/tools_(function_calling).md"
-      - Extracting structured information using LLMs: "concepts/extracting_structured_information_using_llms.md"
-      - LLM Basic Evaluation: "concepts/llm_basic_evaluation.md"
-      - RAG (Retrieval Augmented Generation): "concepts/rag_(retrieval_augmented_generation).md"
-      - Dumping prompts and calls: "concepts/dumping_prompts_and_calls.md"
-      - Supported LLM providers: "concepts/supported_llm_providers.md"
-      - Tracking Costs for LLM Providers: "concepts/tracking_costs_for_llm_providers.md"
-      - Wrapping Mirascope classes: "concepts/wrapping_mirascope_classes.md"
+  - Get Started:
+      - "index.md"
+      - Why Use Mirascope: "WHY.md"
+      - Help: "HELP.md"
+      - Migration Guide: "MIGRATE.md"
+      - Contributing: "CONTRIBUTING.md"
+      - Changelog: "CHANGELOG.md"
+  - Learn:
+      - "learn/index.md"
+      - Prompts: "learn/prompts.md"
+      - Calls: "learn/calls.md"
+      - Streams: "learn/streams.md"
+      - Tools: "learn/tools.md"
+      - Dynamic Configuration: "learn/dynamic_configuration.md"
+      - Chaining: "learn/chaining.md"
+      - JSON Mode: "learn/json_mode.md"
+      - Response Models: "learn/response_models.md"
+      - Output Parsers: "learn/output_parsers.md"
+      - Async: "learn/async.md"
+      - Evals: "learn/evals.md"
+      - Agents: "learn/agents.md"
+  - Cookbook:
+      - "cookbook/index.md"
+      - Text Classification: "cookbook/text_classification.md"
+      - Text Summaritzation: "cookbook/text_summarization.md"
+      - Search with Sources: "cookbook/search_with_sources.md"
+      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - Extract from PDF: "cookbook/extract_from_pdf.md"
+      - Knowledge Graph: "cookbook/knowledge_graph.md"
+      - Generating Captions: "cookbook/generating_captions.md"
+      - PII Scrubbing: "cookbook/pii_scrubbing.md"
+      - Extraction using Vision: "cookbook/extraction_using_vision.md"
+      - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
+      - Support Ticket Routing: "cookbook/support_ticket_routing.md"
+      - Document Segmentation: "cookbook/document_segmentation.md"
+      - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
+      - Speech Transcription: "cookbook/speech_transcription.md"
+      - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.md"
+      - Query Plan: "cookbook/query_plan.md"
+      - Agents:
+          - "cookbook/agents/index.md"
+          - Web Search Agent: "cookbook/agents/web_search_agent.md"
+          - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
+          - Generating SQL Agent: "cookbook/agents/generating_sql_agent.md"
+          - Localized Agent: "cookbook/agents/localized_agent.md"
+          - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
+      - Prompt Engineering:
+          - "cookbook/prompt_engineering/index.md"
+          - Text Based:
+              - "cookbook/prompt_engineering/text_based/index.md"
+              - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
+          - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
   - Integrations:
-      - Logfire: "integrations/logfire.md"
+      - "integrations/index.md"
+      - Custom LLM Provider: "integrations/custom_provider.md"
+      - HyperDX: "integrations/hyperdx.md"
       - Langfuse: "integrations/langfuse.md"
-      - FastAPI: "integrations/fastapi.md"
-      - Weights & Biases: "integrations/weights_and_biases.md"
-      - LangChain & LangSmith: "integrations/langchain.md"
-      - Llama Index: "integrations/llama_index.md"
-      - Client Wrappers: "integrations/client_wrappers.md"
-      - OpenTelemetry:
-          - "integrations/open_telemetry/index.md"
-          - HyperDX: "integrations/open_telemetry/hyperdx.md"
-  - Cookbook: "cookbook/index.md"
+      - Logfire: "integrations/logfire.md"
+      - Middleware: "integrations/middleware.md"
+      - OpenTelemetry: "integrations/otel.md"
+      - Tenacity: "integrations/tenacity.md"
   - API Reference:
       - "api/index.md"
-      - anthropic:
-          - "api/anthropic/index.md"
-          - calls: "api/anthropic/calls.md"
-          - extractors: "api/anthropic/extractors.md"
-          - tools: "api/anthropic/tools.md"
-          - types: "api/anthropic/types.md"
-      - base:
-          - "api/base/index.md"
-          - calls: "api/base/calls.md"
-          - extractors: "api/base/extractors.md"
-          - prompts: "api/base/prompts.md"
-          - tools: "api/base/tools.md"
-          - types: "api/base/types.md"
-          - utils: "api/base/utils.md"
-          - ops_utils: "api/base/ops_utils.md"
-      - chroma:
-          - "api/chroma/index.md"
-          - types: "api/chroma/types.md"
-          - vectorstores: "api/chroma/vectorstores.md"
-      - cohere:
-          - "api/cohere/index.md"
-          - calls: "api/cohere/calls.md"
-          - embedders: "api/cohere/embedders.md"
-          - extractors: "api/cohere/extractors.md"
-          - tools: "api/cohere/tools.md"
-          - types: "api/cohere/types.md"
-      - enums: "api/enums.md"
-      - gemini:
-          - "api/gemini/index.md"
-          - calls: "api/gemini/calls.md"
-          - extractors: "api/gemini/extractors.md"
-          - tools: "api/gemini/tools.md"
-          - types: "api/gemini/types.md"
-      - langfuse:
-          - "api/langfuse/index.md"
-          - langfuse: "api/langfuse/langfuse.md"
-      - logfire:
-          - "api/logfire/index.md"
-          - logfire: "api/logfire/logfire.md"
-      - mistral:
-          - "api/mistral/index.md"
-          - calls: "api/mistral/calls.md"
-          - extractors: "api/mistral/extractors.md"
-          - tools: "api/mistral/tools.md"
-          - types: "api/mistral/types.md"
-      - openai:
-          - "api/openai/index.md"
-          - calls: "api/openai/calls.md"
-          - embedders: "api/openai/embedders.md"
-          - extractors: "api/openai/extractors.md"
-          - tools: "api/openai/tools.md"
-          - types: "api/openai/types.md"
-      - otel:
-          - "api/otel/index.md"
-          - otel: "api/otel/otel.md"
-          - hyperdx:
-              - "api/otel/hyperdx/index.md"
-              - hyperdx: "api/otel/hyperdx/hyperdx.md"
-      - pinecone:
-          - "api/pinecone/index.md"
-          - vectorstores: "api/pinecone/vectorstores.md"
-          - types: "api/pinecone/types.md"
-      - rag:
-          - "api/rag/index.md"
-          - embedders: "api/rag/embedders.md"
-          - chunkers:
-              - "api/rag/chunkers/index.md"
-              - base_chunker: "api/rag/chunkers/base_chunker.md"
-              - text_chunker: "api/rag/chunkers/text_chunker.md"
-          - vectorstores: "api/rag/vectorstores.md"
-      - wandb:
-          - "api/wandb/index.md"
-          - wandb: "api/wandb/wandb.md"
-          - weave: "api/wandb/weave.md"
-  - Help: "HELP.md"
-  - Contributing: "CONTRIBUTING.md"
+      - Core:
+          - "api/core/index.md"
+          - Anthropic:
+              - call: "api/core/anthropic/call.md"
+              - call_params: "api/core/anthropic/call_params.md"
+              - call_response: "api/core/anthropic/call_response.md"
+              - call_response_chunk: "api/core/anthropic/call_response_chunk.md"
+              - dynamic_config: "api/core/anthropic/dynamic_config.md"
+              - stream: "api/core/anthropic/stream.md"
+              - tool: "api/core/anthropic/tool.md"
+          - Base:
+              - call_factory: "api/core/base/call_factory.md"
+              - call_params: "api/core/base/call_params.md"
+              - call_response: "api/core/base/call_response.md"
+              - call_response_chunk: "api/core/base/call_response_chunk.md"
+              - dynamic_config: "api/core/base/dynamic_config.md"
+              - message_param: "api/core/base/message_param.md"
+              - metadata: "api/core/base/metadata.md"
+              - prompt: "api/core/base/prompt.md"
+              - stream: "api/core/base/stream.md"
+              - structured_stream: "api/core/base/structured_stream.md"
+              - tool: "api/core/base/tool.md"
+              - toolkit: "api/core/base/toolkit.md"
+          - Cohere:
+              - call: "api/core/cohere/call.md"
+              - call_params: "api/core/cohere/call_params.md"
+              - call_response: "api/core/cohere/call_response.md"
+              - call_response_chunk: "api/core/cohere/call_response_chunk.md"
+              - dynamic_config: "api/core/cohere/dynamic_config.md"
+              - stream: "api/core/cohere/stream.md"
+              - tool: "api/core/cohere/tool.md"
+          - Gemini:
+              - call: "api/core/gemini/call.md"
+              - call_params: "api/core/gemini/call_params.md"
+              - call_response: "api/core/gemini/call_response.md"
+              - call_response_chunk: "api/core/gemini/call_response_chunk.md"
+              - dynamic_config: "api/core/gemini/dynamic_config.md"
+              - stream: "api/core/gemini/stream.md"
+              - tool: "api/core/gemini/tool.md"
+          - Groq:
+              - call: "api/core/groq/call.md"
+              - call_params: "api/core/groq/call_params.md"
+              - call_response: "api/core/groq/call_response.md"
+              - call_response_chunk: "api/core/groq/call_response_chunk.md"
+              - dynamic_config: "api/core/groq/dynamic_config.md"
+              - stream: "api/core/groq/stream.md"
+              - tool: "api/core/groq/tool.md"
+          - LiteLLM:
+              - call: "api/core/litellm/call.md"
+          - Mistral:
+              - call: "api/core/mistral/call.md"
+              - call_params: "api/core/mistral/call_params.md"
+              - call_response: "api/core/mistral/call_response.md"
+              - call_response_chunk: "api/core/mistral/call_response_chunk.md"
+              - dynamic_config: "api/core/mistral/dynamic_config.md"
+              - stream: "api/core/mistral/stream.md"
+              - tool: "api/core/mistral/tool.md"
+          - OpenAI:
+              - call: "api/core/openai/call.md"
+              - call_params: "api/core/openai/call_params.md"
+              - call_response: "api/core/openai/call_response.md"
+              - call_response_chunk: "api/core/openai/call_response_chunk.md"
+              - dynamic_config: "api/core/openai/dynamic_config.md"
+              - stream: "api/core/openai/stream.md"
+              - tool: "api/core/openai/tool.md"
+      - Integrations:
+          - "api/integrations/index.md"
+          - Langfuse: "api/integrations/langfuse.md"
+          - Logfire: "api/integrations/logfire.md"
+          - Middleware: "api/integrations/middleware.md"
+          - OpenTelemetry: "api/integrations/otel.md"
+          - Tenacity: "api/integrations/tenacity.md"

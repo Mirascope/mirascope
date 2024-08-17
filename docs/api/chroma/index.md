@@ -1,3 +1,0 @@
-# chroma
-
-::: mirascope.chroma

@@ -4,15 +4,16 @@ run-name: ${{ github.actor }} is linting the package
 on:
   push:
     branches:
-      - main
       - dev
+      - v1
   pull_request:
     branches:
-      - main
       - dev
+      - v1
 
 jobs:
-  tests:
+  lints:
+    name: Ruff and Pyright
     runs-on: ubuntu-latest
 
     steps:
@@ -32,5 +33,5 @@ jobs:
       - name: Run Ruff
         run: poetry run ruff check .
 
-      - name: Run MyPy
-        run: poetry run mypy .
+      - name: Run Pyright
+        run: poetry run pyright .

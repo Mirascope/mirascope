@@ -1,9 +1,3 @@
----
-hide:
-- navigation
-- toc
----
-
 # Contributing
 
 ## Setting Up Development Environment
@@ -15,7 +9,7 @@ To create a virtual environment for development, run the following in your shell
 ```sh
 pip install poetry
 poetry shell
-poetry install --with dev
+poetry install --all-extras --with dev
 ```
 
 Simply use `exit` to deactivate the environment. The next time you call `poetry shell` the environment will already be setup and ready to go.
@@ -69,22 +63,25 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
 
     ```shell
     poetry run ruff check .
-    poetry run mypy .
+    poetry run pyright .
     ```
 
 4. Test!
+
     - Add tests. Tests should be mirrored based on structure of the source.
 
     ```bash
     | - mirascope
-    |  | - openai
-    |  |  | - calls.py
+    |  | - core
+    |  |  | - openai
+    |  |  |  | - ...
     | - tests
-    |  | - openai
-    |  |  | - test_calls.py
+    |  | - core
+    |  |  | - openai
+    |  |  |  | - ...
     ```
   
-    - Run tests to make sure nothing broke
+    - Run tests to make sure nothing is broken
 
     ```shell
     poetry run pytest tests/
@@ -105,15 +102,10 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     ```
 
     - Open the printed URL to open a PR.
-
     - Fill in a detailed title and description.
-
     - Check box to allow edits from maintainers
-
     - Submit your PR for review. You can do this via Contribute in your fork repo.
-
     - Link the issue you selected or created under "Development"
-
     - We will review your contribution and add any comments to the PR. Commit any updates you make in response to comments and push them to the branch (they will be automatically included in the PR)
 
 ### Pull Requests
@@ -132,6 +124,6 @@ We use a [Codecov dashboard](https://app.codecov.io/github/Mirascope/mirascope/t
 
 ## Formatting and Linting
 
-In an effort to keep the codebase clean and easy to work with, we use `ruff` for formatting and both `ruff` and `mypy` for linting. Before sending any PR for review, make sure to run both `ruff` and `mypy`.
+In an effort to keep the codebase clean and easy to work with, we use `ruff` for formatting and both `ruff` and `pyright` for linting. Before sending any PR for review, make sure to run both `ruff` and `pyright`.
 
-If you are using VS Code, then install the extensions in `.vscode/extensions.json` and the workspace settings should automatically run `ruff` formatting on save and show `ruff` and `mypy` errors.
+If you are using VS Code, then install the extensions in `.vscode/extensions.json` and the workspace settings should automatically run `ruff` formatting on save and show `ruff` and `pyright` errors.

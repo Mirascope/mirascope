@@ -1,3 +1,0 @@
-# otel
-
-::: mirascope.otel

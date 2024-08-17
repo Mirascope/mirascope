@@ -4,20 +4,21 @@ run-name: ${{ github.actor }} is testing the package
 on:
   push:
     branches:
-      - main
       - dev
+      - v1
   pull_request:
     branches:
-      - main
       - dev
+      - v1
 
 jobs:
   tests:
+    name: Tests
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v3

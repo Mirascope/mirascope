@@ -1,3 +1,0 @@
-# openai
-
-::: mirascope.openai

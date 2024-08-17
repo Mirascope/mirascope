@@ -1,3 +1,0 @@
-# pinecone
-
-::: mirascope.pinecone

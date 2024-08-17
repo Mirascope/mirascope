@@ -1,3 +1,0 @@
-# rag
-
-::: mirascope.rag

@@ -1,1 +1,1 @@
-"""Tests for the mirascope module."""
+"""Tests for the Mirascope package."""
