@@ -143,7 +143,7 @@ nav:
   - Cookbook:
       - "cookbook/index.md"
       - Text Classification: "cookbook/text_classification.md"
-      - Text Summaritzation: "cookbook/text_summarization.md"
+      - Text Summarization: "cookbook/text_summarization.md"
       - Search with Sources: "cookbook/search_with_sources.md"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
       - Extract from PDF: "cookbook/extract_from_pdf.md"

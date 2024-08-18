@@ -166,27 +166,29 @@ def structured_stream_factory(
         _P,
         Iterable[_ResponseModelT] | Awaitable[AsyncIterable[_ResponseModelT]],
     ]:
+        def handle_chunk(chunk: _ResponseChunkT):
+            call_response_chunk = TCallResponseChunk(chunk=chunk)
+            json_output = get_json_output(call_response_chunk, json_mode)
+            call_response_chunk_type = type(call_response_chunk)
+            original_content_property = getattr(call_response_chunk_type, "content")
+            setattr(call_response_chunk_type, "content", json_output)
+            call_response_chunk = call_response_chunk_type(chunk=chunk)
+            setattr(call_response_chunk_type, "content", original_content_property)
+            return call_response_chunk, None
+
         def handle_stream(
             stream: Generator[_ResponseChunkT, None, None],
             tool_types: list[type[_BaseToolT]] | None,
         ):
             for chunk in stream:
-                call_response_chunk = TCallResponseChunk(chunk=chunk)
-                json_output = get_json_output(call_response_chunk, json_mode)
-                call_response_chunk_type = type(call_response_chunk)
-                setattr(call_response_chunk_type, "content", json_output)
-                yield call_response_chunk_type(chunk=chunk), None
+                yield handle_chunk(chunk)
 
         async def handle_stream_async(
             stream: AsyncGenerator[_ResponseChunkT, None],
             tool_types: list[type[_BaseToolT]] | None,
         ):
             async for chunk in stream:
-                call_response_chunk = TCallResponseChunk(chunk=chunk)
-                json_output = get_json_output(call_response_chunk, json_mode)
-                call_response_chunk_type = type(call_response_chunk)
-                setattr(call_response_chunk_type, "content", json_output)
-                yield call_response_chunk_type(chunk=chunk), None
+                yield handle_chunk(chunk)
 
         stream_decorator = stream_factory(
             TCallResponse=TCallResponse,

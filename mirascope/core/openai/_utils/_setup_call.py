@@ -44,7 +44,7 @@ def setup_call(
         call_kwargs["response_format"] = {"type": "json_object"}
         json_mode_content = _utils.json_mode_content(
             tool_types[0] if tool_types else None
-        )
+        ).strip()
         messages.append(
             ChatCompletionUserMessageParam(role="user", content=json_mode_content)
         )
