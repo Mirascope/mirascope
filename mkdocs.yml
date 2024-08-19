@@ -10,6 +10,7 @@ theme:
   custom_dir: docs/overrides
   icon:
     repo: fontawesome/brands/github
+  logo: assets/brandmark.png
   features:
     - content.tabs.link
     - content.code.annotate
@@ -29,13 +30,13 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-      primary: indigo
+      primary: custom
       accent: indigo
     - scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-      primary: indigo
+      primary: custom
       accent: indigo
   font:
     text: Roboto
