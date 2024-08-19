@@ -10,15 +10,49 @@
     
     We're extremely excited about the changes in v1 and want to make sure that you are set up to be equally excited.
 
-## Introduction
-
 Mirascope v1 introduces significant changes to improve developer experience, enhance flexibility, and provide more powerful features for working with Large Language Models (LLMs). This guide will help you migrate your existing Mirascope v0 code to v1, highlighting key differences and new features.
+
+## Understanding the Shift from v0 to v1
+
+### Why Decorators Instead of Classes?
+
+The transition from a class-based approach in v0 to a decorator-based approach in v1 represents a fundamental shift in how Mirascope handles LLM API calls. This change was driven by several key considerations:
+
+1. **Stateless Nature of LLM API Calls**:
+   LLM API calls are inherently stateless. The class-based approach in v0, which introduced fields as state, didn't align well with this stateless nature. Decorators better represent the functional, stateless character of these API interactions.
+
+2. **Performance Improvements**:
+   Creating a class instance for every call introduced unnecessary overhead. Functions, modified by decorators at runtime, provide a more lightweight and faster execution model.
+
+3. **Functional Programming Paradigm**:
+   The move to a more functional approach allows for greater flexibility and composability. It enables features like dynamic configuration, which were challenging to implement with the class-based model.
+
+4. **Easier Integration with Other Libraries**:
+   Many Python libraries use decorators. By adopting a decorator-based approach, Mirascope v1 seamlessly integrates with these libraries. For example, you can now use libraries like `tenacity` for retry logic without any explicit integration – it just works.
+
+### Benefits of the New Approach
+
+1. **Simplified Code**:
+   Instead of defining a class for each LLM call, you can now use a simple function with a decorator. This results in more concise and readable code.
+
+2. **Enhanced Flexibility**:
+   The decorator approach allows for more dynamic behavior, such as easily changing call parameters or prompt templates at runtime.
+
+3. **Improved Performance**:
+   By eliminating the need to construct class instances, the new approach offers better performance, especially for applications making frequent LLM calls.
+
+4. **Better Alignment with Python Ecosystem**:
+   The decorator pattern is widely used in Python, making Mirascope v1 feel more native to experienced Python developers.
+
+The v1 approach is more concise, directly represents the stateless nature of the API call, and allows for easier dynamic usage and integration with other Python libraries.
+
+By embracing this new paradigm, Mirascope v1 offers a more pythonic, flexible, and powerful way to interact with LLMs, setting the stage for more advanced features and integrations in the future.
 
 ## Core Changes
 
-### From Classes to Decorators
+The most significant change in v1 is the shift from class-based to decorator-based calls. To illustrate the difference, let's take a look at various comparison examples between the two versions.
 
-The most significant change in v1 is the shift from class-based to decorator-based calls.
+### From Classes to Decorators
 
 Before (v0):
 
