@@ -139,9 +139,9 @@ def update_links(obj: GriffeObject) -> None:
 
 
 class UpdateDocstringsExtension(Extension):
-    def on_instance(
+    def on_instance(  # type: ignore
         self, *, node: ast.AST | ObjectNode, obj: GriffeObject, agent: Any
-    ) -> None:  # type: ignore
+    ) -> None:
         try:
             if not obj.is_alias and obj.docstring is not None:
                 update_links(obj)
