@@ -18,7 +18,7 @@ def convert_function_to_base_tool(
     __doc__: str | None = None,
     __namespace__: str | None = None,
 ) -> type[BaseToolT]:
-    """Constructst a `BaseToolT` type from the given function.
+    """Constructs a `BaseToolT` type from the given function.
 
     This method expects all function parameters to be properly documented in identical
     order with identical variable names, as well as descriptions of each parameter.

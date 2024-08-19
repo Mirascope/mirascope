@@ -23,6 +23,7 @@ def get_template_variables(
 
     Args:
         template: The template string to parse.
+        include_format_spec: A boolean indicating whether to include format specifications.
 
     Returns:
         The variables in the template string.
