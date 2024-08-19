@@ -11,6 +11,7 @@ import re
 import sys
 import traceback
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 from griffe import Extension, ObjectNode
@@ -138,7 +139,9 @@ def update_links(obj: GriffeObject) -> None:
 
 
 class UpdateDocstringsExtension(Extension):
-    def on_instance(self, *, node: ast.AST | ObjectNode, obj: GriffeObject) -> None:  # type: ignore
+    def on_instance(
+        self, *, node: ast.AST | ObjectNode, obj: GriffeObject, agent: Any
+    ) -> None:  # type: ignore
         try:
             if not obj.is_alias and obj.docstring is not None:
                 update_links(obj)

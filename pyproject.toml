@@ -67,7 +67,7 @@ pytest-cov = "^4.1.0"
 mike = "^2.0.0"
 mkdocs = "^1.6.0"
 mkdocs-material = "^9.5.28"
-mkdocstrings = ">0.25.1,<1.0.0"
+mkdocstrings = "^0.25.2"
 mkdocstrings-python = "^1.10.5"
 black = "^24.8.0"
 
