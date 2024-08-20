@@ -199,7 +199,6 @@ def structured_stream_factory(
         )
 
         tool = setup_extract_tool(response_model, TToolType)
-        is_async = inspect.iscoroutinefunction(fn)
         stream_decorator_kwargs = {
             "model": model,
             "tools": [tool],
@@ -207,29 +206,33 @@ def structured_stream_factory(
             "client": client,
             "call_params": call_params,
         }
+        if inspect.iscoroutinefunction(fn):
 
-        @wraps(fn)
-        def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-            assert SetupCall.fn_is_sync(fn)
-            return BaseStructuredStream[_ResponseModelT](
-                stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
-                    *args, **kwargs
-                ),
-                response_model=response_model,
-            )
+            @wraps(fn)
+            async def inner_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> AsyncIterable[_ResponseModelT]:
+                assert SetupCall.fn_is_async(fn)
+                return BaseStructuredStream[_ResponseModelT](
+                    stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                        *args, **kwargs
+                    ),
+                    response_model=response_model,
+                )
 
-        @wraps(fn)
-        async def inner_async(
-            *args: _P.args, **kwargs: _P.kwargs
-        ) -> AsyncIterable[_ResponseModelT]:
-            assert SetupCall.fn_is_async(fn)
-            return BaseStructuredStream[_ResponseModelT](
-                stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
-                    *args, **kwargs
-                ),
-                response_model=response_model,
-            )
+            return inner_async
+        else:
 
-        return inner_async if is_async else inner
+            @wraps(fn)
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
+                assert SetupCall.fn_is_sync(fn)
+                return BaseStructuredStream[_ResponseModelT](
+                    stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                        *args, **kwargs
+                    ),
+                    response_model=response_model,
+                )
+
+            return inner
 
     return decorator
