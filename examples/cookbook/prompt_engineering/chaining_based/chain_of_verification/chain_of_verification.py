@@ -13,8 +13,7 @@ def call(query: str): ...
 class VerificationQuestions(BaseModel):
     questions: list[str] = Field(
         ...,
-        description="""A list of questions that  verifies if the response
-        answers the original query correctly.""",
+        description="A list of questions that  verifies if the response answers the original query correctly.",
     )
 
 
@@ -23,8 +22,7 @@ class VerificationQuestions(BaseModel):
     """
     SYSTEM:
     You will be given a query and a response to the query.
-    Take the relevant statements in the response and rephrase them into questions so
-    that they can be used to verify that they satisfy the original query.
+    Take the relevant statements in the response and rephrase them into questions so that they can be used to verify that they satisfy the original query.
     USER:
     Query:
     {query}
@@ -51,7 +49,7 @@ async def answer(query: str): ...
     {response}
 
     Here is some fact checking on the response:
-    {verification_q_and_a:list}
+    {verification_q_and_a:lists}
 
     Using the knowledge you learned from verification, re-answer the original query.
     """
@@ -63,7 +61,8 @@ async def cov_call(query: str) -> openai.OpenAIDynamicConfig:
     responses = await asyncio.gather(*tasks)
     verification_answers = [response.content for response in responses]
     verification_q_and_a = [
-        f"Q:{q}\nA:{a}" for q, a in zip(verification_questions, verification_answers)
+        [f"Q:{q}", f"A:{a}"]
+        for q, a in zip(verification_questions, verification_answers)
     ]
     return {
         "computed_fields": {

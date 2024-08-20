@@ -12,8 +12,7 @@ class PromptVariations(BaseModel):
 @openai.call(model="gpt-4o-mini", response_model=PromptVariations)
 @prompt_template(
     """
-    Return the {num_prompts} alternate variations of the prompt which retain the
-    full meaning but uses different phrasing.
+    Return the {num_prompts} alternate variations of the prompt which retain the full meaning but uses different phrasing.
     Prompt: {prompt}
     """
 )
@@ -49,9 +48,7 @@ class ResponseDetails(BaseModel):
     Prompt: {query}
     Response: {response}
 
-    Extract the raw numerical value of the answer given by the response, and also
-    give an estimate between 0.0 and 1.0 of the probability that this solution
-    is correct.
+    Extract the raw numerical value of the answer given by the response, and also give an estimate between 0.0 and 1.0 of the probability that this solution is correct.
     """
 )
 async def evaluate_response(query: str, response: str): ...
@@ -84,7 +81,7 @@ async def diverse(query: str, num_variations: int):
             eval_response.correctness_probability
         )
     # print(response_scores)
-    best_response = max(response_scores, key=response_scores.get)  # type: ignore
+    best_response = max(response_scores.keys(), key=lambda k: response_scores[k])
     return best_response
 
 

@@ -61,7 +61,7 @@ def self_refine(query: str, depth: int) -> str:
     response = call(query)
     for _ in range(depth):
         response = generate_new_response(query, response)
-    return response
+    return response.content
 
 
 query = """Olivia has $23. She bought five bagels for $3 each.
@@ -116,17 +116,17 @@ class MathSolution(BaseModel):
     Provide the solution steps and the final numerical answer.
     """
 )
-def enhanced_generate_new_response(query: str, response: str) -> openai.OpenAIDynamicConfig:
+def enhanced_generate_new_response(
+    query: str, response: OpenAICallResponse
+) -> openai.OpenAIDynamicConfig:
     feedback = evaluate_response(query, response)
-    print(feedback)
     return {"computed_fields": {"feedback": feedback}}
 
 def enhanced_self_refine(query: str, depth: int) -> MathSolution:
-    response = call(query).content
+    response = call(query)
     for _ in range(depth):
         solution = enhanced_generate_new_response(query, response)
         response = f"Steps: {solution.steps}\nFinal Answer: {solution.final_answer}"
-        print(response)
     return solution
 
 # Example usage

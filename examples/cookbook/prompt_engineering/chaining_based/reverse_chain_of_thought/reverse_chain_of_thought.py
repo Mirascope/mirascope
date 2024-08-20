@@ -55,13 +55,11 @@ class Comparison(BaseModel):
     )
     deducible: bool = Field(
         ...,
-        description="""Whether the condition is deducible from the list of other \
-        conditions.""",
+        description="Whether the condition is deducible from the list of other conditions.",
     )
     illustration: str = Field(
         ...,
-        description="""A quick illustration of the reason the condition is/isn't \
-        deducible from the list of other conditions.""",
+        description="A quick illustration of the reason the condition is/isn't deducible from the list of other conditions.",
     )
 
 
@@ -76,8 +74,7 @@ class Comparison(BaseModel):
 
     Here is a condition list: '{condition_list}'
 
-    From a mathematical point of view, can this candidate condition be deduced from
-    the condition list?
+    From a mathematical point of view, can this candidate condition be deduced from the condition list?
     Please illustrate your reason and answer True or False.
     """
 )
@@ -92,8 +89,7 @@ async def compare_conditions(condition: str, condition_list: list[str]): ...
     Q1: {original_problem}
     Q2: {reconstructed_problem}
     
-    From a mathematical point of view, are these two problems asking the same
-    thing at the end?
+    From a mathematical point of view, are these two problems asking the same thing at the end?
     """
 )
 def compare_questions(original_problem: str, reconstructed_problem: str): ...

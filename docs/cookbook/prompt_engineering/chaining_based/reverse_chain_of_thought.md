@@ -39,8 +39,8 @@ def zero_shot_cot(query: str): ...
     """
     USER:
     Give the concrete prompt (problem) that can generate this answer.
-    The problem should contain all basic and necessary information and correspond to the
-    answer. The problem can only ask for one result.
+    The problem should contain all basic and necessary information and correspond to the answer.
+    The problem can only ask for one result.
 
     {response}
     """
@@ -62,8 +62,7 @@ class Decomposition(BaseModel):
 @prompt_template(
     """
     Please list the conditions of the problem. There may be multiple conditions.
-    Do not list conditions not related to calculations,
-    but list all necessary conditions.
+    Do not list conditions not related to calculations, but list all necessary conditions.
     The format should be a list of conditions with one condition per item.
 
     {query}
@@ -78,13 +77,11 @@ class Comparison(BaseModel):
     )
     deducible: bool = Field(
         ...,
-        description="""Whether the condition is deducible from the list of other \
-        conditions.""",
+        description="Whether the condition is deducible from the list of other conditions.",
     )
     illustration: str = Field(
         ...,
-        description="""A quick illustration of the reason the condition is/isn't \
-        deducible from the list of other conditions.""",
+        description="A quick illustration of the reason the condition is/isn't deducible from the list of other conditions.",
     )
 
 
@@ -99,8 +96,7 @@ class Comparison(BaseModel):
 
     Here is a condition list: '{condition_list}'
 
-    From a mathematical point of view, can this candidate condition be deduced from
-    the condition list?
+    From a mathematical point of view, can this candidate condition be deduced from the condition list?
     Please illustrate your reason and answer True or False.
     """
 )
@@ -115,8 +111,7 @@ async def compare_conditions(condition: str, condition_list: list[str]): ...
     Q1: {original_problem}
     Q2: {reconstructed_problem}
     
-    From a mathematical point of view, are these two problems asking the same
-    thing at the end?
+    From a mathematical point of view, are these two problems asking the same thing at the end?
     """
 )
 def compare_questions(original_problem: str, reconstructed_problem: str): ...

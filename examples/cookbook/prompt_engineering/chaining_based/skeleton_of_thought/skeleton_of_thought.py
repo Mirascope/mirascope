@@ -17,12 +17,9 @@ class Skeleton(BaseModel):
 @openai.call(model="gpt-3.5-turbo", response_model=Skeleton)
 @prompt_template(
     """
-    You’re an organizer responsible for only giving the skeleton (not the full \
-    content) for answering the question.
-    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to answer \
-    the question.
-    Instead of writing a full sentence, each skeleton point should be very short \
-    with only 3∼5 words.
+    You're an organizer responsible for only giving the skeleton (not the full content) for answering the question.
+    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to answer the question. 
+    Instead of writing a full sentence, each skeleton point should be very short with only 3∼5 words.
     Generally, the skeleton should have 3∼10 points.
     Now, please provide the skeleton for the following question.
     {query}
@@ -35,8 +32,7 @@ def break_into_subpoints(query: str): ...
 @openai.call(model="gpt-3.5-turbo")
 @prompt_template(
     """
-    You’re responsible for continuing the writing of one and only one point in
-    the overall answer to the following question:
+    You’re responsible for continuing the writing of one and only one point in the overall answer to the following question:
 
     {query}
 
@@ -44,8 +40,7 @@ def break_into_subpoints(query: str): ...
 
     {skeleton}
 
-    Continue and only continue the writing of point {point_index}. Write it very
-    shortly in 1-2 sentences and do not continue with other points!
+    Continue and only continue the writing of point {point_index}. Write it very shortly in 1-2 sentences and do not continue with other points!
     """
 )
 async def expand_subpoint(query: str, skeleton: list[str], point_index: int): ...

@@ -33,7 +33,7 @@ class Problem(BaseModel):
 @prompt_template(
     """
     Examples to guide your answer:
-    {examples:list}
+    {examples:lists}
     Break the following query into subproblems:
     {query}
     """
@@ -42,7 +42,7 @@ def break_into_subproblems(
     query: str, few_shot_examples: list[dict[str, str]]
 ) -> openai.OpenAIDynamicConfig:
     examples = [
-        f"Question: {example['question']}\nAnswer: {example['answer']}"
+        [f"Q:{example['question']}", f"A:{example['answer']}"]
         for example in few_shot_examples
     ]
     return {"computed_fields": {"examples": examples}}
@@ -53,8 +53,8 @@ def break_into_subproblems(
 def call(history: list[ChatCompletionMessageParam]): ...
 
 
-query_context = """The Census Bureaus 2006-2010 American Community Survey showed that\
-(in 2010 inflation adjustment dollars) median household income was $52,056 and the\
+query_context = """The Census Bureaus 2006-2010 American Community Survey showed that \
+(in 2010 inflation adjustment dollars) median household income was $52,056 and the \
 median family income was $58,942."""
 
 query_question = "How many years did the Census Bureaus American Community Survey last?"

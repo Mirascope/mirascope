@@ -61,7 +61,7 @@ few_shot_examples = [
 @prompt_template(
     """
     Some examples on how to think step by step:
-    {examples:list}
+    {examples:lists}
 
     Answer the following question, thinking step by step:
     {query}
@@ -71,7 +71,7 @@ async def chain_of_thought(
     query: str, few_shot_examples: list[dict[str, str]]
 ) -> openai.OpenAIDynamicConfig:
     examples = [
-        f"Question: {example['question']}\nAnswer: {example['answer']}"
+        [f"Q:{example['question']}", f"A:{example['answer']}"]
         for example in few_shot_examples
     ]
     return {"computed_fields": {"examples": examples}}

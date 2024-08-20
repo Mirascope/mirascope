@@ -95,6 +95,8 @@ def decomposed_prompting(query: str):
             output = tool.call()
             history += response.tool_message_params([(tool, output)])
             response = solve_next_step(history, query)
+
+            # This should never return another tool call in DECOMP so don't recurse
             history.append(response.message_param)
     return response
 

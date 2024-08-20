@@ -39,7 +39,7 @@ qa_examples = [
 @prompt_template(
     """
     Here are some examples that demonstrate the voice to use in a corporate setting.
-    {examples:list}
+    {examples:lists}
 
     With these examples, answer the following question:
     {query}
@@ -48,7 +48,10 @@ qa_examples = [
 async def answer(query: str) -> openai.OpenAIDynamicConfig:
     random_indices = random.sample(range(len(qa_examples)), 3)
     examples = [
-        f"Question: {qa_examples[i]['question']}\nAnswer: {qa_examples[i]['answer']}"
+        [
+            f"Question: {qa_examples[i]['question']}",
+            f"Answer: {qa_examples[i]['answer']}",
+        ]
         for i in random_indices
     ]
     return {"computed_fields": {"examples": examples}}

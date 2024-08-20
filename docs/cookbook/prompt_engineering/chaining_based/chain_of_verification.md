@@ -80,7 +80,8 @@ async def cov_call(query: str) -> openai.OpenAIDynamicConfig:
     responses = await asyncio.gather(*tasks)
     verification_answers = [response.content for response in responses]
     verification_q_and_a = [
-        f"Q:{q}\nA:{a}" for q, a in zip(verification_questions, verification_answers)
+        [f"Q:{q}", f"A:{a}"]
+        for q, a in zip(verification_questions, verification_answers)
     ]
     return {
         "computed_fields": {

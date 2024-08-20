@@ -15,17 +15,15 @@ class Problem(BaseModel):
 @openai.call(model="gpt-4o-mini", response_model=Problem)
 @prompt_template(
     """
-    Your job is to break a problem into subproblems so that it may be solved
-    step by step, using at most one function call at each step.
+    Your job is to break a problem into subproblems so that it may be solved step by step, using at most one function call at each step.
 
-    You have access to the following functions which you can use to solve a
-    problem:
+    You have access to the following functions which you can use to solve a problem:
     split: split a string into individual words
     substring: get the ith character of a single string.
     concat: concatenate some number of strings.
 
-    Here is an example of how it would be done for the problem: Get the first two
-    letters of the phrase 'Round Robin' with a period and space in between them.
+    Here is an example of how it would be done for the problem:
+    Get the first two letters of the phrase 'Round Robin' with a period and space in between them.
     Steps:
     split 'Round Robin' into individual words
     substring the 0th char of 'Round'
@@ -80,6 +78,8 @@ def decomposed_prompting(query: str):
             history += response.tool_message_params([(tool, output)])
             response = solve_next_step(history, query)
             # print(response)
+
+            # This should never return another tool call in DECOMP so don't recurse
             history.append(response.message_param)
     return response
 

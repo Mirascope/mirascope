@@ -98,7 +98,7 @@ async def diverse(query: str, num_variations: int):
         response_scores[eval_response.solution_number] += (
             eval_response.correctness_probability
         )
-    best_response = max(response_scores, key=response_scores.get)  # type: ignore
+    best_response = max(response_scores.keys(), key=lambda k: response_scores[k])
     return best_response
 
 

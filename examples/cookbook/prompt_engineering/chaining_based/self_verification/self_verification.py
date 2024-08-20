@@ -24,8 +24,7 @@ class ProblemInfo(BaseModel):
 @openai.call(model="gpt-4o-mini", response_model=ProblemInfo)
 @prompt_template(
     """
-    For the following question, identify the key pieces of information
-    needed to answer the question.
+    For the following question, identify the key pieces of information needed to answer the question.
     Question: {query}
     """
 )
@@ -47,8 +46,7 @@ class MaskedPrompts(BaseModel):
 @prompt_template(
     """
     Generate one masked copy of the prompt for each piece of key info.
-    The number of masked prompts you generate should be equal to the number of pieces
-    of key info, and each masked prompt should mask one key piece of information.
+    The number of masked prompts you generate should be equal to the number of pieces of key info, and each masked prompt should mask one key piece of information.
     Prompt: {query}
     Key Info: {key_info}
     """
@@ -62,10 +60,8 @@ async def mask_prompt(query: str) -> openai.OpenAIDynamicConfig:
 @prompt_template(
     """
     SYSTEM:
-    You will be given a masked prompt with some value Xd out, and the solution to \
-    the original problem.
-    Return the prompt verbatim, but fill in the value for X according to what you \
-    see in the solution.
+    You will be given a masked prompt with some value Xd out, and the solution to the original problem.
+    Return the prompt verbatim, but fill in the value for X according to what you see in the solution.
 
     USER:
     solution: {solution}
@@ -78,11 +74,7 @@ async def fill_in_value(solution: str, masked_prompt: str): ...
 class PromptComparison(BaseModel):
     score: int = Field(
         ...,
-        description="""The number of variation prompts which are \
-                    semantically equivalent to the original prompt. \
-                    For numbers in the prompts, expect the same values, and for \
-                    quantitative words, only count semantically identical terms, such \
-                    as two times = double.""",
+        description="""The number of variation prompts which are semantically equivalent to the original prompt. For numbers in the prompts, expect the same values, and for quantitative words, only count semantically identical terms, such as two times = double.""",
     )
 
 
