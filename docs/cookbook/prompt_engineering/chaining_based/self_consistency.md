@@ -26,47 +26,55 @@ from collections import Counter
 
 from mirascope.core import openai, prompt_template
 
-few_shot_examples = """
-Q: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done,
-there will be 21 trees. How many trees did the grove workers plant today?
-A: We start with 15 trees. Later we have 21 trees. The difference must be the number of trees they planted.
-So, they must have planted 21 - 15 = 6 trees. The answer is 6.
-Q: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
-A: There are 3 cars in the parking lot already. 2 more arrive. Now there are 3 + 2 = 5 cars. The answer is 5.
-Q: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
-A: Leah had 32 chocolates and Leah’s sister had 42. That means there were originally 32 + 42 = 74
-chocolates. 35 have been eaten. So in total they still have 74 - 35 = 39 chocolates. The answer is 39.
-Q: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops
-did Jason give to Denny?
-A: Jason had 20 lollipops. Since he only has 12 now, he must have given the rest to Denny. The number of
-lollipops he has given to Denny must have been 20 - 12 = 8 lollipops. The answer is 8.
-Q: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does
-he have now?
-A: He has 5 toys. He got 2 from mom, so after that he has 5 + 2 = 7 toys. Then he got 2 more from dad, so
-in total he has 7 + 2 = 9 toys. The answer is 9.
-Q: There were nine computers in the server room. Five more computers were installed each day, from
-monday to thursday. How many computers are now in the server room?
-A: There are 4 days from monday to thursday. 5 computers were added each day. That means in total 4 * 5 =
-20 computers were added. There were 9 computers in the beginning, so now there are 9 + 20 = 29 computers.
-The answer is 29.
-Q: Michael had 58 golf balls. On tuesday, he lost 23 golf balls. On wednesday, he lost 2 more. How many
-golf balls did he have at the end of wednesday?
-A: Michael initially had 58 balls. He lost 23 on Tuesday, so after that he has 58 - 23 = 35 balls. On
-Wednesday he lost 2 more so now he has 35 - 2 = 33 balls. The answer is 33.
-"""
+few_shot_examples = [
+    {
+        "question": "There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?",
+        "answer": "We start with 15 trees. Later we have 21 trees. The difference must be the number of trees they planted. So, they must have planted 21 - 15 = 6 trees. The answer is 6.",
+    },
+    {
+        "question": "If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?",
+        "answer": "There are 3 cars in the parking lot already. 2 more arrive. Now there are 3 + 2 = 5 cars. The answer is 5.",
+    },
+    {
+        "question": "Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?",
+        "answer": "Leah had 32 chocolates and Leah’s sister had 42. That means there were originally 32 + 42 = 74 chocolates. 35 have been eaten. So in total they still have 74 - 35 = 39 chocolates. The answer is 39.",
+    },
+    {
+        "question": "Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?",
+        "answer": "Jason had 20 lollipops. Since he only has 12 now, he must have given the rest to Denny. The number of lollipops he has given to Denny must have been 20 - 12 = 8 lollipops. The answer is 8.",
+    },
+    {
+        "question": "Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?",
+        "answer": "He has 5 toys. He got 2 from mom, so after that he has 5 + 2 = 7 toys. Then he got 2 more from dad, so in total he has 7 + 2 = 9 toys. The answer is 9.",
+    },
+    {
+        "question": "There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?",
+        "answer": "There are 4 days from monday to thursday. 5 computers were added each day. That means in total 4 * 5 = 20 computers were added. There were 9 computers in the beginning, so now there are 9 + 20 = 29 computers. The answer is 29.",
+    },
+    {
+        "question": "Michael had 58 golf balls. On tuesday, he lost 23 golf balls. On wednesday, he lost 2 more. How many golf balls did he have at the end of wednesday?",
+        "answer": "Michael initially had 58 balls. He lost 23 on Tuesday, so after that he has 58 - 23 = 35 balls. On Wednesday he lost 2 more so now he has 35 - 2 = 33 balls. The answer is 33.",
+    },
+]
 
 @openai.call(model="gpt-4o-mini", call_params={"temperature": 0.5})
 @prompt_template(
     """
     Some examples on how to think step by step:
-    {few_shot_examples}
+    {examples:list}
 
     Answer the following question, thinking step by step:
     {query}
     """
 )
-async def chain_of_thought(query: str) -> openai.OpenAIDynamicConfig:
-    return {"computed_fields": {"few_shot_examples": few_shot_examples}}
+async def chain_of_thought(
+    query: str, few_shot_examples: list[dict[str, str]]
+) -> openai.OpenAIDynamicConfig:
+    examples = [
+        f"Question: {example['question']}\nAnswer: {example['answer']}"
+        for example in few_shot_examples
+    ]
+    return {"computed_fields": {"examples": examples}}
 
 def most_frequent(lst):
     """Returns the most frequent element in a list."""
@@ -75,14 +83,20 @@ def most_frequent(lst):
     return most_common[0][0] if most_common else None
 
 async def self_consistency(query: str, num_samples: int):
-    cot_tasks = [chain_of_thought(query) for _ in range(num_samples)]
+    cot_tasks = [chain_of_thought(query, few_shot_examples) for _ in range(num_samples)]
     cot_responses = [response.content for response in await asyncio.gather(*cot_tasks)]
     # Extract final answers manually (simplified for this example)
-    final_answers = [response.split("The answer is ")[-1].strip(".") for response in cot_responses]
+    final_answers = [
+        response.split("The answer is ")[-1].strip(".") for response in cot_responses
+    ]
     return most_frequent(final_answers)
 
 query = "Olivia has $23. She bought five bagels for $3 each. How much money does she have left?"
-result = asyncio.run(self_consistency(query=query, num_samples=5))
+result = asyncio.run(
+    self_consistency(
+        query=query, num_samples=5, few_shot_examples=few_shot_examples
+    )
+)
 print(f"The most consistent answer is: {result}")
 # > The most consistent answer is: $8
 ```
@@ -119,7 +133,7 @@ class Solution(BaseModel):
 async def extract_number(response: str): ...
 
 async def enhanced_self_consistency(query: str, num_samples: int):
-    cot_tasks = [chain_of_thought(query) for _ in range(num_samples)]
+    cot_tasks = [chain_of_thought(query, few_shot_examples) for _ in range(num_samples)]
     cot_responses = [response.content for response in await asyncio.gather(*cot_tasks)]
     extract_number_tasks = [extract_number(response) for response in cot_responses]
     response_numbers = [
@@ -128,10 +142,13 @@ async def enhanced_self_consistency(query: str, num_samples: int):
     ]
     return most_frequent(response_numbers)
 
-# Example usage
-query = "Olivia has $23. She bought five bagels for $3 each. How much money does she have left?"
-result = asyncio.run(enhanced_self_consistency(query=query, num_samples=5))
-print(f"The most consistent answer is: {result}")
+
+result = asyncio.run(
+    enhanced_self_consistency(
+        query=query, num_samples=5, few_shot_examples=few_shot_examples
+    )
+))
+print(f"The most consistent answer is: {result.content}")
 # > The most consistent answer is: 8
 ```
 

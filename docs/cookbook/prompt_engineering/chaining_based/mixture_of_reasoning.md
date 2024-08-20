@@ -18,9 +18,9 @@ Mixture of Reasoning is a prompt engineering technique where you set up multiple
 Let's implement the Mixture of Reasoning technique using Mirascope:
 
 ```python
+from mirascope.core import openai, prompt_template
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
@@ -102,9 +102,9 @@ print(best_response.reasoning)
 This implementation consists of several key components:
 
 1. Three different prompt engineering techniques:
-   - `cot_call`: Chain of Thought reasoning
-   - `emotion_prompting_call`: Emotional prompting
-   - `rar_call`: Rephrase and Respond
+   - `cot_call`: [Chain of Thought reasoning](../text_based/chain_of_thought.md)
+   - `emotion_prompting_call`: [Emotion prompting](../text_based/emotion_prompting.md)
+   - `rar_call`: [Rephrase and Respond](../text_based/rephrase_and_response.md)
 
 2. A `BestResponse` model to structure the output of the final evaluation.
 

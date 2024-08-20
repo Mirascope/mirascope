@@ -39,7 +39,7 @@ qa_examples = [
 @prompt_template(
     """
     Here are some examples that demonstrate the voice to use in a corporate setting.
-    {examples}
+    {examples:list}
 
     With these examples, answer the following question:
     {query}
@@ -47,7 +47,10 @@ qa_examples = [
 )
 async def answer(query: str) -> openai.OpenAIDynamicConfig:
     random_indices = random.sample(range(len(qa_examples)), 3)
-    examples = [qa_examples[i] for i in random_indices]
+    examples = [
+        f"Question: {qa_examples[i]['question']}\nAnswer: {qa_examples[i]['answer']}"
+        for i in random_indices
+    ]
     return {"computed_fields": {"examples": examples}}
 
 @openai.call(model="gpt-4o-mini")
@@ -64,13 +67,14 @@ async def aggregate_answers(
     tasks = [answer(query) for _ in range(num_responses)]
     responses = await asyncio.gather(*tasks)
     return {
-        "computed_fields": {"responses": [response.content for response in responses]}
+        "computed_fields": {"responses": responses}
     }
 
 async def demonstration_ensembling(query, ensemble_size):
-    print(await aggregate_answers(query=query, num_responses=ensemble_size))
+    response = await aggregate_answers(query=query, num_responses=ensemble_size)
+    print(response.content)
 
-query = """Help me write a notice that highlights the importance of attending\
+query = """Help me write a notice that highlights the importance of attending \
 the company's social events. Give me just the notice, no further explanation."""
 
 asyncio.run(demonstration_ensembling(query=query, ensemble_size=5))

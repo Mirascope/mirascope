@@ -13,9 +13,8 @@
 Let's implement the Prompt Paraphrasing technique using Mirascope:
 
 ```python
-from pydantic import BaseModel, Field
-
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 class Translations(BaseModel):
@@ -36,20 +35,20 @@ class Translations(BaseModel):
 def translate(phrase: str, language: str, num_translations: int): ...
 
 
-def prompt_paraphrasing(query: str, num_translations: int = 3):
+def prompt_paraphrasing(query: str, num_translations: int = 3) -> set[str]:
     spanish_translations = translate(
         phrase=query,
         language="Spanish",
         num_translations=num_translations,
     )
     # Avoid Duplicates
-    prompt_varations = set()
+    prompt_variations = set()
     for spanish_phrase in spanish_translations.translations:
         back_translations = translate(
             spanish_phrase, language="English", num_translations=3
         )
-        prompt_varations.update(back_translations.translations)
-    return prompt_varations
+        prompt_variations.update(back_translations.translations)
+    return prompt_variations
 
 
 print(

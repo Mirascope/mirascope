@@ -62,9 +62,11 @@ async def mask_prompt(query: str) -> openai.OpenAIDynamicConfig:
 @prompt_template(
     """
     SYSTEM:
-    You will be given a masked prompt with some value Xd out, and the solution to
-    the original problem. Return the prompt verbatim, but fill in the value for X
-    according to what you see in the solution.
+    You will be given a masked prompt with some value Xd out, and the solution to \
+    the original problem.
+    Return the prompt verbatim, but fill in the value for X according to what you \
+    see in the solution.
+
     USER:
     solution: {solution}
     masked prompt: {masked_prompt}
@@ -76,10 +78,10 @@ async def fill_in_value(solution: str, masked_prompt: str): ...
 class PromptComparison(BaseModel):
     score: int = Field(
         ...,
-        description="""The number of variation prompts which are
-                    semantically equivalent to the original prompt.
-                    For numbers in the prompts, expect the same values, and for
-                    quantitative words, only count semantically identical terms, such
+        description="""The number of variation prompts which are \
+                    semantically equivalent to the original prompt. \
+                    For numbers in the prompts, expect the same values, and for \
+                    quantitative words, only count semantically identical terms, such \
                     as two times = double.""",
     )
 
@@ -88,8 +90,9 @@ class PromptComparison(BaseModel):
 @prompt_template(
     """
     SYSTEM:
-    You will be given an original prompt and some variations of it. Return the
-    number of variations which are semantically identical.
+    You will be given an original prompt and some variations of it.
+    Return the number of variations which are semantically identical.
+    
     USER:
     Original Prompt:
     {query}
@@ -117,10 +120,10 @@ async def evaluate_solution(query: str, solution: str, masked_prompts: list[str]
     return score
 
 
-query = """Tim wanted to make lemonade for a pool party. For a gallon of lemonade,
-his recipe called for 1 cup of fresh lemon juice. He found that 6 lemons would yield
-1 cup of juice. He figured he would need to make 4 gallons of lemonade for the
-party. His best friend Allen asked if Tim could make an extra gallon for him that
+query = """Tim wanted to make lemonade for a pool party. For a gallon of lemonade, \
+his recipe called for 1 cup of fresh lemon juice. He found that 6 lemons would yield \
+1 cup of juice. He figured he would need to make 4 gallons of lemonade for the \
+party. His best friend Allen asked if Tim could make an extra gallon for him that \
 was twice as tart as the other gallons. How many lemons will Tim need?"""
 
 

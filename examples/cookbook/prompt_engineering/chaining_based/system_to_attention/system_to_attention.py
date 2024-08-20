@@ -14,11 +14,11 @@ class RelevantContext(BaseModel):
 @openai.call(model="gpt-4o-mini", response_model=RelevantContext)
 @prompt_template(
     """
-    Given the following text by a user, extract the part that is related and useful,
-    so that using that text alone would be good context for providing an accurate and
-    correct answer to the question portion of the text. Please include the actual
-    question or query that the user is asking. Separate this into two categories
-    labeled with ”Context text related to the question (includes all content except
+    Given the following text by a user, extract the part that is related and useful, \
+    so that using that text alone would be good context for providing an accurate and \
+    correct answer to the question portion of the text. Please include the actual \
+    question or query that the user is asking. Separate this into two categories \
+    labeled with ”Context text related to the question (includes all content except \
     unrelated sentences):” and ”Detailed question:”. Do not use list.
     Text by User: {query}
     """

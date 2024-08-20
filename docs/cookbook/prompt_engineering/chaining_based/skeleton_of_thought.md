@@ -1,6 +1,6 @@
 # Skeleton of Thought: Enhancing LLM Response Speed
 
-[Skeleton of Thought](https://arxiv.org/pdf/2307.15337) is a prompt-engineering technique that is speed-oriented as opposed to the quality of the response. To expedite the response from a model, make an initial call to create a "skeleton" of the problem that outlines its solution in bulletpoints (without further explanations), then make an individual call with each of the subpoints in parallel before reconstructing the answer at the end.
+This recipe demonstrates how to implement Skeleton of Thought, a speed-oriented prompt engineering technique.
 
 This recipe demonstrates how to implement the Skeleton of Thought technique using Large Language Models (LLMs) with Mirascope.
 
@@ -10,6 +10,11 @@ This recipe demonstrates how to implement the Skeleton of Thought technique usin
     - [Calls](../../../learn/calls.md)
     - [Response Models](../../../learn/response_models.md)
 
+!!! note "Background"
+
+    [Skeleton of Thought](https://arxiv.org/pdf/2307.15337) is a prompt-engineering technique that is speed-oriented as opposed to the quality of the response. To expedite the response from a model, make an initial call to create a "skeleton" of the problem that outlines its solution in bulletpoints (without further explanations), then make an individual call with each of the subpoints in parallel before reconstructing the answer at the end.
+
+
 ## Basic Skeleton of Thought Implementation
 
 Let's start with a basic implementation of Skeleton of Thought:
@@ -17,9 +22,8 @@ Let's start with a basic implementation of Skeleton of Thought:
 ```python
 import asyncio
 
-from pydantic import BaseModel, Field
-
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 class Skeleton(BaseModel):
@@ -34,12 +38,13 @@ class Skeleton(BaseModel):
 @openai.call(model="gpt-3.5-turbo", response_model=Skeleton)
 @prompt_template(
     """
-    You're an organizer responsible for only giving the skeleton
-    (not the full content) for answering the question.
-    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to
-    answer the question. Instead of writing a full sentence, each skeleton point
-    should be very short with only 3∼5 words. Generally, the skeleton should have
-    3∼10 points. Now, please provide the skeleton for the following question.
+    You're an organizer responsible for only giving the skeleton (not the full \
+    content) for answering the question.
+    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to  answer \
+    the question. Instead of writing a full sentence, each skeleton point should be \
+    very short with only 3∼5 words.
+    Generally, the skeleton should have 3∼10 points.
+    Now, please provide the skeleton for the following question.
     {query}
     Skeleton:
     """

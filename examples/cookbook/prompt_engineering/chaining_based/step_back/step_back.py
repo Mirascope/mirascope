@@ -40,8 +40,8 @@ few_shot_examples = [
     },
 ]
 
-stepback_prompt = """You are an expert at world knowledge. Your task is to step
-back and paraphrase a question to a more generic step-back question, which is
+stepback_prompt = """You are an expert at world knowledge. Your task is to step \
+back and paraphrase a question to a more generic step-back question, which is \
 easier to answer. Here are a few examples:"""
 
 
@@ -72,7 +72,7 @@ def get_stepback_question(
         "computed_fields": {
             "stepback_prompt_and_examples": f"{stepback_prompt}\n{example_prompts}"
             if num_examples
-            else ""
+            else None
         }
     }
 

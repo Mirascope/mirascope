@@ -51,7 +51,7 @@ async def answer(query: str): ...
     {response}
 
     Here is some fact checking on the response:
-    {verification_q_and_a}
+    {verification_q_and_a:list}
 
     Using the knowledge you learned from verification, re-answer the original query.
     """

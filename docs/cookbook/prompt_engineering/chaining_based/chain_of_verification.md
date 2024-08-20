@@ -22,9 +22,9 @@ Let's implement the Chain of Verification technique using Mirascope:
 ```python
 import asyncio
 
+from mirascope.core import openai, prompt_template
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
 @prompt_template("{query}")
@@ -68,7 +68,7 @@ async def answer(query: str): ...
     {response}
 
     Here is some fact checking on the response:
-    {verification_q_and_a}
+    {verification_q_and_a:list}
 
     Using the knowledge you learned from verification, re-answer the original query.
     """

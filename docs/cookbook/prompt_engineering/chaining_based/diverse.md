@@ -20,9 +20,8 @@ Let's implement the DiVeRSe technique using Mirascope:
 ```python
 import asyncio
 
-from pydantic import BaseModel, Field
-
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 class PromptVariations(BaseModel):
@@ -103,8 +102,9 @@ async def diverse(query: str, num_variations: int):
     return best_response
 
 
-async def run_diverse(prompt, num_variations=3):
-    return await diverse(prompt, num_variations)
+async def run_diverse(prompt, num_variations=3) -> str:
+    response = await diverse(prompt, num_variations)
+    return response.content
 
 
 query = """

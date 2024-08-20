@@ -47,7 +47,7 @@ def sim_to_m(story: str, query: str, name: str) -> openai.OpenAIDynamicConfig:
     return {"computed_fields": {"story_from_perspective": story_from_perspective}}
 
 
-story = """Jim put the ball in the box. While Jim wasn't looking, Avi moved the
+story = """Jim put the ball in the box. While Jim wasn't looking, Avi moved the \
 ball to the basket."""
 query = "Where does Jim think the ball is?"
 

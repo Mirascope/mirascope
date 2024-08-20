@@ -84,8 +84,7 @@ def decomposed_prompting(query: str):
     return response
 
 
-query = """Take the last letters of the words in ”Augusta Ada King” and concatenate
-them using a space."""
+query = """Take the last letters of the words in ”Augusta Ada King” and concatenate them using a space."""
 
 
 print(decomposed_prompting(query))

@@ -18,39 +18,29 @@ This recipe demonstrates how to implement the Least to Most technique using Larg
 Let's implement the Least to Most technique using Mirascope:
 
 ```python
+from mirascope.core import openai, prompt_template
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
 
-few_shot_examples = """
-Q: The median age in the city was 22.1 years. 10.1% of residents were under the age of 18; 56.2%
-were between the ages of 18 and 24; 16.1% were from 25 to 44; 10.5% were from 45 to 64; and 7%
-were 65 years of age or older. Which age group is larger: under the age of 18 or 18 and 24?
-A: To answer the question "Which age group is larger: under the age of 18 or 18 and 24?", we need
-to know: "How many percent were under the age of 18?", "How many percent were between the
-ages of 18 and 24?".
-Q: Old age pensions were raised by 300 francs per month to 1,700 francs for a single person and
-to 3,700 francs for a couple, while health insurance benefits were made more widely available to
-unemployed persons and part-time employees. How many francs were the old age pensions for a
-single person before they were raised?
-A: To answer the question "How many francs were the old age pensions for a single person before
-they were raised?", we need to know: "How many francs were the old age pensions for a single
-person?", "How many francs were old age pensions raised for a single person?".
-Q: In April 2011, the ECB raised interest rates for the first time since 2008 from 1% to 1.25%, with
-a further increase to 1.50% in July 2011. However, in 2012-2013 the ECB lowered interest rates to
-encourage economic growth, reaching the historically low 0.25% in November 2013. Soon after the
-rates were cut to 0.15%, then on 4 September 2014 the central bank reduced the rates from 0.15%
-to 0.05%, the lowest rates on record. How many percentage points did interest rates drop between
-April 2011 and September 2014?
-A: To answer the question "How many percentage points did interest rates drop between April 2011
-and September 2014?", we need to know: "What was the interest rate in April 2011?", "What was
-the interest rate in September 2014?".
-Q: Non-nationals make up more than half of the population of Bahrain. According to government
-statistics dated between 2005-2009 roughly 290,000 Indians, 125,000 Bangladeshis, 45,000 Pakistanis, 45,000 Filipinos, and 8,000 Indonesians. How many Pakistanis and Indonesians are in Bahrain?
-A: To answer the question "How many Pakistanis and Indonesians are in Bahrain?", we need to
-know: "How many Pakistanis are in Bahrain?", "How many Indonesians are in Bahrain?".
-"""
+few_shot_examples = [
+    {
+        "question": "The median age in the city was 22.1 years. 10.1% of residents were under the age of 18; 56.2% were between the ages of 18 and 24; 16.1% were from 25 to 44; 10.5% were from 45 to 64; and 7% were 65 years of age or older. Which age group is larger: under the age of 18 or 18 and 24?",
+        "answer": 'To answer the question "Which age group is larger: under the age of 18 or 18 and 24?", we need to know: "How many percent were under the age of 18?", "How many percent were between the ages of 18 and 24?".',
+    },
+    {
+        "question": "Old age pensions were raised by 300 francs per month to 1,700 francs for a single person and to 3,700 francs for a couple, while health insurance benefits were made more widely available to unemployed persons and part-time employees. How many francs were the old age pensions for a single person before they were raised?",
+        "answer": 'To answer the question "How many francs were the old age pensions for a single person before they were raised?", we need to know: "How many francs were the old age pensions for a single person?", "How many francs were old age pensions raised for a single person?".',
+    },
+    {
+        "question": "In April 2011, the ECB raised interest rates for the first time since 2008 from 1% to 1.25%, with a further increase to 1.50% in July 2011. However, in 2012-2013 the ECB lowered interest rates to encourage economic growth, reaching the historically low 0.25% in November 2013. Soon after the rates were cut to 0.15%, then on 4 September 2014 the central bank reduced the rates from 0.15% to 0.05%, the lowest rates on record. How many percentage points did interest rates drop between April 2011 and September 2014?",
+        "answer": 'To answer the question "How many percentage points did interest rates drop between April 2011 and September 2014?", we need to know: "What was the interest rate in April 2011?", "What was the interest rate in September 2014?".',
+    },
+    {
+        "question": "Non-nationals make up more than half of the population of Bahrain. According to government statistics dated between 2005-2009 roughly 290,000 Indians, 125,000 Bangladeshis, 45,000 Pakistanis, 45,000 Filipinos, and 8,000 Indonesians. How many Pakistanis and Indonesians are in Bahrain?",
+        "answer": 'To answer the question "How many Pakistanis and Indonesians are in Bahrain?", we need to know: "How many Pakistanis are in Bahrain?", "How many Indonesians are in Bahrain?".',
+    },
+]
 
 
 class Problem(BaseModel):
@@ -63,13 +53,19 @@ class Problem(BaseModel):
 @prompt_template(
     """
     Examples to guide your answer:
-    {examples}
+    {examples:list}
     Break the following query into subproblems:
     {query}
     """
 )
-def break_into_subproblems(query: str) -> openai.OpenAIDynamicConfig:
-    return {"computed_fields": {"examples": few_shot_examples}}
+def break_into_subproblems(
+    query: str, few_shot_examples: list[dict[str,str]]
+) -> openai.OpenAIDynamicConfig:
+    examples = [
+        f"Question: {example['question']}\nAnswer: {example['answer']}"
+        for example in few_shot_examples
+    ]
+    return {"computed_fields": {"examples": examples}}
 
 
 @openai.call(model="gpt-4o-mini")
@@ -78,7 +74,9 @@ def call(history: list[ChatCompletionMessageParam]): ...
 
 
 def least_to_most(query_context: str, query_question: str):
-    problem = break_into_subproblems(query_context + query_question)
+    problem = break_into_subproblems(
+        query=query_context + query_question, few_shot_examples=few_shot_examples
+    )
     history: list[ChatCompletionMessageParam] = [
         {"role": "user", "content": query_context + problem.subproblems[0]}
     ]
@@ -94,8 +92,8 @@ def least_to_most(query_context: str, query_question: str):
         return response
 
 
-query_context = """The Census Bureaus 2006-2010 American Community Survey showed that
-(in 2010 inflation adjustment dollars) median household income was $52,056 and the
+query_context = """The Census Bureaus 2006-2010 American Community Survey showed that\
+(in 2010 inflation adjustment dollars) median household income was $52,056 and the\
 median family income was $58,942."""
 
 query_question = "How many years did the Census Bureaus American Community Survey last?"

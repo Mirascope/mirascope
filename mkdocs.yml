@@ -173,7 +173,7 @@ nav:
           - Chaining Based:
               - "cookbook/prompt_engineering/chaining_based/index.md"
               - System to Attention: "cookbook/prompt_engineering/chaining_based/system_to_attention.md"
-              - Sym to M: "cookbook/prompt_engineering/chaining_based/sym_to_m.md"
+              - Sim to M: "cookbook/prompt_engineering/chaining_based/sim_to_m.md"
               - Step Back: "cookbook/prompt_engineering/chaining_based/step_back.md"
               - Least to Most: "cookbook/prompt_engineering/chaining_based/least_to_most.md"
               - Decomposed Prompting: "cookbook/prompt_engineering/chaining_based/decomposed_prompting.md"

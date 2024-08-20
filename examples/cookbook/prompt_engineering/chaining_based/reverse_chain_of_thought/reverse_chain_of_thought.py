@@ -14,7 +14,8 @@ def zero_shot_cot(query: str): ...
 @openai.call(model="gpt-4o-mini")
 @prompt_template(
     """
-    USER: Give the concrete prompt (problem) that can generate this answer.
+    USER:
+    Give the concrete prompt (problem) that can generate this answer.
     The problem should contain all basic and necessary information and correspond to the
     answer. The problem can only ask for one result.
 
@@ -54,12 +55,12 @@ class Comparison(BaseModel):
     )
     deducible: bool = Field(
         ...,
-        description="""Whether the condition is deducible from the list of other
+        description="""Whether the condition is deducible from the list of other \
         conditions.""",
     )
     illustration: str = Field(
         ...,
-        description="""A quick illustration of the reason the condition is/isn't
+        description="""A quick illustration of the reason the condition is/isn't \
         deducible from the list of other conditions.""",
     )
 
@@ -229,10 +230,10 @@ async def reverse_cot(query: str):
     return response
 
 
-query = """At the trip to the county level scavenger hunt competition 90 people
-were required to split into groups for the competition to begin. To break
-people up into smaller groups with different leaders 9-person groups were
-formed. If 3/5 of the number of groups each had members bring back 2 seashells each
+query = """At the trip to the county level scavenger hunt competition 90 people \
+were required to split into groups for the competition to begin. To break \
+people up into smaller groups with different leaders 9-person groups were \
+formed. If 3/5 of the number of groups each had members bring back 2 seashells each \
 how many seashells did they bring?"""
 
 print(asyncio.run(reverse_cot(query=query)))

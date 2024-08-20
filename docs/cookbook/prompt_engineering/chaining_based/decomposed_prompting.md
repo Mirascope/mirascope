@@ -20,10 +20,9 @@ Let's implement the Decomposed Prompting technique using Mirascope:
 ```python
 import json
 
+from mirascope.core import openai, prompt_template
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
-
-from mirascope.core import openai, prompt_template
 
 
 class Problem(BaseModel):
@@ -100,8 +99,7 @@ def decomposed_prompting(query: str):
     return response
 
 
-query = """Take the last letters of the words in "Augusta Ada King" and concatenate
-them using a space."""
+query = """Take the last letters of the words in "Augusta Ada King" and concatenate them using a space."""
 
 
 print(decomposed_prompting(query))

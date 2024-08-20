@@ -17,12 +17,14 @@ class Skeleton(BaseModel):
 @openai.call(model="gpt-3.5-turbo", response_model=Skeleton)
 @prompt_template(
     """
-    You’re an organizer responsible for only giving the skeleton
-    (not the full content) for answering the question.
-    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to
-    answer the question. Instead of writing a full sentence, each skeleton point
-    should be very short with only 3∼5 words. Generally, the skeleton should have
-    3∼10 points. Now, please provide the skeleton for the following question.
+    You’re an organizer responsible for only giving the skeleton (not the full \
+    content) for answering the question.
+    Provide the skeleton in a list of points (numbered 1., 2., 3., etc.) to answer \
+    the question.
+    Instead of writing a full sentence, each skeleton point should be very short \
+    with only 3∼5 words.
+    Generally, the skeleton should have 3∼10 points.
+    Now, please provide the skeleton for the following question.
     {query}
     Skeleton:
     """

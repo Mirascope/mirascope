@@ -1,4 +1,5 @@
 from mirascope.core import openai, prompt_template
+from mirascope.core.openai import OpenAICallResponse
 
 
 @openai.call(model="gpt-4o-mini")
@@ -17,7 +18,7 @@ def call(query: str): ...
     {response}
     """
 )
-def evaluate_response(query: str, response: str): ...
+def evaluate_response(query: str, response: OpenAICallResponse): ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -33,20 +34,22 @@ def evaluate_response(query: str, response: str): ...
     Consider the feedback to generate a new response to the query.
     """
 )
-def generate_new_response(query: str, response: str) -> openai.OpenAIDynamicConfig:
+def generate_new_response(
+    query: str, response: OpenAICallResponse
+) -> openai.OpenAIDynamicConfig:
     feedback = evaluate_response(query, response)
-    print(feedback)
+    # print(feedback)
     return {"computed_fields": {"feedback": feedback}}
 
 
 def self_refine(query: str, depth: int) -> str:
-    response = call(query).content
+    response = call(query)
     # Uncomment to see intermediate responses
-    print(response)
+    # print(response)
     for _ in range(depth):
-        response = generate_new_response(query, response).content
-        print(response)
-    return response
+        response = generate_new_response(query, response)
+        # print(response)
+    return response.content
 
 
 query = """Olivia has $23. She bought five bagels for $3 each.
