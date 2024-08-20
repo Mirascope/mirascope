@@ -59,7 +59,7 @@ def extract_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...  # pragma: no cover
+    ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...
 
     @overload
     def decorator(
@@ -72,7 +72,7 @@ def extract_factory(
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P, Awaitable[_ResponseModelT | _ParsedOutputT]
-    ]: ...  # pragma: no cover
+    ]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

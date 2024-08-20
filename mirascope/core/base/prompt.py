@@ -330,10 +330,10 @@ def prompt_template(template: str):
     """
 
     @overload
-    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...  # pragma: no cover
+    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
     @overload
-    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...  # pragma: no cover
+    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
 
     def inner(
         prompt: type[_BasePromptT] | Callable[_P, _R],
@@ -376,10 +376,10 @@ def metadata(metadata: Metadata):
     """
 
     @overload
-    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...  # pragma: no cover
+    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
     @overload
-    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...  # pragma: no cover
+    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
 
     def inner(
         prompt: type[_BasePromptT] | Callable[_P, _R],
