@@ -141,6 +141,10 @@ line-ending = "auto"
 [tool.pyright]
 exclude = ["mirascope/beta"]
 
+[tool.coverage.report]
+exclude_also = [
+    "@overload"
+]
 
 [build-system]
 requires = ["poetry-core"]

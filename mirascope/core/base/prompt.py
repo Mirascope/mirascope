@@ -105,7 +105,7 @@ class BasePrompt(BaseModel):
             [Callable[..., BaseDynamicConfig]], Callable[..., _BaseCallResponseT]
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> _BaseCallResponseT: ...  # pragma: no cover
+    ) -> _BaseCallResponseT: ...
 
     @overload
     def run(
@@ -114,7 +114,7 @@ class BasePrompt(BaseModel):
             [Callable[..., BaseDynamicConfig]], Callable[..., _BaseStreamT]
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> _BaseStreamT: ...  # pragma: no cover
+    ) -> _BaseStreamT: ...
 
     @overload
     def run(  # type: ignore
@@ -123,7 +123,7 @@ class BasePrompt(BaseModel):
             [Callable[..., BaseDynamicConfig]], Callable[..., _ResponseModelT]
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> _ResponseModelT: ...  # pragma: no cover
+    ) -> _ResponseModelT: ...
 
     @overload
     def run(
@@ -133,7 +133,7 @@ class BasePrompt(BaseModel):
             Callable[..., Iterable[_ResponseModelT]],
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> Iterable[_ResponseModelT]: ...  # pragma: no cover
+    ) -> Iterable[_ResponseModelT]: ...
 
     def run(
         self,
@@ -200,7 +200,7 @@ class BasePrompt(BaseModel):
             Callable[..., Awaitable[_BaseCallResponseT]],
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> Awaitable[_BaseCallResponseT]: ...  # pragma: no cover
+    ) -> Awaitable[_BaseCallResponseT]: ...
 
     @overload
     def run_async(
@@ -210,7 +210,7 @@ class BasePrompt(BaseModel):
             Callable[..., Awaitable[_BaseStreamT]],
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> Awaitable[_BaseStreamT]: ...  # pragma: no cover
+    ) -> Awaitable[_BaseStreamT]: ...
 
     @overload
     def run_async(
@@ -220,7 +220,7 @@ class BasePrompt(BaseModel):
             Callable[..., Awaitable[_ResponseModelT]],
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> Awaitable[_ResponseModelT]: ...  # pragma: no cover
+    ) -> Awaitable[_ResponseModelT]: ...
 
     @overload
     def run_async(
@@ -230,7 +230,7 @@ class BasePrompt(BaseModel):
             Callable[..., Awaitable[AsyncIterable[_ResponseModelT]]],
         ],
         *additional_decorators: Callable[[_T], _T],
-    ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...  # pragma: no cover
+    ) -> Awaitable[AsyncIterable[_ResponseModelT]]: ...
 
     def run_async(
         self,
