@@ -1,4 +1,4 @@
-"""Utility for converting a model model into a base tool."""
+"""Utility for converting a model into a base tool."""
 
 import inspect
 from abc import update_abstractmethods
@@ -21,7 +21,8 @@ def convert_base_model_to_base_tool(
     performing extraction.
 
     Args:
-        schema: The `BaseModel` schema to convert.
+        model: The `BaseModel` schema to convert.
+        base: The base type to extend with the `BaseModel` fields.
 
     Returns:
         The constructed `BaseModelT` type.
