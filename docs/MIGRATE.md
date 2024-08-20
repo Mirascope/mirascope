@@ -86,6 +86,95 @@ response = recommend_book("fantasy")
 print(response.content)
 ```
 
+#### `BasePrompt`
+
+The `BasePrompt` class still operates in the same way as v0 calls (e.g. `OpenAICall`). The primary difference is that you run the prompt using the `run` method instead of using the `call` or `stream` methods. This method can be run against any provider's call decorator:
+
+```python
+from mirascope.core import BasePrompt, openai, prompt_template
+
+
+@prompt_template("Recommend a {genre} book")
+class BookRecommendationPrompt(BasePrompt):
+    genre: str
+
+
+prompt = BookRecommendationPrompt(genre="fantasy")
+response = prompt.run(openai.call("gpt-4o-mini"))
+print(response.content)
+```
+
+Of course, there's nothing stopping you from replicating the original v0 functionality of `OpenAICall` by writing your own `call` method (or whatever you'd like to name it):
+
+```python
+from mirascope.core import BasePrompt, openai, prompt_template
+
+
+@prompt_template("Recommend a {genre} book")
+class BookRecommender(BasePrompt):
+    genre: str
+
+    def call(self) -> openai.OpenAICallResponse:
+        return self.run(openai.call("gpt-4o-mini"))
+
+    def stream(self) -> openai.OpenAIStream:
+        return self.run(openai.call("gpt-4o-mini", stream=True))
+
+
+recommender = BookRecommender(genre="fantasy")
+response = recommender.call()
+print(response.content)
+
+stream = recommender.stream()
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+#### Statefulness
+
+Some people may feel that "statelessness" is actually an inherent problem with LLM API calls. We agree with this sentiment, and it's the reason for the original design in v0. However, as we've continued to build we've come to believe that adding such state to the abstraction for making the LLM call itself is the wrong place for that state to live. Instead, the state should live in a class that wraps the call, and the call should have easy access to said state.
+
+This provides a far clearer sense of what is "state" and what is an "argument" of the call. Consider the following example:
+
+```python
+from mirascope.core import openai, prompt_template
+from openai.types.chat import ChatCompletionMessageParam
+from pydantic import BaseModel, computed_field
+
+
+class Librarian(BaseModel):
+    genre: str
+
+    @openai.call("gpt-4o-mini")
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian. You specialize in the {self.genre} genre
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def call(self, query: str): ...
+
+    @computed_field
+    @property
+    def history(self) -> list[ChatCompletionMessageParam]:
+        """Returns dummy history for demonstration purposes"""
+        return [
+            {"role": "user", "content": "What book should I read?"},
+            {
+                "role": "assistant",
+                "content": "Do you like fantasy books?",
+            },
+        ]
+
+
+fantasy_librarian = Librarian(genre="fantasy")
+response = fantasy_librarian.call("I do like fantasy books!")
+print(response.content)
+```
+
+It's evident that `genre` and `history` are state of the `Librarian` class, and the call method uses this state for every call. However, we've also introduced the `query` argument of the call, which is clearly not state and should be provided for every call.
+
 ### Async Calls
 
 Before (v0):
