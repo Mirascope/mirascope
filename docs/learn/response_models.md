@@ -45,6 +45,29 @@ This approach works consistently across all supported providers in Mirascope.
     
     `completion = cast(ChatCompletion, book._response)  # pyright: ignore [reportAttributeAccessIssue]`
 
+
+### Extracting Built-in Types
+
+Sometimes you may want to extract just a single built-in type. For these cases, we've included shorthand so you don't have to define an entire `BaseModel`:
+
+```python
+from mirascope.core import openai, prompt_template
+
+
+@openai.call("gpt-4o-mini", response_model=list[str])
+@prompt_template("Recommend a list of {num} {genre} books")
+def recommend_books(genre: str, num: int):
+    ...
+
+
+books = recommend_books("fantasy", 3)
+for book in books:
+    print(book)
+# > The Name of the Wind by Patrick Rothfuss
+#   Mistborn: The Final Empire by Brandon Sanderson
+#   The Way of Kings by Brandon Sanderson
+```
+
 ### Few-Shot Examples
 
 Adding few-shot examples to your response model can improve results by better demonstrating exactly how to adhere to your desired output.
