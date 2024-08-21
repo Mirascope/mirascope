@@ -172,6 +172,9 @@ nav:
               - "cookbook/prompt_engineering/text_based/index.md"
               - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
           - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
+      - LangGraph vs. Mirascope:
+          - "cookbook/langgraph_vs_mirascope/index.md"
+          - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_provider.md"

@@ -1662,15 +1662,15 @@ wheels = [
 
 [[package]]
 name = "llama-cloud"
-version = "0.0.13"
+version = "0.0.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/1a/f993600e52a2bf29aba9f8da676f5128dcdafb01fb87572b4d2a610a7f2c/llama_cloud-0.0.13.tar.gz", hash = "sha256:0e3165a22f8df34a00d13f1f5739438ba4d620f2d8a9289df830078a39fe6f1f", size = 64196 }
+sdist = { url = "https://files.pythonhosted.org/packages/d1/e4/52e3c15452d3661faf3167d60fb0e021db81ee562ae67599f54007f16ee7/llama_cloud-0.0.14.tar.gz", hash = "sha256:44157bd3fc84099365181fb0254b7b533a502f2a8b97d5f87e86d1cccc1501d8", size = 67590 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/c3/e377c515e16230a1db2b6c445eed444be151b2aa82b6b8b2dbeac026530d/llama_cloud-0.0.13-py3-none-any.whl", hash = "sha256:b641450308b80c85eeae7ef9cb5a3b4a3b1823d5cde05b626ce33f7494ec6229", size = 169446 },
+    { url = "https://files.pythonhosted.org/packages/fb/4e/a9fbec86fb8438728764fb5a9713f0c8c2008cc1848817fbd280d7f9bb76/llama_cloud-0.0.14-py3-none-any.whl", hash = "sha256:356143a9d88d59ed8f0474841fcfba053fe8b56ff8bb3771e570d583869061f8", size = 179618 },
 ]
 
 [[package]]
@@ -3190,7 +3190,7 @@ wheels = [
 
 [[package]]
 name = "posthog"
-version = "3.5.0"
+version = "3.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "backoff" },
@@ -3199,9 +3199,9 @@ dependencies = [
     { name = "requests" },
     { name = "six" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/c8/8a7308d5355fedfc400098a75fd191cf615b55aa22ef2a937995326e6f5e/posthog-3.5.0.tar.gz", hash = "sha256:8f7e3b2c6e8714d0c0c542a2109b83a7549f63b7113a133ab2763a89245ef2ef", size = 38142 }
+sdist = { url = "https://files.pythonhosted.org/packages/22/a6/a260008b95152d31ef19845ae3100411b481279ec98d22e8c87606abe78e/posthog-3.5.2.tar.gz", hash = "sha256:a383a80c1f47e0243f5ce359e81e06e2e7b37eb39d1d6f8d01c3e64ed29df2ee", size = 38380 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/5f/24cb22118db0e11703b6b80ef9f982eadde21eb585c3a769719e48dce893/posthog-3.5.0-py2.py3-none-any.whl", hash = "sha256:3c672be7ba6f95d555ea207d4486c171d06657eb34b3ce25eb043bfe7b6b5b76", size = 41300 },
+    { url = "https://files.pythonhosted.org/packages/53/62/2e7f75beedf9b5411f133a5af558cc7d76e20bbf6778a51ade15e6d3152b/posthog-3.5.2-py2.py3-none-any.whl", hash = "sha256:605b3d92369971cc99290b1fcc8534cbddac3726ef7972caa993454a5ecfb644", size = 41545 },
 ]
 
 [[package]]

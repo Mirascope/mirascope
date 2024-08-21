@@ -148,10 +148,11 @@ class LocalizedRecommender(BaseModel):
     @openai.call(model="gpt-4o", stream=True)
     @prompt_template(
         """
-        SYSTEM: You are a local guide that recommends the best places to visit in a place.
-        Use the `get_current_date` function to get the current date.
-        Use the `get_coordinates_from_location` function to get the coordinates of a location if you need it.
-        Use the `nimble_google_maps` function to get the best places to visit in a location based on the users query.
+        SYSTEM:
+        You are a local guide that recommends the best places to visit in a place.
+        Use the `_get_current_date` function to get the current date.
+        Use the `_get_coordinates_from_location` function to get the coordinates of a location if you need it.
+        Use the `_nimble_google_maps` function to get the best places to visit in a location based on the users query.
 
         MESSAGES: {self.history}
         USER: {question}
