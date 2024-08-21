@@ -40,7 +40,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
         If there is no string content (e.g. when using tools), this method must return
         the empty string.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -49,19 +49,19 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
         If there is no finish reason, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
     def model(self) -> str | None:
         """Should return the name of the response model."""
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
     def id(self) -> str | None:
         """Should return the id of the response."""
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -70,7 +70,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
         If there is no usage, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -79,7 +79,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
         If there is no input_tokens, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -88,4 +88,4 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
         If there is no output_tokens, this method must return None.
         """
-        ...  # pragma: no cover
+        ...

@@ -36,12 +36,12 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncRespo
     @overload
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT]
-    ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
+    ) -> Callable[_P, _ResponseT]: ...
 
     @overload
     def __call__(
         self, fn: Callable[_P, Awaitable[_BaseDynamicConfigT]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
 
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
@@ -52,12 +52,12 @@ class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
     def __call__(
         self, *, stream: Literal[False] = False, **kwargs: Any
-    ) -> Awaitable[_ResponseT]: ...  # pragma: no cover
+    ) -> Awaitable[_ResponseT]: ...
 
     @overload
     def __call__(
         self, *, stream: Literal[True] = True, **kwargs: Any
-    ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]: ...  # pragma: no cover
+    ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]: ...
 
     def __call__(
         self, *, stream: bool = False, **kwargs: Any
@@ -70,16 +70,16 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
     def __call__(
         self, *, stream: Literal[False] = False, **kwargs: Any
-    ) -> _ResponseT: ...  # pragma: no cover
+    ) -> _ResponseT: ...
 
     @overload
     def __call__(
         self, *, stream: Literal[True] = True, **kwargs: Any
-    ) -> Generator[_ResponseChunkT, None, None]: ...  # pragma: no cover
+    ) -> Generator[_ResponseChunkT, None, None]: ...
 
     def __call__(
         self, *, stream: bool = False, **kwargs: Any
-    ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...  # pragma: no cover
+    ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
 
 
 class SetupCall(
@@ -111,7 +111,7 @@ class SetupCall(
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
         dict[str, Any],
-    ]: ...  # pragma: no cover
+    ]: ...
 
     @overload
     def __call__(
@@ -132,7 +132,7 @@ class SetupCall(
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
         dict[str, Any],
-    ]: ...  # pragma: no cover
+    ]: ...
 
     def __call__(
         self,

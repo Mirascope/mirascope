@@ -29,9 +29,9 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     @abstractmethod
     def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:
         """Queries the vectorstore for closest match"""
-        ...  # pragma: no cover
+        ...
 
     @abstractmethod
     def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
-        ...  # pragma: no cover
+        ...

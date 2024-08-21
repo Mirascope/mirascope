@@ -50,7 +50,7 @@ def create_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...  # pragma: no cover
+    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
     @overload
     def decorator(
@@ -64,7 +64,7 @@ def create_factory(
     ) -> Callable[
         _P,
         Awaitable[_BaseCallResponseT | _ParsedOutputT],
-    ]: ...  # pragma: no cover
+    ]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
@@ -80,84 +80,87 @@ def create_factory(
         | _ParsedOutputT
         | Awaitable[_BaseCallResponseT | _ParsedOutputT],
     ]:
-        is_async = inspect.iscoroutinefunction(fn)
+        if inspect.iscoroutinefunction(fn):
 
-        @wraps(fn)
-        def inner(
-            *args: _P.args, **kwargs: _P.kwargs
-        ) -> TCallResponse | _ParsedOutputT:
-            assert SetupCall.fn_is_sync(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=tools,
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=False,
-            )
-            start_time = datetime.datetime.now().timestamp() * 1000
-            response = create(stream=False, **call_kwargs)
-            end_time = datetime.datetime.now().timestamp() * 1000
-            output = TCallResponse(
-                metadata=get_metadata(fn, dynamic_config),
-                response=response,
-                tool_types=tool_types,  # type: ignore
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_params,
-                call_kwargs=call_kwargs,
-                user_message_param=get_possible_user_message_param(messages),
-                start_time=start_time,
-                end_time=end_time,
-            )
-            output._model = model
-            return output if not output_parser else output_parser(output)
+            @wraps(fn)
+            async def inner_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> TCallResponse | _ParsedOutputT:
+                assert SetupCall.fn_is_async(fn)
+                fn_args = get_fn_args(fn, args, kwargs)
+                dynamic_config = await fn(*args, **kwargs)
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                    model=model,
+                    client=client,
+                    fn=fn,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    tools=tools,
+                    json_mode=json_mode,
+                    call_params=call_params,
+                    extract=False,
+                )
+                start_time = datetime.datetime.now().timestamp() * 1000
+                response = await create(stream=False, **call_kwargs)
+                end_time = datetime.datetime.now().timestamp() * 1000
+                output = TCallResponse(
+                    metadata=get_metadata(fn, dynamic_config),
+                    response=response,
+                    tool_types=tool_types,  # type: ignore
+                    prompt_template=prompt_template,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    messages=messages,
+                    call_params=call_params,
+                    call_kwargs=call_kwargs,
+                    user_message_param=get_possible_user_message_param(messages),
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+                output._model = model
+                return output if not output_parser else output_parser(output)
 
-        @wraps(fn)
-        async def inner_async(
-            *args: _P.args, **kwargs: _P.kwargs
-        ) -> TCallResponse | _ParsedOutputT:
-            assert SetupCall.fn_is_async(fn)
-            fn_args = get_fn_args(fn, args, kwargs)
-            dynamic_config = await fn(*args, **kwargs)
-            create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                model=model,
-                client=client,
-                fn=fn,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                tools=tools,
-                json_mode=json_mode,
-                call_params=call_params,
-                extract=False,
-            )
-            start_time = datetime.datetime.now().timestamp() * 1000
-            response = await create(stream=False, **call_kwargs)
-            end_time = datetime.datetime.now().timestamp() * 1000
-            output = TCallResponse(
-                metadata=get_metadata(fn, dynamic_config),
-                response=response,
-                tool_types=tool_types,  # type: ignore
-                prompt_template=prompt_template,
-                fn_args=fn_args,
-                dynamic_config=dynamic_config,
-                messages=messages,
-                call_params=call_params,
-                call_kwargs=call_kwargs,
-                user_message_param=get_possible_user_message_param(messages),
-                start_time=start_time,
-                end_time=end_time,
-            )
-            output._model = model
-            return output if not output_parser else output_parser(output)
+            return inner_async
+        else:
 
-        return inner_async if is_async else inner
+            @wraps(fn)
+            def inner(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> TCallResponse | _ParsedOutputT:
+                assert SetupCall.fn_is_sync(fn)
+                fn_args = get_fn_args(fn, args, kwargs)
+                dynamic_config = fn(*args, **kwargs)
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                    model=model,
+                    client=client,
+                    fn=fn,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    tools=tools,
+                    json_mode=json_mode,
+                    call_params=call_params,
+                    extract=False,
+                )
+                start_time = datetime.datetime.now().timestamp() * 1000
+                response = create(stream=False, **call_kwargs)
+                end_time = datetime.datetime.now().timestamp() * 1000
+                output = TCallResponse(
+                    metadata=get_metadata(fn, dynamic_config),
+                    response=response,
+                    tool_types=tool_types,  # type: ignore
+                    prompt_template=prompt_template,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    messages=messages,
+                    call_params=call_params,
+                    call_kwargs=call_kwargs,
+                    user_message_param=get_possible_user_message_param(messages),
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+                output._model = model
+                return output if not output_parser else output_parser(output)
+
+            return inner
 
     return decorator

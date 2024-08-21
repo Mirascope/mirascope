@@ -93,7 +93,7 @@ class BaseCallResponse(
         If there is no string content (e.g. when using tools), this method must return
         the empty string.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -102,19 +102,19 @@ class BaseCallResponse(
 
         If there is no finish reason, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
     def model(self) -> str | None:
         """Should return the name of the response model."""
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
     def id(self) -> str | None:
         """Should return the id of the response."""
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -123,7 +123,7 @@ class BaseCallResponse(
 
         If there is no usage, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -132,7 +132,7 @@ class BaseCallResponse(
 
         If there is no input_tokens, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -141,7 +141,7 @@ class BaseCallResponse(
 
         If there is no output_tokens, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
@@ -150,27 +150,27 @@ class BaseCallResponse(
 
         If there is no cost, this method must return None.
         """
-        ...  # pragma: no cover
+        ...
 
     @computed_field
     @property
     @abstractmethod
     def message_param(self) -> Any:
         """Returns the assistant's response as a message parameter."""
-        ...  # pragma: no cover
+        ...
 
     @computed_field
     @property
     @abstractmethod
     def tools(self) -> list[_BaseToolT] | None:
         """Returns the tools for the 0th choice message."""
-        ...  # pragma: no cover
+        ...
 
     @property
     @abstractmethod
     def tool(self) -> _BaseToolT | None:
         """Returns the 0th tool for the 0th choice message."""
-        ...  # pragma: no cover
+        ...
 
     @classmethod
     @abstractmethod
@@ -183,4 +183,4 @@ class BaseCallResponse(
             tools_and_outputs: The list of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
-        ...  # pragma: no cover
+        ...
