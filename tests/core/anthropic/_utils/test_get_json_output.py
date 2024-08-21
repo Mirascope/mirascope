@@ -107,6 +107,5 @@ def test_get_json_output_call_response_chunk() -> None:
         type="text_delta",
         text="",
     )
-    chunk.type
 
     assert get_json_output(call_response_chunk, json_mode=False) == ""

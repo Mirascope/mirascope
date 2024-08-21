@@ -81,7 +81,7 @@ def test_structured_stream_factory_sync(
         call_params=mock_structured_stream_decorator_kwargs["call_params"],
     )
     mock_stream_inner.assert_called_once_with(genre="fantasy", topic="magic")
-    assert [t for t in structured_stream.stream] == [("chunk", None)]
+    assert list(structured_stream.stream) == [("chunk", None)]
 
     # Test internal `handle_stream`
     kwargs = mock_stream_factory.call_args.kwargs
@@ -90,7 +90,7 @@ def test_structured_stream_factory_sync(
         and (handle_stream := kwargs["handle_stream"]) is not None
     )
     for chunk, tool in handle_stream(["chunk0", "chunk1"], None):
-        assert hasattr(chunk, "content") and getattr(chunk, "content") == "json_output"
+        assert hasattr(chunk, "content") and chunk.content == "json_output"
         assert tool is None
 
 
@@ -170,7 +170,7 @@ async def test_structured_stream_factory_async(
         yield "chunk1"
 
     async for chunk, tool in handle_stream(generator(), None):
-        assert hasattr(chunk, "content") and getattr(chunk, "content") == "json_output"
+        assert hasattr(chunk, "content") and chunk.content == "json_output"
         assert tool is None
 
 
@@ -205,14 +205,14 @@ async def test_base_structured_stream(mock_extract_tool_return: MagicMock) -> No
     for i, output in enumerate(structured_stream):
         assert output == "tool"
         mock_extract_tool_return.assert_called_once_with(
-            MagicMock, '{"title": "title"}', True if i == 0 else False
+            MagicMock, '{"title": "title"}', i == 0
         )
         mock_extract_tool_return.reset_mock()
     i = 0
     async for output in structured_stream:
         assert output == "tool"
         mock_extract_tool_return.assert_called_with(
-            MagicMock, '{"title": "title"}', True if i == 0 else False
+            MagicMock, '{"title": "title"}', i == 0
         )
         mock_extract_tool_return.reset_mock()
         i += 1

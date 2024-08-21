@@ -75,7 +75,7 @@ def test_base_prompt_run() -> None:
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
     assert hasattr(decorator_arg, "_prompt_template")
-    assert getattr(decorator_arg, "_prompt_template") == "Recommend a {genre} book."
+    assert decorator_arg._prompt_template == "Recommend a {genre} book."
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")
@@ -101,7 +101,7 @@ async def test_base_prompt_run_async() -> None:
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
     assert hasattr(decorator_arg, "_prompt_template")
-    assert getattr(decorator_arg, "_prompt_template") == "Recommend a {genre} book."
+    assert decorator_arg._prompt_template == "Recommend a {genre} book."
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")
@@ -123,6 +123,17 @@ def test_prompt_template_docstring() -> None:
     os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "DISABLED"
 
 
+def test_prompt_template_with_function() -> None:
+    """Tests the `prompt_template` decorator on a function."""
+
+    @prompt_template("Recommend a book.")
+    def fn(): ...
+
+    assert (
+        hasattr(fn, "_prompt_template") and fn._prompt_template == "Recommend a book."  # pyright: ignore [reportFunctionMemberAccess]
+    )
+
+
 def test_metadata_decorator() -> None:
     """Tests the `metadata` decorator on a `BasePrompt`."""
 
@@ -132,3 +143,8 @@ def test_metadata_decorator() -> None:
 
     prompt = BookRecommendationPrompt()
     assert prompt.dump()["metadata"] == {"tags": {"version:0001"}}
+
+    @metadata({"tags": {"version:0001"}})
+    def fn(): ...
+
+    assert hasattr(fn, "_metadata") and fn._metadata == {"tags": {"version:0001"}}  # pyright: ignore [reportFunctionMemberAccess]

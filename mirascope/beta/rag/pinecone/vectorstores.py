@@ -1,7 +1,8 @@
 """A module for calling Chroma's Client and Collection."""
 
+from collections.abc import Callable
 from functools import cached_property
-from typing import Any, Callable, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 from pinecone import Index, Pinecone, QueryResponse
 
@@ -51,10 +52,10 @@ class PineconeVectorStore(BaseVectorStore):
     ```
     """
 
-    handle_add_text: Optional[Callable[[list[Document]], None]] = None
-    handle_retrieve_text: Optional[Callable[[list[float]], list[str]]] = None
+    handle_add_text: Callable[[list[Document]], None] | None = None
+    handle_retrieve_text: Callable[[list[float]], list[str]] | None = None
 
-    vectorstore_params: ClassVar[Union[PineconePodParams, PineconeServerlessParams]] = (
+    vectorstore_params: ClassVar[PineconePodParams | PineconeServerlessParams] = (
         PineconeServerlessParams(cloud="aws", region="us-east-1")
     )
     client_settings: ClassVar[PineconeSettings] = PineconeSettings()
@@ -95,7 +96,7 @@ class PineconeVectorStore(BaseVectorStore):
 
     def add(
         self,
-        text: Union[str, list[Document]],
+        text: str | list[Document],
         **kwargs: Any,
     ) -> None:
         """Takes unstructured data and upserts into vectorstore"""

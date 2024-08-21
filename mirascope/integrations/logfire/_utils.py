@@ -1,10 +1,9 @@
 """Mirascope x Logfire Integration utils"""
 
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from typing import (
     Any,
-    Callable,
-    Generator,
 )
 
 import logfire
@@ -91,7 +90,7 @@ def handle_stream(
 
 
 def set_response_model_output(
-    result: BaseModel | BaseType, output: dict[str, Any] = {}
+    result: BaseModel | BaseType, output: dict[str, Any]
 ) -> None:
     if isinstance(result, BaseModel):
         output["response_model"] = {

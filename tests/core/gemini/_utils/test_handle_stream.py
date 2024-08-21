@@ -52,12 +52,7 @@ def mock_chunks() -> list[GenerateContentResponseType]:
 
 def test_handle_stream(mock_chunks: list[GenerateContentResponseType]) -> None:
     """Tests the `handle_stream` function."""
-    result = [
-        (chunk, tool)
-        for chunk, tool in handle_stream(
-            (chunk for chunk in mock_chunks), tool_types=None
-        )
-    ]
+    result = list(handle_stream((chunk for chunk in mock_chunks), tool_types=None))
     assert len(result) == 2
     assert result[0][0].content == "The author is "
     assert result[0][1] is None

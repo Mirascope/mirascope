@@ -1,7 +1,8 @@
 """Function for binding `args` and `kwargs` as a dictionary to the fn's signature."""
 
 import inspect
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def get_fn_args(

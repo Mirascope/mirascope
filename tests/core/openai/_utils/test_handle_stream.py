@@ -137,9 +137,7 @@ def mock_chunks() -> list[ChatCompletionChunk]:
 def test_handle_stream(mock_chunks: list[ChatCompletionChunk]) -> None:
     """Tests the `handle_stream` function."""
 
-    result = [
-        t for t in handle_stream((c for c in mock_chunks), tool_types=[FormatBook])
-    ]
+    result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
     # Check we get three tuples back.
     # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
     assert len(result) == 3

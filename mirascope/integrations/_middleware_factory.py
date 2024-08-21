@@ -1,11 +1,10 @@
 """The `middleware_factory` method for handling the call response."""
 
 import inspect
+from collections.abc import Awaitable, Callable
 from contextlib import AbstractContextManager, contextmanager
 from functools import wraps
 from typing import (
-    Awaitable,
-    Callable,
     ParamSpec,
     TypeVar,
     cast,
@@ -205,8 +204,7 @@ def middleware_factory(
                     def new_stream_iter(self):
                         # Create the context manager when user iterates over the stream
                         with custom_context_manager(fn) as context:
-                            for chunk, tool in original_iter():
-                                yield chunk, tool
+                            yield from original_iter()
                             if handle_stream is not None:
                                 handle_stream(result, fn, context)
 
@@ -227,8 +225,7 @@ def middleware_factory(
                     def new_iter(self):
                         # Create the context manager when user iterates over the stream
                         with custom_context_manager(fn) as context:
-                            for chunk in original_iter():
-                                yield chunk
+                            yield from original_iter()
                             if handle_structured_stream is not None:
                                 handle_structured_stream(result, fn, context)
 

@@ -113,12 +113,12 @@ async def fine_grained_comparison(
     history: list[ChatCompletionMessageParam], query: str, reconstructed_query: str
 ) -> openai.OpenAIDynamicConfig:
     # Decompose both queries into conditions
-    original_conditions, reconstructed_conditions = [
+    original_conditions, reconstructed_conditions = (
         response.conditions
         for response in await asyncio.gather(
             decompose_query(query), decompose_query(reconstructed_query)
         )
-    ]
+    )
 
     # Identify overlooked/hallucinated conditions and misinterpretation of question
     overlooking_tasks = [

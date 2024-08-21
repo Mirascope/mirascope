@@ -129,11 +129,15 @@ target-version = "py310"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"tests/*.py" = ["S101"]
+"examples/*.py" = ["T201"]
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F"]
-ignore = []
+select = ["E", "F", "I", "UP", "YTT", "B", "T10", "T20", "C4", "PYI006", "SIM"]
+ignore = ['D105', 'D107', 'D205', 'D415', 'E501', 'B011', 'B028', 'B904']
 fixable = ["ALL"]
+isort = { known-first-party = ['mirascope', 'tests', 'examples'] }
+pydocstyle = { convention = 'google' }
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 

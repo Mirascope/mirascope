@@ -3,7 +3,7 @@
 import asyncio
 import datetime
 from concurrent.futures import ThreadPoolExecutor
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from openai import AsyncOpenAI, OpenAI
 from openai.types import Embedding
@@ -31,9 +31,9 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
     ```
     """
 
-    dimensions: Optional[int] = 1536
-    embed_batch_size: Optional[int] = 20
-    max_workers: Optional[int] = 64
+    dimensions: int | None = 1536
+    embed_batch_size: int | None = 20
+    max_workers: int | None = 64
     embedding_params: ClassVar[OpenAIEmbeddingParams] = OpenAIEmbeddingParams(
         model="text-embedding-3-small"
     )
@@ -49,13 +49,12 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
             for i in range(0, len(inputs), self.embed_batch_size)
         ]
 
-        embedding_responses: list[OpenAIEmbeddingResponse] = [
-            response
-            for response in ThreadPoolExecutor(self.max_workers).map(
+        embedding_responses: list[OpenAIEmbeddingResponse] = list(
+            ThreadPoolExecutor(self.max_workers).map(
                 lambda inputs: self._embed(inputs),
                 input_batches,
             )
-        ]
+        )
         return self._merge_batch_embeddings(embedding_responses)
 
     async def embed_async(self, inputs: list[str]) -> OpenAIEmbeddingResponse:

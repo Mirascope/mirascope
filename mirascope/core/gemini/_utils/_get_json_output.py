@@ -22,9 +22,7 @@ def get_json_output(
         ]:
             return json.dumps(
                 {
-                    k: v
-                    if not isinstance(v, RepeatedComposite)
-                    else [item for item in v]
+                    k: v if not isinstance(v, RepeatedComposite) else list(v)
                     for k, v in tool_calls[0].args.items()
                 }
             )

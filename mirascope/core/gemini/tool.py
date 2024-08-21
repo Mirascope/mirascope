@@ -99,8 +99,6 @@ class GeminiTool(BaseTool):
         """
         if not tool_call.args:
             raise ValueError("Tool call doesn't have any arguments.")
-        model_json: dict[str, Any] = {
-            key: value for key, value in tool_call.args.items()
-        }
+        model_json: dict[str, Any] = dict(tool_call.args.items())
         model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)
