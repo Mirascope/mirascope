@@ -6,8 +6,8 @@ We'll implement the [LangGraph Quickstart](https://langchain-ai.github.io/langgr
 
 A chatbot must possess at least two key capabilities to be considered as such:
 
-    * The ability to engage in conversation with a user
-    * The capacity to retain and reference information from the ongoing dialogue
+* The ability to engage in conversation with a user
+* The capacity to retain and reference information from the ongoing dialogue
 
 Let's take a look at how that looks using Mirascope:
 
@@ -57,10 +57,10 @@ Chatbot.run()
 
 The `run` method serves as the entry point for our Chatbot. It implements a continuous loop that:
 
-    1. Prompts the user for input
-    2. Processes the user's message
-    3. Generates and streams the assistant's response for a real time feel
-    4. Updates the conversation history
+1. Prompts the user for input
+2. Processes the user's message
+3. Generates and streams the assistant's response for a real time feel
+4. Updates the conversation history
 
 This loop persists until the user chooses to exit. After each interaction, both the user's input and the assistant's response are appended to the history list. This accumulation of context allows the language model to maintain continuity and relevance in future conversations.
 
@@ -255,10 +255,10 @@ Chatbot.run()
 
 We have enhanced our chatbot's functionality with several key modifications:
 
-    * Added a `WebSearch` tool to the tools parameter in the `@openai.call` decorator.
-    * Refactored the streaming logic and history management into a new `_step` method.
-    * Updated the history to include tool usage and outputs.
-    * Revised the prompt template to instruct the chatbot on how to utilize the new `WebSearch` tool.
+* Added a `WebSearch` tool to the tools parameter in the `@openai.call` decorator.
+* Refactored the streaming logic and history management into a new `_step` method.
+* Updated the history to include tool usage and outputs.
+* Revised the prompt template to instruct the chatbot on how to utilize the new `WebSearch` tool.
 
 ## Part 3: Human-in-the-loop
 
