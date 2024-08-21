@@ -66,7 +66,7 @@ class BaseTool(BaseModel):
     @abstractmethod
     def call(self) -> Any:
         """The method to call the tool."""
-        ...  # pragma: no cover
+        ...
 
     @classmethod
     def model_tool_schema(cls) -> dict[str, Any]:

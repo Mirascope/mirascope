@@ -192,14 +192,14 @@ class BaseStream(
     @abstractmethod
     def cost(self) -> float | None:
         """Returns the cost of the stream."""
-        ...  # pragma: no cover
+        ...
 
     @abstractmethod
     def _construct_message_param(
         self, tool_calls: list[Any] | None = None, content: str | None = None
     ) -> _AssistantMessageParamT:
         """Constructs the assistant message."""
-        ...  # pragma: no cover
+        ...
 
     def tool_message_params(
         self, tools_and_outputs: list[tuple[_BaseToolT, str]]
@@ -215,7 +215,7 @@ class BaseStream(
     @abstractmethod
     def construct_call_response(self) -> _BaseCallResponseT:
         """Constructs the call response."""
-        ...  # pragma: no cover
+        ...
 
 
 _BaseCallResponseChunkT = TypeVar(
