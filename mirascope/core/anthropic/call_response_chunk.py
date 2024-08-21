@@ -92,8 +92,8 @@ class AnthropicCallResponseChunk(
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        if (usage := self.usage) and hasattr(usage, "input_tokens"):
-            return getattr(usage, "input_tokens")
+        if (usage := self.usage) and isinstance(usage, Usage):
+            return usage.input_tokens
         return None
 
     @property

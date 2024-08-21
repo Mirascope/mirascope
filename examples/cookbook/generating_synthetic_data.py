@@ -63,7 +63,10 @@ class DataFrameGenerator(BaseModel):
 
     def generate_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame(
-            {name: column for name, column in zip(self.column_names, self.data)}
+            {
+                name: column
+                for name, column in zip(self.column_names, self.data, strict=False)
+            }
         )
 
 

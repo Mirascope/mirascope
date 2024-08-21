@@ -1,7 +1,7 @@
 import inspect
 from abc import update_abstractmethods
-from typing import Any, TypeVar, cast, get_type_hints
 from collections.abc import Callable
+from typing import Any, TypeVar, cast, get_type_hints
 
 import jiter
 from docstring_parser import parse
@@ -120,7 +120,7 @@ def convert_function_to_base_tool(
         return await call(self)
 
     if inspect.iscoroutinefunction(fn):
-        setattr(model, "call", call_async)
+        model.call = call_async  # pyright: ignore [reportAttributeAccessIssue]
     else:
-        setattr(model, "call", call)
+        model.call = call  # pyright: ignore [reportAttributeAccessIssue]
     return update_abstractmethods(model)

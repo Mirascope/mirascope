@@ -1,10 +1,10 @@
 """Mirascope x Logfire Integration utils"""
 
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from typing import (
     Any,
 )
-from collections.abc import Callable, Generator
 
 import logfire
 from pydantic import BaseModel
@@ -90,8 +90,10 @@ def handle_stream(
 
 
 def set_response_model_output(
-    result: BaseModel | BaseType, output: dict[str, Any] = {}
+    result: BaseModel | BaseType, output: dict[str, Any] | None = None
 ) -> None:
+    if output is None:
+        output = {}
     if isinstance(result, BaseModel):
         output["response_model"] = {
             "name": result.__class__.__name__,

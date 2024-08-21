@@ -1,7 +1,14 @@
 """This module defines the base class for structured streams."""
 
 import inspect
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import (
+    AsyncGenerator,
+    AsyncIterable,
+    Awaitable,
+    Callable,
+    Generator,
+    Iterable,
+)
 from functools import wraps
 from typing import (
     Generic,
@@ -9,7 +16,6 @@ from typing import (
     TypeVar,
     overload,
 )
-from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 
 from pydantic import BaseModel
 
@@ -167,10 +173,10 @@ def structured_stream_factory(
             call_response_chunk = TCallResponseChunk(chunk=chunk)
             json_output = get_json_output(call_response_chunk, json_mode)
             call_response_chunk_type = type(call_response_chunk)
-            original_content_property = getattr(call_response_chunk_type, "content")
-            setattr(call_response_chunk_type, "content", json_output)
+            original_content_property = call_response_chunk_type.content
+            call_response_chunk_type.content = json_output  # pyright: ignore [reportAttributeAccessIssue]
             call_response_chunk = call_response_chunk_type(chunk=chunk)
-            setattr(call_response_chunk_type, "content", original_content_property)
+            call_response_chunk_type.content = original_content_property  # pyright: ignore [reportAttributeAccessIssue]
             return call_response_chunk, None
 
         def handle_stream(

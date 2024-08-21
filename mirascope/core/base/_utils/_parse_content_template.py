@@ -75,8 +75,8 @@ def _load_media(source: str | bytes) -> bytes:
         return data
     except Exception as e:  # pragma: no cover
         raise ValueError(
-            f"Failed to load or encode data from {source}: {str(e)}"
-        )  # pragma: no cover
+            f"Failed to load or encode data from {source}"
+        ) from e  # pragma: no cover
 
 
 def _construct_image_part(

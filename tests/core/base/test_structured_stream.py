@@ -90,7 +90,7 @@ def test_structured_stream_factory_sync(
         and (handle_stream := kwargs["handle_stream"]) is not None
     )
     for chunk, tool in handle_stream(["chunk0", "chunk1"], None):
-        assert hasattr(chunk, "content") and getattr(chunk, "content") == "json_output"
+        assert hasattr(chunk, "content") and chunk.content == "json_output"
         assert tool is None
 
 
@@ -170,7 +170,7 @@ async def test_structured_stream_factory_async(
         yield "chunk1"
 
     async for chunk, tool in handle_stream(generator(), None):
-        assert hasattr(chunk, "content") and getattr(chunk, "content") == "json_output"
+        assert hasattr(chunk, "content") and chunk.content == "json_output"
         assert tool is None
 
 

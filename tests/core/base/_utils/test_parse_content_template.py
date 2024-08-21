@@ -36,7 +36,7 @@ def test_parse_content_template_images(
     """Test the parse_content_template function with image templates."""
     image_data = b"\xff\xd8\xffimage data"
     mock_response = MagicMock()
-    setattr(mock_response, "read", lambda: image_data)
+    mock_response.read = lambda: image_data
     mock_urlopen.return_value.__enter__.return_value = mock_response
     mock_open.return_value.__enter__.return_value = mock_response
     template = "Analyze this image: {url:image}"
@@ -110,7 +110,7 @@ def test_parse_content_template_audio(
     """Test the parse_content_template function with image templates."""
     audio_data = b"ID3audio data"
     mock_response = MagicMock()
-    setattr(mock_response, "read", lambda: audio_data)
+    mock_response.read = lambda: audio_data
     mock_urlopen.return_value.__enter__.return_value = mock_response
     mock_open.return_value.__enter__.return_value = mock_response
     template = "Analyze this audio: {url:audio}"
