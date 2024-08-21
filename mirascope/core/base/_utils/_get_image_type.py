@@ -10,17 +10,13 @@ def get_image_type(image_data: bytes) -> str:
         return "gif"
     elif image_data.startswith(b"RIFF") and image_data[8:12] == b"WEBP":
         return "webp"
-    elif (
-        image_data[4:12]
-        in (
-            b"ftypmif1",
-            b"ftypmsf1",
-            b"ftypheic",
-            b"ftypheix",
-            b"ftyphevc",
-            b"ftyphevx",
-        )
-        and image_data[4:8] == b"ftyp"  # HEIF and HEIC files start with 'ftyp'
+    elif image_data[4:12] in (
+        b"ftypmif1",
+        b"ftypmsf1",
+        b"ftypheic",
+        b"ftypheix",
+        b"ftyphevc",
+        b"ftyphevx",
     ):
         subtype = image_data[8:12]
         if subtype in (b"heic", b"heix"):
