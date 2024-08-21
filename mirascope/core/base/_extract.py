@@ -87,7 +87,6 @@ def extract_factory(
         _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
     ]:
         tool = setup_extract_tool(response_model, TToolType)
-        is_async = inspect.iscoroutinefunction(fn)
         create_decorator_kwargs = {
             "model": model,
             "tools": [tool],
@@ -97,38 +96,45 @@ def extract_factory(
             "call_params": call_params,
         }
 
-        @wraps(fn)
-        def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-            assert SetupCall.fn_is_sync(fn)
-            call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
-                *args, **kwargs
-            )
-            json_output = get_json_output(call_response, json_mode)
-            try:
-                output = extract_tool_return(response_model, json_output, False)
-            except ValidationError as e:
-                e._response = call_response  # type: ignore
-                raise e
-            if isinstance(output, BaseModel):
-                output._response = call_response  # type: ignore
-            return output if not output_parser else output_parser(output)  # type: ignore
+        if inspect.iscoroutinefunction(fn):
 
-        @wraps(fn)
-        async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-            assert SetupCall.fn_is_async(fn)
-            call_response = await create_decorator(fn=fn, **create_decorator_kwargs)(
-                *args, **kwargs
-            )
-            json_output = get_json_output(call_response, json_mode)
-            try:
-                output = extract_tool_return(response_model, json_output, False)
-            except ValidationError as e:
-                e._response = call_response  # type: ignore
-                raise e
-            if isinstance(output, BaseModel):
-                output._response = call_response  # type: ignore
-            return output if not output_parser else output_parser(output)  # type: ignore
+            @wraps(fn)
+            async def inner_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> _ResponseModelT:
+                assert SetupCall.fn_is_async(fn)
+                call_response = await create_decorator(
+                    fn=fn, **create_decorator_kwargs
+                )(*args, **kwargs)
+                json_output = get_json_output(call_response, json_mode)
+                try:
+                    output = extract_tool_return(response_model, json_output, False)
+                except ValidationError as e:
+                    e._response = call_response  # type: ignore
+                    raise e
+                if isinstance(output, BaseModel):
+                    output._response = call_response  # type: ignore
+                return output if not output_parser else output_parser(output)  # type: ignore
 
-        return inner_async if is_async else inner
+            return inner_async
+        else:
+
+            @wraps(fn)
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+                assert SetupCall.fn_is_sync(fn)
+                call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
+                    *args, **kwargs
+                )
+                json_output = get_json_output(call_response, json_mode)
+                try:
+                    output = extract_tool_return(response_model, json_output, False)
+                except ValidationError as e:
+                    e._response = call_response  # type: ignore
+                    raise e
+                if isinstance(output, BaseModel):
+                    output._response = call_response  # type: ignore
+                return output if not output_parser else output_parser(output)  # type: ignore
+
+            return inner
 
     return decorator
