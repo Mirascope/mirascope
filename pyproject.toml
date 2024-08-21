@@ -143,7 +143,8 @@ exclude = ["mirascope/beta"]
 
 [tool.coverage.report]
 exclude_also = [
-    "@overload"
+    "@overload",
+    "@abstractmethod"
 ]
 
 [build-system]

@@ -34,4 +34,4 @@ class BaseChunker(BaseModel, ABC):
     @abstractmethod
     def chunk(self, text: str) -> list[Document]:
         """Returns a Document that contains an id, text, and optionally metadata."""
-        ...  # pragma: no cover
+        ...

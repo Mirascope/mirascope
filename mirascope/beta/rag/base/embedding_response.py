@@ -27,4 +27,4 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
         If there are multiple choices in a response, this method should select the 0th
         choice and return it's embedding.
         """
-        ...  # pragma: no cover
+        ...
