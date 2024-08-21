@@ -315,7 +315,7 @@ Chatbot.run()
 
 ### Human-as-a-tool
 
-We can use prompt engineering techniques to help the LLM make a decision on whether it needs human intervention or not. Let's add a `RequestAssistance` tool, and update our prompt so the LLM knows how to use our new tool.
+We can use prompt engineering techniques to help the LLM make a decision on whether it needs human intervention or not. Let's add a `RequestAssistance` tool and update our prompt so the LLM knows how to use our new tool.
 
 ```python
 class RequestAssistance(openai.OpenAITool):
@@ -325,8 +325,10 @@ class RequestAssistance(openai.OpenAITool):
 
     def call(self) -> str:
         """Prompts a human to enter a response."""
-        print(f"The AI has requested assistance. Here is the question: {self.query}")
-        response = input("(Human): ")
+        print(
+            f"\n\tThe AI has requested assistance. Here is the question: {self.query}"
+        )
+        response = input("\t(Human): ")
         return f"Human response: {response}"
 
 class Chatbot(BaseModel):

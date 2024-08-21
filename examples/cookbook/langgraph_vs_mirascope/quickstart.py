@@ -56,8 +56,10 @@ class RequestAssistance(openai.OpenAITool):
 
     def call(self) -> str:
         """Prompts a human to enter a response."""
-        print(f"The AI has requested assistance. Here is the question: {self.query}")
-        response = input("(Human): ")
+        print(
+            f"\n\tThe AI has requested assistance. Here is the question: {self.query}"
+        )
+        response = input("\t(Human): ")
         return f"Human response: {response}"
 
 
