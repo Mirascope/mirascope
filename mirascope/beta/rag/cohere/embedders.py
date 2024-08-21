@@ -1,7 +1,7 @@
 """A module for calling OpenAI's Embeddings models."""
 
 import datetime
-from typing import ClassVar, Optional, Union
+from typing import ClassVar
 
 from cohere import AsyncClient, Client
 
@@ -36,7 +36,7 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
     ```
     """
 
-    dimensions: Optional[int] = 1024
+    dimensions: int | None = 1024
     embedding_params: ClassVar[CohereEmbeddingParams] = CohereEmbeddingParams(
         model="embed-english-v3.0"
     )
@@ -77,9 +77,7 @@ class CohereEmbedder(BaseEmbedder[CohereEmbeddingResponse]):
             embedding_type=embedding_type,
         )
 
-    def __call__(
-        self, input: list[str]
-    ) -> Optional[Union[list[list[float]], list[list[int]]]]:
+    def __call__(self, input: list[str]) -> list[list[float]] | list[list[int]] | None:
         """Call the embedder with a input
 
         Chroma expects parameter to be `input`.

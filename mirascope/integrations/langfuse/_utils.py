@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from langfuse.decorators import langfuse_context
 from pydantic import BaseModel

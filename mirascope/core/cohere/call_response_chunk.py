@@ -79,9 +79,11 @@ class CohereCallResponseChunk(
     @property
     def usage(self) -> ApiMetaBilledUnits | None:
         """Returns the usage of the response."""
-        if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
-            if self.chunk.response.meta:
-                return self.chunk.response.meta.billed_units
+        if (
+            isinstance(self.chunk, StreamedChatResponse_StreamEnd)
+            and self.chunk.response.meta
+        ):
+            return self.chunk.response.meta.billed_units
         return None
 
     @property

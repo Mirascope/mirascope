@@ -13,7 +13,7 @@ async def main():
     tasks = [summarize_movie(genre) for genre in genres]
     results = await asyncio.gather(*tasks)
 
-    for genre, result in zip(genres, results):
+    for genre, result in zip(genres, results, strict=False):
         print(f"{genre.capitalize()} movie summary:")
         print(result.content)
         print()

@@ -139,7 +139,7 @@ async def self_verify(query: str, num_solutions: int):
     scores = await asyncio.gather(*tasks)
     print(scores)
     print(f"MAX SCORE:{len(masked_prompts)}")
-    for cot_solution, score in zip(cot_responses, scores):
+    for cot_solution, score in zip(cot_responses, scores, strict=False):
         print(f"Solution:\n{cot_solution}\nScore:\n{score}\n")
 
 

@@ -28,7 +28,7 @@ def test_base_call_response():
     )  # type: ignore
     assert str(call_response) == "content"
     tool = MagicMock()
-    setattr(tool, "_name", lambda: "mock_tool")
+    tool._name = lambda: "mock_tool"
     assert call_response.serialize_tool_types([tool], _info="") == [
         {"type": "function", "name": "mock_tool"}
     ]

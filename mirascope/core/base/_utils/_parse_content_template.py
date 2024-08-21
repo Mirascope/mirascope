@@ -64,7 +64,7 @@ def _load_media(source: str | bytes) -> bytes:
     try:
         # Some typing weirdness here where checking `isinstance(source, bytes)` results
         # in a type hint of `str | bytearray | memoryview` for source in the else.
-        if isinstance(source, (bytes, bytearray, memoryview)):
+        if isinstance(source, bytes | bytearray | memoryview):
             data = source
         elif source.startswith(("http://", "https://")):
             with urllib.request.urlopen(source) as response:
@@ -75,8 +75,8 @@ def _load_media(source: str | bytes) -> bytes:
         return data
     except Exception as e:  # pragma: no cover
         raise ValueError(
-            f"Failed to load or encode data from {source}: {str(e)}"
-        )  # pragma: no cover
+            f"Failed to load or encode data from {source}"
+        ) from e  # pragma: no cover
 
 
 def _construct_image_part(

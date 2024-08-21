@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -21,7 +21,7 @@ class BaseEmbeddingResponse(BaseModel, Generic[ResponseT], ABC):
 
     @property
     @abstractmethod
-    def embeddings(self) -> Optional[Union[list[list[float]], list[list[int]]]]:
+    def embeddings(self) -> list[list[float]] | list[list[int]] | None:
         """Should return the embedding of the response.
 
         If there are multiple choices in a response, this method should select the 0th

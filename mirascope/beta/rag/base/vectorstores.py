@@ -1,7 +1,7 @@
 """Vectorstores for the RAG module."""
 
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Generic, Optional, TypeVar, Union
+from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel
 
@@ -18,8 +18,8 @@ BaseQueryResultsT = TypeVar("BaseQueryResultsT", bound=BaseQueryResults)
 class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     """The base class abstract interface for interacting with vectorstores."""
 
-    api_key: ClassVar[Optional[str]] = None
-    index_name: ClassVar[Optional[str]] = None
+    api_key: ClassVar[str | None] = None
+    index_name: ClassVar[str | None] = None
     chunker: ClassVar[BaseChunker] = TextChunker(chunk_size=1000, chunk_overlap=200)
     embedder: ClassVar[BaseEmbedder]
     vectorstore_params: ClassVar[BaseVectorStoreParams] = BaseVectorStoreParams()
@@ -32,6 +32,6 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
         ...
 
     @abstractmethod
-    def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
         ...

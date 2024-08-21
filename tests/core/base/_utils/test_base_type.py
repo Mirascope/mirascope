@@ -17,7 +17,7 @@ def test_is_base_type() -> None:
     assert is_base_type(set)
     assert is_base_type(tuple)
     assert is_base_type(dict)
-    assert is_base_type(Union[str, int])
+    assert is_base_type(Union[str, int])  # noqa: UP007
     assert is_base_type(Annotated[str, "test"])
     assert is_base_type(Literal[1])
     assert not is_base_type(BaseModel)

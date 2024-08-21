@@ -1,7 +1,8 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from litellm import acompletion, completion
 from openai import OpenAI

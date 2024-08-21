@@ -1,6 +1,6 @@
 """Types for interacting with Chroma using Mirascope."""
 
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from chromadb import CollectionMetadata, Settings
 from chromadb.api.types import URI, Document, IDs, Loadable, Metadata
@@ -12,18 +12,18 @@ from ..base.vectorstore_params import BaseVectorStoreParams
 
 
 class ChromaParams(BaseVectorStoreParams):
-    metadata: Optional[CollectionMetadata] = None
+    metadata: CollectionMetadata | None = None
     get_or_create: bool = False
 
 
 class ChromaQueryResult(BaseModel):
     ids: list[IDs]
-    embeddings: Optional[list[list[Vector]]] = None
-    documents: Optional[list[list[Document]]] = None
-    uris: Optional[list[list[URI]]] = None
-    data: Optional[list[Loadable]] = None
-    metadatas: Optional[list[list[Optional[Metadata]]]] = None
-    distances: Optional[list[list[float]]] = None
+    embeddings: list[list[Vector]] | None = None
+    documents: list[list[Document]] | None = None
+    uris: list[list[URI]] | None = None
+    data: list[Loadable] | None = None
+    metadatas: list[list[Metadata | None]] | None = None
+    distances: list[list[float]] | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -34,8 +34,8 @@ class ChromaSettings(BaseModel):
     host: str = "localhost"
     port: int = 8000
     ssl: bool = False
-    headers: Optional[dict[str, str]] = None
-    settings: Optional[Settings] = None
+    headers: dict[str, str] | None = None
+    settings: Settings | None = None
     tenant: str = DEFAULT_TENANT
     database: str = DEFAULT_DATABASE
 

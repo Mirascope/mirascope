@@ -1,12 +1,9 @@
 """The `BasePrompt` class for better prompt engineering."""
 
+from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from functools import reduce
 from typing import (
     Any,
-    AsyncIterable,
-    Awaitable,
-    Callable,
-    Iterable,
     ParamSpec,
     TypeVar,
     overload,
@@ -338,7 +335,7 @@ def prompt_template(template: str):
     def inner(
         prompt: type[_BasePromptT] | Callable[_P, _R],
     ) -> type[_BasePromptT] | Callable[_P, _R]:
-        setattr(prompt, "_prompt_template", template)
+        prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
         return prompt
 
     return inner
@@ -385,7 +382,7 @@ def metadata(metadata: Metadata):
         prompt: type[_BasePromptT] | Callable[_P, _R],
     ) -> type[_BasePromptT] | Callable[_P, _R]:
         """Updates the `metadata` class attribute to the given value."""
-        setattr(prompt, "_metadata", metadata)
+        prompt._metadata = metadata  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
         return prompt
 
     return inner

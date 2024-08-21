@@ -118,7 +118,7 @@ def test_base_tool_type_conversion() -> None:
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
 
     tool_type = BaseTool.type_from_base_type(str)
-    setattr(tool_type, "call", lambda self: self.value)
+    tool_type.call = lambda self: self.value  # pyright: ignore [reportAttributeAccessIssue]
     update_abstractmethods(tool_type)
     assert tool_type.__name__ == "str"
     tool = tool_type(value="The Name of the Wind")  # type: ignore

@@ -1,8 +1,9 @@
 """Beta implementation of the new OpenAI parse functionality."""
 
 import inspect
+from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Awaitable, Callable, Literal, ParamSpec, TypeVar, cast, overload
+from typing import Literal, ParamSpec, TypeVar, cast, overload
 
 from pydantic import BaseModel
 

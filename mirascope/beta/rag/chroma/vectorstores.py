@@ -1,7 +1,7 @@
 """A module for calling Chroma's Client and Collection."""
 
 from functools import cached_property
-from typing import Any, ClassVar, Optional, Union, cast
+from typing import Any, ClassVar, cast
 
 from chromadb import Collection, EphemeralClient, HttpClient, Metadata, PersistentClient
 from chromadb.api import ClientAPI
@@ -42,7 +42,7 @@ class ChromaVectorStore(BaseVectorStore):
     _provider: ClassVar[str] = "chroma"
 
     def retrieve(
-        self, text: Optional[Union[str, list[str]]] = None, **kwargs: Any
+        self, text: str | list[str] | None = None, **kwargs: Any
     ) -> ChromaQueryResult:
         """Queries the vectorstore for closest match"""
         if text:
@@ -54,7 +54,7 @@ class ChromaVectorStore(BaseVectorStore):
 
         return ChromaQueryResult.model_validate(query_result)
 
-    def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):

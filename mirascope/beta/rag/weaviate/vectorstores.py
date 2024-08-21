@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Any, ClassVar, Union
+from typing import Any, ClassVar
 
 import weaviate
 import weaviate.classes as wvc
@@ -43,7 +43,7 @@ class WeaviateVectorStore(BaseVectorStore):
     vectorstore_params = WeaviateParams()
     client_settings: ClassVar[WeaviateSettings] = WeaviateSettings()
 
-    def add(self, text: Union[str, list[Document]], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:
         """Takes unstructured data and inserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):
@@ -57,7 +57,7 @@ class WeaviateVectorStore(BaseVectorStore):
                 properties={"text": documents[0].text}, uuid=documents[0].id, **kwargs
             )
 
-        data_objects = list()
+        data_objects = []
         for document in documents:
             data_object = wvc.data.DataObject(
                 properties={"text": document.text}, uuid=document.id

@@ -78,7 +78,7 @@ def test_convert_function_to_base_tool_with_self_argument() -> None:
         return self.title
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
-    setattr(tool_type, "title", "The Name of the Wind")
+    tool_type.title = "The Name of the Wind"  # pyright: ignore [reportAttributeAccessIssue]
     tool = tool_type()
     assert tool.call() == "The Name of the Wind"
 
