@@ -257,7 +257,8 @@ We have enhanced our chatbot's functionality with several key modifications:
 
 * Added a `WebSearch` tool to the tools parameter in the `@openai.call` decorator.
 * Refactored the streaming logic and history management into a new `_step` method.
-* Updated the history to include tool usage and outputs.
+    * This enables calling `_step` iteratively until the agent is done calling tools and is ready to respond.
+    * For each `_step` we update the history to include tool usage and outputs.
 * Revised the prompt template to instruct the chatbot on how to utilize the new `WebSearch` tool.
 
 ## Part 3: Human-in-the-loop
@@ -266,16 +267,18 @@ Let us take a look at how we can slot in human input or approval using Mirascope
 
 ### Permission before using tool
 
-Since we are just writing python code, we don't need to setup a `interrupt_before`. We can simply add a function `_interrupt_before` before our tool call, like so:
+Since we are just writing python code, we don't need to setup an `interrupt_before`. We can simply add a function `_interrupt_before` that we call before calling our tool, like so:
 
 ```python
 def _interrupt_before(self, tool: openai.OpenAITool) -> openai.OpenAITool | None:
     """Interrupt before the tool is called. Return the modified tool or None."""
     if not isinstance(tool, WebSearch):
         return tool
-    response = input("Do you want to use the tool? (y/n): ")
+    response = input(f"Do you want to use the {tool._name()} tool? (y/n): ")
     if response.lower() in ["n", "no"]:
-        response = input("Do you want to modify the tool? (y/n): ")
+        response = input(
+            f"Do you want to modify the {tool._name()} tool's query? (y/n): "
+        )
         if response.lower() in ["n", "no"]:
             return None
         else:
@@ -310,7 +313,7 @@ Now, before the LLM calls the tool, it will prompt the user requesting permissio
 ```python
 Chatbot.run()
 (User): Can you tell me about the Mirascope python library?
-(Assistant): Do you want to use the tool? (y/n): y
+(Assistant): Do you want to use the WebSearch tool? (y/n): y
 ```
 
 ### Human-as-a-tool
@@ -321,13 +324,14 @@ We can use prompt engineering techniques to help the LLM make a decision on whet
 class RequestAssistance(openai.OpenAITool):
     """A tool that requests assistance from a human expert."""
 
-    query: str = Field(..., description="The users question.")
+    query: str = Field(
+        ...,
+        description="The request for assistance needed to properly respond to the user",
+    )
 
     def call(self) -> str:
         """Prompts a human to enter a response."""
-        print(
-            f"\n\tThe AI has requested assistance. Here is the question: {self.query}"
-        )
+        print(f"I am in need of assistance. {self.query}")
         response = input("\t(Human): ")
         return f"Human response: {response}"
 
@@ -361,9 +365,11 @@ class Chatbot(BaseModel):
     ...
 
 Chatbot.run()
-# (User): What is my name?
-# (Assistant): The AI has requested assistance. Here is the question: What is my name?
-# (Human): The users name is Will.
+# > (User): What is my name?
+# > (Assistant): I am in need of assistance. How to identify a user's name in a conversation without them explicitly stating it?
+#       (Human): Tell them you don't know their name and would love for them to share it with you
+#   I’m not sure what your name is. I would love to know, so please feel free to share it!
+# > (User): 
 ```
 
 ## Part 4: Time Travel also known as list splicing
@@ -388,5 +394,9 @@ chatbot.history = chatbot.history[:-4]
 ```
 
 While in this example, we are calling the run function multiple times, there is nothing stopping you from updating the history inside the Chatbot. Note that in real-world applications, conversation history is typically stored in a cache, database, or other persistent storage systems, so add `computed_fields` as necessary to retrieve from storage.
+
+!!! note "Dynamic, Relevant History"
+
+    We have seen cases where the history is retrieved dynamically from e.g. a vector store. This enables injecting only relevant history along with each call, which can help reduce token usage and keep the assistant's responses more relevant.
 
 Congratulations! You've now learned how to create a sophisticated chatbot using Mirascope and simple Python code. This approach demonstrates that powerful AI applications can be built with minimal reliance on complex abstractions or pre-built tools, giving you greater flexibility and control over your project's architecture.

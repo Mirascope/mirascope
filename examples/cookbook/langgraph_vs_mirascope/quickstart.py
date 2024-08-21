@@ -52,13 +52,14 @@ class WebSearch(openai.OpenAITool):
 class RequestAssistance(openai.OpenAITool):
     """A tool that requests assistance from a human expert."""
 
-    query: str = Field(..., description="The users question.")
+    query: str = Field(
+        ...,
+        description="The request for assistance needed to properly respond to the user",
+    )
 
     def call(self) -> str:
         """Prompts a human to enter a response."""
-        print(
-            f"\n\tThe AI has requested assistance. Here is the question: {self.query}"
-        )
+        print(f"I am in need of assistance. {self.query}")
         response = input("\t(Human): ")
         return f"Human response: {response}"
 
@@ -91,9 +92,11 @@ class Chatbot(BaseModel):
         """Interrupt before the tool is called. Return the modified tool or None."""
         if not isinstance(tool, WebSearch):
             return tool
-        response = input("Do you want to use the tool? (y/n): ")
+        response = input(f"Do you want to use the {tool._name()} tool? (y/n): ")
         if response.lower() in ["n", "no"]:
-            response = input("Do you want to modify the tool? (y/n): ")
+            response = input(
+                f"Do you want to modify the {tool._name()} tool's query? (y/n): "
+            )
             if response.lower() in ["n", "no"]:
                 return None
             else:
