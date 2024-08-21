@@ -1,6 +1,6 @@
 # Tools
 
-Tools are defined functions that a Large Language Model (LLM) can invoke to extend its capabilities. This greatly enhances the capabilities of LLMs by allowing them to perform specific tasks, access external data, interact with other systems, and more. This feature enables the create of more dynamic and interactic LLM applciations.
+Tools are defined functions that a Large Language Model (LLM) can invoke to extend its capabilities. This greatly enhances the capabilities of LLMs by allowing them to perform specific tasks, access external data, interact with other systems, and more. This feature enables the create of more dynamic and interactic LLM applications.
 
 !!! info "How Tools Are Called"
 

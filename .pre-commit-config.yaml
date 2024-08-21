@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.6.1"
+    hooks:
+      - id: ruff
+        files: "^mirascope|^tests|^examples"
+        args: [--fix]
+      - id: ruff-format
+        files: "^mirascope|^tests|^examples"
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.377
+    hooks:
+      - id: pyright
+  - repo: local
+    hooks:
+      - id: tests
+        name: tests
+        entry: uv run pytest tests
+        language: system
+        types: [python]
+        pass_filenames: false

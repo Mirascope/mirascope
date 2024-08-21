@@ -323,7 +323,7 @@ As you develop more sophisticated agents with Mirascope, it's crucial to follow 
 ### Managing Agent State and Memory
 
 - **Pydantic Models**: Use Pydantic models to define clear, type-safe state structures for your agents.
-- **Efficient History Management**: Implement strategies to manage conversation history, such as keeping only the most recent messages or summarizing older interactions. You can also store converstaion history in an external source and retrieve relevant messages to inject as context (e.g. RAG using a VectorStore of messages).
+- **Efficient History Management**: Implement strategies to manage conversation history, such as keeping only the most recent messages or summarizing older interactions. You can also store conversation history in an external source and retrieve relevant messages to inject as context (e.g. RAG using a VectorStore of messages).
 - **State Persistence**: For long-running agents, consider using databases or file storage to maintain state across sessions.
 - **Serialization**: Implement methods to serialize and deserialize your agent's state for easy storage and retrieval. Pydantic's `BaseModel` class makes this simple and easy.
 

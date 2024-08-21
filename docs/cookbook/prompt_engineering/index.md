@@ -2,9 +2,9 @@
 
 This section covers various prompt engineering techniques and how you can use Mirascope to implement them.
 
-Many of these recipes are adapated from techniques found in [this paper](https://arxiv.org/pdf/2406.06608) by [Learn Prompting](https://learnprompting.org/)
+Many of these recipes are adapted from techniques found in [this paper](https://arxiv.org/pdf/2406.06608) by [Learn Prompting](https://learnprompting.org/)
 
-We recommend taking a look at the original papers for a full view of the technique and to better understand how we have adapated it to a more dynamic, reusable code environment.
+We recommend taking a look at the original papers for a full view of the technique and to better understand how we have adapted it to a more dynamic, reusable code environment.
 
 !!! note "Some Techniques Are Not Included"
 

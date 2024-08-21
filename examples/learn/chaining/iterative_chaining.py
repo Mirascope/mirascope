@@ -9,7 +9,7 @@ class SummaryFeedback(BaseModel):
     critique: str = Field(..., description="The critique of the summary.")
     rewritten_summary: str = Field(
         ...,
-        description="A rewritten sumary that takes the critique into account.",
+        description="A rewritten summary that takes the critique into account.",
     )
 
 
