@@ -1,7 +1,8 @@
 """Utility for setting up a provider-specific call."""
 
 import inspect
-from typing import Any, Awaitable, Callable, TypeVar
+from typing import Any, TypeVar
+from collections.abc import Awaitable, Callable
 
 from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig

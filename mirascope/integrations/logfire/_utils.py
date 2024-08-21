@@ -3,9 +3,8 @@
 from contextlib import contextmanager
 from typing import (
     Any,
-    Callable,
-    Generator,
 )
+from collections.abc import Callable, Generator
 
 import logfire
 from pydantic import BaseModel

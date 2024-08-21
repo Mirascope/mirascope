@@ -1,7 +1,8 @@
 """This module contains the setup_call function, which is used to set up the"""
 
 import inspect
-from typing import Any, Awaitable, Callable, cast
+from typing import Any, cast
+from collections.abc import Awaitable, Callable
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import (  # type: ignore

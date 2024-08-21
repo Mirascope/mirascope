@@ -1,7 +1,5 @@
 """Tests that `partial` works to make all fields optional."""
 
-from typing import Optional
-
 from pydantic import BaseModel
 
 from mirascope.core.base._partial import partial
@@ -17,8 +15,8 @@ class ShallowModel(BaseModel):
 class PartialShallowModel(BaseModel):
     """A test model."""
 
-    param: Optional[str] = None
-    default: Optional[int] = None
+    param: str | None = None
+    default: int | None = None
 
 
 def test_shallow_partial():
@@ -39,8 +37,8 @@ class DeeperModel(BaseModel):
 class PartialDeeperModel(BaseModel):
     """A deeper model."""
 
-    shallow: Optional[PartialShallowModel] = {}  # type: ignore
-    param: Optional[str] = None
+    shallow: PartialShallowModel | None = {}  # pyright: ignore [reportAssignmentType]
+    param: str | None = None
 
 
 def test_deeper_partial():
@@ -62,9 +60,9 @@ class DeepestModel(BaseModel):
 class PartialDeepestModel(BaseModel):
     """A deepest model."""
 
-    shallow: Optional[PartialShallowModel] = {}  # type: ignore
-    deeper: Optional[PartialDeeperModel] = {}  # type: ignore
-    param: Optional[str] = None
+    shallow: PartialShallowModel | None = {}  # pyright: ignore [reportAssignmentType]
+    deeper: PartialDeeperModel | None = {}  # pyright: ignore [reportAssignmentType]
+    param: str | None = None
 
 
 def test_deepest_partial():

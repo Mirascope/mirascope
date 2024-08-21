@@ -2,7 +2,8 @@
 
 import json
 from contextlib import contextmanager
-from typing import Any, Callable, Generator, Sequence
+from typing import Any
+from collections.abc import Callable, Generator, Sequence
 
 from opentelemetry.sdk.trace import SpanProcessor, TracerProvider
 from opentelemetry.sdk.trace.export import (

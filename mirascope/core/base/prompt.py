@@ -3,14 +3,11 @@
 from functools import reduce
 from typing import (
     Any,
-    AsyncIterable,
-    Awaitable,
-    Callable,
-    Iterable,
     ParamSpec,
     TypeVar,
     overload,
 )
+from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 
 from pydantic import BaseModel
 

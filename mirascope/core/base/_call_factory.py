@@ -4,14 +4,12 @@ from enum import Enum
 from functools import partial
 from typing import (
     Annotated,
-    AsyncIterable,
-    Callable,
-    Iterable,
     Literal,
     NoReturn,
     TypeVar,
     overload,
 )
+from collections.abc import AsyncIterable, Callable, Iterable
 
 from pydantic import BaseModel
 
@@ -109,9 +107,7 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig, TCallResponse, TCallResponse
-    ]: ...
+    ) -> LLMFunctionDecorator[TDynamicConfig, TCallResponse, TCallResponse]: ...
 
     @overload
     def base_call(
@@ -124,9 +120,7 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
-    ]: ...
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
 
     @overload
     def base_call(
@@ -191,9 +185,7 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig, _ResponseModelT, _ResponseModelT
-    ]: ...
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ResponseModelT, _ResponseModelT]: ...
 
     @overload
     def base_call(
@@ -206,9 +198,7 @@ def call_factory(
         json_mode: bool = False,
         client: _BaseClientT | None = None,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig, _ParsedOutputT, _ParsedOutputT
-    ]: ...
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
 
     @overload
     def base_call(

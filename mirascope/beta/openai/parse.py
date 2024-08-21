@@ -2,7 +2,8 @@
 
 import inspect
 from functools import wraps
-from typing import Awaitable, Callable, Literal, ParamSpec, TypeVar, cast, overload
+from typing import Literal, ParamSpec, TypeVar, cast, overload
+from collections.abc import Awaitable, Callable
 
 from pydantic import BaseModel
 

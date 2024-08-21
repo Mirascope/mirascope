@@ -1,7 +1,8 @@
 """This module contains the setup_call function for Mistral tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable, cast
+from typing import Any, cast
+from collections.abc import Awaitable, Callable
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient

@@ -1,7 +1,8 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable, cast
+from typing import Any, cast
+from collections.abc import Awaitable, Callable
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (

@@ -1,6 +1,6 @@
 """Utility for pulling metadata from a call and merging with any dynamic metadata."""
 
-from typing import Callable
+from collections.abc import Callable
 
 from pydantic import BaseModel
 

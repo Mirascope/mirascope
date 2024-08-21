@@ -4,8 +4,6 @@ import inspect
 from collections.abc import AsyncGenerator, Generator
 from typing import (
     Any,
-    Awaitable,
-    Callable,
     Literal,
     ParamSpec,
     Protocol,
@@ -13,6 +11,7 @@ from typing import (
     TypeVar,
     overload,
 )
+from collections.abc import Awaitable, Callable
 
 from ..call_response_chunk import BaseCallResponseChunk
 from ..tool import BaseTool

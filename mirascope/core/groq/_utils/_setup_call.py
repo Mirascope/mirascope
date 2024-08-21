@@ -1,7 +1,8 @@
 """This module contains the setup_call function for Groq tools."""
 
 import inspect
-from typing import Any, Awaitable, Callable, cast
+from typing import Any, cast
+from collections.abc import Awaitable, Callable
 
 from groq import AsyncGroq, Groq
 from groq.types.chat import ChatCompletion, ChatCompletionMessageParam

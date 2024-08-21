@@ -1,6 +1,7 @@
 import inspect
 from abc import update_abstractmethods
-from typing import Any, Callable, TypeVar, cast, get_type_hints
+from typing import Any, TypeVar, cast, get_type_hints
+from collections.abc import Callable
 
 import jiter
 from docstring_parser import parse

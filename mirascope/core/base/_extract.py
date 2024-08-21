@@ -2,7 +2,8 @@
 
 import inspect
 from functools import wraps
-from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
+from typing import ParamSpec, TypeVar, overload
+from collections.abc import Awaitable, Callable
 
 from pydantic import BaseModel, ValidationError
 
@@ -70,9 +71,7 @@ def extract_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[
-        _P, Awaitable[_ResponseModelT | _ParsedOutputT]
-    ]: ...
+    ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

@@ -4,15 +4,12 @@ import inspect
 from collections.abc import AsyncGenerator, Generator
 from functools import wraps
 from typing import (
-    AsyncIterable,
-    Awaitable,
-    Callable,
     Generic,
-    Iterable,
     ParamSpec,
     TypeVar,
     overload,
 )
+from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 
 from pydantic import BaseModel
 

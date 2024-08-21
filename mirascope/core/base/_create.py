@@ -3,7 +3,8 @@
 import datetime
 import inspect
 from functools import wraps
-from typing import Awaitable, Callable, ParamSpec, TypeVar, overload
+from typing import ParamSpec, TypeVar, overload
+from collections.abc import Awaitable, Callable
 
 from ._utils import (
     SetupCall,

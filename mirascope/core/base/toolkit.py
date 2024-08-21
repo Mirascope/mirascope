@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC
-from typing import Callable, ClassVar, NamedTuple, TypeVar
+from typing import ClassVar, NamedTuple, TypeVar
+from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import Concatenate, ParamSpec
+from typing_extensions import ParamSpec
+from typing import Concatenate
 
 from . import BaseTool
 from ._utils import convert_function_to_base_tool, get_template_variables
