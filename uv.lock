@@ -2205,23 +2205,23 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.29.0,<1.0" },
-    { name = "cohere", marker = "extra == 'cohere'", specifier = ">=5.5.8,<6" },
-    { name = "docstring-parser", specifier = ">=0.15,<1.0" },
-    { name = "google-generativeai", marker = "extra == 'gemini'", specifier = ">=0.4.0,<1" },
-    { name = "groq", marker = "extra == 'groq'", specifier = ">=0.9.0,<1" },
-    { name = "hyperdx-opentelemetry", marker = "extra == 'hyperdx'", specifier = ">=0.1.0,<1" },
+    { name = "anthropic", marker = "extra == 'anthropic'", specifier = "<1.0,>=0.29.0" },
+    { name = "cohere", marker = "extra == 'cohere'", specifier = "<6,>=5.5.8" },
+    { name = "docstring-parser", specifier = "<1.0,>=0.15" },
+    { name = "google-generativeai", marker = "extra == 'gemini'", specifier = "<1,>=0.4.0" },
+    { name = "groq", marker = "extra == 'groq'", specifier = "<1,>=0.9.0" },
+    { name = "hyperdx-opentelemetry", marker = "extra == 'hyperdx'", specifier = "<1,>=0.1.0" },
     { name = "jiter", specifier = ">=0.5.0" },
-    { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
-    { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.41.4,<2" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=0.41.0,<1" },
-    { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=0.4.2,<1" },
-    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
-    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
-    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
-    { name = "pillow", marker = "extra == 'gemini'", specifier = ">=10.4.0,<11" },
+    { name = "langfuse", marker = "extra == 'langfuse'", specifier = "<3,>=2.30.0" },
+    { name = "litellm", marker = "extra == 'litellm'", specifier = "<2,>=1.41.4" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = "<1,>=0.41.0" },
+    { name = "mistralai", marker = "extra == 'mistral'", specifier = "<1,>=0.4.2" },
+    { name = "openai", marker = "extra == 'openai'", specifier = "<2,>=1.6.0" },
+    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
+    { name = "pillow", marker = "extra == 'gemini'", specifier = "<11,>=10.4.0" },
     { name = "pydantic", specifier = "==2.7.4" },
-    { name = "tenacity", marker = "extra == 'tenacity'", specifier = ">=8.4.2,<9" },
+    { name = "tenacity", marker = "extra == 'tenacity'", specifier = "<9,>=8.4.2" },
 ]
 
 [package.metadata.requires-dev]
