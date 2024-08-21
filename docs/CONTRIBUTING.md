@@ -2,17 +2,33 @@
 
 ## Setting Up Development Environment
 
-We use [poetry](https://python-poetry.org/) as our package and dependency manager.
+We use [uv](https://docs.astral.sh/uv/) as our package and dependency manager.
 
-To create a virtual environment for development, run the following in your shell:
+### Installation
+
+First, install `uv` using the official method:
+
+**macOS and Linux**
 
 ```sh
-pip install poetry
-poetry shell
-poetry install --all-extras --with dev
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Simply use `exit` to deactivate the environment. The next time you call `poetry shell` the environment will already be setup and ready to go.
+**Windows**
+
+```powershell
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+For more detailed instructions, refer to the [official uv setup guide](https://docs.astral.sh/uv/#getting-started).
+
+### Create a Virtual Environment
+
+After installing `uv`, create a virtual environment for development by running:
+
+```sh
+uv sync --all-extras --dev
+```
 
 ## Development Workflow
 
@@ -56,14 +72,14 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     - Format your code!
 
     ```shell
-    poetry run ruff format .
+    uv run ruff format .
     ```
 
     - Lint and test your code! From the base directory, run:
 
     ```shell
-    poetry run ruff check .
-    poetry run pyright .
+    uv run ruff check .
+    uv run pyright .
     ```
 
 4. Test!
@@ -84,13 +100,13 @@ Simply use `exit` to deactivate the environment. The next time you call `poetry 
     - Run tests to make sure nothing is broken
 
     ```shell
-    poetry run pytest tests/
+    uv run pytest tests/
     ```
 
     - Check coverage report
 
     ```shell
-    poetry run pytest tests/ --cov=./ --cov-report=html
+    uv run pytest tests/ --cov=./ --cov-report=html
     ```
 
 5. Contributions are submitted through [GitHub Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
