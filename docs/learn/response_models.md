@@ -45,6 +45,42 @@ This approach works consistently across all supported providers in Mirascope.
     
     `completion = cast(ChatCompletion, book._response)  # pyright: ignore [reportAttributeAccessIssue]`
 
+### Few-Shot Examples
+
+Adding few-shot examples to your response model can improve results by better demonstrating exactly how to adhere to your desired output.
+
+```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class Book(BaseModel):
+    title: str = Field(..., examples=["THE NAME OF THE WIND"])
+    author: str = Field(..., examples=["Rothfuss, Patrick"])
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {"title": "THE NAME OF THE WIND", "author": "Rothfuss, Patrick"}
+            ]
+        }
+    )
+
+
+@openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
+@prompt_template("Recommend a {genre} book. Match example format.")
+def recommend_book(genre: str): ...
+
+
+book = recommend_book("scifi")
+print(book)
+# > title='DUNE' author='Herber, Frank'
+```
+
+!!! note "Example Effectiveness"
+
+    We have found that examples are more effective when used in conjunction with additional prompt engineering. In the above example, you can see that we added "Match example format" to the prompt. We have also found that examples often work better when using `json_mode=True`. We believe that this is the result of models not being trained specifically on JSON schemas with examples and more often trained on few-shot examples that are directly part of the prompt itself.
+
 ## Streaming Response Models
 
 If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
