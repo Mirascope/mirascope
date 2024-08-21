@@ -56,7 +56,7 @@ class RequestAssistance(openai.OpenAITool):
 
     def call(self) -> str:
         """Prompts a human to enter a response."""
-        print(f"The user has requested assistance. Here is the question: {self.query}")
+        print(f"The AI has requested assistance. Here is the question: {self.query}")
         response = input("(Human): ")
         return f"Human response: {response}"
 
@@ -72,17 +72,15 @@ class Chatbot(BaseModel):
         Your task is to answer the user's question using the provided tools.
         You have access to the following tools:
             - `WebSearch`: Search the web for information.
-            - `RequestAssistance`: Request assistance from a human expert.
+            - `RequestAssistance`: Request assistance from a human expert if you do not
+                know how to answer the question.
 
         Once you have gathered all of the information you need, generate a writeup that
         strikes the right balance between brevity and completeness. The goal is to
         provide as much information to the writer as possible without overwhelming them.
 
-        MESSAGES:
-        {self.history}
-
-        USER:
-        {question}
+        MESSAGES: {self.history}
+        USER: {question}
         """
     )
     def _call(self, question: str | None = None): ...
