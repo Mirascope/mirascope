@@ -147,7 +147,7 @@ def test_toolkit_tool_method_not_found() -> None:
 
 
 def test_toolkit_tool_method_with_non_self_var(mock_namespaces) -> None:
-    """Tests that non-self temlate variables are preserved through tool creation."""
+    """Tests that non-self template variables are preserved through tool creation."""
 
     class BookRecommendationToolKit(BaseToolKit):
         """A toolkit for recommending books."""

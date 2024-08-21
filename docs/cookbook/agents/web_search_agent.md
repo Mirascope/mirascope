@@ -61,7 +61,7 @@ def web_search(text: str) -> str:
         return f"{type(e)}: Failed to search the web for text"
 ```
 
-We are grabbing the first 5 results that best match our user query and retriving their URLs, for parsing and use BeautifulSoup to assist in extracting all paragraph tags in the HTML.
+We are grabbing the first 5 results that best match our user query and retrieving their URLs, for parsing and use BeautifulSoup to assist in extracting all paragraph tags in the HTML.
 
 Depending on your use-case, you may want to let the LLM decide which urls to use by separating search and parsing into two separate tools.
 
@@ -69,7 +69,7 @@ Now that our tool is setup, we can proceed to implement the Q&A functionality of
 
 ## Add Q&A Functionality
 
-Now that we have our tools we can now create our prompt_template and `_step` function. We engineer the prompt to first use our `web_search` tool and then answer the user question based on the retrived content:
+Now that we have our tools we can now create our prompt_template and `_step` function. We engineer the prompt to first use our `web_search` tool and then answer the user question based on the retrieved content:
 
 ```python
 from openai.types.chat import ChatCompletionMessageParam
@@ -175,5 +175,5 @@ When adapting this recipe, consider:
 
 - Optimizing the search by utilizing `async` to increase parallelism.
 - Separate `web_search` into `serp_tool` and `parse_web` tools, so the LLM can pick and choose which url to parse.
-- When targetting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
+- When targeting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
 - Implement a feedback loop so the LLM can rewrite the query for better search results.

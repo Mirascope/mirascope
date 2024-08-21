@@ -29,7 +29,7 @@ def review_responder(review: str) -> openai.OpenAIDynamicConfig:
     conditional_review_prompt = (
         "thank you response for the review."
         if sentiment == Sentiment.POSITIVE
-        else "reponse addressing the review."
+        else "response addressing the review."
     )
     return {
         "computed_fields": {

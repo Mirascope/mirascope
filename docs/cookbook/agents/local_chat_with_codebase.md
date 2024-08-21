@@ -217,5 +217,5 @@ Let us replace the LLM Rerank and LLM call with OpenAI GPT 4o-mini and see our r
 When adapting this recipe, consider:
 
     - Experiment with different model providers and version for quality.
-    - Use a different Reranking prompt as that impacts the quality of retrival
+    - Use a different Reranking prompt as that impacts the quality of retrieval
     - Implement a feedback loop so the LLM hallucinates less frequently. 

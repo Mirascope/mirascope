@@ -152,7 +152,7 @@ Even with no safe guards in place, doing code execution is still dangerous and w
 
 - **Automated Code Generation**: Generating boilerplate or units tests for more productivity.
 - **Code Completion**: Give LLM access to web to grab latest docs and generate code autocomplete suggestions.
-- **Documentation Maintenence**: Make sure all documentation code snippets are runnable with proper syntax.
+- **Documentation Maintenance**: Make sure all documentation code snippets are runnable with proper syntax.
 - **Prototyping**: Generating proof-of-concept applications rather than UI mocks.
 
 When adapting this recipe to your specific use-case, consider the following:

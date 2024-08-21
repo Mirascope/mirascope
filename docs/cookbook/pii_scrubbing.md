@@ -10,7 +10,7 @@ In this recipe, we go over how to detect Personal Identifiable Information, or P
 
 !!! note "Background"
 
-    Prior to Natural Language Processing (NLP) and Named Entity Recognition (NER) techniques, scrubbing or redacting sensative information was a time-consuming manual task. LLMs have improved on this by being able to understand context surrounding sensitive information.
+    Prior to Natural Language Processing (NLP) and Named Entity Recognition (NER) techniques, scrubbing or redacting sensitive information was a time-consuming manual task. LLMs have improved on this by being able to understand context surrounding sensitive information.
 
 ## Create your prompt
 

@@ -170,10 +170,10 @@ def handle_response_model(
     session.commit()
 ```
 
-The first argument will be a Pydantic `BaseModel` or Python primative depending on the type of `response_model`. All other arguments will be the same as `handle_call_response`.
+The first argument will be a Pydantic `BaseModel` or Python primitive depending on the type of `response_model`. All other arguments will be the same as `handle_call_response`.
 
 For `BaseModel` you can grab the provider-specific `BaseCallResponse` via `response_model._response`.
-However, this information is not available for primatives `BaseType`, so we use what we have access to. We recommend using a `BaseModel` for primitives when you need `BaseCallResponse` data.
+However, this information is not available for primitives `BaseType`, so we use what we have access to. We recommend using a `BaseModel` for primitives when you need `BaseCallResponse` data.
 
 ### `handle_structured_stream` and `handle_structured_stream_async`
 
