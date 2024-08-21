@@ -30,6 +30,16 @@ After installing `uv`, create a virtual environment for development by running:
 uv sync --all-extras --dev
 ```
 
+### Pre-commit Setup
+
+To set up pre-commit hooks, run the following command:
+
+```sh
+uv run pre-commit install --install-hooks
+```
+
+This will ensure that your code is automatically checked and formatted before each commit.
+
 ## Development Workflow
 
 1. Search through existing [GitHub Issues](https://github.com/Mirascope/mirascope/issues) to see if what you want to work on has already been added.
