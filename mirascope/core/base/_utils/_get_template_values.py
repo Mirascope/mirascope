@@ -37,7 +37,7 @@ def get_template_values(
             else:
                 if not isinstance(value, list) or (
                     value
-                    and not all(isinstance(item, (list, tuple, set)) for item in value)
+                    and not all(isinstance(item, list | tuple | set) for item in value)
                 ):
                     raise ValueError(
                         f"Template variable '{var}' must be a list of lists when using "

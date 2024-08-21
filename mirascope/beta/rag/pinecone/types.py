@@ -1,6 +1,6 @@
 """Types for interacting with Pinecone using Mirascope."""
 
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from pinecone.config import Config
 from pinecone.core.client.api.manage_indexes_api import ManageIndexesApi
@@ -27,12 +27,12 @@ class PodSpec(BaseModel):
     """The parameters for Pinecone PodSpec"""
 
     environment: str
-    replicas: Optional[int] = None
-    shards: Optional[int] = None
-    pods: Optional[int] = None
-    pod_type: Optional[str] = "p1.x1"
-    metadata_config: Optional[dict] = {}
-    source_collection: Optional[str] = None
+    replicas: int | None = None
+    shards: int | None = None
+    pods: int | None = None
+    pod_type: str | None = "p1.x1"
+    metadata_config: dict | None = {}
+    source_collection: str | None = None
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
@@ -45,8 +45,8 @@ class PodSpec(BaseModel):
 class PineconeParams(BaseModel):
     """The parameters for Pinecone create_index"""
 
-    metric: Optional[Literal["cosine", "dotproduct", "euclidean"]] = "cosine"
-    timeout: Optional[int] = None
+    metric: Literal["cosine", "dotproduct", "euclidean"] | None = "cosine"
+    timeout: int | None = None
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
@@ -80,16 +80,16 @@ class PineconePodParams(PineconeParams, PodSpec, BaseVectorStoreParams):
 class PineconeSettings(BaseModel):
     """Settings for Pinecone instance"""
 
-    api_key: Optional[str] = None
-    host: Optional[str] = None
-    proxy_url: Optional[str] = None
-    proxy_headers: Optional[dict[str, str]] = None
-    ssl_ca_certs: Optional[str] = None
-    ssl_verify: Optional[bool] = None
-    config: Optional[Config] = None
-    additional_headers: Optional[dict[str, str]] = {}
-    pool_threads: Optional[int] = 1
-    index_api: Optional[ManageIndexesApi] = None
+    api_key: str | None = None
+    host: str | None = None
+    proxy_url: str | None = None
+    proxy_headers: dict[str, str] | None = None
+    ssl_ca_certs: str | None = None
+    ssl_verify: bool | None = None
+    config: Config | None = None
+    additional_headers: dict[str, str] | None = {}
+    pool_threads: int | None = 1
+    index_api: ManageIndexesApi | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -138,6 +138,6 @@ class PineconeQueryResult(BaseModel):
     """
 
     ids: list[str]
-    documents: Optional[list[str]] = None
-    scores: Optional[list[float]] = None
-    embeddings: Optional[list[list[float]]] = None
+    documents: list[str] | None = None
+    scores: list[float] | None = None
+    embeddings: list[list[float]] | None = None

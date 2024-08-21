@@ -1,6 +1,6 @@
 """Mirascope x Tenacity Integration."""
 
-from typing import Callable
+from collections.abc import Callable
 
 from tenacity import RetryCallState
 

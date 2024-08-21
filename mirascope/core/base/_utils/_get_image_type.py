@@ -18,11 +18,9 @@ def get_image_type(image_data: bytes) -> str:
         b"ftyphevc",
         b"ftyphevx",
     ):
-        # HEIF and HEIC files start with 'ftyp' followed by specific codes
-        if image_data[4:8] == b"ftyp":
-            subtype = image_data[8:12]
-            if subtype in (b"heic", b"heix"):
-                return "heic"
-            elif subtype in (b"mif1", b"msf1", b"hevc", b"hevx"):
-                return "heif"
+        subtype = image_data[8:12]
+        if subtype in (b"heic", b"heix"):
+            return "heic"
+        elif subtype in (b"mif1", b"msf1", b"hevc", b"hevx"):
+            return "heif"
     raise ValueError("Unsupported image type")

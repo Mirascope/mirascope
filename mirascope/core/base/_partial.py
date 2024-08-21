@@ -9,7 +9,7 @@ serves as an acknowledgment of the original author's contribution to this projec
 """
 
 from copy import deepcopy
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
@@ -44,10 +44,10 @@ def partial(wrapped_class: type[Model]) -> type[Model]:
         # If the field is a BaseModel, then recursively convert it's
         # attributes to optionals.
         if type(annotation) is type(BaseModel):
-            tmp_field.annotation = Optional[partial(annotation)]  # type: ignore
+            tmp_field.annotation = partial(annotation) | None  # pyright: ignore [reportAttributeAccessIssue,reportArgumentType]
             tmp_field.default = {}
         else:
-            tmp_field.annotation = Optional[field.annotation]  # type: ignore[assignment]
+            tmp_field.annotation = field.annotation | None  # pyright: ignore [reportOptionalOperand,reportAttributeAccessIssue]
             tmp_field.default = None
         return tmp_field.annotation, tmp_field
 

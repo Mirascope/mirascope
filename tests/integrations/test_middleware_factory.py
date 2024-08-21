@@ -135,7 +135,7 @@ def test_middleware_factory_stream_sync():
     result_chunks = []
     for chunk, _ in result:
         result_chunks.append(chunk.content)
-    for result_chunk, stream_chunk in zip(result_chunks, stream_chunks):
+    for result_chunk, stream_chunk in zip(result_chunks, stream_chunks, strict=False):
         assert result_chunk == stream_chunk[0].content
     assert my_stream.cost == result.cost
 
@@ -187,7 +187,7 @@ async def test_middleware_factory_stream_async():
     result_chunks = []
     async for chunk, _ in result:
         result_chunks.append(chunk.content)
-    for result_chunk, stream_chunk in zip(result_chunks, stream_chunks):
+    for result_chunk, stream_chunk in zip(result_chunks, stream_chunks, strict=False):
         assert result_chunk == stream_chunk[0].content
     assert my_stream.cost == result.cost
 

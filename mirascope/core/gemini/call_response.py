@@ -3,8 +3,6 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from typing import Optional
-
 from google.generativeai.protos import FunctionResponse  # type: ignore
 from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
@@ -90,7 +88,7 @@ class GeminiCallResponse(
         return self._model
 
     @property
-    def id(self) -> Optional[str]:
+    def id(self) -> str | None:
         """Returns the id of the response.
 
         google.generativeai does not return an id

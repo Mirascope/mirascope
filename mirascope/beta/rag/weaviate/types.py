@@ -1,6 +1,6 @@
 """Types for interacting with Weaviate using Mirascope."""
 
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 import weaviate.types as wt
 from pydantic import BaseModel, ConfigDict
@@ -11,24 +11,24 @@ from ..base.vectorstore_params import BaseVectorStoreParams
 
 class WeaviateSettings(BaseModel):
     mode: Literal["local", "cloud", "custom", "embedded"] = "local"
-    headers: Optional[dict[str, str]] = None
-    cluster_url: Optional[str] = None
-    auth_credentials: Optional[Any] = None
-    hostname: Optional[str] = None
-    port: Optional[int] = None
-    grpc_port: Optional[int] = None
-    additional_config: Optional[Any] = None
-    version: Optional[str] = None
-    persistence_data_path: Optional[str] = None
-    binary_path: Optional[str] = None
-    environment_variables: Optional[dict[str, str]] = None
-    http_host: Optional[str] = None
-    http_port: Optional[int] = None
-    http_secure: Optional[bool] = None
-    grpc_host: Optional[str] = None
-    grpc_secure: Optional[bool] = None
+    headers: dict[str, str] | None = None
+    cluster_url: str | None = None
+    auth_credentials: Any | None = None
+    hostname: str | None = None
+    port: int | None = None
+    grpc_port: int | None = None
+    additional_config: Any | None = None
+    version: str | None = None
+    persistence_data_path: str | None = None
+    binary_path: str | None = None
+    environment_variables: dict[str, str] | None = None
+    http_host: str | None = None
+    http_port: int | None = None
+    http_secure: bool | None = None
+    grpc_host: str | None = None
+    grpc_secure: bool | None = None
 
-    skip_init_checks: Optional[bool] = None
+    skip_init_checks: bool | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -51,8 +51,8 @@ class WeaviateSettings(BaseModel):
 
 
 class WeaviateParams(BaseVectorStoreParams):
-    vectorizer_config: Optional[Any] = None
-    generative_config: Optional[Any] = None
+    vectorizer_config: Any | None = None
+    generative_config: Any | None = None
 
     def kwargs(self) -> dict[str, Any]:
         kwargs = {}
@@ -71,9 +71,9 @@ class WeaviateParams(BaseVectorStoreParams):
 
 class WeaviateQueryResult(BaseModel):
     id: wt.UUID
-    documents: Optional[list[Document]]
+    documents: list[Document] | None
     metadata: dict[str, Any]
-    collection: Optional[str] = None
+    collection: str | None = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

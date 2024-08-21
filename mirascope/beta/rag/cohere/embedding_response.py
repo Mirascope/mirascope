@@ -21,7 +21,7 @@ class CohereEmbeddingResponse(BaseEmbeddingResponse[SkipValidation[EmbedResponse
         else:
             embedding_type = self.embedding_type
             if embedding_type == "float":
-                embedding_type == "float_"
+                embedding_type = "float_"
 
             # TODO: Update to model_dump when Cohere updates to Pydantic v2
             embeddings_by_type: EmbedByTypeResponseEmbeddings = self.response.embeddings

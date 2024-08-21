@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import inspect
 from abc import abstractmethod
-from typing import Any, Callable, ClassVar, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, ClassVar, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 

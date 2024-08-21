@@ -1,7 +1,8 @@
 """This module contains the setup_call function for the Anthropic API."""
 
 import inspect
-from typing import Any, Awaitable, Callable, cast
+from collections.abc import Awaitable, Callable
+from typing import Any, cast
 
 from anthropic import (
     Anthropic,

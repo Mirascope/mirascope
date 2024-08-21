@@ -1,11 +1,9 @@
 """Protocols for reusable type hints."""
 
 import inspect
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from typing import (
     Any,
-    Awaitable,
-    Callable,
     Literal,
     ParamSpec,
     Protocol,

@@ -3,12 +3,10 @@
 import datetime
 import inspect
 from abc import ABC, abstractmethod
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from functools import wraps
 from typing import (
     Any,
-    Awaitable,
-    Callable,
     ClassVar,
     Generic,
     ParamSpec,
@@ -334,10 +332,9 @@ def stream_factory(
                 )
 
                 def generator():
-                    for chunk, tool in handle_stream(
+                    yield from handle_stream(
                         create(stream=True, **call_kwargs), tool_types
-                    ):
-                        yield chunk, tool
+                    )
 
                 return TStream(
                     stream=generator(),

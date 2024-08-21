@@ -67,9 +67,7 @@ class CohereTool(BaseTool):
                 )
             parameter_definitions = {
                 prop: ToolParameterDefinitionsValue(
-                    description=prop_schema["description"]
-                    if "description" in prop_schema
-                    else None,
+                    description=prop_schema.get("description", None),
                     type=prop_schema["type"],
                     required="required" in model_schema
                     and prop in model_schema["required"],
