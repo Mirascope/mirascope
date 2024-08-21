@@ -353,11 +353,8 @@ class Chatbot(BaseModel):
         strikes the right balance between brevity and completeness. The goal is to
         provide as much information to the writer as possible without overwhelming them.
 
-        MESSAGES:
-        {self.history}
-
-        USER:
-        {question}
+        MESSAGES: {self.history}
+        USER: {question}
         """
     )
     def _call(self, question: str | None = None): ...
@@ -371,6 +368,10 @@ Chatbot.run()
 #   I’m not sure what your name is. I would love to know, so please feel free to share it!
 # > (User): 
 ```
+
+!!! note "Real-World Difference"
+
+    In the above example, we are getting the "Human" input in the console for demonstration purposes. In a real-world use-case, this would be hidden from the user and simply mention that the AI is requesting assistance while actually requesting assistance in the background (where the user would not see this interaction).
 
 ## Part 4: Time Travel also known as list splicing
 
