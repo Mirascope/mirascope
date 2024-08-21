@@ -10,19 +10,21 @@ def get_image_type(image_data: bytes) -> str:
         return "gif"
     elif image_data.startswith(b"RIFF") and image_data[8:12] == b"WEBP":
         return "webp"
-    elif image_data[4:12] in (
-        b"ftypmif1",
-        b"ftypmsf1",
-        b"ftypheic",
-        b"ftypheix",
-        b"ftyphevc",
-        b"ftyphevx",
+    elif (
+        image_data[4:12]
+        in (
+            b"ftypmif1",
+            b"ftypmsf1",
+            b"ftypheic",
+            b"ftypheix",
+            b"ftyphevc",
+            b"ftyphevx",
+        )
+        and image_data[4:8] == b"ftyp"  # HEIF and HEIC files start with 'ftyp'
     ):
-        # HEIF and HEIC files start with 'ftyp' followed by specific codes
-        if image_data[4:8] == b"ftyp":
-            subtype = image_data[8:12]
-            if subtype in (b"heic", b"heix"):
-                return "heic"
-            elif subtype in (b"mif1", b"msf1", b"hevc", b"hevx"):
-                return "heif"
+        subtype = image_data[8:12]
+        if subtype in (b"heic", b"heix"):
+            return "heic"
+        elif subtype in (b"mif1", b"msf1", b"hevc", b"hevx"):
+            return "heif"
     raise ValueError("Unsupported image type")
