@@ -11,7 +11,7 @@ on:
 
 jobs:
   lints:
-    name: Ruff and Pyright
+    name: Ruff, Pyright, and Codespell
     runs-on: ubuntu-latest
 
     steps:
