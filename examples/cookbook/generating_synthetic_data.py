@@ -62,12 +62,7 @@ class DataFrameGenerator(BaseModel):
         return pd.concat([df, self.generate_dataframe()], ignore_index=True)
 
     def generate_dataframe(self) -> pd.DataFrame:
-        return pd.DataFrame(
-            {
-                name: column
-                for name, column in zip(self.column_names, self.data, strict=False)
-            }
-        )
+        return pd.DataFrame(dict(zip(self.column_names, self.data, strict=False)))
 
 
 @openai.call(model="gpt-4o-mini", response_model=DataFrameGenerator)

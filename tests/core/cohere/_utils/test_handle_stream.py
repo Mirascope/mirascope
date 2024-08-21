@@ -49,9 +49,7 @@ def mock_chunks() -> list[StreamedChatResponse]:
 def test_handle_stream(mock_chunks: list[StreamedChatResponse]) -> None:
     """Tests the `handle_stream` function."""
 
-    result = [
-        t for t in handle_stream((c for c in mock_chunks), tool_types=[FormatBook])
-    ]
+    result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
     assert len(result) == 3
     assert result[0][1] is None
 

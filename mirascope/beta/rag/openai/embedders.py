@@ -49,13 +49,12 @@ class OpenAIEmbedder(BaseEmbedder[OpenAIEmbeddingResponse]):
             for i in range(0, len(inputs), self.embed_batch_size)
         ]
 
-        embedding_responses: list[OpenAIEmbeddingResponse] = [
-            response
-            for response in ThreadPoolExecutor(self.max_workers).map(
+        embedding_responses: list[OpenAIEmbeddingResponse] = list(
+            ThreadPoolExecutor(self.max_workers).map(
                 lambda inputs: self._embed(inputs),
                 input_batches,
             )
-        ]
+        )
         return self._merge_batch_embeddings(embedding_responses)
 
     async def embed_async(self, inputs: list[str]) -> OpenAIEmbeddingResponse:

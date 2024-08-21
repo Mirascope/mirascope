@@ -3,8 +3,8 @@
 usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
 """
 
-from typing import Any, Generic, TypeVar
 from collections.abc import Callable
+from typing import Any, Generic, TypeVar
 
 from typing_extensions import NotRequired, TypedDict
 

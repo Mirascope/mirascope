@@ -81,7 +81,7 @@ def test_structured_stream_factory_sync(
         call_params=mock_structured_stream_decorator_kwargs["call_params"],
     )
     mock_stream_inner.assert_called_once_with(genre="fantasy", topic="magic")
-    assert [t for t in structured_stream.stream] == [("chunk", None)]
+    assert list(structured_stream.stream) == [("chunk", None)]
 
     # Test internal `handle_stream`
     kwargs = mock_stream_factory.call_args.kwargs

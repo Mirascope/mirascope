@@ -1,9 +1,9 @@
 """The `extract_factory` method for generating provider specific create decorators."""
 
 import inspect
+from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
-from collections.abc import Awaitable, Callable
 
 from pydantic import BaseModel, ValidationError
 

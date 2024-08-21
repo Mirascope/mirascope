@@ -1,5 +1,5 @@
-from typing import Any, Literal, NotRequired
 from collections.abc import Sequence
+from typing import Any, Literal, NotRequired
 
 from typing_extensions import TypedDict
 

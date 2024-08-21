@@ -58,7 +58,7 @@ def test_stream_factory_sync(
         return dynamic_config
 
     stream: BaseStream = decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
-    assert [t for t in stream.stream] == mock_handle_stream.return_value  # type: ignore
+    assert list(stream.stream) == mock_handle_stream.return_value  # type: ignore
 
     assert stream.metadata == mock_get_metadata.return_value
     assert stream.tool_types == mock_tool_types
@@ -198,7 +198,7 @@ async def test_base_stream(mock_get_possible_user_message_param: MagicMock) -> N
     assert (
         stream.user_message_param == mock_get_possible_user_message_param.return_value
     )
-    assert [t for t in stream] == [(mock_chunk, mock_tool)]
+    assert list(stream) == [(mock_chunk, mock_tool)]
     mock_construct_message_param.assert_called_once_with(["tool_call"], "content")
     assert stream.message_param == "mock_message_param"
     assert stream.model == "updated_model"

@@ -10,7 +10,5 @@ class OpenAIEmbeddingResponse(BaseEmbeddingResponse[CreateEmbeddingResponse]):
     @property
     def embeddings(self) -> list[list[float]]:
         """Returns the raw embeddings."""
-        embeddings_model: list[Embedding] = [
-            embedding for embedding in self.response.data
-        ]
+        embeddings_model: list[Embedding] = list(self.response.data)
         return [embedding.embedding for embedding in embeddings_model]

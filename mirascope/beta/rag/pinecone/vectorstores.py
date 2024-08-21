@@ -1,8 +1,8 @@
 """A module for calling Chroma's Client and Collection."""
 
+from collections.abc import Callable
 from functools import cached_property
 from typing import Any, ClassVar
-from collections.abc import Callable
 
 from pinecone import Index, Pinecone, QueryResponse
 

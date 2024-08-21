@@ -57,7 +57,7 @@ class WeaviateVectorStore(BaseVectorStore):
                 properties={"text": documents[0].text}, uuid=documents[0].id, **kwargs
             )
 
-        data_objects = list()
+        data_objects = []
         for document in documents:
             data_object = wvc.data.DataObject(
                 properties={"text": document.text}, uuid=document.id

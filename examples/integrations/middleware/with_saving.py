@@ -1,6 +1,6 @@
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from typing import Any, cast
-from collections.abc import Callable, Generator
 
 from pydantic import BaseModel
 from sqlalchemy import JSON, Column

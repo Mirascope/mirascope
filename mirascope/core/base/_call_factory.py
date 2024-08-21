@@ -1,5 +1,6 @@
 """The `call_factory` method for generating provider specific call decorators."""
 
+from collections.abc import AsyncIterable, Callable, Iterable
 from enum import Enum
 from functools import partial
 from typing import (
@@ -9,7 +10,6 @@ from typing import (
     TypeVar,
     overload,
 )
-from collections.abc import AsyncIterable, Callable, Iterable
 
 from pydantic import BaseModel
 

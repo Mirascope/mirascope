@@ -1,8 +1,8 @@
 """This module contains the setup_call function for Cohere tools."""
 
 import inspect
-from typing import Any, cast
 from collections.abc import Awaitable, Callable
+from typing import Any, cast
 
 from cohere import AsyncClient, Client
 from cohere.types import ChatMessage, NonStreamedChatResponse
