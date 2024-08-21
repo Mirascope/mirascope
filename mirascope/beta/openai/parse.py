@@ -36,70 +36,79 @@ def parse(
     def decorator(
         fn: Callable[_P, OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
     ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
-        is_async = inspect.iscoroutinefunction(fn)
+        if inspect.iscoroutinefunction(fn):
 
-        @wraps(fn)
-        def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-            assert _utils.SetupCall.fn_is_sync(fn)
-            fn_args = _utils.get_fn_args(fn, args, kwargs)
-            dynamic_config = fn(*args, **kwargs)
-            _, messages, _, call_kwargs = _utils.setup_call(
-                fn,
-                fn_args,
-                dynamic_config,
-                None,
-                OpenAITool,
-                call_params or OpenAICallParams(),
-            )
-            messages = cast(
-                list[BaseMessageParam | ChatCompletionMessageParam], messages
-            )
-            messages = convert_message_params(messages)
-            messages.append({"role": "user", "content": _utils.json_mode_content(None)})
-            client = OpenAI()
-            call_kwargs.pop("response_format", None)
-            completion = client.beta.chat.completions.parse(
-                model=model,
-                messages=messages,
-                response_format=response_model,
-                **call_kwargs,
-            )
-            message = completion.choices[0].message
-            if message.parsed:
-                return message.parsed
-            raise RuntimeError(f"{message.refusal}")
+            @wraps(fn)
+            async def inner_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> _ResponseModelT:
+                assert _utils.SetupCall.fn_is_async(fn)
+                fn_args = _utils.get_fn_args(fn, args, kwargs)
+                dynamic_config = await fn(*args, **kwargs)
+                _, messages, _, call_kwargs = _utils.setup_call(
+                    fn,
+                    fn_args,
+                    dynamic_config,
+                    None,
+                    OpenAITool,
+                    call_params or OpenAICallParams(),
+                )
+                messages = cast(
+                    list[BaseMessageParam | ChatCompletionMessageParam], messages
+                )
+                messages = convert_message_params(messages)
+                messages.append(
+                    {"role": "user", "content": _utils.json_mode_content(None)}
+                )
+                client = AsyncOpenAI()
+                call_kwargs.pop("response_format", None)
+                completion = await client.beta.chat.completions.parse(
+                    model=model,
+                    messages=messages,
+                    response_format=response_model,
+                    **call_kwargs,
+                )
+                message = completion.choices[0].message
+                if message.parsed:
+                    return message.parsed
+                raise RuntimeError(f"{message.refusal}")
 
-        @wraps(fn)
-        async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-            assert _utils.SetupCall.fn_is_async(fn)
-            fn_args = _utils.get_fn_args(fn, args, kwargs)
-            dynamic_config = await fn(*args, **kwargs)
-            _, messages, _, call_kwargs = _utils.setup_call(
-                fn,
-                fn_args,
-                dynamic_config,
-                None,
-                OpenAITool,
-                call_params or OpenAICallParams(),
-            )
-            messages = cast(
-                list[BaseMessageParam | ChatCompletionMessageParam], messages
-            )
-            messages = convert_message_params(messages)
-            messages.append({"role": "user", "content": _utils.json_mode_content(None)})
-            client = AsyncOpenAI()
-            call_kwargs.pop("response_format", None)
-            completion = await client.beta.chat.completions.parse(
-                model=model,
-                messages=messages,
-                response_format=response_model,
-                **call_kwargs,
-            )
-            message = completion.choices[0].message
-            if message.parsed:
-                return message.parsed
-            raise RuntimeError(f"{message.refusal}")
+            return inner_async
+        else:
 
-        return inner_async if is_async else inner
+            @wraps(fn)
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+                assert _utils.SetupCall.fn_is_sync(fn)
+                fn_args = _utils.get_fn_args(fn, args, kwargs)
+                dynamic_config = fn(*args, **kwargs)
+                _, messages, _, call_kwargs = _utils.setup_call(
+                    fn,
+                    fn_args,
+                    dynamic_config,
+                    None,
+                    OpenAITool,
+                    call_params or OpenAICallParams(),
+                )
+                messages = cast(
+                    list[BaseMessageParam | ChatCompletionMessageParam], messages
+                )
+                messages = convert_message_params(messages)
+                messages.append(
+                    {"role": "user", "content": _utils.json_mode_content(None)}
+                )
+                client = OpenAI()
+                call_kwargs.pop("response_format", None)
+                completion = client.beta.chat.completions.parse(
+                    model=model,
+                    messages=messages,
+                    response_format=response_model,
+                    **call_kwargs,
+                )
+                message = completion.choices[0].message
+                if message.parsed:
+                    return message.parsed
+                raise RuntimeError(f"{message.refusal}")
+
+            return inner
 
     return decorator
