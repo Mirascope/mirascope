@@ -50,7 +50,7 @@ def create_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...  # pragma: no cover
+    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
     @overload
     def decorator(
@@ -64,7 +64,7 @@ def create_factory(
     ) -> Callable[
         _P,
         Awaitable[_BaseCallResponseT | _ParsedOutputT],
-    ]: ...  # pragma: no cover
+    ]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

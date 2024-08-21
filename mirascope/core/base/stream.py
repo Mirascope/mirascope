@@ -254,7 +254,7 @@ def stream_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream]: ...  # pragma: no cover
+    ) -> Callable[_P, TStream]: ...
 
     @overload
     def decorator(
@@ -264,7 +264,7 @@ def stream_factory(
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[TStream]]: ...  # pragma: no cover
+    ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
