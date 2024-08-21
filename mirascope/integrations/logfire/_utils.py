@@ -90,10 +90,8 @@ def handle_stream(
 
 
 def set_response_model_output(
-    result: BaseModel | BaseType, output: dict[str, Any] | None = None
+    result: BaseModel | BaseType, output: dict[str, Any]
 ) -> None:
-    if output is None:
-        output = {}
     if isinstance(result, BaseModel):
         output["response_model"] = {
             "name": result.__class__.__name__,
