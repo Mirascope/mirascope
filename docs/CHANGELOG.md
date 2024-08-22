@@ -1,5 +1,27 @@
 # Changelog
 
+## [v1.0.2](https://github.com/Mirascope/mirascope/releases/tag/v1.0.2) - 2024-08-22
+
+## What's Changed
+* docs: update theme, logo, and migration guide by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/431](https://github.com/Mirascope/mirascope/pull/431)
+* docs: typo and missing args in docstring by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/430](https://github.com/Mirascope/mirascope/pull/430)
+* docs: update migration guide re: statelessness by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/434](https://github.com/Mirascope/mirascope/pull/434)
+* fix: ruff target python version to py310 by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/435](https://github.com/Mirascope/mirascope/pull/435)
+* fix: avoid unnecessary function definitions by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/436](https://github.com/Mirascope/mirascope/pull/436)
+* fix: ignore overload in coverage by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/437](https://github.com/Mirascope/mirascope/pull/437)
+* fix: remove `# pragma: no cover` from all abstractmethod by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/438](https://github.com/Mirascope/mirascope/pull/438)
+* switch from poetry to uv and add pre-commit hooks by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/439](https://github.com/Mirascope/mirascope/pull/439)
+* Add ruff rules by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/442](https://github.com/Mirascope/mirascope/pull/442)
+* docs: update setup guide for uv by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/440](https://github.com/Mirascope/mirascope/pull/440)
+* docs: update response models docs to have few-shot examples section by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/443](https://github.com/Mirascope/mirascope/pull/443)
+* docs: add built-in types section to response models docs by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/444](https://github.com/Mirascope/mirascope/pull/444)
+* added langgraph quickstart mirascope version by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/441](https://github.com/Mirascope/mirascope/pull/441)
+* docs: update response model docs and fix a few issues here and there by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/446](https://github.com/Mirascope/mirascope/pull/446)
+* fix: issue with  getting kwargs with model_dump by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/447](https://github.com/Mirascope/mirascope/pull/447)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.1...v1.0.2](https://github.com/Mirascope/mirascope/compare/v1.0.1...v1.0.2)
+
 ## [v1.0.1](https://github.com/Mirascope/mirascope/releases/tag/v1.0.1) - 2024-08-18
 
 ## What's Changed
