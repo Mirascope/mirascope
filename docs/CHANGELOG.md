@@ -1,5 +1,91 @@
 # Changelog
 
+## [v1.0.1](https://github.com/Mirascope/mirascope/releases/tag/v1.0.1) - 2024-08-18
+
+## What's Changed
+* fix: structured streaming + json mode bug (and a typo) by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/429](https://github.com/Mirascope/mirascope/pull/429)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.0...v1.0.1](https://github.com/Mirascope/mirascope/compare/v1.0.0...v1.0.1)
+
+## [v1.0.0](https://github.com/Mirascope/mirascope/releases/tag/v1.0.0) - 2024-08-17
+
+## What's Changed
+* Add ToolKit for new interface by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/340](https://github.com/Mirascope/mirascope/pull/340)
+* Learn: philosophy by [@brianpark0126](https://github.com/brianpark0126) in [https://github.com/Mirascope/mirascope/pull/343](https://github.com/Mirascope/mirascope/pull/343)
+* added initial work to fix/clean up tool streaming by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/346](https://github.com/Mirascope/mirascope/pull/346)
+* fix: tools (sync vs. async) + streaming (cost tracking and linting) by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/351](https://github.com/Mirascope/mirascope/pull/351)
+* feat: beta rag by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/352](https://github.com/Mirascope/mirascope/pull/352)
+* Multimodal Support by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/353](https://github.com/Mirascope/mirascope/pull/353)
+* Structured streaming updates by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/354](https://github.com/Mirascope/mirascope/pull/354)
+* Multimodal audio support by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/355](https://github.com/Mirascope/mirascope/pull/355)
+* Test `mirascope.core.base`: 100% coverages by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/357](https://github.com/Mirascope/mirascope/pull/357)
+* Test core openai by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/358](https://github.com/Mirascope/mirascope/pull/358)
+* fixed pyright errors and reorganized integrations, and added tests for integrations by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/356](https://github.com/Mirascope/mirascope/pull/356)
+* Anthropic tests by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/360](https://github.com/Mirascope/mirascope/pull/360)
+* fix: add test openai api key so client creation doesn't fail by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/361](https://github.com/Mirascope/mirascope/pull/361)
+* tests: gemini and updates call_response and call_response_chunk interfaces to remain consistent across providers by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/362](https://github.com/Mirascope/mirascope/pull/362)
+* Update message params + LiteLLM updates by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/363](https://github.com/Mirascope/mirascope/pull/363)
+* Cohere tests by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/364](https://github.com/Mirascope/mirascope/pull/364)
+* Remaining Core Tests For 100% Coverage by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/365](https://github.com/Mirascope/mirascope/pull/365)
+* Minor BaseTool (and corresponding provider tool) updates by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/366](https://github.com/Mirascope/mirascope/pull/366)
+* fix: remaining issues with imports, ensuring that optional imports are truly optional by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/367](https://github.com/Mirascope/mirascope/pull/367)
+* Mistral cost tracking update by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/368](https://github.com/Mirascope/mirascope/pull/368)
+* Readme updates by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/369](https://github.com/Mirascope/mirascope/pull/369)
+* fix: issue with gemini returning a proto object for lists when using tools by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/370](https://github.com/Mirascope/mirascope/pull/370)
+* Further test prompt template parser by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/373](https://github.com/Mirascope/mirascope/pull/373)
+* Initial cookbook templates by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/375](https://github.com/Mirascope/mirascope/pull/375)
+* Construct call response from Stream by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/374](https://github.com/Mirascope/mirascope/pull/374)
+* Blog writing agent recipe by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/377](https://github.com/Mirascope/mirascope/pull/377)
+* fixed some bugs and finalized logfire by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/378](https://github.com/Mirascope/mirascope/pull/378)
+* fix: attempt 1 at fixing workflows so they can act as checks by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/379](https://github.com/Mirascope/mirascope/pull/379)
+* Beta openai structured outputs by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/381](https://github.com/Mirascope/mirascope/pull/381)
+* Documentation by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/382](https://github.com/Mirascope/mirascope/pull/382)
+* chore: adding initial finalized chaining examples for review by [@brianpark0126](https://github.com/brianpark0126) in [https://github.com/Mirascope/mirascope/pull/376](https://github.com/Mirascope/mirascope/pull/376)
+* updated tenacity integration by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/380](https://github.com/Mirascope/mirascope/pull/380)
+* docs: update text classification cookbook recipe by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/384](https://github.com/Mirascope/mirascope/pull/384)
+* added pdf extraction cookbook by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/383](https://github.com/Mirascope/mirascope/pull/383)
+* added web scraping cookbook by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/385](https://github.com/Mirascope/mirascope/pull/385)
+* Documentation by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/389](https://github.com/Mirascope/mirascope/pull/389)
+* docs: streams by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/391](https://github.com/Mirascope/mirascope/pull/391)
+* docs: tools by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/392](https://github.com/Mirascope/mirascope/pull/392)
+* docs: dynamic configuration by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/394](https://github.com/Mirascope/mirascope/pull/394)
+* docs: chaining by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/395](https://github.com/Mirascope/mirascope/pull/395)
+* docs: json mode by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/396](https://github.com/Mirascope/mirascope/pull/396)
+* docs: response model by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/397](https://github.com/Mirascope/mirascope/pull/397)
+* docs: output parsers by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/398](https://github.com/Mirascope/mirascope/pull/398)
+* docs: evals by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/399](https://github.com/Mirascope/mirascope/pull/399)
+* docs: async by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/400](https://github.com/Mirascope/mirascope/pull/400)
+* docs: agents + random fixes by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/401](https://github.com/Mirascope/mirascope/pull/401)
+* docs: learn index by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/402](https://github.com/Mirascope/mirascope/pull/402)
+* Documentation by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/403](https://github.com/Mirascope/mirascope/pull/403)
+* added knowledge graph cookbook by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/390](https://github.com/Mirascope/mirascope/pull/390)
+* Documentation by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/404](https://github.com/Mirascope/mirascope/pull/404)
+* docs: tenacity by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/406](https://github.com/Mirascope/mirascope/pull/406)
+* docs: finalize existing integration docs and examples by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/407](https://github.com/Mirascope/mirascope/pull/407)
+* docs: help and contributing finalization by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/408](https://github.com/Mirascope/mirascope/pull/408)
+* docs: get started guide + changelog + litellm minor fix by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/409](https://github.com/Mirascope/mirascope/pull/409)
+* chore: update poetry lock by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/411](https://github.com/Mirascope/mirascope/pull/411)
+* fix: BasePrompt not working with additional decorators by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/413](https://github.com/Mirascope/mirascope/pull/413)
+* added extraction using vision by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/412](https://github.com/Mirascope/mirascope/pull/412)
+* added code generation by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/405](https://github.com/Mirascope/mirascope/pull/405)
+* fix typing for integration decorators outfacing by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/415](https://github.com/Mirascope/mirascope/pull/415)
+* docs: API Reference by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/416](https://github.com/Mirascope/mirascope/pull/416)
+* docs: learn <-> api reference linking + improvements by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/419](https://github.com/Mirascope/mirascope/pull/419)
+* added query plan by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/420](https://github.com/Mirascope/mirascope/pull/420)
+* added pii scrubbing by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/414](https://github.com/Mirascope/mirascope/pull/414)
+* added document segmentation cookbook by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/417](https://github.com/Mirascope/mirascope/pull/417)
+* removed semantic duplicates by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/421](https://github.com/Mirascope/mirascope/pull/421)
+* added support ticket routing by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/418](https://github.com/Mirascope/mirascope/pull/418)
+* added speech transcription by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/422](https://github.com/Mirascope/mirascope/pull/422)
+* made updates to docs by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/423](https://github.com/Mirascope/mirascope/pull/423)
+* V1 by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/425](https://github.com/Mirascope/mirascope/pull/425)
+
+## New Contributors
+* [@koxudaxi](https://github.com/koxudaxi) made their first contribution in [https://github.com/Mirascope/mirascope/pull/340](https://github.com/Mirascope/mirascope/pull/340)
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v0.18.3...v1.0.0](https://github.com/Mirascope/mirascope/compare/v0.18.3...v1.0.0)
+
 ## [v0.18.3](https://github.com/Mirascope/mirascope/releases/tag/v0.18.3) - 2024-08-11
 
 ## What's Changed
