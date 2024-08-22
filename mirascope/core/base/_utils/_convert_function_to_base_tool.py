@@ -1,6 +1,6 @@
 import inspect
 from abc import update_abstractmethods
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar, cast, get_type_hints
 
 import jiter
@@ -101,7 +101,7 @@ def convert_function_to_base_tool(
     if examples:
         model.model_config["json_schema_extra"] = {"examples": examples}
 
-    def call(self: base):
+    def call(self: base) -> Any:  # noqa: ANN401
         return fn(
             **(
                 ({"self": self} if has_self else {})
@@ -116,7 +116,7 @@ def convert_function_to_base_tool(
             )
         )
 
-    async def call_async(self: base):
+    async def call_async(self: base) -> Awaitable[Callable]:
         return await call(self)
 
     if inspect.iscoroutinefunction(fn):

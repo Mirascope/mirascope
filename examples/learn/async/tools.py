@@ -15,10 +15,10 @@ class FormatBook(BaseTool):
 
 @openai.call(model="gpt-4o-mini", tools=[FormatBook])
 @prompt_template("Recommend a {genre} book")
-async def recommend_book(genre: str): ...
+async def recommend_book(genre: str) -> None: ...
 
 
-async def main():
+async def main() -> None:
     response = await recommend_book("fantasy")
     if isinstance((tool := response.tool), FormatBook):
         output = await tool.call()

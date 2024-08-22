@@ -8,7 +8,7 @@ def format_book(title: str, author: str) -> str:
 
 @openai.call(model="gpt-4", tools=[format_book], stream=True)
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
 for chunk, tool in recommend_book("fantasy"):

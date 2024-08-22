@@ -12,7 +12,7 @@ from mirascope.core import openai, prompt_template
     Respond only with the chef's name.
     """
 )
-async def chef_selector(ingredient: str): ...
+async def chef_selector(ingredient: str) -> None: ...
 
 
 class IngredientsList(BaseModel):
@@ -26,7 +26,7 @@ class IngredientsList(BaseModel):
     Make sure to exclude the original ingredient from the list.
     """
 )
-async def ingredients_identifier(ingredient: str): ...
+async def ingredients_identifier(ingredient: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -47,7 +47,7 @@ async def recipe_recommender(ingredient: str) -> openai.OpenAIDynamicConfig:
     return {"computed_fields": {"chef": chef, "ingredients": ingredients}}
 
 
-async def run():
+async def run() -> None:
     response = await recipe_recommender(ingredient="apples")
     print(response.content)
 

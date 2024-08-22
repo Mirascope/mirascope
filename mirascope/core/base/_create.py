@@ -28,7 +28,7 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
 
 
-def create_factory(
+def create_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
     setup_call: SetupCall[

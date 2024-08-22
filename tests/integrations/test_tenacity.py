@@ -6,7 +6,7 @@ from tenacity import RetryCallState
 from mirascope.integrations.tenacity import collect_errors
 
 
-def test_collect_errors():
+def test_collect_errors() -> None:
     validation_error = None
     try:
 

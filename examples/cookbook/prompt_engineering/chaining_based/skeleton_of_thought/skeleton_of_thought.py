@@ -27,7 +27,7 @@ class Skeleton(BaseModel):
     Skeleton:
     """
 )
-def break_into_subpoints(query: str): ...
+def break_into_subpoints(query: str) -> None: ...
 
 
 @openai.call(model="gpt-3.5-turbo")
@@ -46,13 +46,15 @@ def break_into_subpoints(query: str): ...
     shortly in 1-2 sentences and do not continue with other points!
     """
 )
-async def expand_subpoint(query: str, skeleton: list[str], point_index: int): ...
+async def expand_subpoint(
+    query: str, skeleton: list[str], point_index: int
+) -> None: ...
 
 
 query = "How can I improve my focus?"
 
 
-async def skeleton_of_thought(query):
+async def skeleton_of_thought(query: str) -> str:
     skeleton = break_into_subpoints(query)
     # Uncomment to see intermediate responses
     # print(skeleton)

@@ -1,4 +1,6 @@
 import asyncio
+from collections.abc import Coroutine
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -17,7 +19,7 @@ class PromptVariations(BaseModel):
     Prompt: {prompt}
     """
 )
-def get_prompt_variations(prompt: str, num_prompts: int): ...
+def get_prompt_variations(prompt: str, num_prompts: int) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -27,7 +29,7 @@ def get_prompt_variations(prompt: str, num_prompts: int): ...
     {query}
     """
 )
-async def zero_shot_cot(query: str): ...
+async def zero_shot_cot(query: str) -> None: ...
 
 
 class ResponseDetails(BaseModel):
@@ -54,10 +56,10 @@ class ResponseDetails(BaseModel):
     is correct.
     """
 )
-async def evaluate_response(query: str, response: str): ...
+async def evaluate_response(query: str, response: str) -> None: ...
 
 
-async def diverse(query: str, num_variations: int):
+async def diverse(query: str, num_variations: int) -> Coroutine:
     # Gather the variations of the prompt
     alternate_variations = get_prompt_variations(query, num_variations - 1)
     # Uncomment to see intermediate steps
@@ -88,7 +90,7 @@ async def diverse(query: str, num_variations: int):
     return best_response
 
 
-async def run_self_consistency(prompt, num_variations=3):
+async def run_self_consistency(prompt: Any, num_variations: int = 3) -> Coroutine:
     return await diverse(prompt, num_variations)
 
 

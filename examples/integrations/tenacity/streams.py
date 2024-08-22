@@ -9,10 +9,10 @@ from mirascope.core import anthropic, prompt_template
 )
 @anthropic.call("claude-3-5-sonnet-20240620", stream=True)
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
-def stream():
+def stream() -> None:
     for chunk, _ in recommend_book("fantasy"):
         print(chunk.content, end="", flush=True)
 

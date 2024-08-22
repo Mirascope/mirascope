@@ -5,7 +5,7 @@ url = "https://c02.purpledshub.com/uploads/sites/41/2023/01/How-to-see-the-Wolf-
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("Generate a short, descriptive caption for this image: {url:image}")
-def generate_caption(url: str): ...
+def generate_caption(url: str) -> None: ...
 
 
 response = generate_caption(url)

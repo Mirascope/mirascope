@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Any
 
 from dotenv import load_dotenv
 from openai.types.chat import ChatCompletionMessageParam
@@ -25,7 +26,7 @@ con.commit()
 load_dotenv()
 
 
-def run_query(query: str):
+def run_query(query: str) -> list | str:
     """A SELECT query to run."""
     print(query)
     try:
@@ -36,7 +37,7 @@ def run_query(query: str):
         return str(e)
 
 
-def execute_query(query: str):
+def execute_query(query: str) -> str:
     """An INSERT, UPDATE, or DELETE query to execute."""
     print(query)
     try:
@@ -77,9 +78,9 @@ class DatabaseAdministrator(BaseModel):
         {text}
         """
     )
-    def _step(self, text: str): ...
+    def _step(self, text: str) -> None: ...
 
-    def _get_response(self, question: str = ""):
+    def _get_response(self, question: str = "") -> Any | None:
         response = self._step(question)
         tools_and_outputs = []
         if tools := response.tools:
@@ -97,7 +98,7 @@ class DatabaseAdministrator(BaseModel):
         ]
         return self._get_response("")
 
-    def run(self):
+    def run(self) -> None:
         while True:
             question = input("(User): ")
             if question == "exit":

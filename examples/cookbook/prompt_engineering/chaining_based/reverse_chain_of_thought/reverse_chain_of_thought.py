@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
@@ -8,7 +9,7 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("{query} Let's think step by step.")
-def zero_shot_cot(query: str): ...
+def zero_shot_cot(query: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -21,7 +22,7 @@ def zero_shot_cot(query: str): ...
     {response}
     """
 )
-def reconstruct_query(response: str): ...
+def reconstruct_query(response: str) -> None: ...
 
 
 class Decomposition(BaseModel):
@@ -45,7 +46,7 @@ class Decomposition(BaseModel):
     {query}
     """
 )
-async def decompose_query(query: str): ...
+async def decompose_query(query: str) -> None: ...
 
 
 class Comparison(BaseModel):
@@ -80,7 +81,7 @@ class Comparison(BaseModel):
     Please illustrate your reason and answer True or False.
     """
 )
-async def compare_conditions(condition: str, condition_list: list[str]): ...
+async def compare_conditions(condition: str, condition_list: list[str]) -> None: ...
 
 
 @openai.call(
@@ -95,7 +96,7 @@ async def compare_conditions(condition: str, condition_list: list[str]): ...
     thing at the end?
     """
 )
-def compare_questions(original_problem: str, reconstructed_problem: str): ...
+def compare_questions(original_problem: str, reconstructed_problem: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -215,7 +216,9 @@ async def fine_grained_comparison(
     }
 
 
-async def reverse_cot(query: str):
+async def reverse_cot(
+    query: str,
+) -> Any:
     cot_response = zero_shot_cot(query=query)
     reconstructed_query_response = reconstruct_query(cot_response.content)
     history = cot_response.messages + reconstructed_query_response.messages

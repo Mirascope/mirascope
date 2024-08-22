@@ -10,7 +10,7 @@ from mirascope.core import openai, prompt_template
 @prompt_template(
     "Answer the following question, going through it step by step: {query}"
 )
-async def zero_shot_cot(query: str): ...
+async def zero_shot_cot(query: str) -> None: ...
 
 
 class ProblemInfo(BaseModel):
@@ -29,7 +29,7 @@ class ProblemInfo(BaseModel):
     Question: {query}
     """
 )
-def identify_key_info(query: str): ...
+def identify_key_info(query: str) -> None: ...
 
 
 class MaskedPrompts(BaseModel):
@@ -70,7 +70,7 @@ async def mask_prompt(query: str) -> openai.OpenAIDynamicConfig:
     masked prompt: {masked_prompt}
     """
 )
-async def fill_in_value(solution: str, masked_prompt: str): ...
+async def fill_in_value(solution: str, masked_prompt: str) -> None: ...
 
 
 class PromptComparison(BaseModel):
@@ -103,13 +103,15 @@ def score_variations(
     return {
         "computed_fields": {
             "numbered_variations": [
-                f"{i+1}. {_}" for i, _ in enumerate(filled_in_prompts)
+                f"{i + 1}. {_}" for i, _ in enumerate(filled_in_prompts)
             ]
         }
     }
 
 
-async def evaluate_solution(query: str, solution: str, masked_prompts: list[str]):
+async def evaluate_solution(
+    query: str, solution: str, masked_prompts: list[str]
+) -> float:
     tasks = [fill_in_value(solution, masked_prompt) for masked_prompt in masked_prompts]
     responses = await asyncio.gather(*tasks)
     filled_in_prompts = [response.content for response in responses]
@@ -124,7 +126,7 @@ party. His best friend Allen asked if Tim could make an extra gallon for him tha
 was twice as tart as the other gallons. How many lemons will Tim need?"""
 
 
-async def self_verify(query: str, num_solutions: int):
+async def self_verify(query: str, num_solutions: int) -> None:
     tasks = [mask_prompt(query)]
     tasks += [zero_shot_cot(query) for _ in range(num_solutions)]
     responses = await asyncio.gather(*tasks)

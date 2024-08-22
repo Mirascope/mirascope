@@ -65,7 +65,7 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
     @property
     @abstractmethod
-    def usage(self) -> Any:
+    def usage(self) -> Any:  # noqa: ANN401
         """Should return the usage of the response.
 
         If there is no usage, this method must return None.

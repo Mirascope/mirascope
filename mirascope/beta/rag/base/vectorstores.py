@@ -27,11 +27,11 @@ class BaseVectorStore(BaseModel, Generic[BaseQueryResultsT], ABC):
     _provider: ClassVar[str] = "base"
 
     @abstractmethod
-    def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:
+    def retrieve(self, text: str, **kwargs: Any) -> BaseQueryResultsT:  # noqa: ANN401
         """Queries the vectorstore for closest match"""
         ...
 
     @abstractmethod
-    def add(self, text: str | list[Document], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:  # noqa: ANN401
         """Takes unstructured data and upserts into vectorstore"""
         ...

@@ -1,5 +1,8 @@
 """Mirascope x OpenTelemetry Integration."""
 
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
+
 from .._middleware_factory import middleware_factory
 from ._utils import (
     custom_context_manager,
@@ -13,8 +16,11 @@ from ._utils import (
     handle_structured_stream_async,
 )
 
+_P = ParamSpec("_P")
+_R = TypeVar("_R")
 
-def with_otel():
+
+def with_otel() -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
     """Wraps a Mirascope function with OpenTelemetry.
 
     Example:

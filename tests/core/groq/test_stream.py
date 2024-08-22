@@ -37,7 +37,7 @@ def test_groq_stream() -> None:
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     tool_call = ChoiceDeltaToolCall(
@@ -132,7 +132,7 @@ def test_groq_stream() -> None:
     }
 
 
-def test_construct_call_response():
+def test_construct_call_response() -> None:
     """Tests the `GroqStream.construct_call_response` method."""
 
     class FormatBook(GroqTool):
@@ -141,7 +141,7 @@ def test_construct_call_response():
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     tool_call = ChoiceDeltaToolCall(
@@ -266,7 +266,7 @@ def test_construct_call_response():
     assert constructed_call_response.response == call_response.response
 
 
-def test_construct_call_response_no_usage():
+def test_construct_call_response_no_usage() -> None:
     """Tests the `GroqStream.construct_call_response` method with no usage."""
     chunks = [
         ChatCompletionChunk(

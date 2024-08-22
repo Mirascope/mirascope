@@ -14,7 +14,7 @@ with open("wikipedia-python.txt") as file:
     {text}
     """
 )
-def simple_summarize_text(text: str): ...
+def simple_summarize_text(text: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -28,7 +28,7 @@ def simple_summarize_text(text: str): ...
     {text}
     """
 )
-def summarize_text_with_outline(text: str): ...
+def summarize_text_with_outline(text: str) -> None: ...
 
 
 class SegmentedSummary(BaseModel):
@@ -48,7 +48,7 @@ class SegmentedSummary(BaseModel):
     {text}
     """
 )
-def summarize_by_section(text): ...
+def summarize_by_section(text: str) -> None: ...
 
 
 @openai.call(model="gpt-4o")

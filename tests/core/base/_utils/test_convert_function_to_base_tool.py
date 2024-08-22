@@ -11,7 +11,7 @@ from mirascope.core.base.tool import BaseTool
 def test_convert_function_to_base_tool() -> None:
     """Tests the `convert_function_to_base_tool` function."""
 
-    def format_book(title: str, author: str):
+    def format_book(title: str, author: str) -> str:
         """Returns the title and author nicely formatted."""
         return f"{title} by {author}"
 
@@ -28,7 +28,7 @@ def test_convert_function_to_base_tool() -> None:
 async def test_convert_async_function_to_base_tool() -> None:
     """Tests the `convert_function_to_base_tool` function with async functions."""
 
-    async def format_book(title: str, author: str):
+    async def format_book(title: str, author: str) -> str:
         """Returns the title and author nicely formatted."""
         return f"{title} by {author}"
 
@@ -40,7 +40,7 @@ async def test_convert_async_function_to_base_tool() -> None:
 def test_convert_class_function_to_base_tool_fully_documented() -> None:
     """Tests `convert_function_to_base_tool` with a fully documented class function."""
 
-    def format_book(title: str = "default_title"):
+    def format_book(title: str = "default_title") -> None:
         """Returns the title and author nicely formatted.
 
         Examples:
@@ -64,7 +64,7 @@ def test_convert_class_function_to_base_tool_fully_documented() -> None:
 def test_convert_function_to_base_tool_with_protected_namespace_field() -> None:
     """Tests `convert_function_to_base_tool` with a protected namespace field."""
 
-    def format_book(model_title: str):
+    def format_book(model_title: str) -> None:
         """Tool with protected name model_*"""
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
@@ -86,7 +86,7 @@ def test_convert_function_to_base_tool_with_self_argument() -> None:
 def test_convert_function_to_base_tool_with_cls_argument() -> None:
     """Tests `convert_function_to_base_tool` with a function that takes `cls`."""
 
-    def format_book(cls=None):
+    def format_book(cls=None) -> str:
         return "The Name of the Wind"
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
@@ -97,7 +97,7 @@ def test_convert_function_to_base_tool_with_cls_argument() -> None:
 def test_convert_function_to_base_tool_missing_type_annotation() -> None:
     """Tests `convert_function_to_base_tool` with a missing a type annotation."""
 
-    def format_book(title):
+    def format_book(title) -> None:
         """Tool with missing type annotation."""
 
     with pytest.raises(ValueError):
@@ -107,7 +107,7 @@ def test_convert_function_to_base_tool_missing_type_annotation() -> None:
 def test_convert_function_to_base_tool_incorrect_parameter_name() -> None:
     """Tests `convert_function_to_base_tool` with an incorrect parameter name."""
 
-    def format_book(title: str):
+    def format_book(title: str) -> None:
         """Returns the title and author nicely formatted.
 
         Args:
@@ -121,7 +121,7 @@ def test_convert_function_to_base_tool_incorrect_parameter_name() -> None:
 def test_convert_function_to_base_tool_missing_parameter_description() -> None:
     """Tests `convert_function_to_base_tool` with a missing parameter description."""
 
-    def format_book(title: str):
+    def format_book(title: str) -> None:
         """Returns the title and author nicely formatted.
 
         Args:

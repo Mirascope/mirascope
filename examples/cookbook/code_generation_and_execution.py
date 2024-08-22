@@ -1,3 +1,5 @@
+from typing import Any
+
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, SkipValidation
 
@@ -15,10 +17,10 @@ from mirascope.core import openai, prompt_template
     {code}
     """
 )
-def evaluate_code_safety(code: str): ...
+def evaluate_code_safety(code: str) -> None: ...
 
 
-def execute_code(code: str):
+def execute_code(code: str) -> str | None:
     """Execute Python code and return the output."""
     is_code_safe = evaluate_code_safety(code)
     if not is_code_safe:
@@ -60,9 +62,9 @@ class SoftwareEngineer(BaseModel):
         {text}
         """
     )
-    def _step(self, text: str): ...
+    def _step(self, text: str) -> None: ...
 
-    def _get_response(self, question: str = ""):
+    def _get_response(self, question: str = "") -> Any | None:
         response = self._step(question)
         tools_and_outputs = []
         if tools := response.tools:
@@ -80,7 +82,7 @@ class SoftwareEngineer(BaseModel):
         ]
         return self._get_response("")
 
-    def run(self):
+    def run(self) -> None:
         while True:
             question = input("(User): ")
             if question == "exit":

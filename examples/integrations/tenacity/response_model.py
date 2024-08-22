@@ -15,7 +15,7 @@ class Book(BaseModel):
 )
 @anthropic.call("claude-3-5-sonnet-20240620", response_model=Book)
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
 book = recommend_book("fantasy")

@@ -20,7 +20,7 @@ apollo_url = "https://storage.googleapis.com/generativeai-downloads/data/Apollo-
     {url:audio}
     """
 )
-def transcribe_speech_from_url(url: str): ...
+def transcribe_speech_from_url(url: str) -> None: ...
 
 
 response = transcribe_speech_from_url(apollo_url)
@@ -63,7 +63,7 @@ class AudioTag(BaseModel):
     Use the tool call passed into the API call to fill it out.
     """
 )
-def analyze_audio(url: str): ...
+def analyze_audio(url: str) -> None: ...
 
 
 response = analyze_audio(apollo_url)
@@ -85,7 +85,7 @@ with open("YOUR_MP3_HERE", "rb") as file:
         {data:audio}
         """
     )
-    def transcribe_speech_from_file(data: bytes): ...
+    def transcribe_speech_from_file(data: bytes) -> None: ...
 
     response = transcribe_speech_from_file(data)
     print(response)

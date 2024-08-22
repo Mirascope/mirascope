@@ -23,7 +23,7 @@ class RelevantContext(BaseModel):
     Text by User: {query}
     """
 )
-def remove_irrelevant_info(query: str):
+def remove_irrelevant_info(query: str) -> None:
     """Reduces a query down to its relevant context and question"""
 
 

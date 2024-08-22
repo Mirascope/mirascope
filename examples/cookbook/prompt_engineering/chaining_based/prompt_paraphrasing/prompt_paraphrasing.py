@@ -18,10 +18,10 @@ class Translations(BaseModel):
     Give {num_translations} translations in {language}
     """
 )
-def translate(phrase: str, language: str, num_translations: int): ...
+def translate(phrase: str, language: str, num_translations: int) -> None: ...
 
 
-def prompt_paraphrasing(query: str, num_translations: int = 3):
+def prompt_paraphrasing(query: str, num_translations: int = 3) -> set:
     spanish_translations = translate(
         phrase=query,
         language="Spanish",

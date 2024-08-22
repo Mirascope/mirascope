@@ -44,7 +44,7 @@ def test_anthropic_stream() -> None:
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     chunks = [
@@ -158,14 +158,14 @@ def test_anthropic_stream() -> None:
     }
 
 
-def test_construct_call_response():
+def test_construct_call_response() -> None:
     class FormatBook(AnthropicTool):
         """Returns the title and author nicely formatted."""
 
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     chunks = [
@@ -306,7 +306,7 @@ def test_construct_call_response():
     assert constructed_call_response.response == call_response.response
 
 
-def test_construct_call_response_string_content():
+def test_construct_call_response_string_content() -> None:
     """Tests the `construct_call_response` method handles string message_param.
     This should never occur since we convert all string message_param to TextBlock.
     """

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from mirascope.core.base.call_response_chunk import BaseCallResponseChunk
 
 
-def test_base_call_response_chunk():
+def test_base_call_response_chunk() -> None:
     class MyCallResponseChunk(BaseCallResponseChunk):
         @property
         def content(self) -> str:

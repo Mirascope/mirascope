@@ -5,7 +5,7 @@ import json
 from ..tool import BaseTool
 
 
-def json_mode_content(tool_type: type[BaseTool] | None):
+def json_mode_content(tool_type: type[BaseTool] | None) -> str:
     """Returns the content to request JSON mode from models without it."""
     if not tool_type:
         return "\n\nExtract ONLY a valid JSON dict using the schema."

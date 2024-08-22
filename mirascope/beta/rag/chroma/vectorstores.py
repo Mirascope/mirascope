@@ -42,7 +42,9 @@ class ChromaVectorStore(BaseVectorStore):
     _provider: ClassVar[str] = "chroma"
 
     def retrieve(
-        self, text: str | list[str] | None = None, **kwargs: Any
+        self,
+        text: str | list[str] | None = None,
+        **kwargs: Any,  # noqa: ANN401
     ) -> ChromaQueryResult:
         """Queries the vectorstore for closest match"""
         if text:
@@ -54,7 +56,7 @@ class ChromaVectorStore(BaseVectorStore):
 
         return ChromaQueryResult.model_validate(query_result)
 
-    def add(self, text: str | list[Document], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:  # noqa: ANN401
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):

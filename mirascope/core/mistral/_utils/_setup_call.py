@@ -1,13 +1,14 @@
 """This module contains the setup_call function for Mistral tools."""
 
 import inspect
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Iterable
 from typing import Any, cast
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,
+    ChatCompletionStreamResponse,
     ChatMessage,
     ResponseFormat,
     ResponseFormats,
@@ -67,7 +68,17 @@ def setup_call(
             MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
         )
 
-    def create_or_stream(stream: bool, **kwargs: Any):
+    def create_or_stream(
+        stream: bool,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> (
+        Iterable[ChatCompletionStreamResponse]
+        | AsyncGenerator[  # noqa: ANN401
+            ChatCompletionStreamResponse, None
+        ]
+        | ChatCompletionResponse
+        | Coroutine[Any, Any, ChatCompletionResponse]
+    ):
         if stream:
             return client.chat_stream(**kwargs)
         return client.chat(**kwargs)

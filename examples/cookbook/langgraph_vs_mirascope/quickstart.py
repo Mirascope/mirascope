@@ -4,6 +4,8 @@ Here is the reference link to LangGraph quickstart:
     https://langchain-ai.github.io/langgraph/tutorials/introduction
 """
 
+from typing import Any
+
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
@@ -86,7 +88,7 @@ class Chatbot(BaseModel):
         USER: {question}
         """
     )
-    def _call(self, question: str | None = None): ...
+    def _call(self, question: str | None = None) -> None: ...
 
     def _interrupt_before(self, tool: openai.OpenAITool) -> openai.OpenAITool | None:
         """Interrupt before the tool is called. Return the modified tool or None."""
@@ -105,7 +107,7 @@ class Chatbot(BaseModel):
         else:
             return tool
 
-    def _step(self, question: str | None = None):
+    def _step(self, question: str | None = None) -> Any:
         response = self._call(question)
         tools_and_outputs = []
         for chunk, tool in response:
@@ -123,7 +125,7 @@ class Chatbot(BaseModel):
             return self._step()
         return response.content
 
-    def run(self):
+    def run(self) -> None:
         while True:
             question = input("(User): ")
             if question in ["quit", "exit"]:

@@ -12,12 +12,12 @@ from mirascope.integrations._middleware_factory import (
 )
 
 
-def test_default_context_manager():
+def test_default_context_manager() -> None:
     with default_context_manager(lambda x: x) as result:
         assert result is None
 
 
-def test_default_context_manager_async():
+def test_default_context_manager_async() -> None:
     async def async_fn(x):
         return x  # pragma: no cover
 
@@ -25,7 +25,7 @@ def test_default_context_manager_async():
         assert result is None
 
 
-def test_middleware_factory_call_response_sync():
+def test_middleware_factory_call_response_sync() -> None:
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
@@ -50,7 +50,7 @@ def test_middleware_factory_call_response_sync():
     def sync_fn() -> MyCallResponse:
         return call_response
 
-    def handle_call_response(result, fn, context):
+    def handle_call_response(result, fn, context) -> None:
         assert isinstance(result, BaseCallResponse)
 
     decorate = middleware_factory(handle_call_response=handle_call_response)(sync_fn)
@@ -59,7 +59,7 @@ def test_middleware_factory_call_response_sync():
 
 
 @pytest.mark.asyncio
-async def test_middleware_factory_call_response_async():
+async def test_middleware_factory_call_response_async() -> None:
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
@@ -84,7 +84,7 @@ async def test_middleware_factory_call_response_async():
     async def async_fn() -> MyCallResponse:
         return call_response
 
-    async def handle_call_response_async(result, fn, context):
+    async def handle_call_response_async(result, fn, context) -> None:
         assert isinstance(result, BaseCallResponse)
 
     decorate = middleware_factory(
@@ -94,7 +94,7 @@ async def test_middleware_factory_call_response_async():
     assert result.content == call_response.content
 
 
-def test_middleware_factory_stream_sync():
+def test_middleware_factory_stream_sync() -> None:
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     mock_chunk = MagicMock()
@@ -105,7 +105,7 @@ def test_middleware_factory_stream_sync():
 
     class MyStream(BaseStream):
         @property
-        def cost(self):
+        def cost(self) -> int:
             return 10
 
     # Usage
@@ -127,7 +127,7 @@ def test_middleware_factory_stream_sync():
     def sync_fn() -> BaseStream:
         return my_stream
 
-    def handle_stream(result, fn, context):
+    def handle_stream(result, fn, context) -> None:
         assert isinstance(result, BaseStream)
 
     decorate = middleware_factory(handle_stream=handle_stream)(sync_fn)
@@ -141,7 +141,7 @@ def test_middleware_factory_stream_sync():
 
 
 @pytest.mark.asyncio
-async def test_middleware_factory_stream_async():
+async def test_middleware_factory_stream_async() -> None:
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     mock_chunk = MagicMock()
@@ -152,7 +152,7 @@ async def test_middleware_factory_stream_async():
 
     class MyStream(BaseStream):
         @property
-        def cost(self):
+        def cost(self) -> int:
             return 10
 
     # Usage
@@ -179,7 +179,7 @@ async def test_middleware_factory_stream_async():
     async def async_fn() -> BaseStream:
         return my_stream
 
-    async def handle_stream_async(result, fn, context):
+    async def handle_stream_async(result, fn, context) -> None:
         assert isinstance(result, BaseStream)
 
     decorate = middleware_factory(handle_stream_async=handle_stream_async)(async_fn)
@@ -192,7 +192,7 @@ async def test_middleware_factory_stream_async():
     assert my_stream.cost == result.cost
 
 
-def test_middleware_factory_base_model_sync():
+def test_middleware_factory_base_model_sync() -> None:
     class Foo(BaseModel):
         bar: str
         baz: int
@@ -200,7 +200,7 @@ def test_middleware_factory_base_model_sync():
     def sync_fn() -> Foo:
         return Foo(bar="bar", baz=1)
 
-    def handle_response_model(result, fn, context):
+    def handle_response_model(result, fn, context) -> None:
         assert isinstance(result, BaseModel)
 
     decorate = middleware_factory(handle_response_model=handle_response_model)(sync_fn)
@@ -209,7 +209,7 @@ def test_middleware_factory_base_model_sync():
 
 
 @pytest.mark.asyncio
-async def test_middleware_factory_base_model_async():
+async def test_middleware_factory_base_model_async() -> None:
     class Foo(BaseModel):
         bar: str
         baz: int
@@ -217,7 +217,7 @@ async def test_middleware_factory_base_model_async():
     async def async_fn() -> Foo:
         return Foo(bar="bar", baz=1)
 
-    async def handle_response_model_async(result, fn, context):
+    async def handle_response_model_async(result, fn, context) -> None:
         assert isinstance(result, BaseModel)
 
     decorate = middleware_factory(
@@ -228,7 +228,7 @@ async def test_middleware_factory_base_model_async():
     assert result.model_dump() == async_fn_result.model_dump()
 
 
-def test_middleware_factory_structured_stream():
+def test_middleware_factory_structured_stream() -> None:
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     class Foo(BaseModel):
@@ -249,7 +249,7 @@ def test_middleware_factory_structured_stream():
     def sync_fn() -> BaseStructuredStream:
         return my_structured_stream
 
-    def handle_structured_stream(result, fn, context):
+    def handle_structured_stream(result, fn, context) -> None:
         assert isinstance(result, BaseStructuredStream)
 
     decorate = middleware_factory(handle_structured_stream=handle_structured_stream)(
@@ -260,7 +260,7 @@ def test_middleware_factory_structured_stream():
 
 
 @pytest.mark.asyncio
-async def test_middleware_factory_structured_stream_async():
+async def test_middleware_factory_structured_stream_async() -> None:
     patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
     class Foo(BaseModel):
@@ -285,7 +285,7 @@ async def test_middleware_factory_structured_stream_async():
     async def async_fn() -> BaseStructuredStream:
         return my_structured_stream
 
-    async def handle_structured_stream_async(result, fn, context):
+    async def handle_structured_stream_async(result, fn, context) -> None:
         assert isinstance(result, BaseStructuredStream)
 
     decorate = middleware_factory(

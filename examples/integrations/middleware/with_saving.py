@@ -1,6 +1,6 @@
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
-from typing import Any, cast
+from typing import Any, ParamSpec, TypeVar, cast
 
 from pydantic import BaseModel
 from sqlalchemy import JSON, Column
@@ -18,7 +18,7 @@ engine = create_engine("sqlite:///database.db")
 class CallResponseTable(SQLModel, table=True):
     """CallResponse model"""
 
-    __tablename__: str = "call_response"  #  type: ignore
+    __tablename__: str = "call_response"  # type: ignore
 
     id: int | None = Field(default=None, primary_key=True)
     function_name: str = Field(default="")
@@ -43,7 +43,7 @@ def custom_context_manager(
 
 def handle_call_response(
     result: BaseCallResponse, fn: Callable, session: Session | None
-):
+) -> None:
     if not session:
         raise ValueError("Session is not set.")
 
@@ -59,11 +59,11 @@ def handle_call_response(
 
 async def handle_call_response_async(
     result: BaseCallResponse, fn: Callable, session: Session | None
-):
+) -> None:
     handle_call_response(result, fn, session)
 
 
-def handle_stream(stream: BaseStream, fn: Callable, session: Session | None):
+def handle_stream(stream: BaseStream, fn: Callable, session: Session | None) -> None:
     if not session:
         raise ValueError("Session is not set.")
 
@@ -80,13 +80,13 @@ def handle_stream(stream: BaseStream, fn: Callable, session: Session | None):
 
 async def handle_stream_async(
     stream: BaseStream, fn: Callable, session: Session | None
-):
+) -> None:
     handle_stream(stream, fn, session)
 
 
 def handle_response_model(
     response_model: BaseModel | BaseType, fn: Callable, session: Session | None
-):
+) -> None:
     if not session:
         raise ValueError("Session is not set.")
 
@@ -110,13 +110,13 @@ def handle_response_model(
 
 async def handle_response_model_async(
     response_model: BaseModel | BaseType, fn: Callable, session: Session | None
-):
+) -> None:
     handle_response_model(response_model, fn, session)
 
 
 def handle_structured_stream(
     structured_stream: BaseStructuredStream, fn: Callable, session: Session | None
-):
+) -> None:
     if not session:
         raise ValueError("Session is not set.")
 
@@ -133,11 +133,15 @@ def handle_structured_stream(
 
 async def handle_structured_stream_async(
     structured_stream: BaseStructuredStream, fn: Callable, session: Session | None
-):
+) -> None:
     handle_structured_stream(structured_stream, fn, session)
 
 
-def with_saving():
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def with_saving() -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Saves some data after a Mirascope call."""
 
     return middleware_factory(
@@ -157,7 +161,7 @@ def with_saving():
 @with_saving()
 @anthropic.call(model="claude-3-5-sonnet-20240620")
 @prompt_template("What is your purpose?")
-def run(): ...
+def run() -> None: ...
 
 
 print(run())

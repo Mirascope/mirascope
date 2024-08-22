@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
@@ -36,7 +37,7 @@ class Problem(BaseModel):
     {query}
     """
 )
-def break_into_subproblems(query: str): ...
+def break_into_subproblems(query: str) -> None: ...
 
 
 def split(str: str) -> str:
@@ -61,10 +62,10 @@ def concat(strings: list[str]) -> str:
     MESSAGES: {history}
     """
 )
-def solve_next_step(history: list[ChatCompletionMessageParam], query: str): ...
+def solve_next_step(history: list[ChatCompletionMessageParam], query: str) -> None: ...
 
 
-def decomposed_prompting(query: str):
+def decomposed_prompting(query: str) -> Any:
     problem = break_into_subproblems(query=query)
     # Uncomment to see intermediate responses
     # print(problem.subproblems)

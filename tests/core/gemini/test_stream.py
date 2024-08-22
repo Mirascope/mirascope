@@ -75,7 +75,7 @@ def test_gemini_stream() -> None:
     }
 
 
-def test_construct_call_response():
+def test_construct_call_response() -> None:
     chunks = [
         GenerateContentResponseType.from_response(
             GenerateContentResponse(

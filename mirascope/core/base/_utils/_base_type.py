@@ -7,7 +7,7 @@ from typing import Annotated, Any, Literal, TypeGuard, Union, get_origin
 BaseType = str | int | float | bool | bytes | list | set | tuple | dict
 
 
-def is_base_type(type_: Any) -> TypeGuard[type[BaseType]]:
+def is_base_type(type_: Any) -> TypeGuard[type[BaseType]]:  # noqa: ANN401
     """Check if a type is a base type."""
     base_types = {str, int, float, bool, bytes, list, set, tuple, dict}
     return (

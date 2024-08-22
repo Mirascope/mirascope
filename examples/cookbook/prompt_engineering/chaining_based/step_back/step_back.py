@@ -79,7 +79,7 @@ def get_stepback_question(
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("""{query}""")
-def call(query: str):
+def call(query: str) -> None:
     """A standard call to OpenAI."""
 
 

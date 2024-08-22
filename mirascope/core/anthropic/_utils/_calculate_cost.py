@@ -4,7 +4,7 @@
 def calculate_cost(
     input_tokens: int | float | None,
     output_tokens: int | float | None,
-    model="claude-3-haiku-20240229",
+    model: str = "claude-3-haiku-20240229",
 ) -> float | None:
     """Calculate the cost of a completion using the Anthropic API.
 

@@ -299,7 +299,7 @@ class BasePrompt(BaseModel):
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 
 
-def prompt_template(template: str):
+def prompt_template(template: str):  # noqa: ANN201
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#prompt-templates
@@ -341,7 +341,7 @@ def prompt_template(template: str):
     return inner
 
 
-def metadata(metadata: Metadata):
+def metadata(metadata: Metadata):  # noqa: ANN201
     """A decorator for adding metadata to a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#metadata

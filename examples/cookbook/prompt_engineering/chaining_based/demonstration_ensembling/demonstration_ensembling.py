@@ -58,7 +58,7 @@ query = """Help me write a notice that highlights the importance of attending\
 the company's social events. Give me just the notice, no further explanation."""
 
 
-async def demonstration_ensembling(query, ensemble_size):
+async def demonstration_ensembling(query: str, ensemble_size: int) -> None:
     print(await aggregate_answers(query=query, num_responses=ensemble_size))
 
 

@@ -39,7 +39,7 @@ movie_genres = [
     {genres}
     """
 )
-def deduplicate_genres(genres: list[str]): ...
+def deduplicate_genres(genres: list[str]) -> None: ...
 
 
 response = deduplicate_genres(movie_genres)
@@ -81,7 +81,7 @@ duplicate_books = [
     {books}
     """
 )
-def deduplicate_books(books: list[Book]): ...
+def deduplicate_books(books: list[Book]) -> None: ...
 
 
 books = deduplicate_books(duplicate_books)

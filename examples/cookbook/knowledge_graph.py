@@ -73,14 +73,14 @@ kg = generate_knowledge_graph(question, "../wikipedia.txt")
     {question}
     """
 )
-def run(question: str, knowledge_graph: KnowledgeGraph): ...
+def run(question: str, knowledge_graph: KnowledgeGraph) -> None: ...
 
 
 print(kg)
 print(run(question, kg))
 
 
-def render_graph(kg: KnowledgeGraph):
+def render_graph(kg: KnowledgeGraph) -> None:
     G = nx.DiGraph()
 
     for node in kg.nodes:

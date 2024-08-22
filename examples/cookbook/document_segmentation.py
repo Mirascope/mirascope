@@ -90,7 +90,7 @@ class Segment(BaseModel):
     {article}
     """
 )
-def semantic_segmentation(article: str): ...
+def semantic_segmentation(article: str) -> None: ...
 
 
 segments = semantic_segmentation(SAMPLE_ARTICLE)
@@ -109,7 +109,7 @@ segments = semantic_segmentation(SAMPLE_ARTICLE)
     {question}
     """
 )
-def segmented_document(segments: list[Segment], question: str): ...
+def segmented_document(segments: list[Segment], question: str) -> None: ...
 
 
 segmented = segmented_document(

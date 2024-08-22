@@ -50,7 +50,7 @@ def test_logfire_custom_context_manager(mock_logfire: MagicMock) -> None:
         assert set(call_args["tags"]) == {"tag1", "tag2"}
 
 
-def test_get_call_response_span_data():
+def test_get_call_response_span_data() -> None:
     call_response = MagicMock()
     result = _utils.get_call_response_span_data(call_response)
     assert result["async"] is False
@@ -70,7 +70,7 @@ def test_get_call_response_span_data():
     }
 
 
-def test_get_tool_calls():
+def test_get_tool_calls() -> None:
     call_response = MyCallResponse(
         metadata={"tags": {"version:0001"}},
         response="test response",
@@ -112,7 +112,7 @@ def test_get_tool_calls():
 def test_handle_call_response(
     mock_get_tool_calls: MagicMock,
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert _utils.handle_call_response(MagicMock(), mock_fn, None) is None
 
@@ -144,7 +144,7 @@ def test_handle_call_response(
 async def test_handle_call_response_async(
     mock_get_tool_calls: MagicMock,
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert await _utils.handle_call_response_async(MagicMock(), mock_fn, None) is None
 
@@ -169,7 +169,7 @@ async def test_handle_call_response_async(
 @patch(
     "mirascope.integrations.logfire._utils.handle_call_response", new_callable=MagicMock
 )
-def test_handle_stream(mock_handle_call_response: MagicMock):
+def test_handle_stream(mock_handle_call_response: MagicMock) -> None:
     mock_fn = MagicMock()
     mock_stream = MagicMock(spec=BaseStream)
     construct_call_response = MagicMock()
@@ -186,7 +186,7 @@ def test_handle_stream(mock_handle_call_response: MagicMock):
     new_callable=AsyncMock,
 )
 @pytest.mark.asyncio
-async def test_handle_stream_async(mock_handle_call_response_async: MagicMock):
+async def test_handle_stream_async(mock_handle_call_response_async: MagicMock) -> None:
     mock_fn = MagicMock()
     mock_stream = MagicMock(spec=BaseStream)
     construct_call_response = MagicMock()
@@ -211,7 +211,7 @@ async def test_handle_stream_async(mock_handle_call_response_async: MagicMock):
 def test_handle_response_model(
     mock_set_response_model_output: MagicMock,
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert _utils.handle_response_model(MagicMock(), mock_fn, None) is None
 
@@ -239,7 +239,7 @@ def test_handle_response_model(
 )
 def test_handle_structured_stream(
     mock_get_structured_stream_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert _utils.handle_structured_stream(MagicMock(), mock_fn, None) is None
 
@@ -273,7 +273,7 @@ def test_handle_structured_stream(
 async def test_handle_response_model_async(
     mock_set_response_model_output: MagicMock,
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert await _utils.handle_response_model_async(MagicMock(), mock_fn, None) is None
 
@@ -302,7 +302,7 @@ async def test_handle_response_model_async(
 @pytest.mark.asyncio
 async def test_handle_structured_stream_async(
     mock_get_structured_stream_span_data: MagicMock,
-):
+) -> None:
     mock_fn = MagicMock()
     assert (
         await _utils.handle_structured_stream_async(MagicMock(), mock_fn, None) is None
@@ -326,7 +326,7 @@ async def test_handle_structured_stream_async(
     assert mock_get_structured_stream_span_data.return_value["async"] is True
 
 
-def test_set_response_model_output():
+def test_set_response_model_output() -> None:
     class MyBaseModel(BaseModel):
         foo: str
 
@@ -347,7 +347,7 @@ def test_set_response_model_output():
 )
 def test_get_structured_stream_span_data_base_model(
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     class MyBaseModel(BaseModel):
         foo: str
 
@@ -369,7 +369,7 @@ def test_get_structured_stream_span_data_base_model(
 )
 def test_get_structured_stream_span_data_base_type(
     mock_get_call_response_span_data: MagicMock,
-):
+) -> None:
     class MyBaseModel(BaseModel):
         foo: str
 

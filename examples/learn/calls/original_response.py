@@ -2,7 +2,7 @@ from mirascope.core import openai
 
 
 @openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str):
+def recommend_book(genre: str) -> None:
     """Recommend a {genre} book."""
 
 

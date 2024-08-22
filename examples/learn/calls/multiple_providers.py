@@ -2,7 +2,7 @@ from mirascope.core import anthropic, mistral, openai, prompt_template
 
 
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
 openai_recommendation = openai.call("gpt-4o-mini")(recommend_book)("fantasy")

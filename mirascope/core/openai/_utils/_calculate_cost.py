@@ -4,7 +4,7 @@
 def calculate_cost(
     input_tokens: int | float | None,
     output_tokens: int | float | None,
-    model="gpt-3.5-turbo-16k",
+    model: str = "gpt-3.5-turbo-16k",
 ) -> float | None:
     """Calculate the cost of a completion using the OpenAI API.
 

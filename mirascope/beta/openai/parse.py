@@ -21,7 +21,7 @@ def parse(
     model: Literal["gpt-4o-2024-08-06"],
     response_model: type[_ResponseModelT],
     call_params: OpenAICallParams | None = None,
-):
+) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
     """Beta implementation of the new OpenAI parse functionality."""
 
     @overload

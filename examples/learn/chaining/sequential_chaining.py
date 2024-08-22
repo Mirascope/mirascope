@@ -8,7 +8,7 @@ from mirascope.core import openai, prompt_template
     Give me just the name.
     """
 )
-def scientist_selector(field_of_study: str): ...
+def scientist_selector(field_of_study: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -18,7 +18,7 @@ def scientist_selector(field_of_study: str): ...
     Your task is to explain a theory that you, {scientist}, are famous for.
     """
 )
-def theory_explainer(scientist: str, theory: str): ...
+def theory_explainer(scientist: str, theory: str) -> None: ...
 
 
 scientist = scientist_selector(field_of_study="physics").content

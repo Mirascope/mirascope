@@ -1,6 +1,8 @@
 """Mirascope x HyperDX Integration."""
 
 import os
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
 
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -12,8 +14,11 @@ from opentelemetry.sdk.trace.export import (
 from mirascope.integrations.otel._utils import configure
 from mirascope.integrations.otel._with_otel import with_otel
 
+_P = ParamSpec("_P")
+_R = TypeVar("_R")
 
-def with_hyperdx():
+
+def with_hyperdx() -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
     """Decorator to wrap a function with hyperdx.
 
     Example:

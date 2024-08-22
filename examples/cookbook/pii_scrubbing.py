@@ -1,6 +1,7 @@
 from openai import OpenAI
 
 from mirascope.core import openai, prompt_template
+from mirascope.core.openai import OpenAICallResponse
 
 PII_DEFINITION = """
 Any representation of information that permits the identity of an individual to whom 
@@ -63,10 +64,10 @@ def check_if_pii_exists(article: str) -> openai.OpenAIDynamicConfig:
     {article}
     """
 )
-def scrub_pii(article: str): ...
+def scrub_pii(article: str) -> None: ...
 
 
-def run():
+def run() -> str | OpenAICallResponse | None:
     does_pii_exist = check_if_pii_exists(PII_ARTICLE)
     if does_pii_exist:
         return scrub_pii(PII_ARTICLE)

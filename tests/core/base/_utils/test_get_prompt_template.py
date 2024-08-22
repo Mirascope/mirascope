@@ -30,14 +30,14 @@ def test_get_prompt_template() -> None:
     assert get_prompt_template(PromptWithDocstring) == "docstring_prompt"
     os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "DISABLED"
 
-    def fn(): ...  # pragma: no cover
+    def fn() -> None: ...  # pragma: no cover
 
     with pytest.raises(ValueError, match="No prompt template set!"):
         get_prompt_template(fn)
 
     assert get_prompt_template(prompt_template("prompt")(fn)) == "prompt"
 
-    def fn_with_docstring():
+    def fn_with_docstring() -> None:
         """docstring_prompt"""
 
     with pytest.raises(

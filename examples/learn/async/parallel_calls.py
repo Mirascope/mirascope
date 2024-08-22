@@ -5,10 +5,10 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("Summarize the plot of a {genre} movie")
-async def summarize_movie(genre: str): ...
+async def summarize_movie(genre: str) -> None: ...
 
 
-async def main():
+async def main() -> None:
     genres = ["action", "comedy", "drama", "sci-fi"]
     tasks = [summarize_movie(genre) for genre in genres]
     results = await asyncio.gather(*tasks)

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from mirascope.core.base.call_response import BaseCallResponse
 
 
-def test_base_call_response():
+def test_base_call_response() -> None:
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:

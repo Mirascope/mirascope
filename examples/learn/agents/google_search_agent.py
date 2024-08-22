@@ -50,9 +50,9 @@ class GoogleBot(BaseModel):
         USER: {query}
         """
     )
-    def _call(self, query: str): ...
+    def _call(self, query: str) -> None: ...
 
-    def _step(self, query: str):
+    def _step(self, query: str) -> str:
         response = self._call(query)
         self.history += [response.user_message_param, response.message_param]
         if tools := response.tools:
@@ -62,7 +62,7 @@ class GoogleBot(BaseModel):
         else:
             return response.content
 
-    def run(self):
+    def run(self) -> None:
         while True:
             query = input("(User): ")
             if query in ["exit", "quit"]:

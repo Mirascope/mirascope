@@ -100,7 +100,9 @@ def set_call_response_event_attributes(result: BaseCallResponse, span: Span) -> 
     )
 
 
-def handle_call_response(result: BaseCallResponse, fn: Callable, span: Span | None):
+def handle_call_response(
+    result: BaseCallResponse, fn: Callable, span: Span | None
+) -> None:
     if span is None:
         return
 
@@ -110,7 +112,7 @@ def handle_call_response(result: BaseCallResponse, fn: Callable, span: Span | No
     set_call_response_event_attributes(result, span)
 
 
-def handle_stream(stream: BaseStream, fn: Callable, span: Span | None):
+def handle_stream(stream: BaseStream, fn: Callable, span: Span | None) -> None:
     if span is None:
         return
     constructed_call_response = stream.construct_call_response()
@@ -122,7 +124,7 @@ def handle_stream(stream: BaseStream, fn: Callable, span: Span | None):
 
 def handle_response_model(
     result: BaseModel | BaseType, fn: Callable, span: Span | None
-):
+) -> None:
     if span is None:
         return
     if isinstance(result, BaseModel):
@@ -155,7 +157,7 @@ def handle_response_model(
 
 def handle_structured_stream(
     result: BaseStructuredStream, fn: Callable, span: Span | None
-):
+) -> None:
     if span is None:
         return
     attributes = get_call_response_attributes(result.stream.construct_call_response())
@@ -183,7 +185,7 @@ def handle_structured_stream(
 
 async def handle_call_response_async(
     result: BaseCallResponse, fn: Callable, span: Span | None
-):
+) -> None:
     if span is None:
         return
 
@@ -193,7 +195,9 @@ async def handle_call_response_async(
     set_call_response_event_attributes(result, span)
 
 
-async def handle_stream_async(stream: BaseStream, fn: Callable, span: Span | None):
+async def handle_stream_async(
+    stream: BaseStream, fn: Callable, span: Span | None
+) -> None:
     if span is None:
         return
     constructed_call_response = stream.construct_call_response()
@@ -205,7 +209,7 @@ async def handle_stream_async(stream: BaseStream, fn: Callable, span: Span | Non
 
 async def handle_response_model_async(
     result: BaseModel | BaseType, fn: Callable, span: Span | None
-):
+) -> None:
     if span is None:
         return
     if isinstance(result, BaseModel):
@@ -238,7 +242,7 @@ async def handle_response_model_async(
 
 async def handle_structured_stream_async(
     result: BaseStructuredStream, fn: Callable, span: Span | None
-):
+) -> None:
     if span is None:
         return
     attributes = get_call_response_attributes(result.stream.construct_call_response())

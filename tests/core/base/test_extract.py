@@ -54,7 +54,7 @@ def test_extract_factory_sync(
         **mock_extract_decorator_kwargs,
     )
 
-    def fn(genre: str, *, topic: str):
+    def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
     output = decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
@@ -122,7 +122,7 @@ async def test_extract_factory_async(
         **mock_extract_decorator_kwargs,
     )
 
-    async def fn(genre: str, *, topic: str):
+    async def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
     output = await decorator(fn)(genre="fantasy", topic="magic")  # type: ignore

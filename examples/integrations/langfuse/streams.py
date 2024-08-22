@@ -9,7 +9,7 @@ from mirascope.integrations.langfuse import with_langfuse
     call_params={"stream_options": {"include_usage": True}},
 )
 @prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
 for chunk, _ in recommend_book("fantasy"):

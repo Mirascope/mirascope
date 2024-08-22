@@ -62,7 +62,7 @@ class Librarian(BaseModel):
         else:
             return response.content
 
-    def run(self):
+    def run(self) -> None:
         while True:
             query = input("User: ")
             if query.lower() == "exit":

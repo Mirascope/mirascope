@@ -10,7 +10,7 @@ from mirascope.core.base.prompt import prompt_template
     What events does {name} know about?
     """
 )
-def get_one_perspective(story: str, name: str):
+def get_one_perspective(story: str, name: str) -> None:
     """Gets one person's perspective of a story."""
 
 

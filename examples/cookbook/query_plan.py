@@ -39,10 +39,10 @@ class Query(BaseModel):
     {question}
     """
 )
-def create_query_plan(question: str): ...
+def create_query_plan(question: str) -> None: ...
 
 
-def get_weather_by_year(year: int):
+def get_weather_by_year(year: int) -> str:
     """Made up data to get Tokyo weather by year"""
     if year == 2020:
         data = {
@@ -108,7 +108,7 @@ def run(
     return {"tools": tools_fn}
 
 
-def execute_query_plan(query_plan: list[Query]):
+def execute_query_plan(query_plan: list[Query]) -> dict[int, dict[str, str]] | str:
     results = {}
     for query in query_plan:
         history = []

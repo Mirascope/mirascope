@@ -43,7 +43,7 @@ class WeaviateVectorStore(BaseVectorStore):
     vectorstore_params = WeaviateParams()
     client_settings: ClassVar[WeaviateSettings] = WeaviateSettings()
 
-    def add(self, text: str | list[Document], **kwargs: Any) -> None:
+    def add(self, text: str | list[Document], **kwargs: Any) -> None:  # noqa: ANN401
         """Takes unstructured data and inserts into vectorstore"""
         documents: list[Document]
         if isinstance(text, str):
@@ -66,14 +66,14 @@ class WeaviateVectorStore(BaseVectorStore):
 
         return self._index.data.insert_many(data_objects)
 
-    def retrieve(self, text: str, **kwargs: Any) -> WeaviateQueryResult:
+    def retrieve(self, text: str, **kwargs: Any) -> WeaviateQueryResult:  # noqa: ANN401
         """Queries the vectorstore for closest match"""
         query_result = self._index.query.near_text(query=text, **kwargs)
         result = query_result.objects[0]
 
         return WeaviateQueryResult.from_response(result)
 
-    def close_connection(self):
+    def close_connection(self) -> None:
         self._client.close()
 
     ############################# PRIVATE PROPERTIES #################################

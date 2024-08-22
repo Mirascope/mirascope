@@ -4,7 +4,7 @@
 def calculate_cost(
     input_tokens: int | float | None,
     output_tokens: int | float | None,
-    model="command-r-plus",
+    model: str = "command-r-plus",
 ) -> float | None:
     """Calculate the cost of a completion using the Cohere API.
 

@@ -16,7 +16,7 @@ class User(BaseModel):
     security_answer: str
 
 
-def get_user_by_email(email: str):
+def get_user_by_email(email: str) -> User | None:
     if email == "johndoe@gmail.com":
         return User(
             name="John Doe",
@@ -32,18 +32,18 @@ def get_user_by_email(email: str):
         return None
 
 
-def get_sale_items():
+def get_sale_items() -> str:
     return "Sale items: we have a monitor at half off for $80!"
 
 
-def get_rewards(user: User):
+def get_rewards(user: User) -> str:
     if sum(user.past_charges) > 300:
         return "Rewards: for your loyalty, you get 10% off your next purchase!"
     else:
         return "Rewards: you have no rewards available right now."
 
 
-def get_billing_details(user: User):
+def get_billing_details(user: User) -> dict[str, list[str] | str | list[float]]:
     return {
         "user_email": user.email,
         "user_name": user.name,
@@ -52,7 +52,7 @@ def get_billing_details(user: User):
     }
 
 
-def get_account_details(user: User):
+def get_account_details(user: User) -> dict[str, str]:
     return {
         "user_email": user.email,
         "user_name": user.name,
@@ -92,7 +92,7 @@ class CallClassification(BaseModel):
     {transcript}
     """
 )
-def classify_transcript(transcript: str): ...
+def classify_transcript(transcript: str) -> None: ...
 
 
 @openai.call(model="gpt-4o-mini", tools=[route_to_agent])

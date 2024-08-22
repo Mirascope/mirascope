@@ -17,7 +17,7 @@ class Librarian(BaseModel):
     )
     def _call(self, query: str) -> openai.OpenAIDynamicConfig: ...
 
-    def run(self):
+    def run(self) -> None:
         while True:
             query = input("User: ")
             if query.lower() == "exit":

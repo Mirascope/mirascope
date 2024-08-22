@@ -8,7 +8,7 @@ class SentimentAnalysisPrompt(BasePrompt):
     text: str
 
 
-async def main():
+async def main() -> None:
     prompt = SentimentAnalysisPrompt(text="I love using Mirascope!")
     result = await prompt.run_async(openai.call(model="gpt-4o-mini"))
     print(result.content)

@@ -19,7 +19,7 @@ def test_get_metadata() -> None:
         "tags": {"version:0002"}
     }
 
-    def fn():
+    def fn() -> None:
         """prompt"""
 
     assert get_metadata(fn, None) == {}

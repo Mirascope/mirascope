@@ -127,7 +127,7 @@ def test_prompt_template_with_function() -> None:
     """Tests the `prompt_template` decorator on a function."""
 
     @prompt_template("Recommend a book.")
-    def fn(): ...
+    def fn() -> None: ...
 
     assert (
         hasattr(fn, "_prompt_template") and fn._prompt_template == "Recommend a book."  # pyright: ignore [reportFunctionMemberAccess]
@@ -145,6 +145,6 @@ def test_metadata_decorator() -> None:
     assert prompt.dump()["metadata"] == {"tags": {"version:0001"}}
 
     @metadata({"tags": {"version:0001"}})
-    def fn(): ...
+    def fn() -> None: ...
 
     assert hasattr(fn, "_metadata") and fn._metadata == {"tags": {"version:0001"}}  # pyright: ignore [reportFunctionMemberAccess]

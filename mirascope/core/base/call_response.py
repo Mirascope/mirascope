@@ -75,7 +75,11 @@ class BaseCallResponse(
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     @field_serializer("tool_types")
-    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+    def serialize_tool_types(
+        self,
+        tool_types: list[type[_BaseToolT]],
+        _info: Any,  # noqa: ANN401
+    ) -> list[dict[str, str]]:  # noqa: ANN401
         return [{"type": "function", "name": tool._name()} for tool in tool_types or []]
 
     def __str__(self) -> str:
@@ -118,7 +122,7 @@ class BaseCallResponse(
 
     @property
     @abstractmethod
-    def usage(self) -> Any:
+    def usage(self) -> Any:  # noqa: ANN401
         """Should return the usage of the response.
 
         If there is no usage, this method must return None.
@@ -155,7 +159,7 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
-    def message_param(self) -> Any:
+    def message_param(self) -> Any:  # noqa: ANN401
         """Returns the assistant's response as a message parameter."""
         ...
 

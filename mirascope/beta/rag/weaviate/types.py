@@ -1,5 +1,7 @@
 """Types for interacting with Weaviate using Mirascope."""
 
+from __future__ import annotations
+
 from typing import Any, Literal
 
 import weaviate.types as wt
@@ -77,7 +79,7 @@ class WeaviateQueryResult(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def from_response(response_object):
+    def from_response(response_object) -> WeaviateQueryResult:
         model_dict = {}
         id = str(response_object.uuid)
         text = response_object.properties["text"]

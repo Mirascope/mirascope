@@ -15,7 +15,7 @@ class Book(BaseModel):
 @with_logfire()
 @openai.call(model="gpt-4o-mini", response_model=Book)
 @prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> None: ...
 
 
 print(recommend_book("fantasy"))

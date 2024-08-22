@@ -31,7 +31,7 @@ def test_mistral_stream() -> None:
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     tool_call_delta = ToolCall(
@@ -135,14 +135,14 @@ def test_mistral_stream() -> None:
     )
 
 
-def test_construct_call_response():
+def test_construct_call_response() -> None:
     class FormatBook(MistralTool):
         """Returns the title and author nicely formatted."""
 
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Dummy call."""
 
     tool_call_delta = ToolCall(

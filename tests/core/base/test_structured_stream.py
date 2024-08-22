@@ -59,7 +59,7 @@ def test_structured_stream_factory_sync(
         **mock_structured_stream_decorator_kwargs,
     )
 
-    def fn(genre: str, *, topic: str):
+    def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
     structured_stream: BaseStructuredStream = decorator(fn)(
@@ -131,7 +131,7 @@ async def test_structured_stream_factory_async(
         **mock_structured_stream_decorator_kwargs,
     )
 
-    async def fn(genre: str, *, topic: str):
+    async def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
     structured_stream: BaseStructuredStream = await decorator(fn)(
