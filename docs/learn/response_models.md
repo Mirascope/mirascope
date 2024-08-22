@@ -207,7 +207,7 @@ In the event that there is an error such as a `ValidationError`, there is often 
 from typing import cast
 
 from mirascope.core import openai, prompt_template
-from pydantic import BaseModel, ValidationError, field_validator\
+from pydantic import BaseModel, ValidationError, field_validator
 
 
 class Book(BaseModel):
