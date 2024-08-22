@@ -174,7 +174,7 @@ class BasePrompt(BaseModel):
         print(response.content)
         ```
         """
-        kwargs = self.model_dump()
+        kwargs = {field: getattr(self, field) for field in self.model_fields}
         args_str = ", ".join(kwargs.keys())
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"def {fn_name}({args_str}): ...", namespace)
@@ -280,7 +280,7 @@ class BasePrompt(BaseModel):
         asyncio.run(run())
         ```
         """
-        kwargs = self.model_dump()
+        kwargs = {field: getattr(self, field) for field in self.model_fields}
         args_str = ", ".join(kwargs.keys())
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"async def {fn_name}({args_str}): ...", namespace)
