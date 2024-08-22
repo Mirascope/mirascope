@@ -4,7 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
-from pydantic import computed_field
+from pydantic import SerializeAsAny, computed_field
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
@@ -92,9 +92,9 @@ class AnthropicCallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> MessageParam:
+    def message_param(self) -> SerializeAsAny[MessageParam]:
         """Returns the assistants's response as a message parameter."""
-        return self.response.model_dump(include={"content", "role"})  # type: ignore
+        return MessageParam(**self.response.model_dump(include={"content", "role"}))
 
     @computed_field
     @property

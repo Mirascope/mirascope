@@ -11,7 +11,7 @@ from openai.types.chat import (
     ChatCompletionUserMessageParam,
 )
 from openai.types.completion_usage import CompletionUsage
-from pydantic import SkipValidation, computed_field
+from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
@@ -101,7 +101,7 @@ class OpenAICallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> ChatCompletionAssistantMessageParam:
+    def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
         return self.response.choices[0].message.model_dump(exclude={"function_call"})  # type: ignore
 
