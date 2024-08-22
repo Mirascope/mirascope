@@ -8,6 +8,7 @@ from typing import Any, ClassVar, Generic, TypeVar
 from pydantic import (
     BaseModel,
     ConfigDict,
+    FieldSerializationInfo,
     SkipValidation,
     computed_field,
     field_serializer,
@@ -74,8 +75,10 @@ class BaseCallResponse(
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    @field_serializer("tool_types")
-    def serialize_tool_types(self, tool_types: list[type[_BaseToolT]], _info):
+    @field_serializer("tool_types", when_used="json")
+    def serialize_tool_types(
+        self, tool_types: list[type[_BaseToolT]] | None, info: FieldSerializationInfo
+    ) -> list[dict[str, str]]:
         return [{"type": "function", "name": tool._name()} for tool in tool_types or []]
 
     def __str__(self) -> str:
