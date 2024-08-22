@@ -1,4 +1,4 @@
-from typing import Any, LiteralString
+from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,7 +38,7 @@ def nimble_google_search(query: str) -> dict[Any, str]:
     return search_results
 
 
-def get_content(url: str) -> LiteralString:
+def get_content(url: str) -> str:
     data = []
     response = requests.get(url)
     content = response.content
