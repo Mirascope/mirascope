@@ -12,7 +12,7 @@ from mirascope.core import openai, prompt_template
     - genre
     """
 )
-def get_book_info(book_title: str) -> None: ...
+def get_book_info(book_title: str): ...
 
 
 response = get_book_info("The Great Gatsby")

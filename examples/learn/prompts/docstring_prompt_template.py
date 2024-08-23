@@ -18,7 +18,7 @@ print(prompt)
 
 
 @openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str) -> None:
+def recommend_book(genre: str):
     """Recommend a {genre} book"""
     ...
 

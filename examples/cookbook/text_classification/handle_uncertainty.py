@@ -25,7 +25,7 @@ class SentimentWithCertainty(BaseModel):
     Also provide a certainty score between 0 and 1, where 1 is absolute certainty.
     """
 )
-def classify_sentiment_with_certainty(text: str) -> None: ...
+def classify_sentiment_with_certainty(text: str): ...
 
 
 text = "This is the best product ever. And the worst."

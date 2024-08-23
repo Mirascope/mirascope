@@ -10,7 +10,7 @@ class Sentiment(str, Enum):
 
 @openai.call(model="gpt-4o", response_model=Sentiment)
 @prompt_template("Is the following review positive or negative? {review}")
-def sentiment_classifier(review: str) -> None: ...
+def sentiment_classifier(review: str): ...
 
 
 @openai.call("gpt-4o-mini")

@@ -1,7 +1,5 @@
 import asyncio
 import os
-from collections.abc import Callable
-from typing import Any
 
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ConfigDict
@@ -36,20 +34,18 @@ class MiraBot(BaseModel):
         {input}
         """
     )
-    async def _step(self, input: str) -> None: ...
+    async def _step(self, input: str): ...
 
-    async def register_event_handlers(self) -> None:
+    async def register_event_handlers(self):
         @self.app.event("message")
-        async def handle_message_events(
-            message: dict, say: Callable, logger: Any
-        ) -> None:  # noqa: ANN401
+        async def handle_message_events(message, say, logger):
             response = await self._step(message["text"])
             if response.user_message_param:
                 self.history.append(response.user_message_param)
             self.history.append(response.message_param)
             await say(response.content)
 
-    async def start(self) -> None:
+    async def start(self):
         handler = AsyncSocketModeHandler(self.app, SLACK_APP_TOKEN)
         await self.register_event_handlers()
         await handler.start_async()

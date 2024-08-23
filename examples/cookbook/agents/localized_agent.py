@@ -1,7 +1,5 @@
 import asyncio
-from collections.abc import Coroutine
 from datetime import datetime
-from typing import Any
 
 import aiohttp
 import requests
@@ -18,7 +16,7 @@ class LocalizedRecommender(BaseModel):
 
     async def _nimble_google_maps_places(
         self, session: aiohttp.ClientSession, place_id: str
-    ) -> dict[str, Any]:
+    ):
         """
         Use Nimble to get the details of a place on Google Maps.
         """
@@ -48,9 +46,7 @@ class LocalizedRecommender(BaseModel):
                 "name": result.get("title", ""),
             }
 
-    async def _nimble_google_maps(
-        self, latitude: float, longitude: float, query: str
-    ) -> Any:
+    async def _nimble_google_maps(self, latitude: float, longitude: float, query: str):
         """
         Use Nimble to search for places on Google Maps.
         """
@@ -87,11 +83,11 @@ class LocalizedRecommender(BaseModel):
             results = await asyncio.gather(*tasks)
         return results
 
-    async def _get_current_date(self) -> str:
+    async def _get_current_date(self):
         """Get the current date and time."""
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    async def _get_coordinates_from_location(self, location_name: str) -> str:
+    async def _get_coordinates_from_location(self, location_name: str):
         """Get the coordinates of a location."""
         base_url = "https://nominatim.openstreetmap.org/search"
         params = {"q": location_name, "format": "json", "limit": 1}
@@ -128,9 +124,7 @@ class LocalizedRecommender(BaseModel):
             ]
         }
 
-    async def _get_response(
-        self, question: str
-    ) -> Coroutine[Any, Any, Any | None] | None:
+    async def _get_response(self, question: str):
         response = await self._step(question)
         tool_call = None
         output = None
@@ -146,9 +140,9 @@ class LocalizedRecommender(BaseModel):
         if tool_call and output:
             self.history += response.tool_message_params([(tool_call, str(output))])
             return await self._get_response(question)
-        return None
+        return
 
-    async def run(self) -> None:
+    async def run(self):
         while True:
             question = input("(User): ")
             if question == "exit":

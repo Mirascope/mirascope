@@ -36,7 +36,7 @@ class Eval(BaseModel):
     Input Text: {input}
     """
 )
-def evaluate_toxicity(input: str) -> None: ...
+def evaluate_toxicity(input: str): ...
 
 
 # Example usage

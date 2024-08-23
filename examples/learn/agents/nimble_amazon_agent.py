@@ -1,5 +1,3 @@
-from typing import Any
-
 import requests
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
@@ -9,7 +7,7 @@ from mirascope.core import openai, prompt_template
 NIMBLE_TOKEN = "YOUR_NIMBLE_TOKEN"
 
 
-def amazon_search(question: str) -> list[dict[str, Any]]:
+def amazon_search(question: str):
     """Use Nimble to search for products on Amazon."""
     url = "https://api.webit.live/api/v1/realtime/web"
     headers = {
@@ -52,9 +50,9 @@ class NimbleAmazonBot(BaseModel):
         USER: {query}
         """
     )
-    def _call(self, query: str) -> None: ...
+    def _call(self, query: str): ...
 
-    def _step(self, query: str) -> str:
+    def _step(self, query: str):
         response = self._call(query)
         self.history += [response.user_message_param, response.message_param]
         if tools := response.tools:
@@ -64,7 +62,7 @@ class NimbleAmazonBot(BaseModel):
         else:
             return response.content
 
-    def run(self) -> None:
+    def run(self):
         while True:
             query = input("(User): ")
             if query in ["exit", "quit"]:

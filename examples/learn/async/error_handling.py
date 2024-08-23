@@ -7,10 +7,10 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("Explain {concept} in simple terms")
-async def explain_concept(concept: str) -> None: ...
+async def explain_concept(concept: str): ...
 
 
-async def main() -> None:
+async def main():
     try:
         response = await explain_concept("quantum computing")
         print(response.content)

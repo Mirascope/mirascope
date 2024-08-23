@@ -43,7 +43,7 @@ def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
     Output ONLY the XML and no other text.
     """
 )
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 book = recommend_book("science fiction")

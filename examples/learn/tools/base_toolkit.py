@@ -21,7 +21,7 @@ toolkit = BookTools(reading_level="beginner")
 
 @openai.call("gpt-4o-mini", tools=toolkit.create_tools())
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 response = recommend_book("science")

@@ -24,7 +24,7 @@ load_dotenv()
     Inventory - how many are left in stock
     """
 )
-def generate_csv_data(num_datapoints: int) -> None: ...
+def generate_csv_data(num_datapoints: int): ...
 
 
 print(generate_csv_data(5))
@@ -46,7 +46,7 @@ class HomeAppliance(BaseModel):
     of HomeAppliance.
     """
 )
-def generate_home_appliance_data(num_datapoints: int) -> None: ...
+def generate_home_appliance_data(num_datapoints: int): ...
 
 
 print(generate_home_appliance_data(5))
@@ -81,7 +81,7 @@ class DataFrameGenerator(BaseModel):
     Inventory - how many are left in stock
     """
 )
-def generate_df_data(num_datapoints: int) -> None: ...
+def generate_df_data(num_datapoints: int): ...
 
 
 df_data = generate_df_data(5)
@@ -99,7 +99,7 @@ df = df_data.generate_dataframe()
     `pd.DataFrame(data, columns=column_names)` then appended to the existing data.
     """
 )
-def generate_additional_df_data(num_datapoints: int, df: pd.DataFrame) -> None: ...
+def generate_additional_df_data(num_datapoints: int, df: pd.DataFrame): ...
 
 
 df_data = generate_additional_df_data(5, df)
@@ -123,7 +123,7 @@ class TV(BaseModel):
     for both OLEDs and QLEDS, price should increase roughly proportionately to size
     """
 )
-def generate_tv_data(num_datapoints: int) -> None: ...
+def generate_tv_data(num_datapoints: int): ...
 
 
 for tv in generate_tv_data(10):

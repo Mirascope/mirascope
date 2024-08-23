@@ -27,7 +27,7 @@ class Item(BaseModel):
     {url:image}
     """
 )
-def extract_receipt_info_openai(url: str) -> None: ...
+def extract_receipt_info_openai(url: str): ...
 
 
 @anthropic.call(
@@ -40,7 +40,7 @@ def extract_receipt_info_openai(url: str) -> None: ...
     {url:image}
     """
 )
-def extract_receipt_info_anthropic(url: str) -> None: ...
+def extract_receipt_info_anthropic(url: str): ...
 
 
 print(extract_receipt_info_openai(image_url))

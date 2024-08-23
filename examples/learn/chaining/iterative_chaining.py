@@ -15,7 +15,7 @@ class SummaryFeedback(BaseModel):
 
 @openai.call(model="gpt-4o")
 @prompt_template("Summarize the following text into one sentence: {original_text}")
-def summarizer(original_text: str) -> None: ...
+def summarizer(original_text: str): ...
 
 
 @openai.call(model="gpt-4o", response_model=SummaryFeedback)
@@ -28,10 +28,10 @@ def summarizer(original_text: str) -> None: ...
     Then rewrite the summary based on the critique. It must be one sentence.
     """
 )
-def resummarizer(original_text: str, summary: str) -> None: ...
+def resummarizer(original_text: str, summary: str): ...
 
 
-def rewrite_iteratively(original_text: str, summary: str, depth: int = 2) -> str:
+def rewrite_iteratively(original_text: str, summary: str, depth=2):
     text = original_text
     for _ in range(depth):
         text = resummarizer(original_text=text, summary=summary).rewritten_summary

@@ -3,7 +3,7 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-3.5-turbo")
 @prompt_template("Summarize this text: {text}")
-def summarize(text: str) -> None: ...
+def summarize(text: str): ...
 
 
 @openai.call(model="gpt-3.5-turbo")

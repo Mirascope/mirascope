@@ -1,5 +1,3 @@
-from typing import Any
-
 import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
@@ -9,7 +7,7 @@ from mirascope.core import openai, prompt_template
 NIMBLE_TOKEN = "YOUR_NIMBLE_API_KEY"
 
 
-def nimble_google_search(query: str) -> dict[Any, str]:
+def nimble_google_search(query: str):
     """
     Use Nimble to get information about the query using Google Search.
     """
@@ -38,7 +36,7 @@ def nimble_google_search(query: str) -> dict[Any, str]:
     return search_results
 
 
-def get_content(url: str) -> str:
+def get_content(url: str):
     data = []
     response = requests.get(url)
     content = response.content
@@ -65,7 +63,7 @@ def get_content(url: str) -> str:
     {question}
     """
 )
-def search(question: str) -> None: ...
+def search(question: str): ...
 
 
 class SearchResponse(BaseModel):
@@ -86,10 +84,10 @@ class SearchResponse(BaseModel):
     {question}
     """
 )
-def extract(question: str, results: str) -> None: ...
+def extract(question: str, results: str): ...
 
 
-def run(question: str) -> Any:
+def run(question: str):
     response = search(question)
     if tool := response.tool:
         output = tool.call()

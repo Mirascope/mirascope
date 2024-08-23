@@ -1,6 +1,5 @@
 import asyncio
 from collections import Counter
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -71,17 +70,17 @@ class Solution(BaseModel):
     {response}
     """
 )
-async def extract_number(response: str) -> None: ...
+async def extract_number(response: str): ...
 
 
-def most_frequent(lst: Any) -> str | None:  # noqa: ANN401
+def most_frequent(lst):
     """Returns the most frequent element in a list."""
     counter = Counter(lst)
     most_common = counter.most_common(1)
     return most_common[0][0] if most_common else None
 
 
-async def self_consistency(query: str, num_samples: int) -> str | None:
+async def self_consistency(query: str, num_samples: int):
     cot_tasks = [chain_of_thought(query) for _ in range(num_samples)]
     cot_responses = [response.content for response in await asyncio.gather(*cot_tasks)]
     # Uncomment to see intermediate responses

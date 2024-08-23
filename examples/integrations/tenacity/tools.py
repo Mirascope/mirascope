@@ -9,14 +9,14 @@ def format_book(title: str, author: str) -> str:
 
 @anthropic.call("claude-3-5-sonnet-20240620", tools=[format_book])
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=4, max=10),
 )
-def run() -> None:
+def run():
     response = recommend_book("fantasy")
     if tool := response.tool:
         print(tool.call())

@@ -107,15 +107,15 @@ class MirascopeBot(BaseModel):
         {question}
         """
     )
-    def _step(self, context: str, question: str) -> None: ...
+    def _step(self, context: str, question: str): ...
 
-    def _get_response(self, question: str) -> None:
+    def _get_response(self, question: str):
         context = get_documents(question)
         answer = self._step(context, question)
         print("(Assistant):", answer.content)
         return
 
-    def run(self) -> None:
+    def run(self):
         while True:
             question = input("(User): ")
             if question == "exit":

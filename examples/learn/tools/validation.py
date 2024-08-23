@@ -20,7 +20,7 @@ class FormatBook(BaseTool):
 
 @openai.call(model="gpt-4", tools=[FormatBook])
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 try:

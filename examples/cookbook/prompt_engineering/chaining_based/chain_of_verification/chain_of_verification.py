@@ -1,5 +1,4 @@
 import asyncio
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +7,7 @@ from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
 @prompt_template("{query}")
-def call(query: str) -> None: ...
+def call(query: str): ...
 
 
 class VerificationQuestions(BaseModel):
@@ -34,12 +33,12 @@ class VerificationQuestions(BaseModel):
     {response}
     """
 )
-def get_verification_questions(query: str, response: str) -> None: ...
+def get_verification_questions(query: str, response: str): ...
 
 
 @openai.call("gpt-4o-mini")
 @prompt_template("Concisely answer the following question: {query}")
-async def answer(query: str) -> None: ...
+async def answer(query: str): ...
 
 
 @openai.call(model="gpt-4o-mini")
@@ -75,9 +74,7 @@ async def cov_call(query: str) -> openai.OpenAIDynamicConfig:
     }
 
 
-async def chain_of_verification(
-    query: str,
-) -> Any:
+async def chain_of_verification(query: str):
     response = await cov_call(query=query)
     # Uncomment to see intermediate responses
     # print(response.user_message_param["content"])

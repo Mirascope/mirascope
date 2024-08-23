@@ -21,7 +21,7 @@ class SpellingAndGrammarCheck(BaseModel):
     Does the following text have any typos or grammatical errors? {text}
     """
 )
-def check_for_errors(text: str) -> None: ...
+def check_for_errors(text: str): ...
 
 
 class TextWithoutErrors(BaseModel):

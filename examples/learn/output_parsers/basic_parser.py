@@ -17,7 +17,7 @@ def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> Book
     model="claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation
 )
 @prompt_template("Recommend a {genre} book in the format Title by Author")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 book = recommend_book("science fiction")

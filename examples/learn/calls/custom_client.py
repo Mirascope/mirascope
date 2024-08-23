@@ -12,7 +12,7 @@ custom_client = OpenAI(
 
 @openai.call(model="gpt-4o-mini", client=custom_client)
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 response = recommend_book("fantasy")

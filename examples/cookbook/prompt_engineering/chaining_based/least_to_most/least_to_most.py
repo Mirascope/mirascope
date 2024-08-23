@@ -1,5 +1,3 @@
-from typing import Any
-
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
@@ -55,7 +53,7 @@ def break_into_subproblems(query: str) -> openai.OpenAIDynamicConfig:
 
 
 @openai.call(model="gpt-4o-mini")
-def call(history: list[ChatCompletionMessageParam]) -> None:
+def call(history: list[ChatCompletionMessageParam]):
     """
     MESSAGES: {history}
     """
@@ -68,7 +66,7 @@ median family income was $58,942."""
 query_question = "How many years did the Census Bureaus American Community Survey last?"
 
 
-def least_to_most(query_context: str, query_question: str) -> Any:
+def least_to_most(query_context: str, query_question: str):
     problem = break_into_subproblems(query_context + query_question)
     # Uncomment to see intermediate steps
     # print(problem.subproblems)

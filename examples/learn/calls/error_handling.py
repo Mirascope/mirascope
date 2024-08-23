@@ -5,7 +5,7 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> None: ...
+def recommend_book(genre: str): ...
 
 
 try:
