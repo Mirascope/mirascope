@@ -43,8 +43,12 @@ This approach works consistently across all supported providers in Mirascope.
 
     Example:
     
-    `completion = cast(ChatCompletion, book._response)  # pyright: ignore [reportAttributeAccessIssue]`
-
+    ```python
+    # original `OpenAICallResponse`
+    response = cast(openai.OpenAICallResponse, book._response)  # pyright: ignore [reportAttributeAccessIssue]
+    # original `ChatCompletion`
+    completion = response.response
+    ```
 
 ### Extracting Built-in Types
 
@@ -194,6 +198,47 @@ except ValidationError as e:
 ```
 
 For robust applications, consider implementing retry logic with validation error feedback. Mirascope's integration with Tenacity makes this process straightforward. Check out the [Tenacity integration documentation](../integrations/tenacity.md) to learn how to easily reinsert validation errors into subsequent retry calls, improving performance and reliability.
+
+### Accessing Original Response On Error
+
+In the event that there is an error such as a `ValidationError`, there is often value in being able to view and analyze the original response (particularly for debugging purposes). For this reason we attach the original call response to the error that's raised for easy access:
+
+```python
+from typing import cast
+
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, ValidationError, field_validator
+
+
+class Book(BaseModel):
+    title: str
+
+    @field_validator("title")
+    @classmethod
+    def isupper(cls, title: str) -> str:
+        if not title.isupper():
+            raise ValueError(f"title is not uppercase: {title}")
+        return title
+
+
+@openai.call("gpt-4o-mini", response_model=Book)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+try:
+    book = recommend_book("fantasy")
+    print(book)
+except ValidationError as e:
+    print(e)
+    # > 1 validation error for Book
+    #   title
+    #     Value error, title is not uppercase: The Name of the Wind [type=value_error, input_value='The Name of the Wind', input_type=str]
+    #       For further information visit https://errors.pydantic.dev/2.7/v/value_error
+    response = cast(openai.OpenAICallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
+    print(response.model_dump())
+    # > {'metadata': {}, 'response': {'id': ...}, ...}
+```
 
 ## Best Practices
 
