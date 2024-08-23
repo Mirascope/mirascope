@@ -148,7 +148,9 @@ class BaseStream(
         """Iterates over the stream and stores useful information."""
         self.content = ""
 
-        async def generator() -> AsyncGenerator[tuple[Any, Any], Any]:
+        async def generator() -> (
+            AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]
+        ):
             assert isinstance(
                 self.stream, AsyncGenerator
             ), "Stream must be an async generator for __aiter__"
@@ -291,7 +293,11 @@ def stream_factory(  # noqa: ANN201
                     extract=False,
                 )
 
-                async def generator() -> AsyncGenerator[tuple[Any, Any], None]:
+                async def generator() -> (
+                    AsyncGenerator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                    ]
+                ):
                     async for chunk, tool in handle_stream_async(
                         await create(stream=True, **call_kwargs), tool_types
                     ):
@@ -331,7 +337,11 @@ def stream_factory(  # noqa: ANN201
                     extract=False,
                 )
 
-                def generator() -> Generator[Any, None, None]:
+                def generator() -> (
+                    Generator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
+                    ]
+                ):
                     yield from handle_stream(
                         create(stream=True, **call_kwargs), tool_types
                     )

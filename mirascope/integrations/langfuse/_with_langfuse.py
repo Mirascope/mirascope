@@ -1,7 +1,7 @@
 """Mirascope x Langfuse Integration."""
 
 from collections.abc import Callable
-from typing import ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 from langfuse.decorators import observe
 
@@ -17,8 +17,10 @@ from ._utils import (
     handle_structured_stream_async,
 )
 
+F = TypeVar("F", bound=Callable[..., Any])
 
-def custom_decorator(fn: Callable) -> Callable:
+
+def custom_decorator(fn: Callable) -> Callable[[F], F]:
     return observe(
         name=fn.__name__,
         as_type="generation",
