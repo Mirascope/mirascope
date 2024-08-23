@@ -355,7 +355,20 @@ def prompt_template(template: str) -> PromptDecorator:
     return inner
 
 
-def metadata(metadata: Metadata):  # noqa: ANN201
+class MetadataDecorator(Protocol):
+    @overload
+    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+
+    @overload
+    def __call__(self, prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+
+    def __call__(
+        self,
+        prompt: type[_BasePromptT] | Callable[_P, _R],
+    ) -> type[_BasePromptT] | Callable[_P, _R]: ...
+
+
+def metadata(metadata: Metadata) -> MetadataDecorator:
     """A decorator for adding metadata to a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#metadata
