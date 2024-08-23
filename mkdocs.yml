@@ -163,7 +163,7 @@ nav:
           - "cookbook/agents/index.md"
           - Web Search Agent: "cookbook/agents/web_search_agent.md"
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
-          - Generating SQL Agent: "cookbook/agents/generating_sql_agent.md"
+          - SQL Agent: "cookbook/agents/sql_agent.md"
           - Localized Agent: "cookbook/agents/localized_agent.md"
           - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
       - Prompt Engineering:
