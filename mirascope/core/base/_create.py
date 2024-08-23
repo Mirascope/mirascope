@@ -2,17 +2,17 @@
 
 import datetime
 import inspect
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
+from . import BaseCallParams
 from ._utils import (
     SetupCall,
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
 )
-from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
@@ -21,11 +21,13 @@ _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
+# _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
+# We can't set TypedDict as a bound for a TypeVar, so we use Mapping instead
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=Mapping)
 
 
 def create_factory(  # noqa: ANN202
@@ -74,7 +76,7 @@ def create_factory(  # noqa: ANN202
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
+        call_params: BaseCallParams[BaseTool],
     ) -> Callable[
         _P,
         _BaseCallResponseT

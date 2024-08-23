@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Iterable
-from typing import Any, cast
+from typing import Any, Literal, NotRequired, TypeVar, cast
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -15,11 +15,17 @@ from mistralai.models.chat_completion import (
     ToolChoice,
 )
 
-from ...base import BaseMessageParam, BaseTool, _utils
+from ...base import BaseCallParams, BaseMessageParam, BaseTool, _utils
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
+
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+
+
+class MistralToolCallParams(BaseCallParams[_BaseToolT]):
+    tool_choice: NotRequired[Literal["required"]]
 
 
 def setup_call(
@@ -60,7 +66,7 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs["tool_choice"] = ToolChoice.any
+        call_kwargs["tool_choice"] = cast(ToolChoice, ToolChoice.any)
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:

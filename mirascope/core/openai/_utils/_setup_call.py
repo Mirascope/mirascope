@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import Any, Literal, TypeVar, cast
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (
@@ -10,12 +10,19 @@ from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
 )
+from typing_extensions import NotRequired
 
-from ...base import BaseMessageParam, BaseTool, _utils
+from ...base import BaseCallParams, BaseMessageParam, BaseTool, _utils
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import OpenAITool
 from ._convert_message_params import convert_message_params
+
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+
+
+class OpenAIToolCallParams(BaseCallParams[_BaseToolT]):
+    tool_choice: NotRequired[Literal["required"]]
 
 
 def setup_call(
@@ -31,7 +38,7 @@ def setup_call(
     extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
-    str,
+    str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
     dict[str, Any],

@@ -10,9 +10,10 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from . import OpenAITool
 
 
-class OpenAICallParams(BaseCallParams):
+class OpenAICallParams(BaseCallParams[OpenAITool]):
     """The parameters to use when calling the OpenAI API.
 
     [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)

@@ -3,7 +3,7 @@
 import datetime
 import inspect
 from abc import ABC, abstractmethod
-from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator, Mapping
 from functools import wraps
 from typing import (
     Any,
@@ -11,6 +11,7 @@ from typing import (
     Generic,
     ParamSpec,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -38,9 +39,12 @@ _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _ToolMessageParamT = TypeVar("_ToolMessageParamT")
 _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
+# _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _FinishReason = TypeVar("_FinishReason")
+
+# We can't set TypedDict as a bound for a TypeVar, so we use Mapping instead
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=Mapping)
 
 
 class BaseStream(
@@ -77,7 +81,7 @@ class BaseStream(
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
     call_params: _BaseCallParamsT
-    call_kwargs: dict[str, Any]
+    call_kwargs: BaseCallParams[_BaseToolT]
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
@@ -106,7 +110,7 @@ class BaseStream(
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
-        call_kwargs: dict[str, Any],
+        call_kwargs: BaseCallParams[_BaseToolT],
     ) -> None:
         """Initializes an instance of `BaseStream`."""
         self.content = ""
@@ -223,7 +227,7 @@ _BaseCallResponseChunkT = TypeVar(
 )
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
+# _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -253,7 +257,7 @@ def stream_factory(  # noqa: ANN201
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
+        call_params: BaseCallParams[BaseTool],
     ) -> Callable[_P, TStream]: ...
 
     @overload
@@ -263,7 +267,7 @@ def stream_factory(  # noqa: ANN201
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
+        call_params: BaseCallParams[BaseTool],
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
@@ -272,7 +276,7 @@ def stream_factory(  # noqa: ANN201
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: _BaseCallParamsT,
+        call_params: BaseCallParams[BaseTool],
     ) -> Callable[_P, TStream | Awaitable[TStream]]:
         if inspect.iscoroutinefunction(fn):
 
@@ -357,7 +361,7 @@ def stream_factory(  # noqa: ANN201
                     dynamic_config=dynamic_config,
                     messages=messages,
                     call_params=call_params,
-                    call_kwargs=call_kwargs,
+                    call_kwargs=cast(BaseCallParams, dict(call_params)),
                 )
 
             return inner

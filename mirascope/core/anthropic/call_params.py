@@ -34,3 +34,4 @@ class AnthropicCallParams(BaseCallParams):
     top_k: NotRequired[int | None]
     top_p: NotRequired[float | None]
     timeout: NotRequired[float | Timeout | None]
+    system: NotRequired[str | None]

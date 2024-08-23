@@ -40,7 +40,7 @@ def setup_call(
     extract: bool,
 ) -> tuple[
     Callable[..., Message] | Callable[..., Awaitable[Message]],
-    str,
+    str | None,
     list[MessageParam],
     list[type[AnthropicTool]] | None,
     dict[str, Any],

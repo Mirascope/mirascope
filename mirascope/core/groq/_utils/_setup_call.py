@@ -27,7 +27,7 @@ def setup_call(
     extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
-    str,
+    str | None,
     list[ChatCompletionMessageParam],
     list[type[GroqTool]] | None,
     dict[str, Any],

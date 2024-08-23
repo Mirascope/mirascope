@@ -32,7 +32,7 @@ def setup_call(
 ) -> tuple[
     Callable[..., GenerateContentResponse]
     | Callable[..., Awaitable[AsyncGenerateContentResponse]],
-    str,
+    str | None,
     list[ContentDict],
     list[type[GeminiTool]] | None,
     dict[str, Any],
@@ -43,18 +43,22 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        generation_config = call_kwargs.get("generation_config", {})
-        generation_config["response_mime_type"] = "application/json"
-        call_kwargs["generation_config"] = generation_config
+        # generation_config = call_kwargs.get("generation_config", {})
+        # TODO: generation_config is dataclass, not dict
+        # We can't assign to a dataclass field like this
+        # generation_config["response_mime_type"] = "application/json"
+        # call_kwargs["generation_config"] = generation_config
         messages[-1]["parts"].append(
             _utils.json_mode_content(tool_types[0] if tool_types else None)
         )
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        tool_config = call_kwargs.get("tool_config", {})
-        tool_config["function_calling_config"] = {"mode": "auto"}
-        call_kwargs["tool_config"] = tool_config
+        # TODO: tool_config is dataclass, not dict
+        # We can't assign to a dataclass field like this
+        # tool_config = call_kwargs.get("tool_config", {})
+        # tool_config["function_calling_config"] = {"mode": "auto"}
+        # call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 
     if client is None:

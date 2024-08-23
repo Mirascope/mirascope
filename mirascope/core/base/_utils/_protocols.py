@@ -1,7 +1,7 @@
 """Protocols for reusable type hints."""
 
 import inspect
-from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator, Mapping
 from typing import (
     Any,
     Literal,
@@ -12,6 +12,7 @@ from typing import (
     overload,
 )
 
+from .. import BaseCallParams
 from ..call_response_chunk import BaseCallResponseChunk
 from ..tool import BaseTool
 
@@ -19,7 +20,7 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
 _BaseClientT = TypeVar("_BaseClientT", contravariant=True)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
+# _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
 _AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)
@@ -92,6 +93,10 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
 
 
+# We can't set TypedDict as a bound for a TypeVar, so we use Mapping instead
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=Mapping, covariant=True)
+
+
 class SetupCall(
     Protocol[
         _BaseClientT,
@@ -113,14 +118,14 @@ class SetupCall(
         dynamic_config: _BaseDynamicConfigT,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        call_params: _BaseCallParamsT,
+        call_params:  BaseCallParams[BaseTool],
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallParams[BaseTool],
     ]: ...
 
     @overload
@@ -134,14 +139,14 @@ class SetupCall(
         dynamic_config: _BaseDynamicConfigT,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        call_params: _BaseCallParamsT,
+        call_params:  BaseCallParams[BaseTool],
         extract: bool,
     ) -> tuple[
         AsyncCreateFn[_ResponseT, _ResponseChunkT],
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallParams[BaseTool],
     ]: ...
 
     def __call__(
@@ -154,7 +159,7 @@ class SetupCall(
         dynamic_config: _BaseDynamicConfigT,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        call_params: _BaseCallParamsT,
+        call_params:  BaseCallParams[BaseTool],
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
@@ -162,7 +167,7 @@ class SetupCall(
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallParams[BaseTool],
     ]: ...  # pragma: no cover
 
     @staticmethod
