@@ -70,7 +70,7 @@ def get_tool_calls(result: BaseCallResponse) -> list[dict] | None:
 
 def handle_call_response(
     result: BaseCallResponse, fn: Callable, logfire_span: logfire.LogfireSpan | None
-):
+) -> None:
     if logfire_span is None:
         return
     span_data = get_call_response_span_data(result)
@@ -85,7 +85,7 @@ def handle_stream(
     stream: BaseStream,
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
-):
+) -> None:
     handle_call_response(stream.construct_call_response(), fn, logfire_span)
 
 
@@ -103,7 +103,7 @@ def set_response_model_output(
 
 def handle_response_model(
     result: BaseModel | BaseType, fn: Callable, logfire_span: logfire.LogfireSpan | None
-):
+) -> None:
     if logfire_span is None:
         return
     span_data: dict[str, Any] = {"output": {}, "async": False}
@@ -132,7 +132,7 @@ def get_structured_stream_span_data(result: BaseStructuredStream) -> dict:
 
 def handle_structured_stream(
     result: BaseStructuredStream, fn: Callable, logfire_span: logfire.LogfireSpan | None
-):
+) -> None:
     if logfire_span is None:
         return
     span_data = get_structured_stream_span_data(result)
@@ -142,7 +142,7 @@ def handle_structured_stream(
 
 async def handle_call_response_async(
     result: BaseCallResponse, fn: Callable, logfire_span: logfire.LogfireSpan | None
-):
+) -> None:
     if logfire_span is None:
         return
     span_data = get_call_response_span_data(result)
@@ -157,7 +157,7 @@ async def handle_stream_async(
     stream: BaseStream,
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
-):
+) -> None:
     await handle_call_response_async(stream.construct_call_response(), fn, logfire_span)
 
 
@@ -165,7 +165,7 @@ async def handle_response_model_async(
     result: BaseModel | BaseType,
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
-):
+) -> None:
     if logfire_span is None:
         return
     span_data: dict[str, Any] = {"output": {}, "async": True}
@@ -180,7 +180,7 @@ async def handle_structured_stream_async(
     result: BaseStructuredStream,
     fn: Callable,
     logfire_span: logfire.LogfireSpan | None,
-):
+) -> None:
     if logfire_span is None:
         return
     span_data = get_structured_stream_span_data(result)

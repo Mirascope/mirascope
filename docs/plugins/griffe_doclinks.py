@@ -151,7 +151,7 @@ class UpdateDocstringsExtension(Extension):
 
 
 # Add a hook to catch and log any unhandled exceptions
-def exception_handler(exctype, value, tb):
+def exception_handler(exctype: Any, value: Any, tb: Any) -> None:
     logger.error("Unhandled exception:", exc_info=(exctype, value, tb))
 
 

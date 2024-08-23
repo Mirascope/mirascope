@@ -5,6 +5,7 @@ from functools import reduce
 from typing import (
     Any,
     ParamSpec,
+    Protocol,
     TypeVar,
     overload,
 )
@@ -299,7 +300,20 @@ class BasePrompt(BaseModel):
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 
 
-def prompt_template(template: str):
+class PromptDecorator(Protocol):
+    @overload
+    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+
+    @overload
+    def __call__(self, prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+
+    def __call__(
+        self,
+        prompt: type[_BasePromptT] | Callable[_P, _R],
+    ) -> type[_BasePromptT] | Callable[_P, _R]: ...
+
+
+def prompt_template(template: str) -> PromptDecorator:
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#prompt-templates
@@ -341,7 +355,20 @@ def prompt_template(template: str):
     return inner
 
 
-def metadata(metadata: Metadata):
+class MetadataDecorator(Protocol):
+    @overload
+    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+
+    @overload
+    def __call__(self, prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+
+    def __call__(
+        self,
+        prompt: type[_BasePromptT] | Callable[_P, _R],
+    ) -> type[_BasePromptT] | Callable[_P, _R]: ...
+
+
+def metadata(metadata: Metadata) -> MetadataDecorator:
     """A decorator for adding metadata to a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#metadata

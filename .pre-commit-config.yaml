@@ -10,9 +10,10 @@ repos:
     hooks:
       - id: ruff
         files: "^mirascope|^tests|^examples"
-        args: [--fix]
+        args: [--fix, --config=pyproject.toml]
       - id: ruff-format
         files: "^mirascope|^tests|^examples"
+        args: [--config=pyproject.toml]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.377
     hooks:

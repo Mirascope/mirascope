@@ -8,7 +8,7 @@ from __future__ import annotations
 import inspect
 from abc import ABC
 from collections.abc import Callable
-from typing import ClassVar, Concatenate, NamedTuple, TypeVar
+from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import ParamSpec
@@ -93,7 +93,7 @@ class BaseToolKit(BaseModel, ABC):
         return tools
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
+    def __pydantic_init_subclass__(cls, **kwargs: Any) -> None:  # noqa: ANN401
         # validate the namespace
         if cls.__namespace__:
             if cls.__namespace__ in _namespaces:

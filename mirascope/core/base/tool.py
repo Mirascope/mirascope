@@ -65,7 +65,7 @@ class BaseTool(BaseModel):
         }
 
     @abstractmethod
-    def call(self) -> Any:
+    def call(self) -> Any:  # noqa: ANN401
         """The method to call the tool."""
         ...
 
@@ -76,7 +76,7 @@ class BaseTool(BaseModel):
         model_schema.pop("title", None)
         model_schema.pop("description", None)
 
-        def remove_schema_titles(obj):
+        def remove_schema_titles(obj: Any) -> Any:  # noqa: ANN401
             if isinstance(obj, dict):
                 # Remove the 'title' key only if it's a direct child of a schema object
                 if "type" in obj or "$ref" in obj or "properties" in obj:

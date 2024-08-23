@@ -1,11 +1,15 @@
 """This module contains the setup_call function for Cohere tools."""
 
 import inspect
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, Coroutine, Iterator
 from typing import Any, cast
 
-from cohere import AsyncClient, Client
-from cohere.types import ChatMessage, NonStreamedChatResponse
+from cohere import (
+    AsyncClient,
+    Client,
+    NonStreamedChatResponse,
+)
+from cohere.types import ChatMessage
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import CohereCallParams
@@ -69,7 +73,15 @@ def setup_call(
     if client is None:
         client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
 
-    def create_or_stream(stream: bool, **kwargs: Any):
+    def create_or_stream(
+        stream: bool,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> (
+        Iterator[Any]
+        | AsyncIterator[Any]
+        | NonStreamedChatResponse
+        | Coroutine[Any, Any, NonStreamedChatResponse]
+    ):
         if stream:
             return client.chat_stream(**kwargs)
         return client.chat(**kwargs)

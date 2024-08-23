@@ -44,7 +44,7 @@ class FormatBook(AnthropicTool):
     title: str
     author: str
 
-    def call(self):
+    def call(self) -> None:
         """Dummy call."""
 
 

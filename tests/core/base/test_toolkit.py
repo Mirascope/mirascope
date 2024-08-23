@@ -85,7 +85,7 @@ def test_toolkit_multiple_method(mock_namespaces) -> None:
             return f"{title} by {author} ({genre})"
 
         @dummy_decorator
-        def dummy_method(self):
+        def dummy_method(self) -> str:
             """dummy method"""
             return "dummy"  # pragma: no cover
 
@@ -141,7 +141,7 @@ def test_toolkit_tool_method_not_found() -> None:
                 return f"{title} by {author}"  # pragma: no cover
 
             @dummy_decorator
-            def dummy_method(self):
+            def dummy_method(self) -> str:
                 """dummy method"""
                 return "dummy"  # pragma: no cover
 

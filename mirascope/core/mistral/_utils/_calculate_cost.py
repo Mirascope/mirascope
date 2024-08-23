@@ -4,7 +4,7 @@
 def calculate_cost(
     input_tokens: int | float | None,
     output_tokens: int | float | None,
-    model="open-mistral-7b",
+    model: str = "open-mistral-7b",
 ) -> float | None:
     """Calculate the cost of a completion using the Mistral API.
 

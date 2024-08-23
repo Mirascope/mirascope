@@ -11,7 +11,7 @@ def test_setup_call() -> None:
     """Tests the `setup_call` function."""
 
     @prompt_template("Recommend a {genre} book.")
-    def fn(genre: str): ...  # pragma: no cover
+    def fn(genre: str) -> None: ...  # pragma: no cover
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -30,7 +30,7 @@ def test_setup_call() -> None:
     assert call_kwargs == {"arg": "value"}
 
     @prompt_template("Recommend a {genre} book.")
-    def prompt_template_fn(genre: str):
+    def prompt_template_fn(genre: str) -> None:
         """Normal docstr."""
 
     assert setup_call(
@@ -50,14 +50,14 @@ def test_setup_call_with_dynamic_config() -> None:
         title: str
         author: str
 
-        def call(self):
+        def call(self) -> None:
             """Format book tool call method."""
 
         @classmethod
         def tool_schema(cls):
             return {"type": "function", "name": cls._name()}
 
-    def format_book(title: str, author: str):
+    def format_book(title: str, author: str) -> None:
         """Format book tool."""
 
     dynamic_config: BaseDynamicConfig = {
@@ -68,7 +68,7 @@ def test_setup_call_with_dynamic_config() -> None:
     }
 
     @prompt_template("Recommend a {genre} book.")
-    def fn(): ...  # pragma: no cover
+    def fn() -> None: ...  # pragma: no cover
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn, {}, dynamic_config, None, FormatBook, {}
@@ -102,7 +102,7 @@ def test_setup_call_with_custom_messages() -> None:
     ]
     dynamic_config: BaseDynamicConfig = {"messages": custom_messages}
 
-    def fn():
+    def fn() -> None:
         """Normal docstr."""
 
     template, messages, tool_types, call_kwargs = setup_call(

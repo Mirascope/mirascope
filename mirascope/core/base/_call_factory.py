@@ -48,7 +48,7 @@ _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 
 
-def call_factory(
+def call_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],

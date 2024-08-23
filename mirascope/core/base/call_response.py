@@ -121,7 +121,7 @@ class BaseCallResponse(
 
     @property
     @abstractmethod
-    def usage(self) -> Any:
+    def usage(self) -> Any:  # noqa: ANN401
         """Should return the usage of the response.
 
         If there is no usage, this method must return None.
@@ -158,7 +158,7 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
-    def message_param(self) -> Any:
+    def message_param(self) -> Any:  # noqa: ANN401
         """Returns the assistant's response as a message parameter."""
         ...
 

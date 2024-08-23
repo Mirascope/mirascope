@@ -1,10 +1,11 @@
 """The `middleware_factory` method for handling the call response."""
 
 import inspect
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from contextlib import AbstractContextManager, contextmanager
 from functools import wraps
 from typing import (
+    Any,
     ParamSpec,
     TypeVar,
     cast,
@@ -41,7 +42,7 @@ _R = TypeVar("_R")
 @contextmanager
 def default_context_manager(
     fn: SyncFunc | AsyncFunc,
-):
+) -> Generator[None, None, None]:
     yield None
 
 
@@ -141,8 +142,12 @@ def middleware_factory(
                 elif isinstance(result, BaseStream):
                     original_aiter = result.__aiter__
 
-                    def new_aiter_stream(self):
-                        async def generator():
+                    def new_aiter_stream(
+                        self: Any,  # noqa: ANN401
+                    ) -> AsyncGenerator[tuple[Any, Any | None], Any]:  # noqa: ANN401
+                        async def generator() -> (
+                            AsyncGenerator[tuple[Any, Any | None], Any]
+                        ):
                             with custom_context_manager(fn) as context:
                                 async for chunk, tool in original_aiter():
                                     yield chunk, tool
@@ -165,8 +170,12 @@ def middleware_factory(
                 elif isinstance(result, BaseStructuredStream):
                     original_aiter = result.__aiter__
 
-                    def new_aiter(self):
-                        async def generator():
+                    def new_aiter(
+                        self: Any,  # noqa: ANN401
+                    ) -> AsyncGenerator[tuple[Any, Any | None], Any]:  # noqa: ANN401
+                        async def generator() -> (
+                            AsyncGenerator[tuple[Any, Any | None], Any]
+                        ):
                             with custom_context_manager(fn) as context:
                                 async for chunk in original_aiter():
                                     yield chunk
@@ -201,7 +210,9 @@ def middleware_factory(
                 elif isinstance(result, BaseStream):
                     original_iter = result.__iter__
 
-                    def new_stream_iter(self):
+                    def new_stream_iter(
+                        self: Any,  # noqa: ANN401
+                    ) -> Generator[tuple[Any, Any | None], None, None]:  # noqa: ANN401
                         # Create the context manager when user iterates over the stream
                         with custom_context_manager(fn) as context:
                             yield from original_iter()
@@ -222,7 +233,14 @@ def middleware_factory(
                 elif isinstance(result, BaseStructuredStream):
                     original_iter = result.__iter__
 
-                    def new_iter(self):
+                    def new_iter(
+                        self: Any,  # noqa: ANN401
+                    ) -> Generator[
+                        Generator[tuple[Any, Any | None], None, None]
+                        | Generator[Any, None, None],
+                        Any,
+                        None,
+                    ]:  # noqa: ANN401
                         # Create the context manager when user iterates over the stream
                         with custom_context_manager(fn) as context:
                             yield from original_iter()

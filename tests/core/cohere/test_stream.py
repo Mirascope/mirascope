@@ -71,7 +71,7 @@ def test_cohere_stream() -> None:
     )
 
 
-def test_construct_call_response():
+def test_construct_call_response() -> None:
     chunks = [
         StreamedChatResponse_StreamStart(generation_id="id"),
         StreamedChatResponse_TextGeneration(
@@ -135,7 +135,7 @@ def test_construct_call_response():
     assert constructed_call_response.response == call_response.response
 
 
-def test_construct_call_response_no_usage():
+def test_construct_call_response_no_usage() -> None:
     """Tests the `GroqStream.construct_call_response` method with no usage."""
     chunks = [
         StreamedChatResponse_StreamStart(generation_id="id"),

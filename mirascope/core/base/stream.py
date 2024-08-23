@@ -107,7 +107,7 @@ class BaseStream(
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
         call_kwargs: dict[str, Any],
-    ):
+    ) -> None:
         """Initializes an instance of `BaseStream`."""
         self.content = ""
         self.stream = stream
@@ -148,7 +148,9 @@ class BaseStream(
         """Iterates over the stream and stores useful information."""
         self.content = ""
 
-        async def generator():
+        async def generator() -> (
+            AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]
+        ):
             assert isinstance(
                 self.stream, AsyncGenerator
             ), "Stream must be an async generator for __aiter__"
@@ -164,7 +166,7 @@ class BaseStream(
 
         return generator()
 
-    def _update_properties(self, chunk: _BaseCallResponseChunkT):
+    def _update_properties(self, chunk: _BaseCallResponseChunkT) -> None:
         """Updates the properties of the stream."""
         self.content += chunk.content
         if chunk.input_tokens is not None:
@@ -227,7 +229,7 @@ _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
 
 
-def stream_factory(
+def stream_factory(  # noqa: ANN201
     *,
     TCallResponse: type[_BaseCallResponseT],
     TStream: type[BaseStream],
@@ -291,7 +293,11 @@ def stream_factory(
                     extract=False,
                 )
 
-                async def generator():
+                async def generator() -> (
+                    AsyncGenerator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                    ]
+                ):
                     async for chunk, tool in handle_stream_async(
                         await create(stream=True, **call_kwargs), tool_types
                     ):
@@ -331,7 +337,11 @@ def stream_factory(
                     extract=False,
                 )
 
-                def generator():
+                def generator() -> (
+                    Generator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
+                    ]
+                ):
                     yield from handle_stream(
                         create(stream=True, **call_kwargs), tool_types
                     )

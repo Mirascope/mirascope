@@ -55,7 +55,7 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
         *,
         stream: BaseStream,
         response_model: type[_ResponseModelT],
-    ):
+    ) -> None:
         """Initializes an instance of `BaseStructuredStream`."""
         self.stream = stream
         self.response_model = response_model
@@ -85,7 +85,7 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
     def __aiter__(self) -> AsyncGenerator[_ResponseModelT, None]:
         """Iterates over the stream and extracts structured outputs."""
 
-        async def generator():
+        async def generator() -> AsyncGenerator[_ResponseModelT, None]:
             json_output = ""
             async for chunk, _ in self.stream:
                 json_output += chunk.content
@@ -116,7 +116,7 @@ _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
 
 
-def structured_stream_factory(
+def structured_stream_factory(  # noqa: ANN201
     *,
     TCallResponse: type[_BaseCallResponseT],
     TCallResponseChunk: type[_BaseCallResponseChunkT],
@@ -169,7 +169,9 @@ def structured_stream_factory(
         _P,
         Iterable[_ResponseModelT] | Awaitable[AsyncIterable[_ResponseModelT]],
     ]:
-        def handle_chunk(chunk: _ResponseChunkT):
+        def handle_chunk(
+            chunk: _ResponseChunkT,
+        ) -> tuple[_BaseCallResponseChunkT, None]:
             call_response_chunk = TCallResponseChunk(chunk=chunk)
             json_output = get_json_output(call_response_chunk, json_mode)
             call_response_chunk_type = type(call_response_chunk)
@@ -182,14 +184,14 @@ def structured_stream_factory(
         def handle_stream(
             stream: Generator[_ResponseChunkT, None, None],
             tool_types: list[type[_BaseToolT]] | None,
-        ):
+        ) -> Generator[tuple[_BaseCallResponseChunkT, None], None, None]:
             for chunk in stream:
                 yield handle_chunk(chunk)
 
         async def handle_stream_async(
             stream: AsyncGenerator[_ResponseChunkT, None],
             tool_types: list[type[_BaseToolT]] | None,
-        ):
+        ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, None], None]:
             async for chunk in stream:
                 yield handle_chunk(chunk)
 

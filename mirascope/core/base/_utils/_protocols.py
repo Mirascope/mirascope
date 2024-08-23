@@ -49,12 +49,18 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncRespo
 class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
     def __call__(
-        self, *, stream: Literal[False] = False, **kwargs: Any
+        self,
+        *,
+        stream: Literal[False] = False,
+        **kwargs: Any,  # noqa: ANN401
     ) -> Awaitable[_ResponseT]: ...
 
     @overload
     def __call__(
-        self, *, stream: Literal[True] = True, **kwargs: Any
+        self,
+        *,
+        stream: Literal[True] = True,
+        **kwargs: Any,  # noqa: ANN401
     ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]: ...
 
     def __call__(
@@ -67,12 +73,18 @@ class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
 class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
     def __call__(
-        self, *, stream: Literal[False] = False, **kwargs: Any
+        self,
+        *,
+        stream: Literal[False] = False,
+        **kwargs: Any,  # noqa: ANN401
     ) -> _ResponseT: ...
 
     @overload
     def __call__(
-        self, *, stream: Literal[True] = True, **kwargs: Any
+        self,
+        *,
+        stream: Literal[True] = True,
+        **kwargs: Any,  # noqa: ANN401
     ) -> Generator[_ResponseChunkT, None, None]: ...
 
     def __call__(

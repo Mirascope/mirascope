@@ -11,7 +11,7 @@ from mirascope.integrations.langfuse import _utils
 from mirascope.integrations.langfuse._utils import ModelUsage
 
 
-def test_get_call_response_observation():
+def test_get_call_response_observation() -> None:
     """Tests the `get_call_response_observation` function."""
     mock_result = MagicMock(spec=BaseCallResponse)
     mock_result.model = "test_model"

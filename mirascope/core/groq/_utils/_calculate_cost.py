@@ -4,7 +4,7 @@
 def calculate_cost(
     input_tokens: int | float | None,
     output_tokens: int | float | None,
-    model="mixtral-8x7b-32768",
+    model: str = "mixtral-8x7b-32768",
 ) -> float | None:
     """Calculate the cost of a completion using the Groq API.
 

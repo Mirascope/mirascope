@@ -75,7 +75,7 @@ class GeminiTool(BaseTool):
                     "with $defs."
                 )
 
-            def handle_enum_schema(prop_schema):
+            def handle_enum_schema(prop_schema: dict[str, Any]) -> dict[str, Any]:
                 if "enum" in prop_schema:
                     prop_schema["format"] = "enum"
                 return prop_schema

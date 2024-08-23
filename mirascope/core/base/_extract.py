@@ -32,7 +32,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
 
 
-def extract_factory(
+def extract_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
     TToolType: type[BaseTool],

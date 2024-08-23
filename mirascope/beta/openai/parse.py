@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Literal, ParamSpec, TypeVar, cast, overload
+from typing import Literal, ParamSpec, Protocol, TypeVar, cast, overload
 
 from pydantic import BaseModel
 
@@ -17,11 +17,25 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=_utils.BaseType | BaseModel)
 _P = ParamSpec("_P")
 
 
+class ParseFunctionDecorator(Protocol[_ResponseModelT]):
+    @overload
+    def __call__(self, fn: Callable[..., OpenAIDynamicConfig]) -> _ResponseModelT: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[..., Awaitable[OpenAIDynamicConfig]]
+    ) -> Awaitable[_ResponseModelT]: ...
+
+    def __call__(
+        self, fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]]
+    ) -> _ResponseModelT | Awaitable[_ResponseModelT]: ...
+
+
 def parse(
     model: Literal["gpt-4o-2024-08-06"],
     response_model: type[_ResponseModelT],
     call_params: OpenAICallParams | None = None,
-):
+) -> ParseFunctionDecorator[_ResponseModelT]:
     """Beta implementation of the new OpenAI parse functionality."""
 
     @overload
@@ -36,7 +50,7 @@ def parse(
 
     def decorator(
         fn: Callable[_P, OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
-    ) -> Callable[_P, _ResponseModelT | Awaitable[_ResponseModelT]]:
+    ):
         if inspect.iscoroutinefunction(fn):
 
             @wraps(fn)

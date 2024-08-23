@@ -19,7 +19,7 @@ class PartialShallowModel(BaseModel):
     default: int | None = None
 
 
-def test_shallow_partial():
+def test_shallow_partial() -> None:
     """Tests that `Partial` works to make all fields optional in a shallow model."""
     assert (
         partial(ShallowModel).model_json_schema()
@@ -41,7 +41,7 @@ class PartialDeeperModel(BaseModel):
     param: str | None = None
 
 
-def test_deeper_partial():
+def test_deeper_partial() -> None:
     """Tests that `Partial` works to make all fields optional in a deeper model."""
     assert (
         partial(DeeperModel).model_json_schema()
@@ -65,7 +65,7 @@ class PartialDeepestModel(BaseModel):
     param: str | None = None
 
 
-def test_deepest_partial():
+def test_deepest_partial() -> None:
     """Tests that `Partial` works to make all fields optional in a deeper model."""
     assert (
         partial(DeepestModel).model_json_schema()

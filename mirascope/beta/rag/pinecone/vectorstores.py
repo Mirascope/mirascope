@@ -61,7 +61,7 @@ class PineconeVectorStore(BaseVectorStore):
     client_settings: ClassVar[PineconeSettings] = PineconeSettings()
     _provider: ClassVar[str] = "pinecone"
 
-    def retrieve(self, text: str, **kwargs: Any) -> PineconeQueryResult:
+    def retrieve(self, text: str, **kwargs: Any) -> PineconeQueryResult:  # noqa: ANN401
         """Queries the vectorstore for closest match"""
         embed = self.embedder.embed
         text_embedding: BaseEmbeddingResponse = embed([text])
@@ -97,7 +97,7 @@ class PineconeVectorStore(BaseVectorStore):
     def add(
         self,
         text: str | list[Document],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Takes unstructured data and upserts into vectorstore"""
         documents: list[Document]

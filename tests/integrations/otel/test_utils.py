@@ -38,7 +38,7 @@ patch.multiple(BaseStream, __abstractmethods__=set()).start()
 
 
 @patch("mirascope.integrations.otel._utils.get_tracer", new_callable=MagicMock)
-def test_custom_context_manager(mock_get_tracer: MagicMock):
+def test_custom_context_manager(mock_get_tracer: MagicMock) -> None:
     """Tests the `custom_context_manager` function."""
     mock_fn = MagicMock(__name__="dummy_function")
     mock_span = MagicMock(name="MockSpan")
@@ -64,7 +64,7 @@ def test_configure_no_processor(
     mock_tracer_provider: MagicMock,
     mock_set_tracer_provider: MagicMock,
     mock_get_tracer: MagicMock,
-):
+) -> None:
     """Tests the `configure` function with no processors."""
     mock_add_span_processor = MagicMock()
     mock_tracer_provider.return_value.add_span_processor = mock_add_span_processor
@@ -88,7 +88,7 @@ def test_configure_with_processors(
     mock_tracer_provider: MagicMock,
     mock_set_tracer_provider: MagicMock,
     mock_get_tracer: MagicMock,
-):
+) -> None:
     """Tests the `configure` function with processors."""
     processors: list = [MagicMock()]
     mock_add_span_processor = MagicMock()
@@ -100,7 +100,7 @@ def test_configure_with_processors(
     mock_get_tracer.assert_called_once_with("otel")
 
 
-def test_get_call_response_attributes():
+def test_get_call_response_attributes() -> None:
     """Tests the `get_call_response_attributes` function."""
     call_response = MyCallResponse(
         metadata={"tags": {"version:0001"}},
@@ -149,7 +149,7 @@ def test_get_call_response_attributes():
     )
 
 
-def test_set_call_response_event_attributes():
+def test_set_call_response_event_attributes() -> None:
     """Tests the `set_call_response_event_attributes` function."""
     result = MagicMock()
     result.user_message_param = {"role": "user", "content": "user_content"}
@@ -183,7 +183,7 @@ def test_set_call_response_event_attributes():
 def test_handle_call_response(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_call_response` function."""
     mock_fn = MagicMock()
     assert _utils.handle_call_response(MagicMock(), mock_fn, None) is None
@@ -216,7 +216,7 @@ def test_handle_call_response(
 async def test_handle_call_response_async(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_call_response_async` function."""
     mock_fn = MagicMock()
     assert await _utils.handle_call_response_async(MagicMock(), mock_fn, None) is None
@@ -248,7 +248,7 @@ async def test_handle_call_response_async(
 def test_handle_stream(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_stream` function."""
     mock_fn = MagicMock()
     assert _utils.handle_stream(MagicMock(), mock_fn, None) is None
@@ -284,7 +284,7 @@ def test_handle_stream(
 async def test_handle_stream_async(
     mock_set_call_response_event_attributes: MagicMock,
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_stream_async` function."""
     mock_fn = MagicMock()
     assert await _utils.handle_stream_async(MagicMock(), mock_fn, None) is None
@@ -313,7 +313,7 @@ async def test_handle_stream_async(
 )
 def test_handle_response_model(
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_response_model` function with `BaseModel` result."""
     mock_fn = MagicMock()
     assert _utils.handle_response_model(MagicMock(), mock_fn, None) is None
@@ -344,7 +344,7 @@ def test_handle_response_model(
     )
 
 
-def test_handle_response_model_base_type():
+def test_handle_response_model_base_type() -> None:
     """Tests the `handle_response_model` function with `BaseType` result."""
     mock_fn = MagicMock()
     result = b"foo"
@@ -370,7 +370,7 @@ def test_handle_response_model_base_type():
 )
 def test_handle_structured_stream(
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_structured_stream` function."""
     mock_fn = MagicMock()
     assert _utils.handle_structured_stream(MagicMock(), mock_fn, None) is None
@@ -420,7 +420,7 @@ def test_handle_structured_stream(
 @pytest.mark.asyncio
 async def test_handle_response_model_async(
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_response_model_async` function with `BaseModel` result."""
     mock_fn = MagicMock()
     assert await _utils.handle_response_model_async(MagicMock(), mock_fn, None) is None
@@ -452,7 +452,7 @@ async def test_handle_response_model_async(
 
 
 @pytest.mark.asyncio
-async def test_handle_response_model_async_base_type():
+async def test_handle_response_model_async_base_type() -> None:
     """Tests the `handle_response_model_async` function with `BaseType` result."""
     mock_fn = MagicMock()
     result = b"foo"
@@ -479,7 +479,7 @@ async def test_handle_response_model_async_base_type():
 @pytest.mark.asyncio
 async def test_handle_structured_stream_async(
     mock_get_call_response_attributes: MagicMock,
-):
+) -> None:
     """Tests the `handle_structured_stream_async` function."""
     mock_fn = MagicMock()
     assert (
