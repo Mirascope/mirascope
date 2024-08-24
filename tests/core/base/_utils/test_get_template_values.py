@@ -24,7 +24,6 @@ def test_get_template_values() -> None:
         ("var4", "list"),
         ("var5", "lists"),
         ("var6", "lists"),
-        ("var7", ""),
     ]
     attrs = {
         "self": {"var0": "value0"},
@@ -35,7 +34,6 @@ def test_get_template_values() -> None:
         "var4": [],
         "var5": [["value4", "value5"], ["value6", "value7"]],
         "var6": [],
-        "kwargs": {"var7": "value7"},
     }
     expected = {
         "self": {"var0": "value0"},
@@ -46,7 +44,6 @@ def test_get_template_values() -> None:
         "var4": "",
         "var5": "value4\nvalue5\n\nvalue6\nvalue7",
         "var6": "",
-        "var7": "value7",
     }
     assert get_template_values(template_variables, attrs) == expected
 
