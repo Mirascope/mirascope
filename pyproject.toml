@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.0.3"
+version = "1.0.4"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -65,6 +65,7 @@ logfire = ["logfire>=0.41.0,<1"]
 mistral = ["mistralai>=0.4.2,<1"]
 openai = ["openai>=1.6.0,<2"]
 opentelemetry = ["opentelemetry-api>=1.22.0,<2", "opentelemetry-sdk>=1.22.0,<2"]
+weave = ["weave>=0.50.14"]
 
 [tool.uv]
 dev-dependencies = [
@@ -182,6 +183,8 @@ skip = '.git,*.lock'
 ignore-words-list = 'EHR'
 ignore-regex = 'and buyed some milk'
 
+[tool.coverage.run]
+omit = ["mirascope/beta/*", "mirascope/v0/*"]
 
 [tool.coverage.report]
 exclude_also = ["@overload", "@abstractmethod"]

@@ -14,6 +14,7 @@ from typing import (
     Generic,
     ParamSpec,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -132,6 +133,13 @@ def structured_stream_factory(  # noqa: ANN201
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseChunkT],
 ):
+    class CustomContentChunk(TCallResponseChunk):
+        json_output: str
+
+        @property
+        def content(self) -> str:
+            return self.json_output
+
     @overload
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT],
@@ -174,11 +182,11 @@ def structured_stream_factory(  # noqa: ANN201
         ) -> tuple[_BaseCallResponseChunkT, None]:
             call_response_chunk = TCallResponseChunk(chunk=chunk)
             json_output = get_json_output(call_response_chunk, json_mode)
-            call_response_chunk_type = type(call_response_chunk)
-            original_content_property = call_response_chunk_type.content
-            call_response_chunk_type.content = json_output  # pyright: ignore [reportAttributeAccessIssue]
-            call_response_chunk = call_response_chunk_type(chunk=chunk)
-            call_response_chunk_type.content = original_content_property  # pyright: ignore [reportAttributeAccessIssue]
+
+            call_response_chunk = cast(
+                _BaseCallResponseChunkT,
+                CustomContentChunk(chunk=chunk, json_output=json_output),  # pyright: ignore [reportAbstractUsage]
+            )
             return call_response_chunk, None
 
         def handle_stream(
