@@ -140,9 +140,10 @@ def middleware_factory(
                     with custom_context_manager(fn) as context:
                         await handle_call_response_async(result, fn, context)
                 elif isinstance(result, BaseStream):
+                    original_class = type(result)
                     original_aiter = result.__aiter__
 
-                    def new_aiter_stream(
+                    def new_stream_aiter(
                         self: Any,  # noqa: ANN401
                     ) -> AsyncGenerator[tuple[Any, Any | None], Any]:  # noqa: ANN401
                         async def generator() -> (
@@ -156,11 +157,14 @@ def middleware_factory(
 
                         return generator()
 
-                    result.__class__.__aiter__ = (
-                        custom_decorator(new_aiter_stream)
-                        if custom_decorator
-                        else new_aiter_stream
-                    )
+                    class MiddlewareAsyncStream(original_class):
+                        __aiter__ = (
+                            custom_decorator(fn)(new_stream_aiter)
+                            if custom_decorator
+                            else new_stream_aiter
+                        )
+
+                    result.__class__ = MiddlewareAsyncStream
                 elif (
                     isinstance(result, ResponseModel)
                     and handle_response_model_async is not None
@@ -168,6 +172,7 @@ def middleware_factory(
                     with custom_context_manager(fn) as context:
                         await handle_response_model_async(result, fn, context)
                 elif isinstance(result, BaseStructuredStream):
+                    original_class = type(result)
                     original_aiter = result.__aiter__
 
                     def new_aiter(
@@ -186,9 +191,14 @@ def middleware_factory(
 
                         return generator()
 
-                    result.__class__.__aiter__ = (
-                        custom_decorator(new_aiter) if custom_decorator else new_aiter
-                    )
+                    class MiddlewareAsyncStructuredStream(original_class):
+                        __aiter__ = (
+                            custom_decorator(fn)(new_aiter)
+                            if custom_decorator
+                            else new_aiter
+                        )
+
+                    result.__class__ = MiddlewareAsyncStructuredStream
                 return cast(_R, result)
 
             return (
@@ -208,6 +218,7 @@ def middleware_factory(
                     with custom_context_manager(fn) as context:
                         handle_call_response(result, fn, context)
                 elif isinstance(result, BaseStream):
+                    original_class = type(result)
                     original_iter = result.__iter__
 
                     def new_stream_iter(
@@ -219,11 +230,14 @@ def middleware_factory(
                             if handle_stream is not None:
                                 handle_stream(result, fn, context)
 
-                    result.__class__.__iter__ = (
-                        custom_decorator(new_stream_iter)
-                        if custom_decorator
-                        else new_stream_iter
-                    )
+                    class MiddlewareStream(original_class):
+                        __iter__ = (
+                            custom_decorator(fn)(new_stream_iter)
+                            if custom_decorator
+                            else new_stream_iter
+                        )
+
+                    result.__class__ = MiddlewareStream
                 elif (
                     isinstance(result, ResponseModel)
                     and handle_response_model is not None
@@ -231,6 +245,7 @@ def middleware_factory(
                     with custom_context_manager(fn) as context:
                         handle_response_model(result, fn, context)
                 elif isinstance(result, BaseStructuredStream):
+                    original_class = type(result)
                     original_iter = result.__iter__
 
                     def new_iter(
@@ -247,9 +262,14 @@ def middleware_factory(
                             if handle_structured_stream is not None:
                                 handle_structured_stream(result, fn, context)
 
-                    result.__class__.__iter__ = (
-                        custom_decorator(new_iter) if custom_decorator else new_iter
-                    )
+                    class MiddlewareStructuredStream(original_class):
+                        __iter__ = (
+                            custom_decorator(fn)(new_iter)
+                            if custom_decorator
+                            else new_iter
+                        )
+
+                    result.__class__ = MiddlewareStructuredStream
                 return cast(_R, result)
 
             return custom_decorator(fn)(wrapper) if custom_decorator else wrapper
