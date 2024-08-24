@@ -5,13 +5,13 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import Literal, ParamSpec, Protocol, TypeVar, cast, overload
 
+from openai import AsyncOpenAI, OpenAI
+from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
 from mirascope.core.base import BaseMessageParam, _utils
 from mirascope.core.openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
 from mirascope.core.openai._utils import convert_message_params
-from openai import AsyncOpenAI, OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 
 _ResponseModelT = TypeVar("_ResponseModelT", bound=_utils.BaseType | BaseModel)
 _P = ParamSpec("_P")

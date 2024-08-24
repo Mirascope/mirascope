@@ -12,8 +12,3 @@ class BaseCallParams(BaseModel):
     tools: list[type[BaseTool] | Callable] | None = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
-
-
-class BaseConfig(BaseModel):
-    llm_ops: list[Callable | str] = []
-    client_wrappers: list[Callable | str] = []

@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from ...core.base import BasePrompt, BaseTool, _utils
 from ...core.base.dynamic_config import DynamicConfigFull
-from .types import BaseCallParams, BaseConfig
+from .types import BaseCallParams
 from .utils import retry_decorator
 
 ExtractedType = _utils.BaseType | BaseModel
@@ -19,10 +19,7 @@ class BaseExtractor(BasePrompt, Generic[_ExtractedTypeT]):
     tags: ClassVar[list[str]] = []
     prompt_template: ClassVar[str] = ""
 
-    api_key: ClassVar[str | None] = None
-    base_url: ClassVar[str | None] = None
     call_params: ClassVar[BaseCallParams] = BaseCallParams(model="")
-    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[])
 
     _decorator: ClassVar[Callable] = lambda self: None
     _provider: ClassVar[str] = "NO PROVIDER"

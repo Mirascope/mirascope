@@ -13,7 +13,7 @@ from ...core.base import (
     _utils,
 )
 from ...core.base.dynamic_config import DynamicConfigFull
-from .types import BaseCallParams, BaseConfig
+from .types import BaseCallParams
 from .utils import retry_decorator
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -29,10 +29,7 @@ class BaseCall(
     tags: ClassVar[list[str]] = []
     prompt_template: ClassVar[str] = ""
 
-    api_key: ClassVar[str | None] = None
-    base_url: ClassVar[str | None] = None
     call_params: ClassVar[BaseCallParams] = BaseCallParams(model="")
-    configuration: ClassVar[BaseConfig] = BaseConfig(llm_ops=[], client_wrappers=[])
 
     _decorator: ClassVar[Callable] = lambda self: None
     _provider: ClassVar[str] = "NO PROVIDER"

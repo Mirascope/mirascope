@@ -6,9 +6,6 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
-from ...beta.rag.base.embedders import BaseEmbedder
-from .calls import BaseCall
-
 
 def get_class_vars(self: BaseModel) -> dict[str, Any]:
     """Get the class variables of a `BaseModel` removing any dangerous variables."""
@@ -17,77 +14,6 @@ def get_class_vars(self: BaseModel) -> dict[str, Any]:
         if classvars != "api_key":
             class_vars[classvars] = getattr(self.__class__, classvars)
     return class_vars
-
-
-T = TypeVar("T")
-
-
-def get_wrapped_async_client(client: T, self: BaseCall | BaseEmbedder) -> T:
-    """Get a wrapped async client."""
-    if self.configuration.client_wrappers:
-        for op in self.configuration.client_wrappers:
-            if op == "langfuse":  # pragma: no cover
-                from langfuse.openai import AsyncOpenAI as LangfuseAsyncOpenAI
-
-                client = LangfuseAsyncOpenAI(
-                    api_key=self.api_key, base_url=self.base_url
-                )  # pyright: ignore [reportAssignmentType]
-            elif op == "logfire":  # pragma: no cover
-                import logfire
-
-                if self._provider == "openai":
-                    logfire.instrument_openai(client)  # type: ignore
-                elif self._provider == "anthropic":
-                    logfire.instrument_anthropic(client)  # type: ignore
-            elif callable(op):
-                client = op(client)
-    return client
-
-
-def get_wrapped_client(client: T, self: BaseCall | BaseEmbedder) -> T:
-    """Get a wrapped client."""
-    if self.configuration.client_wrappers:
-        for op in self.configuration.client_wrappers:  # pragma: no cover
-            if op == "langfuse":
-                from langfuse.openai import OpenAI as LangfuseOpenAI
-
-                client = LangfuseOpenAI(api_key=self.api_key, base_url=self.base_url)  # pyright: ignore [reportAssignmentType]
-            elif op == "logfire":  # pragma: no cover
-                import logfire
-
-                if self._provider == "openai":
-                    logfire.instrument_openai(client)  # type: ignore
-                elif self._provider == "anthropic":
-                    logfire.instrument_anthropic(client)  # type: ignore
-            elif callable(op):
-                client = op(client)
-    return client
-
-
-C = TypeVar("C")
-
-
-def get_wrapped_call(
-    call: C,
-    self: BaseCall | BaseEmbedder,
-    **kwargs: Any,  # noqa: ANN401
-) -> C:
-    """Wrap a call to add the `llm_ops` parameter if it exists."""
-    if self.configuration.llm_ops:
-        wrapped_call = call
-        for op in self.configuration.llm_ops:
-            if op == "weave":  # pragma: no cover
-                import weave
-
-                wrapped_call = weave.op()(wrapped_call)
-            elif callable(op):
-                wrapped_call = op(
-                    wrapped_call,
-                    self._provider,
-                    **kwargs,
-                )
-        return wrapped_call
-    return call
 
 
 F = TypeVar("F", bound=Callable[..., Any])

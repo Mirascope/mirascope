@@ -1,10 +1,7 @@
 """OpenAI modules for the v0 look-alike implementation."""
 
-from collections.abc import Callable
 from typing import ClassVar, Generic, TypeVar
 
-from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
-from openai.lib.azure import AsyncAzureADTokenProvider, AzureADTokenProvider
 from openai.types.chat import ChatCompletionToolChoiceOptionParam
 from openai.types.chat.completion_create_params import ResponseFormat
 from pydantic import ConfigDict
@@ -16,39 +13,6 @@ from ..core.openai import (
     openai_call,
 )
 from .base import BaseCall, BaseCallParams, BaseExtractor, ExtractedType
-
-
-def azure_client_wrapper(
-    azure_endpoint: str,
-    azure_deployment: str | None = None,
-    api_version: str | None = None,
-    api_key: str | None = None,
-    azure_ad_token: str | None = None,
-    azure_ad_token_provider: AzureADTokenProvider
-    | AsyncAzureADTokenProvider
-    | None = None,
-    organization: str | None = None,
-) -> Callable[[OpenAI | AsyncOpenAI], AzureOpenAI | AsyncAzureOpenAI]:
-    """Returns a client wrapper for using OpenAI models on Microsoft Azure."""
-
-    def inner_azure_client_wrapper(
-        client: OpenAI | AsyncOpenAI,
-    ) -> AzureOpenAI | AsyncAzureOpenAI:
-        """Returns matching `AzureOpenAI` or `AsyncAzureOpenAI` client."""
-        kwargs = {
-            "azure_endpoint": azure_endpoint,
-            "azure_deployment": azure_deployment,
-            "api_version": api_version,
-            "api_key": api_key,
-            "azure_ad_token": azure_ad_token,
-            "azure_ad_token_provider": azure_ad_token_provider,
-            "organization": organization,
-        }
-        if isinstance(client, OpenAI):
-            return AzureOpenAI(**kwargs)
-        return AsyncAzureOpenAI(**kwargs)
-
-    return inner_azure_client_wrapper
 
 
 class OpenAICallParams(BaseCallParams):
