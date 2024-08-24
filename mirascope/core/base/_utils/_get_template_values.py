@@ -16,7 +16,6 @@ def get_template_values(
         The values of the template variables.
     """
     values = {}
-    attrs.update(attrs.pop("kwargs", {}))
     if "self" in attrs:
         values["self"] = attrs.get("self")
     for var, format_spec in template_variables:
