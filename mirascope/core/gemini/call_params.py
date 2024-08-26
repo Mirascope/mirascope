@@ -7,7 +7,7 @@ from google.generativeai.types import (
     GenerationConfigDict,
     RequestOptions,
 )
-from google.generativeai.types.content_types import ToolConfigDict, ToolConfigType
+from google.generativeai.types.content_types import ToolConfigType
 from google.generativeai.types.safety_types import (
     SafetySettingOptions,
 )

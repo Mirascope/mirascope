@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 
 from typing_extensions import NotRequired
 
-from mirascope.core.base import BaseCallParams
+from .call_params import BaseCallParams
 
 _BaseToolT = TypeVar("_BaseToolT")
 

@@ -4,7 +4,9 @@ from groq.types.chat import ChatCompletionMessageParam
 from typing_extensions import NotRequired
 
 from mirascope.core.base.call_kwargs import BaseCallKwargs
-from mirascope.core.groq import GroqCallParams, GroqTool
+
+from .call_params import GroqCallParams
+from .tool import GroqTool
 
 
 class GroqCallKwargs(GroqCallParams, BaseCallKwargs[GroqTool]):

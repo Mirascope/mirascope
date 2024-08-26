@@ -4,7 +4,9 @@ from openai.types.chat import ChatCompletionMessageParam
 from typing_extensions import NotRequired
 
 from mirascope.core.base.call_kwargs import BaseCallKwargs
-from mirascope.core.openai import OpenAICallParams, OpenAITool
+
+from .call_params import OpenAICallParams
+from .tool import OpenAITool
 
 
 class OpenAICallKwargs(OpenAICallParams, BaseCallKwargs[OpenAITool]):

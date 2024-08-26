@@ -3,8 +3,10 @@
 from anthropic.types import MessageParam
 from typing_extensions import NotRequired
 
-from mirascope.core.anthropic import AnthropicCallParams, AnthropicTool
 from mirascope.core.base.call_kwargs import BaseCallKwargs
+
+from .call_params import AnthropicCallParams
+from .tool import AnthropicTool
 
 
 class AnthropicCallKwargs(AnthropicCallParams, BaseCallKwargs[AnthropicTool]):

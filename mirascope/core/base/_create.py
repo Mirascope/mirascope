@@ -6,13 +6,13 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
-from . import BaseCallParams
 from ._utils import (
     SetupCall,
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
 )
+from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
