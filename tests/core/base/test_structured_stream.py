@@ -42,15 +42,10 @@ def test_structured_stream_factory_sync(
     mock_get_json_output = MagicMock()
     mock_get_json_output.return_value = "json_output"
 
-    class TCallResponseChunk(MagicMock):
-        @property
-        def content(self) -> str:
-            return "json_output"
-
     decorator = partial(
         structured_stream_factory(
             TCallResponse=MagicMock,
-            TCallResponseChunk=TCallResponseChunk,
+            TCallResponseChunk=MagicMock,
             TStream=MagicMock,
             TToolType=MagicMock,
             setup_call=mock_setup_call,
@@ -114,15 +109,10 @@ async def test_structured_stream_factory_async(
     mock_get_json_output = MagicMock()
     mock_get_json_output.return_value = "json_output"
 
-    class TCallResponseChunk(MagicMock):
-        @property
-        def content(self) -> str:
-            return "json_output"
-
     decorator = partial(
         structured_stream_factory(
             TCallResponse=MagicMock,
-            TCallResponseChunk=TCallResponseChunk,
+            TCallResponseChunk=MagicMock,
             TStream=MagicMock,
             TToolType=MagicMock,
             setup_call=mock_setup_call_async,
