@@ -1,4 +1,4 @@
-"""This module contains the type definition for the base call keyword arguments."""
+"""This module contains the type definition for the Gemini call keyword arguments."""
 
 from mirascope.core.base.call_kwargs import BaseCallKwargs
 

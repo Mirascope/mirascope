@@ -1,4 +1,4 @@
-"""This module contains the type definition for the base call keyword arguments."""
+"""This module contains the type definition for the Anthropic call keyword arguments."""
 
 from anthropic.types import MessageParam
 from typing_extensions import NotRequired
