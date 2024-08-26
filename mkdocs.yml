@@ -172,6 +172,9 @@ nav:
               - "cookbook/prompt_engineering/text_based/index.md"
               - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
           - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
+      - Evaluations:
+          - "cookbook/evals/index.md"
+          - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.md"
       - LangGraph vs. Mirascope:
           - "cookbook/langgraph_vs_mirascope/index.md"
           - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"

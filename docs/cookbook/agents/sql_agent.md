@@ -13,7 +13,7 @@ In this recipe, we will be using OpenAI GPT-4o-mini to act as a co-pilot for a D
 
 ## Setup
 
-We will be using SQLite but this example will work for any common SQL dialect, such as PostgreSQL, MySQL, MSSQL, and more.
+We will be using SQLite, but this example will work for any common SQL dialect, such as PostgreSQL, MySQL, MSSQL, and more.
 
 ```python
 pip install sqlite3
@@ -21,7 +21,7 @@ pip install sqlite3
 
 ## Setup SQL Database
 
-Replace this part with whichever SQL dialect you are using, or skip if you have a database setup already.
+Replace this part with whichever SQL dialect you are using, or skip if you have a database set up already.
 
 ```python
 import sqlite3
@@ -49,9 +49,8 @@ We will be creating an Agent that will take non-technical queries and translate 
 import sqlite3
 from typing import ClassVar
 
-from pydantic import BaseModel, ConfigDict
-
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, ConfigDict
 
 class Librarian(BaseModel):
     con: ClassVar[sqlite3.Connection] = sqlite3.connect("database.db")
@@ -163,14 +162,11 @@ class Librarian(BaseModel):
         You must use these tools to interact with the database.
 
         MESSAGES: {self.messages}
-        USER:
-        {query}
+        USER: {query}
         """
     )
     async def _step(self, query: str) -> openai.OpenAIDynamicConfig:
-        return {
-            "tools": [self._run_query, self._execute_query],
-        }
+        return {"tools": [self._run_query, self._execute_query]}
         
     async def _get_response(self, question: str):
         response = await self._step(question)
@@ -186,7 +182,6 @@ class Librarian(BaseModel):
         if tools_and_outputs:
             self.messages += response.tool_message_params(tools_and_outputs)
             return await self._get_response("")
-        return
 
     async def run(self):
         while True:

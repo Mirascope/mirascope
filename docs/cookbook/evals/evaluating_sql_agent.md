@@ -1,4 +1,4 @@
-# Generate SQL with LLM
+# Evaluating Generating SQL with LLM
 
 In this recipe, we will be using taking our [SQL Agent](../agents/sql_agent.md) example and running evaluations on LLM call. We will be exploring various different evaluations we can run to ensure quality and expected behavior.
 
@@ -240,6 +240,10 @@ async def test_delete_query(delete_query: str, mock_librarian: Librarian):
 The golden dataset serves as our test fixtures, allowing us to verify basic text-to-SQL conversions and ensure our Agent maintains this functionality.
 
 As we expand our tools or enhance our prompt, we should consistently implement additional prompt regression tests to maintain quality and functionality.
+
+!!! note "Tip"
+
+    SQL queries can get complex so be sure to add very specific tests, especially for mutable operations like INSERTS, UPDATES, and DELETES.
 
 ## Evaluating conversations
 

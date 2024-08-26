@@ -102,9 +102,7 @@ class Librarian(BaseModel):
         """
     )
     async def _step(self, query: str) -> openai.OpenAIDynamicConfig:
-        return {
-            "tools": [self._run_query, self._execute_query],
-        }
+        return {"tools": [self._run_query, self._execute_query]}
 
     async def _get_response(self, question: str):
         response = await self._step(question)
@@ -120,7 +118,6 @@ class Librarian(BaseModel):
         if tools_and_outputs:
             self.messages += response.tool_message_params(tools_and_outputs)
             return await self._get_response("")
-        return
 
     async def run(self):
         while True:
