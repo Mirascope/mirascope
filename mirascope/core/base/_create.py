@@ -2,7 +2,7 @@
 
 import datetime
 import inspect
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
@@ -21,13 +21,11 @@ _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
-# _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
-# We can't set TypedDict as a bound for a TypeVar, so we use Mapping instead
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=Mapping)
 
 
 def create_factory(  # noqa: ANN202
@@ -76,7 +74,7 @@ def create_factory(  # noqa: ANN202
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _BaseClientT | None,
-        call_params: BaseCallParams[BaseTool],
+        call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
         _BaseCallResponseT

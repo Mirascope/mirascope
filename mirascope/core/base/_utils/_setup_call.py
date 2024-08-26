@@ -1,9 +1,10 @@
 """Utility for setting up a provider-specific call."""
 
 import inspect
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar, cast
 
+from ..call_kwargs import BaseCallKwargs
 from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
@@ -16,8 +17,7 @@ from ._parse_prompt_messages import parse_prompt_messages
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
-# We can't set TypedDict as a bound for a TypeVar, so we use Mapping instead
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=Mapping)
+_BaseCallKwargsT = TypeVar("_BaseCallKwargsT", bound=BaseCallKwargs)
 
 
 def setup_call(
@@ -26,14 +26,14 @@ def setup_call(
     dynamic_config: _BaseDynamicConfigT,
     tools: list[type[BaseTool] | Callable] | None,
     tool_type: type[_BaseToolT],
-    call_params: _BaseCallParamsT,
+    call_params: BaseCallParams,
 ) -> tuple[
     str | None,
     list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
-    _BaseCallParamsT,
+    BaseCallKwargs[_BaseToolT],
 ]:
-    call_kwargs = cast(BaseCallParams, dict(call_params))
+    call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
     prompt_template, messages, computed_fields = None, None, None
     if dynamic_config is not None:
         computed_fields = dynamic_config.get("computed_fields", None)
@@ -64,4 +64,4 @@ def setup_call(
         ]
         call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
 
-    return prompt_template, messages, tool_types, cast(_BaseCallParamsT, call_kwargs)
+    return prompt_template, messages, tool_types, call_kwargs

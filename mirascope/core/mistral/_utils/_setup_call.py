@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Iterable
-from typing import Any, Literal, NotRequired, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -15,17 +15,14 @@ from mistralai.models.chat_completion import (
     ToolChoice,
 )
 
-from ...base import BaseCallParams, BaseMessageParam, BaseTool, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-
-
-class MistralToolCallParams(BaseCallParams[_BaseToolT]):
-    tool_choice: NotRequired[Literal["required"]]
 
 
 def setup_call(
@@ -47,9 +44,10 @@ def setup_call(
     list[type[MistralTool]] | None,
     dict[str, Any],
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, MistralTool, call_params
     )
+    call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)
     messages = convert_message_params(messages)
     if json_mode:

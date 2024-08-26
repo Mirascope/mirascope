@@ -14,6 +14,7 @@ from pydantic import (
     field_serializer,
 )
 
+from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
@@ -25,6 +26,7 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
+_BaseCallKwargsT = TypeVar("_BaseCallKwargsT", bound=BaseCallKwargs)
 
 
 class BaseCallResponse(
@@ -65,7 +67,7 @@ class BaseCallResponse(
     dynamic_config: _BaseDynamicConfigT
     messages: SkipValidation[list[_MessageParamT]]
     call_params: SkipValidation[_CallParamsT]
-    call_kwargs: BaseCallParams[_BaseToolT]
+    call_kwargs: BaseCallKwargs[_BaseToolT]
     user_message_param: _UserMessageParamT | None = None
     start_time: float
     end_time: float

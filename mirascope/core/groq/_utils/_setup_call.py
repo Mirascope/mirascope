@@ -8,6 +8,7 @@ from groq import AsyncGroq, Groq
 from groq.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import GroqDynamicConfig
 from ..tool import GroqTool
@@ -30,11 +31,12 @@ def setup_call(
     str | None,
     list[ChatCompletionMessageParam],
     list[type[GroqTool]] | None,
-    dict[str, Any],
+    GroqCallKwargs,
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, GroqTool, call_params
     )
+    call_kwargs = cast(GroqCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:

@@ -12,6 +12,7 @@ from cohere import (
 from cohere.types import ChatMessage
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import CohereCallKwargs
 from ..call_params import CohereCallParams
 from ..dynamic_config import CohereDynamicConfig
 from ..tool import CohereTool
@@ -35,11 +36,12 @@ def setup_call(
     str,
     list[ChatMessage],
     list[type[CohereTool]] | None,
-    dict[str, Any],
+    CohereCallKwargs,
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, CohereTool, call_params
     )
+    call_kwargs = cast(CohereCallKwargs, call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)
     messages = convert_message_params(messages)
 

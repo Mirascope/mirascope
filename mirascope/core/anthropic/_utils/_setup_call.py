@@ -15,6 +15,7 @@ from anthropic import (
 from anthropic.types import Message, MessageParam
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig
 from ..tool import AnthropicTool
@@ -43,11 +44,12 @@ def setup_call(
     str | None,
     list[MessageParam],
     list[type[AnthropicTool]] | None,
-    dict[str, Any],
+    AnthropicCallKwargs,
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, AnthropicTool, call_params
     )
+    call_kwargs: AnthropicCallKwargs = cast(AnthropicCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | MessageParam], messages)
     messages = convert_message_params(messages)
 
@@ -68,7 +70,8 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
-    call_kwargs |= {"model": model, "messages": messages}
+    call_kwargs["model"] = model
+    call_kwargs["messages"] = messages
 
     if client is None:
         client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
