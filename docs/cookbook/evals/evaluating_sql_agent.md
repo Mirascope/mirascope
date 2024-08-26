@@ -117,13 +117,11 @@ class Librarian(BaseModel):
         USER: {query}
         """
     )
-    async def _step(self, query: str) -> openai.OpenAIDynamicConfig:
-        return {
-            "tools": [self._run_query, self._execute_query],
-        }
+    async def _call(self, query: str) -> openai.OpenAIDynamicConfig:
+        return {"tools": [self._run_query, self._execute_query]}
 
-    async def _get_response(self, question: str):
-        response = await self._step(question)
+    async def _step(self, question: str):
+        response = await self._call(question)
         tools_and_outputs = []
         async for chunk, tool in response:
             if tool:
@@ -135,8 +133,7 @@ class Librarian(BaseModel):
         self.messages.append(response.message_param)
         if tools_and_outputs:
             self.messages += response.tool_message_params(tools_and_outputs)
-            return await self._get_response("")
-        return
+            await self._step("")
 
     async def run(self):
         while True:
@@ -144,7 +141,7 @@ class Librarian(BaseModel):
             if question == "exit":
                 break
             print("(Assistant): ", end="", flush=True)
-            await self._get_response(question)
+            await self._step(question)
             print()
 ```
 
