@@ -47,7 +47,7 @@ def setup_call(
 
     preamble = ""
     if "preamble" in call_kwargs and call_kwargs["preamble"] is not None:
-        preamble = f'{preamble}{call_kwargs.pop("preamble")}'
+        preamble = call_kwargs.pop("preamble", "") or ""
     if messages[0].role == "SYSTEM":  # type: ignore
         if preamble:
             preamble += "\n\n"
