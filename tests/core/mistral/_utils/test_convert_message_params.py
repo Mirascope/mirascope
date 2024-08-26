@@ -24,7 +24,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Mistral does not currently support multimodalities.",
+        match="Mistral currently only supports text parts.",
     ):
         convert_message_params(
             [
@@ -44,7 +44,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Mistral does not currently support multimodalities.",
+        match="Mistral currently only supports text parts.",
     ):
         convert_message_params(
             [

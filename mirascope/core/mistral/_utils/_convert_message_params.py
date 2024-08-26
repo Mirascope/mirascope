@@ -16,7 +16,7 @@ def convert_message_params(
             converted_message_params.append(ChatMessage(**message_param.model_dump()))
         else:
             if len(content) != 1 or content[0].type != "text":
-                raise ValueError("Mistral does not currently support multimodalities.")
+                raise ValueError("Mistral currently only supports text parts.")
             converted_message_params.append(
                 ChatMessage(role=message_param.role, content=content[0].text)
             )

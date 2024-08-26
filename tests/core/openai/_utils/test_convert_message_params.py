@@ -65,8 +65,8 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="OpenAI currently only supports text and image modalities. "
-        "Modality provided: audio",
+        match="OpenAI currently only supports text and image parts. "
+        "Part provided: audio",
     ):
         convert_message_params(
             [
