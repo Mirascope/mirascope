@@ -68,7 +68,7 @@ async def test_insert_query(insert_query: str, mock_librarian: Librarian):
 @pytest.mark.parametrize(
     "update_query",
     [
-        "Can you mark Gone with the Wind as read.",
+        "Can you mark Gone with the Wind as read?",
         "I just finished Gone with the Wind, can you update the status?",
     ],
 )

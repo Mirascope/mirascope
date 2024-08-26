@@ -107,7 +107,7 @@ class Librarian(BaseModel):
         All queries must end with a semicolon.
 
         You have access to the following tools:
-        - `_run_query`: Use the query generated to run a SELECT query.
+        - `_run_query`: When user asks for recommendations, you can use this tool to see what they have read.
         - `_execute_query`: Use the query generated to execute an 
             INSERT, UPDATE, or DELETE query.
 
