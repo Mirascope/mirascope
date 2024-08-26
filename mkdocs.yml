@@ -163,7 +163,7 @@ nav:
           - "cookbook/agents/index.md"
           - Web Search Agent: "cookbook/agents/web_search_agent.md"
           - Blog Writing Agent: "cookbook/agents/blog_writing_agent.md"
-          - Generating SQL Agent: "cookbook/agents/generating_sql_agent.md"
+          - SQL Agent: "cookbook/agents/sql_agent.md"
           - Localized Agent: "cookbook/agents/localized_agent.md"
           - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.md"
       - Prompt Engineering:
@@ -172,6 +172,9 @@ nav:
               - "cookbook/prompt_engineering/text_based/index.md"
               - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
           - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
+      - Evaluations:
+          - "cookbook/evals/index.md"
+          - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.md"
       - LangGraph vs. Mirascope:
           - "cookbook/langgraph_vs_mirascope/index.md"
           - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"
