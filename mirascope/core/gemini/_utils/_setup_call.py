@@ -58,7 +58,8 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         tool_config = call_kwargs.get("tool_config", {})
-        tool_config["function_calling_config"] = {"mode": "auto"}
+        # Ignore type checking, because gemini tool config is not yet typed correctly
+        tool_config["function_calling_config"] = {"mode": "auto"}  # type: ignore
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 
