@@ -9,7 +9,6 @@ In this recipe, we will be using OpenAI GPT-4o-mini to act as a co-pilot for a D
     - [Tools](../../learn/tools.md)
     - [Dynamic Configuration](../../learn/dynamic_configuration.md)
     - [Async](../../learn/async.md)
-    - [Evals](../../learn/evals.md)
     - [Agents](../../learn/agents.md)
 
 ## Setup
@@ -229,98 +228,7 @@ asyncio.run(Librarian().run())
 
 Note that the SQL statements in the dialogue are there for development purposes.
 
-Having established that we can have a quality conversation with our `Librarian`, we can now enhance our prompt. However, we must ensure that these improvements don't compromise the Librarian's core functionality.
-
-## Evaluating the prompt
-
-One effective approach is to establish a golden dataset that the prompt must successfully pass. We'll leverage `pytest` for this purpose, as it offers numerous testing conveniences.
-
-```python
-from unittest.mock import MagicMock
-
-import pytest
-
-
-@pytest.fixture
-def mock_librarian():
-    class MockLibrarian(Librarian):
-        con: ClassVar[sqlite3.Connection] = MagicMock()
-
-    return MockLibrarian()
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "select_query",
-    [
-        "Get all books",
-        "Get every single book",
-        "Show me all books",
-        "List all books",
-        "Display all books",
-    ],
-)
-async def test_select_query(select_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._step(select_query)
-    async for _, tool in response:
-        query = tool.args.get("query", "") if tool else ""
-        assert query == "SELECT * FROM ReadingList;"
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "insert_query",
-    [
-        "Please add Gone with the Wind to my reading list",
-        "You recently recommended Gone with the Wind, can you add it to my reading list.",
-    ],
-)
-async def test_insert_query(insert_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._step(insert_query)
-    async for _, tool in response:
-        query = tool.args.get("query", "") if tool else ""
-        assert (
-            query
-            == "INSERT INTO ReadingList (title, status) VALUES ('Gone with the Wind', 'Not Started');"
-        )
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "update_query",
-    [
-        "Can you mark Gone with the Wind as read.",
-        "I just finished Gone with the Wind, can you update the status?",
-    ],
-)
-async def test_update_query(update_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._step(update_query)
-    async for _, tool in response:
-        query = tool.args.get("query", "") if tool else ""
-        assert (
-            query
-            == "UPDATE ReadingList SET status = 'Complete' WHERE title = 'Gone with the Wind';"
-        )
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "delete_query",
-    [
-        "Can you remove Gone with the Wind from my reading list?",
-        "Can you delete Gone with the Wind?",
-    ],
-)
-async def test_delete_query(delete_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._step(delete_query)
-    async for _, tool in response:
-        query = tool.args.get("query", "") if tool else ""
-        assert query == "DELETE FROM ReadingList WHERE title = 'Gone with the Wind';"
-```
-
-The golden dataset serves as our test fixtures, allowing us to verify basic text-to-SQL conversions and ensure our Agent maintains this functionality.
-
-As we expand our tools or enhance our prompt, we should consistently implement additional prompt regression tests to maintain quality and functionality.
+Having established that we can have a quality conversation with our `Librarian`, we can now enhance our prompt. However, we must ensure that these improvements don't compromise the Librarian's core functionality. Check out [Evaluating SQL Agent](../evals/evaluating_sql_agent.md) for an in-depth guide on how we evaluate the quality of our prompt.
 
 
 

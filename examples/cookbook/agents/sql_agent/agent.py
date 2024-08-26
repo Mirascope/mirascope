@@ -34,7 +34,7 @@ class Librarian(BaseModel):
             rows_affected = cursor.rowcount
             self.con.commit()
             if rows_affected > 0:
-                return "Query executed successfully, {rows_affected} row(s) were updated/inserted."
+                return f"Query executed successfully, {rows_affected} row(s) were updated/inserted."
             else:
                 return "No rows were updated/inserted."
         except sqlite3.Error as e:
@@ -98,8 +98,7 @@ class Librarian(BaseModel):
         You must use these tools to interact with the database.
 
         MESSAGES: {self.messages}
-        USER:
-        {query}
+        USER: {query}
         """
     )
     async def _step(self, query: str) -> openai.OpenAIDynamicConfig:
