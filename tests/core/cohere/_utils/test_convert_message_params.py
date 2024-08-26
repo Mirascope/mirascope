@@ -33,7 +33,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Cohere does not currently support multimodalities.",
+        match="Cohere currently only supports text parts.",
     ):
         convert_message_params(
             [
@@ -53,7 +53,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Cohere does not currently support multimodalities.",
+        match="Cohere currently only supports text parts.",
     ):
         convert_message_params(
             [

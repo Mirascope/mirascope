@@ -44,8 +44,8 @@ def convert_message_params(
                     )
                 else:
                     raise ValueError(
-                        "OpenAI currently only supports text and image modalities. "
-                        f"Modality provided: {part.type}"
+                        "OpenAI currently only supports text and image parts. "
+                        f"Part provided: {part.type}"
                     )
             converted_message_params.append(
                 {"role": message_param.role, "content": converted_content}

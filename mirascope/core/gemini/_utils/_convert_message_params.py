@@ -53,7 +53,7 @@ def convert_message_params(
                         )
                     image = PIL.Image.open(io.BytesIO(part.image))
                     converted_content.append(image)
-                else:
+                elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
                         "audio/mp3",
@@ -69,6 +69,11 @@ def convert_message_params(
                         )
                     converted_content.append(
                         {"mime_type": part.media_type, "data": part.audio}
+                    )
+                else:
+                    raise ValueError(
+                        "Gemini currently only supports text, image, and audio parts. "
+                        f"Part provided: {part.type}"
                     )
             converted_message_params.append({"role": role, "parts": converted_content})
     return converted_message_params

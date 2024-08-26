@@ -34,6 +34,7 @@ class GroqCallParams(BaseCallParams):
         user: ...
     """
 
+    extra_headers: NotRequired[dict[str, str] | None]
     frequency_penalty: NotRequired[float | None]
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]

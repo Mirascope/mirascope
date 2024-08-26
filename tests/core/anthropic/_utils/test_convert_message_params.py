@@ -6,7 +6,13 @@ from anthropic.types import MessageParam
 from mirascope.core.anthropic._utils._convert_message_params import (
     convert_message_params,
 )
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    CacheControlPart,
+    ImagePart,
+    TextPart,
+)
 
 
 def test_convert_message_params() -> None:
@@ -22,6 +28,7 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                CacheControlPart(type="cache_control", cache_type="ephemeral"),
             ],
         ),
     ]
@@ -41,6 +48,7 @@ def test_convert_message_params() -> None:
                         "type": "base64",
                     },
                 },
+                {"type": "text", "text": "", "cache_control": {"type": "ephemeral"}},
             ],
         },
     ]
@@ -68,8 +76,8 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Anthropic currently only supports text and image modalities. "
-        "Modality provided: audio",
+        match="Anthropic currently only supports text, image, and cache control parts. "
+        "Part provided: audio",
     ):
         convert_message_params(
             [

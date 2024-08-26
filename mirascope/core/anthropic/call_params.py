@@ -26,6 +26,7 @@ class AnthropicCallParams(BaseCallParams):
         timeout: ...
     """
 
+    extra_headers: NotRequired[dict[str, str] | None]
     max_tokens: Required[int]
     tool_choice: NotRequired[ToolChoice | None]
     metadata: NotRequired[Metadata | None]
