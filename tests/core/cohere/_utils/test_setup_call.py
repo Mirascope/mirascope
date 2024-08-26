@@ -153,5 +153,6 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
+    assert "model" in call_kwargs
     assert call_kwargs["model"] == "command-r-plus"
     assert call_kwargs["message"] == messages[-1].message

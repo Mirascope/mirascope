@@ -116,7 +116,7 @@ def test_get_call_response_attributes() -> None:
             "tools": [],
             "model": "gpt-4o",
             "messages": [],
-        },
+        },  # type: ignore
         user_message_param={
             "role": "user",
             "content": [

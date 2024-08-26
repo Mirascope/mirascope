@@ -77,6 +77,7 @@ def test_setup_call_system_message(
         call_params={"max_tokens": 1000},
         extract=False,
     )
+    assert "system" in call_kwargs
     assert call_kwargs["system"] == [{"type": "text", "text": "test"}]
 
 
