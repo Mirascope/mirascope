@@ -75,6 +75,10 @@ def test_get_json_output_call_response() -> None:
     ):
         get_json_output(call_response, json_mode=False)
 
+    completion.choices[0].message.refusal = "refusal message"
+    with pytest.raises(ValueError, match="refusal message"):
+        get_json_output(call_response, json_mode=False)
+
 
 def test_get_json_output_call_response_chunk() -> None:
     """Tests the `get_json_output` function with a call response chunk."""

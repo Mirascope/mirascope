@@ -37,6 +37,7 @@ def convert_base_model_to_base_tool(
         __doc__=model.__doc__ if model.__doc__ else DEFAULT_TOOL_DOCSTRING,
         **cast(dict[str, Any], field_definitions),
     )
+    tool_type.model_config = model.model_config | tool_type.model_config
     bases = list(tool_type.__bases__)
     tool_type.__bases__ = tuple(bases) if model in bases else tuple([model] + bases)
     for name, value in inspect.getmembers(model):

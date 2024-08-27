@@ -14,7 +14,7 @@ from openai.types.chat import (
 from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
-from ..tool import OpenAITool
+from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
 from ._convert_message_params import convert_message_params
 
 
@@ -42,13 +42,26 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        call_kwargs["response_format"] = {"type": "json_object"}
-        json_mode_content = _utils.json_mode_content(
-            tool_types[0] if tool_types else None
-        ).strip()
-        messages.append(
-            ChatCompletionUserMessageParam(role="user", content=json_mode_content)
-        )
+        if tool_types and tool_types[0].model_config.get("strict", False):
+            call_kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": tool_types[0]._name(),
+                    "description": tool_types[0]._description(),
+                    "strict": True,
+                    "schema": tool_types[0].model_json_schema(
+                        schema_generator=GenerateOpenAIStrictToolJsonSchema
+                    ),
+                },
+            }
+        else:
+            call_kwargs["response_format"] = {"type": "json_object"}
+            json_mode_content = _utils.json_mode_content(
+                tool_types[0] if tool_types else None
+            ).strip()
+            messages.append(
+                ChatCompletionUserMessageParam(role="user", content=json_mode_content)
+            )
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."

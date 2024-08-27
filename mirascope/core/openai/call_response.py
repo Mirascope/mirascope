@@ -112,7 +112,12 @@ class OpenAICallResponse(
 
         Raises:
             ValidationError: if a tool call doesn't match the tool's schema.
+            ValueError: if the model refused to response, in which case the error
+                message will be the refusal.
         """
+        if refusal := self.response.choices[0].message.refusal:
+            raise ValueError(refusal)
+
         tool_calls = self.response.choices[0].message.tool_calls
         if not self.tool_types or not tool_calls:
             return None
@@ -133,6 +138,8 @@ class OpenAICallResponse(
 
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
+            ValueError: if the model refused to response, in which case the error
+                message will be the refusal.
         """
         if tools := self.tools:
             return tools[0]

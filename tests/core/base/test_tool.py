@@ -65,34 +65,6 @@ def test_base_tool_custom_name() -> None:
     assert FormatBook._name() == "format_book"
 
 
-def test_base_tool_model_tool_schema() -> None:
-    """Tests the `BaseTool.model_tool_schema` class method."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    class FormatBook(BaseTool):
-        book: Book
-        genre: str
-
-    assert FormatBook.model_tool_schema() == {
-        "$defs": {
-            "Book": {
-                "properties": {
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                },
-                "required": ["title", "author"],
-                "type": "object",
-            }
-        },
-        "properties": {"book": {"$ref": "#/$defs/Book"}, "genre": {"type": "string"}},
-        "required": ["book", "genre"],
-        "type": "object",
-    }
-
-
 def test_base_tool_type_conversion() -> None:
     """Tests the `BaseTool.type_from...` class methods."""
 

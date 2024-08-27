@@ -54,3 +54,33 @@ def test_openai_tool() -> None:
             },
         },
     )
+
+
+def test_openai_tool_strict() -> None:
+    """Tests the strict settings for the `OpenAITool` class."""
+
+    class FormatBook(OpenAITool):
+        """Returns the title and author nicely formatted."""
+
+        title: str
+        author: str
+
+        tool_config = {"strict": True}
+
+    assert FormatBook.tool_schema() == ChatCompletionToolParam(
+        type="function",
+        function={
+            "name": "FormatBook",
+            "description": "Returns the title and author nicely formatted.",
+            "strict": True,
+            "parameters": {
+                "properties": {
+                    "title": {"type": "string"},
+                    "author": {"type": "string"},
+                },
+                "required": ["title", "author"],
+                "type": "object",
+                "additionalProperties": False,
+            },
+        },
+    )

@@ -10,7 +10,7 @@ import copy
 from anthropic.types import ToolParam, ToolUseBlock
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool
+from ..base import BaseTool, GenerateJsonSchemaNoTitles
 
 
 class AnthropicTool(BaseTool):
@@ -59,7 +59,9 @@ class AnthropicTool(BaseTool):
         ```
         """
         kwargs = {
-            "input_schema": cls.model_tool_schema(),
+            "input_schema": cls.model_json_schema(
+                schema_generator=GenerateJsonSchemaNoTitles
+            ),
             "name": cls._name(),
             "description": cls._description(),
         }

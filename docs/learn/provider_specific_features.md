@@ -6,6 +6,73 @@ Often these provider-specific features are powerful and worth using, so we try o
 
 If there are any features in particular that you want to use that that are not currently supported, let us know!
 
+## OpenAI
+
+### Structured Outputs
+
+OpenAI's newest models (starting with `gpt-4o-2024-08-06`) support strict structured outputs that reliably adhere to developer-supplied JSON Schemas, achieving 100% reliability in their evals, perfectly matching the desired output schemas.
+
+This feature can be extremely useful when extracting structured information or using tools, and you can access this feature when using tools or response models with Mirascope.
+
+#### Tools
+
+To use structured outputs with tools, simply set `strict=True` in the tool's `ToolConfig`. You can then use the tool just like you normally would:
+
+```python
+from mirascope.core import BaseTool, ToolConfig, openai, prompt_template
+
+
+class FormatBook(BaseTool):
+    title: str
+    author: str
+
+    tool_config = ToolConfig(strict=True)
+
+    def call(self) -> str:
+        return f"{self.title} by {self.author}"
+
+
+@openai.call(
+    "gpt-4o-2024-08-06", tools=[FormatBook], call_params={"tool_choice": "required"}
+)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+response = recommend_book("fantasy")
+if tool := response.tool:
+    print(tool.call())
+# > The Name of the Wind by Patrick Rothfuss
+```
+
+#### Response Models
+
+Similarly, you can use structured outputs with response models by setting `strict=True` in the response model's `ResponseModelConfigDict`, which is just a subclass of Pydantic's `ConfigDict` with the addition of the `strict` key. You will also need to set `json_mode=True`:
+
+```python
+from mirascope.core import ResponseModelConfigDict, openai, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+    model_config = ResponseModelConfigDict(strict=True)
+
+
+@openai.call("gpt-4o-2024-08-06", response_model=Book, json_mode=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+book = recommend_book("fantasy")
+print(book)
+# > title='The Name of the Wind' author='Patrick Rothfuss'
+```
+
 ## Anthropic
 
 ### Prompt Caching
@@ -26,6 +93,7 @@ To access this feature in Mirascope, simple add a `:cache_control` tagged breakp
     {:cache_control}
 
     USER: {query}
+    """
 )
 ```
 

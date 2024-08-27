@@ -8,9 +8,11 @@ from __future__ import annotations
 import inspect
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, TypeVar, cast
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, ConfigDict
+from pydantic.json_schema import GenerateJsonSchema, JsonSchemaMode, JsonSchemaValue
+from pydantic_core.core_schema import CoreSchema
 from typing_extensions import Required, TypedDict
 
 from . import _utils
@@ -23,7 +25,35 @@ class _CacheControl(TypedDict):
 
 
 class ToolConfig(TypedDict, total=False):
+    strict: bool
     cache_control: _CacheControl
+
+
+class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
+    _openai_strict: ClassVar[bool] = False
+
+    def _remove_title(self, obj: Any) -> Any:  # noqa: ANN401
+        if isinstance(obj, dict):
+            if self._openai_strict and "type" in obj and obj["type"] == "object":
+                obj["additionalProperties"] = False
+            if "type" in obj or "$ref" in obj or "properties" in obj:
+                obj.pop("title", None)
+
+            for key, value in list(obj.items()):
+                obj[key] = self._remove_title(value)
+        elif isinstance(obj, list):
+            return [self._remove_title(item) for item in obj]
+
+        return obj
+
+    def generate(
+        self, schema: CoreSchema, mode: JsonSchemaMode = "validation"
+    ) -> JsonSchemaValue:
+        json_schema = super().generate(schema, mode=mode)
+        json_schema.pop("title", None)
+        json_schema.pop("description", None)
+        json_schema = self._remove_title(json_schema)
+        return json_schema
 
 
 class BaseTool(BaseModel):
@@ -48,7 +78,7 @@ class BaseTool(BaseModel):
     '''
 
     __custom_name__: ClassVar[str] = ""
-    tool_config: ClassVar[ToolConfig] = {}
+    tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
@@ -78,30 +108,6 @@ class BaseTool(BaseModel):
     def call(self) -> Any:  # noqa: ANN401
         """The method to call the tool."""
         ...
-
-    @classmethod
-    def model_tool_schema(cls) -> dict[str, Any]:
-        """Returns the model_json_schema modified for reduced token usage."""
-        model_schema = cls.model_json_schema()
-        model_schema.pop("title", None)
-        model_schema.pop("description", None)
-
-        def remove_schema_titles(obj: Any) -> Any:  # noqa: ANN401
-            if isinstance(obj, dict):
-                # Remove the 'title' key only if it's a direct child of a schema object
-                if "type" in obj or "$ref" in obj or "properties" in obj:
-                    obj.pop("title", None)
-
-                # Recursively process nested objects
-                for key, value in list(obj.items()):
-                    obj[key] = remove_schema_titles(value)
-            elif isinstance(obj, list):
-                # Recursively process list items
-                return [remove_schema_titles(item) for item in obj]
-
-            return obj
-
-        return cast(dict[str, Any], remove_schema_titles(model_schema))
 
     @classmethod
     def type_from_fn(cls: _BaseToolT, fn: Callable) -> _BaseToolT:

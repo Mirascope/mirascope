@@ -22,14 +22,12 @@ Extract ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to
 {
   "properties": {
     "title": {
-      "title": "Title",
       "type": "string"
     }
   },
   "required": [
     "title"
   ],
-  "title": "Book",
   "type": "object"
 }"""
     )

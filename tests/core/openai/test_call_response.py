@@ -1,5 +1,6 @@
 """Tests the `openai.call_response` module."""
 
+import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionToolMessageParam
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
@@ -127,3 +128,7 @@ def test_openai_call_response_with_tools() -> None:
             name="FormatBook",  # type: ignore
         )
     ]
+
+    completion.choices[0].message.refusal = "refusal message"
+    with pytest.raises(ValueError, match="refusal message"):
+        tool = call_response.tools
