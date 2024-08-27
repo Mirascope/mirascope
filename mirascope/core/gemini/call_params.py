@@ -13,8 +13,6 @@ from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
-GenerationConfigType = GenerationConfigDict | GenerationConfig
-
 
 class GeminiCallParams(BaseCallParams):
     """The parameters to use when calling the Gemini API.
@@ -28,7 +26,7 @@ class GeminiCallParams(BaseCallParams):
         tool_config: ...
     """
 
-    generation_config: NotRequired[GenerationConfigType]
+    generation_config: NotRequired[GenerationConfigDict | GenerationConfig]
     safety_settings: NotRequired[SafetySettingOptions]
     request_options: NotRequired[RequestOptions]
     tool_config: NotRequired[ToolConfigType]

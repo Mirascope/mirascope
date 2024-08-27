@@ -50,8 +50,6 @@ def setup_call(
         generation_config = call_kwargs.get("generation_config", {})
         if is_dataclass(generation_config):
             generation_config = asdict(generation_config)
-        elif not isinstance(generation_config, dict):
-            generation_config = dict(generation_config)
         generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = generation_config
         messages[-1]["parts"].append(
