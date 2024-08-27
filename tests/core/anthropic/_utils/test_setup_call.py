@@ -30,6 +30,7 @@ def test_setup_call(
 ) -> None:
     """Tests the `setup_call` function."""
     mock_utils.setup_call = mock_base_setup_call
+    mock_base_setup_call.return_value[3] = {"max_tokens": 1000}
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="claude-3-5-sonnet-20240620",
@@ -66,6 +67,7 @@ def test_setup_call_system_message(
         {"role": "system", "content": [{"type": "text", "text": "test"}]}
     ]
     mock_utils.setup_call = mock_base_setup_call
+    mock_base_setup_call.return_value[3] = {"max_tokens": 1000}
     _, _, _, _, call_kwargs = setup_call(
         model="claude-3-5-sonnet-20240620",
         client=None,
@@ -97,7 +99,7 @@ def test_setup_call_json_mode(
     mock_base_setup_call.return_value[1] = [
         {"role": "user", "content": [{"type": "text", "text": "test"}]}
     ]
-    mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
+    mock_base_setup_call.return_value[3] = {"max_tokens": 1000, "tools": MagicMock()}
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
         model="claude-3-5-sonnet-20240620",
@@ -146,6 +148,7 @@ def test_setup_call_extract(
     mock_base_setup_call.return_value[2] = [
         MagicMock(spec=AnthropicTool, __name__="tool")
     ]
+    mock_base_setup_call.return_value[3] = {"max_tokens": 1000}
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, tool_types, call_kwargs = setup_call(
         model="claude-3-5-sonnet-20240620",

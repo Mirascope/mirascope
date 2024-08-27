@@ -70,7 +70,11 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
-    call_kwargs |= {"model": model, "messages": messages}
+    call_kwargs |= {
+        "model": model,
+        "messages": messages,
+        "max_tokens": call_kwargs["max_tokens"],
+    }
 
     if client is None:
         client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
