@@ -6,6 +6,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope.core.base._utils import DEFAULT_TOOL_DOCSTRING
+from mirascope.core.base.response_model_config_dict import ResponseModelConfigDict
 from mirascope.core.base.tool import BaseTool, ToolConfig
 
 
@@ -129,4 +130,17 @@ def test_base_tool_unsupported_configurations_warning() -> None:
         match="NONE does not support the following tool configurations, so they will "
         "be ignored: {'unsupported'}",
     ):
-        FormatBook.warn_for_unsupported_configurations(ToolConfig)
+        FormatBook.warn_for_unsupported_configurations()
+
+    class Book(BaseTool):
+        title: str
+
+        model_config = ResponseModelConfigDict(strict=True)
+
+    with pytest.warns(
+        UserWarning,
+        match="NONE does not support strict structured outputs, but you have "
+        "configured `strict=True` in your `ResponseModelConfigDict`. Ignoring `strict` "
+        "as this feature is only supported by OpenAI.",
+    ):
+        Book.warn_for_unsupported_configurations()

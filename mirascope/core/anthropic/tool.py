@@ -11,7 +11,7 @@ from anthropic.types import ToolParam, ToolUseBlock
 from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import TypedDict
 
-from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+from ..base import BaseTool, ToolConfig
 
 
 class _CacheControl(TypedDict):
@@ -51,6 +51,7 @@ class AnthropicTool(BaseTool[ToolParam]):
     """
 
     __provider__ = "anthropic"
+    __tool_config_type__ = AnthropicToolConfig
 
     tool_call: SkipJsonSchema[ToolUseBlock]
 
@@ -71,11 +72,8 @@ class AnthropicTool(BaseTool[ToolParam]):
         print(tool_type.tool_schema())  # prints the Anthropic-specific tool schema
         ```
         """
-        cls.warn_for_unsupported_configurations(AnthropicToolConfig)
         kwargs = {
-            "input_schema": cls.model_json_schema(
-                schema_generator=GenerateJsonSchemaNoTitles
-            ),
+            "input_schema": cls.model_json_schema(),
             "name": cls._name(),
             "description": cls._description(),
         }

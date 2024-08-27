@@ -12,7 +12,12 @@ from collections.abc import Callable
 from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
-from pydantic.json_schema import GenerateJsonSchema, JsonSchemaMode, JsonSchemaValue
+from pydantic.json_schema import (
+    DEFAULT_REF_TEMPLATE,
+    GenerateJsonSchema,
+    JsonSchemaMode,
+    JsonSchemaValue,
+)
 from pydantic_core.core_schema import CoreSchema
 from typing_extensions import TypedDict
 
@@ -75,6 +80,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     '''
 
     __provider__: ClassVar[str] = "NONE"
+    __tool_config_type__: ClassVar[type[ToolConfig]] = ToolConfig
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -147,16 +153,39 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
         )
 
     @classmethod
-    def warn_for_unsupported_configurations(
-        cls, tool_config_type: type[ToolConfig]
-    ) -> None:
-        """Warns when a specific provider does not support provided config options."""
-        unsupported_keys = _utils.get_unsupported_tool_config_keys(
-            cls.tool_config, tool_config_type
+    def model_json_schema(
+        cls,
+        by_alias: bool = True,
+        ref_template: str = DEFAULT_REF_TEMPLATE,
+        schema_generator: type[GenerateJsonSchema] = GenerateJsonSchemaNoTitles,
+        mode: JsonSchemaMode = "validation",
+    ) -> dict[str, Any]:
+        """Returns the generated JSON schema for the class."""
+        cls.warn_for_unsupported_configurations()
+        return super().model_json_schema(
+            by_alias=by_alias,
+            ref_template=ref_template,
+            schema_generator=schema_generator,
+            mode=mode,
         )
-        if unsupported_keys:
+
+    @classmethod
+    def warn_for_unsupported_configurations(cls) -> None:
+        """Warns when a specific provider does not support provided config options."""
+        unsupported_tool_keys = _utils.get_unsupported_tool_config_keys(
+            cls.tool_config, cls.__tool_config_type__
+        )
+        if unsupported_tool_keys:
             warnings.warn(
                 f"{cls.__provider__} does not support the following tool "
-                f"configurations, so they will be ignored: {unsupported_keys}",
+                f"configurations, so they will be ignored: {unsupported_tool_keys}",
+                UserWarning,
+            )
+
+        if "strict" in cls.model_config and cls.__provider__ != "openai":
+            warnings.warn(
+                f"{cls.__provider__} does not support strict structured outputs, but "
+                "you have configured `strict=True` in your `ResponseModelConfigDict`. "
+                "Ignoring `strict` as this feature is only supported by OpenAI.",
                 UserWarning,
             )
