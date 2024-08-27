@@ -10,6 +10,7 @@ from google.generativeai.types import (  # type: ignore
     AsyncGenerateContentResponse,
     ContentDict,
     GenerateContentResponse,
+GenerationConfig
 )
 from google.generativeai.types.content_types import ToolConfigDict
 
