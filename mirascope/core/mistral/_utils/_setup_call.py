@@ -23,19 +23,6 @@ from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
 
 
-class create_or_stream:
-    def __call__(
-        self,
-        stream: bool,
-        **kwargs: Any,  # noqa: ANN401
-    ) -> (
-        ChatCompletionResponse
-        | Coroutine[Any, Any, ChatCompletionResponse]
-        | AsyncGenerator[ChatCompletionStreamResponse, None]
-        | Iterable[ChatCompletionStreamResponse]
-    ): ...
-
-
 def setup_call(
     *,
     model: str,
@@ -48,9 +35,14 @@ def setup_call(
     call_params: MistralCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletionResponse]
-    | Callable[..., Awaitable[ChatCompletionResponse]],
-    str,
+    Callable[
+        ...,
+        ChatCompletionResponse
+        | Coroutine[Any, Any, ChatCompletionResponse]
+        | AsyncGenerator[ChatCompletionStreamResponse, None]
+        | Iterable[ChatCompletionStreamResponse],
+    ],
+    str | None,
     list[ChatMessage],
     list[type[MistralTool]] | None,
     MistralCallKwargs,
