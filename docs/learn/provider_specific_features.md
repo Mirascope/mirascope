@@ -16,17 +16,18 @@ This feature can be extremely useful when extracting structured information or u
 
 #### Tools
 
-To use structured outputs with tools, simply set `strict=True` in the tool's `ToolConfig`. You can then use the tool just like you normally would:
+To use structured outputs with tools, use the `OpenAIToolConfig` and set `strict=True`. You can then use the tool just like you normally would:
 
 ```python
-from mirascope.core import BaseTool, ToolConfig, openai, prompt_template
+from mirascope.core import BaseTool, openai, prompt_template
+from mirascope.core.openai import OpenAIToolConfig
 
 
 class FormatBook(BaseTool):
     title: str
     author: str
 
-    tool_config = ToolConfig(strict=True)
+    tool_config = OpenAIToolConfig(strict=True)
 
     def call(self) -> str:
         return f"{self.title} by {self.author}"
@@ -103,15 +104,17 @@ You can also specify the cache control type the same way we support additional o
 @prompt_template("... {:cache_control(type=ephemeral)}")
 ```
 
-It is also possible to cache tools by setting the cache control on the tool's `ConfigDict`:
+It is also possible to cache tools by using the `AnthropicToolConfig` and setting the cache control:
 
 ```python
-from mirascope.core import BaseTool, ToolConfig
+from mirascope.core import BaseTool, anthropic
+from mirascope.core.anthropic import AnthropicToolConfig
+
 
 class CachedTool(BaseTool):
     ...
 
-    tool_config = ToolConfig(cache_control={"type": "ephemeral"})
+    tool_config = AnthropicToolConfig(cache_control={"type": "ephemeral"})
 
     def call(self) -> str: ...
 ```

@@ -5,8 +5,8 @@ from anthropic.types import (
     ToolUseBlock,
 )
 
-from mirascope.core.anthropic.tool import AnthropicTool
-from mirascope.core.base.tool import BaseTool, ToolConfig
+from mirascope.core.anthropic.tool import AnthropicTool, AnthropicToolConfig
+from mirascope.core.base.tool import BaseTool
 
 
 def test_anthropic_tool() -> None:
@@ -18,7 +18,7 @@ def test_anthropic_tool() -> None:
         title: str
         author: str
 
-        tool_config = ToolConfig(cache_control={"type": "ephemeral"})
+        tool_config = AnthropicToolConfig(cache_control={"type": "ephemeral"})
 
         def call(self) -> str:
             return f"{self.title} by {self.author}"

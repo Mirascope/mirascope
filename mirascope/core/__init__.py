@@ -9,7 +9,6 @@ from .base import (
     BaseTool,
     BaseToolKit,
     ResponseModelConfigDict,
-    ToolConfig,
     metadata,
     prompt_template,
     toolkit_tool,
@@ -54,6 +53,5 @@ __all__ = [
     "openai",
     "prompt_template",
     "ResponseModelConfigDict",
-    "ToolConfig",
     "toolkit_tool",
 ]

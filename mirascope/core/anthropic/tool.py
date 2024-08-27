@@ -9,8 +9,19 @@ import copy
 
 from anthropic.types import ToolParam, ToolUseBlock
 from pydantic.json_schema import SkipJsonSchema
+from typing_extensions import TypedDict
 
-from ..base import BaseTool, GenerateJsonSchemaNoTitles
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+
+
+class _CacheControl(TypedDict):
+    type: str
+
+
+class AnthropicToolConfig(ToolConfig, total=False):
+    """A tool configuration for Anthropic-specific features."""
+
+    cache_control: _CacheControl
 
 
 class AnthropicTool(BaseTool):

@@ -7,7 +7,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 
 from mirascope.core.base.tool import BaseTool
-from mirascope.core.openai.tool import OpenAITool
+from mirascope.core.openai.tool import OpenAITool, OpenAIToolConfig
 
 
 def test_openai_tool() -> None:
@@ -65,7 +65,7 @@ def test_openai_tool_strict() -> None:
         title: str
         author: str
 
-        tool_config = {"strict": True}
+        tool_config = OpenAIToolConfig(strict=True)
 
     assert FormatBook.tool_schema() == ChatCompletionToolParam(
         type="function",

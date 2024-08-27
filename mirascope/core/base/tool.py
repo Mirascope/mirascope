@@ -13,20 +13,15 @@ from typing import Any, ClassVar, TypeVar
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaMode, JsonSchemaValue
 from pydantic_core.core_schema import CoreSchema
-from typing_extensions import Required, TypedDict
+from typing_extensions import TypedDict
 
 from . import _utils
 
 _BaseToolT = TypeVar("_BaseToolT")
 
 
-class _CacheControl(TypedDict):
-    type: Required[str]
-
-
 class ToolConfig(TypedDict, total=False):
-    strict: bool
-    cache_control: _CacheControl
+    """A base class for tool configurations."""
 
 
 class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
