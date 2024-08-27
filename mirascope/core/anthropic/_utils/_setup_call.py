@@ -70,6 +70,11 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
+    # TODO: Investigate type checking issue with Anthropic provider
+    # The |= operator causes type check failures, while direct assignment works.
+    # This behavior differs from other providers. Further investigation needed.
+    # Temporary workaround: Use direct assignment for 'model' key
+    # call_kwargs |= {"model": model, "messages": messages}  # Original line causing type check errors
     call_kwargs["model"] = model
     call_kwargs["messages"] = messages
 
