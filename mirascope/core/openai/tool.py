@@ -16,7 +16,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ..base import BaseTool
 
 
-class OpenAITool(BaseTool):
+class OpenAITool(BaseTool[ChatCompletionToolParam]):
     """A class for defining tools for OpenAI LLM calls.
 
     Example:

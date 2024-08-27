@@ -2,6 +2,7 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
+from dataclasses import asdict, is_dataclass
 from typing import Any, cast
 
 from google.generativeai import GenerativeModel  # type: ignore
@@ -10,8 +11,10 @@ from google.generativeai.types import (  # type: ignore
     ContentDict,
     GenerateContentResponse,
 )
+from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
@@ -32,18 +35,21 @@ def setup_call(
 ) -> tuple[
     Callable[..., GenerateContentResponse]
     | Callable[..., Awaitable[AsyncGenerateContentResponse]],
-    str,
+    str | None,
     list[ContentDict],
     list[type[GeminiTool]] | None,
-    dict[str, Any],
+    GeminiCallKwargs,
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, GeminiTool, call_params
     )
+    call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
     if json_mode:
         generation_config = call_kwargs.get("generation_config", {})
+        if is_dataclass(generation_config):
+            generation_config = asdict(generation_config)
         generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = generation_config
         messages[-1]["parts"].append(
@@ -52,8 +58,12 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        tool_config = call_kwargs.get("tool_config", {})
-        tool_config["function_calling_config"] = {"mode": "auto"}
+        call_kwargs.pop("tool_config", None)
+        tool_config = ToolConfigDict()
+        tool_config.function_calling_config = {
+            "mode": "any",
+            "allowed_function_names": [tool_types[0]._name()],
+        }
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 

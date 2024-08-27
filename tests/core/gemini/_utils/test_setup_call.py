@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from google.generativeai import GenerativeModel  # type: ignore
+from google.generativeai.types import GenerationConfig
+from google.generativeai.types.content_types import ToolConfigDict
 
 from mirascope.core.gemini._utils._setup_call import setup_call
 from mirascope.core.gemini.tool import GeminiTool
@@ -62,6 +64,7 @@ def test_setup_call(
     )
 
 
+@pytest.mark.parametrize("generation_config_type", [dict, GenerationConfig])
 @patch(
     "mirascope.core.gemini._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
@@ -71,6 +74,7 @@ def test_setup_call_json_mode(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
+    generation_config_type: type,
 ) -> None:
     """Tests the `setup_call` function with JSON mode."""
     mock_utils.setup_call = mock_base_setup_call
@@ -79,6 +83,16 @@ def test_setup_call_json_mode(
         {"role": "user", "parts": [{"type": "text", "text": "test"}]}
     ]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
+    mock_base_setup_call.return_value[-1]["generation_config"] = generation_config_type(
+        candidate_count=1,
+        max_output_tokens=100,
+        response_mime_type="application/xml",
+        response_schema=None,
+        stop_sequences=["\n"],
+        temperature=0.5,
+        top_k=0,
+        top_p=0,
+    )
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
         model="gemini-flash-1.5",
@@ -93,6 +107,17 @@ def test_setup_call_json_mode(
     )
     assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
     assert "tools" not in call_kwargs
+    assert "generation_config" in call_kwargs
+    assert call_kwargs["generation_config"] == {
+        "candidate_count": 1,
+        "max_output_tokens": 100,
+        "response_mime_type": "application/json",
+        "response_schema": None,
+        "stop_sequences": ["\n"],
+        "temperature": 0.5,
+        "top_k": 0,
+        "top_p": 0,
+    }
 
 
 @patch(
@@ -106,6 +131,9 @@ def test_setup_call_extract(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function with extraction."""
+    mock_tool = MagicMock()
+    mock_tool._name.side_effect = lambda: "test"
+    mock_base_setup_call.return_value[2] = [mock_tool]
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
         model="gemini-flash-1.5",
@@ -118,6 +146,10 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
-    assert "tool_config" in call_kwargs and call_kwargs["tool_config"] == {
-        "function_calling_config": {"mode": "auto"}
+    assert "tool_config" in call_kwargs and isinstance(
+        call_kwargs["tool_config"], ToolConfigDict
+    )
+    assert call_kwargs["tool_config"].function_calling_config == {
+        "allowed_function_names": ["test"],
+        "mode": "any",
     }

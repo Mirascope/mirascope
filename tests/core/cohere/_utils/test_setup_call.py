@@ -81,6 +81,8 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
+    assert "preamble" in call_kwargs
+    assert "chat_history" in call_kwargs
     assert call_kwargs["preamble"] == f"{preamble_message}\n\n{system_message}"
     assert call_kwargs["chat_history"] == mock_convert_message_params.return_value[:-1]
     assert (
@@ -153,5 +155,7 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
+    assert "model" in call_kwargs
+    assert "message" in call_kwargs
     assert call_kwargs["model"] == "command-r-plus"
     assert call_kwargs["message"] == messages[-1].message

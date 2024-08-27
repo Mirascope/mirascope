@@ -12,6 +12,7 @@ from typing import (
     overload,
 )
 
+from ..call_kwargs import BaseCallKwargs
 from ..call_response_chunk import BaseCallResponseChunk
 from ..tool import BaseTool
 
@@ -120,7 +121,7 @@ class SetupCall(
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallKwargs[_BaseToolT],
     ]: ...
 
     @overload
@@ -141,7 +142,7 @@ class SetupCall(
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallKwargs[_BaseToolT],
     ]: ...
 
     def __call__(
@@ -162,7 +163,7 @@ class SetupCall(
         str,
         list[dict[str, Any]],
         list[type[_BaseToolT]] | None,
-        dict[str, Any],
+        BaseCallKwargs[_BaseToolT],
     ]: ...  # pragma: no cover
 
     @staticmethod

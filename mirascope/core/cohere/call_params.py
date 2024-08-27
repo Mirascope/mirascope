@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from cohere.types import (
     ChatConnector,
     ChatDocument,
+    ChatMessage,
     ChatRequestPromptTruncation,
     ToolResult,
 )
@@ -55,3 +56,5 @@ class CohereCallParams(BaseCallParams):
     presence_penalty: NotRequired[float | None]
     raw_prompting: NotRequired[bool | None]
     tool_results: NotRequired[Sequence[ToolResult] | None]
+    preamble: NotRequired[str | None]
+    chat_history: NotRequired[Sequence[ChatMessage] | None]

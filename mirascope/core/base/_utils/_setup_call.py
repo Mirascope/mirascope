@@ -2,8 +2,9 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
+from ..call_kwargs import BaseCallKwargs
 from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
@@ -25,12 +26,12 @@ def setup_call(
     tool_type: type[_BaseToolT],
     call_params: BaseCallParams,
 ) -> tuple[
-    str,
+    str | None,
     list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
-    dict[str, Any],
+    BaseCallKwargs[_BaseToolT],
 ]:
-    call_kwargs = call_params.copy()
+    call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
     prompt_template, messages, computed_fields = None, None, None
     if dynamic_config is not None:
         computed_fields = dynamic_config.get("computed_fields", None)
@@ -59,6 +60,6 @@ def setup_call(
             else convert_function_to_base_tool(tool, tool_type)
             for tool in tools
         ]
-        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]  # type: ignore
+        call_kwargs["tools"] = [tool_type.tool_schema() for tool_type in tool_types]
 
-    return prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return prompt_template, messages, tool_types, call_kwargs

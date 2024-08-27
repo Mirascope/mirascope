@@ -1,9 +1,11 @@
 import json
+from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
 from pydantic import BaseModel, Field
 
+from mirascope.core.base.call_kwargs import BaseCallKwargs
 from mirascope.core.base.call_response import BaseCallResponse
 from mirascope.core.base.stream import BaseStream
 from mirascope.core.base.structured_stream import BaseStructuredStream
@@ -111,12 +113,15 @@ def test_get_call_response_attributes() -> None:
         dynamic_config={"computed_fields": {"genre": "nonfiction"}},
         messages=[],
         call_params={"tool_choice": "required"},
-        call_kwargs={
-            "tool_choice": "required",
-            "tools": [],
-            "model": "gpt-4o",
-            "messages": [],
-        },
+        call_kwargs=cast(
+            BaseCallKwargs,
+            {
+                "tool_choice": "required",
+                "tools": [],
+                "model": "gpt-4o",
+                "messages": [],
+            },
+        ),
         user_message_param={
             "role": "user",
             "content": [

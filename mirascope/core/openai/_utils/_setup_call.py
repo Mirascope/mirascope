@@ -12,6 +12,7 @@ from openai.types.chat import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import OpenAITool
@@ -31,14 +32,15 @@ def setup_call(
     extract: bool,
 ) -> tuple[
     Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
-    str,
+    str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
-    dict[str, Any],
+    OpenAICallKwargs,
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, OpenAITool, call_params
     )
+    call_kwargs = cast(OpenAICallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:
