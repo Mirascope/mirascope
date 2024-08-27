@@ -127,4 +127,8 @@ class BaseTool(Generic[_ToolSchema], BaseModel):
         return _utils.convert_base_type_to_base_tool(base_type, cls)  # type: ignore
 
     @classmethod
-    def tool_schema(cls) -> _ToolSchema: ...
+    def tool_schema(cls) -> _ToolSchema:
+        raise RuntimeError(
+            f"{cls.__name__}.tool_schema() is not implemented. "
+            "This method should be implemented in provider-specific tool classes."
+        )

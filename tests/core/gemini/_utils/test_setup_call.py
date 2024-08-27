@@ -106,6 +106,7 @@ def test_setup_call_json_mode(
     )
     assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
     assert "tools" not in call_kwargs
+    assert "generation_config" in call_kwargs
     assert call_kwargs["generation_config"] == {
         "candidate_count": 1,
         "max_output_tokens": 100,
