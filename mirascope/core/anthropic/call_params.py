@@ -5,7 +5,7 @@ from __future__ import annotations
 from anthropic.types.completion_create_params import Metadata
 from anthropic.types.message_create_params import ToolChoice
 from httpx import Timeout
-from typing_extensions import NotRequired, Required
+from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
@@ -26,7 +26,7 @@ class AnthropicCallParams(BaseCallParams):
         timeout: ...
     """
 
-    max_tokens: Required[int]
+    max_tokens: int
     tool_choice: NotRequired[ToolChoice | None]
     metadata: NotRequired[Metadata | None]
     stop_sequences: NotRequired[list[str] | None]
