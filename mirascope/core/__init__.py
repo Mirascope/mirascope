@@ -8,7 +8,7 @@ from .base import (
     BasePrompt,
     BaseTool,
     BaseToolKit,
-    ToolConfig,
+    ResponseModelConfigDict,
     metadata,
     prompt_template,
     toolkit_tool,
@@ -52,6 +52,6 @@ __all__ = [
     "mistral",
     "openai",
     "prompt_template",
-    "ToolConfig",
+    "ResponseModelConfigDict",
     "toolkit_tool",
 ]

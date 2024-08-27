@@ -15,6 +15,7 @@ from ._get_possible_user_message_param import get_possible_user_message_param
 from ._get_prompt_template import get_prompt_template
 from ._get_template_values import get_template_values
 from ._get_template_variables import get_template_variables
+from ._get_unsupported_tool_config_keys import get_unsupported_tool_config_keys
 from ._json_mode_content import json_mode_content
 from ._parse_content_template import parse_content_template
 from ._parse_prompt_messages import parse_prompt_messages
@@ -51,6 +52,7 @@ __all__ = [
     "get_prompt_template",
     "get_template_values",
     "get_template_variables",
+    "get_unsupported_tool_config_keys",
     "HandleStream",
     "HandleStreamAsync",
     "is_base_type",

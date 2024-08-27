@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope.core.base._utils import DEFAULT_TOOL_DOCSTRING
-from mirascope.core.base.tool import BaseTool
+from mirascope.core.base.tool import BaseTool, ToolConfig
 
 
 def test_base_tool() -> None:
@@ -65,34 +65,6 @@ def test_base_tool_custom_name() -> None:
     assert FormatBook._name() == "format_book"
 
 
-def test_base_tool_model_tool_schema() -> None:
-    """Tests the `BaseTool.model_tool_schema` class method."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    class FormatBook(BaseTool):
-        book: Book
-        genre: str
-
-    assert FormatBook.model_tool_schema() == {
-        "$defs": {
-            "Book": {
-                "properties": {
-                    "title": {"type": "string"},
-                    "author": {"type": "string"},
-                },
-                "required": ["title", "author"],
-                "type": "object",
-            }
-        },
-        "properties": {"book": {"$ref": "#/$defs/Book"}, "genre": {"type": "string"}},
-        "required": ["book", "genre"],
-        "type": "object",
-    }
-
-
 def test_base_tool_type_conversion() -> None:
     """Tests the `BaseTool.type_from...` class methods."""
 
@@ -139,3 +111,22 @@ def test_base_tool_tool_schema_not_implemented() -> None:
         "This method should be implemented in provider-specific tool classes."
         in str(exc_info.value)
     )
+
+
+def test_base_tool_unsupported_configurations_warning() -> None:
+    """Tests the `warn_for_unsupported_configurations` classmethod of `BaseTool`."""
+
+    class Unsupported(ToolConfig, total=False):
+        unsupported: str
+
+    class FormatBook(BaseTool):
+        title: str
+
+        tool_config = Unsupported(unsupported="")
+
+    with pytest.warns(
+        UserWarning,
+        match="NONE does not support the following tool configurations, so they will "
+        "be ignored: {'unsupported'}",
+    ):
+        FormatBook.warn_for_unsupported_configurations(ToolConfig)

@@ -17,9 +17,10 @@ from .message_param import (
 )
 from .metadata import Metadata
 from .prompt import BasePrompt, metadata, prompt_template
+from .response_model_config_dict import ResponseModelConfigDict
 from .stream import BaseStream
 from .structured_stream import BaseStructuredStream
-from .tool import BaseTool, ToolConfig
+from .tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from .toolkit import BaseToolKit, toolkit_tool
 
 __all__ = [
@@ -38,10 +39,12 @@ __all__ = [
     "BaseType",
     "CacheControlPart",
     "call_factory",
+    "GenerateJsonSchemaNoTitles",
     "ImagePart",
     "metadata",
     "Metadata",
     "prompt_template",
+    "ResponseModelConfigDict",
     "TextPart",
     "ToolConfig",
     "toolkit_tool",

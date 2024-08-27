@@ -1,11 +1,13 @@
 """Tests the `openai._utils.setup_call` module."""
 
 import inspect
+from typing import ClassVar
 from unittest.mock import MagicMock, patch
 
 import pytest
 from openai import OpenAI
 
+from mirascope.core.base import ResponseModelConfigDict
 from mirascope.core.openai._utils._setup_call import setup_call
 from mirascope.core.openai.tool import OpenAITool
 
@@ -73,6 +75,11 @@ def test_setup_call_json_mode(
     mock_base_setup_call.return_value[1] = [
         {"role": "user", "content": [{"type": "text", "text": "test"}]}
     ]
+
+    class MockToolType(MagicMock):
+        model_config: ClassVar[dict] = {}
+
+    mock_base_setup_call.return_value[2] = [MockToolType]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
@@ -106,6 +113,40 @@ def test_setup_call_json_mode(
     assert isinstance(messages[-1], dict) and "content" in messages[-1]
 
     assert messages[-1] == {"role": "user", "content": "json output"}
+
+    class Tool(OpenAITool):
+        """A test tool."""
+
+        title: str
+
+        model_config = ResponseModelConfigDict(strict=True)
+
+    mock_base_setup_call.return_value[2] = [Tool]
+    _, _, _, _, call_kwargs = setup_call(
+        model="gpt-4o",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,
+        call_params={},
+        extract=False,
+    )
+    assert "response_format" in call_kwargs and call_kwargs["response_format"] == {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "Tool",
+            "description": "A test tool.",
+            "strict": True,
+            "schema": {
+                "properties": {"title": {"type": "string"}},
+                "required": ["title"],
+                "type": "object",
+                "additionalProperties": False,
+            },
+        },
+    }
 
 
 @patch(

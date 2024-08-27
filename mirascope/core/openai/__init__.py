@@ -7,7 +7,7 @@ from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
 from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
-from .tool import OpenAITool
+from .tool import OpenAITool, OpenAIToolConfig
 
 __all__ = [
     "call",
@@ -17,5 +17,6 @@ __all__ = [
     "OpenAICallResponseChunk",
     "OpenAIStream",
     "OpenAITool",
+    "OpenAIToolConfig",
     "openai_call",
 ]

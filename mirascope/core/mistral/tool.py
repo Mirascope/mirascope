@@ -11,7 +11,7 @@ import jiter
 from mistralai.models.chat_completion import ToolCall
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
 
 class MistralTool(BaseTool[dict[str, Any]]):
@@ -59,8 +59,11 @@ class MistralTool(BaseTool[dict[str, Any]]):
         print(tool_type.tool_schema())  # prints the Mistral-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(ToolConfig)
         fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
-        model_schema = cls.model_tool_schema()
+        model_schema = cls.model_json_schema(
+            schema_generator=GenerateJsonSchemaNoTitles
+        )
         if model_schema["properties"]:
             fn["parameters"] = model_schema
         return {"function": fn, "type": "function"}

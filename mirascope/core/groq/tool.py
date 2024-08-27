@@ -13,7 +13,7 @@ from groq.types.chat import (
 from groq.types.shared_params import FunctionDefinition
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
 
 class GroqTool(BaseTool[ChatCompletionToolParam]):
@@ -61,8 +61,11 @@ class GroqTool(BaseTool[ChatCompletionToolParam]):
         print(tool_type.tool_schema())  # prints the Groq-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(ToolConfig)
         fn = FunctionDefinition(name=cls._name(), description=cls._description())
-        model_schema = cls.model_tool_schema()
+        model_schema = cls.model_json_schema(
+            schema_generator=GenerateJsonSchemaNoTitles
+        )
         if model_schema["properties"]:
             fn["parameters"] = model_schema
         return ChatCompletionToolParam(function=fn, type="function")

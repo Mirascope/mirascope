@@ -2,7 +2,7 @@
 
 import json
 
-from ..tool import BaseTool
+from ..tool import BaseTool, GenerateJsonSchemaNoTitles
 
 
 def json_mode_content(tool_type: type[BaseTool] | None) -> str:
@@ -12,4 +12,4 @@ def json_mode_content(tool_type: type[BaseTool] | None) -> str:
     return f"""
 
 Extract ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to this schema:
-{json.dumps(tool_type.model_json_schema(), indent=2)}"""
+{json.dumps(tool_type.model_json_schema(schema_generator=GenerateJsonSchemaNoTitles), indent=2)}"""

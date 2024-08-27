@@ -13,7 +13,17 @@ from openai.types.chat import (
 from openai.types.shared_params import FunctionDefinition
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+
+
+class GenerateOpenAIStrictToolJsonSchema(GenerateJsonSchemaNoTitles):
+    _openai_strict = True
+
+
+class OpenAIToolConfig(ToolConfig, total=False):
+    """A tool configuration for OpenAI-specific features."""
+
+    strict: bool
 
 
 class OpenAITool(BaseTool[ChatCompletionToolParam]):
@@ -61,8 +71,13 @@ class OpenAITool(BaseTool[ChatCompletionToolParam]):
         print(tool_type.tool_schema())  # prints the OpenAI-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(OpenAIToolConfig)
         fn = FunctionDefinition(name=cls._name(), description=cls._description())
-        model_schema = cls.model_tool_schema()
+        schema_generator = GenerateJsonSchemaNoTitles
+        if cls.tool_config.get("strict", False):
+            fn["strict"] = True
+            schema_generator = GenerateOpenAIStrictToolJsonSchema
+        model_schema = cls.model_json_schema(schema_generator=schema_generator)
         if model_schema["properties"]:
             fn["parameters"] = model_schema
         return ChatCompletionToolParam(function=fn, type="function")
