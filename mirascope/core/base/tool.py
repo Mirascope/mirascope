@@ -18,7 +18,7 @@ from typing_extensions import TypedDict
 from . import _utils
 
 _BaseToolT = TypeVar("_BaseToolT")
-_ToolSchema = TypeVar("_ToolSchema")
+_ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
 class ToolConfig(TypedDict, total=False):
@@ -52,7 +52,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-class BaseTool(BaseModel, Generic[_ToolSchema]):
+class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     '''A class for defining tools for LLM calls.
 
     Example:
@@ -138,7 +138,7 @@ class BaseTool(BaseModel, Generic[_ToolSchema]):
         return _utils.convert_base_type_to_base_tool(base_type, cls)  # type: ignore
 
     @classmethod
-    def tool_schema(cls) -> _ToolSchema:
+    def tool_schema(cls) -> _ToolSchemaT:
         raise RuntimeError(
             f"{cls.__name__}.tool_schema() is not implemented. "
             "This method should be implemented in provider-specific tool classes."
