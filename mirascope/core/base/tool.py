@@ -27,7 +27,7 @@ class ToolConfig(TypedDict, total=False):
     cache_control: _CacheControl
 
 
-class BaseTool(Generic[_ToolSchema], BaseModel):
+class BaseTool(BaseModel, Generic[_ToolSchema]):
     '''A class for defining tools for LLM calls.
 
     Example:
