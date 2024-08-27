@@ -1,5 +1,49 @@
 # Changelog
 
+## [v1.1.0](https://github.com/Mirascope/mirascope/releases/tag/v1.1.0) - 2024-08-27
+
+## What's Changed
+* chore: updated sql agent example and added tests by [@brenkao](https://github.com/brenkao) in [https://github.com/Mirascope/mirascope/pull/450](https://github.com/Mirascope/mirascope/pull/450)
+* feat: anthropic prompt caching by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/456](https://github.com/Mirascope/mirascope/pull/456)
+* fix: setup_call type by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/449](https://github.com/Mirascope/mirascope/pull/449)
+* feat: openai structured outputs by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/457](https://github.com/Mirascope/mirascope/pull/457)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.6...v1.1.0](https://github.com/Mirascope/mirascope/compare/v1.0.6...v1.1.0)
+
+## [v1.0.6](https://github.com/Mirascope/mirascope/releases/tag/v1.0.6) - 2024-08-24
+
+## What's Changed
+* Fix kwargs input by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/455](https://github.com/Mirascope/mirascope/pull/455)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.5...v1.0.6](https://github.com/Mirascope/mirascope/compare/v1.0.5...v1.0.6)
+
+## [v1.0.5](https://github.com/Mirascope/mirascope/releases/tag/v1.0.5) - 2024-08-24
+
+## What's Changed
+* Fix 452 453 by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/454](https://github.com/Mirascope/mirascope/pull/454)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.4...v1.0.5](https://github.com/Mirascope/mirascope/compare/v1.0.4...v1.0.5)
+
+## [v1.0.4](https://github.com/Mirascope/mirascope/releases/tag/v1.0.4) - 2024-08-24
+
+## What's Changed
+* V0 interface support by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/451](https://github.com/Mirascope/mirascope/pull/451)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.3...v1.0.4](https://github.com/Mirascope/mirascope/compare/v1.0.3...v1.0.4)
+
+## [v1.0.3](https://github.com/Mirascope/mirascope/releases/tag/v1.0.3) - 2024-08-23
+
+## What's Changed
+* fix: Apply ruff ANN rule by [@koxudaxi](https://github.com/koxudaxi) in [https://github.com/Mirascope/mirascope/pull/445](https://github.com/Mirascope/mirascope/pull/445)
+* Fix pydantic version by [@willbakst](https://github.com/willbakst) in [https://github.com/Mirascope/mirascope/pull/448](https://github.com/Mirascope/mirascope/pull/448)
+
+
+**Full Changelog**: [https://github.com/Mirascope/mirascope/compare/v1.0.2...v1.0.3](https://github.com/Mirascope/mirascope/compare/v1.0.2...v1.0.3)
+
 ## [v1.0.2](https://github.com/Mirascope/mirascope/releases/tag/v1.0.2) - 2024-08-22
 
 ## What's Changed
