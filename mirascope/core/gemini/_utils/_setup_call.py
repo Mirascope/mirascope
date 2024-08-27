@@ -37,7 +37,7 @@ def setup_call(
     str | None,
     list[ContentDict],
     list[type[GeminiTool]] | None,
-    dict[str, Any],
+    GeminiCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, GeminiTool, call_params
@@ -59,7 +59,7 @@ def setup_call(
         assert tool_types, "At least one tool must be provided for extraction."
         tool_config = call_kwargs.get("tool_config", {})
         # Ignore type checking, because gemini tool config is not yet typed correctly
-        tool_config["function_calling_config"] = {"mode": "auto"}  # type: ignore
+        tool_config["function_calling_config"] = {"mode": "auto"}  # pyright: ignore [reportGeneralTypeIssues, reportIndexIssue]
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 

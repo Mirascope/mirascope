@@ -10,5 +10,5 @@ from .tool import GroqTool
 
 
 class GroqCallKwargs(GroqCallParams, BaseCallKwargs[GroqTool]):
-    model: NotRequired[str]
-    messages: NotRequired[list[ChatCompletionMessageParam]]
+    model: str
+    messages: list[ChatCompletionMessageParam]

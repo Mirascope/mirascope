@@ -26,7 +26,6 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
-_BaseCallKwargsT = TypeVar("_BaseCallKwargsT", bound=BaseCallKwargs)
 
 
 class BaseCallResponse(

@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Iterable
-from typing import Any, TypeVar, cast
+from typing import Any, cast
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -22,7 +22,18 @@ from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
 
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+
+class create_or_stream:
+    def __call__(
+        self,
+        stream: bool,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> (
+        ChatCompletionResponse
+        | Coroutine[Any, Any, ChatCompletionResponse]
+        | AsyncGenerator[ChatCompletionStreamResponse, None]
+        | Iterable[ChatCompletionStreamResponse]
+    ): ...
 
 
 def setup_call(
@@ -42,7 +53,7 @@ def setup_call(
     str,
     list[ChatMessage],
     list[type[MistralTool]] | None,
-    dict[str, Any],
+    MistralCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, MistralTool, call_params
@@ -76,15 +87,13 @@ def setup_call(
         stream: bool,
         **kwargs: Any,  # noqa: ANN401
     ) -> (
-        Iterable[ChatCompletionStreamResponse]
-        | AsyncGenerator[  # noqa: ANN401
-            ChatCompletionStreamResponse, None
-        ]
-        | ChatCompletionResponse
+        ChatCompletionResponse
         | Coroutine[Any, Any, ChatCompletionResponse]
+        | AsyncGenerator[ChatCompletionStreamResponse, None]
+        | Iterable[ChatCompletionStreamResponse]
     ):
         if stream:
             return client.chat_stream(**kwargs)
         return client.chat(**kwargs)
 
-    return create_or_stream, prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create_or_stream, prompt_template, messages, tool_types, call_kwargs

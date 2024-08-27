@@ -17,8 +17,6 @@ from ._parse_prompt_messages import parse_prompt_messages
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
-_BaseCallKwargsT = TypeVar("_BaseCallKwargsT", bound=BaseCallKwargs)
-
 
 def setup_call(
     fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],

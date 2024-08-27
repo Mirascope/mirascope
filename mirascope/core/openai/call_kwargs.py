@@ -10,5 +10,5 @@ from .tool import OpenAITool
 
 
 class OpenAICallKwargs(OpenAICallParams, BaseCallKwargs[OpenAITool]):
-    model: NotRequired[str]
-    messages: NotRequired[list[ChatCompletionMessageParam]]
+    model: str
+    messages: list[ChatCompletionMessageParam]

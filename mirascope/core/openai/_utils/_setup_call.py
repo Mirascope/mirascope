@@ -18,8 +18,6 @@ from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import OpenAITool
 from ._convert_message_params import convert_message_params
 
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-
 
 def setup_call(
     *,

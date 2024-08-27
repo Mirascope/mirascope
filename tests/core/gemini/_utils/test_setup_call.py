@@ -5,9 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import (
-    GenerationConfig,
-)
+from google.generativeai.types import GenerationConfig
 
 from mirascope.core.gemini._utils._setup_call import setup_call
 from mirascope.core.gemini.tool import GeminiTool

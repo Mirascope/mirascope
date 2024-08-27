@@ -21,7 +21,6 @@ _BaseCallResponseChunkT = TypeVar(
 )
 _BaseClientT = TypeVar("_BaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
-_BaseCallKwargsT = TypeVar("_BaseCallKwargsT", bound=BaseCallKwargs)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
 _AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)

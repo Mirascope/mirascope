@@ -10,5 +10,5 @@ from .tool import AnthropicTool
 
 
 class AnthropicCallKwargs(AnthropicCallParams, BaseCallKwargs[AnthropicTool]):
-    model: NotRequired[str]
-    messages: NotRequired[list[MessageParam]]
+    model: str
+    messages: list[MessageParam]
