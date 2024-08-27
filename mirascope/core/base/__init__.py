@@ -3,6 +3,7 @@
 from . import _partial, _utils
 from ._call_factory import call_factory
 from ._utils import BaseType
+from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -23,6 +24,7 @@ from .toolkit import BaseToolKit, toolkit_tool
 
 __all__ = [
     "AudioPart",
+    "BaseCallKwargs",
     "BaseCallParams",
     "BaseCallResponse",
     "BaseCallResponseChunk",

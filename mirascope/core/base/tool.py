@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Any, ClassVar, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
-from typing_extensions import Required, TypedDict
+from typing_extensions import TypedDict
 
 from . import _utils
 
@@ -20,7 +20,7 @@ _ToolSchema = TypeVar("_ToolSchema")
 
 
 class _CacheControl(TypedDict):
-    type: Required[str]
+    type: str
 
 
 class ToolConfig(TypedDict, total=False):

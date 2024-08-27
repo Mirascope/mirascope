@@ -2,8 +2,7 @@
 
 from google.generativeai.types import ContentDict
 
-from mirascope.core.base.call_kwargs import BaseCallKwargs
-
+from ..base import BaseCallKwargs
 from .call_params import GeminiCallParams
 from .tool import GeminiTool
 

@@ -2,8 +2,7 @@
 
 from anthropic.types import MessageParam
 
-from mirascope.core.base.call_kwargs import BaseCallKwargs
-
+from ..base import BaseCallKwargs
 from .call_params import AnthropicCallParams
 from .tool import AnthropicTool
 

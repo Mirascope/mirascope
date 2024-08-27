@@ -2,8 +2,7 @@
 
 from openai.types.chat import ChatCompletionMessageParam
 
-from mirascope.core.base.call_kwargs import BaseCallKwargs
-
+from ..base import BaseCallKwargs
 from .call_params import OpenAICallParams
 from .tool import OpenAITool
 

@@ -2,8 +2,7 @@
 
 from cohere.types import ChatMessage
 
-from mirascope.core.base.call_kwargs import BaseCallKwargs
-
+from ..base import BaseCallKwargs
 from .call_params import CohereCallParams
 from .tool import CohereTool
 
