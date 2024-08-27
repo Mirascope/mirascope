@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, TypeVar, cast
+from typing import Any, cast
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (

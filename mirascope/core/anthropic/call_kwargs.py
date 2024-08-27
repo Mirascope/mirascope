@@ -1,7 +1,6 @@
 """This module contains the type definition for the Anthropic call keyword arguments."""
 
 from anthropic.types import MessageParam
-from typing_extensions import NotRequired
 
 from mirascope.core.base.call_kwargs import BaseCallKwargs
 
