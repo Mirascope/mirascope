@@ -52,6 +52,8 @@ class OpenAITool(BaseTool[ChatCompletionToolParam]):
     ```
     """
 
+    __provider__ = "openai"
+
     tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
 
     @classmethod

@@ -40,6 +40,8 @@ class MistralTool(BaseTool[dict[str, Any]]):
     ```
     """
 
+    __provider__ = "mistral"
+
     tool_call: SkipJsonSchema[ToolCall]
 
     @classmethod

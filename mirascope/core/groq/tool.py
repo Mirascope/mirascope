@@ -42,6 +42,8 @@ class GroqTool(BaseTool[ChatCompletionToolParam]):
     ```
     """
 
+    __provider__ = "groq"
+
     tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
 
     @classmethod

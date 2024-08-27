@@ -43,6 +43,8 @@ class GeminiTool(BaseTool[Tool]):
     ```
     """
 
+    __provider__ = "gemini"
+
     tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod

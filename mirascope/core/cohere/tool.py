@@ -38,6 +38,8 @@ class CohereTool(BaseTool[Tool]):
     ```
     """
 
+    __provider__ = "cohere"
+
     tool_call: SkipValidation[SkipJsonSchema[ToolCall]]
 
     @classmethod
