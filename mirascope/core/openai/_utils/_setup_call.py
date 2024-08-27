@@ -1,6 +1,7 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
+import warnings
 from collections.abc import Awaitable, Callable
 from typing import Any, cast
 
@@ -67,6 +68,12 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
+        if tool_types and tool_types[0].model_config.get("strict", False):
+            warnings.warn(
+                "You must set `json_mode=True` to use `strict=True` response models. "
+                "Ignoring `strict` and using tools for extraction.",
+                UserWarning,
+            )
         call_kwargs["tool_choice"] = "required"
     call_kwargs |= {"model": model, "messages": messages}
 

@@ -53,6 +53,7 @@ class OpenAITool(BaseTool[ChatCompletionToolParam]):
     """
 
     __provider__ = "openai"
+    __tool_config_type__ = OpenAIToolConfig
 
     tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
 
@@ -73,7 +74,6 @@ class OpenAITool(BaseTool[ChatCompletionToolParam]):
         print(tool_type.tool_schema())  # prints the OpenAI-specific tool schema
         ```
         """
-        cls.warn_for_unsupported_configurations(OpenAIToolConfig)
         fn = FunctionDefinition(name=cls._name(), description=cls._description())
         schema_generator = GenerateJsonSchemaNoTitles
         if cls.tool_config.get("strict", False):
