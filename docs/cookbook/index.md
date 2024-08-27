@@ -16,7 +16,7 @@ Each recipe in our cookbook:
 Here are some popular recipes to get you started:
 
 - [Web Search Agent](./agents/web_search_agent.md): Build an agent that can search the web and answer questions
-- [SQL Agent](./agents/generating_sql_agent.md): Use LLMs to generate SQL and operate as a data analysis co-pilot
+- [SQL Agent](./agents/sql_agent.md): Use LLMs to generate SQL and operate as a data analysis co-pilot
 - [Text Classification](./text_classification.md): Learn how to classify text into labels
 - [Text Summarization](./text_summarization.md): Learn how to create concise summaries of long texts
 - [Support Ticket Routing](./support_ticket_routing.md): Automate customer support ticket classification and routing

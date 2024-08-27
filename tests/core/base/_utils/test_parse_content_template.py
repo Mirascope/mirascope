@@ -8,6 +8,7 @@ from mirascope.core.base._utils._parse_content_template import parse_content_tem
 from mirascope.core.base.message_param import (
     AudioPart,
     BaseMessageParam,
+    CacheControlPart,
     ImagePart,
     TextPart,
 )
@@ -154,3 +155,20 @@ def test_parse_content_template_audio(
         match="When using 'audios' template, 'urls' must be a list.",
     ):
         parse_content_template("user", template, {"urls": None})
+
+
+def test_parse_content_template_cache_control() -> None:
+    """Test the parse_content_template function with a cache_control part."""
+    expected = BaseMessageParam(
+        role="user",
+        content=[CacheControlPart(type="cache_control", cache_type="ephemeral")],
+    )
+    assert parse_content_template("user", "{:cache_control}", {}) == expected
+    assert (
+        parse_content_template("user", "{:cache_control(type=ephemeral)}", {})
+        == expected
+    )
+    assert parse_content_template("user", "{not_used:cache_control}", {}) == expected
+
+    expected.role = "system"
+    assert parse_content_template("system", "{:cache_control}", {}) == expected

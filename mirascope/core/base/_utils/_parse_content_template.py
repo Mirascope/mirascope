@@ -9,6 +9,7 @@ from typing_extensions import TypedDict
 from ..message_param import (
     AudioPart,
     BaseMessageParam,
+    CacheControlPart,
     ImagePart,
     TextPart,
 )
@@ -16,7 +17,7 @@ from ._format_template import format_template
 from ._get_audio_type import get_audio_type
 from ._get_image_type import get_image_type
 
-_PartType = Literal["text", "image", "images", "audio", "audios"]
+_PartType = Literal["text", "image", "images", "audio", "audios", "cache_control"]
 
 
 class _Part(TypedDict):
@@ -28,15 +29,15 @@ class _Part(TypedDict):
 def _parse_parts(template: str) -> list[_Part]:
     # \{ and \} match the literal curly braces.
     #
-    # ([^:{}]+) captures one or more characters that are not { or } or :.
-    # This captures the content before the colon.
+    # ([^:{}]*) captures content before the colon that are not { or } or :.
+    # This can be empty when using `cache_control`.
     #
     # : matches the literal colon separating the type from the content.
     #
-    # (image|images|audio|audios) captures the supported special type after the colon.
+    # (image|images|...) captures the supported special type after the colon.
     #
     # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
-    pattern = r"\{([^:{}]+):(image|images|audio|audios)(?:\(([^)]*)\))?\}"
+    pattern = r"\{([^:{}]*):(image|images|audio|audios|cache_control)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
@@ -104,7 +105,7 @@ def _construct_audio_part(source: str | bytes) -> AudioPart:
 
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> list[TextPart] | list[ImagePart] | list[AudioPart]:
+) -> list[TextPart] | list[ImagePart] | list[AudioPart] | list[CacheControlPart]:
     if part["type"] == "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
@@ -129,6 +130,15 @@ def _construct_parts(
                 f"When using 'audios' template, '{part['template']}' must be a list."
             )
         return [_construct_audio_part(source) for source in sources] if sources else []
+    elif part["type"] == "cache_control":
+        return [
+            CacheControlPart(
+                type="cache_control",
+                cache_type=part["options"].get("type", "ephemeral")
+                if part["options"]
+                else "ephemeral",
+            )
+        ]
     else:  # text type
         formatted_template = format_template(part["template"].strip(), attrs)
         if not formatted_template:

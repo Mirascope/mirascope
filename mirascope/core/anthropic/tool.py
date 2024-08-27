@@ -58,11 +58,14 @@ class AnthropicTool(BaseTool):
         print(tool_type.tool_schema())  # prints the Anthropic-specific tool schema
         ```
         """
-        return ToolParam(
-            input_schema=cls.model_tool_schema(),
-            name=cls._name(),
-            description=cls._description(),
-        )
+        kwargs = {
+            "input_schema": cls.model_tool_schema(),
+            "name": cls._name(),
+            "description": cls._description(),
+        }
+        if "cache_control" in cls.tool_config:
+            kwargs["cache_control"] = cls.tool_config["cache_control"]
+        return ToolParam(**kwargs)
 
     @classmethod
     def from_tool_call(cls, tool_call: ToolUseBlock) -> AnthropicTool:

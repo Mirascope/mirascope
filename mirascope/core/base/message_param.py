@@ -17,6 +17,21 @@ class TextPart(BaseModel):
     text: str
 
 
+class CacheControlPart(BaseModel):
+    """A `TextPart` with cache control.
+
+    This part is currently only available with Anthropic. For more details, see:
+    https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+
+    Attributes:
+        type: Always "cache_control"
+        cache_type: Currently only "ephemeral" is available.
+    """
+
+    type: Literal["cache_control"]
+    cache_type: str
+
+
 class ImagePart(BaseModel):
     """A content part for images.
 
@@ -58,4 +73,4 @@ class BaseMessageParam(BaseModel):
     """
 
     role: str
-    content: str | list[TextPart | ImagePart | AudioPart]
+    content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart]

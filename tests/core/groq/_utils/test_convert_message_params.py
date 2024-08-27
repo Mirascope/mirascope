@@ -24,7 +24,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Groq does not currently support multimodalities.",
+        match="Groq currently only supports text parts.",
     ):
         convert_message_params(
             [
@@ -44,7 +44,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Groq does not currently support multimodalities.",
+        match="Groq currently only supports text parts.",
     ):
         convert_message_params(
             [
