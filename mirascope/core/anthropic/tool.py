@@ -13,7 +13,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ..base import BaseTool
 
 
-class AnthropicTool(BaseTool):
+class AnthropicTool(BaseTool[ToolParam]):
     """A class for defining tools for Anthropic LLM calls.
 
     Example:
