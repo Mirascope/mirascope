@@ -14,7 +14,7 @@ from google.generativeai.types import (  # type: ignore
 )
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool, GenerateJsonSchemaNoTitles
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
 
 class GeminiTool(BaseTool[Tool]):
@@ -62,6 +62,7 @@ class GeminiTool(BaseTool[Tool]):
         print(tool_type.tool_schema())  # prints the Gemini-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(ToolConfig)
         model_schema = cls.model_json_schema(
             schema_generator=GenerateJsonSchemaNoTitles
         )

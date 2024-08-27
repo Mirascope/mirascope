@@ -9,7 +9,7 @@ from cohere.types import Tool, ToolCall, ToolParameterDefinitionsValue
 from pydantic import SkipValidation
 from pydantic.json_schema import SkipJsonSchema
 
-from ..base import BaseTool, GenerateJsonSchemaNoTitles
+from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
 
 class CohereTool(BaseTool[Tool]):
@@ -57,6 +57,7 @@ class CohereTool(BaseTool[Tool]):
         print(tool_type.tool_schema())  # prints the Cohere-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(ToolConfig)
         model_schema = cls.model_json_schema(
             schema_generator=GenerateJsonSchemaNoTitles
         )

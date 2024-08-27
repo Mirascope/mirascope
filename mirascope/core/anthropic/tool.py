@@ -50,6 +50,8 @@ class AnthropicTool(BaseTool[ToolParam]):
     ```
     """
 
+    __provider__ = "anthropic"
+
     tool_call: SkipJsonSchema[ToolUseBlock]
 
     @classmethod
@@ -69,6 +71,7 @@ class AnthropicTool(BaseTool[ToolParam]):
         print(tool_type.tool_schema())  # prints the Anthropic-specific tool schema
         ```
         """
+        cls.warn_for_unsupported_configurations(AnthropicToolConfig)
         kwargs = {
             "input_schema": cls.model_json_schema(
                 schema_generator=GenerateJsonSchemaNoTitles

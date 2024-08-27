@@ -6,6 +6,7 @@ usage-docs: learn/tools.md#the-basetool-class
 from __future__ import annotations
 
 import inspect
+import warnings
 from abc import abstractmethod
 from collections.abc import Callable
 from typing import Any, ClassVar, Generic, TypeVar
@@ -73,6 +74,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     ```
     '''
 
+    __provider__: ClassVar[str] = "NONE"
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -143,3 +145,18 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
             f"{cls.__name__}.tool_schema() is not implemented. "
             "This method should be implemented in provider-specific tool classes."
         )
+
+    @classmethod
+    def warn_for_unsupported_configurations(
+        cls, tool_config_type: type[ToolConfig]
+    ) -> None:
+        """Warns when a specific provider does not support provided config options."""
+        unsupported_keys = _utils.get_unsupported_tool_config_keys(
+            cls.tool_config, tool_config_type
+        )
+        if unsupported_keys:
+            warnings.warn(
+                f"{cls.__provider__} does not support the following tool "
+                f"configurations, so they will be ignored: {unsupported_keys}",
+                UserWarning,
+            )
