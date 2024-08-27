@@ -16,7 +16,7 @@ def convert_message_params(
             converted_message_params.append(message_param.model_dump())
         else:
             if len(content) != 1 or content[0].type != "text":
-                raise ValueError("Groq does not currently support multimodalities.")
+                raise ValueError("Groq currently only supports text parts.")
             converted_message_params.append(
                 {"role": message_param.role, "content": content[0].text}
             )

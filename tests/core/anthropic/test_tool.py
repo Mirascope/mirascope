@@ -6,7 +6,7 @@ from anthropic.types import (
 )
 
 from mirascope.core.anthropic.tool import AnthropicTool
-from mirascope.core.base.tool import BaseTool
+from mirascope.core.base.tool import BaseTool, ToolConfig
 
 
 def test_anthropic_tool() -> None:
@@ -17,6 +17,8 @@ def test_anthropic_tool() -> None:
 
         title: str
         author: str
+
+        tool_config = ToolConfig(cache_control={"type": "ephemeral"})
 
         def call(self) -> str:
             return f"{self.title} by {self.author}"
@@ -35,10 +37,10 @@ def test_anthropic_tool() -> None:
     assert tool.title == "The Name of the Wind"
     assert tool.author == "Patrick Rothfuss"
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
-    assert FormatBook.tool_schema() == ToolParam(
-        name="FormatBook",
-        description="Returns the title and author nicely formatted.",
-        input_schema={
+    kwargs = {
+        "name": "FormatBook",
+        "description": "Returns the title and author nicely formatted.",
+        "input_schema": {
             "properties": {
                 "title": {"type": "string"},
                 "author": {"type": "string"},
@@ -46,4 +48,6 @@ def test_anthropic_tool() -> None:
             "required": ["title", "author"],
             "type": "object",
         },
-    )
+        "cache_control": {"type": "ephemeral"},
+    }
+    assert FormatBook.tool_schema() == ToolParam(**kwargs)

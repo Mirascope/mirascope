@@ -21,7 +21,14 @@ def convert_message_params(
             for part in content:
                 if part.type == "text":
                     converted_content.append(part.model_dump())
-
+                elif part.type == "cache_control":
+                    converted_content.append(
+                        {
+                            "type": "text",
+                            "text": "",
+                            "cache_control": {"type": part.cache_type},
+                        }
+                    )
                 elif part.type == "image":
                     if part.media_type not in [
                         "image/jpeg",
@@ -30,8 +37,9 @@ def convert_message_params(
                         "image/webp",
                     ]:
                         raise ValueError(
-                            f"Unsupported image media type: {part.media_type}. Anthropic"
-                            " currently only supports JPEG, PNG, GIF, and WebP images."
+                            f"Unsupported image media type: {part.media_type}. "
+                            "Anthropic currently only supports JPEG, PNG, GIF, and "
+                            "WebP images."
                         )
                     converted_content.append(
                         {
@@ -45,8 +53,8 @@ def convert_message_params(
                     )
                 else:
                     raise ValueError(
-                        "Anthropic currently only supports text and image modalities. "
-                        f"Modality provided: {part.type}"
+                        "Anthropic currently only supports text, image, and cache "
+                        f"control parts. Part provided: {part.type}"
                     )
             converted_message_params.append(
                 {"role": message_param.role, "content": converted_content}

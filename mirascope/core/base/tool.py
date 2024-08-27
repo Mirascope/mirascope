@@ -11,11 +11,20 @@ from collections.abc import Callable
 from typing import Any, ClassVar, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
+from typing_extensions import Required, TypedDict
 
 from . import _utils
 
 _BaseToolT = TypeVar("_BaseToolT")
 _ToolSchema = TypeVar("_ToolSchema")
+
+
+class _CacheControl(TypedDict):
+    type: Required[str]
+
+
+class ToolConfig(TypedDict, total=False):
+    cache_control: _CacheControl
 
 
 class BaseTool(Generic[_ToolSchema], BaseModel):
@@ -40,6 +49,7 @@ class BaseTool(Generic[_ToolSchema], BaseModel):
     '''
 
     __custom_name__: ClassVar[str] = ""
+    tool_config: ClassVar[ToolConfig] = {}
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod

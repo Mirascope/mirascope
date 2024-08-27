@@ -6,7 +6,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 from google.generativeai.types import ContentDict
 
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    CacheControlPart,
+    ImagePart,
+    TextPart,
+)
 from mirascope.core.gemini._utils._convert_message_params import convert_message_params
 
 
@@ -81,5 +87,20 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                         )
                     ],
                 ),
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="Gemini currently only supports text, image, and audio parts. Part provided: cache_control",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        CacheControlPart(type="cache_control", cache_type="ephemeral")
+                    ],
+                )
             ]
         )
