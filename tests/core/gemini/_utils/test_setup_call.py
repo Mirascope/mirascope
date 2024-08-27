@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import GenerationConfig
+from google.generativeai.types.content_types import ToolConfigDict
 
 from mirascope.core.gemini._utils._setup_call import setup_call
 from mirascope.core.gemini.tool import GeminiTool
@@ -145,6 +146,10 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
-    assert "tool_config" in call_kwargs and call_kwargs["tool_config"] == {
-        "function_calling_config": {"allowed_function_names": ["test"], "mode": "any"}
+    assert "tool_config" in call_kwargs and isinstance(
+        call_kwargs["tool_config"], ToolConfigDict
+    )
+    assert call_kwargs["tool_config"].function_calling_config == {
+        "allowed_function_names": ["test"],
+        "mode": "any",
     }
