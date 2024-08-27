@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from dataclasses import asdict
+from dataclasses import asdict, is_dataclass
 from typing import Any, cast
 
 from google.generativeai import GenerativeModel  # type: ignore
@@ -11,6 +11,7 @@ from google.generativeai.types import (  # type: ignore
     ContentDict,
     GenerateContentResponse,
 )
+from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_kwargs import GeminiCallKwargs
@@ -47,8 +48,10 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         generation_config = call_kwargs.get("generation_config", {})
-        if not isinstance(generation_config, dict):
+        if is_dataclass(generation_config):
             generation_config = asdict(generation_config)
+        elif not isinstance(generation_config, dict):
+            generation_config = dict(generation_config)
         generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = generation_config
         messages[-1]["parts"].append(
@@ -57,9 +60,13 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        tool_config = call_kwargs.get("tool_config", {})
-        # Ignore type checking, because gemini tool config is not yet typed correctly
-        tool_config["function_calling_config"] = {"mode": "auto"}  # pyright: ignore [reportGeneralTypeIssues, reportIndexIssue]
+        call_kwargs.pop("tool_config", None)
+        tool_config = ToolConfigDict(
+            function_calling_config={
+                "mode": "any",
+                "allowed_function_names": [tool_types[0]._name()],
+            }
+        )
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 

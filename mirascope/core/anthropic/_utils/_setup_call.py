@@ -49,7 +49,7 @@ def setup_call(
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, AnthropicTool, call_params
     )
-    call_kwargs: AnthropicCallKwargs = cast(AnthropicCallKwargs, base_call_kwargs)
+    call_kwargs = cast(AnthropicCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | MessageParam], messages)
     messages = convert_message_params(messages)
 
@@ -70,13 +70,7 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
-    # TODO: Investigate type checking issue with Anthropic provider
-    # The |= operator causes type check failures, while direct assignment works.
-    # This behavior differs from other providers. Further investigation needed.
-    # Temporary workaround: Use direct assignment for 'model' key
-    # call_kwargs |= {"model": model, "messages": messages}  # Original line causing type check errors
-    call_kwargs["model"] = model
-    call_kwargs["messages"] = messages
+    call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
         client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()

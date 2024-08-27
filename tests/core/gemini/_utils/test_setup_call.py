@@ -130,6 +130,9 @@ def test_setup_call_extract(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function with extraction."""
+    mock_tool = MagicMock()
+    mock_tool._name.side_effect = lambda: "test"
+    mock_base_setup_call.return_value[2] = [mock_tool]
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
         model="gemini-flash-1.5",
@@ -143,5 +146,5 @@ def test_setup_call_extract(
         extract=True,
     )
     assert "tool_config" in call_kwargs and call_kwargs["tool_config"] == {
-        "function_calling_config": {"mode": "auto"}
+        "function_calling_config": {"allowed_function_names": ["test"], "mode": "any"}
     }
