@@ -160,16 +160,30 @@ def test_setup_call_extract(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function with extraction."""
+
+    class Tool(OpenAITool):
+        """A test tool."""
+
+        title: str
+
+        model_config = ResponseModelConfigDict(strict=True)
+
+    mock_base_setup_call.return_value[2] = [Tool]
     mock_utils.setup_call = mock_base_setup_call
-    _, _, _, _, call_kwargs = setup_call(
-        model="gpt-4o",
-        client=None,
-        fn=MagicMock(),
-        fn_args={},
-        dynamic_config=None,
-        tools=None,
-        json_mode=False,
-        call_params={},
-        extract=True,
-    )
+    with pytest.warns(
+        UserWarning,
+        match="You must set `json_mode=True` to use `strict=True` response models. "
+        "Ignoring `strict` and using tools for extraction.",
+    ):
+        _, _, _, _, call_kwargs = setup_call(
+            model="gpt-4o",
+            client=None,
+            fn=MagicMock(),
+            fn_args={},
+            dynamic_config=None,
+            tools=None,
+            json_mode=False,
+            call_params={},
+            extract=True,
+        )
     assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "required"
