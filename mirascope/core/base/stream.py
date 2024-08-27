@@ -22,6 +22,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
+from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -77,7 +78,7 @@ class BaseStream(
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
     call_params: _BaseCallParamsT
-    call_kwargs: dict[str, Any]
+    call_kwargs: BaseCallKwargs[_BaseToolT]
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
@@ -106,7 +107,7 @@ class BaseStream(
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
-        call_kwargs: dict[str, Any],
+        call_kwargs: BaseCallKwargs[_BaseToolT],
     ) -> None:
         """Initializes an instance of `BaseStream`."""
         self.content = ""

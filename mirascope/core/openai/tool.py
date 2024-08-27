@@ -26,7 +26,7 @@ class OpenAIToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class OpenAITool(BaseTool):
+class OpenAITool(BaseTool[ChatCompletionToolParam]):
     """A class for defining tools for OpenAI LLM calls.
 
     Example:

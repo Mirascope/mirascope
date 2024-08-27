@@ -16,6 +16,7 @@ from mistralai.models.chat_completion import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
@@ -34,16 +35,22 @@ def setup_call(
     call_params: MistralCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletionResponse]
-    | Callable[..., Awaitable[ChatCompletionResponse]],
-    str,
+    Callable[
+        ...,
+        ChatCompletionResponse
+        | Coroutine[Any, Any, ChatCompletionResponse]
+        | AsyncGenerator[ChatCompletionStreamResponse, None]
+        | Iterable[ChatCompletionStreamResponse],
+    ],
+    str | None,
     list[ChatMessage],
     list[type[MistralTool]] | None,
-    dict[str, Any],
+    MistralCallKwargs,
 ]:
-    prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
+    prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn, fn_args, dynamic_config, tools, MistralTool, call_params
     )
+    call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)
     messages = convert_message_params(messages)
     if json_mode:
@@ -60,7 +67,7 @@ def setup_call(
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs["tool_choice"] = ToolChoice.any
+        call_kwargs["tool_choice"] = cast(ToolChoice, ToolChoice.any)
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
@@ -72,15 +79,13 @@ def setup_call(
         stream: bool,
         **kwargs: Any,  # noqa: ANN401
     ) -> (
-        Iterable[ChatCompletionStreamResponse]
-        | AsyncGenerator[  # noqa: ANN401
-            ChatCompletionStreamResponse, None
-        ]
-        | ChatCompletionResponse
+        ChatCompletionResponse
         | Coroutine[Any, Any, ChatCompletionResponse]
+        | AsyncGenerator[ChatCompletionStreamResponse, None]
+        | Iterable[ChatCompletionStreamResponse]
     ):
         if stream:
             return client.chat_stream(**kwargs)
         return client.chat(**kwargs)
 
-    return create_or_stream, prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create_or_stream, prompt_template, messages, tool_types, call_kwargs

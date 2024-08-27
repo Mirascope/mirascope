@@ -24,7 +24,7 @@ class AnthropicToolConfig(ToolConfig, total=False):
     cache_control: _CacheControl
 
 
-class AnthropicTool(BaseTool):
+class AnthropicTool(BaseTool[ToolParam]):
     """A class for defining tools for Anthropic LLM calls.
 
     Example:

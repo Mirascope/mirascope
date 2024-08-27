@@ -133,7 +133,7 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert call_kwargs["response_format"] == {
+    assert "response_format" in call_kwargs and call_kwargs["response_format"] == {
         "type": "json_schema",
         "json_schema": {
             "name": "Tool",

@@ -8,7 +8,7 @@ from __future__ import annotations
 import inspect
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaMode, JsonSchemaValue
@@ -18,6 +18,7 @@ from typing_extensions import TypedDict
 from . import _utils
 
 _BaseToolT = TypeVar("_BaseToolT")
+_ToolSchema = TypeVar("_ToolSchema")
 
 
 class ToolConfig(TypedDict, total=False):
@@ -51,7 +52,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-class BaseTool(BaseModel):
+class BaseTool(BaseModel, Generic[_ToolSchema]):
     '''A class for defining tools for LLM calls.
 
     Example:
@@ -135,3 +136,10 @@ class BaseTool(BaseModel):
             base_type: The base type (e.g. `int`) to convert into this tool type.
         """
         return _utils.convert_base_type_to_base_tool(base_type, cls)  # type: ignore
+
+    @classmethod
+    def tool_schema(cls) -> _ToolSchema:
+        raise RuntimeError(
+            f"{cls.__name__}.tool_schema() is not implemented. "
+            "This method should be implemented in provider-specific tool classes."
+        )

@@ -96,3 +96,18 @@ def test_base_tool_type_conversion() -> None:
     tool = tool_type(value="The Name of the Wind")  # type: ignore
     assert tool.call() == "The Name of the Wind"
     assert isinstance(tool, BaseTool)
+
+
+def test_base_tool_tool_schema_not_implemented() -> None:
+    """Tests the `BaseTool` class when the `tool_schema` method is not implemented."""
+
+    class FormatBook(BaseTool):
+        title: str
+
+    with pytest.raises(RuntimeError) as exc_info:
+        FormatBook.tool_schema()
+    assert "FormatBook.tool_schema() is not implemented." in str(exc_info.value)
+    assert (
+        "This method should be implemented in provider-specific tool classes."
+        in str(exc_info.value)
+    )
