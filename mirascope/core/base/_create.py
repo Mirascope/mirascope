@@ -110,7 +110,7 @@ def create_factory(  # noqa: ANN202
                 output = TCallResponse(
                     metadata=get_metadata(fn, dynamic_config),
                     response=response,
-                    tool_types=tool_types,  # type: ignore
+                    tool_types=tool_types,
                     prompt_template=prompt_template,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -153,7 +153,7 @@ def create_factory(  # noqa: ANN202
                     output = TCallResponse(
                         metadata=get_metadata(fn, dynamic_config),
                         response=response,
-                        tool_types=tool_types,  # type: ignore
+                        tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                         prompt_template=prompt_template,
                         fn_args=fn_args,
                         dynamic_config=dynamic_config,

@@ -312,7 +312,7 @@ def stream_factory(  # noqa: ANN201
                     return TStream(
                         stream=generator(),
                         metadata=get_metadata(fn, dynamic_config),
-                        tool_types=tool_types,  # type: ignore
+                        tool_types=tool_types,
                         call_response_type=TCallResponse,
                         model=model,
                         prompt_template=prompt_template,
@@ -361,7 +361,7 @@ def stream_factory(  # noqa: ANN201
                     return TStream(
                         stream=generator(),
                         metadata=get_metadata(fn, dynamic_config),
-                        tool_types=tool_types,  # type: ignore
+                        tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                         call_response_type=TCallResponse,
                         model=model,
                         prompt_template=prompt_template,
