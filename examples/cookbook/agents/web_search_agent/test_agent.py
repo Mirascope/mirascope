@@ -98,7 +98,7 @@ async def test_conversation():
         ],
         messages=messages,
     )
-    response = await web_assistant._call("What is mirascope library?")
+    response = await web_assistant._stream("What is mirascope library?")
     async for _, tool in response:
         queries = tool.args.get("queries", "") if tool else ""
         is_context_relevant = False
