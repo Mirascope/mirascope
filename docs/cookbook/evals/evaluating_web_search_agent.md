@@ -161,9 +161,64 @@ class WebAssistant(BaseModel):
             print()
 ```
 
+## Basic Evaluations
+
+Let's start off with some basic evaluations to know whether our agent is working in general. Given that updates to prompts can significantly influence LLM behavior, it's crucial to test each component of our agent individually.
+
+### Evaluating `_web_search` tool
+
+Our goal is to ensure that the LLM consistently utilizes the web search tool, rather than relying on its inherent knowledge base to generate responses. We've intentionally refrained from explicitly instructing the agent to always utilize the web search tool, as some user queries may be more conversational in nature and not necessitate web searches. However, for user queries that are more information-seeking, the agent should always leverage the web search tool.
+
+```python
+import pytest
+
+user_queries = [
+    "How is the weather in New York?",
+    "What is the capital of France?",
+    "Who is the president of the United States?",
+    "What is the population of India?",
+    "What is an apple?",
+]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_query", user_queries)
+async def test_web_search(user_query: str):
+    """Tests that the web search agent always uses the web search tool."""
+    web_assistant = WebAssistant()
+    response = await web_assistant._stream(user_query)
+    async for _, tool in response:
+        assert tool._name() == "_web_search" if tool else False
+```
+
+It's recommended to continually expand our golden dataset until we can confidently assert that the LLM uses web search when appropriate.
+
+### Evaluating `extract_content` tool
+
+Our agent has been prompt engineered to utilize the extract_content tool at its discretion. Given the non-deterministic nature of this test, we'll implement a basic verification to ensure that the `extract_content` tool is invoked at least once per user query. We'll employ the same golden dataset used in the `test_web_search`, allowing us to assume that `test_extract_content` will always have a functional `_web_search`.
+
+```python
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_query", user_queries)
+async def test_extract_content(user_query: str):
+    """Tests that the extract content tool gets called at least once."""
+    web_assistant = WebAssistant()
+    await web_assistant._step(user_query)
+    extract_content_calls = 0
+    for message in web_assistant.messages:
+        if message["role"] == "assistant":
+            message = cast(ChatCompletionAssistantMessageParam, message)
+            for tool in message.get("tool_calls", []):
+                if tool["function"]["name"] == "extract_content":
+                    extract_content_calls += 1
+    assert extract_content_calls > 0
+```
+
+Now that we have our simple tests, let's take a look at a more complex evaluation-based test.
+
 ## Evaluating context relevance of LLM-generated queries
 
-LLMs can easily answer detailed queries, but real-world scenarios often involve vague questions from users who may not fully understand what they're seeking. Just as many people struggle to master advanced search techniques despite years of using search engines, becoming proficient at formulating effective queries for LLMs is equally challenging. 
+LLMs can easily answer detailed queries, but real-world scenarios often involve vague questions from users who may not fully understand what they're seeking. Just as many people struggle to master advanced search techniques despite years of using search engines, becoming proficient at formulating effective queries for LLMs is equally challenging.
 
 ```python
 from pydantic import BaseModel, Field
@@ -286,8 +341,6 @@ Now that we have our evaluation, we can write our test.
 
 ```python
 import json
-
-import pytest
 
 search_history = [
     "best LLM development tools",

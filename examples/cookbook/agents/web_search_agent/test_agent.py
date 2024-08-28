@@ -1,4 +1,7 @@
+from typing import cast
+
 import pytest
+from openai.types.chat import ChatCompletionAssistantMessageParam
 from pydantic import BaseModel, Field
 
 from examples.cookbook.agents.web_search_agent.agent import WebAssistant
@@ -88,6 +91,7 @@ async def check_context_relevance(
 
 @pytest.mark.asyncio
 async def test_conversation():
+    """Tests that in a conversation setting, the llm generated query is context-relevant."""
     web_assistant = WebAssistant(
         search_history=[
             "best LLM development tools",
@@ -110,3 +114,38 @@ async def test_conversation():
             if is_context_relevant:
                 break
         assert is_context_relevant
+
+
+user_queries = [
+    "How is the weather in New York?",
+    "What is the capital of France?",
+    "Who is the president of the United States?",
+    "What is the population of India?",
+    "What is an apple?",
+]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_query", user_queries)
+async def test_web_search(user_query: str):
+    """Tests that the web search agent always uses the web search tool."""
+    web_assistant = WebAssistant()
+    response = await web_assistant._stream(user_query)
+    async for _, tool in response:
+        assert tool._name() == "_web_search" if tool else False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("user_query", user_queries)
+async def test_extract_content(user_query: str):
+    """Tests that the extract content tool gets called at least once."""
+    web_assistant = WebAssistant()
+    await web_assistant._step(user_query)
+    extract_content_calls = 0
+    for message in web_assistant.messages:
+        if message["role"] == "assistant":
+            message = cast(ChatCompletionAssistantMessageParam, message)
+            for tool in message.get("tool_calls", []):
+                if tool["function"]["name"] == "extract_content":
+                    extract_content_calls += 1
+    assert extract_content_calls > 0
