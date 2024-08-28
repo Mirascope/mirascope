@@ -94,6 +94,18 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
 
 
+def fn_is_sync(
+    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
+) -> TypeIs[Callable[_P, _R]]:
+    return not inspect.iscoroutinefunction(fn)
+
+
+def fn_is_async(
+    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
+) -> TypeIs[Callable[_P, Awaitable[_R]]]:
+    return inspect.iscoroutinefunction(fn)
+
+
 class SetupCall(
     Protocol[
         _BaseClientT,
@@ -119,8 +131,8 @@ class SetupCall(
         extract: bool,
     ) -> tuple[
         AsyncCreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
+        str | None,
+        list[Any],
         list[type[_BaseToolT]] | None,
         BaseCallKwargs[_BaseToolT],
     ]: ...
@@ -140,8 +152,8 @@ class SetupCall(
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
+        str | None,
+        list[Any],
         list[type[_BaseToolT]] | None,
         BaseCallKwargs[_BaseToolT],
     ]: ...
@@ -162,23 +174,11 @@ class SetupCall(
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
+        str | None,
+        list[Any],
         list[type[_BaseToolT]] | None,
         BaseCallKwargs[_BaseToolT],
     ]: ...  # pragma: no cover
-
-    @staticmethod
-    def fn_is_sync(
-        fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
-    ) -> TypeIs[Callable[_P, _R]]:
-        return not inspect.iscoroutinefunction(fn)
-
-    @staticmethod
-    def fn_is_async(
-        fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
-    ) -> TypeIs[Callable[_P, Awaitable[_R]]]:
-        return inspect.iscoroutinefunction(fn)
 
 
 class HandleStream(

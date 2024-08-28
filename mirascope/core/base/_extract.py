@@ -15,6 +15,7 @@ from ._utils import (
     extract_tool_return,
     setup_extract_tool,
 )
+from ._utils._protocols import fn_is_async, fn_is_sync
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -30,6 +31,7 @@ _ResponseChunkT = TypeVar("_ResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
+_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def extract_factory(  # noqa: ANN202
@@ -102,7 +104,7 @@ def extract_factory(  # noqa: ANN202
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> _ResponseModelT:
-                assert SetupCall.fn_is_async(fn)
+                assert fn_is_async(fn)
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
@@ -121,7 +123,7 @@ def extract_factory(  # noqa: ANN202
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-                if SetupCall.fn_is_sync(fn):
+                if fn_is_sync(fn):
                     call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                         *args, **kwargs
                     )

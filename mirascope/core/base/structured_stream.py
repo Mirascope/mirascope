@@ -27,6 +27,7 @@ from ._utils import (
     extract_tool_return,
     setup_extract_tool,
 )
+from ._utils._protocols import fn_is_async, fn_is_sync
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -42,6 +43,7 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 class BaseStructuredStream(Generic[_ResponseModelT]):
@@ -115,6 +117,7 @@ _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
+_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def structured_stream_factory(  # noqa: ANN201
@@ -226,7 +229,7 @@ def structured_stream_factory(  # noqa: ANN201
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> AsyncIterable[_ResponseModelT]:
-                assert SetupCall.fn_is_async(fn)
+                assert fn_is_async(fn)
                 return BaseStructuredStream[_ResponseModelT](
                     stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
@@ -239,7 +242,7 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-                if SetupCall.fn_is_sync(fn):
+                if fn_is_sync(fn):
                     return BaseStructuredStream[_ResponseModelT](
                         stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
                             *args, **kwargs

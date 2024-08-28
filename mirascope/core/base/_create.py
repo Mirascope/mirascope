@@ -12,6 +12,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
+from ._utils._protocols import fn_is_async, fn_is_sync
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -26,6 +27,7 @@ _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
+_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def create_factory(  # noqa: ANN202
@@ -88,7 +90,7 @@ def create_factory(  # noqa: ANN202
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
-                assert SetupCall.fn_is_async(fn)
+                assert fn_is_async(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -129,7 +131,7 @@ def create_factory(  # noqa: ANN202
             def inner(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
-                if SetupCall.fn_is_sync(fn):
+                if fn_is_sync(fn):
                     fn_args = get_fn_args(fn, args, kwargs)
                     dynamic_config = fn(*args, **kwargs)
                     create, prompt_template, messages, tool_types, call_kwargs = (

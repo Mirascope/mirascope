@@ -22,6 +22,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
+from ._utils._protocols import fn_is_async, fn_is_sync
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -102,7 +103,7 @@ class BaseStream(
         tool_types: list[type[_BaseToolT]] | None,
         call_response_type: type[_BaseCallResponseT],
         model: str,
-        prompt_template: str,
+        prompt_template: str | None,
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
@@ -228,6 +229,7 @@ _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
+_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def stream_factory(  # noqa: ANN201
@@ -280,7 +282,7 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                if SetupCall.fn_is_async(fn):
+                if fn_is_async(fn):
                     fn_args = get_fn_args(fn, args, kwargs)
                     dynamic_config = await fn(*args, **kwargs)
                     create, prompt_template, messages, tool_types, call_kwargs = (
@@ -328,7 +330,7 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                if SetupCall.fn_is_sync(fn):
+                if fn_is_sync(fn):
                     fn_args = get_fn_args(fn, args, kwargs)
                     dynamic_config = fn(*args, **kwargs)
                     create, prompt_template, messages, tool_types, call_kwargs = (

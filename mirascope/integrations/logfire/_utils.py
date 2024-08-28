@@ -169,7 +169,7 @@ async def handle_response_model_async(
     if logfire_span is None:
         return
     span_data: dict[str, Any] = {"output": {}, "async": True}
-    if isinstance(result, BaseModel):  # type: ignore
+    if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # type: ignore
         span_data |= get_call_response_span_data(response)
     set_response_model_output(result, span_data["output"])

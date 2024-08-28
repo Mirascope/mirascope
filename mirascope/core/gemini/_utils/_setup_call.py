@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict, is_dataclass
-from typing import Any, cast
+from typing import Any, ParamSpec, cast, overload
 
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import (  # type: ignore
@@ -17,18 +17,22 @@ from google.generativeai.types.content_types import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn
 from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
 from ._convert_message_params import convert_message_params
 
+_P = ParamSpec("_P")
 
+
+@overload
 def setup_call(
     *,
     model: str,
     client: GenerativeModel | None,
-    fn: Callable[..., GeminiDynamicConfig | Awaitable[GeminiDynamicConfig]],
+    fn: Callable[_P, Awaitable[GeminiDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -36,8 +40,48 @@ def setup_call(
     call_params: GeminiCallParams,
     extract: bool = False,
 ) -> tuple[
-    Callable[..., GenerateContentResponse]
-    | Callable[..., Awaitable[AsyncGenerateContentResponse]],
+    AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
+    str | None,
+    list[ContentDict],
+    list[type[GeminiTool]] | None,
+    GeminiCallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: GenerativeModel | None,
+    fn: Callable[_P, GeminiDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: GeminiDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GeminiCallParams,
+    extract: bool = False,
+) -> tuple[
+    CreateFn[GenerateContentResponse, GenerateContentResponse],
+    str | None,
+    list[ContentDict],
+    list[type[GeminiTool]] | None,
+    GeminiCallKwargs,
+]: ...
+def setup_call(
+    *,
+    model: str,
+    client: GenerativeModel | None,
+    fn: Callable[_P, GeminiDynamicConfig]
+    | Callable[_P, Awaitable[GeminiDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: GeminiDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GeminiCallParams,
+    extract: bool = False,
+) -> tuple[
+    CreateFn[GenerateContentResponse, GenerateContentResponse]
+    | AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
     str | None,
     list[ContentDict],
     list[type[GeminiTool]] | None,
@@ -79,4 +123,4 @@ def setup_call(
         else client.generate_content
     )
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]

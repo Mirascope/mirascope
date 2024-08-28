@@ -3,28 +3,33 @@
 import inspect
 import warnings
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import Any, ParamSpec, cast, overload
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletion,
+    ChatCompletionChunk,
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn
 from ..call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
 from ._convert_message_params import convert_message_params
 
+_P = ParamSpec("_P")
 
+
+@overload
 def setup_call(
     *,
     model: str,
     client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
+    fn: Callable[_P, Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -32,7 +37,50 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
+    AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
+    str | None,
+    list[ChatCompletionMessageParam],
+    list[type[OpenAITool]] | None,
+    OpenAICallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
+    fn: Callable[_P, OpenAIDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: OpenAIDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: OpenAICallParams,
+    extract: bool,
+) -> tuple[
+    CreateFn[ChatCompletion, ChatCompletionChunk],
+    str | None,
+    list[ChatCompletionMessageParam],
+    list[type[OpenAITool]] | None,
+    OpenAICallKwargs,
+]: ...
+
+
+def setup_call(
+    *,
+    model: str,
+    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
+    fn: Callable[_P, OpenAIDynamicConfig]
+    | Callable[_P, Awaitable[OpenAIDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: OpenAIDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: OpenAICallParams,
+    extract: bool,
+) -> tuple[
+    CreateFn[ChatCompletion, ChatCompletionChunk]
+    | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -81,4 +129,4 @@ def setup_call(
         client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
     create = client.chat.completions.create
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]

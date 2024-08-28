@@ -2,22 +2,27 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, ParamSpec
 
-from litellm import acompletion, completion
+from litellm import CustomStreamWrapper, acompletion, completion
+from litellm.types.utils import ModelResponse
 from openai import OpenAI
-from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from openai.types.chat import ChatCompletionMessageParam
 
 from ...base import BaseTool
 from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
 from ...openai._utils import setup_call as setup_call_openai
+from ...openai.call_kwargs import OpenAICallKwargs
+
+_P = ParamSpec("_P")
 
 
 def setup_call(
     *,
     model: str,
     client: None,
-    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
+    fn: Callable[_P, OpenAIDynamicConfig]
+    | Callable[_P, Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -25,11 +30,12 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
-    str,
+    Callable[..., ModelResponse | CustomStreamWrapper]
+    | Callable[..., Awaitable[ModelResponse | CustomStreamWrapper]],
+    str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
-    dict[str, Any],
+    OpenAICallKwargs,
 ]:
     _, prompt_template, messages, tool_types, call_kwargs = setup_call_openai(
         model=model,
@@ -43,4 +49,4 @@ def setup_call(
         extract=extract,
     )
     create = acompletion if inspect.iscoroutinefunction(fn) else completion
-    return create, prompt_template, messages, tool_types, call_kwargs  # type: ignore
+    return create, prompt_template, messages, tool_types, call_kwargs

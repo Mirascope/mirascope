@@ -115,7 +115,7 @@ class BasePrompt(BaseModel):
     ) -> _BaseStreamT: ...
 
     @overload
-    def run(  # type: ignore
+    def run(
         self,
         call_decorator: Callable[
             [Callable[..., BaseDynamicConfig]], Callable[..., _ResponseModelT]
