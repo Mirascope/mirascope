@@ -1,6 +1,6 @@
-# Web Scraper
+# Web Search Agent
 
-In this recipe we’ll explore using Mirascope to get structured information from scraping the web — in this case using OpenAI GPT 4o. We will be using DuckDuckGo's API as a tool for our Agentic workflow.
+In this recipe, we'll explore using Mirascope to enhance our Large Language Model (LLM) — specifically OpenAI's GPT-4o mini — by providing it with access to the web and its contents. We will be using DuckDuckGo's API as a tool for our Agentic workflow.
 
 ??? tip "Mirascope Concepts Used"
 
@@ -37,29 +37,32 @@ class WebAssistant(BaseModel):
     search_history: list[str] = []
 
     def _web_search(self, queries: list[str]) -> str:
-        """Search the web for the given text and parse the paragraphs of the results.
+        """Performs web searches for given queries and returns URLs.
 
         Args:
-            queries: The list of queries to search for.
+            queries: List of search queries.
 
         Returns:
-            Parsed paragraphs of each of the webpages, separated by newlines.
+            str: Newline-separated URLs from search results or error messages.
+
+        Raises:
+            Exception: If web search fails entirely.
         """
         try:
-            parsed_results = []
+            urls = []
             for query in queries:
                 results = DDGS(proxies=None).text(query, max_results=2)
 
                 for result in results:
                     link = result["href"]
                     try:
-                        parsed_results.append("\n".join(link))
+                        urls.append("\n".join(link))
                     except Exception as e:
-                        parsed_results.append(
+                        urls.append(
                             f"{type(e)}: Failed to parse content from URL {link}"
                         )
                 self.search_history.append(query)
-            return "\n\n".join(parsed_results)
+            return "\n\n".join(urls)
 
         except Exception as e:
             return f"{type(e)}: Failed to search the web for text"
@@ -117,7 +120,7 @@ Now that our tools are setup, we can proceed to implement the Q&A functionality 
 
 ## Add Q&A Functionality
 
-Now that we have our tools we can now create our prompt_template and `_call` function. We engineer the prompt to first use our `web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
+Now that we have our tools we can now create our prompt_template and `_stream` function. We engineer the prompt to first use our `_web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
 
 ```python
 from mirascope.core import openai, prompt_template
@@ -139,15 +142,14 @@ class WebAssistant(BaseModel):
 
         You have access to the following tools:
         - `_web_search`: Search the web when the user asks a question. Follow these steps for EVERY web search query:
-
             1. There is a previous search context: {self.search_history}
             2. There is the current user query: {question}
             3. Given the previous search context, generate multiple search queries that explores whether the new query might be related to or connected with the context of the current user query. 
                 Even if the connection isn't immediately clear, consider how they might be related.
         - `extract_content`: Parse the content of a webpage.
 
-        When calling the `web_search` tool, the `body` is simply the body of the search
-        result. You MUST then call the `parse_webpage` tool to get the actual content
+        When calling the `_web_search` tool, the `body` is simply the body of the search
+        result. You MUST then call the `extract_content` tool to get the actual content
         of the webpage. It is up to you to determine which search results to parse.
 
         Once you have gathered all of the information you need, generate a writeup that
@@ -157,7 +159,7 @@ class WebAssistant(BaseModel):
         USER: {question}
         """
     )
-    async def _call(self, question: str) -> openai.OpenAIDynamicConfig:
+    async def _stream(self, question: str) -> openai.OpenAIDynamicConfig:
         return {
             "tools": [self._web_search, extract_content],
             "computed_fields": {
@@ -226,14 +228,15 @@ Search Queries:
 By giving the LLM search history, these search queries now connect the Mirascope library specifically to LLM development tools,
 providing a more cohesive set of results.
 
-We can now create our `_step` and `run` functions which will call our `_call` and `_step` functions respectively.
+We can now create our `_step` and `run` functions which will call our `_stream` and `_step` functions respectively.
 
 ```python
 async def _step(self, question: str):
-    response = await self._call(question)
+    response = await self._stream(question)
     tools_and_outputs = []
     async for chunk, tool in response:
         if tool:
+            print(f"using {tool._name()} tool with args: {tool.args}")
             tools_and_outputs.append((tool, tool.call()))
         else:
             print(chunk.content, end="", flush=True)
@@ -283,7 +286,7 @@ print(WebAssistant().run("What are the top 5 smartphones"))
 
 Note that by giving the LLM the current date, it'll automatically search for the most up-to-date information.
 
-Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.md) for an in-depth guide on how we evaluate the quality of our prompt.
+Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.md) for an in-depth guide on how we evaluate the quality of our agent.
 
 !!! tip "Additional Real-World Applications"
 
@@ -311,7 +314,7 @@ Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.md)
 When adapting this recipe, consider:
 
 * Optimizing the search by utilizing `async` to increase parallelism.
-* When targeting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
+* When targeting specific websites for scraping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
 * Implement a feedback loop so the LLM can rewrite the query for better search results.
-* Reduce the number of tokens used by storing the extracted webpages as embeddings in a vectorstore, and retrieving only what is necessary.
+* Reduce the number of tokens used by storing the extracted webpages as embeddings in a vectorstore and retrieving only what is necessary.
 * Make a more specific web search agent for your use-case rather than a general purpose web search agent.

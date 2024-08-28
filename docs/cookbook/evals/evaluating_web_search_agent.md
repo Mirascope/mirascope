@@ -1,6 +1,6 @@
 # Evaluating Web Search Agent with LLM
 
-In this recipe, we will be using taking our [Web Search Agent](../agents/web_search_agent.md) example and running evaluations on the LLM call. We will be exploring writing a context relevance test since that is one of the most important aspects of web search.
+In this recipe, we will be using taking our [Web Search Agent Cookbook](../agents/web_search_agent.md) and running evaluations on the LLM call. We will be exploring writing a context relevance test since that is one of the most important aspects of web search.
 
 ??? tip "Mirascope Concepts Used"
 
@@ -12,7 +12,9 @@ In this recipe, we will be using taking our [Web Search Agent](../agents/web_sea
 
 ## Web Search Agent
 
-We will be using our `WebAssistant` agent for our evaluations. Here is the full code snippet, for reference:
+??? note "Check out the Web Search Agent Cookbook"
+
+    We will be using our `WebAssistant` agent for our evaluations. For a detailed explanation regarding this code snippet, refer to the [Web Search Agent Cookbook](../agents/web_search_agent.md).
 
 ```python
 import asyncio
@@ -69,30 +71,32 @@ class WebAssistant(BaseModel):
     search_history: list[str] = []
 
     def _web_search(self, queries: list[str]) -> str:
-        """Search the web for the given text and parse the paragraphs of the results.
+        """Performs web searches for given queries and returns URLs.
 
         Args:
-            queries: The list of queries to search for.
+            queries: List of search queries.
 
         Returns:
-            Parsed paragraphs of each of the webpages, separated by newlines.
+            str: Newline-separated URLs from search results or error messages.
+
+        Raises:
+            Exception: If web search fails entirely.
         """
         try:
-            parsed_results = []
+            urls = []
             for query in queries:
-                print(query)
                 results = DDGS(proxies=None).text(query, max_results=2)
 
                 for result in results:
                     link = result["href"]
                     try:
-                        parsed_results.append("\n".join(link))
+                        urls.append("\n".join(link))
                     except Exception as e:
-                        parsed_results.append(
+                        urls.append(
                             f"{type(e)}: Failed to parse content from URL {link}"
                         )
                 self.search_history.append(query)
-            return "\n\n".join(parsed_results)
+            return "\n\n".join(urls)
 
         except Exception as e:
             return f"{type(e)}: Failed to search the web for text"
@@ -106,15 +110,14 @@ class WebAssistant(BaseModel):
 
         You have access to the following tools:
         - `_web_search`: Search the web when the user asks a question. Follow these steps for EVERY web search query:
-
             1. There is a previous search context: {self.search_history}
             2. There is the current user query: {question}
             3. Given the previous search context, generate multiple search queries that explores whether the new query might be related to or connected with the context of the current user query. 
                 Even if the connection isn't immediately clear, consider how they might be related.
         - `extract_content`: Parse the content of a webpage.
 
-        When calling the `web_search` tool, the `body` is simply the body of the search
-        result. You MUST then call the `parse_webpage` tool to get the actual content
+        When calling the `_web_search` tool, the `body` is simply the body of the search
+        result. You MUST then call the `extract_content` tool to get the actual content
         of the webpage. It is up to you to determine which search results to parse.
 
         Once you have gathered all of the information you need, generate a writeup that
@@ -124,7 +127,7 @@ class WebAssistant(BaseModel):
         USER: {question}
         """
     )
-    async def _call(self, question: str) -> openai.OpenAIDynamicConfig:
+    async def _stream(self, question: str) -> openai.OpenAIDynamicConfig:
         return {
             "tools": [self._web_search, extract_content],
             "computed_fields": {
@@ -133,10 +136,11 @@ class WebAssistant(BaseModel):
         }
 
     async def _step(self, question: str):
-        response = await self._call(question)
+        response = await self._stream(question)
         tools_and_outputs = []
         async for chunk, tool in response:
             if tool:
+                print(f"using {tool._name()} tool with args: {tool.args}")
                 tools_and_outputs.append((tool, tool.call()))
             else:
                 print(chunk.content, end="", flush=True)
@@ -156,8 +160,6 @@ class WebAssistant(BaseModel):
             await self._step(question)
             print()
 ```
-
-For more information regarding this code snippet, refer to the Web Search Agent cookbook.
 
 ## Evaluating context relevance of LLM-generated queries
 
@@ -283,8 +285,17 @@ However, it's important to note that not all user queries need to be context-rel
 Now that we have our evaluation, we can write our test.
 
 ```python
+import json
+
 import pytest
 
+search_history = [
+    "best LLM development tools",
+    "top libraries for LLM development",
+    "LLM libraries for software engineers",
+    "LLM dev tools for machine learning",
+    "most popular libraries for LLM development",
+]
 messages = [
     {"role": "user", "content": "I am a SWE looking for a LLM dev tool library"},
     {
@@ -294,7 +305,7 @@ messages = [
             {
                 "type": "function",
                 "function": {
-                    "arguments": '{"queries":["best LLM development tools","top libraries for LLM development","LLM libraries for software engineers","LLM dev tools for machine learning","most popular libraries for LLM development"]}',
+                    "arguments": json.dumps({"queries": search_history}),
                     "name": "_web_search",
                 },
                 "id": "call_1",
@@ -310,13 +321,7 @@ messages = [
 @pytest.mark.asyncio
 async def test_conversation():
     web_assistant = WebAssistant(
-        search_history=[
-            "best LLM development tools",
-            "top libraries for LLM development",
-            "LLM libraries for software engineers",
-            "LLM dev tools for machine learning",
-            "most popular libraries for LLM development",
-        ],
+        search_history=search_history,
         messages=messages,
     )
     response = await web_assistant._call("What is mirascope library?")
@@ -335,7 +340,7 @@ async def test_conversation():
 
 A few things to note:
 
-- Messages are appended to reduce testing time and token usage. Check [messages.py](ADD LINK) for the full history used.
+- Messages are appended to reduce testing time and token usage. Check [messages.py](https://github.com/Mirascope/mirascope/tree/dev/examples/cookbook/agents/web_search_agent/messages.py) for the full history used.
 - Our test asserts at least one of the llm queries generated must be context-relevant.
 
 Evaluating context relevance is just of the crucial steps towards enhancing LLM-powered search systems, enabling them to provide more coherent, personalized, and valuable results across diverse user interactions.
