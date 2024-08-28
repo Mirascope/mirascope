@@ -320,7 +320,7 @@ def stream_factory(  # noqa: ANN201
                         call_params=call_params,
                         call_kwargs=call_kwargs,
                     )
-                else:
+                else:  # pragma: no cover
                     raise AssertionError("Function is not async")
 
             return inner_async
@@ -369,7 +369,7 @@ def stream_factory(  # noqa: ANN201
                         call_params=call_params,
                         call_kwargs=call_kwargs,
                     )
-                else:
+                else:  # pragma: no cover
                     raise AssertionError("Function is not synchronous")
 
             return inner

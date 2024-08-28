@@ -114,7 +114,7 @@ def extract_factory(  # noqa: ANN202
                     raise e
                 if isinstance(output, BaseModel):
                     output._response = call_response  # type: ignore
-                return output if not output_parser else output_parser(output)  # type: ignore
+                return output if not output_parser else output_parser(output)
 
             return inner_async
         else:
@@ -134,7 +134,7 @@ def extract_factory(  # noqa: ANN202
                     if isinstance(output, BaseModel):
                         output._response = call_response  # type: ignore
                     return output if not output_parser else output_parser(output)  # type: ignore
-                else:
+                else:  # pragma: no cover
                     raise AssertionError("Function must be async")
 
             return inner

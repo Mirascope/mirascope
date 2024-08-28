@@ -164,7 +164,7 @@ def create_factory(  # noqa: ANN202
                     )
                     output._model = model
                     return output if not output_parser else output_parser(output)
-                else:
+                else:  # pragma: no cover
                     raise AssertionError("Function must be synchronous")
 
             return inner

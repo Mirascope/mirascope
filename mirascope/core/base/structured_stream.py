@@ -246,7 +246,7 @@ def structured_stream_factory(  # noqa: ANN201
                         ),
                         response_model=response_model,
                     )
-                else:
+                else:  # pragma: no cover
                     raise AssertionError("Function is not synchronous")
 
             return inner
