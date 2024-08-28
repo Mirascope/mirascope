@@ -35,4 +35,4 @@ def extract_tool_return(
         return temp_model.model_validate(json_obj).value  # type: ignore
     elif allow_partial:
         return partial(response_model).model_validate(json_obj)
-    return response_model.model_validate(json_obj)  # type: ignore
+    return response_model.model_validate(json_obj)
