@@ -2256,6 +2256,7 @@ dependencies = [
     { name = "docstring-parser" },
     { name = "jiter" },
     { name = "pydantic" },
+    { name = "typing-extensions" },
 ]
 
 [package.optional-dependencies]
@@ -2351,6 +2352,7 @@ requires-dist = [
     { name = "pillow", marker = "extra == 'gemini'", specifier = "<11,>=10.4.0" },
     { name = "pydantic", specifier = "<3.0,>=2.7.4" },
     { name = "tenacity", marker = "extra == 'tenacity'", specifier = "<9,>=8.4.2" },
+    { name = "typing-extensions", specifier = ">=4.10.0" },
     { name = "weave", marker = "extra == 'weave'", specifier = ">=0.50.14" },
 ]
 

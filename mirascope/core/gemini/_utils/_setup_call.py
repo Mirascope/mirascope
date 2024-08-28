@@ -11,7 +11,10 @@ from google.generativeai.types import (  # type: ignore
     ContentDict,
     GenerateContentResponse,
 )
-from google.generativeai.types.content_types import ToolConfigDict
+from google.generativeai.types.content_types import (
+    FunctionCallingConfigDict,
+    ToolConfigDict,
+)
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ..call_kwargs import GeminiCallKwargs
@@ -59,11 +62,12 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
-        tool_config = ToolConfigDict()
-        tool_config.function_calling_config = {
-            "mode": "any",
-            "allowed_function_names": [tool_types[0]._name()],
-        }
+        tool_config = ToolConfigDict(
+            function_calling_config=FunctionCallingConfigDict(
+                mode="any",
+                allowed_function_names=[tool_types[0]._name()],
+            )
+        )
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 

@@ -9,7 +9,7 @@ import inspect
 import warnings
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import (
@@ -84,6 +84,9 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    if TYPE_CHECKING:
+        tool_call: Any
 
     @classmethod
     def _name(cls) -> str:

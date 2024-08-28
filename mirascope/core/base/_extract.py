@@ -74,7 +74,8 @@ def extract_factory(  # noqa: ANN202
     ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
@@ -120,19 +121,21 @@ def extract_factory(  # noqa: ANN202
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-                assert SetupCall.fn_is_sync(fn)
-                call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
-                    *args, **kwargs
-                )
-                json_output = get_json_output(call_response, json_mode)
-                try:
-                    output = extract_tool_return(response_model, json_output, False)
-                except ValidationError as e:
-                    e._response = call_response  # type: ignore
-                    raise e
-                if isinstance(output, BaseModel):
-                    output._response = call_response  # type: ignore
-                return output if not output_parser else output_parser(output)  # type: ignore
+                if SetupCall.fn_is_sync(fn):
+                    call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
+                        *args, **kwargs
+                    )
+                    json_output = get_json_output(call_response, json_mode)
+                    try:
+                        output = extract_tool_return(response_model, json_output, False)
+                    except ValidationError as e:
+                        e._response = call_response  # type: ignore
+                        raise e
+                    if isinstance(output, BaseModel):
+                        output._response = call_response  # type: ignore
+                    return output if not output_parser else output_parser(output)  # type: ignore
+                else:
+                    raise AssertionError("Function must be async")
 
             return inner
 

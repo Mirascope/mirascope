@@ -136,7 +136,7 @@ class BaseStream(
         for chunk, tool in self.stream:
             self._update_properties(chunk)
             if tool:
-                tool_calls.append(tool.tool_call)  # type: ignore
+                tool_calls.append(tool.tool_call)
             yield chunk, tool
         self.end_time = datetime.datetime.now().timestamp() * 1000
         self.message_param = self._construct_message_param(
@@ -159,7 +159,7 @@ class BaseStream(
             async for chunk, tool in self.stream:
                 self._update_properties(chunk)
                 if tool:
-                    tool_calls.append(tool.tool_call)  # type: ignore
+                    tool_calls.append(tool.tool_call)
                 yield chunk, tool
             self.message_param = self._construct_message_param(
                 tool_calls or None, self.content
@@ -222,7 +222,7 @@ class BaseStream(
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
-_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+# _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
@@ -268,98 +268,109 @@ def stream_factory(  # noqa: ANN201
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream | Awaitable[TStream]]:
+    ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if inspect.iscoroutinefunction(fn):
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert SetupCall.fn_is_async(fn)
-                fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = await fn(*args, **kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                    model=model,
-                    client=client,
-                    fn=fn,
-                    fn_args=fn_args,
-                    dynamic_config=dynamic_config,
-                    tools=tools,
-                    json_mode=json_mode,
-                    call_params=call_params,
-                    extract=False,
-                )
+                if SetupCall.fn_is_async(fn):
+                    fn_args = get_fn_args(fn, args, kwargs)
+                    dynamic_config = await fn(*args, **kwargs)
+                    create, prompt_template, messages, tool_types, call_kwargs = (
+                        setup_call(
+                            model=model,
+                            client=client,
+                            fn=fn,
+                            fn_args=fn_args,
+                            dynamic_config=dynamic_config,
+                            tools=tools,
+                            json_mode=json_mode,
+                            call_params=call_params,
+                            extract=False,
+                        )
+                    )
 
-                async def generator() -> (
-                    AsyncGenerator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
-                    ]
-                ):
-                    async for chunk, tool in handle_stream_async(
-                        await create(stream=True, **call_kwargs), tool_types
+                    async def generator() -> (
+                        AsyncGenerator[
+                            tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                        ]
                     ):
-                        yield chunk, tool
+                        async for chunk, tool in handle_stream_async(
+                            await create(stream=True, **call_kwargs), tool_types
+                        ):
+                            yield chunk, tool
 
-                return TStream(
-                    stream=generator(),
-                    metadata=get_metadata(fn, dynamic_config),
-                    tool_types=tool_types,  # type: ignore
-                    call_response_type=TCallResponse,
-                    model=model,
-                    prompt_template=prompt_template,
-                    fn_args=fn_args,
-                    dynamic_config=dynamic_config,
-                    messages=messages,
-                    call_params=call_params,
-                    call_kwargs=call_kwargs,
-                )
+                    return TStream(
+                        stream=generator(),
+                        metadata=get_metadata(fn, dynamic_config),
+                        tool_types=tool_types,  # type: ignore
+                        call_response_type=TCallResponse,
+                        model=model,
+                        prompt_template=prompt_template,
+                        fn_args=fn_args,
+                        dynamic_config=dynamic_config,
+                        messages=messages,
+                        call_params=call_params,
+                        call_kwargs=call_kwargs,
+                    )
+                else:
+                    raise AssertionError("Function is not async")
 
             return inner_async
         else:
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert SetupCall.fn_is_sync(fn)
-                fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = fn(*args, **kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-                    model=model,
-                    client=client,
-                    fn=fn,
-                    fn_args=fn_args,
-                    dynamic_config=dynamic_config,
-                    tools=tools,
-                    json_mode=json_mode,
-                    call_params=call_params,
-                    extract=False,
-                )
-
-                def generator() -> (
-                    Generator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
-                    ]
-                ):
-                    yield from handle_stream(
-                        create(stream=True, **call_kwargs), tool_types
+                if SetupCall.fn_is_sync(fn):
+                    fn_args = get_fn_args(fn, args, kwargs)
+                    dynamic_config = fn(*args, **kwargs)
+                    create, prompt_template, messages, tool_types, call_kwargs = (
+                        setup_call(
+                            model=model,
+                            client=client,
+                            fn=fn,
+                            fn_args=fn_args,
+                            dynamic_config=dynamic_config,
+                            tools=tools,
+                            json_mode=json_mode,
+                            call_params=call_params,
+                            extract=False,
+                        )
                     )
 
-                return TStream(
-                    stream=generator(),
-                    metadata=get_metadata(fn, dynamic_config),
-                    tool_types=tool_types,  # type: ignore
-                    call_response_type=TCallResponse,
-                    model=model,
-                    prompt_template=prompt_template,
-                    fn_args=fn_args,
-                    dynamic_config=dynamic_config,
-                    messages=messages,
-                    call_params=call_params,
-                    call_kwargs=call_kwargs,
-                )
+                    def generator() -> (
+                        Generator[
+                            tuple[_BaseCallResponseChunkT, _BaseToolT | None],
+                            None,
+                            None,
+                        ]
+                    ):
+                        yield from handle_stream(
+                            create(stream=True, **call_kwargs), tool_types
+                        )
+
+                    return TStream(
+                        stream=generator(),
+                        metadata=get_metadata(fn, dynamic_config),
+                        tool_types=tool_types,  # type: ignore
+                        call_response_type=TCallResponse,
+                        model=model,
+                        prompt_template=prompt_template,
+                        fn_args=fn_args,
+                        dynamic_config=dynamic_config,
+                        messages=messages,
+                        call_params=call_params,
+                        call_kwargs=call_kwargs,
+                    )
+                else:
+                    raise AssertionError("Function is not synchronous")
 
             return inner
 

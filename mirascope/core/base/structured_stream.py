@@ -167,7 +167,8 @@ def structured_stream_factory(  # noqa: ANN201
     ]: ...
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
@@ -238,13 +239,15 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-                assert SetupCall.fn_is_sync(fn)
-                return BaseStructuredStream[_ResponseModelT](
-                    stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
-                        *args, **kwargs
-                    ),
-                    response_model=response_model,
-                )
+                if SetupCall.fn_is_sync(fn):
+                    return BaseStructuredStream[_ResponseModelT](
+                        stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                            *args, **kwargs
+                        ),
+                        response_model=response_model,
+                    )
+                else:
+                    raise AssertionError("Function is not synchronous")
 
             return inner
 

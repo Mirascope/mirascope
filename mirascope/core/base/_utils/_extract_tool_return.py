@@ -1,6 +1,6 @@
 """This module contains the function to extract the return value of a tool."""
 
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 import jiter
 from pydantic import BaseModel
@@ -9,7 +9,10 @@ from .._partial import partial
 from ._base_type import BaseType, is_base_type
 from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
 
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+_BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
+_BaseTypeT = TypeVar("_BaseTypeT", bound=BaseType)
+
+_ResponseModelT: TypeAlias = _BaseModelT | _BaseTypeT
 
 
 def extract_tool_return(
@@ -26,11 +29,10 @@ def extract_tool_return(
         else json_output
     )
     if is_base_type(response_model):
-        temp_model = convert_base_type_to_base_tool(response_model, BaseModel)  # type: ignore
+        temp_model = convert_base_type_to_base_tool(response_model, BaseModel)
         if allow_partial:
             return partial(temp_model).model_validate(json_obj).value  # type: ignore
         return temp_model.model_validate(json_obj).value  # type: ignore
-
-    if allow_partial:
-        return partial(response_model).model_validate(json_obj)  # type: ignore
+    elif allow_partial:
+        return partial(response_model).model_validate(json_obj)
     return response_model.model_validate(json_obj)  # type: ignore
