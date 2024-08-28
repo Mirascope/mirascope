@@ -180,7 +180,7 @@ venv = ".venv"
 
 [tool.codespell]
 skip = '.git,*.lock'
-ignore-words-list = 'EHR'
+ignore-words-list = 'EHR, AKS, Appen'
 ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]

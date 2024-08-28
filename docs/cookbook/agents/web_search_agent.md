@@ -24,107 +24,240 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already. We are using
 
 ## Add DuckDuckGo Tool
 
-The first step is to create a `WebAssistant` that first conducts a web search based on the user's query. Let’s go ahead and add our web search tool:
+The first step is to create a `WebAssistant` that first conducts a web search based on the user's query. Let’s go ahead and create our `WebAssistant` and add our web search tool:
 
 ```python
 import requests
-from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-
-def web_search(text: str) -> str:
-    """Search the web for the given text and parse the paragraphs of the results.
-
-    Args:
-        text: The text to search for.
-
-    Returns:
-        Parsed paragraphs of each of the webpages, separated by newlines.
-    """
-    try:
-        # Search the web for the given text
-        results = DDGS(proxy=None).text(text, max_results=5)
-        
-        # Parse the paragraphs of each resulting webpage
-        parsed_results = []
-        for result in results:
-            link = result["href"]
-            try:
-                response = requests.get(link)
-                soup = BeautifulSoup(response.content, "html.parser")
-                parsed_results.append("\n".join([p.text for p in soup.find_all("p")]))
-            except Exception as e:
-                parsed_results.append(f"{type(e)}: Failed to parse content from URL {link}")
-        
-        return "\n\n".join(parsed_results)
-    
-    except Exception as e:
-        return f"{type(e)}: Failed to search the web for text"
-```
-
-We are grabbing the first 5 results that best match our user query and retrieving their URLs, for parsing and use BeautifulSoup to assist in extracting all paragraph tags in the HTML.
-
-Depending on your use-case, you may want to let the LLM decide which urls to use by separating search and parsing into two separate tools.
-
-Now that our tool is setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
-
-## Add Q&A Functionality
-
-Now that we have our tools we can now create our prompt_template and `_step` function. We engineer the prompt to first use our `web_search` tool and then answer the user question based on the retrieved content:
-
-```python
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
+class WebAssistant(BaseModel):
+    messages: list[ChatCompletionMessageParam] = []
+    search_history: list[str] = []
+
+    def _web_search(self, queries: list[str]) -> str:
+        """Search the web for the given text and parse the paragraphs of the results.
+
+        Args:
+            queries: The list of queries to search for.
+
+        Returns:
+            Parsed paragraphs of each of the webpages, separated by newlines.
+        """
+        try:
+            parsed_results = []
+            for query in queries:
+                results = DDGS(proxies=None).text(query, max_results=2)
+
+                for result in results:
+                    link = result["href"]
+                    try:
+                        parsed_results.append("\n".join(link))
+                    except Exception as e:
+                        parsed_results.append(
+                            f"{type(e)}: Failed to parse content from URL {link}"
+                        )
+                self.search_history.append(query)
+            return "\n\n".join(parsed_results)
+
+        except Exception as e:
+            return f"{type(e)}: Failed to search the web for text"
+```
+
+We are grabbing the first 2 results that best match each of our user queries and retrieving their URLs. We save our search results into `search_history` to provide as context for future searches.
+
+We also want to setup our `extract_content` tool which will take in a url and grab the HTML content.
+
+```python
+import re
+
+from bs4 import BeautifulSoup
+
+
+def extract_content(url: str) -> str:
+    """Extract the main content from a webpage.
+
+    Args:
+        url: The URL of the webpage to extract the content from.
+
+    Returns: 
+        The extracted content as a string.
+    """
+    try:
+        response = requests.get(url, timeout=5)
+
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        unwanted_tags = ["script", "style", "nav", "header", "footer", "aside"]
+        for tag in unwanted_tags:
+            for element in soup.find_all(tag):
+                element.decompose()
+
+        main_content = (
+            soup.find("main")
+            or soup.find("article")
+            or soup.find("div", class_=re.compile("content|main"))
+        )
+
+        if main_content:
+            text = main_content.get_text(separator="\n", strip=True)
+        else:
+            text = soup.get_text(separator="\n", strip=True)
+
+        lines = (line.strip() for line in text.splitlines())
+        return "\n".join(line for line in lines if line)
+    except Exception as e:
+        return f"{type(e)}: Failed to extract content from URL {url}"
+```
+
+Notice that we did not define `extract_content` as a method of `WebAssistant`, since `extract_content` does not need to update state. 
+
+Now that our tools are setup, we can proceed to implement the Q&A functionality of our `WebAssistant`.
+
+## Add Q&A Functionality
+
+Now that we have our tools we can now create our prompt_template and `_call` function. We engineer the prompt to first use our `web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
+
+```python
 from mirascope.core import openai, prompt_template
 
 
 class WebAssistant(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    messages: list[ChatCompletionMessageParam] = []
+    search_history: list[str] = []
 
-    @openai.call(model="gpt-4o", stream=True, tools=[web_search])
+    def _web_search(self, queries: list[str]) -> str:
+        ...
+
+    @openai.call(model="gpt-4o-mini", stream=True)
     @prompt_template(
         """
         SYSTEM:
         You are an expert web searcher. Your task is to answer the user's question using the provided tools.
-        Use the tool `web_search` once to gather the required information.
-        After using the tool, provide a comprehensive answer to the user's question based on the information you retrieved.
+        The current date is {current_date}.
 
-        MESSAGES:
-        {self.history}
+        You have access to the following tools:
+        - `_web_search`: Search the web when the user asks a question. Follow these steps for EVERY web search query:
 
-        USER:
-        {question}
+            1. There is a previous search context: {self.search_history}
+            2. There is the current user query: {question}
+            3. Given the previous search context, generate multiple search queries that explores whether the new query might be related to or connected with the context of the current user query. 
+                Even if the connection isn't immediately clear, consider how they might be related.
+        - `extract_content`: Parse the content of a webpage.
+
+        When calling the `web_search` tool, the `body` is simply the body of the search
+        result. You MUST then call the `parse_webpage` tool to get the actual content
+        of the webpage. It is up to you to determine which search results to parse.
+
+        Once you have gathered all of the information you need, generate a writeup that
+        strikes the right balance between brevity and completeness based on the context of the user's query.
+
+        MESSAGES: {self.messages}
+        USER: {question}
         """
     )
-    def _step(self, question: str): ...
+    async def _call(self, question: str) -> openai.OpenAIDynamicConfig:
+        return {
+            "tools": [self._web_search, extract_content],
+            "computed_fields": {
+                "current_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            },
+        }
 
 ```
 
-We set our `@openai.call()` to `stream=True` to provide a more responsive user experience. We can now create our `run` function which will call our `_step` function, which will loop until it answers the users question.
+There are a few things to note:
+
+1. We set our `@openai.call()` to `stream=True` to provide a more responsive user experience.
+2. We give the LLM the current date so the user does not need to provide that.
+3. We instruct our LLM on how to use the tools.
+    * User queries can often times be ambiguous so giving as much context to the LLM when it generates the search query is crucial.
+    * Multiple search queries are generated for user queries that might rely on previous context.
+
+### Example search queries
+
+```bash
+(User): I am a SWE looking for a LLM dev tool library
+```
+
+Search Queries:
+
+* LLM development tool libraries
+* best libraries for LLM development
+* software engineering tools for LLM
+* open source LLM libraries for developers
+* programming libraries for large language models
+
+By prompting the LLM to generate multiple queries, the LLM has access to a wide range of relevant information, including both open-source and commercial products, which it would have a significantly lower chance of doing with a single query.
+
+```bash
+(User): What is Mirascope library?
+```
+
+Search Queries:
+
+* Mirascope library
+* what is Mirascope
+* Mirascope Python library
+* Mirascope library documentation
+* Mirascope library features
+* Mirascope library use cases
+* Mirascope library tutorial
+
+The LLM can gather information regarding the Mirascope library but has no context beyond that.
+
+Let's take a look at what happens when we call the user queries together.
+
+```bash
+(User): I am a SWE looking for a LLM dev tool library
+(Assistant): ...
+(User): What is Mirascope library?
+```
+
+Search Queries:
+
+* Mirascope library
+* Mirascope LLM development
+* Mirascope open source
+* Mirascope Python library
+* LLM tools Mirascope
+
+By giving the LLM search history, these search queries now connect the Mirascope library specifically to LLM development tools,
+providing a more cohesive set of results.
+
+We can now create our `_step` and `run` functions which will call our `_call` and `_step` functions respectively.
 
 ```python
-def run(self, prompt: str) -> str:
-    stream = self._step(prompt)
-    result, tools_and_outputs = "", []
-    for chunk, tool in stream:
+async def _step(self, question: str):
+    response = await self._call(question)
+    tools_and_outputs = []
+    async for chunk, tool in response:
         if tool:
             tools_and_outputs.append((tool, tool.call()))
         else:
-            result += chunk.content
             print(chunk.content, end="", flush=True)
-    if stream.user_message_param:
-        self.history.append(stream.user_message_param)
-    self.history.append(stream.message_param)
+    if response.user_message_param:
+        self.messages.append(response.user_message_param)
+    self.messages.append(response.message_param)
     if tools_and_outputs:
-        self.history += stream.tool_message_params(tools_and_outputs)
-        return self.run("")
-    return result
+        self.messages += response.tool_message_params(tools_and_outputs)
+        await self._step("")
+
+async def run(self):
+    while True:
+        question = input("(User): ")
+        if question == "exit":
+            break
+        print("(Assistant): ", end="", flush=True)
+        await self._step(question)
+        print()
 ```
 
 The `run` function will keep running until the LLM feels that the users question can be answered.
 
 ```python
-print(WebAssistant().run("What are the top 5 smartphones of 2024?"))
+print(WebAssistant().run("What are the top 5 smartphones"))
 # > 1. **iPhone 15 Pro Max**
 #      - **Best Overall:**
 #        - The iPhone 15 Pro Max offers a powerful A17 chipset, a versatile camera system with a 5x zoom telephoto lens, and a premium design with titanium sides. It's noted for its remarkable battery life and robust performance.
@@ -147,6 +280,10 @@ print(WebAssistant().run("What are the top 5 smartphones of 2024?"))
 #
 #   These smartphones have been chosen based on their overall performance, camera capabilities, battery life, and additional features like AI integration and long-term software support.
 ```
+
+Note that by giving the LLM the current date, it'll automatically search for the most up-to-date information.
+
+Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.md) for an in-depth guide on how we evaluate the quality of our prompt.
 
 !!! tip "Additional Real-World Applications"
 
@@ -173,7 +310,8 @@ print(WebAssistant().run("What are the top 5 smartphones of 2024?"))
 
 When adapting this recipe, consider:
 
-- Optimizing the search by utilizing `async` to increase parallelism.
-- Separate `web_search` into `serp_tool` and `parse_web` tools, so the LLM can pick and choose which url to parse.
-- When targeting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
-- Implement a feedback loop so the LLM can rewrite the query for better search results.
+* Optimizing the search by utilizing `async` to increase parallelism.
+* When targeting specific websites for scrapping purposes, use `response_model` to extract the specific information you're looking for across websites with similar content.
+* Implement a feedback loop so the LLM can rewrite the query for better search results.
+* Reduce the number of tokens used by storing the extracted webpages as embeddings in a vectorstore, and retrieving only what is necessary.
+* Make a more specific web search agent for your use-case rather than a general purpose web search agent.
