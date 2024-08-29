@@ -22,7 +22,7 @@ def test_base_tool() -> None:
         def call(self) -> str:
             return f"{self.title} by {self.author}"
 
-    tool = FormatBook(title="The Name of the Wind", author="Patrick Rothfuss")
+    tool = FormatBook(title="The Name of the Wind", author="Patrick Rothfuss")  # pyright: ignore [reportCallIssue]
     assert tool._name() == "FormatBook"
     assert tool._description() == "Returns a formatted book title and author."
     assert tool.args == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
@@ -42,7 +42,7 @@ async def test_base_tool_call_async() -> None:
         async def call(self) -> str:
             return f"{self.title} by {self.author}"
 
-    tool = FormatBook(title="The Name of the Wind", author="Patrick Rothfuss")
+    tool = FormatBook(title="The Name of the Wind", author="Patrick Rothfuss")  # pyright: ignore [reportCallIssue]
     assert await tool.call() == "The Name of the Wind by Patrick Rothfuss"
 
 
