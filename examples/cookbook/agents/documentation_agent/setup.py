@@ -9,9 +9,7 @@ from llama_index.core.storage import StorageContext
 from llama_index.core.vector_stores import SimpleVectorStore
 from llama_index.embeddings.openai import OpenAIEmbedding
 
-documents = SimpleDirectoryReader(
-    input_files=["../../../../docs/learn/calls.md"]
-).load_data()
+documents = SimpleDirectoryReader("../../../../docs/learn").load_data()
 vector_store = SimpleVectorStore()
 storage_context = StorageContext.from_defaults(vector_store=vector_store)
 

@@ -68,10 +68,10 @@ class Relevance(BaseModel):
 def llm_query_rerank(documents: list[dict], query: str): ...
 
 
-def get_documents(query: str) -> str:
+def get_documents(query: str) -> list[str]:
     """The get_documents tool that retrieves Mirascope documentation based on the
     relevance of the query"""
-
+    print("Query:", query)
     query_bundle = QueryBundle(query)
     retriever = VectorIndexRetriever(
         index=cast(VectorStoreIndex, loaded_index),
@@ -90,11 +90,10 @@ def get_documents(query: str) -> str:
             }
             for id, node in enumerate(retrieved_nodes[idx : idx + choice_batch_size])
         ]
-        print(nodes_batch)
         results += llm_query_rerank(nodes_batch, query)
     results = sorted(results, key=lambda x: x.score or 0, reverse=True)[:top_n]
 
-    return "\n".join(result.document for result in results)
+    return [result.document for result in results]
 
 
 class MirascopeBot(BaseModel):
@@ -108,19 +107,19 @@ class MirascopeBot(BaseModel):
         Here is the relevant documentation to answer the question.
 
         Context:
-        {context}
+        {context:list}
 
         USER:
         {question}
         """
     )
-    def _call(self, context: str, question: str): ...
+    def _call(self, question: str) -> openai.OpenAIDynamicConfig:
+        documents = get_documents(question)
+        return {"computed_fields": {"context": documents}}
 
     def _step(self, question: str):
-        context = get_documents(question)
-        answer = self._call(context, question)
+        answer = self._call(question)
         print("(Assistant):", answer.content)
-        return
 
     def run(self):
         while True:
