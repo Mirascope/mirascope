@@ -136,6 +136,8 @@ async def test_async_setup_call(
     assert isinstance(chat, ChatCompletionResponse)
     assert isinstance(stream, AsyncGenerator)
     assert await anext(stream) == mock_stream_response
+    with pytest.raises(StopAsyncIteration):
+        await anext(stream)
 
 
 @patch(
