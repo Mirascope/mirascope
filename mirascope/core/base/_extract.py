@@ -135,7 +135,7 @@ def extract_factory(  # noqa: ANN202
                         raise e
                     if isinstance(output, BaseModel):
                         output._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
-                    return output if not output_parser else output_parser(output)  # type: ignore
+                    return output if not output_parser else output_parser(output)  # pyright: ignore [reportReturnType, reportArgumentType]
                 else:  # pragma: no cover
                     raise AssertionError("Function must be async")
 

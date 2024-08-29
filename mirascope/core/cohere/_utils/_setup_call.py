@@ -129,7 +129,6 @@ def setup_call(
 
     if client is None:
         client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
-    # create_or_stream = _get_create_or_stream(client)
     if isinstance(client, AsyncClient):
 
         @overload
@@ -156,12 +155,12 @@ def setup_call(
             AsyncGenerator[StreamedChatResponse, None] | NonStreamedChatResponse,
         ]:
             if stream:
+                iterator: AsyncIterator[StreamedChatResponse] = client.chat_stream(
+                    **kwargs
+                )
 
                 async def wrapper() -> AsyncGenerator[StreamedChatResponse, None]:
                     async def _stream() -> AsyncGenerator[StreamedChatResponse, None]:
-                        iterator: AsyncIterator[StreamedChatResponse] = (
-                            client.chat_stream(**kwargs)
-                        )
                         while True:
                             yield await anext(iterator)
 

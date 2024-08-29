@@ -123,7 +123,7 @@ class BaseStream(
         self.messages = messages
         self.call_params = call_params
         self.call_kwargs = call_kwargs
-        self.user_message_param = get_possible_user_message_param(messages)  # type: ignore
+        self.user_message_param = get_possible_user_message_param(messages)  # pyright: ignore [reportAttributeAccessIssue]
 
     def __iter__(
         self,
