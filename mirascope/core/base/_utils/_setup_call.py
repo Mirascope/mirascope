@@ -108,14 +108,16 @@ def _get_async_create_fn(
             return functions.async_func(**kwargs)
         else:
             async_generator = functions.async_generator_func(**kwargs)
-            if isinstance(async_generator, Awaitable):  # pragma: no cover
-                return async_generator
-            else:
+            if inspect.isasyncgen(async_generator) or not isinstance(
+                async_generator, Awaitable
+            ):
 
                 async def _stream() -> AsyncGenerator[_StreamedResponse]:
                     return async_generator
 
-            return _stream()
+                return _stream()
+            else:
+                return async_generator
 
     return create_or_stream
 
