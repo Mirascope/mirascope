@@ -7,18 +7,13 @@ from typing import (
     Any,
     Literal,
     TypeAlias,
-    TypeVar,
     Union,
     get_origin,
 )
 
-from pydantic import BaseModel
 from typing_extensions import TypeIs
 
 BaseType: TypeAlias = str | int | float | bool | bytes | list | set | tuple | dict
-
-_BaseModelT = TypeVar("_BaseModelT", bound=BaseModel)
-_BaseTypeT = TypeVar("_BaseTypeT", bound=BaseType)
 
 
 def is_base_type(type_: Any) -> TypeIs[type[BaseType]]:  # noqa: ANN401
