@@ -132,7 +132,7 @@ test_extract_content_messages = [
     },
     {
         "role": "tool",
-        "content": "h\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nF\nr\na\nn\nc\ne\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nF\nr\na\nn\nc\ne\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns",
+        "content": "https://en.wikipedia.org/wiki/Paris\n\nhttps://www.britannica.com/place/Paris\n\nhttps://en.wikipedia.org/wiki/Paris\n\nhttps://www.britannica.com/place/Paris\n\nhttps://en.wikipedia.org/wiki/France\n\nhttps://www.britannica.com/place/France\n\nhttps://en.wikipedia.org/wiki/Paris\n\nhttps://www.britannica.com/place/Paris\n\nhttps://www.britannica.com/place/Paris\n\nhttps://en.wikipedia.org/wiki/Paris",
         "tool_call_id": "call_ddhSpVcNeDg9bLz4C7HEw85P",
         "name": "_web_search",
     },
