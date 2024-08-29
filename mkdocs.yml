@@ -176,6 +176,7 @@ nav:
       - Evaluations:
           - "cookbook/evals/index.md"
           - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.md"
+          - Evaluating Web Search Agent: "cookbook/evals/evaluating_web_search_agent.md"
       - LangGraph vs. Mirascope:
           - "cookbook/langgraph_vs_mirascope/index.md"
           - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"
