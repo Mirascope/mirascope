@@ -9,11 +9,11 @@ from collections.abc import (
     Iterable,
     Iterator,
 )
+from dataclasses import dataclass
 from typing import (
     Any,
     Generic,
     Literal,
-    NamedTuple,
     ParamSpec,
     TypeVar,
     cast,
@@ -41,7 +41,8 @@ _NonStreamedResponse = TypeVar("_NonStreamedResponse")
 _P = ParamSpec("_P")
 
 
-class _AsyncFunctions(NamedTuple, Generic[_NonStreamedResponse, _StreamedResponse]):
+@dataclass
+class _AsyncFunctions(Generic[_NonStreamedResponse, _StreamedResponse]):
     async_func: Callable[..., Awaitable[_NonStreamedResponse]]
     async_generator_func: (
         Callable[..., Awaitable[AsyncGenerator[_StreamedResponse]]]
@@ -49,7 +50,8 @@ class _AsyncFunctions(NamedTuple, Generic[_NonStreamedResponse, _StreamedRespons
     )
 
 
-class _SyncFunctions(NamedTuple, Generic[_NonStreamedResponse, _StreamedResponse]):
+@dataclass
+class _SyncFunctions(Generic[_NonStreamedResponse, _StreamedResponse]):
     sync_func: Callable[..., _NonStreamedResponse]
     sync_generator_func: Callable[
         ..., Iterator[_StreamedResponse] | Iterable[_StreamedResponse]
