@@ -1,11 +1,11 @@
 """Tests the `cohere._utils.setup_call` module."""
 
 import os
-from collections.abc import Iterator
-from unittest.mock import MagicMock, patch
+from collections.abc import AsyncGenerator, Iterator
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from cohere import NonStreamedChatResponse
+from cohere import AsyncClient, NonStreamedChatResponse, StreamedChatResponse
 from cohere.types import ChatMessage
 
 from mirascope.core.cohere._utils._setup_call import setup_call
@@ -97,6 +97,89 @@ def test_setup_call(
     assert isinstance(chat, NonStreamedChatResponse)
     assert isinstance(stream, Iterator)
     assert next(stream) == "chat"
+
+
+@patch(
+    "mirascope.core.cohere._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.cohere._utils._setup_call._utils", new_callable=MagicMock)
+@pytest.mark.asyncio
+async def test_async_setup_call(
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests the `setup_call` function."""
+    mock_chat = AsyncMock(spec=NonStreamedChatResponse)
+    mock_chat.__name__ = "chat"
+
+    mock_stream_response = AsyncMock(spec=StreamedChatResponse)
+    mock_stream_response.text = "chat"
+
+    async def mock_stream_generator():
+        yield mock_stream_response
+
+    mock_chat_stream = AsyncMock(spec=AsyncGenerator)
+    mock_chat_stream.__aiter__.return_value = mock_stream_generator()
+
+    mock_client = AsyncMock(spec=AsyncClient, name="mock_client")
+    mock_client.chat_stream.return_value = mock_chat_stream.__aiter__.return_value
+    mock_client.chat.return_value = mock_chat
+
+    mock_utils.setup_call = mock_base_setup_call
+    system_message = "system"
+    preamble_message = "preamble"
+    mock_base_setup_call.return_value[-1] = {
+        "preamble": preamble_message,
+    }
+    mock_convert_message_params.return_value = [
+        ChatMessage(role="SYSTEM", message=system_message),  # type: ignore
+        ChatMessage(role="USER", message="history user"),  # type: ignore
+        ChatMessage(
+            role="CHATBOT",  # type: ignore
+            message="history system",
+        ),
+        ChatMessage(
+            role="USER",  # type: ignore
+            message="content",
+        ),
+    ]
+    fn = AsyncMock()
+
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="command-r-plus",
+        client=mock_client,
+        fn=fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        extract=False,
+    )
+    assert prompt_template == mock_base_setup_call.return_value[0]
+    assert tool_types == mock_base_setup_call.return_value[2]
+    assert "model" in call_kwargs and call_kwargs["model"] == "command-r-plus"
+    assert "message" in call_kwargs and call_kwargs["message"] == messages[-1].message
+    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, CohereTool, {})
+    mock_convert_message_params.assert_called_once_with(
+        mock_base_setup_call.return_value[1]
+    )
+    assert messages == mock_convert_message_params.return_value
+    assert "preamble" in call_kwargs
+    assert "chat_history" in call_kwargs
+    assert call_kwargs["preamble"] == f"{preamble_message}\n\n{system_message}"
+    assert call_kwargs["chat_history"] == mock_convert_message_params.return_value[:-1]
+    assert (
+        call_kwargs["message"] == mock_convert_message_params.return_value[-1].message
+    )
+    mock_chat.return_value = MagicMock(spec=NonStreamedChatResponse)
+    chat = await create(stream=False, **call_kwargs)
+    stream = await create(stream=True, **call_kwargs)
+    assert isinstance(chat, NonStreamedChatResponse)
+    assert isinstance(stream, AsyncGenerator)
+    assert await anext(stream) == mock_stream_response
 
 
 @patch(

@@ -1,9 +1,16 @@
 """Tests the `mistral._utils.setup_call` module."""
 
-from unittest.mock import MagicMock, patch
+from collections.abc import AsyncGenerator
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from mistralai.models.chat_completion import ChatMessage, ToolChoice
+from mistralai.async_client import MistralAsyncClient
+from mistralai.models.chat_completion import (
+    ChatCompletionResponse,
+    ChatCompletionStreamResponse,
+    ChatMessage,
+    ToolChoice,
+)
 
 from mirascope.core.mistral._utils._setup_call import setup_call
 from mirascope.core.mistral.tool import MistralTool
@@ -68,6 +75,67 @@ def test_setup_call(
     stream = create(stream=True, **call_kwargs)
     mock_mistral_chat_stream.assert_called_once_with(**call_kwargs)
     assert next(stream) == "chat"  # pyright: ignore [reportArgumentType]
+
+
+@patch(
+    "mirascope.core.mistral._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.mistral._utils._setup_call._utils", new_callable=MagicMock)
+@pytest.mark.asyncio
+async def test_async_setup_call(
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests the `setup_call` function."""
+    mock_mistral_chat = AsyncMock(spec=ChatCompletionResponse)
+    mock_mistral_chat.__name__ = "chat"
+
+    mock_stream_response = AsyncMock(spec=ChatCompletionStreamResponse)
+    mock_stream_response.text = "chat"
+
+    async def mock_stream_generator():
+        yield mock_stream_response
+
+    mock_mistral_chat_stream = AsyncMock(spec=AsyncGenerator)
+    mock_mistral_chat_stream.__aiter__.return_value = mock_stream_generator()
+
+    mock_client = AsyncMock(spec=MistralAsyncClient, name="mock_client")
+    mock_client.chat_stream.return_value = (
+        mock_mistral_chat_stream.__aiter__.return_value
+    )
+    mock_client.chat.return_value = mock_mistral_chat
+
+    mock_utils.setup_call = mock_base_setup_call
+
+    fn = MagicMock()
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="mistral-large-latest",
+        client=mock_client,
+        fn=fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        extract=False,
+    )
+    assert prompt_template == mock_base_setup_call.return_value[0]
+    assert tool_types == mock_base_setup_call.return_value[2]
+    assert "model" in call_kwargs and call_kwargs["model"] == "mistral-large-latest"
+    assert "messages" in call_kwargs and call_kwargs["messages"] == messages
+    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, MistralTool, {})
+    mock_convert_message_params.assert_called_once_with(
+        mock_base_setup_call.return_value[1]
+    )
+
+    mock_mistral_chat.return_value = MagicMock(spec=ChatCompletionResponse)
+    chat = await create(stream=False, **call_kwargs)
+    stream = await create(stream=True, **call_kwargs)
+    assert isinstance(chat, ChatCompletionResponse)
+    assert isinstance(stream, AsyncGenerator)
+    assert await anext(stream) == mock_stream_response
 
 
 @patch(

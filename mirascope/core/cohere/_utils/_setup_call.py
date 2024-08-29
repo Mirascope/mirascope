@@ -161,8 +161,11 @@ def setup_call(
 
                 async def wrapper() -> AsyncGenerator[StreamedChatResponse, None]:
                     async def _stream() -> AsyncGenerator[StreamedChatResponse, None]:
-                        while True:
-                            yield await anext(iterator)
+                        try:
+                            while True:
+                                yield await anext(iterator)
+                        except StopAsyncIteration:
+                            return
 
                     return _stream()
 
