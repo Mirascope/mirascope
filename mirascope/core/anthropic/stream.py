@@ -3,7 +3,14 @@
 usage docs: learn/streams.md
 """
 
-from anthropic.types import Message, MessageParam, TextBlock, ToolUseBlock, Usage
+from anthropic.types import (
+    Message,
+    MessageParam,
+    TextBlock,
+    ToolParam,
+    ToolUseBlock,
+    Usage,
+)
 from anthropic.types.content_block import ContentBlock
 from anthropic.types.text_block_param import TextBlockParam
 from anthropic.types.tool_use_block_param import ToolUseBlockParam
@@ -29,6 +36,7 @@ class AnthropicStream(
         MessageParam,
         MessageParam,
         AnthropicTool,
+        ToolParam,
         AnthropicDynamicConfig,
         AnthropicCallParams,
         FinishReason,

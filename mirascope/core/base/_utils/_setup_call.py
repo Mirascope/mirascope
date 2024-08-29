@@ -29,7 +29,7 @@ def setup_call(
     str | None,
     list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
-    BaseCallKwargs[_BaseToolT],
+    BaseCallKwargs,
 ]:
     call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
     prompt_template, messages, computed_fields = None, None, None

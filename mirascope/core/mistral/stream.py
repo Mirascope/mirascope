@@ -3,6 +3,8 @@
 usage docs: learn/streams.md
 """
 
+from typing import Any
+
 from mistralai.models.chat_completion import (
     ChatCompletionResponse,
     ChatCompletionResponseChoice,
@@ -29,6 +31,7 @@ class MistralStream(
         ChatMessage,
         ChatMessage,
         MistralTool,
+        dict[str, Any],
         MistralDynamicConfig,
         MistralCallParams,
         FinishReason,
