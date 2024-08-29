@@ -116,7 +116,7 @@ def _get_async_create_fn(
                     return async_generator
 
                 return _stream()
-            else:
+            else:  # pragma: no cover
                 return async_generator
 
     return create_or_stream

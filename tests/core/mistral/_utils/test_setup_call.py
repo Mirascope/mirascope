@@ -94,9 +94,20 @@ async def test_async_setup_call(
     mock_stream_response = AsyncMock(spec=ChatCompletionStreamResponse)
     mock_stream_response.text = "chat"
 
-    mock_iterator = AsyncMock()
-    mock_iterator.__aiter__.return_value = mock_iterator
-    mock_iterator.__anext__.side_effect = [mock_stream_response, StopAsyncIteration()]
+    class AsyncMockIterator:
+        def __init__(self, item):
+            self.item = iter(item)
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            try:
+                return next(self.item)
+            except StopIteration:
+                raise StopAsyncIteration
+
+    mock_iterator = AsyncMockIterator([mock_stream_response])
 
     mock_client = AsyncMock(spec=MistralAsyncClient, name="mock_client")
     mock_client.chat_stream.return_value = mock_iterator
@@ -128,10 +139,12 @@ async def test_async_setup_call(
     mock_mistral_chat.return_value = MagicMock(spec=ChatCompletionResponse)
     chat = await create(stream=False, **call_kwargs)
     stream = await create(stream=True, **call_kwargs)
+    result = []
     async for chunk in stream:
-        assert chunk == mock_stream_response
+        result.append(chunk)
+    assert result == [mock_stream_response]
     assert isinstance(chat, ChatCompletionResponse)
-    assert isinstance(stream, AsyncMock)
+    assert isinstance(stream, AsyncMockIterator)
 
 
 @patch(
