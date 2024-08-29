@@ -188,7 +188,7 @@ ignore-regex = 'and buyed some milk'
 omit = ["mirascope/beta/*", "mirascope/v0/*"]
 
 [tool.coverage.report]
-exclude_also = ["@overload", "@abstractmethod"]
+exclude_also = ["@overload", "@abstractmethod", "if TYPE_CHECKING:"]
 
 [build-system]
 requires = ["hatchling"]

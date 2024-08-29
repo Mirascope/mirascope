@@ -193,9 +193,10 @@ def setup_call(
             **kwargs: Any,  # noqa: ANN401
         ) -> Generator[StreamedChatResponse, None, None] | NonStreamedChatResponse:
             if stream:
+                iterator = client.chat_stream(**kwargs)
 
                 def _stream() -> Generator[StreamedChatResponse, None, None]:
-                    yield from client.chat_stream(**kwargs)
+                    yield from iterator
 
                 return _stream()
             return client.chat(**kwargs)

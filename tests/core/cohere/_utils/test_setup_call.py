@@ -42,6 +42,9 @@ def test_setup_call(
     """Tests the `setup_call` function."""
     mock_chat.__name__ = "chat"
     mock_chat_stream.__name__ = "chat_stream"
+    mock_chat_iterator = MagicMock()
+    mock_chat_iterator.__iter__.return_value = ["chat"]
+    mock_chat_stream.return_value = mock_chat_iterator
     mock_utils.setup_call = mock_base_setup_call
     system_message = "system"
     preamble_message = "preamble"
@@ -93,6 +96,7 @@ def test_setup_call(
     stream = create(stream=True, **call_kwargs)
     assert isinstance(chat, NonStreamedChatResponse)
     assert isinstance(stream, Iterator)
+    assert next(stream) == "chat"
 
 
 @patch(
