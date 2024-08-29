@@ -1,5 +1,3 @@
-# codespell-ignore-file
-
 test_conversation_messages = [
     {"role": "user", "content": "I am a SWE looking for a LLM dev tool library"},
     {
