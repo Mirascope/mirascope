@@ -229,7 +229,6 @@ _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
-_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def stream_factory(  # noqa: ANN201

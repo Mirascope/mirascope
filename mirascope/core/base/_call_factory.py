@@ -46,7 +46,6 @@ _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
-_BaseMessageT = TypeVar("_BaseMessageT")
 
 
 def call_factory(  # noqa: ANN202

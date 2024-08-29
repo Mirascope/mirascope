@@ -31,7 +31,6 @@ _ResponseChunkT = TypeVar("_ResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
-_BaseMessageT = TypeVar("_BaseMessageT", bound=dict)
 
 
 def extract_factory(  # noqa: ANN202
