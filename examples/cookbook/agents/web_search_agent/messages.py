@@ -10,14 +10,14 @@ test_conversation_messages = [
                     "arguments": '{"queries":["best LLM development tools","top libraries for LLM development","LLM libraries for software engineers","LLM dev tools for machine learning","most popular libraries for LLM development"]}',
                     "name": "_web_search",
                 },
-                "id": "call_y4Xnq69KC3OkhvHT6AR4TezI",
+                "id": "call_1",
             }
         ],
     },
     {
         "role": "tool",
-        "content": "h\nt\nt\np\ns\n:\n/\n/\nr\ne\ns\ne\na\nr\nc\nh\n.\na\ni\nm\nu\nl\nt\ni\np\nl\ne\n.\nc\no\nm\n/\nl\nl\nm\no\np\ns\n-\nt\no\no\nl\ns\n/\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nt\ne\nc\nh\nr\na\nd\na\nr\n.\nc\no\nm\n/\nc\no\nm\np\nu\nt\ni\nn\ng\n/\na\nr\nt\ni\nf\ni\nc\ni\na\nl\n-\ni\nn\nt\ne\nl\nl\ni\ng\ne\nn\nc\ne\n/\nb\ne\ns\nt\n-\nl\na\nr\ng\ne\n-\nl\na\nn\ng\nu\na\ng\ne\n-\nm\no\nd\ne\nl\ns\n-\nl\nl\nm\ns\n-\nf\no\nr\n-\nc\no\nd\ni\nn\ng\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nl\no\ng\n.\na\ni\np\no\nr\nt\n.\nt\ne\nc\nh\n/\np\n/\nt\no\np\n-\n9\n-\nl\ni\nb\nr\na\nr\ni\ne\ns\n-\nt\no\n-\na\nc\nc\ne\nl\ne\nr\na\nt\ne\n-\nl\nl\nm\n\nh\nt\nt\np\ns\n:\n/\n/\nm\ne\nd\ni\nu\nm\n.\nc\no\nm\n/\np\ny\nt\nh\no\nn\nf\no\nr\na\nl\nl\n/\ne\ns\ns\ne\nn\nt\ni\na\nl\n-\np\ny\nt\nh\no\nn\n-\nl\ni\nb\nr\na\nr\ni\ne\ns\n-\nf\no\nr\n-\nl\nl\nm\ns\n-\na\nn\nd\n-\na\np\np\nl\ni\nc\na\nt\ni\no\nn\n-\nd\ne\nv\ne\nl\no\np\nm\ne\nn\nt\n-\ni\nn\n-\n2\n0\n2\n4\n-\n1\n7\nc\n6\n4\nb\n6\n7\n2\n4\n2\n1\n\nh\nt\nt\np\ns\n:\n/\n/\ng\ni\nt\nh\nu\nb\n.\nc\no\nm\n/\nt\ne\nn\ns\no\nr\nc\nh\no\nr\nd\n/\na\nw\ne\ns\no\nm\ne\n-\nl\nl\nm\no\np\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ng\ni\nt\nh\nu\nb\n.\nc\no\nm\n/\ng\na\ni\n4\ns\ne\n/\nL\nL\nM\n4\nS\nE\n\nh\nt\nt\np\ns\n:\n/\n/\nm\ne\nd\ni\nu\nm\n.\nc\no\nm\n/\n@\nb\ni\nj\ni\nt\n2\n1\n1\n9\n8\n7\n/\nt\no\np\n-\nl\nl\nm\n-\nd\ne\nv\n-\nt\no\no\nl\n-\na\nn\nd\n-\nw\nh\ne\nn\n-\nt\no\n-\nu\ns\ne\n-\nt\nh\ne\nm\n-\ni\nn\n-\ny\no\nu\nr\n-\na\ni\n-\ns\nt\na\nc\nk\n-\n6\n2\n2\na\n6\n5\n1\ne\nc\ne\n0\n6\n\nh\nt\nt\np\ns\n:\n/\n/\nr\ne\ns\ne\na\nr\nc\nh\n.\na\ni\nm\nu\nl\nt\ni\np\nl\ne\n.\nc\no\nm\n/\nl\nl\nm\no\np\ns\n-\nt\no\no\nl\ns\n/\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nd\na\nt\na\nc\na\nm\np\n.\nc\no\nm\n/\nb\nl\no\ng\n/\nt\no\np\n-\no\np\ne\nn\n-\ns\no\nu\nr\nc\ne\n-\nl\nl\nm\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nm\ne\nd\ni\nu\nm\n.\nc\no\nm\n/\np\ny\nt\nh\no\nn\nf\no\nr\na\nl\nl\n/\ne\ns\ns\ne\nn\nt\ni\na\nl\n-\np\ny\nt\nh\no\nn\n-\nl\ni\nb\nr\na\nr\ni\ne\ns\n-\nf\no\nr\n-\nl\nl\nm\ns\n-\na\nn\nd\n-\na\np\np\nl\ni\nc\na\nt\ni\no\nn\n-\nd\ne\nv\ne\nl\no\np\nm\ne\nn\nt\n-\ni\nn\n-\n2\n0\n2\n4\n-\n1\n7\nc\n6\n4\nb\n6\n7\n2\n4\n2\n1",
-        "tool_call_id": "call_y4Xnq69KC3OkhvHT6AR4TezI",
+        "content": "https://www.blog.aiport.tech/p/top-9-libraries-to-accelerate-llm\n\nhttps://github.com/tensorchord/awesome-llmops\n\nhttps://www.blog.aiport.tech/p/top-9-libraries-to-accelerate-llm\n\nhttps://medium.com/pythonforall/essential-python-libraries-for-llms-and-application-development-in-2024-17c64b672421\n\nhttps://www.datacamp.com/blog/top-open-source-llms\n\nhttps://machinelearningmastery.com/5-essential-free-tools-getting-started-llms/\n\nhttps://github.com/princeton-nlp/swe-agent\n\nhttps://arxiv.org/html/2407.01489v1\n\nhttps://www.datacamp.com/blog/top-open-source-llms\n\nhttps://llmmodels.org/blog/top-10-open-source-llm-frameworks-2024/",
+        "tool_call_id": "call_1",
         "name": "_web_search",
     },
     {

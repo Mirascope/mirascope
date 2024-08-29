@@ -74,7 +74,7 @@ class WebAssistant(BaseModel):
                 for result in results:
                     link = result["href"]
                     try:
-                        urls.append("\n".join(link))
+                        urls.append(link)
                     except Exception as e:
                         urls.append(
                             f"{type(e)}: Failed to parse content from URL {link}"
@@ -120,6 +120,7 @@ class WebAssistant(BaseModel):
         }
 
     async def _step(self, question: str):
+        print(self.messages)
         response = await self._stream(question)
         tools_and_outputs = []
         async for chunk, tool in response:

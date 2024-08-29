@@ -90,7 +90,7 @@ class WebAssistant(BaseModel):
                 for result in results:
                     link = result["href"]
                     try:
-                        urls.append("\n".join(link))
+                        urls.append(link)
                     except Exception as e:
                         urls.append(
                             f"{type(e)}: Failed to parse content from URL {link}"
