@@ -5,8 +5,8 @@ from collections.abc import Awaitable, Callable
 from dataclasses import asdict, is_dataclass
 from typing import Any, ParamSpec, cast, overload
 
-from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import (  # type: ignore
+from google.generativeai import GenerativeModel
+from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
     GenerateContentResponse,
@@ -67,6 +67,8 @@ def setup_call(
     list[type[GeminiTool]] | None,
     GeminiCallKwargs,
 ]: ...
+
+
 def setup_call(
     *,
     model: str,

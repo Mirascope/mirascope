@@ -128,7 +128,7 @@ def handle_response_model(
     if span is None:
         return
     if isinstance(result, BaseModel):
-        response: BaseCallResponse = result._response  # type: ignore
+        response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
         attributes = get_call_response_attributes(response)
         attributes["async"] = False
         span.set_attributes(attributes)
@@ -213,7 +213,7 @@ async def handle_response_model_async(
     if span is None:
         return
     if isinstance(result, BaseModel):
-        response: BaseCallResponse = result._response  # type: ignore
+        response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
         attributes = get_call_response_attributes(response)
         attributes["async"] = True
         span.set_attributes(attributes)

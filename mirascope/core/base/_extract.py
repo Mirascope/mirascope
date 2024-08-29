@@ -112,10 +112,10 @@ def extract_factory(  # noqa: ANN202
                 try:
                     output = extract_tool_return(response_model, json_output, False)
                 except ValidationError as e:
-                    e._response = call_response  # type: ignore
+                    e._response = call_response
                     raise e
                 if isinstance(output, BaseModel):
-                    output._response = call_response  # type: ignore
+                    output._response = call_response
                 return output if not output_parser else output_parser(output)
 
             return inner_async
@@ -131,10 +131,10 @@ def extract_factory(  # noqa: ANN202
                     try:
                         output = extract_tool_return(response_model, json_output, False)
                     except ValidationError as e:
-                        e._response = call_response  # type: ignore
+                        e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                         raise e
                     if isinstance(output, BaseModel):
-                        output._response = call_response  # type: ignore
+                        output._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     return output if not output_parser else output_parser(output)  # type: ignore
                 else:  # pragma: no cover
                     raise AssertionError("Function must be async")

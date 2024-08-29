@@ -3,11 +3,11 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from google.generativeai.protos import FunctionResponse  # type: ignore
-from google.generativeai.types import (  # type: ignore
+from google.generativeai.protos import FunctionResponse
+from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
-    ContentsType,  # type: ignore
+    ContentsType,
     GenerateContentResponse,
 )
 from pydantic import computed_field
@@ -122,7 +122,7 @@ class GeminiCallResponse(
     @property
     def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
-        return {"role": "model", "parts": self.response.parts}  # type: ignore
+        return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
 
     @computed_field
     @property

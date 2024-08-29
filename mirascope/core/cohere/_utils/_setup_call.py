@@ -48,7 +48,7 @@ def setup_call(
     preamble = ""
     if "preamble" in call_kwargs and call_kwargs["preamble"] is not None:
         preamble = call_kwargs.pop("preamble", "") or ""
-    if messages[0].role == "SYSTEM":  # type: ignore
+    if messages[0].role == "SYSTEM":  # pyright: ignore [reportAttributeAccessIssue]
         if preamble:
             preamble += "\n\n"
         preamble += messages.pop(0).message
@@ -59,7 +59,7 @@ def setup_call(
     if json_mode:
         # Cannot mutate ChatMessage in place
         messages[-1] = ChatMessage(
-            role=messages[-1].role,  # type: ignore
+            role=messages[-1].role,  # pyright: ignore [reportCallIssue, reportAttributeAccessIssue]
             message=messages[-1].message
             + _utils.json_mode_content(tool_types[0] if tool_types else None),
             tool_calls=messages[-1].tool_calls,

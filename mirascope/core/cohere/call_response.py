@@ -110,7 +110,7 @@ class CohereCallResponse(
         return ChatMessage(
             message=self.response.text,
             tool_calls=self.response.tool_calls,
-            role="assistant",  # type: ignore
+            role="assistant",  # pyright: ignore [reportCallIssue]
         )
 
     @computed_field

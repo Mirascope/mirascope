@@ -58,7 +58,7 @@ def handle_response_model(
     result: BaseModel | BaseType, fn: Callable, context: None
 ) -> None:
     if isinstance(result, BaseModel):
-        response: BaseCallResponse = result._response  # type: ignore
+        response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
         call_response_observation = get_call_response_observation(response, fn)
         call_response_observation.pop("output")
         langfuse_context.update_current_observation(

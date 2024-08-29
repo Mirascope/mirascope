@@ -11,11 +11,8 @@ from google.ai.generativelanguage import (
     FunctionCall,
     GenerateContentResponse,
 )
+from google.generativeai.types import ContentDict, ContentsType
 from google.generativeai.types import (
-    ContentDict,
-    ContentsType,  # type: ignore
-)
-from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
 from google.generativeai.types.content_types import PartType
