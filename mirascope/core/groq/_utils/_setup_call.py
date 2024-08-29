@@ -2,17 +2,64 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import Any, cast, overload
 
 from groq import AsyncGroq, Groq
-from groq.types.chat import ChatCompletion, ChatCompletionMessageParam
+from groq.types.chat import (
+    ChatCompletion,
+    ChatCompletionChunk,
+    ChatCompletionMessageParam,
+)
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn
 from ..call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import GroqDynamicConfig
 from ..tool import GroqTool
 from ._convert_message_params import convert_message_params
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: Groq | AsyncGroq | None,
+    fn: Callable[..., Awaitable[GroqDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: GroqDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GroqCallParams,
+    extract: bool,
+) -> tuple[
+    AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
+    str | None,
+    list[ChatCompletionMessageParam],
+    list[type[GroqTool]] | None,
+    GroqCallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: Groq | AsyncGroq | None,
+    fn: Callable[..., GroqDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: GroqDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GroqCallParams,
+    extract: bool,
+) -> tuple[
+    CreateFn[ChatCompletion, ChatCompletionChunk],
+    str | None,
+    list[ChatCompletionMessageParam],
+    list[type[GroqTool]] | None,
+    GroqCallKwargs,
+]: ...
 
 
 def setup_call(
@@ -27,7 +74,8 @@ def setup_call(
     call_params: GroqCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
+    CreateFn[ChatCompletion, ChatCompletionChunk]
+    | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[GroqTool]] | None,
@@ -66,4 +114,4 @@ def setup_call(
         client = AsyncGroq() if inspect.iscoroutinefunction(fn) else Groq()
     create = client.chat.completions.create
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]
