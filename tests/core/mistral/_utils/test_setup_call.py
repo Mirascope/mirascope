@@ -1,6 +1,5 @@
 """Tests the `mistral._utils.setup_call` module."""
 
-from collections.abc import AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -95,26 +94,9 @@ async def test_async_setup_call(
     mock_stream_response = AsyncMock(spec=ChatCompletionStreamResponse)
     mock_stream_response.text = "chat"
 
-    # class AsyncIteratorMock:
-    #     def __init__(self, items):
-    #         self.items = iter(items)
-    #
-    #     def __aiter__(self):
-    #         return self
-    #
-    #     async def __anext__(self):
-    #         try:
-    #             return next(self.items)
-    #         except StopIteration:
-    #             raise StopAsyncIteration
     mock_iterator = AsyncMock()
     mock_iterator.__aiter__.return_value = mock_iterator
     mock_iterator.__anext__.side_effect = [mock_stream_response, StopAsyncIteration()]
-
-    async def mock_stream_generator() -> (
-        AsyncGenerator[ChatCompletionStreamResponse, None]
-    ):
-        yield mock_stream_response
 
     mock_client = AsyncMock(spec=MistralAsyncClient, name="mock_client")
     mock_client.chat_stream.return_value = mock_iterator
