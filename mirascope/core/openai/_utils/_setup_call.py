@@ -3,7 +3,7 @@
 import inspect
 import warnings
 from collections.abc import Awaitable, Callable
-from typing import Any, ParamSpec, cast, overload
+from typing import Any, cast, overload
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (
@@ -21,15 +21,13 @@ from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
 from ._convert_message_params import convert_message_params
 
-_P = ParamSpec("_P")
-
 
 @overload
 def setup_call(
     *,
     model: str,
     client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[_P, Awaitable[OpenAIDynamicConfig]],
+    fn: Callable[..., Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -50,7 +48,7 @@ def setup_call(
     *,
     model: str,
     client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[_P, OpenAIDynamicConfig],
+    fn: Callable[..., OpenAIDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -70,8 +68,8 @@ def setup_call(
     *,
     model: str,
     client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
-    fn: Callable[_P, OpenAIDynamicConfig]
-    | Callable[_P, Awaitable[OpenAIDynamicConfig]],
+    fn: Callable[..., OpenAIDynamicConfig]
+    | Callable[..., Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,

@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict, is_dataclass
-from typing import Any, ParamSpec, cast, overload
+from typing import Any, cast, overload
 
 from google.generativeai import GenerativeModel
 from google.generativeai.types import (
@@ -24,15 +24,13 @@ from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
 from ._convert_message_params import convert_message_params
 
-_P = ParamSpec("_P")
-
 
 @overload
 def setup_call(
     *,
     model: str,
     client: GenerativeModel | None,
-    fn: Callable[_P, Awaitable[GeminiDynamicConfig]],
+    fn: Callable[..., Awaitable[GeminiDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -53,7 +51,7 @@ def setup_call(
     *,
     model: str,
     client: GenerativeModel | None,
-    fn: Callable[_P, GeminiDynamicConfig],
+    fn: Callable[..., GeminiDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -73,8 +71,7 @@ def setup_call(
     *,
     model: str,
     client: GenerativeModel | None,
-    fn: Callable[_P, GeminiDynamicConfig]
-    | Callable[_P, Awaitable[GeminiDynamicConfig]],
+    fn: Callable[..., GeminiDynamicConfig | Awaitable[GeminiDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,

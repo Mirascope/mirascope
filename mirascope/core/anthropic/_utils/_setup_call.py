@@ -87,8 +87,7 @@ def setup_call(
     | AnthropicVertex
     | AsyncAnthropicVertex
     | None,
-    fn: Callable[..., AnthropicDynamicConfig]
-    | Callable[..., Awaitable[AnthropicDynamicConfig]],
+    fn: Callable[..., AnthropicDynamicConfig | Awaitable[AnthropicDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
@@ -96,7 +95,7 @@ def setup_call(
     call_params: AnthropicCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., Message] | Callable[..., Awaitable[Message]],
+    Callable[..., Message | Awaitable[Message]],
     str | None,
     list[MessageParam],
     list[type[AnthropicTool]] | None,

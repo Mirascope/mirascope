@@ -24,10 +24,10 @@ litellm_call = call_factory(
     TStream=OpenAIStream,
     TCallParams=OpenAICallParams,
     default_call_params=OpenAICallParams(),
-    setup_call=setup_call,  # type: ignore
+    setup_call=setup_call,  # pyright: ignore [reportArgumentType]
     get_json_output=get_json_output,
-    handle_stream=handle_stream,
-    handle_stream_async=handle_stream_async,
+    handle_stream=handle_stream,  # pyright: ignore [reportArgumentType]
+    handle_stream_async=handle_stream_async,  # pyright: ignore [reportArgumentType]
 )
 """A decorator for calling the LiteLLM API with a typed function.
 
