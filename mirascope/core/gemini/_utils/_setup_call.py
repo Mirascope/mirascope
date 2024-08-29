@@ -106,7 +106,7 @@ def setup_call(
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
         tool_config = ToolConfigDict(
-            function_calling_config=FunctionCallingConfigDict(
+            function_calling_config=FunctionCallingConfigDict(  # pyright: ignore [reportCallIssue]
                 mode="any",
                 allowed_function_names=[tool_types[0]._name()],
             )
