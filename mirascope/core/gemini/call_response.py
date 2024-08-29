@@ -4,11 +4,12 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from google.generativeai.protos import FunctionResponse  # type: ignore
-from google.generativeai.types import (  # type: ignore
+from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
-    ContentsType,  # type: ignore
+    ContentsType,
     GenerateContentResponse,
+    Tool,
 )
 from pydantic import computed_field
 
@@ -23,6 +24,7 @@ class GeminiCallResponse(
     BaseCallResponse[
         GenerateContentResponse | AsyncGenerateContentResponse,
         GeminiTool,
+        Tool,
         GeminiDynamicConfig,
         ContentsType,
         GeminiCallParams,

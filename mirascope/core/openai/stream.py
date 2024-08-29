@@ -11,6 +11,7 @@ from openai.types.chat import (
     ChatCompletionMessageToolCall,
     ChatCompletionMessageToolCallParam,
     ChatCompletionToolMessageParam,
+    ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
 )
 from openai.types.chat.chat_completion import Choice
@@ -37,6 +38,7 @@ class OpenAIStream(
         ChatCompletionToolMessageParam,
         ChatCompletionMessageParam,
         OpenAITool,
+        ChatCompletionToolParam,
         OpenAIDynamicConfig,
         OpenAICallParams,
         FinishReason,

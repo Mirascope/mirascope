@@ -8,6 +8,7 @@ from groq.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
     ChatCompletionToolMessageParam,
+    ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
 )
 from groq.types.completion_usage import CompletionUsage
@@ -24,6 +25,7 @@ class GroqCallResponse(
     BaseCallResponse[
         ChatCompletion,
         GroqTool,
+        ChatCompletionToolParam,
         GroqDynamicConfig,
         ChatCompletionMessageParam,
         GroqCallParams,

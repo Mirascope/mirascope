@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from typing import Any
+
 from mistralai.models.chat_completion import ChatCompletionResponse, ChatMessage
 from mistralai.models.common import UsageInfo
 from pydantic import computed_field
@@ -18,6 +20,7 @@ class MistralCallResponse(
     BaseCallResponse[
         ChatCompletionResponse,
         MistralTool,
+        dict[str, Any],
         MistralDynamicConfig,
         ChatMessage,
         MistralCallParams,
