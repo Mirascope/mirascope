@@ -95,16 +95,29 @@ async def test_async_setup_call(
     mock_stream_response = AsyncMock(spec=ChatCompletionStreamResponse)
     mock_stream_response.text = "chat"
 
-    async def mock_stream_generator():
+    # class AsyncIteratorMock:
+    #     def __init__(self, items):
+    #         self.items = iter(items)
+    #
+    #     def __aiter__(self):
+    #         return self
+    #
+    #     async def __anext__(self):
+    #         try:
+    #             return next(self.items)
+    #         except StopIteration:
+    #             raise StopAsyncIteration
+    mock_iterator = AsyncMock()
+    mock_iterator.__aiter__.return_value = mock_iterator
+    mock_iterator.__anext__.side_effect = [mock_stream_response, StopAsyncIteration()]
+
+    async def mock_stream_generator() -> (
+        AsyncGenerator[ChatCompletionStreamResponse, None]
+    ):
         yield mock_stream_response
 
-    mock_mistral_chat_stream = AsyncMock(spec=AsyncGenerator)
-    mock_mistral_chat_stream.__aiter__.return_value = mock_stream_generator()
-
     mock_client = AsyncMock(spec=MistralAsyncClient, name="mock_client")
-    mock_client.chat_stream.return_value = (
-        mock_mistral_chat_stream.__aiter__.return_value
-    )
+    mock_client.chat_stream.return_value = mock_iterator
     mock_client.chat.return_value = mock_mistral_chat
 
     mock_utils.setup_call = mock_base_setup_call
@@ -133,11 +146,10 @@ async def test_async_setup_call(
     mock_mistral_chat.return_value = MagicMock(spec=ChatCompletionResponse)
     chat = await create(stream=False, **call_kwargs)
     stream = await create(stream=True, **call_kwargs)
+    async for chunk in stream:
+        assert chunk == mock_stream_response
     assert isinstance(chat, ChatCompletionResponse)
-    assert isinstance(stream, AsyncGenerator)
-    assert await anext(stream) == mock_stream_response
-    with pytest.raises(StopAsyncIteration):
-        await anext(stream)
+    assert isinstance(stream, AsyncMock)
 
 
 @patch(

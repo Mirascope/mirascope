@@ -2,16 +2,11 @@
 
 import inspect
 from collections.abc import (
-    AsyncGenerator,
-    AsyncIterator,
     Awaitable,
     Callable,
-    Coroutine,
-    Generator,
 )
 from typing import (
     Any,
-    Literal,
     cast,
     overload,
 )
@@ -25,6 +20,11 @@ from cohere.types import ChatMessage, StreamedChatResponse
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
+from ...base._utils._setup_call import (
+    _AsyncFunctions,
+    _get_create_fn_or_async_create_fn,
+    _SyncFunctions,
+)
 from ..call_kwargs import CohereCallKwargs
 from ..call_params import CohereCallParams
 from ..dynamic_config import CohereDynamicConfig
@@ -130,79 +130,8 @@ def setup_call(
     if client is None:
         client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
     if isinstance(client, AsyncClient):
-
-        @overload
-        def async_create_or_stream(
-            *,
-            stream: Literal[True] = True,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[Any, Any, AsyncGenerator[StreamedChatResponse, None]]: ...
-
-        @overload
-        def async_create_or_stream(
-            *,
-            stream: Literal[False] = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[Any, Any, NonStreamedChatResponse]: ...
-
-        def async_create_or_stream(
-            *,
-            stream: bool = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[
-            Any,
-            Any,
-            AsyncGenerator[StreamedChatResponse, None] | NonStreamedChatResponse,
-        ]:
-            if stream:
-                iterator: AsyncIterator[StreamedChatResponse] = client.chat_stream(
-                    **kwargs
-                )
-
-                async def wrapper() -> AsyncGenerator[StreamedChatResponse, None]:
-                    async def _stream() -> AsyncGenerator[StreamedChatResponse, None]:
-                        try:
-                            while True:
-                                yield await anext(iterator)
-                        except StopAsyncIteration:
-                            return
-
-                    return _stream()
-
-                return wrapper()
-            else:
-                return client.chat(**kwargs)
-
-        create_or_stream = async_create_or_stream
+        functions = _AsyncFunctions(client.chat, client.chat_stream)  # pyright: ignore [reportArgumentType]
     else:
-
-        @overload
-        def sync_create_or_stream(
-            *,
-            stream: Literal[True] = True,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Generator[StreamedChatResponse, None, None]: ...
-
-        @overload
-        def sync_create_or_stream(
-            *,
-            stream: Literal[False] = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> NonStreamedChatResponse: ...
-
-        def sync_create_or_stream(
-            *,
-            stream: bool = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Generator[StreamedChatResponse, None, None] | NonStreamedChatResponse:
-            if stream:
-                iterator = client.chat_stream(**kwargs)
-
-                def _stream() -> Generator[StreamedChatResponse, None, None]:
-                    yield from iterator
-
-                return _stream()
-            return client.chat(**kwargs)
-
-        create_or_stream = sync_create_or_stream
+        functions = _SyncFunctions(client.chat, client.chat_stream)
+    create_or_stream = _get_create_fn_or_async_create_fn(functions)
     return create_or_stream, prompt_template, messages, tool_types, call_kwargs

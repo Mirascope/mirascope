@@ -2,14 +2,10 @@
 
 import inspect
 from collections.abc import (
-    AsyncGenerator,
-    AsyncIterator,
     Awaitable,
     Callable,
-    Coroutine,
-    Generator,
 )
-from typing import Any, Literal, cast, overload
+from typing import Any, cast, overload
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -24,6 +20,11 @@ from mistralai.models.chat_completion import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
+from ...base._utils._setup_call import (
+    _AsyncFunctions,
+    _get_create_fn_or_async_create_fn,
+    _SyncFunctions,
+)
 from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
@@ -120,87 +121,8 @@ def setup_call(
             MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
         )
     if isinstance(client, MistralAsyncClient):
-
-        @overload
-        def async_create_or_stream(
-            *,
-            stream: Literal[True] = True,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[
-            Any, Any, AsyncGenerator[ChatCompletionStreamResponse, None]
-        ]: ...
-
-        @overload
-        def async_create_or_stream(
-            *,
-            stream: Literal[False] = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[Any, Any, ChatCompletionResponse]: ...
-
-        def async_create_or_stream(
-            *,
-            stream: bool = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Coroutine[
-            Any,
-            Any,
-            AsyncGenerator[ChatCompletionStreamResponse, None] | ChatCompletionResponse,
-        ]:
-            if stream:
-                iterator: AsyncIterator[ChatCompletionStreamResponse] = (
-                    client.chat_stream(**kwargs)
-                )
-
-                async def wrapper() -> (
-                    AsyncGenerator[ChatCompletionStreamResponse, None]
-                ):
-                    async def _stream() -> (
-                        AsyncGenerator[ChatCompletionStreamResponse, None]
-                    ):
-                        try:
-                            while True:
-                                yield await anext(iterator)
-                        except StopAsyncIteration:
-                            return
-
-                    return _stream()
-
-                return wrapper()
-            else:
-                return client.chat(**kwargs)
-
-        create_or_stream = async_create_or_stream
+        functions = _AsyncFunctions(client.chat, client.chat_stream)  # pyright: ignore [reportArgumentType]
     else:
-
-        @overload
-        def sync_create_or_stream(
-            *,
-            stream: Literal[True] = True,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Generator[ChatCompletionStreamResponse, None]: ...
-
-        @overload
-        def sync_create_or_stream(
-            *,
-            stream: Literal[False] = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> ChatCompletionResponse: ...
-
-        def sync_create_or_stream(
-            stream: bool = False,
-            **kwargs: Any,  # noqa: ANN401
-        ) -> (
-            ChatCompletionResponse | Generator[ChatCompletionStreamResponse, None, None]
-        ):
-            if stream:
-                chat_stream = client.chat_stream(**kwargs)
-
-                def _stream() -> Generator[ChatCompletionStreamResponse, None, None]:
-                    yield from chat_stream
-
-                return _stream()
-            return client.chat(**kwargs)
-
-        create_or_stream = sync_create_or_stream
-
+        functions = _SyncFunctions(client.chat, client.chat_stream)
+    create_or_stream = _get_create_fn_or_async_create_fn(functions)
     return create_or_stream, prompt_template, messages, tool_types, call_kwargs

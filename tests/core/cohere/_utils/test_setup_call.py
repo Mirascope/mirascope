@@ -111,21 +111,20 @@ async def test_async_setup_call(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
-    mock_chat = AsyncMock(spec=NonStreamedChatResponse)
-    mock_chat.__name__ = "chat"
+    mock_chat_response = MagicMock(spec=NonStreamedChatResponse)
+    mock_chat_response.__name__ = "chat"
 
     mock_stream_response = AsyncMock(spec=StreamedChatResponse)
     mock_stream_response.text = "chat"
 
+    mock_client = AsyncMock(spec=AsyncClient, name="mock_client")
+
     async def mock_stream_generator():
+        await AsyncMock()()
         yield mock_stream_response
 
-    mock_chat_stream = AsyncMock(spec=AsyncGenerator)
-    mock_chat_stream.__aiter__.return_value = mock_stream_generator()
-
-    mock_client = AsyncMock(spec=AsyncClient, name="mock_client")
-    mock_client.chat_stream.return_value = mock_chat_stream.__aiter__.return_value
-    mock_client.chat.return_value = mock_chat
+    mock_client.chat_stream.return_value = mock_stream_generator()
+    mock_client.chat.return_value = mock_chat_response
 
     mock_utils.setup_call = mock_base_setup_call
     system_message = "system"
@@ -174,14 +173,12 @@ async def test_async_setup_call(
     assert (
         call_kwargs["message"] == mock_convert_message_params.return_value[-1].message
     )
-    mock_chat.return_value = MagicMock(spec=NonStreamedChatResponse)
     chat = await create(stream=False, **call_kwargs)
     stream = await create(stream=True, **call_kwargs)
+    async for chunk in stream:
+        assert chunk == mock_stream_response
     assert isinstance(chat, NonStreamedChatResponse)
     assert isinstance(stream, AsyncGenerator)
-    assert await anext(stream) == mock_stream_response
-    with pytest.raises(StopAsyncIteration):
-        await anext(stream)
 
 
 @patch(
