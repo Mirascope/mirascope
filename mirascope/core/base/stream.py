@@ -220,12 +220,7 @@ class BaseStream(
         ...
 
 
-_BaseCallResponseChunkT = TypeVar(
-    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
-)
-# _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
