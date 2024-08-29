@@ -120,7 +120,7 @@ Now that our tools are setup, we can proceed to implement the Q&A functionality 
 
 ## Add Q&A Functionality
 
-Now that we have our tools we can now create our prompt_template and `_stream` function. We engineer the prompt to first use our `_web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
+Now that we have our tools we can now create our `prompt_template` and `_stream` function. We engineer the prompt to first use our `_web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
 
 ```python
 from mirascope.core import openai, prompt_template

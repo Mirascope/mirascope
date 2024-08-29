@@ -172,23 +172,26 @@ Our goal is to ensure that the LLM consistently utilizes the web search tool, ra
 ```python
 import pytest
 
-user_queries = [
-    "How is the weather in New York?",
-    "What is the capital of France?",
-    "Who is the president of the United States?",
-    "What is the population of India?",
-    "What is an apple?",
-]
-
-
 @pytest.mark.asyncio
-@pytest.mark.parametrize("user_query", user_queries)
+@pytest.mark.parametrize(
+    "user_query",
+    [
+        "How is the weather in New York?",
+        "What is the capital of France?",
+        "Who is the president of the United States?",
+        "What is the population of India?",
+        "What is an apple?",
+    ],
+)
 async def test_web_search(user_query: str):
     """Tests that the web search agent always uses the web search tool."""
     web_assistant = WebAssistant()
     response = await web_assistant._stream(user_query)
+    tools = []
     async for _, tool in response:
-        assert tool._name() == "_web_search" if tool else False
+        if tool:
+            tools.append(tool)
+    assert len(tools) == 1 and tools[0]._name() == "_web_search"
 ```
 
 It's recommended to continually expand our golden dataset until we can confidently assert that the LLM uses web search when appropriate.
@@ -198,21 +201,39 @@ It's recommended to continually expand our golden dataset until we can confident
 Our agent has been prompt engineered to utilize the extract_content tool at its discretion. Given the non-deterministic nature of this test, we'll implement a basic verification to ensure that the `extract_content` tool is invoked at least once per user query. We'll employ the same golden dataset used in the `test_web_search`, allowing us to assume that `test_extract_content` will always have a functional `_web_search`.
 
 ```python
+messages = [
+    {"role": "user", "content": "What is the capital of France?"},
+    {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            {
+                "type": "function",
+                "function": {
+                    "arguments": '{"queries":["capital of France","capital city of France","France","Paris","France capital"]}',
+                    "name": "_web_search",
+                },
+                "id": "call_1",
+            }
+        ],
+    },
+    {"role": "tool", "content": "..."},
+]
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("user_query", user_queries)
-async def test_extract_content(user_query: str):
-    """Tests that the extract content tool gets called at least once."""
-    web_assistant = WebAssistant()
-    await web_assistant._step(user_query)
-    extract_content_calls = 0
-    for message in web_assistant.messages:
-        if message["role"] == "assistant":
-            message = cast(ChatCompletionAssistantMessageParam, message)
-            for tool in message.get("tool_calls", []):
-                if tool["function"]["name"] == "extract_content":
-                    extract_content_calls += 1
-    assert extract_content_calls > 0
+async def test_extract_content():
+    """Tests that the extract content tool gets called once."""
+    user_query = "What is the capital of France?"
+    web_assistant = WebAssistant(messages=messages)
+    response = await web_assistant._stream(user_query)
+    tools = []
+    async for _, tool in response:
+        if tool:
+            tools.append(tool)
+    assert len(tools) == 1 and tools[0]._name() == "extract_content"
 ```
+
+For brevity, we've included just one example from our golden dataset, as the full messages array would be too lengthy to show.
 
 Now that we have our simple tests, let's take a look at a more complex evaluation-based test.
 

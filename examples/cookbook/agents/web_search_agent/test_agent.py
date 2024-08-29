@@ -1,11 +1,11 @@
-from typing import cast
-
 import pytest
-from openai.types.chat import ChatCompletionAssistantMessageParam
 from pydantic import BaseModel, Field
 
 from examples.cookbook.agents.web_search_agent.agent import WebAssistant
-from examples.cookbook.agents.web_search_agent.messages import messages
+from examples.cookbook.agents.web_search_agent.messages import (
+    test_conversation_messages,
+    test_extract_content_messages,
+)
 from mirascope.core import (
     anthropic,
     prompt_template,
@@ -100,7 +100,7 @@ async def test_conversation():
             "LLM dev tools for machine learning",
             "most popular libraries for LLM development",
         ],
-        messages=messages,
+        messages=test_conversation_messages,
     )
     response = await web_assistant._stream("What is mirascope library?")
     async for _, tool in response:
@@ -116,36 +116,36 @@ async def test_conversation():
         assert is_context_relevant
 
 
-user_queries = [
-    "How is the weather in New York?",
-    "What is the capital of France?",
-    "Who is the president of the United States?",
-    "What is the population of India?",
-    "What is an apple?",
-]
-
-
 @pytest.mark.asyncio
-@pytest.mark.parametrize("user_query", user_queries)
+@pytest.mark.parametrize(
+    "user_query",
+    [
+        "How is the weather in New York?",
+        "What is the capital of France?",
+        "Who is the president of the United States?",
+        "What is the population of India?",
+        "What is an apple?",
+    ],
+)
 async def test_web_search(user_query: str):
     """Tests that the web search agent always uses the web search tool."""
     web_assistant = WebAssistant()
     response = await web_assistant._stream(user_query)
+    tools = []
     async for _, tool in response:
-        assert tool._name() == "_web_search" if tool else False
+        if tool:
+            tools.append(tool)
+    assert len(tools) == 1 and tools[0]._name() == "_web_search"
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("user_query", user_queries)
-async def test_extract_content(user_query: str):
-    """Tests that the extract content tool gets called at least once."""
-    web_assistant = WebAssistant()
-    await web_assistant._step(user_query)
-    extract_content_calls = 0
-    for message in web_assistant.messages:
-        if message["role"] == "assistant":
-            message = cast(ChatCompletionAssistantMessageParam, message)
-            for tool in message.get("tool_calls", []):
-                if tool["function"]["name"] == "extract_content":
-                    extract_content_calls += 1
-    assert extract_content_calls > 0
+async def test_extract_content():
+    """Tests that the extract content tool gets called once."""
+    user_query = "What is the capital of France?"
+    web_assistant = WebAssistant(messages=test_extract_content_messages)
+    response = await web_assistant._stream(user_query)
+    tools = []
+    async for _, tool in response:
+        if tool:
+            tools.append(tool)
+    assert len(tools) == 1 and tools[0]._name() == "extract_content"

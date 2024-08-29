@@ -1,6 +1,6 @@
 # codespell-ignore-file
 
-messages = [
+test_conversation_messages = [
     {"role": "user", "content": "I am a SWE looking for a LLM dev tool library"},
     {
         "role": "assistant",
@@ -111,5 +111,29 @@ messages = [
         "content": "Medium\nOpen in app\nSign up\nSign in\nWrite\nSign up\nSign in\nPAGE NOT FOUND\n404\nOut of nothing, something.\nYou can find (just about) anything on\nMedium\n— apparently even a page that doesn’t exist. Maybe these stories will take you somewhere new?\nHome\n“You Can’t Eat Technology.”\nAdam DeMartino\nAug 25, 2024\n·\n11 min read\n“You Can’t Eat Technology.”\nAdam DeMartino\nAug 25, 2024\n·\n11 min read\nReflections from the 2024 DNC\nIsaac Saul\nin\nThe Political Prism\nAug 25, 2024\n·\n15 min read\nReflections from the 2024 DNC\nIsaac Saul\nin\nThe Political Prism\nAug 25, 2024\n·\n15 min read\nIt’s cognitive bias week, because thinking is hard\nThe Medium Newsletter\nin\nThe Medium Blog\nAug 27, 2024\n·\n3 min read\nIt’s cognitive bias week, because thinking is hard\nThe Medium Newsletter\nin\nThe Medium Blog\nAug 27, 2024\n·\n3 min read\nThe Fun and Games of College Tours\njen murphy parker\nAug 17, 2024\n·\n12 min read\nMember-only\nThe Fun and Games of College Tours\njen murphy parker\nAug 17, 2024\n·\n12 min read\nMember-only",
         "tool_call_id": "call_UWuyM3dy71Js7fspwSKnMlGC",
         "name": "extract_content",
+    },
+]
+
+test_extract_content_messages = [
+    {"role": "user", "content": "What is the capital of France?"},
+    {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+            {
+                "type": "function",
+                "function": {
+                    "arguments": '{"queries":["capital of France","capital city of France","France","Paris","France capital"]}',
+                    "name": "_web_search",
+                },
+                "id": "call_ddhSpVcNeDg9bLz4C7HEw85P",
+            }
+        ],
+    },
+    {
+        "role": "tool",
+        "content": "h\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nF\nr\na\nn\nc\ne\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nF\nr\na\nn\nc\ne\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\nw\nw\nw\n.\nb\nr\ni\nt\na\nn\nn\ni\nc\na\n.\nc\no\nm\n/\np\nl\na\nc\ne\n/\nP\na\nr\ni\ns\n\nh\nt\nt\np\ns\n:\n/\n/\ne\nn\n.\nw\ni\nk\ni\np\ne\nd\ni\na\n.\no\nr\ng\n/\nw\ni\nk\ni\n/\nP\na\nr\ni\ns",
+        "tool_call_id": "call_ddhSpVcNeDg9bLz4C7HEw85P",
+        "name": "_web_search",
     },
 ]
