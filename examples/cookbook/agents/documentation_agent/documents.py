@@ -51,7 +51,7 @@ retrieved_mirascope_docs = [
     },
 ]
 
-retrieve_dummy_docs = [
+retrieved_dummy_docs = [
     {"id": 0, "document": "Bob eats burgers every day.", "score": 7},
     {"id": 1, "document": "Bob's favorite food is not pizza.", "score": 9},
     {"id": 2, "document": "I ate at In-N-Out with Bob yesterday", "score": 4},
