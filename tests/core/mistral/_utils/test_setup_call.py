@@ -39,6 +39,9 @@ def test_setup_call(
 ) -> None:
     """Tests the `setup_call` function."""
     mock_utils.setup_call = mock_base_setup_call
+    mock_chat_iterator = MagicMock()
+    mock_chat_iterator.__iter__.return_value = ["chat"]
+    mock_mistral_chat_stream.return_value = mock_chat_iterator
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="mistral-large-latest",
@@ -62,8 +65,9 @@ def test_setup_call(
     assert messages == mock_convert_message_params.return_value
     create(stream=False, **call_kwargs)
     mock_mistral_chat.assert_called_once_with(**call_kwargs)
-    create(stream=True, **call_kwargs)
+    stream = create(stream=True, **call_kwargs)
     mock_mistral_chat_stream.assert_called_once_with(**call_kwargs)
+    assert next(stream) == "chat"  # pyright: ignore [reportArgumentType]
 
 
 @patch(
