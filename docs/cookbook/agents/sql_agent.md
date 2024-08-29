@@ -91,7 +91,7 @@ Now that we have our tools setup it is time to engineer our prompt
 
 Knowing what tools are available is crucial when prompt engineering, so that we can tell the LLM when and how the tools should be used.
 
-Now we will take our `Librarian` and add our call:
+Now we will take our `Librarian` and add our `@openai.call`:
 
 ```python
 from openai.types.chat import ChatCompletionMessageParam
@@ -165,11 +165,11 @@ class Librarian(BaseModel):
         USER: {query}
         """
     )
-    async def _call(self, query: str) -> openai.OpenAIDynamicConfig:
+    async def _stream(self, query: str) -> openai.OpenAIDynamicConfig:
         return {"tools": [self._run_query, self._execute_query]}
 
     async def _step(self, question: str):
-        response = await self._call(question)
+        response = await self._stream(question)
         tools_and_outputs = []
         async for chunk, tool in response:
             if tool:
