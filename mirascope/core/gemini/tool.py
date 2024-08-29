@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from google.ai.generativelanguage import FunctionCall
-from google.generativeai.types import (  # type: ignore
+from google.generativeai.types import (
     FunctionDeclaration,
     Tool,
 )

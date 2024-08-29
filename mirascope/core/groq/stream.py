@@ -9,6 +9,7 @@ from groq.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCallParam,
     ChatCompletionToolMessageParam,
+    ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
 )
 from groq.types.chat.chat_completion import Choice
@@ -35,6 +36,7 @@ class GroqStream(
         ChatCompletionToolMessageParam,
         ChatCompletionMessageParam,
         GroqTool,
+        ChatCompletionToolParam,
         GroqDynamicConfig,
         GroqCallParams,
         FinishReason,
