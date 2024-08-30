@@ -15,12 +15,9 @@ def get_json_output(
             json_start = content.index("{")
             json_end = content.rfind("}")
             return content[json_start : json_end + 1]
-        elif (
-            (block := response.response.content[0])
-            and block.type == "tool_use"
-            and block.input is not None
-        ):
-            return json.dumps(block.input)
+        for block in response.response.content:
+            if block.type == "tool_use" and block.input is not None:
+                return json.dumps(block.input)
         raise ValueError("No tool call or JSON object found in response.")
     else:
         if json_mode:

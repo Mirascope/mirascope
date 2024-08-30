@@ -23,7 +23,7 @@ class CohereCallResponse(
     BaseCallResponse[
         SkipValidation[NonStreamedChatResponse],
         CohereTool,
-        Tool,
+        SkipValidation[Tool],
         CohereDynamicConfig,
         SkipValidation[ChatMessage],
         CohereCallParams,
