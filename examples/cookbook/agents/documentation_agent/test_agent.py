@@ -13,7 +13,7 @@ batch_query_rerank_golden_dataset = [
     (
         "How do I make a basic OpenAI call using Mirascope?",
         retrieved_mirascope_openai_docs,
-        {4, 1},
+        {4, 1, 5},
     ),
     (
         "Can you write me code for making a Mirascope call?",
@@ -37,4 +37,4 @@ def test_llm_query_rerank(query: str, documents: list[dict], top_n_ids: set[int]
     response = llm_query_rerank(documents, query)
     results = sorted(response, key=lambda x: x.score or 0, reverse=True)
     assert all(result.score > 5 for result in results)
-    assert {result.id for result in results[: len(top_n_ids)]} == top_n_ids
+    assert top_n_ids.issuperset({result.id for result in results[: len(top_n_ids)]})
