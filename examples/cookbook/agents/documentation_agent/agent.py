@@ -33,35 +33,32 @@ class Relevance(BaseModel):
     SYSTEM:
     Document Relevance Assessment
     Given a list of documents and a question, determine the relevance of each document to answering the question.
-    Input
 
-    A question
-    A list of documents, each with an ID and content summary
+    Input
+        - A question
+        - A list of documents, each with an ID and content summary
 
     Task
-
-    Analyze each document for its relevance to the question.
-    Assign a relevance score from 1-10 for each document.
-    Provide a reason for each score.
+        - Analyze each document for its relevance to the question.
+        - Assign a relevance score from 1-10 for each document.
+        - Provide a reason for each score.
 
     Scoring Guidelines
-
-    Consider both direct and indirect relevance to the question.
-    Prioritize positive, affirmative information over negative statements.
-    Assess the informativeness of the content, not just keyword matches.
-    Consider the potential for a document to contribute to a complete answer.
+        - Consider both direct and indirect relevance to the question.
+        - Prioritize positive, affirmative information over negative statements.
+        - Assess the informativeness of the content, not just keyword matches.
+        - Consider the potential for a document to contribute to a complete answer.
 
     Important Notes
-
-    Exclude documents with no relevance to the question.
-    Be cautious with negative statements - they may be relevant but are often less informative than positive ones.
-    Consider how multiple documents might work together to answer the question.
+        - Exclude documents with no relevance less than 5 to the question.
+        - Be cautious with negative statements - they may be relevant but are often less informative than positive ones.
+        - Consider how multiple documents might work together to answer the question.
+        - Use the document title and content summary to make your assessment.
 
     Documents:
     {documents}
 
     USER: 
-    query:
     {query}
     """
 )
@@ -71,7 +68,6 @@ def llm_query_rerank(documents: list[dict], query: str): ...
 def get_documents(query: str) -> list[str]:
     """The get_documents tool that retrieves Mirascope documentation based on the
     relevance of the query"""
-    print("Query:", query)
     query_bundle = QueryBundle(query)
     retriever = VectorIndexRetriever(
         index=cast(VectorStoreIndex, loaded_index),
@@ -86,6 +82,7 @@ def get_documents(query: str) -> list[str]:
             {
                 "id": idx + id,
                 "text": node.node.get_text(),  # pyright: ignore[reportAttributeAccessIssue]
+                "document_title": node.metadata["document_title"],
                 "semantic_score": node.score,
             }
             for id, node in enumerate(retrieved_nodes[idx : idx + choice_batch_size])
