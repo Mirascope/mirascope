@@ -2,12 +2,11 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, overload
+from typing import Any, cast, overload
 
-from litellm import CustomStreamWrapper, acompletion, completion
-from litellm.types.utils import ModelResponse
+from litellm import acompletion, completion
 from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
 from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
@@ -28,7 +27,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., Awaitable[ModelResponse | CustomStreamWrapper]],
+    Callable[..., Awaitable[ChatCompletion]],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -49,7 +48,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ModelResponse | CustomStreamWrapper],
+    Callable[..., ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -69,8 +68,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ModelResponse | CustomStreamWrapper]
-    | Callable[..., Awaitable[ModelResponse | CustomStreamWrapper]],
+    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -87,5 +85,8 @@ def setup_call(
         call_params=call_params,
         extract=extract,
     )
-    create = acompletion if inspect.iscoroutinefunction(fn) else completion
+    create = cast(
+        Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
+        acompletion if inspect.iscoroutinefunction(fn) else completion,
+    )
     return create, prompt_template, messages, tool_types, call_kwargs
