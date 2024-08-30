@@ -134,7 +134,7 @@ class SetupCall(
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
+        BaseCallKwargs,
     ]: ...
 
     @overload
@@ -155,7 +155,7 @@ class SetupCall(
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
+        BaseCallKwargs,
     ]: ...
 
     def __call__(
@@ -176,7 +176,7 @@ class SetupCall(
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
+        BaseCallKwargs,
     ]: ...  # pragma: no cover
 
 
