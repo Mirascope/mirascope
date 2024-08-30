@@ -278,48 +278,44 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                if fn_is_async(fn):
-                    fn_args = get_fn_args(fn, args, kwargs)
-                    dynamic_config = await fn(*args, **kwargs)
-                    create, prompt_template, messages, tool_types, call_kwargs = (
-                        setup_call(
-                            model=model,
-                            client=client,
-                            fn=fn,
-                            fn_args=fn_args,
-                            dynamic_config=dynamic_config,
-                            tools=tools,
-                            json_mode=json_mode,
-                            call_params=call_params,
-                            extract=False,
-                        )
-                    )
+                assert fn_is_async(fn)
+                fn_args = get_fn_args(fn, args, kwargs)
+                dynamic_config = await fn(*args, **kwargs)
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                    model=model,
+                    client=client,
+                    fn=fn,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    tools=tools,
+                    json_mode=json_mode,
+                    call_params=call_params,
+                    extract=False,
+                )
 
-                    async def generator() -> (
-                        AsyncGenerator[
-                            tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
-                        ]
+                async def generator() -> (
+                    AsyncGenerator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                    ]
+                ):
+                    async for chunk, tool in handle_stream_async(
+                        await create(stream=True, **call_kwargs), tool_types
                     ):
-                        async for chunk, tool in handle_stream_async(
-                            await create(stream=True, **call_kwargs), tool_types
-                        ):
-                            yield chunk, tool
+                        yield chunk, tool
 
-                    return TStream(
-                        stream=generator(),
-                        metadata=get_metadata(fn, dynamic_config),
-                        tool_types=tool_types,
-                        call_response_type=TCallResponse,
-                        model=model,
-                        prompt_template=prompt_template,
-                        fn_args=fn_args,
-                        dynamic_config=dynamic_config,
-                        messages=messages,
-                        call_params=call_params,
-                        call_kwargs=call_kwargs,
-                    )
-                else:  # pragma: no cover
-                    raise AssertionError("Function is not async")
+                return TStream(
+                    stream=generator(),
+                    metadata=get_metadata(fn, dynamic_config),
+                    tool_types=tool_types,
+                    call_response_type=TCallResponse,
+                    model=model,
+                    prompt_template=prompt_template,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    messages=messages,
+                    call_params=call_params,
+                    call_kwargs=call_kwargs,
+                )
 
             return inner_async
         else:
