@@ -22,6 +22,7 @@ from .tool import BaseTool
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
@@ -33,6 +34,7 @@ class BaseCallResponse(
     Generic[
         _ResponseT,
         _BaseToolT,
+        _ToolSchemaT,
         _BaseDynamicConfigT,
         _MessageParamT,
         _CallParamsT,
@@ -66,7 +68,7 @@ class BaseCallResponse(
     dynamic_config: _BaseDynamicConfigT
     messages: SkipValidation[list[_MessageParamT]]
     call_params: SkipValidation[_CallParamsT]
-    call_kwargs: BaseCallKwargs[_BaseToolT]
+    call_kwargs: BaseCallKwargs[_ToolSchemaT]
     user_message_param: _UserMessageParamT | None = None
     start_time: float
     end_time: float

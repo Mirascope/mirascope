@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.1.0"
+version = "1.1.1"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -180,7 +180,11 @@ venvPath = "."
 venv = ".venv"
 
 [tool.codespell]
-skip = '.git,*.lock'
+skip = [
+    ".git",
+    "*.lock",
+    "./examples/cookbook/agents/web_search_agent/messages.py",
+]
 ignore-words-list = 'EHR'
 ignore-regex = 'and buyed some milk'
 

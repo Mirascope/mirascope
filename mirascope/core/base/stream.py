@@ -40,6 +40,7 @@ _AssistantMessageParamT = TypeVar("_AssistantMessageParamT")
 _ToolMessageParamT = TypeVar("_ToolMessageParamT")
 _MessageParamT = TypeVar("_MessageParamT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _FinishReason = TypeVar("_FinishReason")
@@ -54,6 +55,7 @@ class BaseStream(
         _ToolMessageParamT,
         _MessageParamT,
         _BaseToolT,
+        _ToolSchemaT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _FinishReason,
@@ -79,7 +81,7 @@ class BaseStream(
     dynamic_config: _BaseDynamicConfigT
     messages: list[_MessageParamT]
     call_params: _BaseCallParamsT
-    call_kwargs: BaseCallKwargs[_BaseToolT]
+    call_kwargs: BaseCallKwargs[_ToolSchemaT]
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
@@ -108,7 +110,7 @@ class BaseStream(
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
-        call_kwargs: BaseCallKwargs[_BaseToolT],
+        call_kwargs: BaseCallKwargs[_ToolSchemaT],
     ) -> None:
         """Initializes an instance of `BaseStream`."""
         self.content = ""

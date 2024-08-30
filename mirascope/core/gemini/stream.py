@@ -11,7 +11,11 @@ from google.ai.generativelanguage import (
     FunctionCall,
     GenerateContentResponse,
 )
-from google.generativeai.types import ContentDict, ContentsType
+from google.generativeai.types import (
+    ContentDict,
+    ContentsType,
+    Tool,
+)
 from google.generativeai.types import (
     GenerateContentResponse as GenerateContentResponseType,
 )
@@ -35,6 +39,7 @@ class GeminiStream(
         ContentDict,
         ContentsType,
         GeminiTool,
+        Tool,
         GeminiDynamicConfig,
         GeminiCallParams,
         Candidate.FinishReason,

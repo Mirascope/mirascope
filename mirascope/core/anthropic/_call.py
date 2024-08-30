@@ -22,7 +22,7 @@ anthropic_call = call_factory(
     TToolType=AnthropicTool,
     TCallParams=AnthropicCallParams,
     default_call_params=AnthropicCallParams(max_tokens=1000),
-    setup_call=setup_call,
+    setup_call=setup_call,  # type: ignore
     get_json_output=get_json_output,
     handle_stream=handle_stream,
     handle_stream_async=handle_stream_async,

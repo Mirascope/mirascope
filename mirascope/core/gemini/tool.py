@@ -8,7 +8,10 @@ from __future__ import annotations
 from typing import Any
 
 from google.ai.generativelanguage import FunctionCall
-from google.generativeai.types import FunctionDeclaration, Tool
+from google.generativeai.types import (
+    FunctionDeclaration,
+    Tool,
+)
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool

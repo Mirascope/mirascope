@@ -8,6 +8,7 @@ from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
     ChatCompletionToolMessageParam,
+    ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
 )
 from openai.types.completion_usage import CompletionUsage
@@ -24,6 +25,7 @@ class OpenAICallResponse(
     BaseCallResponse[
         ChatCompletion,
         OpenAITool,
+        ChatCompletionToolParam,
         OpenAIDynamicConfig,
         ChatCompletionMessageParam,
         OpenAICallParams,

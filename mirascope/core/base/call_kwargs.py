@@ -6,8 +6,8 @@ from typing_extensions import NotRequired
 
 from .call_params import BaseCallParams
 
-_BaseToolT = TypeVar("_BaseToolT")
+_ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
-class BaseCallKwargs(Generic[_BaseToolT], BaseCallParams):
-    tools: NotRequired[list[_BaseToolT]]
+class BaseCallKwargs(BaseCallParams, Generic[_ToolSchemaT]):
+    tools: NotRequired[list[_ToolSchemaT]]

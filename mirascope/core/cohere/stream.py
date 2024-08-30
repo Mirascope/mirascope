@@ -9,6 +9,7 @@ from cohere.types import (
     ChatMessage,
     ChatStreamEndEventFinishReason,
     NonStreamedChatResponse,
+    Tool,
     ToolCall,
 )
 
@@ -30,6 +31,7 @@ class CohereStream(
         ChatMessage,
         ChatMessage,
         CohereTool,
+        Tool,
         CohereDynamicConfig,
         CohereCallParams,
         ChatStreamEndEventFinishReason,

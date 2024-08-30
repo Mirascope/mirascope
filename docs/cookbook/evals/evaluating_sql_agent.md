@@ -117,11 +117,11 @@ class Librarian(BaseModel):
         USER: {query}
         """
     )
-    async def _call(self, query: str) -> openai.OpenAIDynamicConfig:
+    async def _stream(self, query: str) -> openai.OpenAIDynamicConfig:
         return {"tools": [self._run_query, self._execute_query]}
 
     async def _step(self, question: str):
-        response = await self._call(question)
+        response = await self._stream(question)
         tools_and_outputs = []
         async for chunk, tool in response:
             if tool:

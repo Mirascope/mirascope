@@ -40,7 +40,7 @@ def mock_librarian():
     ],
 )
 async def test_select_query(select_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._call(select_query)
+    response = await mock_librarian._stream(select_query)
     async for _, tool in response:
         query = tool.args.get("query", "") if tool else ""
         assert query == "SELECT * FROM ReadingList;"
@@ -55,7 +55,7 @@ async def test_select_query(select_query: str, mock_librarian: Librarian):
     ],
 )
 async def test_insert_query(insert_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._call(insert_query)
+    response = await mock_librarian._stream(insert_query)
     async for _, tool in response:
         query = tool.args.get("query", "") if tool else ""
         assert (
@@ -73,7 +73,7 @@ async def test_insert_query(insert_query: str, mock_librarian: Librarian):
     ],
 )
 async def test_update_query(update_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._call(update_query)
+    response = await mock_librarian._stream(update_query)
     async for _, tool in response:
         query = tool.args.get("query", "") if tool else ""
         assert (
@@ -91,7 +91,7 @@ async def test_update_query(update_query: str, mock_librarian: Librarian):
     ],
 )
 async def test_delete_query(delete_query: str, mock_librarian: Librarian):
-    response = await mock_librarian._call(delete_query)
+    response = await mock_librarian._stream(delete_query)
     async for _, tool in response:
         query = tool.args.get("query", "") if tool else ""
         assert query == "DELETE FROM ReadingList WHERE title = 'Gone with the Wind';"
@@ -108,7 +108,7 @@ async def test_conversation(mock_librarian: Librarian):
             content="I would recommend 'The Name of the Wind' by Patrick Rothfuss. It’s the first book in 'The Kingkiller Chronicle' series and features a beautifully written story about a gifted young man who grows up to be a legendary figure. It's filled with magic, adventure, and rich character development. I believe you'll enjoy it! Would you like to add it to your reading list?",
         ),
     ]
-    response = await mock_librarian._call("Can you add it to my reading list?")
+    response = await mock_librarian._stream("Can you add it to my reading list?")
     async for _, tool in response:
         query = tool.args.get("query", "") if tool else ""
         assert (
@@ -171,7 +171,7 @@ async def test_friendliness(mock_librarian: Librarian):
             tool_call_id="1",
         ),
     ]
-    response = await mock_librarian._call("")
+    response = await mock_librarian._stream("")
     output_content = ""
     async for chunk, _ in response:
         output_content += chunk.content

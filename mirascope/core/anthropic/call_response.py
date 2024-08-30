@@ -3,7 +3,13 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from anthropic.types import Message, MessageParam, ToolResultBlockParam, Usage
+from anthropic.types import (
+    Message,
+    MessageParam,
+    ToolParam,
+    ToolResultBlockParam,
+    Usage,
+)
 from pydantic import SerializeAsAny, computed_field
 
 from ..base import BaseCallResponse
@@ -17,6 +23,7 @@ class AnthropicCallResponse(
     BaseCallResponse[
         Message,
         AnthropicTool,
+        ToolParam,
         AnthropicDynamicConfig,
         MessageParam,
         AnthropicCallParams,
