@@ -82,7 +82,7 @@ def get_async_create_fn(
                     return cast(AsyncGenerator[_StreamedResponse], async_generator)
 
                 return _stream()
-            else:  # pragma: no cover
+            else:
                 return cast(
                     Awaitable[AsyncGenerator[_StreamedResponse]], async_generator
                 )
