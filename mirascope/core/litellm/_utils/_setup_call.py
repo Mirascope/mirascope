@@ -1,6 +1,5 @@
 """This module contains the setup_call function for OpenAI tools."""
 
-import inspect
 from collections.abc import Awaitable, Callable
 from typing import Any, cast, overload
 
@@ -9,6 +8,7 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
+from ...base._utils._protocols import fn_is_async
 from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
 from ...openai._utils import setup_call as setup_call_openai
 from ...openai.call_kwargs import OpenAICallKwargs
@@ -87,6 +87,6 @@ def setup_call(
     )
     create = cast(
         Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
-        acompletion if inspect.iscoroutinefunction(fn) else completion,
+        acompletion if fn_is_async(fn) else completion,
     )
     return create, prompt_template, messages, tool_types, call_kwargs
