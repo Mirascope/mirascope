@@ -1,6 +1,5 @@
 """Tests the `gemini._utils.setup_call` module."""
 
-import inspect
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -28,7 +27,12 @@ def mock_base_setup_call() -> MagicMock:
 @patch(
     "mirascope.core.gemini._utils._setup_call.GenerativeModel", new_callable=MagicMock
 )
+@patch(
+    "mirascope.core.gemini._utils._setup_call.GenerativeModel.generate_content",
+    new_callable=MagicMock,
+)
 def test_setup_call(
+    mock_generate_content: MagicMock,
     mock_generative_model: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
@@ -59,9 +63,14 @@ def test_setup_call(
     )
     assert messages == mock_convert_message_params.return_value
     mock_generative_model.assert_called_once_with(model_name="gemini-flash-1.5")
-    assert inspect.signature(create) == inspect.signature(
-        generative_model.generate_content
-    )
+    assert create(**call_kwargs)
+    mock_generate_content.assert_called_once_with(**call_kwargs)
+    mock_generate_content.reset_mock()
+    assert create(stream=True, **call_kwargs)
+    mock_generate_content.assert_called_once_with(**call_kwargs, stream=True)
+    mock_generate_content.reset_mock()
+    assert create(stream=False, **call_kwargs)
+    mock_generate_content.assert_called_once_with(**call_kwargs)
 
 
 @pytest.mark.parametrize("generation_config_type", [dict, GenerationConfig])

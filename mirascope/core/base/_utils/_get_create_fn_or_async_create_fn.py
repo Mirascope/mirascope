@@ -13,6 +13,7 @@ from typing import (
     Literal,
     TypeAlias,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -36,7 +37,7 @@ _SyncGeneratorFunc: TypeAlias = Callable[
 
 def get_async_create_fn(
     async_func: _AsyncFunc[_NonStreamedResponse],
-    async_generator_func: _AsyncGeneratorFunc[_StreamedResponse],
+    async_generator_func: _AsyncGeneratorFunc[_StreamedResponse] | None = None,
 ) -> AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]:
     @overload
     def create_or_stream(
@@ -61,26 +62,31 @@ def get_async_create_fn(
         | Awaitable[_NonStreamedResponse]
     ):
         if not stream:
-            return async_func(**kwargs)
+            return cast(Awaitable[_NonStreamedResponse], async_func(**kwargs))
         else:
-            async_generator = async_generator_func(**kwargs)
+            if async_generator_func is None:
+                async_generator = async_func(**kwargs, stream=True)
+            else:
+                async_generator = async_generator_func(**kwargs)
             if inspect.isasyncgen(async_generator) or not isinstance(
                 async_generator, Awaitable
             ):
 
                 async def _stream() -> AsyncGenerator[_StreamedResponse]:
-                    return async_generator  # pyright: ignore [reportReturnType]
+                    return cast(AsyncGenerator[_StreamedResponse], async_generator)
 
                 return _stream()
             else:  # pragma: no cover
-                return async_generator
+                return cast(
+                    Awaitable[AsyncGenerator[_StreamedResponse]], async_generator
+                )
 
     return create_or_stream
 
 
 def get_create_fn(
     sync_func: _SyncFunc[_NonStreamedResponse],
-    sync_generator_func: _SyncGeneratorFunc[_StreamedResponse],
+    sync_generator_func: _SyncGeneratorFunc[_StreamedResponse] | None = None,
 ) -> CreateFn[_NonStreamedResponse, _StreamedResponse]:
     @overload
     def create_or_stream(
@@ -102,12 +108,19 @@ def get_create_fn(
         **kwargs: Any,  # noqa: ANN401
     ) -> Generator[_StreamedResponse, None, None] | _NonStreamedResponse:
         if stream:
-            generator = sync_generator_func(**kwargs)
+            if sync_generator_func is None:
+                generator = cast(
+                    Iterator[_StreamedResponse],
+                    sync_func(**kwargs, stream=True),
+                )
+            else:
+                generator = sync_generator_func(**kwargs)
 
             def _stream() -> Generator[_StreamedResponse, None, None]:
                 yield from generator
 
             return _stream()
-        return sync_func(**kwargs)
+
+        return cast(_NonStreamedResponse, sync_func(**kwargs))
 
     return create_or_stream

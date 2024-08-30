@@ -14,7 +14,7 @@ from google.generativeai.types import (
 from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
@@ -112,10 +112,9 @@ def setup_call(
 
     if client is None:
         client = GenerativeModel(model_name=model)
-    create = (
-        client.generate_content_async
-        if inspect.iscoroutinefunction(fn)
-        else client.generate_content
-    )
+    if inspect.iscoroutinefunction(fn):
+        create = get_async_create_fn(client.generate_content_async)
+    else:
+        create = get_create_fn(client.generate_content)
 
-    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]
+    return create, prompt_template, messages, tool_types, call_kwargs
