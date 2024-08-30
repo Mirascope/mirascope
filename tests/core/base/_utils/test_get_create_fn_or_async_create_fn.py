@@ -22,7 +22,7 @@ async def test_get_async_create_fn_non_streaming():
 @pytest.mark.asyncio
 async def test_get_async_create_fn_streaming_with_generator():
     async def async_func(**kwargs: Any) -> str:
-        return "non-streaming result"
+        return "non-streaming result"  # pragma: no cover
 
     async def async_generator_func(**kwargs: Any) -> AsyncGenerator[str, None]:
         yield "streaming result 1"
@@ -66,7 +66,7 @@ async def test_get_async_create_fn_with_additional_kwargs():
 @pytest.mark.asyncio
 async def test_get_async_create_fn_streaming_with_additional_kwargs():
     async def async_func(**kwargs: Any) -> str:
-        return "unused"
+        return "unused"  # pragma: no cover
 
     async def async_generator_func(**kwargs: Any) -> AsyncGenerator[str, None]:
         yield f"streaming result: {kwargs.get('param', '')}"
@@ -124,7 +124,7 @@ def test_get_create_fn_non_streaming():
 
 def test_get_create_fn_streaming_with_generator():
     def sync_func(**kwargs: Any) -> str:
-        return "non-streaming result"
+        return "non-streaming result"  # pragma: no cover
 
     def sync_generator_func(**kwargs: Any) -> Iterator[str]:
         yield "streaming result 1"
