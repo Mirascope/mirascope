@@ -102,11 +102,10 @@ def setup_call(
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
-        tool_config: ToolConfigDict = {  # pyright: ignore [reportAssignmentType]
-            "function_calling_config": {
-                "mode": "any",
-                "allowed_function_names": [tool_types[0]._name()],
-            }
+        tool_config = ToolConfigDict()
+        tool_config.function_calling_config = {
+            "mode": "any",
+            "allowed_function_names": [tool_types[0]._name()],
         }
         call_kwargs["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
