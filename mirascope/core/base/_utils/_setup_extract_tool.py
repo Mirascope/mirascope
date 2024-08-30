@@ -23,7 +23,7 @@ def setup_extract_tool(
         # pyright should work with IsType for the case of BaseModel | BaseType
         # But it doesn't, so we need to cover this
         raise ValueError(
-            f"response_model must be a BaseModel or a BaseType, not {response_model}."
+            f"`response_model` must be a BaseModel or a BaseType, not `{response_model}`."
         )
     if not hasattr(response_model, "call"):
         converted_tool_type.call = lambda self: ""  # pyright: ignore [reportAttributeAccessIssue]
