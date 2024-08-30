@@ -1,6 +1,5 @@
 """The `extract_factory` method for generating provider specific create decorators."""
 
-import inspect
 from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
@@ -15,7 +14,7 @@ from ._utils import (
     extract_tool_return,
     setup_extract_tool,
 )
-from ._utils._protocols import fn_is_async, fn_is_sync
+from ._utils._protocols import fn_is_async
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -97,13 +96,12 @@ def extract_factory(  # noqa: ANN202
             "call_params": call_params,
         }
 
-        if inspect.iscoroutinefunction(fn):
+        if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> _ResponseModelT:
-                assert fn_is_async(fn)
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
@@ -111,18 +109,17 @@ def extract_factory(  # noqa: ANN202
                 try:
                     output = extract_tool_return(response_model, json_output, False)
                 except ValidationError as e:
-                    e._response = call_response
+                    e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
                 if isinstance(output, BaseModel):
-                    output._response = call_response
-                return output if not output_parser else output_parser(output)
+                    output._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
+                return output if not output_parser else output_parser(output)  # pyright: ignore [reportArgumentType, reportReturnType]
 
             return inner_async
         else:
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-                assert fn_is_sync(fn)
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
