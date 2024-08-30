@@ -120,7 +120,9 @@ class OpenAICallResponse(
             ValueError: if the model refused to response, in which case the error
                 message will be the refusal.
         """
-        if refusal := self.response.choices[0].message.refusal:
+        if hasattr(self.response.choices[0].message, "refusal") and (
+            refusal := self.response.choices[0].message.refusal
+        ):
             raise ValueError(refusal)
 
         tool_calls = self.response.choices[0].message.tool_calls

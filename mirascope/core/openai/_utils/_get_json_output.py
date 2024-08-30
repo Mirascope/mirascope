@@ -9,7 +9,9 @@ def get_json_output(
 ) -> str:
     """Get the JSON output from a completion response."""
     if isinstance(response, OpenAICallResponse):
-        if refusal := response.response.choices[0].message.refusal:
+        if hasattr(response.response.choices[0].message, "refusal") and (
+            refusal := response.response.choices[0].message.refusal
+        ):
             raise ValueError(refusal)
         elif json_mode and response.content:
             return response.content
