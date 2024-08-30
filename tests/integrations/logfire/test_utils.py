@@ -28,7 +28,7 @@ class MyCallResponse(BaseCallResponse):
 
     @property
     def tools(self) -> list[BaseTool]:
-        return [FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")]  # pyright: ignore [reportCallIssue, reportReturnType]
+        return [FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")]
 
 
 patch.multiple(MyCallResponse, __abstractmethods__=set()).start()
@@ -118,7 +118,7 @@ def test_handle_call_response(
 
     result = MagicMock()
     result.tools = [
-        FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")  # pyright: ignore [reportCallIssue]
+        FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")
     ]
     span = MagicMock()
     set_attributes = MagicMock()
@@ -150,7 +150,7 @@ async def test_handle_call_response_async(
 
     result = MagicMock()
     result.tools = [
-        FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")  # pyright: ignore [reportCallIssue, reportReturnType]
+        FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")
     ]
     span = MagicMock()
     set_attributes = MagicMock()

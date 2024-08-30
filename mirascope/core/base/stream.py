@@ -44,6 +44,7 @@ _ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _FinishReason = TypeVar("_FinishReason")
+_DEFAULT = object()
 
 
 class BaseStream(
@@ -139,7 +140,9 @@ class BaseStream(
         for chunk, tool in self.stream:
             self._update_properties(chunk)
             if tool:
-                tool_calls.append(tool.tool_call)
+                tool_call = getattr(tool, "tool_call", _DEFAULT)
+                if tool_call != _DEFAULT:
+                    tool_calls.append(tool_call)
             yield chunk, tool
         self.end_time = datetime.datetime.now().timestamp() * 1000
         self.message_param = self._construct_message_param(
@@ -162,7 +165,9 @@ class BaseStream(
             async for chunk, tool in self.stream:
                 self._update_properties(chunk)
                 if tool:
-                    tool_calls.append(tool.tool_call)
+                    tool_call = getattr(tool, "tool_call", _DEFAULT)
+                    if tool_call != _DEFAULT:
+                        tool_calls.append(tool_call)
                 yield chunk, tool
             self.message_param = self._construct_message_param(
                 tool_calls or None, self.content
