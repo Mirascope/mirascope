@@ -9,14 +9,15 @@ import inspect
 import warnings
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.json_schema import (
     DEFAULT_REF_TEMPLATE,
     GenerateJsonSchema,
     JsonSchemaMode,
     JsonSchemaValue,
+    SkipJsonSchema,
 )
 from pydantic_core.core_schema import CoreSchema
 from typing_extensions import TypedDict
@@ -85,11 +86,8 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    if TYPE_CHECKING:
-        from pydantic import Field
-
-        # `Field` is needed for type-checking, but it is not used in the actual code
-        tool_call: Any = Field(None)
+    # `Field` is needed for type-checking
+    tool_call: SkipJsonSchema[Any] = Field(None)
 
     @classmethod
     def _name(cls) -> str:
