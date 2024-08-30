@@ -1,7 +1,6 @@
 """This module contains the base classes for streaming responses from LLMs."""
 
 import datetime
-import inspect
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from functools import wraps
@@ -22,7 +21,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
-from ._utils._protocols import fn_is_async, fn_is_sync
+from ._utils._protocols import fn_is_async
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -279,11 +278,10 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
-        if inspect.iscoroutinefunction(fn):
+        if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert fn_is_async(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -311,7 +309,7 @@ def stream_factory(  # noqa: ANN201
                 return TStream(
                     stream=generator(),
                     metadata=get_metadata(fn, dynamic_config),
-                    tool_types=tool_types,
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                     call_response_type=TCallResponse,
                     model=model,
                     prompt_template=prompt_template,
@@ -327,7 +325,6 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert fn_is_sync(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
