@@ -93,7 +93,7 @@ def get_documents(query: str) -> list[str]:
     return [result.document for result in results]
 
 
-class MirascopeBot(BaseModel):
+class DocumentationAgent(BaseModel):
     @openai.call(
         "gpt-4o-mini",
     )
@@ -103,6 +103,41 @@ class MirascopeBot(BaseModel):
         You are an AI Assistant that is an expert at answering questions about Mirascope.
         Here is the relevant documentation to answer the question.
 
+        First classify the question into one of two types:
+            - General Information: Questions about the system or its components.
+            - Code Examples: Questions that require code snippets or examples.
+
+        For General Information, provide a summary of the relevant documents 
+        if the question is too broad ask for more details. If the context does not
+        answer the question, say that the information is not available 
+        or you could not find it.
+
+        For Code Examples, output ONLY code without any markdown, with comments if necessary.
+        If the context does not answer the question, 
+        say that the information is not available.
+
+        Examples:
+            Question: "What is Mirascope?"
+            Answer:
+            A toolkit for building AI-powered applications with Large Language Models (LLMs).
+
+            Explanation: This is a General Information question, so a summary is provided.
+
+            Question: "How do I make a basic OpenAI call using Mirascope?"
+            Answer:
+            from mirascope.core import openai, prompt_template
+
+
+            @openai.call("gpt-4o-mini")
+            @prompt_template("Recommend a {{genre}} book")
+            def recommend_book(genre: str):
+                ...
+
+            response = recommend_book("fantasy")
+            print(response.content)
+
+            Explanation: This is a Code Examples question, 
+            so only a code snippet is provided.
         Context:
         {context:list}
 
@@ -127,4 +162,4 @@ class MirascopeBot(BaseModel):
 
 
 if __name__ == "__main__":
-    MirascopeBot().run()
+    DocumentationAgent().run()
