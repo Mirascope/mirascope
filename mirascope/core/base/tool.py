@@ -86,7 +86,10 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     if TYPE_CHECKING:
-        tool_call: Any
+        from pydantic import Field
+
+        # `Field` is needed for type-checking, but it is not used in the actual code
+        tool_call: Any = Field(None)
 
     @classmethod
     def _name(cls) -> str:

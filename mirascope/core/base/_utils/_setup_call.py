@@ -70,17 +70,6 @@ def _get_create_fn_or_async_create_fn(
 ) -> AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]: ...
 
 
-def _get_create_fn_or_async_create_fn(
-    functions: _SyncFunctions | _AsyncFunctions,
-) -> (
-    CreateFn[_NonStreamedResponse, _StreamedResponse]
-    | AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]
-):
-    if isinstance(functions, _AsyncFunctions):
-        return _get_async_create_fn(functions)
-    return _get_create_fn(functions)
-
-
 def _get_async_create_fn(
     functions: _AsyncFunctions[_NonStreamedResponse, _StreamedResponse],
 ) -> AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]:
@@ -156,6 +145,17 @@ def _get_create_fn(
         return functions.sync_func(**kwargs)
 
     return create_or_stream
+
+
+def _get_create_fn_or_async_create_fn(
+    functions: _SyncFunctions | _AsyncFunctions,
+) -> (
+    CreateFn[_NonStreamedResponse, _StreamedResponse]
+    | AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]
+):
+    if isinstance(functions, _AsyncFunctions):
+        return _get_async_create_fn(functions)
+    return _get_create_fn(functions)
 
 
 def setup_call(
