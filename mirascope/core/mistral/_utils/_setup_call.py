@@ -19,12 +19,7 @@ from mistralai.models.chat_completion import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn
-from ...base._utils._setup_call import (
-    _AsyncFunctions,
-    _get_create_fn_or_async_create_fn,
-    _SyncFunctions,
-)
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
@@ -121,8 +116,7 @@ def setup_call(
             MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
         )
     if isinstance(client, MistralAsyncClient):
-        functions = _AsyncFunctions(client.chat, client.chat_stream)  # pyright: ignore [reportArgumentType]
+        create_or_stream = get_async_create_fn(client.chat, client.chat_stream)
     else:
-        functions = _SyncFunctions(client.chat, client.chat_stream)
-    create_or_stream = _get_create_fn_or_async_create_fn(functions)
+        create_or_stream = get_create_fn(client.chat, client.chat_stream)
     return create_or_stream, prompt_template, messages, tool_types, call_kwargs
