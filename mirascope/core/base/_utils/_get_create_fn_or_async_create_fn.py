@@ -17,10 +17,18 @@ from typing import (
     overload,
 )
 
+from typing_extensions import TypeIs
+
 from ._protocols import AsyncCreateFn, CreateFn
 
 _StreamedResponse = TypeVar("_StreamedResponse")
 _NonStreamedResponse = TypeVar("_NonStreamedResponse")
+_T = TypeVar("_T")
+
+
+def is_awaitable(value: _T | Awaitable[_T]) -> TypeIs[Awaitable[_T]]:
+    return inspect.isawaitable(value)
+
 
 _AsyncFunc: TypeAlias = Callable[..., Awaitable[_NonStreamedResponse]]
 _AsyncGeneratorFunc: TypeAlias = (
@@ -68,9 +76,7 @@ def get_async_create_fn(
                 async_generator = async_func(**kwargs, stream=True)
             else:
                 async_generator = async_generator_func(**kwargs)
-            if inspect.isasyncgen(async_generator) or not isinstance(
-                async_generator, Awaitable
-            ):
+            if inspect.isasyncgen(async_generator) or not is_awaitable(async_generator):
 
                 async def _stream() -> AsyncGenerator[_StreamedResponse]:
                     return cast(AsyncGenerator[_StreamedResponse], async_generator)
