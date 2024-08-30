@@ -14,7 +14,7 @@ from openai.types.chat import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
@@ -125,6 +125,8 @@ def setup_call(
 
     if client is None:
         client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
-    create = client.chat.completions.create
-
-    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]
+    if isinstance(client, AsyncOpenAI):
+        create = get_async_create_fn(client.chat.completions.create)
+    else:
+        create = get_create_fn(client.chat.completions.create)
+    return create, prompt_template, messages, tool_types, call_kwargs

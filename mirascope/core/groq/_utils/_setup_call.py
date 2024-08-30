@@ -12,7 +12,7 @@ from groq.types.chat import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import GroqDynamicConfig
@@ -112,6 +112,8 @@ def setup_call(
 
     if client is None:
         client = AsyncGroq() if inspect.iscoroutinefunction(fn) else Groq()
-    create = client.chat.completions.create
-
-    return create, prompt_template, messages, tool_types, call_kwargs  # pyright: ignore [reportReturnType]
+    if isinstance(client, AsyncGroq):
+        create = get_async_create_fn(client.chat.completions.create)
+    else:
+        create = get_create_fn(client.chat.completions.create)
+    return create, prompt_template, messages, tool_types, call_kwargs
