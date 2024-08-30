@@ -3,11 +3,12 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from typing import Any
+
 from cohere.types import (
     ApiMetaBilledUnits,
     ChatMessage,
     NonStreamedChatResponse,
-    Tool,
     ToolResult,
 )
 from pydantic import SkipValidation, computed_field
@@ -23,7 +24,7 @@ class CohereCallResponse(
     BaseCallResponse[
         SkipValidation[NonStreamedChatResponse],
         CohereTool,
-        Tool,
+        Any,
         CohereDynamicConfig,
         SkipValidation[ChatMessage],
         CohereCallParams,
