@@ -129,8 +129,11 @@ def setup_call(
 
     if client is None:
         client = AsyncClient() if inspect.iscoroutinefunction(fn) else Client()
-    if isinstance(client, AsyncClient):
-        create_or_stream = get_async_create_fn(client.chat, client.chat_stream)
-    else:
-        create_or_stream = get_create_fn(client.chat, client.chat_stream)
+
+    create_or_stream = (
+        get_async_create_fn(client.chat, client.chat_stream)
+        if isinstance(client, AsyncClient)
+        else get_create_fn(client.chat, client.chat_stream)
+    )
+
     return create_or_stream, prompt_template, messages, tool_types, call_kwargs
