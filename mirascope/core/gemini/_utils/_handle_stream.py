@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncGenerator, Generator
 
-from google.generativeai.types import GenerateContentResponse  # type: ignore
+from google.generativeai.types import GenerateContentResponse
 
 from ..call_response_chunk import GeminiCallResponseChunk
 from ..tool import GeminiTool

@@ -90,5 +90,5 @@ class AnthropicTool(BaseTool[ToolParam]):
                 instance.
         """
         model_json = copy.deepcopy(tool_call.input)
-        model_json["tool_call"] = tool_call.model_dump()  # type: ignore
+        model_json["tool_call"] = tool_call.model_dump()  # pyright: ignore [reportIndexIssue]
         return cls.model_validate(model_json)

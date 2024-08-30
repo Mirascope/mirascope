@@ -93,5 +93,5 @@ class ChromaVectorStore(BaseVectorStore):
 
         return self._client.create_collection(
             **vectorstore_params.kwargs(),
-            embedding_function=self.embedder,  # type: ignore
+            embedding_function=self.embedder,
         )

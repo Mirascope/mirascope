@@ -1,7 +1,6 @@
 """This module contains the base classes for streaming responses from LLMs."""
 
 import datetime
-import inspect
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from functools import wraps
@@ -22,6 +21,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
+from ._utils._protocols import fn_is_async
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -43,6 +43,7 @@ _ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _FinishReason = TypeVar("_FinishReason")
+_DEFAULT = object()
 
 
 class BaseStream(
@@ -104,7 +105,7 @@ class BaseStream(
         tool_types: list[type[_BaseToolT]] | None,
         call_response_type: type[_BaseCallResponseT],
         model: str,
-        prompt_template: str,
+        prompt_template: str | None,
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
         messages: list[_MessageParamT],
@@ -124,7 +125,7 @@ class BaseStream(
         self.messages = messages
         self.call_params = call_params
         self.call_kwargs = call_kwargs
-        self.user_message_param = get_possible_user_message_param(messages)  # type: ignore
+        self.user_message_param = get_possible_user_message_param(messages)  # pyright: ignore [reportAttributeAccessIssue]
 
     def __iter__(
         self,
@@ -138,7 +139,9 @@ class BaseStream(
         for chunk, tool in self.stream:
             self._update_properties(chunk)
             if tool:
-                tool_calls.append(tool.tool_call)  # type: ignore
+                tool_call = getattr(tool, "tool_call", _DEFAULT)
+                if tool_call != _DEFAULT:
+                    tool_calls.append(tool_call)
             yield chunk, tool
         self.end_time = datetime.datetime.now().timestamp() * 1000
         self.message_param = self._construct_message_param(
@@ -161,7 +164,9 @@ class BaseStream(
             async for chunk, tool in self.stream:
                 self._update_properties(chunk)
                 if tool:
-                    tool_calls.append(tool.tool_call)  # type: ignore
+                    tool_call = getattr(tool, "tool_call", _DEFAULT)
+                    if tool_call != _DEFAULT:
+                        tool_calls.append(tool_call)
                 yield chunk, tool
             self.message_param = self._construct_message_param(
                 tool_calls or None, self.content
@@ -221,12 +226,7 @@ class BaseStream(
         ...
 
 
-_BaseCallResponseChunkT = TypeVar(
-    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
-)
-_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -270,18 +270,18 @@ def stream_factory(  # noqa: ANN201
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream | Awaitable[TStream]]:
-        if inspect.iscoroutinefunction(fn):
+    ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
+        if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert SetupCall.fn_is_async(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -309,7 +309,7 @@ def stream_factory(  # noqa: ANN201
                 return TStream(
                     stream=generator(),
                     metadata=get_metadata(fn, dynamic_config),
-                    tool_types=tool_types,  # type: ignore
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                     call_response_type=TCallResponse,
                     model=model,
                     prompt_template=prompt_template,
@@ -325,7 +325,6 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                assert SetupCall.fn_is_sync(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -342,7 +341,9 @@ def stream_factory(  # noqa: ANN201
 
                 def generator() -> (
                     Generator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None],
+                        None,
+                        None,
                     ]
                 ):
                     yield from handle_stream(
@@ -352,7 +353,7 @@ def stream_factory(  # noqa: ANN201
                 return TStream(
                     stream=generator(),
                     metadata=get_metadata(fn, dynamic_config),
-                    tool_types=tool_types,  # type: ignore
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                     call_response_type=TCallResponse,
                     model=model,
                     prompt_template=prompt_template,

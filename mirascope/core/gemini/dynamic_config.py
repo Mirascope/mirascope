@@ -3,7 +3,7 @@
 usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
 """
 
-from google.generativeai.types import ContentsType  # type: ignore
+from google.generativeai.types import ContentsType
 
 from ..base import BaseDynamicConfig
 from .call_params import GeminiCallParams

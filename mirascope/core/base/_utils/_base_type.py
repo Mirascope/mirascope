@@ -2,12 +2,21 @@
 
 import inspect
 from enum import Enum
-from typing import Annotated, Any, Literal, TypeGuard, Union, get_origin
+from typing import (
+    Annotated,
+    Any,
+    Literal,
+    TypeAlias,
+    Union,
+    get_origin,
+)
 
-BaseType = str | int | float | bool | bytes | list | set | tuple | dict
+from typing_extensions import TypeIs
+
+BaseType: TypeAlias = str | int | float | bool | bytes | list | set | tuple | dict
 
 
-def is_base_type(type_: Any) -> TypeGuard[type[BaseType]]:  # noqa: ANN401
+def is_base_type(type_: Any) -> TypeIs[type[BaseType]]:  # noqa: ANN401
     """Check if a type is a base type."""
     base_types = {str, int, float, bool, bytes, list, set, tuple, dict}
     return (

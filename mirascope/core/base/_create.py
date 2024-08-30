@@ -1,7 +1,6 @@
 """The `create_factory` method for generating provider specific create decorators."""
 
 import datetime
-import inspect
 from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
@@ -12,6 +11,7 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
+from ._utils._protocols import fn_is_async
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -68,7 +68,8 @@ def create_factory(  # noqa: ANN202
     ]: ...
 
     def decorator(
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
@@ -81,13 +82,12 @@ def create_factory(  # noqa: ANN202
         | _ParsedOutputT
         | Awaitable[_BaseCallResponseT | _ParsedOutputT],
     ]:
-        if inspect.iscoroutinefunction(fn):
+        if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
-                assert SetupCall.fn_is_async(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -107,7 +107,7 @@ def create_factory(  # noqa: ANN202
                 output = TCallResponse(
                     metadata=get_metadata(fn, dynamic_config),
                     response=response,
-                    tool_types=tool_types,  # type: ignore
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                     prompt_template=prompt_template,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -128,7 +128,6 @@ def create_factory(  # noqa: ANN202
             def inner(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
-                assert SetupCall.fn_is_sync(fn)
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = fn(*args, **kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -148,7 +147,7 @@ def create_factory(  # noqa: ANN202
                 output = TCallResponse(
                     metadata=get_metadata(fn, dynamic_config),
                     response=response,
-                    tool_types=tool_types,  # type: ignore
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
                     prompt_template=prompt_template,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

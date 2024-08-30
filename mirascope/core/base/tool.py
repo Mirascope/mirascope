@@ -23,7 +23,7 @@ from typing_extensions import TypedDict
 
 from . import _utils
 
-_BaseToolT = TypeVar("_BaseToolT")
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseModel)
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
@@ -114,36 +114,36 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
         ...
 
     @classmethod
-    def type_from_fn(cls: _BaseToolT, fn: Callable) -> _BaseToolT:
+    def type_from_fn(cls: type[_BaseToolT], fn: Callable) -> type[_BaseToolT]:
         """Returns this tool type converted from a function.
 
         Args:
             fn: The function to convert into this tool type.
         """
-        return _utils.convert_function_to_base_tool(fn, cls)  # type: ignore
+        return _utils.convert_function_to_base_tool(fn, cls)
 
     @classmethod
     def type_from_base_model_type(
-        cls: _BaseToolT, tool_type: type[BaseModel]
-    ) -> _BaseToolT:
+        cls: type[_BaseToolT], tool_type: type[BaseModel]
+    ) -> type[_BaseToolT]:
         """Returns this tool type converted from a given base tool type.
 
         Args:
             tool_type: The tool type to convert into this tool type. This can be a
                 custom `BaseTool` or `BaseModel` definition.
         """
-        return _utils.convert_base_model_to_base_tool(tool_type, cls)  # type: ignore
+        return _utils.convert_base_model_to_base_tool(tool_type, cls)
 
     @classmethod
     def type_from_base_type(
-        cls: _BaseToolT, base_type: type[_utils.BaseType]
-    ) -> _BaseToolT:
+        cls: type[_BaseToolT], base_type: type[_utils.BaseType]
+    ) -> type[_BaseToolT]:
         """Returns this tool type converted from a base type.
 
         Args:
             base_type: The base type (e.g. `int`) to convert into this tool type.
         """
-        return _utils.convert_base_type_to_base_tool(base_type, cls)  # type: ignore
+        return _utils.convert_base_type_to_base_tool(base_type, cls)
 
     @classmethod
     def tool_schema(cls) -> _ToolSchemaT:

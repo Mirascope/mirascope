@@ -15,7 +15,7 @@ def convert_message_params(
         elif isinstance(content := message_param.content, str):
             converted_message_params.append(
                 ChatMessage(
-                    role=message_param.role.upper(),  # type: ignore
+                    role=message_param.role.upper(),  # pyright: ignore [reportCallIssue]
                     message=content,
                 )
             )
@@ -24,7 +24,7 @@ def convert_message_params(
                 raise ValueError("Cohere currently only supports text parts.")
             converted_message_params.append(
                 ChatMessage(
-                    role=message_param.role.upper(),  # type: ignore
+                    role=message_param.role.upper(),  # pyright: ignore [reportCallIssue]
                     message=content[0].text,
                 )
             )

@@ -8,6 +8,7 @@ from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 from ._extract_tool_return import extract_tool_return
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
+from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_fn
 from ._get_fn_args import get_fn_args
 from ._get_image_type import get_image_type
 from ._get_metadata import get_metadata
@@ -45,6 +46,8 @@ __all__ = [
     "format_template",
     "GetJsonOutput",
     "get_audio_type",
+    "get_async_create_fn",
+    "get_create_fn",
     "get_fn_args",
     "get_image_type",
     "get_metadata",

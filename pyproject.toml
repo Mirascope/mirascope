@@ -43,6 +43,7 @@ dependencies = [
     "pydantic>=2.7.4,<3.0",
     "docstring-parser>=0.15,<1.0",
     "jiter>=0.5.0",
+    "typing-extensions>=4.10.0",
 ]
 
 [project.urls]
@@ -71,7 +72,7 @@ weave = ["weave>=0.50.14"]
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.377",
+    "pyright>=1.1.378",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",
@@ -191,7 +192,7 @@ ignore-regex = 'and buyed some milk'
 omit = ["mirascope/beta/*", "mirascope/v0/*"]
 
 [tool.coverage.report]
-exclude_also = ["@overload", "@abstractmethod"]
+exclude_also = ["@overload", "@abstractmethod", "if TYPE_CHECKING:"]
 
 [build-system]
 requires = ["hatchling"]

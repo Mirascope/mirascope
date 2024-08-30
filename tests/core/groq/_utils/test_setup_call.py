@@ -1,11 +1,9 @@
 """Tests the `groq._utils.setup_call` module."""
 
-import inspect
 from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from groq import Groq
 
 from mirascope.core.groq._utils._setup_call import setup_call
 from mirascope.core.groq.tool import GroqTool
@@ -19,6 +17,7 @@ def mock_base_setup_call() -> MagicMock:
     return mock_setup_call
 
 
+@patch("mirascope.core.groq._utils._setup_call.Groq", new_callable=MagicMock)
 @patch(
     "mirascope.core.groq._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
@@ -27,6 +26,7 @@ def mock_base_setup_call() -> MagicMock:
 def test_setup_call(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
+    mock_groq: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
@@ -52,9 +52,15 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
-    assert inspect.signature(create) == inspect.signature(
-        Groq().chat.completions.create
-    )
+    mock_create = mock_groq.return_value.chat.completions.create
+    assert create(**call_kwargs)
+    mock_create.assert_called_once_with(**call_kwargs)
+    mock_create.reset_mock()
+    assert create(stream=True, **call_kwargs)
+    mock_create.assert_called_once_with(**call_kwargs, stream=True)
+    mock_create.reset_mock()
+    assert create(stream=False, **call_kwargs)
+    mock_create.assert_called_once_with(**call_kwargs)
 
 
 @patch(
