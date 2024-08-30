@@ -112,8 +112,11 @@ def setup_call(
 
     if client is None:
         client = AsyncGroq() if inspect.iscoroutinefunction(fn) else Groq()
-    if isinstance(client, AsyncGroq):
-        create = get_async_create_fn(client.chat.completions.create)
-    else:
-        create = get_create_fn(client.chat.completions.create)
+
+    create = (
+        get_async_create_fn(client.chat.completions.create)
+        if isinstance(client, AsyncGroq)
+        else get_create_fn(client.chat.completions.create)
+    )
+
     return create, prompt_template, messages, tool_types, call_kwargs

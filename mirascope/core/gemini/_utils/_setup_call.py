@@ -1,6 +1,5 @@
 """This module contains the setup_call function, which is used to set up the"""
 
-import inspect
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict, is_dataclass
 from typing import Any, cast, overload
@@ -15,6 +14,7 @@ from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base._utils._protocols import fn_is_async
 from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
@@ -112,9 +112,11 @@ def setup_call(
 
     if client is None:
         client = GenerativeModel(model_name=model)
-    if inspect.iscoroutinefunction(fn):
-        create = get_async_create_fn(client.generate_content_async)
-    else:
-        create = get_create_fn(client.generate_content)
+
+    create = (
+        get_async_create_fn(client.generate_content_async)
+        if fn_is_async(fn)
+        else get_create_fn(client.generate_content)
+    )
 
     return create, prompt_template, messages, tool_types, call_kwargs

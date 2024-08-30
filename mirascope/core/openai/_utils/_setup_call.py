@@ -125,8 +125,9 @@ def setup_call(
 
     if client is None:
         client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
-    if isinstance(client, AsyncOpenAI):
-        create = get_async_create_fn(client.chat.completions.create)
-    else:
-        create = get_create_fn(client.chat.completions.create)
+    create = (
+        get_async_create_fn(client.chat.completions.create)
+        if isinstance(client, AsyncOpenAI)
+        else get_create_fn(client.chat.completions.create)
+    )
     return create, prompt_template, messages, tool_types, call_kwargs
