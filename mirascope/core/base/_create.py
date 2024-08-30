@@ -130,43 +130,39 @@ def create_factory(  # noqa: ANN202
             def inner(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
-                if fn_is_sync(fn):
-                    fn_args = get_fn_args(fn, args, kwargs)
-                    dynamic_config = fn(*args, **kwargs)
-                    create, prompt_template, messages, tool_types, call_kwargs = (
-                        setup_call(
-                            model=model,
-                            client=client,
-                            fn=fn,
-                            fn_args=fn_args,
-                            dynamic_config=dynamic_config,
-                            tools=tools,
-                            json_mode=json_mode,
-                            call_params=call_params,
-                            extract=False,
-                        )
-                    )
-                    start_time = datetime.datetime.now().timestamp() * 1000
-                    response = create(stream=False, **call_kwargs)
-                    end_time = datetime.datetime.now().timestamp() * 1000
-                    output = TCallResponse(
-                        metadata=get_metadata(fn, dynamic_config),
-                        response=response,
-                        tool_types=tool_types,  # pyright: ignore [reportArgumentType]
-                        prompt_template=prompt_template,
-                        fn_args=fn_args,
-                        dynamic_config=dynamic_config,
-                        messages=messages,
-                        call_params=call_params,
-                        call_kwargs=call_kwargs,
-                        user_message_param=get_possible_user_message_param(messages),
-                        start_time=start_time,
-                        end_time=end_time,
-                    )
-                    output._model = model
-                    return output if not output_parser else output_parser(output)
-                else:  # pragma: no cover
-                    raise AssertionError("Function must be synchronous")
+                assert fn_is_sync(fn)
+                fn_args = get_fn_args(fn, args, kwargs)
+                dynamic_config = fn(*args, **kwargs)
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                    model=model,
+                    client=client,
+                    fn=fn,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    tools=tools,
+                    json_mode=json_mode,
+                    call_params=call_params,
+                    extract=False,
+                )
+                start_time = datetime.datetime.now().timestamp() * 1000
+                response = create(stream=False, **call_kwargs)
+                end_time = datetime.datetime.now().timestamp() * 1000
+                output = TCallResponse(
+                    metadata=get_metadata(fn, dynamic_config),
+                    response=response,
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
+                    prompt_template=prompt_template,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    messages=messages,
+                    call_params=call_params,
+                    call_kwargs=call_kwargs,
+                    user_message_param=get_possible_user_message_param(messages),
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+                output._model = model
+                return output if not output_parser else output_parser(output)
 
             return inner
 

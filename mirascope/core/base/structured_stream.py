@@ -240,15 +240,13 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-                if fn_is_sync(fn):
-                    return BaseStructuredStream[_ResponseModelT](
-                        stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
-                            *args, **kwargs
-                        ),
-                        response_model=response_model,
-                    )
-                else:  # pragma: no cover
-                    raise AssertionError("Function is not synchronous")
+                assert fn_is_sync(fn)
+                return BaseStructuredStream[_ResponseModelT](
+                    stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
+                        *args, **kwargs
+                    ),
+                    response_model=response_model,
+                )
 
             return inner
 

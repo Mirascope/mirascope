@@ -324,49 +324,45 @@ def stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
-                if fn_is_sync(fn):
-                    fn_args = get_fn_args(fn, args, kwargs)
-                    dynamic_config = fn(*args, **kwargs)
-                    create, prompt_template, messages, tool_types, call_kwargs = (
-                        setup_call(
-                            model=model,
-                            client=client,
-                            fn=fn,
-                            fn_args=fn_args,
-                            dynamic_config=dynamic_config,
-                            tools=tools,
-                            json_mode=json_mode,
-                            call_params=call_params,
-                            extract=False,
-                        )
+                assert fn_is_sync(fn)
+                fn_args = get_fn_args(fn, args, kwargs)
+                dynamic_config = fn(*args, **kwargs)
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                    model=model,
+                    client=client,
+                    fn=fn,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    tools=tools,
+                    json_mode=json_mode,
+                    call_params=call_params,
+                    extract=False,
+                )
+
+                def generator() -> (
+                    Generator[
+                        tuple[_BaseCallResponseChunkT, _BaseToolT | None],
+                        None,
+                        None,
+                    ]
+                ):
+                    yield from handle_stream(
+                        create(stream=True, **call_kwargs), tool_types
                     )
 
-                    def generator() -> (
-                        Generator[
-                            tuple[_BaseCallResponseChunkT, _BaseToolT | None],
-                            None,
-                            None,
-                        ]
-                    ):
-                        yield from handle_stream(
-                            create(stream=True, **call_kwargs), tool_types
-                        )
-
-                    return TStream(
-                        stream=generator(),
-                        metadata=get_metadata(fn, dynamic_config),
-                        tool_types=tool_types,  # pyright: ignore [reportArgumentType]
-                        call_response_type=TCallResponse,
-                        model=model,
-                        prompt_template=prompt_template,
-                        fn_args=fn_args,
-                        dynamic_config=dynamic_config,
-                        messages=messages,
-                        call_params=call_params,
-                        call_kwargs=call_kwargs,
-                    )
-                else:  # pragma: no cover
-                    raise AssertionError("Function is not synchronous")
+                return TStream(
+                    stream=generator(),
+                    metadata=get_metadata(fn, dynamic_config),
+                    tool_types=tool_types,  # pyright: ignore [reportArgumentType]
+                    call_response_type=TCallResponse,
+                    model=model,
+                    prompt_template=prompt_template,
+                    fn_args=fn_args,
+                    dynamic_config=dynamic_config,
+                    messages=messages,
+                    call_params=call_params,
+                    call_kwargs=call_kwargs,
+                )
 
             return inner
 
