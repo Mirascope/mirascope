@@ -1,8 +1,15 @@
 """Utility for setting up a provider-specific call."""
 
 import inspect
-from collections.abc import Awaitable, Callable
-from typing import Any, TypeVar, cast
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
+from typing import (
+    Any,
+    TypeVar,
+    cast,
+)
 
 from ..call_kwargs import BaseCallKwargs
 from ..call_params import BaseCallParams

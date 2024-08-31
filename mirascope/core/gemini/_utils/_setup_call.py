@@ -1,12 +1,11 @@
 """This module contains the setup_call function, which is used to set up the"""
 
-import inspect
 from collections.abc import Awaitable, Callable
 from dataclasses import asdict, is_dataclass
-from typing import Any, cast
+from typing import Any, cast, overload
 
-from google.generativeai import GenerativeModel  # type: ignore
-from google.generativeai.types import (  # type: ignore
+from google.generativeai import GenerativeModel
+from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
     GenerateContentResponse,
@@ -14,11 +13,55 @@ from google.generativeai.types import (  # type: ignore
 from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base._utils._protocols import fn_is_async
 from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
 from ._convert_message_params import convert_message_params
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: GenerativeModel | None,
+    fn: Callable[..., Awaitable[GeminiDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: GeminiDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GeminiCallParams,
+    extract: bool = False,
+) -> tuple[
+    AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
+    str | None,
+    list[ContentDict],
+    list[type[GeminiTool]] | None,
+    GeminiCallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: GenerativeModel | None,
+    fn: Callable[..., GeminiDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: GeminiDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: GeminiCallParams,
+    extract: bool = False,
+) -> tuple[
+    CreateFn[GenerateContentResponse, GenerateContentResponse],
+    str | None,
+    list[ContentDict],
+    list[type[GeminiTool]] | None,
+    GeminiCallKwargs,
+]: ...
 
 
 def setup_call(
@@ -33,8 +76,8 @@ def setup_call(
     call_params: GeminiCallParams,
     extract: bool = False,
 ) -> tuple[
-    Callable[..., GenerateContentResponse]
-    | Callable[..., Awaitable[AsyncGenerateContentResponse]],
+    CreateFn[GenerateContentResponse, GenerateContentResponse]
+    | AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
     str | None,
     list[ContentDict],
     list[type[GeminiTool]] | None,
@@ -69,10 +112,11 @@ def setup_call(
 
     if client is None:
         client = GenerativeModel(model_name=model)
+
     create = (
-        client.generate_content_async
-        if inspect.iscoroutinefunction(fn)
-        else client.generate_content
+        get_async_create_fn(client.generate_content_async)
+        if fn_is_async(fn)
+        else get_create_fn(client.generate_content)
     )
 
     return create, prompt_template, messages, tool_types, call_kwargs

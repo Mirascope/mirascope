@@ -4,9 +4,7 @@ usage docs: learn/streams.md#handling-streamed-responses
 """
 
 from google.ai.generativelanguage import Candidate
-from google.generativeai.types import (  # type: ignore
-    GenerateContentResponse,
-)
+from google.generativeai.types import GenerateContentResponse
 
 from ..base import BaseCallResponseChunk
 

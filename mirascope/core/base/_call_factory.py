@@ -279,7 +279,7 @@ def call_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,
-                )  # type: ignore
+                )  # pyright: ignore [reportReturnType, reportCallIssue]
             else:
                 return partial(
                     extract_factory(
@@ -294,7 +294,8 @@ def call_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,
-                )  # type: ignore
+                )  # pyright: ignore [reportCallIssue]
+
         if stream:
             return partial(
                 stream_factory(
@@ -309,7 +310,7 @@ def call_factory(  # noqa: ANN202
                 json_mode=json_mode,
                 client=client,
                 call_params=call_params,
-            )  # type: ignore
+            )  # pyright: ignore [reportReturnType]
         return partial(
             create_factory(TCallResponse=TCallResponse, setup_call=setup_call),
             model=model,
@@ -318,6 +319,6 @@ def call_factory(  # noqa: ANN202
             json_mode=json_mode,
             client=client,
             call_params=call_params,
-        )  # type: ignore
+        )  # pyright: ignore [reportReturnType, reportCallIssue]
 
     return base_call

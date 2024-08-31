@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import Any, cast, overload
 
 from anthropic import (
     Anthropic,
@@ -12,14 +12,69 @@ from anthropic import (
     AsyncAnthropicBedrock,
     AsyncAnthropicVertex,
 )
-from anthropic.types import Message, MessageParam
+from anthropic.types import Message, MessageParam, MessageStreamEvent
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn
 from ..call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig
 from ..tool import AnthropicTool
 from ._convert_message_params import convert_message_params
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: Anthropic
+    | AsyncAnthropic
+    | AnthropicBedrock
+    | AsyncAnthropicBedrock
+    | AnthropicVertex
+    | AsyncAnthropicVertex
+    | None,
+    fn: Callable[..., Awaitable[AnthropicDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: AnthropicDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: AnthropicCallParams,
+    extract: bool,
+) -> tuple[
+    AsyncCreateFn[Message, MessageStreamEvent],
+    str | None,
+    list[MessageParam],
+    list[type[AnthropicTool]] | None,
+    AnthropicCallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: Anthropic
+    | AsyncAnthropic
+    | AnthropicBedrock
+    | AsyncAnthropicBedrock
+    | AnthropicVertex
+    | AsyncAnthropicVertex
+    | None,
+    fn: Callable[..., AnthropicDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: AnthropicDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: AnthropicCallParams,
+    extract: bool,
+) -> tuple[
+    CreateFn[Message, MessageStreamEvent],
+    str | None,
+    list[MessageParam],
+    list[type[AnthropicTool]] | None,
+    AnthropicCallKwargs,
+]: ...
 
 
 def setup_call(
@@ -40,7 +95,7 @@ def setup_call(
     call_params: AnthropicCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., Message] | Callable[..., Awaitable[Message]],
+    Callable[..., Message | Awaitable[Message]],
     str | None,
     list[MessageParam],
     list[type[AnthropicTool]] | None,

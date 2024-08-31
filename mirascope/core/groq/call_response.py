@@ -103,7 +103,10 @@ class GroqCallResponse(
     @property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
-        return self.response.choices[0].message.model_dump(exclude={"function_call"})  # type: ignore
+        message_param = self.response.choices[0].message.model_dump(
+            exclude={"function_call"}
+        )
+        return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
     @property
@@ -156,7 +159,7 @@ class GroqCallResponse(
                 role="tool",
                 content=output,
                 tool_call_id=tool.tool_call.id,
-                name=tool._name(),  # type: ignore
+                name=tool._name(),  # pyright: ignore [reportCallIssue]
             )
             for tool, output in tools_and_outputs
         ]

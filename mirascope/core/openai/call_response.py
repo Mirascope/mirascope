@@ -105,7 +105,10 @@ class OpenAICallResponse(
     @property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
-        return self.response.choices[0].message.model_dump(exclude={"function_call"})  # type: ignore
+        message_param = self.response.choices[0].message.model_dump(
+            exclude={"function_call"}
+        )
+        return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
     @property
@@ -117,7 +120,9 @@ class OpenAICallResponse(
             ValueError: if the model refused to response, in which case the error
                 message will be the refusal.
         """
-        if refusal := self.response.choices[0].message.refusal:
+        if hasattr(self.response.choices[0].message, "refusal") and (
+            refusal := self.response.choices[0].message.refusal
+        ):
             raise ValueError(refusal)
 
         tool_calls = self.response.choices[0].message.tool_calls
@@ -165,7 +170,7 @@ class OpenAICallResponse(
                 role="tool",
                 content=output,
                 tool_call_id=tool.tool_call.id,
-                name=tool._name(),  # type: ignore
+                name=tool._name(),  # pyright: ignore [reportCallIssue]
             )
             for tool, output in tools_and_outputs
         ]

@@ -1,8 +1,11 @@
 """This module contains the setup_call function for Mistral tools."""
 
 import inspect
-from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Iterable
-from typing import Any, cast
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
+from typing import Any, cast, overload
 
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
@@ -16,11 +19,54 @@ from mistralai.models.chat_completion import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
+from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: MistralClient | MistralAsyncClient | None,
+    fn: Callable[..., Awaitable[MistralDynamicConfig]],
+    fn_args: dict[str, Any],
+    dynamic_config: MistralDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: MistralCallParams,
+    extract: bool,
+) -> tuple[
+    AsyncCreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],
+    str | None,
+    list[ChatMessage],
+    list[type[MistralTool]] | None,
+    MistralCallKwargs,
+]: ...
+
+
+@overload
+def setup_call(
+    *,
+    model: str,
+    client: MistralClient | MistralAsyncClient | None,
+    fn: Callable[..., MistralDynamicConfig],
+    fn_args: dict[str, Any],
+    dynamic_config: MistralDynamicConfig,
+    tools: list[type[BaseTool] | Callable] | None,
+    json_mode: bool,
+    call_params: MistralCallParams,
+    extract: bool,
+) -> tuple[
+    CreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],
+    str | None,
+    list[ChatMessage],
+    list[type[MistralTool]] | None,
+    MistralCallKwargs,
+]: ...
 
 
 def setup_call(
@@ -35,13 +81,8 @@ def setup_call(
     call_params: MistralCallParams,
     extract: bool,
 ) -> tuple[
-    Callable[
-        ...,
-        ChatCompletionResponse
-        | Coroutine[Any, Any, ChatCompletionResponse]
-        | AsyncGenerator[ChatCompletionStreamResponse, None]
-        | Iterable[ChatCompletionStreamResponse],
-    ],
+    CreateFn[ChatCompletionResponse, ChatCompletionStreamResponse]
+    | AsyncCreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],
     str | None,
     list[ChatMessage],
     list[type[MistralTool]] | None,
@@ -74,18 +115,8 @@ def setup_call(
         client = (
             MistralAsyncClient() if inspect.iscoroutinefunction(fn) else MistralClient()
         )
-
-    def create_or_stream(
-        stream: bool,
-        **kwargs: Any,  # noqa: ANN401
-    ) -> (
-        ChatCompletionResponse
-        | Coroutine[Any, Any, ChatCompletionResponse]
-        | AsyncGenerator[ChatCompletionStreamResponse, None]
-        | Iterable[ChatCompletionStreamResponse]
-    ):
-        if stream:
-            return client.chat_stream(**kwargs)
-        return client.chat(**kwargs)
-
+    if isinstance(client, MistralAsyncClient):
+        create_or_stream = get_async_create_fn(client.chat, client.chat_stream)
+    else:
+        create_or_stream = get_create_fn(client.chat, client.chat_stream)
     return create_or_stream, prompt_template, messages, tool_types, call_kwargs

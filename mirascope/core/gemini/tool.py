@@ -67,7 +67,7 @@ class GeminiTool(BaseTool[Tool]):
         model_schema = cls.model_json_schema()
         fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
         if model_schema["properties"]:
-            fn["parameters"] = model_schema  # type: ignore
+            fn["parameters"] = model_schema
         if model_schema["required"]:
             fn["parameters"]["required"] = model_schema["required"]
         if "parameters" in fn:

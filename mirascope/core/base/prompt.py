@@ -115,7 +115,7 @@ class BasePrompt(BaseModel):
     ) -> _BaseStreamT: ...
 
     @overload
-    def run(  # type: ignore
+    def run(
         self,
         call_decorator: Callable[
             [Callable[..., BaseDynamicConfig]], Callable[..., _ResponseModelT]
@@ -180,7 +180,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # type: ignore
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),
@@ -286,7 +286,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"async def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # type: ignore
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),

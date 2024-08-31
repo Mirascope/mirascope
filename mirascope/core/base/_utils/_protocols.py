@@ -7,10 +7,11 @@ from typing import (
     Literal,
     ParamSpec,
     Protocol,
-    TypeGuard,
     TypeVar,
     overload,
 )
+
+from typing_extensions import TypeIs
 
 from ..call_kwargs import BaseCallKwargs
 from ..call_response_chunk import BaseCallResponseChunk
@@ -93,6 +94,12 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
 
 
+def fn_is_async(
+    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
+) -> TypeIs[Callable[_P, Awaitable[_R]]]:
+    return inspect.iscoroutinefunction(fn)
+
+
 class SetupCall(
     Protocol[
         _BaseClientT,
@@ -109,6 +116,27 @@ class SetupCall(
         *,
         model: str,
         client: _BaseClientT | None,
+        fn: Callable[..., Awaitable[_BaseDynamicConfigT]],
+        fn_args: dict[str, Any],
+        dynamic_config: _BaseDynamicConfigT,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        call_params: _BaseCallParamsT,
+        extract: bool,
+    ) -> tuple[
+        AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        str | None,
+        list[Any],
+        list[type[_BaseToolT]] | None,
+        BaseCallKwargs,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        *,
+        model: str,
+        client: _BaseClientT | None,
         fn: Callable[..., _BaseDynamicConfigT],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
@@ -118,31 +146,10 @@ class SetupCall(
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
+        str | None,
+        list[Any],
         list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
-    ]: ...
-
-    @overload
-    def __call__(
-        self,
-        *,
-        model: str,
-        client: _BaseClientT | None,
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
-        fn_args: dict[str, Any],
-        dynamic_config: _BaseDynamicConfigT,
-        tools: list[type[BaseTool] | Callable] | None,
-        json_mode: bool,
-        call_params: _BaseCallParamsT,
-        extract: bool,
-    ) -> tuple[
-        AsyncCreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
-        list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
+        BaseCallKwargs,
     ]: ...
 
     def __call__(
@@ -150,7 +157,7 @@ class SetupCall(
         *,
         model: str,
         client: _BaseClientT | None,
-        fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
         tools: list[type[BaseTool] | Callable] | None,
@@ -160,23 +167,11 @@ class SetupCall(
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_ResponseT, _ResponseChunkT],
-        str,
-        list[dict[str, Any]],
+        str | None,
+        list[Any],
         list[type[_BaseToolT]] | None,
-        BaseCallKwargs[_BaseToolT],
+        BaseCallKwargs,
     ]: ...  # pragma: no cover
-
-    @staticmethod
-    def fn_is_sync(
-        fn: Callable[_P, _R | Awaitable[_R]],
-    ) -> TypeGuard[Callable[_P, _R]]:
-        return not inspect.iscoroutinefunction(fn)
-
-    @staticmethod
-    def fn_is_async(
-        fn: Callable[_P, _R | Awaitable[_R]],
-    ) -> TypeGuard[Callable[_P, Awaitable[_R]]]:
-        return inspect.iscoroutinefunction(fn)
 
 
 class HandleStream(

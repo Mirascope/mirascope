@@ -22,10 +22,10 @@ gemini_call = call_factory(
     TToolType=GeminiTool,
     TCallParams=GeminiCallParams,
     default_call_params=GeminiCallParams(),
-    setup_call=setup_call,  # type: ignore
+    setup_call=setup_call,
     get_json_output=get_json_output,
-    handle_stream=handle_stream,
-    handle_stream_async=handle_stream_async,
+    handle_stream=handle_stream,  # pyright: ignore [reportArgumentType]
+    handle_stream_async=handle_stream_async,  # pyright: ignore [reportArgumentType]
 )
 """A decorator for calling the Gemini API with a typed function.
 

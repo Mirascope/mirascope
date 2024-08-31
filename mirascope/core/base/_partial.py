@@ -51,13 +51,16 @@ def partial(wrapped_class: type[Model]) -> type[Model]:
             tmp_field.default = None
         return tmp_field.annotation, tmp_field
 
-    return create_model(  # type: ignore[no-any-return, call-overload]
+    return create_model(
         f"Partial{wrapped_class.__name__}",
         __base__=wrapped_class,
         __module__=wrapped_class.__module__,
         __doc__=wrapped_class.__doc__,
+        __config__=None,
+        __validators__=None,
+        __cls_kwargs__=None,
         **{
             field_name: _make_field_optional(field_info)
             for field_name, field_info in wrapped_class.model_fields.items()
-        },  # type: ignore
+        },
     )

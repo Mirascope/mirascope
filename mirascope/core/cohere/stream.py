@@ -69,7 +69,7 @@ class CohereStream(
         self, tool_calls: list[ToolCall] | None = None, content: str | None = None
     ) -> ChatMessage:
         return ChatMessage(
-            role="assistant",  # type: ignore
+            role="assistant",  # pyright: ignore [reportCallIssue]
             message=content if content else "",
             tool_calls=tool_calls,
         )
