@@ -124,9 +124,17 @@ def test_llm_query_rerank(query: str, documents: list[dict], top_n_ids: set[int]
     assert top_n_ids.issuperset({result.id for result in results[: len(top_n_ids)]})
 
 
-def test_documentation_agent():
-    query = "How do I make a basic OpenAI call using Mirascope?"
+@pytest.mark.parametrize(
+    "query,expected",
+    [
+        ("How do I make a basic OpenAI call using Mirascope?", None),
+        ("What is Mirascope?", "a toolkit for building AI-powered applications"),
+    ],
+)
+def test_documentation_agent(query: str, expected: str):
     documentation_agent = DocumentationAgent()
     response = documentation_agent._call(query)
-
-    assert check_syntax(response.content) and is_importable(response.content)
+    if response.classification == "code":
+        assert check_syntax(response.content) and is_importable(response.content)
+    else:
+        assert expected in response.content

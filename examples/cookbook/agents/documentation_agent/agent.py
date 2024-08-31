@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Literal, cast
 
 from llama_index.core import (
     QueryBundle,
@@ -93,10 +93,15 @@ def get_documents(query: str) -> list[str]:
     return [result.document for result in results]
 
 
-class DocumentationAgent(BaseModel):
-    @openai.call(
-        "gpt-4o-mini",
+class Response(BaseModel):
+    classification: Literal["code", "general"] = Field(
+        ..., description="The classification of the question"
     )
+    content: str = Field(..., description="The response content")
+
+
+class DocumentationAgent(BaseModel):
+    @openai.call("gpt-4o-mini", response_model=Response, json_mode=True)
     @prompt_template(
         """
         SYSTEM:
