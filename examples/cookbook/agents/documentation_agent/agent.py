@@ -125,7 +125,6 @@ class DocumentationAgent(BaseModel):
             Question: "What is Mirascope?"
             Answer:
             A toolkit for building AI-powered applications with Large Language Models (LLMs).
-
             Explanation: This is a General Information question, so a summary is provided.
 
             Question: "How do I make a basic OpenAI call using Mirascope?"
