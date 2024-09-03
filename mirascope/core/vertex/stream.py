@@ -18,7 +18,7 @@ from vertexai.generative_models import (
 )
 
 from ..base.stream import BaseStream
-from ._utils import calculate_cost
+from ._utils import calculate_cost, convert_message_params
 from .call_params import VertexCallParams
 from .call_response import VertexCallResponse
 from .call_response_chunk import VertexCallResponseChunk
@@ -77,7 +77,7 @@ class VertexStream(
         """Constructs the message parameter for the assistant."""
         return Content(
             role="model",
-            parts=cast(list[Part], [{"text": content}] + (tool_calls or [])),
+            parts=cast(list[Part], [Part.from_text(content)] + (tool_calls or [])),
         )
 
     def construct_call_response(self) -> VertexCallResponse:
@@ -99,11 +99,11 @@ class VertexStream(
                             if self.finish_reasons
                             else FinishReason.STOP,
                             "content": Content(
-                                role=self.message_param["role"],
-                                parts=self.message_param["parts"],
-                            ),
+                                role=self.message_param.role,
+                                parts=self.message_param.parts,
+                            ).to_dict(),
                         }
-                    )
+                    ).to_dict()
                 ]
             }
         )
@@ -117,7 +117,7 @@ class VertexStream(
             messages=self.messages,
             call_params=self.call_params,
             call_kwargs=self.call_kwargs,
-            user_message_param=self.user_message_param,
+            user_message_param=self.messages,
             start_time=self.start_time,
             end_time=self.end_time,
         )

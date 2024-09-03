@@ -1,19 +1,16 @@
-"""Utility for converting `BaseMessageParam` to `ContentsType`"""
+"""Utility for converting `BaseMessageParam` to `Content`"""
 
-import io
-
-import PIL.Image
-from vertexai.generative_models import Content
+from vertexai.generative_models import Content, Image, Part
 
 from ...base import BaseMessageParam
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam | Content],
+    message_params: list[BaseMessageParam | dict | Content],
 ) -> list[Content]:
     converted_message_params = []
     for message_param in message_params:
-        if not isinstance(message_param, BaseMessageParam):
+        if isinstance(message_param, Content):
             converted_message_params.append(message_param)
         elif (role := message_param.role) == "system":
             content = message_param.content
@@ -22,22 +19,26 @@ def convert_message_params(
                     "System message content must be a single text string."
                 )  # pragma: no cover
             converted_message_params += [
-                {
-                    "role": "user",
-                    "parts": [content],
-                },
-                {
-                    "role": "model",
-                    "parts": ["Ok! I will adhere to this system message."],
-                },
+                Content(
+                    role="user",
+                    parts=[
+                        Part.from_text(content) if isinstance(content, str) else content
+                    ],
+                ),
+                Content(
+                    role="model",
+                    parts=[Part.from_text("Ok! I will adhere to this system message.")],
+                ),
             ]
         elif isinstance((content := message_param.content), str):
-            converted_message_params.append({"role": "user", "parts": [content]})
+            converted_message_params.append(
+                Content(role="user", parts=[Part.from_text(content)])
+            )
         else:
-            converted_content = []
+            converted_content: list[Part] = []
             for part in content:
                 if part.type == "text":
-                    converted_content.append(part.text)
+                    converted_content.append(Part.from_text(part.text))
                 elif part.type == "image":
                     if part.media_type not in [
                         "image/jpeg",
@@ -51,8 +52,8 @@ def convert_message_params(
                             "Vertex currently only supports JPEG, PNG, WebP, HEIC, "
                             "and HEIF images."
                         )
-                    image = PIL.Image.open(io.BytesIO(part.image))
-                    converted_content.append(image)
+                    image = Image.from_bytes(part.image)
+                    converted_content.append(Part.from_image(image))
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -68,12 +69,12 @@ def convert_message_params(
                             "and FLAC audio file types."
                         )
                     converted_content.append(
-                        {"mime_type": part.media_type, "data": part.audio}
+                        Part.from_data(mime_type=part.media_type, data=part.audio)
                     )
                 else:
                     raise ValueError(
                         "Vertex currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append({"role": role, "parts": converted_content})
+            converted_message_params.append(Content(role=role, parts=converted_content))
     return converted_message_params
