@@ -1,10 +1,11 @@
 import asyncio
+from collections.abc import Callable
 from contextlib import contextmanager
 from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BasePrompt, openai, prompt_template
 
 
 class Audience(StrEnum):
@@ -23,23 +24,29 @@ class Tone(StrEnum):
     casual = "casual"
 
 
-@openai.call("gpt-4o-mini")
 @prompt_template(
     """
     SYSTEM:
     You are a professional translator who is a native Japanese speaker.
     Translate the English text into natural Japanese without changing the content.
     Please make sure that the text is easy to read for everyone by using appropriate paragraphs so that it does not become difficult to read.
-    
+
     Also, please translate with respect to the following parameters
-    
+
     USER:
     text: {text}
     tone: {tone}
     audience: {audience}
     """
 )
-async def parametrized_translate(text: str, tone: Tone, audience: Audience): ...
+class ParametrizedTranslatePrompt(BasePrompt):
+    text: str
+    tone: Tone
+    audience: Audience
+
+    async def translate(self, call: Callable, model: str) -> str:
+        response = await self.run_async(call(model))
+        return response.content
 
 
 class Evaluation(BaseModel):
@@ -90,49 +97,55 @@ class Evaluation(BaseModel):
     )
 
 
-@openai.call("gpt-4o-mini", response_model=Evaluation)
 @prompt_template(
     """
     SYSTEM:
     You are a professional translator who is a native Japanese speaker.
     Please evaluate the following translation and provide feedback on how it can be improved.
-    
+
     USER:
     original_text: {original_text}
     translation_text: {translation_text}
     """
 )
-async def evaluate_translation(original_text: str, translation_text: str): ...
+class EvaluateTranslationPrompt(BasePrompt):
+    original_text: str
+    translation_text: str
+
+    async def evaluate(self, call: Callable, model: str) -> Evaluation:
+        response = await self.run_async(call(model, response_model=Evaluation))
+        return response
 
 
-@openai.call("gpt-4o-mini")
 @prompt_template("""
     SYSTEM:
     Your task is to improve the quality of a translation from English into Japanese.
     You will be provided with the original text, the translated text, and an evaluation of the translation.
     All evaluation criteria will be scores between 0 and 10.
-    
+
     The translation you are improving was intended to adhere to the desired tone and audience:
     tone: {tone}
     audience: {audience}
-    
+
     You improved translation MUST also adhere to this desired tone and audience.
-    
+
     Output ONLY the improved translation.
-    
+
     USER:
     original text: {original_text}
     translation: {translation_text}
     evaluation: {evaluation}
 """)
-async def improve_translation(
-    *,
-    original_text: str,
-    translation_text: str,
-    tone: Tone,
-    audience: Audience,
-    evaluation: Evaluation,
-) -> None: ...
+class ImproveTranslationPrompt(BasePrompt):
+    original_text: str
+    translation_text: str
+    tone: Tone
+    audience: Audience
+    evaluation: Evaluation
+
+    async def translate(self, call: Callable, model: str) -> str:
+        response = await self.run_async(call(model))
+        return response.content
 
 
 text = """
@@ -152,25 +165,29 @@ async def multi_pass_translation(
     tone: Tone,
     audience: Audience,
     pass_count: int,
+    call: Callable,
+    model: str,
 ) -> str:
     with print_progress_message(1):
-        translation = await parametrized_translate(
-            original_text, tone=tone, audience=audience
+        parametrized_translate_prompt = ParametrizedTranslatePrompt(
+            text=original_text, tone=tone, audience=audience
         )
-        translation_text = translation.content
+        translation_text = await parametrized_translate_prompt.translate(call, model)
 
     for current_count in range(2, pass_count + 1):
         with print_progress_message(current_count):
-            evaluation = await evaluate_translation(original_text, translation_text)
-
-            improved_translation = await improve_translation(
+            evaluate_translation_prompt = EvaluateTranslationPrompt(
+                original_text=original_text, translation_text=translation_text
+            )
+            evaluation = await evaluate_translation_prompt.evaluate(call, model)
+            improve_translation_prompt = ImproveTranslationPrompt(
+                original_text=original_text,
                 translation_text=translation_text,
-                original_text=translation_text,
                 tone=tone,
                 audience=audience,
                 evaluation=evaluation,
             )
-            translation_text = improved_translation.content
+            translation_text = await improve_translation_prompt.translate(call, model)
     return translation_text
 
 
@@ -180,5 +197,7 @@ asyncio.run(
         tone=Tone.casual,
         audience=Audience.general,
         pass_count=3,
+        call=openai.call,
+        model="gpt-4o-mini",
     )
 )

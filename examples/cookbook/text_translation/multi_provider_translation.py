@@ -5,7 +5,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
-from mirascope.core import anthropic, gemini, openai, prompt_template
+from mirascope.core import BasePrompt, anthropic, gemini, openai, prompt_template
 
 
 class Audience(StrEnum):
@@ -39,9 +39,14 @@ class Tone(StrEnum):
     audience: {audience}
     """
 )
-async def parametrized_translate_template(
-    text: str, tone: Tone, audience: Audience
-): ...
+class ParametrizedTranslatePrompt(BasePrompt):
+    text: str
+    tone: Tone
+    audience: Audience
+
+    async def translate(self, call: Callable, model: str) -> str:
+        response = await self.run_async(call(model))
+        return response.content
 
 
 class Evaluation(BaseModel):
@@ -103,9 +108,13 @@ class Evaluation(BaseModel):
     translation_text: {translation_text}
     """
 )
-async def evaluate_translation_template(
-    original_text: str, translation_text: str
-) -> Evaluation: ...
+class EvaluateTranslationPrompt(BasePrompt):
+    original_text: str
+    translation_text: str
+
+    async def evaluate(self, call: Callable, model: str) -> Evaluation:
+        response = await self.run_async(call(model, response_model=Evaluation))
+        return response
 
 
 @prompt_template("""
@@ -127,25 +136,21 @@ async def evaluate_translation_template(
     translation: {translation_text}
     evaluation: {evaluation}
 """)
-async def improve_translation_template(
-    *,
-    original_text: str,
-    translation_text: str,
-    tone: Tone,
-    audience: Audience,
-    evaluation: Evaluation,
-) -> None: ...
+class ImproveTranslationPrompt(BasePrompt):
+    original_text: str
+    translation_text: str
+    tone: Tone
+    audience: Audience
+    evaluation: Evaluation
+
+    async def translate(self, call: Callable, model: str) -> str:
+        response = await self.run_async(call(model))
+        return response.content
 
 
 text = """
 The old codger, a real bootstrapper, had been burning the candle at both ends trying to make his pie-in-the-sky business idea fly. He'd been spinning his wheels for months, barking up the wrong tree with his half-baked marketing schemes.
 """
-
-
-def create_call_function(
-    call, model, _prompt_template, response_model=None
-) -> Callable:
-    return call(model, response_model=response_model)(_prompt_template)
 
 
 @contextmanager
@@ -160,29 +165,29 @@ async def multi_pass_translation(
     tone: Tone,
     audience: Audience,
     pass_count: int,
-    parametrized_translate: Callable,
-    evaluate_translation: Callable,
-    improve_translation: Callable,
+    call: Callable,
     model: str,
 ) -> str:
     with print_progress_message(model, 1):
-        translation = await parametrized_translate(
-            original_text, tone=tone, audience=audience
+        parametrized_translate_prompt = ParametrizedTranslatePrompt(
+            text=original_text, tone=tone, audience=audience
         )
-        translation_text = translation.content
+        translation_text = await parametrized_translate_prompt.translate(call, model)
 
     for current_count in range(2, pass_count + 1):
         with print_progress_message(model, current_count):
-            evaluation = await evaluate_translation(original_text, translation_text)
-
-            improved_translation = await improve_translation(
+            evaluate_translation_prompt = EvaluateTranslationPrompt(
+                original_text=original_text, translation_text=translation_text
+            )
+            evaluation = await evaluate_translation_prompt.evaluate(call, model)
+            improve_translation_prompt = ImproveTranslationPrompt(
+                original_text=original_text,
                 translation_text=translation_text,
-                original_text=translation_text,
                 tone=tone,
                 audience=audience,
                 evaluation=evaluation,
             )
-            translation_text = improved_translation.content
+            translation_text = await improve_translation_prompt.translate(call, model)
     return translation_text
 
 
@@ -195,24 +200,13 @@ async def multi_provider_translation(
 ) -> None:
     results = []
     for call, model in call_models:
-        parametrized_translate = create_call_function(
-            call, model, parametrized_translate_template
-        )
-        evaluate_translation = create_call_function(
-            call, model, evaluate_translation_template, Evaluation
-        )
-        improve_translation = create_call_function(
-            call, model, improve_translation_template
-        )
         results.append(
             multi_pass_translation(
                 original_text,
                 tone,
                 audience,
                 pass_count,
-                parametrized_translate,
-                evaluate_translation,
-                improve_translation,
+                call,
                 model,
             )
         )
