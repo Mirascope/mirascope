@@ -59,7 +59,7 @@ class Tone(StrEnum):
     SYSTEM:
     You are a professional translator who is a native Japanese speaker.
     Translate the English text into natural Japanese without changing the content.
-     Please make sure that the text is easy to read for everyone by using appropriate paragraphs so that it does not become difficult to read.
+    Please make sure that the text is easy to read for everyone by using appropriate paragraphs so that it does not become difficult to read.
     
     Also, please translate with respect to the following parameters
     
@@ -165,16 +165,21 @@ async def evaluate_translation(
 @openai.call("gpt-4o-mini")
 @prompt_template("""
     SYSTEM:
-    Improve the translation text in Japanese with respect to the following Evaluation criteria:
-    the score should be between 0 and 10
-
-    Also, please write the evaluation result for scores in English.
-
-    USER:
-    original_text: {original_text}
-    translation_text: {translation_text}      
+    Your task is to improve the quality of a translation from English into Japanese.
+    You will be provided with the original text, the translated text, and an evaluation of the translation.
+    All evaluation criteria will be scores between 0 and 10.
+    
+    The translation you are improving was intended to adhere to the desired tone and audience:
     tone: {tone}
     audience: {audience}
+    
+    You improved translation MUST also adhere to this desired tone and audience.
+    
+    Output ONLY the improved translation.
+    
+    USER:
+    original text: {original_text}
+    translation: {translation_text}
     evaluation: {evaluation}
 """)
 async def improve_translation(
