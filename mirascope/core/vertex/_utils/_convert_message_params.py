@@ -6,7 +6,7 @@ from ...base import BaseMessageParam
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam | dict | Content],
+    message_params: list[BaseMessageParam | Content],
 ) -> list[Content]:
     converted_message_params = []
     for message_param in message_params:

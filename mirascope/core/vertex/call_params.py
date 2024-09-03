@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from google.cloud.aiplatform_v1beta1.types import GenerationConfig
 from typing_extensions import NotRequired
 from vertexai.generative_models import (
-    GenerationConfig,
     SafetySetting,
     ToolConfig,
 )

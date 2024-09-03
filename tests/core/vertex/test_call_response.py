@@ -1,5 +1,6 @@
 """Tests the `vertex.call_response` module."""
 
+from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -24,9 +25,9 @@ def test_vertex_call_response() -> None:
                         "content": Content(
                             parts=[Part.from_text("The author is Patrick Rothfuss")],
                             role="model",
-                        ),
+                        ).to_dict(),
                     }
-                )
+                ).to_dict()
             ]
         }
     )
@@ -56,9 +57,9 @@ def test_vertex_call_response() -> None:
     assert call_response.input_tokens is None
     assert call_response.output_tokens is None
     assert call_response.cost is None
-    assert call_response.message_param == {
+    assert call_response.message_param.to_dict() == {
+        "parts": [{"text": "The author is Patrick Rothfuss"}],
         "role": "model",
-        "parts": [Part.from_text("The author is Patrick Rothfuss")],
     }
 
 
@@ -72,26 +73,23 @@ def test_vertex_call_response_with_tools() -> None:
         def call(self) -> str:
             return f"{self.title} by {self.author}"
 
+    raw_part = Part()
+    raw_part._raw_part.function_call = gapic_tool_types.FunctionCall(
+        name="FormatBook",
+        args={
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        },
+    )
     response = GenerateContentResponseType.from_dict(
         {
             "candidates": [
                 Candidate.from_dict(
                     {
-                        "finish_reason": 1,
-                        "content": Content(
-                            parts=[
-                                Part.from_function_response(
-                                    name="FormatBook",
-                                    response={
-                                        "title": "The Name of the Wind",
-                                        "author": "Patrick Rothfuss",
-                                    },
-                                )
-                            ]
-                        ),
-                        "role": "model",
+                        "finishReason": 1,
+                        "content": Content(parts=[raw_part]).to_dict(),
                     },
-                )
+                ).to_dict()
             ]
         }
     )
@@ -117,6 +115,7 @@ def test_vertex_call_response_with_tools() -> None:
     assert tool.author == "Patrick Rothfuss"
     output = tool.call()
     assert output == "The Name of the Wind by Patrick Rothfuss"
-    assert call_response.tool_message_params([(tool, output)]) == [
-        dict(name="FormatBook", response={"result": output})
-    ]
+    tool_message_params = call_response.tool_message_params([(tool, output)])
+    assert len(tool_message_params) == 1
+    assert tool_message_params[0].name == "FormatBook"
+    assert tool_message_params[0].response == {"result": output}

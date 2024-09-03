@@ -26,14 +26,16 @@ class FormatBook(VertexTool):
 
 def test_vertex_tool() -> None:
     """Tests the `VertexTool` class."""
-    tool_call = gapic_tool_types.FunctionCall({
-        "name": "FormatBook",
-        "args": {
-            "title": "The Name of the Wind",
-            "author": "Patrick Rothfuss",
-            "genre": "fantasy",
-        },
-    })
+    tool_call = gapic_tool_types.FunctionCall(
+        {
+            "name": "FormatBook",
+            "args": {
+                "title": "The Name of the Wind",
+                "author": "Patrick Rothfuss",
+                "genre": "fantasy",
+            },
+        }
+    )
 
     tool = FormatBook.from_tool_call(tool_call)
     assert isinstance(tool, BaseTool)
@@ -51,17 +53,20 @@ def test_vertex_tool() -> None:
     assert func_decl["description"] == "Returns the title and author nicely formatted."
     assert func_decl["parameters"] == {
         "properties": {
-            "title": {'type_': 'STRING',},
-            "author": {'type_': 'STRING'},
+            "title": {
+                "type_": "STRING",
+            },
+            "author": {"type_": "STRING"},
             "genre": {
                 "enum": ["fantasy", "scifi"],
-                'format_': 'enum',
-                'type_': 'STRING',
+                "format_": "enum",
+                "type_": "STRING",
             },
         },
         "required": ["title", "author", "genre"],
-        'type_': 'OBJECT',
+        "type_": "OBJECT",
     }
+
 
 def test_vertex_tool_no_nesting() -> None:
     """Tests the `VertexTool` class with nested structures."""

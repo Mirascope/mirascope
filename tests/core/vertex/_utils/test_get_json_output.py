@@ -1,6 +1,7 @@
 """Tests the `vertex._utils.get_json_output` module."""
 
 import pytest
+from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -18,6 +19,14 @@ from mirascope.core.vertex.call_response_chunk import VertexCallResponseChunk
 @pytest.fixture()
 def mock_generate_content_response() -> GenerateContentResponse:
     """Returns a mock `GenerateContentResponse` instance."""
+    raw_part = Part()
+    raw_part._raw_part.function_call = gapic_tool_types.FunctionCall(
+        name="FormatBook",
+        args={
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        },
+    )
     return GenerateContentResponse.from_dict(
         {
             "candidates": [
@@ -27,18 +36,12 @@ def mock_generate_content_response() -> GenerateContentResponse:
                         "content": Content(
                             parts=[
                                 Part.from_text("json_output"),
-                                Part.from_function_response(
-                                    name="FormatBook",
-                                    response={
-                                        "title": "The Name of the Wind",
-                                        "author": "Patrick Rothfuss",
-                                    },
-                                ),
+                                raw_part,
                             ],
                             role="model",
-                        ),
+                        ).to_dict(),
                     }
-                )
+                ).to_dict()
             ]
         }
     )
@@ -68,7 +71,7 @@ def test_get_json_output_call_response(
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
     )
 
-    mock_generate_content_response.candidates[0].content.parts.pop(1)
+    mock_generate_content_response._raw_response.candidates[0].content.parts.pop(1)
     with pytest.raises(
         ValueError, match="No tool call or JSON object found in response."
     ):

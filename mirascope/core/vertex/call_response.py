@@ -3,15 +3,16 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from google.cloud.aiplatform_v1beta1.types import (
+    tool as gapic_tool_types,
+)
 from pydantic import computed_field
 from vertexai.generative_models import (
     Content,
     GenerationResponse,
     Tool,
 )
-from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
-)
+
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import VertexCallParams
@@ -123,7 +124,7 @@ class VertexCallResponse(
     @property
     def message_param(self) -> Content:
         """Returns the models's response as a message parameter."""
-        return Content(role="model", parts=self.response.parts)  # pyright: ignore [reportReturnType]
+        return Content(role="model", parts=self.response.candidates[0].content.parts)
 
     @computed_field
     @property
@@ -169,6 +170,8 @@ class VertexCallResponse(
             The list of constructed `FunctionResponse` parameters.
         """
         return [
-            gapic_tool_types.FunctionResponse(name=tool._name(), response={"result": output})
+            gapic_tool_types.FunctionResponse(
+                name=tool._name(), response={"result": output}
+            )
             for tool, output in tools_and_outputs
         ]

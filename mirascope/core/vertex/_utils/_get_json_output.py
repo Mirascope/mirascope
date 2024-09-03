@@ -17,7 +17,8 @@ def get_json_output(
             return response.content
         elif tool_calls := [
             part.function_call
-            for part in response.response.parts
+            for candidate in response.response.candidates
+            for part in candidate.content.parts
             if part.function_call.args
         ]:
             return json.dumps(

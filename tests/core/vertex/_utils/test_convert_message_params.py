@@ -4,7 +4,7 @@ import io
 from unittest.mock import MagicMock, patch
 
 import pytest
-from vertexai.generative_models import Content
+from vertexai.generative_models import Content, Part
 
 from mirascope.core.base import (
     AudioPart,
@@ -19,11 +19,11 @@ from mirascope.core.vertex._utils._convert_message_params import convert_message
 @patch("PIL.Image.open", new_callable=MagicMock)
 def test_convert_message_params(mock_image_open: MagicMock) -> None:
     """Tests the `convert_message_params` function."""
-    mock_image_open.return_value = "test"
+    mock_image_open.return_value.format = "jpeg"
     message_params: list[BaseMessageParam | Content] = [
         BaseMessageParam(role="system", content="You are a helpful assistant."),
         BaseMessageParam(role="user", content="Hello"),
-        {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
+        Content(role="user", parts=[Part.from_text("Hello"), Part.from_text("Hello")]),
         BaseMessageParam(
             role="user",
             content=[
@@ -36,14 +36,21 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
         ),
     ]
     converted_message_params = convert_message_params(message_params)
-    assert converted_message_params == [
-        {"role": "user", "parts": ["You are a helpful assistant."]},
-        {"role": "model", "parts": ["Ok! I will adhere to this system message."]},
-        {"role": "user", "parts": ["Hello"]},
-        {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
+    assert [p.to_dict() for p in converted_message_params] == [
+        {"parts": [{"text": "You are a helpful assistant."}], "role": "user"},
         {
+            "parts": [{"text": "Ok! I will adhere to this system message."}],
+            "role": "model",
+        },
+        {"parts": [{"text": "Hello"}], "role": "user"},
+        {"parts": [{"text": "Hello"}, {"text": "Hello"}], "role": "user"},
+        {
+            "parts": [
+                {"text": "test"},
+                {"inline_data": {"data": "aW1hZ2U=", "mime_type": "image/jpeg"}},
+                {"inline_data": {"data": "YXVkaW8=", "mime_type": "audio/wav"}},
+            ],
             "role": "user",
-            "parts": ["test", "test", {"mime_type": "audio/wav", "data": b"audio"}],
         },
     ]
     mock_image_open.assert_called_once()

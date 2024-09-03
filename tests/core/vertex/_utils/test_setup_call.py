@@ -3,9 +3,12 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from google.cloud.aiplatform_v1beta1.types import content as gapic_content_types
 from vertexai.generative_models import (
+    Content,
     GenerationConfig,
-    GenerativeModel,  # type: ignore
+    GenerativeModel,
+    Part,
     ToolConfig,
 )
 
@@ -29,24 +32,19 @@ def mock_base_setup_call() -> MagicMock:
 @patch(
     "mirascope.core.vertex._utils._setup_call.GenerativeModel", new_callable=MagicMock
 )
-@patch(
-    "mirascope.core.vertex._utils._setup_call.GenerativeModel.generate_content",
-    new_callable=MagicMock,
-)
 def test_setup_call(
-    mock_generate_content: MagicMock,
     mock_generative_model: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
-    generative_model = GenerativeModel(model_name="vertex-flash-1.5")
-    mock_generative_model.return_value = generative_model
+    mock_client = MagicMock(spec=GenerativeModel)
+    mock_generative_model.return_value = mock_client
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-        model="vertex-flash-1.5",
+        model="gemini-flash-1.5",
         client=None,
         fn=fn,
         fn_args={},
@@ -64,15 +62,15 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
-    mock_generative_model.assert_called_once_with(model_name="vertex-flash-1.5")
+    mock_generative_model.assert_called_once_with(model_name="gemini-flash-1.5")
     assert create(**call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs)
-    mock_generate_content.reset_mock()
+    mock_client.generate_content.assert_called_once_with(**call_kwargs)
+    mock_client.generate_content.reset_mock()
     assert create(stream=True, **call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs, stream=True)
-    mock_generate_content.reset_mock()
+    mock_client.generate_content.assert_called_once_with(**call_kwargs, stream=True)
+    mock_client.generate_content.reset_mock()
     assert create(stream=False, **call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs)
+    mock_client.generate_content.assert_called_once_with(**call_kwargs)
 
 
 @pytest.mark.parametrize("generation_config_type", [dict, GenerationConfig])
@@ -81,7 +79,11 @@ def test_setup_call(
     new_callable=MagicMock,
 )
 @patch("mirascope.core.vertex._utils._setup_call._utils", new_callable=MagicMock)
+@patch(
+    "mirascope.core.vertex._utils._setup_call.GenerativeModel", new_callable=MagicMock
+)
 def test_setup_call_json_mode(
+    mock_generative_model: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
@@ -89,20 +91,23 @@ def test_setup_call_json_mode(
 ) -> None:
     """Tests the `setup_call` function with JSON mode."""
     mock_utils.setup_call = mock_base_setup_call
-    mock_utils.json_mode_content = MagicMock()
+    mock_utils.json_mode_content = MagicMock(return_value="mock content")
+    mock_generative_model.return_value = MagicMock()
     mock_base_setup_call.return_value[1] = [
-        {"role": "user", "parts": [{"type": "text", "text": "test"}]}
+        Content(role="user", parts=[Part.from_text("test")])
     ]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
-    mock_base_setup_call.return_value[-1]["generation_config"] = generation_config_type(
-        candidate_count=1,
-        max_output_tokens=100,
-        response_mime_type="application/xml",
-        response_schema=None,
-        stop_sequences=["\n"],
-        temperature=0.5,
-        top_k=0,
-        top_p=0,
+    mock_base_setup_call.return_value[-1]["generation_config"] = (
+        gapic_content_types.GenerationConfig(
+            candidate_count=1,
+            max_output_tokens=100,
+            response_mime_type="application/xml",
+            response_schema=None,
+            stop_sequences=["\n"],
+            temperature=0.5,
+            top_k=0,
+            top_p=0,
+        )
     )
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
@@ -116,19 +121,17 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
+    assert messages[-1].parts[-1].text == "mock content"
     assert "tools" not in call_kwargs
     assert "generation_config" in call_kwargs
-    assert call_kwargs["generation_config"] == {
-        "candidate_count": 1,
-        "max_output_tokens": 100,
-        "response_mime_type": "application/json",
-        "response_schema": None,
-        "stop_sequences": ["\n"],
-        "temperature": 0.5,
-        "top_k": 0,
-        "top_p": 0,
-    }
+    generation_config = call_kwargs["generation_config"]
+    assert generation_config.temperature == 0.5
+    assert generation_config.top_p == 0
+    assert generation_config.top_k == 0
+    assert generation_config.candidate_count == 1
+    assert generation_config.max_output_tokens == 100
+    assert generation_config.stop_sequences == ["\n"]
+    assert generation_config.response_mime_type == "application/json"
 
 
 @patch(
@@ -136,7 +139,11 @@ def test_setup_call_json_mode(
     new_callable=MagicMock,
 )
 @patch("mirascope.core.vertex._utils._setup_call._utils", new_callable=MagicMock)
+@patch(
+    "mirascope.core.vertex._utils._setup_call.GenerativeModel", new_callable=MagicMock
+)
 def test_setup_call_extract(
+    mock_generative_model: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
@@ -147,7 +154,7 @@ def test_setup_call_extract(
     mock_base_setup_call.return_value[2] = [mock_tool]
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
-        model="vertex-flash-1.5",
+        model="gemini-flash-1.5",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -160,7 +167,8 @@ def test_setup_call_extract(
     assert "tool_config" in call_kwargs and isinstance(
         call_kwargs["tool_config"], ToolConfig
     )
-    assert call_kwargs["tool_config"].function_calling_config == {
-        "allowed_function_names": ["test"],
-        "mode": "any",
-    }
+    function_calling_config = call_kwargs[
+        "tool_config"
+    ]._gapic_tool_config.function_calling_config
+    assert function_calling_config.allowed_function_names == ["test"]
+    assert function_calling_config.mode == function_calling_config.Mode.ANY

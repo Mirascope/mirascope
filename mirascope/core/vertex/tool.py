@@ -7,18 +7,14 @@ from __future__ import annotations
 
 from typing import Any
 
-
+from google.cloud.aiplatform_v1beta1.types import (
+    tool as gapic_tool_types,
+)
+from pydantic.json_schema import SkipJsonSchema
 from vertexai.generative_models import (
     FunctionDeclaration,
     Tool,
 )
-
-
-from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
-)
-
-from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 

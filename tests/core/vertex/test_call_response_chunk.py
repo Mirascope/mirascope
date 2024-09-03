@@ -24,9 +24,9 @@ def test_vertex_call_response_chunk() -> None:
                         "content": Content(
                             parts=[Part.from_text("The author is Patrick Rothfuss")],
                             role="model",
-                        ),
+                        ).to_dict(),
                     }
-                )
+                ).to_dict()
             ]
         }
     )

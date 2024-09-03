@@ -46,7 +46,7 @@ def test_vertex_stream() -> None:
                                 parts=[Part.from_text("Patrick Rothfuss")], role="model"
                             ).to_dict(),
                         }
-                    )
+                    ).to_dict()
                 ]
             }
         ),
@@ -60,7 +60,7 @@ def test_vertex_stream() -> None:
         prompt_template="",
         fn_args={},
         dynamic_config=None,
-        messages=[{"role": "user", "parts": ["Who is the author?"]}],
+        messages=[Content(role="user", parts=[Part.from_text("Who is the author?")])],
         call_params={},
         call_kwargs={},
     )
@@ -74,50 +74,52 @@ def test_vertex_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost is None
-    assert stream.message_param == {
-        "role": "model",
-        "parts": [{"text": "The author is Patrick Rothfuss"}],
-    }
-
+    assert stream.message_param.role == "model"
+    assert len(stream.message_param.parts) == 1
+    assert stream.message_param.parts[0].text == "The author is Patrick Rothfuss"
 
 
 def test_construct_call_response() -> None:
     chunks = [
-        GenerateContentResponse.from_dict({
-            "candidates": [
-                Candidate.from_dict(
-                    {
-                        "content": Content(
-                            parts= [Part.from_text("The author is ")], role="model"
-                        ).to_dict(),
-                        "finish_reason": FinishReason.STOP,
-                    }
-                ).to_dict()
-            ]}
+        GenerateContentResponse.from_dict(
+            {
+                "candidates": [
+                    Candidate.from_dict(
+                        {
+                            "content": Content(
+                                parts=[Part.from_text("The author is ")], role="model"
+                            ).to_dict(),
+                            "finish_reason": FinishReason.STOP,
+                        }
+                    ).to_dict()
+                ]
+            }
         ),
-        GenerateContentResponse.from_dict({
-            "candidates": [
-                Candidate.from_dict(
-                    {
-                        "content": Content(
-                            parts=[Part.from_text("Patrick Rothfuss")], role="model"
-                        ).to_dict(),
-                        "finish_reason": FinishReason.STOP,
-                    }
-                ).to_dict()
-            ]
-        }),
+        GenerateContentResponse.from_dict(
+            {
+                "candidates": [
+                    Candidate.from_dict(
+                        {
+                            "content": Content(
+                                parts=[Part.from_text("Patrick Rothfuss")], role="model"
+                            ).to_dict(),
+                            "finish_reason": FinishReason.STOP,
+                        }
+                    ).to_dict()
+                ]
+            }
+        ),
     ]
     stream = VertexStream(
         stream=((VertexCallResponseChunk(chunk=chunk), None) for chunk in chunks),
         metadata={},
         tool_types=None,
         call_response_type=VertexCallResponse,
-        model="vertex-flash-1.5",
+        model="gemini-flash-1.5",
         prompt_template="",
         fn_args={},
         dynamic_config=None,
-        messages=[{"role": "user", "parts": ["Who is the author?"]}],
+        messages=[Content(role="user", parts=[Part.from_text("Who is the author?")])],
         call_params={},
         call_kwargs={},
     )
@@ -125,19 +127,21 @@ def test_construct_call_response() -> None:
     for _ in stream:
         pass
 
-    expected_response = GenerateContentResponse.from_dict({
-        "candidates": [
-            Candidate.from_dict(
-                {
-                    "content": Content(
-                        parts=[Part.from_text("The author is Patrick Rothfuss")],
-                        role="model",
-                    ).to_dict(),
-                    "finish_reason": FinishReason.STOP,
-                }
-            ).to_dict()
-        ]
-    })
+    expected_response = GenerateContentResponse.from_dict(
+        {
+            "candidates": [
+                Candidate.from_dict(
+                    {
+                        "content": Content(
+                            parts=[Part.from_text("The author is Patrick Rothfuss")],
+                            role="model",
+                        ).to_dict(),
+                        "finish_reason": FinishReason.STOP,
+                    }
+                ).to_dict()
+            ]
+        }
+    )
     call_response = VertexCallResponse(
         metadata={},
         response=expected_response,
@@ -153,4 +157,6 @@ def test_construct_call_response() -> None:
         end_time=0,
     )
     constructed_call_response = stream.construct_call_response()
-    assert constructed_call_response.response == call_response.response
+    assert (
+        constructed_call_response.response.to_dict() == call_response.response.to_dict()
+    )

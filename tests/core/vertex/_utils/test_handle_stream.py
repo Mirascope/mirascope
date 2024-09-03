@@ -29,9 +29,9 @@ def mock_chunks() -> list[GenerateContentResponse]:
                             "content": Content(
                                 parts=[Part.from_text("The author is ")],
                                 role="model",
-                            ),
+                            ).to_dict(),
                         }
-                    )
+                    ).to_dict()
                 ]
             }
         ),
@@ -43,9 +43,9 @@ def mock_chunks() -> list[GenerateContentResponse]:
                             "finish_reason": 1,
                             "content": Content(
                                 parts=[Part.from_text("Patrick Rothfuss")], role="model"
-                            ),
+                            ).to_dict(),
                         }
-                    )
+                    ).to_dict()
                 ]
             }
         ),
