@@ -352,4 +352,4 @@ This method allows for comparison of translation results from different models, 
 
 ## Conclusion
 
-This LLM library significantly improves the quality and efficiency of English-Japanese translation through parametrization, multi-pass, and multi-provider techniques. By combining these methods, it effectively handles complex translation tasks and flexibly addresses diverse translation needs.
+The techniques demonstrated in this recipe can help to significantly improve the quality and efficiency of English-Japanese translation through parametrization, multi-pass, and multi-provider techniques. By combining these methods, it effectively handles complex translation tasks and flexibly addresses diverse translation needs.
