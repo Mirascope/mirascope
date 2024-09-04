@@ -184,29 +184,10 @@ MirascopeBot().run()
 # In this example, `greet` is the function that makes an LLM call to a GPT-4o model. The `@call('gpt-4o')` decorator turns this function into an LLM call.
 ```
 
-!!! note
+!!! note "Check out OpenAI Implementation"
+    While we demonstrated an open source version of chatting with our codebase, there are several improvements we can make to get better results. Refer to [Documentation Agent Cookbook](./documentation_agent.md) for a detailed walkthrough on the improvements made.
 
-    Using gpt-4o gives better results than using Ollama for LLMRank and the LLM call.
 
-Let us replace the LLM Rerank and LLM call with OpenAI GPT 4o-mini and see our results
-
-```python
-# (User): How do I make an LLM call using Mirascope?
-# (Assistant): Every provider we support has a corresponding `call` decorator for **turning a function into a call to an LLM**. You can use this decorator on any function definition to make an LLM call, like so:
-
-# ```python
-# from mirascope.core import openai
-#
-# @openai.call("gpt-4o")
-# def recommend_book(genre: str):
-#     """Recommend a {genre} book."""
-#    
-# response = recommend_book("fantasy")
-# print(response)
-# ```
-#
-# This code snippet shows how to make an LLM call with Mirascope using the `call` decorator. The `@openai.call("gpt-4o")` line above the function definition tells Mirascope to use the "gpt-4o" model for this function, effectively turning it into a call to the Large Language Model (LLM).
-```
 
 !!! tip "Additional Real-World Applications"
 
@@ -216,6 +197,6 @@ Let us replace the LLM Rerank and LLM call with OpenAI GPT 4o-mini and see our r
 
 When adapting this recipe, consider:
 
-    - Experiment with different model providers and version for quality.
-    - Use a different Reranking prompt as that impacts the quality of retrieval
-    - Implement a feedback loop so the LLM hallucinates less frequently. 
+- Experiment with different model providers and version for quality.
+- Use a different Reranking prompt as that impacts the quality of retrieval
+- Implement a feedback loop so the LLM hallucinates less frequently.
