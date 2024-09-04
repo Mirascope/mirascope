@@ -1,10 +1,8 @@
-"""Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`."""
+"""Utility for converting `BaseMessageParam` to `ChatRequestMessage`."""
 
 import base64
 
-from azure.ai.inference.models import (
-    ChatRequestMessage,
-)
+from azure.ai.inference.models import ChatRequestMessage, UserMessage
 
 from ...base import BaseMessageParam
 
@@ -17,9 +15,7 @@ def convert_message_params(
         if not isinstance(message_param, BaseMessageParam):
             converted_message_params.append(message_param)
         elif isinstance((content := message_param.content), str):
-            converted_message_params.append(
-                ChatRequestMessage(mapping=message_param.model_dump())
-            )
+            converted_message_params.append(UserMessage(content=content))
         else:
             converted_content = []
             for part in content:
@@ -53,7 +49,7 @@ def convert_message_params(
                     )
             converted_message_params.append(
                 ChatRequestMessage(
-                    mapping={"role": message_param.role, "content": converted_content}
+                    {"role": message_param.role, "content": converted_content}
                 )
             )
     return converted_message_params

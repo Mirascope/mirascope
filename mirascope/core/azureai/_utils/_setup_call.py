@@ -1,6 +1,7 @@
 """This module contains the setup_call function for AzureAI tools."""
 
 import inspect
+import os
 import warnings
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from typing import Any, cast, overload
@@ -22,6 +23,7 @@ from ..call_params import AzureAICallParams
 from ..dynamic_config import AzureAIDynamicConfig
 from ..tool import AzureAITool, GenerateAzureAIStrictToolJsonSchema
 from ._convert_message_params import convert_message_params
+from ._get_credential import get_credential
 
 
 @overload
@@ -123,11 +125,13 @@ def setup_call(
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
-        # TODO: How to set up endpoint and credential?
+        endpoint = os.environ["AZURE_INFERENCE_ENDPOINT"]
+        credential = get_credential()
+
         client = (
-            ChatCompletionsClient(endpoint="", credential="")  # pyright: ignore [reportArgumentType]
+            AsyncChatCompletionsClient(endpoint=endpoint, credential=credential)
             if inspect.iscoroutinefunction(fn)
-            else AsyncChatCompletionsClient(endpoint="", credential="")  # pyright: ignore [reportArgumentType]
+            else ChatCompletionsClient(endpoint=endpoint, credential=credential)
         )
     create = (
         get_async_create_fn(
