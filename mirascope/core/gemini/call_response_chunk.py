@@ -12,12 +12,10 @@ from ..base import BaseCallResponseChunk
 class GeminiCallResponseChunk(
     BaseCallResponseChunk[GenerateContentResponse, Candidate.FinishReason]
 ):
-    """Convenience wrapper around chat completion streaming chunks.
+    """A convenience wrapper around the Gemini API streamed response chunks.
 
-    When using Mirascope's convenience wrappers to interact with Gemini models via
-    `GeminiCall`, responses using `GeminiCall.stream()` will return a
-    `GeminiCallResponseChunk`, whereby the implemented properties allow for simpler
-    syntax and a convenient developer experience.
+    When calling the Gemini API using a function decorated with `gemini_call` and
+    `stream` set to `True`, the stream will contain `GeminiCallResponseChunk` instances
 
     Example:
 
