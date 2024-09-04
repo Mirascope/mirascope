@@ -28,12 +28,28 @@ class Tone(StrEnum):
     Translate the English text into natural Japanese without changing the content.
     Please make sure that the text is easy to read for everyone by using appropriate paragraphs so that it does not become difficult to read.
 
-    Also, please translate with respect to the following parameters
+    Please consider the following parameters in your translation:
+
+    tone: {tone}
+    The tone can be one of the following:
+    - neutral: Maintain a balanced and impartial tone
+    - positive: Use upbeat and optimistic language
+    - negative: Convey a more critical or pessimistic view
+    - professional: Use formal and business-appropriate language
+    - casual: Use informal, conversational language
+
+    audience: {audience}
+    The audience can be one of the following:
+    - general: For the general public, use common terms and clear explanations
+    - professional: For industry professionals, use appropriate jargon and technical terms
+    - academic: For scholarly contexts, use formal language and cite sources if necessary
+    - friendly: For casual, familiar contexts, use warm and approachable language
+    - formal: For official or ceremonial contexts, use polite and respectful language
+
+    Adjust your translation style based on the specified tone and audience to ensure the message is conveyed appropriately.
 
     USER:
     text: {text}
-    tone: {tone}
-    audience: {audience}
     """
 )
 class ParametrizedTranslatePrompt(BasePrompt):
