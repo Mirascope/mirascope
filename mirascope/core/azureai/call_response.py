@@ -107,7 +107,11 @@ class AzureAICallResponse(
         """Returns the assistants's response as a message parameter."""
         # TODO: Remove function_call from message_param
         message_param = self.response.choices[0].message
-        return AssistantMessage(**message_param)
+        if hasattr(message_param, "tool_calls"):
+            return AssistantMessage(
+                content=message_param.content, tool_calls=message_param.tool_calls
+            )
+        return AssistantMessage(content=message_param.content)
 
     @computed_field
     @property
@@ -148,6 +152,16 @@ class AzureAICallResponse(
         return None
 
     @classmethod
+    def _get_tool_message(cls, tool: AzureAITool, output: str) -> ToolMessage:
+        """Returns a tool message for the tool call."""
+        tool_message = ToolMessage(
+            content=output,
+            tool_call_id=tool.tool_call.id,
+        )
+        tool_message.name = tool._name()  # pyright: ignore [reportCallIssue, reportAttributeAccessIssue]
+        return tool_message
+
+    @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[AzureAITool, str]]
     ) -> list[ToolMessage]:
@@ -161,10 +175,5 @@ class AzureAICallResponse(
             The list of constructed `ChatCompletionToolMessageParam` parameters.
         """
         return [
-            ToolMessage(
-                content=output,
-                tool_call_id=tool.tool_call.id,
-                name=tool._name(),  # pyright: ignore [reportCallIssue]
-            )
-            for tool, output in tools_and_outputs
+            cls._get_tool_message(tool, output) for tool, output in tools_and_outputs
         ]
