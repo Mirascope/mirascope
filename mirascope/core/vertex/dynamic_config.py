@@ -18,7 +18,7 @@ from mirascope.core import prompt_template
 from mirascope.core.vertex import VertexDynamicConfig, vertex_call
 
 
-@vertex_call("vertex-flash-1.5")
+@vertex_call("gemini-1.5-flash")
 @prompt_template("Recommend a {capitalized_genre} book")
 def recommend_book(genre: str) -> VertexDynamicConfig:
     return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
