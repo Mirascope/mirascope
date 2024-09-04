@@ -87,9 +87,9 @@ class Tone(StrEnum):
     """
 )
 class ParametrizedTranslatePrompt(BasePrompt):
-    text: str
     tone: Tone
     audience: Audience
+    text: str
 
     async def translate(self, call: Callable, model: str) -> str:
         response = await self.run_async(call(model))
