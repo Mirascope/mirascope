@@ -98,6 +98,7 @@ dev-dependencies = [
     "llama-index-embeddings-huggingface>=0.2.3",
     "slack-bolt>=1.20.0",
     "sqlmodel>=0.0.21",
+    "azure-identity>=1.17.1"
 ]
 
 [tool.pytest.ini_options]

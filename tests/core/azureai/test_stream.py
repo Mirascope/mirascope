@@ -134,7 +134,7 @@ def test_azureai_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    assert stream.cost == 2e-5
+    assert stream.cost is None
 
     format_book = FormatBook.from_tool_call(
         ChatCompletionsToolCall(

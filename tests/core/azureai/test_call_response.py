@@ -56,7 +56,7 @@ def test_azureai_call_response() -> None:
     assert call_response.usage == usage
     assert call_response.input_tokens == 1
     assert call_response.output_tokens == 1
-    assert call_response.cost == 2e-5
+    assert call_response.cost is None
     assert call_response.message_param == {
         "content": "content",
         "role": "assistant",
