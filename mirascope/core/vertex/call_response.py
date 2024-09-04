@@ -28,12 +28,11 @@ class VertexCallResponse(
         Content,
     ]
 ):
-    """Convenience wrapper around Vertex's `GenerateContentResponse`.
+    """A convenience wrapper around the Vertex AI `GenerateContentResponse`.
 
-    When using Mirascope's convenience wrappers to interact with Vertex models via
-    `VertexCall`, responses using `VertexCall.call()` will return a
-    `VertexCallResponse`, whereby the implemented properties allow for simpler syntax
-    and a convenient developer experience.
+    When calling the Vertex AI API using a function decorated with `vertex_call`, the
+    response will be a `VertexCallResponse` instance with properties that allow for
+    more convenient access to commonly used attributes.
 
     Example:
 

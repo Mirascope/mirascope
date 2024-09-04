@@ -31,12 +31,12 @@ class GeminiCallResponse(
         ContentDict,
     ]
 ):
-    """Convenience wrapper around Gemini's `GenerateContentResponse`.
+    """A convenience wrapper around the Gemini API response.
 
-    When using Mirascope's convenience wrappers to interact with Gemini models via
-    `GeminiCall`, responses using `GeminiCall.call()` will return a
-    `GeminiCallResponse`, whereby the implemented properties allow for simpler syntax
-    and a convenient developer experience.
+    When calling the Gemini API using a function decorated with `gemini_call`, the
+    response will be a `GeminiCallResponse` instance with properties that allow for
+    more convenient access to commonly used attributes.
+
 
     Example:
 
