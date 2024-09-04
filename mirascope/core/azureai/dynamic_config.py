@@ -3,12 +3,14 @@
 usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
 """
 
-from azureai.types.chat import ChatCompletionMessageParam
+from azure.ai.inference.models import (
+    ChatRequestMessage,
+)
 
 from ..base import BaseDynamicConfig
 from .call_params import AzureAICallParams
 
-AzureAIDynamicConfig = BaseDynamicConfig[ChatCompletionMessageParam, AzureAICallParams]
+AzureAIDynamicConfig = BaseDynamicConfig[ChatRequestMessage, AzureAICallParams]
 """The function return type for functions wrapped with the `azureai_call` decorator.
 
 Example:

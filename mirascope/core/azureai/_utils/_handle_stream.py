@@ -1,22 +1,26 @@
 """Handles the stream of completion chunks."""
 
+import copy
 from collections.abc import AsyncGenerator, Generator
 
-from azureai.types.chat import ChatCompletionChunk, ChatCompletionMessageToolCall
-from azureai.types.chat.chat_completion_message_tool_call import Function
+from azure.ai.inference.models import (
+    ChatCompletionsToolCall,
+    FunctionCall,
+    StreamingChatCompletionsUpdate,
+)
 
 from ..call_response_chunk import AzureAICallResponseChunk
 from ..tool import AzureAITool
 
 
 def _handle_chunk(
-    chunk: ChatCompletionChunk,
-    current_tool_call: ChatCompletionMessageToolCall,
+    chunk: StreamingChatCompletionsUpdate,
+    current_tool_call: ChatCompletionsToolCall,
     current_tool_type: type[AzureAITool] | None,
     tool_types: list[type[AzureAITool]] | None,
 ) -> tuple[
     AzureAITool | None,
-    ChatCompletionMessageToolCall,
+    ChatCompletionsToolCall,
     type[AzureAITool] | None,
 ]:
     """Handles a chunk of the stream."""
@@ -30,15 +34,14 @@ def _handle_chunk(
     tool_call = tool_calls[0]
     # Reset on new tool
     if tool_call.id and tool_call.function is not None:
-        previous_tool_call = current_tool_call.model_copy()
+        previous_tool_call = copy.deepcopy(current_tool_call)
         previous_tool_type = current_tool_type
-        current_tool_call = ChatCompletionMessageToolCall(
+        current_tool_call = ChatCompletionsToolCall(
             id=tool_call.id,
-            function=Function(
+            function=FunctionCall(
                 arguments="",
                 name=tool_call.function.name if tool_call.function.name else "",
             ),
-            type="function",
         )
         current_tool_type = None
         for tool_type in tool_types:
@@ -68,12 +71,12 @@ def _handle_chunk(
 
 
 def handle_stream(
-    stream: Generator[ChatCompletionChunk, None, None],
+    stream: Generator[StreamingChatCompletionsUpdate, None, None],
     tool_types: list[type[AzureAITool]] | None,
 ) -> Generator[tuple[AzureAICallResponseChunk, AzureAITool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
-    current_tool_call = ChatCompletionMessageToolCall(
-        id="", function=Function(arguments="", name=""), type="function"
+    current_tool_call = ChatCompletionsToolCall(
+        id="", function=FunctionCall(arguments="", name="")
     )
     current_tool_type = None
     for chunk in stream:
@@ -97,12 +100,12 @@ def handle_stream(
 
 
 async def handle_stream_async(
-    stream: AsyncGenerator[ChatCompletionChunk, None],
+    stream: AsyncGenerator[StreamingChatCompletionsUpdate, None],
     tool_types: list[type[AzureAITool]] | None,
 ) -> AsyncGenerator[tuple[AzureAICallResponseChunk, AzureAITool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
-    current_tool_call = ChatCompletionMessageToolCall(
-        id="", function=Function(arguments="", name=""), type="function"
+    current_tool_call = ChatCompletionsToolCall(
+        id="", function=FunctionCall(arguments="", name="")
     )
     current_tool_type = None
     async for chunk in stream:

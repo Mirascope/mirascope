@@ -3,9 +3,17 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from azure.ai.inference.models import SystemMessage, UserMessage
+from azure.ai.inference.models import (
+    AssistantMessage,
+    ChatCompletions,
+    ChatCompletionsToolDefinition,
+    ChatRequestMessage,
+    CompletionsUsage,
+    ToolMessage,
+    UserMessage,
+)
 from pydantic import SerializeAsAny, SkipValidation, computed_field
-from azure.ai.inference.models import ChatCompletions, StreamingChatCompletionsUpdate , CompletionsUsage, ChatCompletionsToolCall, ToolMessage
+
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import AzureAICallParams
@@ -15,13 +23,13 @@ from .tool import AzureAITool
 
 class AzureAICallResponse(
     BaseCallResponse[
-        ChatCompletion,
+        ChatCompletions,
         AzureAITool,
-        ChatCompletionToolParam,
+        ChatCompletionsToolDefinition,
         AzureAIDynamicConfig,
-        ChatCompletionMessageParam,
+        ChatRequestMessage,
         AzureAICallParams,
-        ChatCompletionUserMessageParam,
+        UserMessage,
     ]
 ):
     """A convenience wrapper around the AzureAI `ChatCompletion` response.
@@ -95,11 +103,11 @@ class AzureAICallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
+    def message_param(self) -> SerializeAsAny[AssistantMessage]:
         """Returns the assistants's response as a message parameter."""
         # TODO: Remove function_call from message_param
         message_param = self.response.choices[0].message
-        return ChatCompletionAssistantMessageParam(**message_param)
+        return AssistantMessage(**message_param)
 
     @computed_field
     @property
@@ -111,10 +119,6 @@ class AzureAICallResponse(
             ValueError: if the model refused to response, in which case the error
                 message will be the refusal.
         """
-        if hasattr(self.response.choices[0].message, "refusal") and (
-            refusal := self.response.choices[0].message.refusal
-        ):
-            raise ValueError(refusal)
 
         tool_calls = self.response.choices[0].message.tool_calls
         if not self.tool_types or not tool_calls:

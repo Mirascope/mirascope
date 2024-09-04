@@ -3,20 +3,22 @@
 usage docs: learn/streams.md
 """
 
-from azureai.types.chat import (
-    ChatCompletion,
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessage,
-    ChatCompletionMessageParam,
-    ChatCompletionMessageToolCall,
-    ChatCompletionMessageToolCallParam,
-    ChatCompletionToolMessageParam,
-    ChatCompletionToolParam,
-    ChatCompletionUserMessageParam,
+import datetime
+
+from azure.ai.inference.models import (
+    AssistantMessage,
+    ChatChoice,
+    ChatCompletions,
+    ChatCompletionsToolCall,
+    ChatCompletionsToolDefinition,
+    ChatRequestMessage,
+    ChatResponseMessage,
+    CompletionsFinishReason,
+    CompletionsUsage,
+    FunctionCall,
+    ToolMessage,
+    UserMessage,
 )
-from azureai.types.chat.chat_completion import Choice
-from azureai.types.chat.chat_completion_message_tool_call_param import Function
-from azureai.types.completion_usage import CompletionUsage
 
 from ..base.stream import BaseStream
 from ._utils import calculate_cost
@@ -26,22 +28,20 @@ from .call_response_chunk import AzureAICallResponseChunk
 from .dynamic_config import AzureAIDynamicConfig
 from .tool import AzureAITool
 
-FinishReason = Choice.__annotations__["finish_reason"]
-
 
 class AzureAIStream(
     BaseStream[
         AzureAICallResponse,
         AzureAICallResponseChunk,
-        ChatCompletionUserMessageParam,
-        ChatCompletionAssistantMessageParam,
-        ChatCompletionToolMessageParam,
-        ChatCompletionMessageParam,
+        UserMessage,
+        AssistantMessage,
+        ToolMessage,
+        ChatRequestMessage,
         AzureAITool,
-        ChatCompletionToolParam,
+        ChatCompletionsToolDefinition,
         AzureAIDynamicConfig,
         AzureAICallParams,
-        FinishReason,
+        CompletionsFinishReason,
     ]
 ):
     """A class for convenience around streaming AzureAI LLM calls.
@@ -74,18 +74,15 @@ class AzureAIStream(
 
     def _construct_message_param(
         self,
-        tool_calls: list[ChatCompletionMessageToolCall] | None = None,
+        tool_calls: list[ChatCompletionsToolCall] | None = None,
         content: str | None = None,
-    ) -> ChatCompletionAssistantMessageParam:
+    ) -> AssistantMessage:
         """Constructs the message parameter for the assistant."""
-        message_param = ChatCompletionAssistantMessageParam(
-            role="assistant", content=content
-        )
+        message_param = AssistantMessage(content=content)
         if tool_calls:
             message_param["tool_calls"] = [
-                ChatCompletionMessageToolCallParam(
-                    type="function",
-                    function=Function(
+                ChatCompletionsToolCall(
+                    function=FunctionCall(
                         arguments=tool_call.function.arguments,
                         name=tool_call.function.name,
                     ),
@@ -105,33 +102,34 @@ class AzureAIStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )
-        message = {
-            "role": self.message_param["role"],
-            "content": self.message_param.get("content", ""),
-            "tool_calls": self.message_param.get("tool_calls", []),
-        }
+        message = ChatResponseMessage(
+            role=self.message_param["role"],
+            content=self.message_param.get("content", ""),
+            tool_calls=self.message_param.get("tool_calls", []),
+        )
         if not self.input_tokens and not self.output_tokens:
-            usage = None
+            usage = CompletionsUsage(
+                completion_tokens=0, prompt_tokens=0, total_tokens=0
+            )
         else:
-            usage = CompletionUsage(
+            usage = CompletionsUsage(
                 prompt_tokens=int(self.input_tokens or 0),
                 completion_tokens=int(self.output_tokens or 0),
                 total_tokens=int(self.input_tokens or 0) + int(self.output_tokens or 0),
             )
-        completion = ChatCompletion(
+        completion = ChatCompletions(
             id=self.id if self.id else "",
             model=self.model,
             choices=[
-                Choice(
+                ChatChoice(
                     finish_reason=self.finish_reasons[0]
                     if self.finish_reasons
                     else "stop",
                     index=0,
-                    message=ChatCompletionMessage.model_validate(message),
+                    message=message,
                 )
             ],
-            created=0,
-            object="chat.completion",
+            created=datetime.datetime.now(),
             usage=usage,
         )
         return AzureAICallResponse(

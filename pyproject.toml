@@ -55,6 +55,7 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.29.0,<1.0"]
+azureai =["azure-ai-inference>=1.0.0b4,<2.0", "aiohttp>=3.10.5,<4.0"]
 cohere = ["cohere>=5.5.8,<6"]
 gemini = ["google-generativeai>=0.4.0,<1", "pillow>=10.4.0,<11"]
 groq = ["groq>=0.9.0,<1"]

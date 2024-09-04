@@ -227,6 +227,34 @@ wheels = [
 ]
 
 [[package]]
+name = "azure-ai-inference"
+version = "1.0.0b4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "isodate" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/64/e8/e3c85e49d2e379256f23c685699a36206bfff84d1ae26ffb784ef09ac621/azure-ai-inference-1.0.0b4.tar.gz", hash = "sha256:5464404bef337338d4af6eefde3af903400ddb8e5c9e6820f902303542fa0f72", size = 108285 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6d/a0/66c46c43cce5937072d6480f7836c4429272cf143f78c2b3a984efceff0f/azure_ai_inference-1.0.0b4-py3-none-any.whl", hash = "sha256:e2c949f91845a8cd96cb9a61ffd432b5b0f4ce236b9be8c29d10f38e0a327412", size = 85007 },
+]
+
+[[package]]
+name = "azure-core"
+version = "1.30.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "six" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/99/d4/1f469fa246f554b86fb5cebc30eef1b2a38b7af7a2c2791bce0a4c6e4604/azure-core-1.30.2.tar.gz", hash = "sha256:a14dc210efcd608821aa472d9fb8e8d035d29b68993819147bc290a8ac224472", size = 271104 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/d7/69d53f37733f8cb844862781767aef432ff3152bc9b9864dc98c7e286ce9/azure_core-1.30.2-py3-none-any.whl", hash = "sha256:cf019c1ca832e96274ae85abd3d9f752397194d9fea3b41487290562ac8abe4a", size = 194253 },
+]
+
+[[package]]
 name = "babel"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1561,6 +1589,18 @@ wheels = [
 ]
 
 [[package]]
+name = "isodate"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/db/7a/c0a56c7d56c7fa723988f122fa1f1ccf8c5c4ccc48efad0d214b49e5b1af/isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9", size = 28443 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b6/85/7882d311924cbcfc70b1890780763e36ff0b140c7e51c110fc59a532f087/isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96", size = 41722 },
+]
+
+[[package]]
 name = "janus"
 version = "1.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2250,7 +2290,7 @@ wheels = [
 
 [[package]]
 name = "mirascope"
-version = "1.1.1"
+version = "1.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -2262,6 +2302,10 @@ dependencies = [
 [package.optional-dependencies]
 anthropic = [
     { name = "anthropic" },
+]
+azureai = [
+    { name = "aiohttp" },
+    { name = "azure-ai-inference" },
 ]
 cohere = [
     { name = "cohere" },
@@ -2335,7 +2379,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", marker = "extra == 'azureai'", specifier = "<4.0,>=3.10.5" },
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = "<1.0,>=0.29.0" },
+    { name = "azure-ai-inference", marker = "extra == 'azureai'", specifier = "<2.0,>=1.0.0b4" },
     { name = "cohere", marker = "extra == 'cohere'", specifier = "<6,>=5.5.8" },
     { name = "docstring-parser", specifier = "<1.0,>=0.15" },
     { name = "google-generativeai", marker = "extra == 'gemini'", specifier = "<1,>=0.4.0" },

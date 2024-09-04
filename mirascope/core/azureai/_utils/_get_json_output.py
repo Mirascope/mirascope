@@ -9,11 +9,7 @@ def get_json_output(
 ) -> str:
     """Get the JSON output from a completion response."""
     if isinstance(response, AzureAICallResponse):
-        if hasattr(response.response.choices[0].message, "refusal") and (
-            refusal := response.response.choices[0].message.refusal
-        ):
-            raise ValueError(refusal)
-        elif json_mode and response.content:
+        if json_mode and response.content:
             return response.content
         elif tool_calls := response.response.choices[0].message.tool_calls:
             return tool_calls[0].function.arguments

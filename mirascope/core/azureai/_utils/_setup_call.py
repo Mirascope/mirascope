@@ -7,8 +7,13 @@ from typing import Any, cast, overload
 
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.aio import ChatCompletionsClient as AsyncChatCompletionsClient
-from azure.ai.inference.models import ChatCompletions, StreamingChatCompletionsUpdate
-
+from azure.ai.inference.models import (
+    ChatCompletions,
+    ChatCompletionsResponseFormatJSON,
+    ChatRequestMessage,
+    StreamingChatCompletionsUpdate,
+    UserMessage,
+)
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
@@ -32,9 +37,9 @@ def setup_call(
     call_params: AzureAICallParams,
     extract: bool,
 ) -> tuple[
-    AsyncCreateFn[ChatCompletions, AsyncIterable[StreamingChatCompletionsUpdate]],
+    AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
-    list[ChatCompletionMessageParam],
+    list[ChatRequestMessage],
     list[type[AzureAITool]] | None,
     AzureAICallKwargs,
 ]: ...
@@ -53,9 +58,9 @@ def setup_call(
     call_params: AzureAICallParams,
     extract: bool,
 ) -> tuple[
-    CreateFn[ChatCompletions, Iterable[StreamingChatCompletionsUpdate]],
+    CreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
-    list[ChatCompletionMessageParam],
+    list[ChatRequestMessage],
     list[type[AzureAITool]] | None,
     AzureAICallKwargs,
 ]: ...
@@ -64,7 +69,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: ChatCompletionsClient | None,
+    client: ChatCompletionsClient | AsyncChatCompletionsClient | None,
     fn: Callable[..., AzureAIDynamicConfig]
     | Callable[..., Awaitable[AzureAIDynamicConfig]],
     fn_args: dict[str, Any],
@@ -74,10 +79,10 @@ def setup_call(
     call_params: AzureAICallParams,
     extract: bool,
 ) -> tuple[
-    CreateFn[ChatCompletions, Iterable[StreamingChatCompletionsUpdate]]
-    | AsyncCreateFn[ChatCompletions, AsyncIterable[StreamingChatCompletionsUpdate]],
+    CreateFn[ChatCompletions, StreamingChatCompletionsUpdate]
+    | AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
-    list[ChatCompletionMessageParam],
+    list[ChatRequestMessage],
     list[type[AzureAITool]] | None,
     AzureAICallKwargs,
 ]:
@@ -85,29 +90,26 @@ def setup_call(
         fn, fn_args, dynamic_config, tools, AzureAITool, call_params
     )
     call_kwargs = cast(AzureAICallKwargs, base_call_kwargs)
-    messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
+    messages = cast(list[BaseMessageParam | ChatRequestMessage], messages)
     messages = convert_message_params(messages)
     if json_mode:
         if tool_types and tool_types[0].model_config.get("strict", False):
-            call_kwargs["response_format"] = {
-                "type": "json_schema",
-                "json_schema": {
+            call_kwargs["response_format"] = ChatCompletionsResponseFormatJSON(
+                {
                     "name": tool_types[0]._name(),
                     "description": tool_types[0]._description(),
                     "strict": True,
                     "schema": tool_types[0].model_json_schema(
                         schema_generator=GenerateAzureAIStrictToolJsonSchema
                     ),
-                },
-            }
+                }
+            )
         else:
-            call_kwargs["response_format"] = {"type": "json_object"}
+            call_kwargs["response_format"] = ChatCompletionsResponseFormatJSON()
             json_mode_content = _utils.json_mode_content(
                 tool_types[0] if tool_types else None
             ).strip()
-            messages.append(
-                ChatCompletionUserMessageParam(role="user", content=json_mode_content)
-            )
+            messages.append(UserMessage(content=json_mode_content))
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
@@ -123,9 +125,9 @@ def setup_call(
     if client is None:
         # TODO: How to set up endpoint and credential?
         client = (
-            ChatCompletionsClient(endpoint="", credential="")
+            ChatCompletionsClient(endpoint="", credential="")  # pyright: ignore [reportArgumentType]
             if inspect.iscoroutinefunction(fn)
-            else AsyncChatCompletionsClient(endpoint="", credential="")
+            else AsyncChatCompletionsClient(endpoint="", credential="")  # pyright: ignore [reportArgumentType]
         )
     create = (
         get_async_create_fn(

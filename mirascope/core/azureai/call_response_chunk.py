@@ -3,17 +3,19 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from azureai.types.chat import ChatCompletionChunk
-from azureai.types.chat.chat_completion_chunk import Choice
-from azureai.types.completion_usage import CompletionUsage
+from azure.ai.inference.models import (
+    CompletionsFinishReason,
+    CompletionsUsage,
+    StreamingChatCompletionsUpdate,
+)
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
 
-FinishReason = Choice.__annotations__["finish_reason"]
 
-
-class AzureAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishReason]):
+class AzureAICallResponseChunk(
+    BaseCallResponseChunk[StreamingChatCompletionsUpdate, CompletionsFinishReason]
+):
     """A convenience wrapper around the AzureAI `ChatCompletionChunk` streamed chunks.
 
     When calling the AzureAI API using a function decorated with `azureai_call` and
@@ -39,7 +41,7 @@ class AzureAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, Finish
     ```
     """
 
-    chunk: SkipValidation[ChatCompletionChunk]
+    chunk: SkipValidation[StreamingChatCompletionsUpdate]
 
     @property
     def content(self) -> str:
@@ -50,12 +52,14 @@ class AzureAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, Finish
         return delta.content if delta is not None and delta.content else ""
 
     @property
-    def finish_reasons(self) -> list[FinishReason]:
+    def finish_reasons(self) -> list[CompletionsFinishReason]:
         """Returns the finish reasons of the response."""
         return [
-            choice.finish_reason
+            finish_reason
+            if isinstance(finish_reason, CompletionsFinishReason)
+            else CompletionsFinishReason(finish_reason)
             for choice in self.chunk.choices
-            if choice.finish_reason
+            if (finish_reason := choice.finish_reason)
         ]
 
     @property
@@ -69,7 +73,7 @@ class AzureAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, Finish
         return self.chunk.id
 
     @property
-    def usage(self) -> CompletionUsage | None:
+    def usage(self) -> CompletionsUsage | None:
         """Returns the usage of the chat completion."""
         if hasattr(self.chunk, "usage") and self.chunk.usage:
             return self.chunk.usage

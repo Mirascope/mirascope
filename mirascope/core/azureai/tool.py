@@ -6,11 +6,11 @@ usage docs: learn/tools.md#using-tools-with-standard-calls
 from __future__ import annotations
 
 import jiter
-from azureai.types.chat import (
-    ChatCompletionMessageToolCall,
-    ChatCompletionToolParam,
+from azure.ai.inference.models import (
+    ChatCompletionsToolCall,
+    ChatCompletionsToolDefinition,
+    FunctionDefinition,
 )
-from azureai.types.shared_params import FunctionDefinition
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
@@ -26,7 +26,7 @@ class AzureAIToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class AzureAITool(BaseTool[ChatCompletionToolParam]):
+class AzureAITool(BaseTool[ChatCompletionsToolDefinition]):
     """A class for defining tools for AzureAI LLM calls.
 
     Example:
@@ -55,10 +55,10 @@ class AzureAITool(BaseTool[ChatCompletionToolParam]):
     __provider__ = "azureai"
     __tool_config_type__ = AzureAIToolConfig
 
-    tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
+    tool_call: SkipJsonSchema[ChatCompletionsToolCall]
 
     @classmethod
-    def tool_schema(cls) -> ChatCompletionToolParam:
+    def tool_schema(cls) -> ChatCompletionsToolDefinition:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
 
         Example:
@@ -76,21 +76,18 @@ class AzureAITool(BaseTool[ChatCompletionToolParam]):
         """
         fn = FunctionDefinition(name=cls._name(), description=cls._description())
         schema_generator = GenerateJsonSchemaNoTitles
-        if cls.tool_config.get("strict", False):
-            fn["strict"] = True
-            schema_generator = GenerateAzureAIStrictToolJsonSchema
         model_schema = cls.model_json_schema(schema_generator=schema_generator)
         if model_schema["properties"]:
             fn["parameters"] = model_schema
-        return ChatCompletionToolParam(function=fn, type="function")
+        return ChatCompletionsToolDefinition(function=fn)
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> AzureAITool:
+    def from_tool_call(cls, tool_call: ChatCompletionsToolCall) -> AzureAITool:
         """Constructs an `AzureAITool` instance from a `tool_call`.
 
         Args:
             tool_call: The AzureAI tool call from which to construct this tool instance.
         """
         model_json = jiter.from_json(tool_call.function.arguments.encode())
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json["tool_call"] = tool_call
         return cls.model_validate(model_json)
