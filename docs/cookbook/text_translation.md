@@ -99,11 +99,11 @@ class ParametrizedTranslatePrompt(BasePrompt):
 text = """
 The old codger, a real bootstrapper, had been burning the candle at both ends trying to make his pie-in-the-sky business idea fly. He'd been spinning his wheels for months, barking up the wrong tree with his half-baked marketing schemes.
 """
-parametrized_translate_prompt = ParametrizedTranslatePrompt(
+prompt = ParametrizedTranslatePrompt(
     text=text, tone=Tone.negative, audience=Audience.general
 )
 parametrized_translation = asyncio.run(
-    parametrized_translate_prompt.translate(call=openai.call, model="gpt-4o-mini")
+    prompt.translate(call=openai.call, model="gpt-4o-mini")
 )
 print(f"Parametrized with translation: {parametrized_translation}")
 ```
@@ -194,26 +194,6 @@ class EvaluateTranslationPrompt(BasePrompt):
         return response
 
 
-@prompt_template(
-    """
-    SYSTEM:
-    You are a professional translator who is a native Japanese speaker.
-    Please evaluate the following translation and provide feedback on how it can be improved.
-
-    USER:
-    original_text: {original_text}
-    translation_text: {translation_text}
-    """
-)
-class EvaluateTranslationPrompt(BasePrompt):
-    original_text: str
-    translation_text: str
-
-    async def evaluate(self, call: Callable, model: str) -> Evaluation:
-        response = await self.run_async(call(model, response_model=Evaluation))
-        return response
-
-
 @prompt_template("""
     SYSTEM:
     Your task is to improve the quality of a translation from English into Japanese.
@@ -234,13 +214,13 @@ class EvaluateTranslationPrompt(BasePrompt):
     evaluation: {evaluation}
 """)
 class ImproveTranslationPrompt(BasePrompt):
-    original_text: str
-    translation_text: str
     tone: Tone
     audience: Audience
+    original_text: str
+    translation_text: str
     evaluation: Evaluation
 
-    async def translate(self, call: Callable, model: str) -> str:
+    async def improve_translation(self, call: Callable, model: str) -> str:
         response = await self.run_async(call(model))
         return response.content
 
@@ -253,12 +233,12 @@ def print_progress_message(count: int):
 
 
 async def multi_pass_translation(
-        original_text: str,
-        tone: Tone,
-        audience: Audience,
-        pass_count: int,
-        call: Callable,
-        model: str,
+    original_text: str,
+    tone: Tone,
+    audience: Audience,
+    pass_count: int,
+    call: Callable,
+    model: str,
 ) -> str:
     with print_progress_message(1):
         parametrized_translate_prompt = ParametrizedTranslatePrompt(
@@ -279,7 +259,7 @@ async def multi_pass_translation(
                 audience=audience,
                 evaluation=evaluation,
             )
-            translation_text = await improve_translation_prompt.translate(call, model)
+            translation_text = await improve_translation_prompt.improve_translation(call, model)
     return translation_text
 
 

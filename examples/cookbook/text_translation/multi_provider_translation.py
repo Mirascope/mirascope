@@ -56,9 +56,9 @@ class Tone(StrEnum):
     """
 )
 class ParametrizedTranslatePrompt(BasePrompt):
-    text: str
     tone: Tone
     audience: Audience
+    text: str
 
     async def translate(self, call: Callable, model: str) -> str:
         response = await self.run_async(call(model))
@@ -153,13 +153,13 @@ class EvaluateTranslationPrompt(BasePrompt):
     evaluation: {evaluation}
 """)
 class ImproveTranslationPrompt(BasePrompt):
-    original_text: str
-    translation_text: str
     tone: Tone
     audience: Audience
+    original_text: str
+    translation_text: str
     evaluation: Evaluation
 
-    async def translate(self, call: Callable, model: str) -> str:
+    async def improve_translation(self, call: Callable, model: str) -> str:
         response = await self.run_async(call(model))
         return response.content
 
@@ -203,7 +203,9 @@ async def multi_pass_translation(
                 audience=audience,
                 evaluation=evaluation,
             )
-            translation_text = await improve_translation_prompt.translate(call, model)
+            translation_text = await improve_translation_prompt.improve_translation(
+                call, model
+            )
     return translation_text
 
 

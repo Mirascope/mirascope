@@ -53,9 +53,9 @@ class Tone(StrEnum):
     """
 )
 class ParametrizedTranslatePrompt(BasePrompt):
-    text: str
     tone: Tone
     audience: Audience
+    text: str
 
     async def translate(self, call: Callable, model: str) -> str:
         response = await self.run_async(call(model))
@@ -65,10 +65,10 @@ class ParametrizedTranslatePrompt(BasePrompt):
 text = """
 The old codger, a real bootstrapper, had been burning the candle at both ends trying to make his pie-in-the-sky business idea fly. He'd been spinning his wheels for months, barking up the wrong tree with his half-baked marketing schemes.
 """
-parametrized_translate_prompt = ParametrizedTranslatePrompt(
+prompt = ParametrizedTranslatePrompt(
     text=text, tone=Tone.negative, audience=Audience.general
 )
 parametrized_translation = asyncio.run(
-    parametrized_translate_prompt.translate(call=openai.call, model="gpt-4o-mini")
+    prompt.translate(call=openai.call, model="gpt-4o-mini")
 )
 print(f"Parametrized with translation: {parametrized_translation}")
