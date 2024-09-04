@@ -1,6 +1,7 @@
 import inspect
 from collections.abc import (
     AsyncGenerator,
+    AsyncIterable,
     AsyncIterator,
     Awaitable,
     Callable,
@@ -35,6 +36,7 @@ _AsyncGeneratorFunc: TypeAlias = (
     Callable[..., Awaitable[AsyncGenerator[_StreamedResponse, None]]]
     | Callable[..., AsyncGenerator[_StreamedResponse, None]]
     | Callable[..., AsyncIterator[_StreamedResponse]]
+    | Callable[..., AsyncIterable[_StreamedResponse]]
 )
 
 _SyncFunc: TypeAlias = Callable[..., _NonStreamedResponse]
