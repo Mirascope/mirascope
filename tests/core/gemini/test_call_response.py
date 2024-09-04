@@ -45,11 +45,11 @@ def test_gemini_call_response() -> None:
         start_time=0,
         end_time=0,
     )
-    call_response._model = "gemini-flash-1.5"
+    call_response._model = "gemini-1.5-flash"
     assert call_response._provider == "gemini"
     assert call_response.content == "The author is Patrick Rothfuss"
     assert call_response.finish_reasons == ["STOP"]
-    assert call_response.model == "gemini-flash-1.5"
+    assert call_response.model == "gemini-1.5-flash"
     assert call_response.id is None
     assert call_response.tools is None
     assert call_response.tool is None
