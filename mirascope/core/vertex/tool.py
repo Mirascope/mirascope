@@ -7,14 +7,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
-)
+from google.cloud.aiplatform_v1beta1.types import FunctionCall
 from pydantic.json_schema import SkipJsonSchema
-from vertexai.generative_models import (
-    FunctionDeclaration,
-    Tool,
-)
+from vertexai.generative_models import FunctionDeclaration, Tool
 
 from ..base import BaseTool
 
@@ -33,7 +28,7 @@ class VertexTool(BaseTool[Tool]):
         return f"{title} by {author}"
 
 
-    @vertex_call("vertex-1.5-flash", tools=[format_book])
+    @vertex_call("gemini-1.5-flash", tools=[format_book])
     @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
         ...
@@ -47,7 +42,7 @@ class VertexTool(BaseTool[Tool]):
 
     __provider__ = "vertex"
 
-    tool_call: SkipJsonSchema[gapic_tool_types.FunctionCall]
+    tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod
     def tool_schema(cls) -> Tool:
@@ -95,7 +90,7 @@ class VertexTool(BaseTool[Tool]):
         return Tool(function_declarations=[FunctionDeclaration(**fn)])
 
     @classmethod
-    def from_tool_call(cls, tool_call: gapic_tool_types.FunctionCall) -> VertexTool:
+    def from_tool_call(cls, tool_call: FunctionCall) -> VertexTool:
         """Constructs an `VertexTool` instance from a `tool_call`.
 
         Args:

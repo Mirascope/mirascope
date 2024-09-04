@@ -1,12 +1,7 @@
 """The `vertex_call` decorator for functions as LLM calls."""
 
 from ..base import call_factory
-from ._utils import (
-    get_json_output,
-    handle_stream,
-    handle_stream_async,
-    setup_call,
-)
+from ._utils import get_json_output, handle_stream, handle_stream_async, setup_call
 from .call_params import VertexCallParams
 from .call_response import VertexCallResponse
 from .call_response_chunk import VertexCallResponseChunk

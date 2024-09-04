@@ -1,6 +1,6 @@
 """Tests the `vertex.call_response` module."""
 
-from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
+from google.cloud.aiplatform_v1beta1.types import FunctionCall, GenerateContentResponse
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -28,7 +28,12 @@ def test_vertex_call_response() -> None:
                         ).to_dict(),
                     }
                 ).to_dict()
-            ]
+            ],
+            "usage_metadata": {
+                "prompt_token_count": 10,
+                "candidates_token_count": 20,
+                "total_token_count": 30,
+            },
         }
     )
     call_response = VertexCallResponse(
@@ -45,18 +50,20 @@ def test_vertex_call_response() -> None:
         start_time=0,
         end_time=0,
     )
-    call_response._model = "vertex-flash-1.5"
+    call_response._model = "gemini-1.5-flash"
     assert call_response._provider == "vertex"
     assert call_response.content == "The author is Patrick Rothfuss"
     assert call_response.finish_reasons == ["STOP"]
-    assert call_response.model == "vertex-flash-1.5"
+    assert call_response.model == "gemini-1.5-flash"
     assert call_response.id is None
     assert call_response.tools is None
     assert call_response.tool is None
-    assert call_response.usage is None
-    assert call_response.input_tokens is None
-    assert call_response.output_tokens is None
-    assert call_response.cost is None
+    assert isinstance(call_response.usage, GenerateContentResponse.UsageMetadata)
+    assert call_response.usage.prompt_token_count == 10
+    assert call_response.usage.candidates_token_count == 20
+    assert call_response.usage.total_token_count == 30
+    assert call_response.output_tokens == 20
+    assert call_response.cost == 1.6874999999999997e-06
     assert call_response.message_param.to_dict() == {
         "parts": [{"text": "The author is Patrick Rothfuss"}],
         "role": "model",
@@ -74,7 +81,7 @@ def test_vertex_call_response_with_tools() -> None:
             return f"{self.title} by {self.author}"
 
     raw_part = Part()
-    raw_part._raw_part.function_call = gapic_tool_types.FunctionCall(
+    raw_part._raw_part.function_call = FunctionCall(
         name="FormatBook",
         args={
             "title": "The Name of the Wind",

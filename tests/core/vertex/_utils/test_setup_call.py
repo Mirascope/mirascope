@@ -3,7 +3,9 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.cloud.aiplatform_v1beta1.types import content as gapic_content_types
+from google.cloud.aiplatform_v1beta1.types import (
+    GenerationConfig as GenerationConfigType,
+)
 from vertexai.generative_models import (
     Content,
     GenerationConfig,
@@ -44,7 +46,7 @@ def test_setup_call(
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=fn,
         fn_args={},
@@ -62,7 +64,7 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
-    mock_generative_model.assert_called_once_with(model_name="gemini-flash-1.5")
+    mock_generative_model.assert_called_once_with(model_name="gemini-1.5-flash")
     assert create(**call_kwargs)
     mock_client.generate_content.assert_called_once_with(**call_kwargs)
     mock_client.generate_content.reset_mock()
@@ -97,21 +99,19 @@ def test_setup_call_json_mode(
         Content(role="user", parts=[Part.from_text("test")])
     ]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
-    mock_base_setup_call.return_value[-1]["generation_config"] = (
-        gapic_content_types.GenerationConfig(
-            candidate_count=1,
-            max_output_tokens=100,
-            response_mime_type="application/xml",
-            response_schema=None,
-            stop_sequences=["\n"],
-            temperature=0.5,
-            top_k=0,
-            top_p=0,
-        )
+    mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfigType(
+        candidate_count=1,
+        max_output_tokens=100,
+        response_mime_type="application/xml",
+        response_schema=None,
+        stop_sequences=["\n"],
+        temperature=0.5,
+        top_k=0,
+        top_p=0,
     )
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -154,7 +154,7 @@ def test_setup_call_extract(
     mock_base_setup_call.return_value[2] = [mock_tool]
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=MagicMock(),
         fn_args={},

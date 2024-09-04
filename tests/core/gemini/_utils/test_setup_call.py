@@ -39,12 +39,12 @@ def test_setup_call(
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
-    generative_model = GenerativeModel(model_name="gemini-flash-1.5")
+    generative_model = GenerativeModel(model_name="gemini-1.5-flash")
     mock_generative_model.return_value = generative_model
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=fn,
         fn_args={},
@@ -62,7 +62,7 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
-    mock_generative_model.assert_called_once_with(model_name="gemini-flash-1.5")
+    mock_generative_model.assert_called_once_with(model_name="gemini-1.5-flash")
     assert create(**call_kwargs)
     mock_generate_content.assert_called_once_with(**call_kwargs)
     mock_generate_content.reset_mock()
@@ -104,7 +104,7 @@ def test_setup_call_json_mode(
     )
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=MagicMock(),
         fn_args={},
@@ -145,7 +145,7 @@ def test_setup_call_extract(
     mock_base_setup_call.return_value[2] = [mock_tool]
     mock_utils.setup_call = mock_base_setup_call
     _, _, _, _, call_kwargs = setup_call(
-        model="gemini-flash-1.5",
+        model="gemini-1.5-flash",
         client=None,
         fn=MagicMock(),
         fn_args={},

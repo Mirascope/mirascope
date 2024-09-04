@@ -4,10 +4,8 @@ from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from typing import Any, cast, overload
 
 from google.cloud.aiplatform_v1beta1.types import (
-    content as gapic_content_types,
-)
-from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
+    FunctionCallingConfig,
+    GenerationConfig,
 )
 from vertexai.generative_models import (
     Content,
@@ -95,9 +93,7 @@ def setup_call(
     messages = cast(list[BaseMessageParam | Content], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        generation_config = call_kwargs.get(
-            "generation_config", gapic_content_types.GenerationConfig()
-        )
+        generation_config = call_kwargs.get("generation_config", GenerationConfig())
         generation_config.response_mime_type = "application/json"
         call_kwargs["generation_config"] = generation_config
         messages[-1] = Content(
@@ -115,7 +111,7 @@ def setup_call(
         call_kwargs.pop("tool_config", None)
         tool_config = ToolConfig(
             function_calling_config=ToolConfig.FunctionCallingConfig(
-                mode=gapic_tool_types.FunctionCallingConfig.Mode.ANY,
+                mode=FunctionCallingConfig.Mode.ANY,
                 allowed_function_names=[tool_types[0]._name()],
             )
         )

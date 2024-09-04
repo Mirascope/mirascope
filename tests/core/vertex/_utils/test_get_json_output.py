@@ -1,7 +1,7 @@
 """Tests the `vertex._utils.get_json_output` module."""
 
 import pytest
-from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
+from google.cloud.aiplatform_v1beta1.types import FunctionCall
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -20,7 +20,7 @@ from mirascope.core.vertex.call_response_chunk import VertexCallResponseChunk
 def mock_generate_content_response() -> GenerateContentResponse:
     """Returns a mock `GenerateContentResponse` instance."""
     raw_part = Part()
-    raw_part._raw_part.function_call = gapic_tool_types.FunctionCall(
+    raw_part._raw_part.function_call = FunctionCall(
         name="FormatBook",
         args={
             "title": "The Name of the Wind",

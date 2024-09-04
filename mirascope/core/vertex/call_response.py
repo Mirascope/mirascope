@@ -4,14 +4,11 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
+    FunctionResponse,
+    GenerateContentResponse,
 )
 from pydantic import computed_field
-from vertexai.generative_models import (
-    Content,
-    GenerationResponse,
-    Tool,
-)
+from vertexai.generative_models import Content, GenerationResponse, Tool
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
@@ -84,7 +81,7 @@ class VertexCallResponse(
     def model(self) -> str:
         """Returns the model name.
 
-        google.generativeai does not return model, so we return the model provided by
+        vertex does not return model, so we return the model provided by
         the user.
         """
         return self._model
@@ -93,27 +90,24 @@ class VertexCallResponse(
     def id(self) -> str | None:
         """Returns the id of the response.
 
-        google.generativeai does not return an id
+        vertex does not return an id
         """
         return None
 
     @property
-    def usage(self) -> None:
-        """Returns the usage of the chat completion.
-
-        google.generativeai does not have Usage, so we return None
-        """
-        return None
+    def usage(self) -> GenerateContentResponse.UsageMetadata:
+        """Returns the usage of the chat completion."""
+        return self.response.usage_metadata
 
     @property
-    def input_tokens(self) -> None:
+    def input_tokens(self) -> int:
         """Returns the number of input tokens."""
-        return None
+        return self.usage.prompt_token_count
 
     @property
-    def output_tokens(self) -> None:
+    def output_tokens(self) -> int:
         """Returns the number of output tokens."""
-        return None
+        return self.usage.candidates_token_count
 
     @property
     def cost(self) -> float | None:
@@ -159,7 +153,7 @@ class VertexCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[VertexTool, object]]
-    ) -> list[gapic_tool_types.FunctionResponse]:
+    ) -> list[FunctionResponse]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -170,8 +164,6 @@ class VertexCallResponse(
             The list of constructed `FunctionResponse` parameters.
         """
         return [
-            gapic_tool_types.FunctionResponse(
-                name=tool._name(), response={"result": output}
-            )
+            FunctionResponse(name=tool._name(), response={"result": output})
             for tool, output in tools_and_outputs
         ]

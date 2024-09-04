@@ -25,7 +25,7 @@ class VertexCallResponseChunk(
     from mirascope.core.vertex import vertex_call
 
 
-    @vertex_call("vertex-1.5-flash", stream=True)
+    @vertex_call("gemini-1.5-flash", stream=True)
     @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
         ...
@@ -51,7 +51,7 @@ class VertexCallResponseChunk(
     def model(self) -> None:
         """Returns the model name.
 
-        google.generativeai does not return model, so we return None
+        vertex does not return model, so we return None
         """
         return None
 
@@ -59,7 +59,7 @@ class VertexCallResponseChunk(
     def id(self) -> str | None:
         """Returns the id of the response.
 
-        google.generativeai does not return an id
+        vertex does not return an id
         """
         return None
 
@@ -67,7 +67,7 @@ class VertexCallResponseChunk(
     def usage(self) -> None:
         """Returns the usage of the chat completion.
 
-        google.generativeai does not have Usage, so we return None
+        vertex does not have Usage, so we return None
         """
         return None
 

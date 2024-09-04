@@ -11,11 +11,11 @@ from .tool import VertexTool
 
 __all__ = [
     "call",
-    "vertex_call",
     "VertexCallParams",
     "VertexCallResponse",
     "VertexCallResponseChunk",
     "VertexDynamicConfig",
     "VertexStream",
     "VertexTool",
+    "vertex_call",
 ]

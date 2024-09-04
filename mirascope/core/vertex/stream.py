@@ -5,9 +5,7 @@ usage docs: learn/streams.md
 
 from typing import cast
 
-from google.cloud.aiplatform_v1beta1.types import (
-    tool as gapic_tool_types,
-)
+from google.cloud.aiplatform_v1beta1.types import FunctionCall
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -50,7 +48,7 @@ class VertexStream(
     from mirascope.core.vertex import vertex_call
 
 
-    @vertex_call("vertex-1.5-flash", stream=True)
+    @vertex_call("gemini-1.5-flash", stream=True)
     @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
         ...
@@ -71,7 +69,7 @@ class VertexStream(
 
     def _construct_message_param(
         self,
-        tool_calls: list[gapic_tool_types.FunctionCall] | None = None,
+        tool_calls: list[FunctionCall] | None = None,
         content: str | None = None,
     ) -> Content:
         """Constructs the message parameter for the assistant."""

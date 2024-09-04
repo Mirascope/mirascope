@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Literal
 
 import pytest
-from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
+from google.cloud.aiplatform_v1beta1.types import FunctionCall
 from vertexai.generative_models import (
     Tool,
 )
@@ -26,7 +26,7 @@ class FormatBook(VertexTool):
 
 def test_vertex_tool() -> None:
     """Tests the `VertexTool` class."""
-    tool_call = gapic_tool_types.FunctionCall(
+    tool_call = FunctionCall(
         {
             "name": "FormatBook",
             "args": {
@@ -88,6 +88,4 @@ def test_vertex_tool_no_nesting() -> None:
 def test_vertex_tool_no_args() -> None:
     """Tests the `VertexTool` class with no arguments."""
     with pytest.raises(ValueError, match="Tool call doesn't have any arguments."):
-        FormatBook.from_tool_call(
-            gapic_tool_types.FunctionCall({"name": "FormatBook", "args": {}})
-        )
+        FormatBook.from_tool_call(FunctionCall({"name": "FormatBook", "args": {}}))
