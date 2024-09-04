@@ -217,7 +217,7 @@ The test accommodates the non-deterministic nature of LLM-based reranking. While
 
 ## Evaluating Code Snippets and General Q&A
 
-The example document we are using for our `DocumentationAgent` is the Mirascope docs. Since Mirascope is a python library, users are likely to ask about both code implementation and conceptual understanding. Therefore, our evaluation process needs to address these two distinct scenarios.
+The example documents we are using for our `DocumentationAgent` are the Mirascope docs. Since Mirascope is a python library, users are likely to ask about both code implementation and conceptual understanding. Therefore, our evaluation process needs to address these two distinct scenarios.
 
 ### Evaluating Code Snippet
 
