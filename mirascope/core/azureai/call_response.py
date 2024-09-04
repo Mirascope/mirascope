@@ -105,13 +105,10 @@ class AzureAICallResponse(
     @property
     def message_param(self) -> SerializeAsAny[AssistantMessage]:
         """Returns the assistants's response as a message parameter."""
-        # TODO: Remove function_call from message_param
         message_param = self.response.choices[0].message
-        if hasattr(message_param, "tool_calls"):
-            return AssistantMessage(
-                content=message_param.content, tool_calls=message_param.tool_calls
-            )
-        return AssistantMessage(content=message_param.content)
+        return AssistantMessage(
+            content=message_param.content, tool_calls=message_param.tool_calls
+        )
 
     @computed_field
     @property

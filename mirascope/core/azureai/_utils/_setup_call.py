@@ -15,6 +15,7 @@ from azure.ai.inference.models import (
     StreamingChatCompletionsUpdate,
     UserMessage,
 )
+from azure.core.credentials import AzureKeyCredential
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
@@ -126,7 +127,7 @@ def setup_call(
 
     if client is None:
         endpoint = os.environ["AZURE_INFERENCE_ENDPOINT"]
-        credential = get_credential()
+        credential = cast(AzureKeyCredential, get_credential())
 
         client = (
             AsyncChatCompletionsClient(endpoint=endpoint, credential=credential)

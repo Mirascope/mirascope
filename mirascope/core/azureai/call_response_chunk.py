@@ -73,22 +73,16 @@ class AzureAICallResponseChunk(
         return self.chunk.id
 
     @property
-    def usage(self) -> CompletionsUsage | None:
+    def usage(self) -> CompletionsUsage:
         """Returns the usage of the chat completion."""
-        if hasattr(self.chunk, "usage") and self.chunk.usage:
-            return self.chunk.usage
-        return None
+        return self.chunk.usage
 
     @property
-    def input_tokens(self) -> int | None:
+    def input_tokens(self) -> int:
         """Returns the number of input tokens."""
-        if self.usage:
-            return self.usage.prompt_tokens
-        return None
+        return self.usage.prompt_tokens
 
     @property
-    def output_tokens(self) -> int | None:
+    def output_tokens(self) -> int:
         """Returns the number of output tokens."""
-        if self.usage:
-            return self.usage.completion_tokens
-        return None
+        return self.usage.completion_tokens
