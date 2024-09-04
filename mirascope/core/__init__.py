@@ -37,6 +37,10 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import openai as openai
 
+with suppress(ImportError):
+    from . import vertex as vertex
+
+
 __all__ = [
     "anthropic",
     "base",
@@ -54,4 +58,5 @@ __all__ = [
     "prompt_template",
     "ResponseModelConfigDict",
     "toolkit_tool",
+    "vertex",
 ]

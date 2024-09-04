@@ -1,62 +1,58 @@
-"""This module contains the `GeminiCallResponse` class.
+"""This module contains the `VertexCallResponse` class.
 
 usage docs: learn/calls.md#handling-responses
 """
 
-from google.generativeai.protos import FunctionResponse  # type: ignore
-from google.generativeai.types import (
-    AsyncGenerateContentResponse,
-    ContentDict,
-    ContentsType,  # type: ignore
+from google.cloud.aiplatform_v1beta1.types import (
+    FunctionResponse,
     GenerateContentResponse,
-    Tool,
 )
 from pydantic import computed_field
+from vertexai.generative_models import Content, GenerationResponse, Tool
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
-from .call_params import GeminiCallParams
-from .dynamic_config import GeminiDynamicConfig
-from .tool import GeminiTool
+from .call_params import VertexCallParams
+from .dynamic_config import VertexDynamicConfig
+from .tool import VertexTool
 
 
-class GeminiCallResponse(
+class VertexCallResponse(
     BaseCallResponse[
-        GenerateContentResponse | AsyncGenerateContentResponse,
-        GeminiTool,
+        GenerationResponse,
+        VertexTool,
         Tool,
-        GeminiDynamicConfig,
-        ContentsType,
-        GeminiCallParams,
-        ContentDict,
+        VertexDynamicConfig,
+        Content,
+        VertexCallParams,
+        Content,
     ]
 ):
-    """A convenience wrapper around the Gemini API response.
+    """A convenience wrapper around the Vertex AI `GenerateContentResponse`.
 
-    When calling the Gemini API using a function decorated with `gemini_call`, the
-    response will be a `GeminiCallResponse` instance with properties that allow for
+    When calling the Vertex AI API using a function decorated with `vertex_call`, the
+    response will be a `VertexCallResponse` instance with properties that allow for
     more convenient access to commonly used attributes.
-
 
     Example:
 
     ```python
     from mirascope.core import prompt_template
-    from mirascope.core.gemini import gemini_call
+    from mirascope.core.vertex import vertex_call
 
 
-    @gemini_call("gemini-1.5-flash")
+    @vertex_call("gemini-1.5-flash")
     @prompt_template("Recommend a {genre} book")
     def recommend_book(genre: str):
         ...
 
 
-    response = recommend_book("fantasy")  # response is an `GeminiCallResponse` instance
+    response = recommend_book("fantasy")  # response is an `VertexCallResponse` instance
     print(response.content)
     ```
     """
 
-    _provider = "gemini"
+    _provider = "vertex"
 
     @property
     def content(self) -> str:
@@ -84,7 +80,7 @@ class GeminiCallResponse(
     def model(self) -> str:
         """Returns the model name.
 
-        google.generativeai does not return model, so we return the model provided by
+        vertex does not return model, so we return the model provided by
         the user.
         """
         return self._model
@@ -93,27 +89,24 @@ class GeminiCallResponse(
     def id(self) -> str | None:
         """Returns the id of the response.
 
-        google.generativeai does not return an id
+        vertex does not return an id
         """
         return None
 
     @property
-    def usage(self) -> None:
-        """Returns the usage of the chat completion.
-
-        google.generativeai does not have Usage, so we return None
-        """
-        return None
+    def usage(self) -> GenerateContentResponse.UsageMetadata:
+        """Returns the usage of the chat completion."""
+        return self.response.usage_metadata
 
     @property
-    def input_tokens(self) -> None:
+    def input_tokens(self) -> int:
         """Returns the number of input tokens."""
-        return None
+        return self.usage.prompt_token_count
 
     @property
-    def output_tokens(self) -> None:
+    def output_tokens(self) -> int:
         """Returns the number of output tokens."""
-        return None
+        return self.usage.candidates_token_count
 
     @property
     def cost(self) -> float | None:
@@ -122,13 +115,13 @@ class GeminiCallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> ContentDict:
+    def message_param(self) -> Content:
         """Returns the models's response as a message parameter."""
-        return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
+        return Content(role="model", parts=self.response.candidates[0].content.parts)
 
     @computed_field
     @property
-    def tools(self) -> list[GeminiTool] | None:
+    def tools(self) -> list[VertexTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
         if self.tool_types is None:
             return None
@@ -145,7 +138,7 @@ class GeminiCallResponse(
 
     @computed_field
     @property
-    def tool(self) -> GeminiTool | None:
+    def tool(self) -> VertexTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.
 
         Raises:
@@ -158,7 +151,7 @@ class GeminiCallResponse(
 
     @classmethod
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[GeminiTool, object]]
+        cls, tools_and_outputs: list[tuple[VertexTool, object]]
     ) -> list[FunctionResponse]:
         """Returns the tool message parameters for tool call results.
 

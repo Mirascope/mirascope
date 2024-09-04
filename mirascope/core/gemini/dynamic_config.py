@@ -18,7 +18,7 @@ from mirascope.core import prompt_template
 from mirascope.core.gemini import GeminiDynamicConfig, gemini_call
 
 
-@gemini_call("gemini-flash-1.5")
+@gemini_call("gemini-1.5-flash")
 @prompt_template("Recommend a {capitalized_genre} book")
 def recommend_book(genre: str) -> GeminiDynamicConfig:
     return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
