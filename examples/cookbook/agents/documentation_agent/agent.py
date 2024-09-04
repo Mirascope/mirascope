@@ -139,7 +139,6 @@ class DocumentationAgent(BaseModel):
 
             response = recommend_book("fantasy")
             print(response.content)
-
             Explanation: This is a Code Examples question, 
             so only a code snippet is provided.
         Context:
