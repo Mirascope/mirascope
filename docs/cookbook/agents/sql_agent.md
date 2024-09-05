@@ -52,6 +52,7 @@ from typing import ClassVar
 from mirascope.core import openai, prompt_template
 from pydantic import BaseModel, ConfigDict
 
+
 class Librarian(BaseModel):
     con: ClassVar[sqlite3.Connection] = sqlite3.connect("database.db")
 
@@ -94,12 +95,12 @@ Knowing what tools are available is crucial when prompt engineering, so that we 
 Now we will take our `Librarian` and add our `@openai.call`:
 
 ```python
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class Librarian(BaseModel):
     con: ClassVar[sqlite3.Connection] = sqlite3.connect("database.db")
-    messages: list[ChatCompletionMessageParam] = []
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

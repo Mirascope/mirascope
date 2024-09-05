@@ -7,10 +7,9 @@ Here is the reference link to LangGraph quickstart:
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class WebSearch(openai.OpenAITool):
@@ -65,7 +64,7 @@ class RequestAssistance(openai.OpenAITool):
 
 
 class Chatbot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", stream=True, tools=[WebSearch, RequestAssistance])
     @prompt_template(

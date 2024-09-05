@@ -135,11 +135,11 @@ A quick summary of each of the tools:
 We then create our Agent, giving it the tools we defined and history for memory. As this agent functions as a ChatBot, we implement streaming to enhance the user experience:
 
 ```python
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
 class LocalizedRecommender(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     
     async def _get_current_date(...): ...
     async def _get_coordinates_from_location(...): ...

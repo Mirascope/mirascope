@@ -137,8 +137,7 @@ Some people may feel that "statelessness" is actually an inherent problem with L
 This provides a far clearer sense of what is "state" and what is an "argument" of the call. Consider the following example:
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel, computed_field
 
 
@@ -157,7 +156,7 @@ class Librarian(BaseModel):
 
     @computed_field
     @property
-    def history(self) -> list[ChatCompletionMessageParam]:
+    def history(self) -> list[BaseMessageParam | openai.OpenAIMessageParam]:
         """Returns dummy history for demonstration purposes"""
         return [
             {"role": "user", "content": "What book should I read?"},

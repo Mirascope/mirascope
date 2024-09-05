@@ -1,12 +1,11 @@
 import asyncio
 import os
 
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ConfigDict
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 from slack_bolt.async_app import AsyncApp
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 os.environ["OPENAI_API_KEY"] = "sk-YOUR_OPENAI_API_KEY"
 SLACK_BOT_TOKEN = "xoxb-..."
@@ -15,7 +14,7 @@ SLACK_APP_TOKEN = "xapp-..."
 
 class MiraBot(BaseModel):
     app: AsyncApp = AsyncApp(token=SLACK_BOT_TOKEN)
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

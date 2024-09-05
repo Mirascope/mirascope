@@ -2,10 +2,9 @@ from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 API_KEY = "YOUR_GOOGLE_SEARCH_KEY"
 CSE_ID = "YOUR_GOOGLE_CSE_ID"
@@ -40,7 +39,7 @@ def google_search(query: str) -> str:
 
 
 class GoogleBot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-3.5-turbo", tools=[google_search])
     @prompt_template(

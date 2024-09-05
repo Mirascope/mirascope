@@ -69,12 +69,12 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 First, let's create a base `OpenAIAgent` class that we can later subclass to implement specialized agents:
 
 ```python
-from mirascope.core import openai
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
+
 class OpenAIAgent(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @abstractmethod
     def _step(self, prompt: str) -> openai.OpenAIStream: ...
@@ -223,9 +223,8 @@ class Researcher(OpenAIAgent):
 The next step when writing a blog is to write an initial draft and critique it. We can then incorporate the feedback from the critique to iteratively improve the post. Let's make a call to an LLM to write this first draft as well as critique it:
 
 ```python
-from pydantic import ValidationError
-
 from mirascope.integrations.tenacity import collect_errors
+from pydantic import ValidationError
 
 
 class InitialDraft(BaseModel):

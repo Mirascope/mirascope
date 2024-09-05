@@ -1,9 +1,8 @@
 import json
 
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class Problem(BaseModel):
@@ -61,7 +60,9 @@ def concat(strings: list[str]) -> str:
     MESSAGES: {history}
     """
 )
-def solve_next_step(history: list[ChatCompletionMessageParam], query: str): ...
+def solve_next_step(
+    history: list[BaseMessageParam | openai.OpenAIMessageParam], query: str
+): ...
 
 
 def decomposed_prompting(query: str):
@@ -69,7 +70,7 @@ def decomposed_prompting(query: str):
     # Uncomment to see intermediate responses
     # print(problem.subproblems)
     response = None
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     for subproblem in problem.subproblems:
         history.append({"role": "user", "content": subproblem})
         response = solve_next_step(history, query)

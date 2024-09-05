@@ -1,6 +1,5 @@
 import asyncio
 
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
 from mirascope.core import openai, prompt_template
@@ -110,7 +109,9 @@ def compare_questions(original_problem: str, reconstructed_problem: str): ...
     """
 )
 async def fine_grained_comparison(
-    history: list[ChatCompletionMessageParam], query: str, reconstructed_query: str
+    history: list[openai.OpenAIMessageParam],
+    query: str,
+    reconstructed_query: str,
 ) -> openai.OpenAIDynamicConfig:
     # Decompose both queries into conditions
     original_conditions, reconstructed_conditions = (

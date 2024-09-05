@@ -4,16 +4,15 @@ from abc import abstractmethod
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ValidationError
 from tenacity import retry, wait_exponential
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from mirascope.integrations.tenacity import collect_errors
 
 
 class OpenAIAgent(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @abstractmethod
     def _step(self, prompt: str) -> openai.OpenAIStream: ...
