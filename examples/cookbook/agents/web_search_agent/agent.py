@@ -5,10 +5,9 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 def extract_content(url: str) -> str:
@@ -48,7 +47,7 @@ def extract_content(url: str) -> str:
 
 
 class WebAssistant(BaseModel):
-    messages: list[ChatCompletionMessageParam] = []
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     search_history: list[str] = []
     max_results_per_query: int = 2
 

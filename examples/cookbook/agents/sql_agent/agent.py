@@ -2,15 +2,14 @@ import asyncio
 import sqlite3
 from typing import ClassVar
 
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ConfigDict
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class Librarian(BaseModel):
     con: ClassVar[sqlite3.Connection] = sqlite3.connect("database.db")
-    messages: list[ChatCompletionMessageParam] = []
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

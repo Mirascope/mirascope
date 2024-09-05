@@ -17,13 +17,12 @@ Key benefits of using agents with Mirascope include:
 Let's start by creating a simple agent using Mirascope. We'll build a basic Librarian agent that can engage in conversations and maintain a history of interactions.
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
 
 class Librarian(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini")
     @prompt_template(
@@ -71,8 +70,7 @@ To make our Librarian agent more capable, we'll add tools that allow it to manag
 Let's define a `Book` class and some corresponding tools for our Librarian to use:
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
 
@@ -82,7 +80,7 @@ class Book(BaseModel):
 
 
 class Librarian(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     books: dict[str, str] = {}
 
     def add_book(self, book: Book) -> str:
@@ -234,8 +232,13 @@ Let's implement a toolkit for making recommendations and modify our Librarian cl
 ```python hl_lines="10-16 22 26-31 40-41 54-59"
 from typing import Literal
 
-from mirascope.core import BaseToolKit, openai, prompt_template, toolkit_tool
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import (
+    BaseMessageParam,
+    BaseToolKit,
+    openai,
+    prompt_template,
+    toolkit_tool,
+)
 from pydantic import BaseModel
 
 ...
@@ -251,7 +254,7 @@ class RecommendationTools(BaseToolKit):
 
 
 class Librarian(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     books: dict[str, str] = {}
     user_reading_level: str = "unknown"
 

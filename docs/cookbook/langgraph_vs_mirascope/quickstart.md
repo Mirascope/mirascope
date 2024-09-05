@@ -12,14 +12,12 @@ A chatbot must possess at least two key capabilities to be considered as such:
 Let's take a look at how that looks using Mirascope:
 
 ```python
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
-
-from mirascope.core import openai, prompt_template
 
 
 class Chatbot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", stream=True)
     @prompt_template(
@@ -174,7 +172,7 @@ Now that we have our tool defined, we can easily add the tool to our Mirascope c
 class WebSearch(openai.OpenAITool): ...
 
 class Chatbot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", stream=True, tools=[WebSearch])
     @prompt_template(

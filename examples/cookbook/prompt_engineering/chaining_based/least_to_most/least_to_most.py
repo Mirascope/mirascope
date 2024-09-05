@@ -1,7 +1,6 @@
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 few_shot_examples = """
 Q: The median age in the city was 22.1 years. 10.1% of residents were under the age of 18; 56.2%
@@ -53,7 +52,7 @@ def break_into_subproblems(query: str) -> openai.OpenAIDynamicConfig:
 
 
 @openai.call(model="gpt-4o-mini")
-def call(history: list[ChatCompletionMessageParam]):
+def call(history: list[BaseMessageParam | openai.OpenAIMessageParam]):
     """
     MESSAGES: {history}
     """
@@ -70,7 +69,7 @@ def least_to_most(query_context: str, query_question: str):
     problem = break_into_subproblems(query_context + query_question)
     # Uncomment to see intermediate steps
     # print(problem.subproblems)
-    history: list[ChatCompletionMessageParam] = [
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = [
         {"role": "user", "content": query_context + problem.subproblems[0]}
     ]
     response = call(history=history)

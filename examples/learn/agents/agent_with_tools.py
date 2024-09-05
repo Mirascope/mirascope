@@ -1,7 +1,6 @@
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class Book(BaseModel):
@@ -10,7 +9,7 @@ class Book(BaseModel):
 
 
 class Librarian(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     books: dict[str, str] = {}
 
     def add_book(self, book: Book) -> str:

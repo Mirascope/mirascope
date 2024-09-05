@@ -14,6 +14,8 @@ In this recipe, we will be using OpenAI GPT-4o-mini to use write code to solve p
 We will be creating a Software Engineer agent which will be a Q&A bot that will answer questions for you. We give it access to a tool `execute_code` which will execute the code the LLM generates:
 
 ```python
+from mirascope.core import BaseMessageParam, openai, prompt_template
+
 def execute_code(code: str):
     """Execute Python code and return the output."""
     try:
@@ -26,10 +28,10 @@ def execute_code(code: str):
         return f"Error: {str(e)}"
 
 class SoftwareEngineer(BaseModel):
-    messages: SkipValidation[list[ChatCompletionMessageParam]]
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", tools=[execute_code])
-    def _step(self, text: str):
+    @prompt_template(
         """
         SYSTEM:
         You are an expert software engineer who can write good clean code and solve
@@ -51,6 +53,8 @@ class SoftwareEngineer(BaseModel):
         USER:
         {text}
         """
+    )
+    def _step(self, text: str): ...
 
     def _get_response(self, question: str = ""):
         response = self._step(question)
@@ -94,7 +98,7 @@ While we can see that it can solve basic problems, there could also be some dang
 
 ```python
 @openai.call(model="gpt-4o-mini", response_model=bool)
-def evaluate_code_safety(code: str):
+@prompt_template(
     """
     SYSTEM:
     You are a software engineer who is an expert at reviewing whether code is safe to execute.
@@ -103,6 +107,9 @@ def evaluate_code_safety(code: str):
     USER:
     {code}
     """
+)
+def evaluate_code_safety(code: str): ...
+    
 
 def execute_code(code: str):
     """Execute Python code and return the output."""

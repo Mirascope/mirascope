@@ -3,16 +3,15 @@ from datetime import datetime
 
 import aiohttp
 import requests
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 NIMBLE_TOKEN = "YOUR_NIMBLE_API_KEY"
 
 
 class LocalizedRecommender(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     async def _nimble_google_maps_places(
         self, session: aiohttp.ClientSession, place_id: str

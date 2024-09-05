@@ -29,11 +29,11 @@ The first step is to create a `WebAssistant` that first conducts a web search ba
 ```python
 import requests
 from duckduckgo_search import DDGS
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai
 from pydantic import BaseModel
 
 class WebAssistant(BaseModel):
-    messages: list[ChatCompletionMessageParam] = []
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     search_history: list[str] = []
 
     def _web_search(self, queries: list[str]) -> str:
@@ -123,11 +123,11 @@ Now that our tools are setup, we can proceed to implement the Q&A functionality 
 Now that we have our tools we can now create our `prompt_template` and `_stream` function. We engineer the prompt to first use our `_web_search` tool, then `extract_content` from the tool before answering the user question based on the retrieved content:
 
 ```python
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 class WebAssistant(BaseModel):
-    messages: list[ChatCompletionMessageParam] = []
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     search_history: list[str] = []
 
     def _web_search(self, queries: list[str]) -> str:

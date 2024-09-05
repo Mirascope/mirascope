@@ -1,7 +1,6 @@
-from openai.types.chat import ChatCompletionMessageParam
-from pydantic import BaseModel, SkipValidation
+from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 
 @openai.call(model="gpt-4o-mini", response_model=bool)
@@ -34,7 +33,7 @@ def execute_code(code: str):
 
 
 class SoftwareEngineer(BaseModel):
-    messages: SkipValidation[list[ChatCompletionMessageParam]]
+    messages: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", tools=[execute_code])
     @prompt_template(
