@@ -32,8 +32,8 @@ anthropic_call = call_factory(
 usage docs: learn/calls.md
 
 This decorator is used to wrap a typed function that calls the Anthropic API. It
-parses the docstring of the wrapped function as the messages array and templates the
-input arguments for the function into each message's template.
+parses the prompt template of the wrapped function as the messages array and templates
+the input arguments for the function into each message's template.
 
 Example:
 
