@@ -24,6 +24,7 @@ keywords = [
     "openai",
     "prompt engineering",
     "pydantic",
+    "vertex",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -67,6 +68,7 @@ logfire = ["logfire>=0.41.0,<1"]
 mistral = ["mistralai>=0.4.2,<1"]
 openai = ["openai>=1.6.0,<2"]
 opentelemetry = ["opentelemetry-api>=1.22.0,<2", "opentelemetry-sdk>=1.22.0,<2"]
+vertex = ["google-cloud-aiplatform>=1.38.0,<2"]
 weave = ["weave>=0.50.14"]
 
 [tool.uv]
