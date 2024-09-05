@@ -4,6 +4,8 @@
 
     [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
 
+    [`mirascope.core.azure.call`](../api/core/azure/call.md)
+
     [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
 
     [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
@@ -15,6 +17,8 @@
     [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
 
     [`mirascope.core.openai.call`](../api/core/openai/call.md)
+
+    [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
@@ -61,6 +65,8 @@ Mirascope's call decorator supports multiple LLM providers, allowing you to easi
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [LiteLLM](https://www.litellm.ai/) (for multi-provider support)
+- [Azure AI](https://azure.microsoft.com/en-us/solutions/ai)
+- [Vertex AI](https://cloud.google.com/vertex-ai)
 
 To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same function:
 

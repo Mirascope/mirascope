@@ -182,7 +182,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
                 UserWarning,
             )
 
-        if "strict" in cls.model_config and cls.__provider__ != "openai":
+        if "strict" in cls.model_config and cls.__provider__ not in ["openai", "azure"]:
             warnings.warn(
                 f"{cls.__provider__} does not support strict structured outputs, but "
                 "you have configured `strict=True` in your `ResponseModelConfigDict`. "
