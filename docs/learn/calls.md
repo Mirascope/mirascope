@@ -62,7 +62,7 @@ Mirascope's call decorator supports multiple LLM providers, allowing you to easi
 - [Cohere](https://cohere.com/)
 - [LiteLLM](https://www.litellm.ai/) (for multi-provider support)
 - [AzureAI](https://azure.microsoft.com/en-us/solutions/ai)
-- [Vertex](https://cloud.google.com/vertex-ai)
+- [VertexAI](https://cloud.google.com/vertex-ai)
 
 To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same function:
 
