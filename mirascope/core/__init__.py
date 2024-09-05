@@ -41,11 +41,11 @@ with suppress(ImportError):
     from . import vertex as vertex
 
 with suppress(ImportError):
-    from . import azureai as azureai
+    from . import azure as azure
 
 __all__ = [
     "anthropic",
-    "azureai",
+    "azure",
     "base",
     "BaseMessageParam",
     "BasePrompt",
