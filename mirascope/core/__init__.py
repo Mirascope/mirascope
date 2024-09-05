@@ -40,9 +40,12 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import vertex as vertex
 
+with suppress(ImportError):
+    from . import azureai as azureai
 
 __all__ = [
     "anthropic",
+    "azureai",
     "base",
     "BaseMessageParam",
     "BasePrompt",
