@@ -156,12 +156,38 @@ def test_prompt_template_docstring() -> None:
 def test_prompt_template_with_function() -> None:
     """Tests the `prompt_template` decorator on a function."""
 
-    @prompt_template("Recommend a book.")
-    def fn() -> None: ...
+    @prompt_template("Recommend a {genre} book.")
+    def fn(genre: str) -> None: ...
 
     assert (
-        hasattr(fn, "_prompt_template") and fn._prompt_template == "Recommend a book."  # pyright: ignore [reportFunctionMemberAccess]
+        hasattr(fn, "_prompt_template")
+        and fn._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
     )
+    assert fn("fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+    assert fn(genre="fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+
+
+@pytest.mark.asyncio
+async def test_prompt_template_with_async_function() -> None:
+    """Tests the `prompt_template` decorator on a async function."""
+
+    @prompt_template("Recommend a {genre} book.")
+    async def fn(genre: str) -> None: ...
+
+    assert (
+        hasattr(fn, "_prompt_template")
+        and fn._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
+    )
+    assert await fn("fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+    assert await fn(genre="fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
 
 
 def test_metadata_decorator() -> None:
