@@ -26,7 +26,9 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
 
 def setup_call(
-    fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+    fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
+    | Callable[..., list[BaseMessageParam]]
+    | Callable[..., Awaitable[list[BaseMessageParam]]],
     fn_args: dict[str, Any],
     dynamic_config: _BaseDynamicConfigT,
     tools: list[type[BaseTool] | Callable] | None,

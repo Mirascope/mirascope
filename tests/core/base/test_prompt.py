@@ -1,6 +1,7 @@
 """Tests for the `base_prompt` module."""
 
 import os
+from typing import ClassVar
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -53,6 +54,35 @@ def test_base_prompt_with_computed_fields() -> None:
 
     prompt = BookRecommendationPrompt()
     assert str(prompt) == "Recommend a fantasy book."
+
+
+def test_base_prompt_with_prompt_template() -> None:
+    """Tests the `BasePrompt` class with prompt_template."""
+
+    class BookRecommendationPrompt(BasePrompt):
+        prompt_template: ClassVar[str] = "Recommend a {genre} book."
+        genre: str
+
+    prompt = BookRecommendationPrompt(genre="fantasy")
+    assert str(prompt) == "Recommend a fantasy book."
+    assert prompt.dump() == {
+        "metadata": {},
+        "prompt": "Recommend a fantasy book.",
+        "template": "Recommend a {genre} book.",
+        "inputs": {"genre": "fantasy"},
+    }
+
+    class MessagesPrompt(BasePrompt):
+        prompt_template: ClassVar[str] = """
+        SYSTEM: You are a helpful assistant.
+        USER: Please help me.
+        """
+
+    prompt = MessagesPrompt()
+    assert prompt.message_params() == [
+        BaseMessageParam(role="system", content="You are a helpful assistant."),
+        BaseMessageParam(role="user", content="Please help me."),
+    ]
 
 
 def test_base_prompt_run() -> None:
