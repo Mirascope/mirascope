@@ -393,15 +393,6 @@ def prompt_template(template: str) -> PromptDecorator:
             attribute of the decorated input prompt or call.
     """
 
-    # @overload
-    # def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
-    #
-    # @overload
-    # def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
-
-    # def inner(
-    #     prompt: type[_BasePromptT] | Callable[_P, _R],
-    # ) -> type[_BasePromptT] | Callable[_P, _R]:
     @overload
     def inner(
         prompt: Callable[_P, BaseDynamicConfig],
