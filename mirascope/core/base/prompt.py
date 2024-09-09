@@ -16,7 +16,6 @@ from typing import (
 from pydantic import BaseModel
 from typing_extensions import TypeIs
 
-from . import BaseCallParams
 from ._utils import (
     BaseType,
     format_template,
@@ -307,27 +306,7 @@ class BasePrompt(BaseModel):
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
-_CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
-
-
-def get_prompt_messages_from_prompt_function(
-    fn: Callable[..., BaseDynamicConfig | Awaitable[BaseDynamicConfig]],
-    fn_args: dict[str, Any],
-    dynamic_config: BaseDynamicConfig[_MessageParamT, _CallParamsT],
-) -> list[BaseMessageParam]:
-    """Returns the list of parsed message parameters from a prompt function."""
-    prompt_template = get_prompt_template(fn)
-    assert prompt_template is not None, "The function must have a docstring."
-    if dynamic_config is not None:
-        computed_fields = dynamic_config.get("computed_fields", None)
-        if computed_fields:
-            fn_args |= computed_fields
-    return parse_prompt_messages(
-        roles=["system", "user", "assistant"],
-        template=prompt_template,
-        attrs=fn_args,
-    )
 
 
 class PromptDecorator(Protocol):
@@ -364,6 +343,29 @@ def _is_function(
     Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
 ]:
     return isinstance(prompt, types.FunctionType)
+
+
+def _get_prompt_messages_from_prompt_function(
+    fn: Callable,
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
+    dynamic_config: BaseDynamicConfig,
+) -> list[BaseMessageParam]:
+    if args:
+        sig = inspect.signature(fn)
+        bound_args = sig.bind(*args, **kwargs)
+        bound_args.apply_defaults()
+        fn_args = dict(bound_args.arguments)
+    else:
+        fn_args = kwargs
+    prompt_template = get_prompt_template(fn)
+    assert prompt_template is not None, "The function must have a docstring."
+    return parse_prompt_messages(
+        roles=["system", "user", "assistant"],
+        template=prompt_template,
+        attrs=fn_args,
+        dynamic_config=dynamic_config,
+    )
 
 
 def prompt_template(template: str) -> PromptDecorator:
@@ -427,8 +429,11 @@ def prompt_template(template: str) -> PromptDecorator:
             async def get_base_message_params_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
-                return get_prompt_messages_from_prompt_function(
-                    prompt, kwargs, await prompt(*args, **kwargs)
+                return _get_prompt_messages_from_prompt_function(
+                    prompt,
+                    args=args,
+                    kwargs=kwargs,
+                    dynamic_config=await prompt(*args, **kwargs),
                 )
 
             get_base_message_params_async._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
@@ -440,16 +445,11 @@ def prompt_template(template: str) -> PromptDecorator:
             def get_base_message_params(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
-                if args:
-                    # convert args to kwargs
-                    sig = inspect.signature(prompt)
-                    bound_args = sig.bind(*args, **kwargs)
-                    bound_args.apply_defaults()
-                    fn_args = dict(bound_args.arguments)
-                else:
-                    fn_args = kwargs
-                return get_prompt_messages_from_prompt_function(
-                    prompt, fn_args, prompt(*args, **kwargs)
+                return _get_prompt_messages_from_prompt_function(
+                    prompt,
+                    args=args,
+                    kwargs=kwargs,
+                    dynamic_config=prompt(*args, **kwargs),
                 )
 
             get_base_message_params._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
