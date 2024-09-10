@@ -57,7 +57,9 @@ def test_stream_factory_sync(
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
 
-    stream: BaseStream = decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
+    decorated_fn = decorator(fn)
+    assert decorated_fn._model == mock_stream_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
+    stream: BaseStream = decorated_fn(genre="fantasy", topic="magic")  # type: ignore
     assert list(stream.stream) == mock_handle_stream.return_value  # type: ignore
 
     assert stream.metadata == mock_get_metadata.return_value

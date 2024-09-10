@@ -279,6 +279,7 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
+        fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)

@@ -85,6 +85,7 @@ def create_factory(  # noqa: ANN202
         | _ParsedOutputT
         | Awaitable[_BaseCallResponseT | _ParsedOutputT],
     ]:
+        fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)
