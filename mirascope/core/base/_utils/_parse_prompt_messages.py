@@ -5,21 +5,32 @@ from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
+from ..call_params import BaseCallParams
+from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
 from ._get_template_variables import get_template_variables
 from ._parse_content_template import parse_content_template
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
+_MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 
 
 def parse_prompt_messages(
-    roles: list[str], template: str, attrs: dict[str, Any]
+    roles: list[str],
+    template: str,
+    attrs: dict[str, Any],
+    dynamic_config: BaseDynamicConfig[_MessageParamT, _CallParamsT] = None,
 ) -> list[BaseMessageParam]:
     """Returns messages parsed from the provided prompt `template`.
 
     Raises:
         ValueError: if `MESSAGES` keyword is used with a non-list attribute.
     """
+    if dynamic_config is not None:
+        computed_fields = dynamic_config.get("computed_fields", None)
+        if computed_fields:
+            attrs |= computed_fields
     messages = []
     re_roles = "|".join([role.upper() for role in roles] + ["MESSAGES"])
     for match in re.finditer(rf"({re_roles}):((.|\n)+?)(?=({re_roles}):|\Z)", template):

@@ -1,9 +1,11 @@
 """The `BasePrompt` class for better prompt engineering."""
 
+import types
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
-from functools import reduce
+from functools import reduce, wraps
 from typing import (
     Any,
+    ClassVar,
     ParamSpec,
     Protocol,
     TypeVar,
@@ -11,14 +13,17 @@ from typing import (
 )
 
 from pydantic import BaseModel
+from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
     format_template,
+    get_fn_args,
     get_metadata,
     get_prompt_template,
     parse_prompt_messages,
 )
+from ._utils._protocols import fn_is_async
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
@@ -63,6 +68,8 @@ class BasePrompt(BaseModel):
     # > {"metadata": {"version:0001", "books"}}
     ```
     """
+
+    prompt_template: ClassVar[str]
 
     def __str__(self) -> str:
         """Returns the formatted template."""
@@ -180,7 +187,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType, reportCallIssue]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),
@@ -286,7 +293,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"async def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType, reportCallIssue]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),
@@ -298,19 +305,44 @@ class BasePrompt(BaseModel):
 
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
+_MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
 
 class PromptDecorator(Protocol):
     @overload
-    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+    def __call__(
+        self, prompt: Callable[_P, BaseDynamicConfig]
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
 
     @overload
-    def __call__(self, prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+    def __call__(
+        self, prompt: Callable[_P, Awaitable[BaseDynamicConfig]]
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
+    @overload
+    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
     def __call__(
         self,
-        prompt: type[_BasePromptT] | Callable[_P, _R],
-    ) -> type[_BasePromptT] | Callable[_P, _R]: ...
+        prompt: type[_BasePromptT]
+        | Callable[_P, BaseDynamicConfig]
+        | Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> (
+        Callable[_P, list[BaseMessageParam]]
+        | Callable[_P, Awaitable[list[BaseMessageParam]]]
+        | type[_BasePromptT]
+    ): ...
+
+
+def _is_function(
+    prompt: type[_BasePromptT]
+    | Callable[_P, BaseDynamicConfig]
+    | Callable[_P, Awaitable[BaseDynamicConfig]],
+) -> TypeIs[
+    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
+]:
+    return isinstance(prompt, types.FunctionType)
 
 
 def prompt_template(template: str) -> PromptDecorator:
@@ -341,16 +373,64 @@ def prompt_template(template: str) -> PromptDecorator:
     """
 
     @overload
-    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+    def inner(
+        prompt: Callable[_P, BaseDynamicConfig],
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
 
     @overload
-    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+    def inner(
+        prompt: Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
+    @overload
+    def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
     def inner(
-        prompt: type[_BasePromptT] | Callable[_P, _R],
-    ) -> type[_BasePromptT] | Callable[_P, _R]:
+        prompt: type[_BasePromptT]
+        | Callable[_P, BaseDynamicConfig]
+        | Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> (
+        Callable[_P, list[BaseMessageParam]]
+        | Callable[_P, Awaitable[list[BaseMessageParam]]]
+        | type[_BasePromptT]
+    ):
+        """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
-        return prompt
+
+        if not _is_function(prompt):
+            return prompt
+
+        if fn_is_async(prompt):
+
+            @wraps(prompt)
+            async def get_base_message_params_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> list[BaseMessageParam]:
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
+                    dynamic_config=await prompt(*args, **kwargs),
+                )
+
+            get_base_message_params_async._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
+            return get_base_message_params_async
+
+        else:
+
+            @wraps(prompt)
+            def get_base_message_params(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> list[BaseMessageParam]:
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
+                    dynamic_config=prompt(*args, **kwargs),
+                )
+
+            get_base_message_params._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
+            return get_base_message_params
 
     return inner
 
