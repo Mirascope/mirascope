@@ -57,7 +57,9 @@ def test_structured_stream_factory_sync(
     def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
-    structured_stream: BaseStructuredStream = decorator(fn)(
+    decorated_fn = decorator(fn)
+    assert decorated_fn._model == mock_structured_stream_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
+    structured_stream: BaseStructuredStream = decorated_fn(
         genre="fantasy",  # type: ignore
         topic="magic",
     )

@@ -86,6 +86,7 @@ def extract_factory(  # noqa: ANN202
         _P,
         _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
     ]:
+        fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         tool = setup_extract_tool(response_model, TToolType)
         create_decorator_kwargs = {
             "model": model,
