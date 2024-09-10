@@ -3,13 +3,16 @@
 import datetime
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar, cast, overload
+from typing import ParamSpec, TypeVar, overload
 
 from ._utils import (
     SetupCall,
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
+)
+from ._utils._get_dynamic_configuration import (
+    get_dynamic_configuration,
 )
 from ._utils._protocols import fn_is_async
 from .call_params import BaseCallParams
@@ -89,14 +92,7 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = cast(
-                    _BaseDynamicConfigT,
-                    await (
-                        fn._original_fn(*args, **kwargs)  # pyright: ignore [reportFunctionMemberAccess]
-                        if hasattr(fn, "_original_fn")
-                        else fn(*args, **kwargs)
-                    ),
-                )
+                dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,
@@ -136,11 +132,7 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = (
-                    fn._original_fn(*args, **kwargs)  # pyright: ignore [reportFunctionMemberAccess]
-                    if hasattr(fn, "_original_fn")
-                    else fn(*args, **kwargs)
-                )
+                dynamic_config = get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,

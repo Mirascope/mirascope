@@ -1,6 +1,5 @@
 """The `BasePrompt` class for better prompt engineering."""
 
-import inspect
 import types
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from functools import reduce, wraps
@@ -19,6 +18,7 @@ from typing_extensions import TypeIs
 from ._utils import (
     BaseType,
     format_template,
+    get_fn_args,
     get_metadata,
     get_prompt_template,
     parse_prompt_messages,
@@ -345,29 +345,6 @@ def _is_function(
     return isinstance(prompt, types.FunctionType)
 
 
-def _get_prompt_messages_from_prompt_function(
-    fn: Callable,
-    args: tuple[Any, ...],
-    kwargs: dict[str, Any],
-    dynamic_config: BaseDynamicConfig,
-) -> list[BaseMessageParam]:
-    if args:
-        sig = inspect.signature(fn)
-        bound_args = sig.bind(*args, **kwargs)
-        bound_args.apply_defaults()
-        fn_args = dict(bound_args.arguments)
-    else:
-        fn_args = kwargs
-    prompt_template = get_prompt_template(fn)
-    assert prompt_template is not None, "The function must have a docstring."
-    return parse_prompt_messages(
-        roles=["system", "user", "assistant"],
-        template=prompt_template,
-        attrs=fn_args,
-        dynamic_config=dynamic_config,
-    )
-
-
 def prompt_template(template: str) -> PromptDecorator:
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
@@ -429,10 +406,10 @@ def prompt_template(template: str) -> PromptDecorator:
             async def get_base_message_params_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
-                return _get_prompt_messages_from_prompt_function(
-                    prompt,
-                    args=args,
-                    kwargs=kwargs,
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=await prompt(*args, **kwargs),
                 )
 
@@ -445,10 +422,10 @@ def prompt_template(template: str) -> PromptDecorator:
             def get_base_message_params(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
-                return _get_prompt_messages_from_prompt_function(
-                    prompt,
-                    args=args,
-                    kwargs=kwargs,
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=prompt(*args, **kwargs),
                 )
 

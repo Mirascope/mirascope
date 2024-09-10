@@ -50,7 +50,7 @@ def setup_call(
 
     if not messages:
         prompt_template = get_prompt_template(fn)
-        assert prompt_template is not None, "The function must have a docstring."
+        assert prompt_template is not None, "The function must have a prompt template."
         messages = parse_prompt_messages(
             roles=["system", "user", "assistant"],
             template=prompt_template,
