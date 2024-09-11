@@ -1,4 +1,4 @@
-# Evaluating Generating SQL with LLM
+# Evaluating Documentation Agent
 
 In this recipe, we will be using taking our [Documentation Agent](https://github.com/Mirascope/mirascope/tree/dev/examples/cookbook/agents/documentation_agent/agent.py) example and running evaluations on the LLM call. We will be exploring various different evaluations we can run to ensure quality and expected behavior.
 

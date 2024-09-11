@@ -61,7 +61,9 @@ def test_create_factory_sync(
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
 
-    output: BaseCallResponse = decorator(fn)("fantasy", topic="magic")  # type: ignore
+    decorated_fn = decorator(fn)
+    assert decorated_fn._model == mock_create_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
+    output: BaseCallResponse = decorated_fn("fantasy", topic="magic")  # type: ignore
 
     assert output.metadata == mock_get_metadata.return_value
     assert output.response == mock_create.return_value
