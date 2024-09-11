@@ -57,7 +57,9 @@ def test_extract_factory_sync(
     def fn(genre: str, *, topic: str) -> None:
         """Recommend a {genre} book on {topic}."""
 
-    output = decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
+    decorated_fn = decorator(fn)
+    assert decorated_fn._model == mock_extract_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
+    output = decorated_fn(genre="fantasy", topic="magic")  # type: ignore
     mock_create_factory.assert_called_once_with(
         TCallResponse=MagicMock, setup_call=mock_setup_call
     )
