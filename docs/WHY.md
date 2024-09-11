@@ -26,6 +26,78 @@ Mirascope addresses these pain points with a philosophy centered on transparency
     - **Type Safety**: Catch errors before runtime with our comprehensive type annotations.
     - **Intuitive API**: Our API is designed to be predictable and easy to learn, following Python best practices.
 
+## Comparison with Official SDKs
+
+Mirascope offers advantages over official SDKs like OpenAI's, particularly in terms of simplicity and developer experience. Let's compare the two:
+
+1. **Simplified Syntax**: 
+   
+OpenAI's official SDK:
+```python
+from openai import OpenAI
+
+client = OpenAI()
+completion = client.chat.completions.create(
+ model="gpt-3.5-turbo",
+ messages=[
+   {"role": "user", "content": "Hello world"}
+ ]
+)
+print(completion.choices[0].message.content)
+```
+
+Mirascope:
+```python
+from mirascope.core import openai, prompt_template
+
+@openai.call("gpt-3.5-turbo")
+@prompt_template("Hello world")
+def hello_world():
+   ...
+
+response = hello_world()
+print(response.content)
+```
+
+   Mirascope's approach streamlines the process using decorators, making it more concise.
+
+2. **Provider Agnosticism**: Mirascope allows you to easily switch between providers without changing your core logic. This is not possible with official SDKs, which are tied to specific providers.
+
+3. **Prompt Management**: Mirascope's `@prompt_template` decorator provides a way to manage prompts separately from logic. Official SDKs often mix prompts with API calls.
+
+4. **Streaming Support**: Let's compare Mirascope and the official streaming implementation:
+
+OpenAI's official streaming implementation:
+```python
+response = client.chat.completions.create(
+model='gpt-3.5-turbo',
+messages=[
+ {'role': 'user', 'content': 'Count to 5.'}
+],
+temperature=0,
+stream=True
+)
+
+for chunk in response:
+ if chunk.choices[0].delta.content is not None:
+     print(chunk.choices[0].delta.content, end="")
+```
+
+Mirascope:
+```python
+@openai.call("gpt-3.5-turbo", stream=True)
+@prompt_template("Count to 5.")
+def count_to_five():
+   ...
+
+for chunk, _ in count_to_five():
+   print(chunk.content, end="", flush=True)
+```
+
+Mirascope's implementation uses decorators to set up streaming and provides a more intuitive interface.
+
+By choosing Mirascope, you'll significantly enhance the efficiency and flexibility of your LLM application development. With its intuitive interface, consistency across providers, and powerful prompt management features, developers can focus on implementing core functionality. Mirascope extends the capabilities of official SDKs, offering a more productive and maintainable development experience. We recommend adopting Mirascope for new projects or improving existing codebases.
+
 This video is just one example of the many benefits Mirascope provides developers:
 
 <video src="https://github.com/user-attachments/assets/174acc23-a026-4754-afd3-c4ca570a9dde" controls="controls" style="max-width: 730px;"></video>
@@ -44,3 +116,6 @@ Mirascope is ideal for:
 Ready to experience the Mirascope difference? Check out our [Learn](./learn/index.md) documentation to begin learning how to build cleaner, more maintainable LLM applications today.
 
 By choosing Mirascope, you're opting for a tool that respects your expertise as a developer while providing the conveniences you need to work efficiently with LLMs. We believe that the best tools get out of your way and let you focus on building great applications.
+```
+
+This updated version removes unsubstantiated claims, includes a comparison with OpenAI's official streaming implementation, and maintains a more balanced tone throughout the document.
