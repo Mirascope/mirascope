@@ -259,7 +259,7 @@ print("OpenAI translation:", openai_translation.content)
 print("Anthropic translation:", anthropic_translation.content)
 ```
 
-With Mirascope, you can easily switch between providers or use multiple providers while keeping your core logic (the `translate_to_french` function) unchanged. This approach provides more flexibility compared to using provider-specific SDKs, allowing for easier experimentation and provider comparisons.
+With Mirascope, you can easily switch between providers or use multiple providers while keeping your prompt template consistent. This approach provides more flexibility compared to using provider-specific SDKs, allowing for easier experimentation and provider comparisons.
 
 By choosing Mirascope, you'll significantly enhance the efficiency and flexibility of your LLM application development. With its intuitive interface, consistency across providers, and powerful prompt management features, developers can focus on implementing core functionality. Mirascope extends the capabilities of official SDKs, offering a more productive and maintainable development experience. We recommend adopting Mirascope for new projects or improving existing codebases.
 
