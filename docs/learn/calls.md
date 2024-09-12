@@ -22,7 +22,9 @@
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
-The primary purpose of the call decorator is to:
+## Purpose and Benefits
+
+The primary purpose of the `call` decorator are to:
 
 - Abstract away the complexities of different LLM APIs
 - Provide a unified interface for making LLM calls
@@ -33,9 +35,9 @@ By using the `call` decorator, you can focus on designing your prompts and handl
 
 ## Basic Usage and Syntax
 
-The basic syntax for using the call decorator is straightforward:
+The basic syntax for using the `call` decorator is straightforward:
 
-```python
+```python hl_lines="4"
 from mirascope.core import openai, prompt_template
 
 
@@ -48,7 +50,13 @@ response = recommend_book("fantasy")
 print(response.content)
 ```
 
-In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book recommendation for a user-specified genre. The call decorator transforms the `recommend_book` function into an LLM API call. The function arguments are automatically injected into the prompt defined in the [`@prompt_template`](./prompts.md#prompt-templates) decorator.
+In this example:
+
+We're using OpenAI's `gpt-4o-mini` model to generate a book recommendation.
+The `@openai.call` decorator transforms the recommend_book function into an LLM API call.
+The [`@prompt_template`](./prompts.md#prompt-templates) decorator defines the prompt structure.
+The `genre` argument is automatically injected into the prompt template.
+
 
 !!! info "Function Body"
 
@@ -56,7 +64,7 @@ In this example, we're using OpenAI's `gpt-4o-mini` model to generate a book rec
 
 ## Supported Providers
 
-Mirascope's call decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
+Mirascope's `call` decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
 
 - [OpenAI](https://openai.com/) (and any provider with an OpenAI compatible endpoint)
 - [Anthropic](https://www.anthropic.com/)
@@ -70,7 +78,7 @@ Mirascope's call decorator supports multiple LLM providers, allowing you to easi
 
 To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same function:
 
-```python
+```python hl_lines="9 12 15"
 from mirascope.core import anthropic, mistral, openai, prompt_template
 
 
@@ -132,7 +140,7 @@ For all providers, we have only included additional call parameters that are not
 
 Here is an example using custom OpenAI call parameters to change the temperature:
 
-```python
+```python hl_lines="4"
 from mirascope.core import openai, prompt_template
 
 
@@ -146,13 +154,15 @@ response = recommend_book("fantasy")
 print(response.content)
 ```
 
+In this example, we're setting the `temperature` parameter to 0.7, which affects the randomness of the model's output. A higher temperature (closer to 1.0) will result in more diverse and creative outputs, while a lower temperature (closer to 0.0) will make the outputs more focused and deterministic.
+
 ## Custom Client
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
 
 To use a custom client, you can pass it to the `call` decorator using the `client` parameter. Here's an example using a custom OpenAI client:
 
-```python
+```python hl_lines="5-9 12"
 from openai import OpenAI
 from mirascope.core import openai, prompt_template
 
@@ -173,6 +183,8 @@ def recommend_book(genre: str):
 response = recommend_book("fantasy")
 print(response.content)
 ```
+
+In this example, we're creating a custom OpenAI client with a specific API key, organization ID, and base URL. This custom client is then passed to the call decorator, allowing us to use a custom endpoint or configuration for our LLM calls.
 
 Any custom client is supported so long as it has the same API as the original base client.
 
@@ -283,13 +295,133 @@ In this example, your IDE will provide proper autocompletion and type checking f
 
 ## Best Practices
 
-- Provider Flexibility: Design functions to be provider-agnostic, allowing easy switching between different LLM providers for comparison or fallback strategies.
-- Provider-Specific Prompts: Tailor prompts to leverage unique features of specific providers when needed, using provider-specific `call` decorators. For example, Anthropic is known to handle prompts with XML particularly well.
-- Error Handling: Implement robust error handling to manage API failures, timeouts, or content policy violations, ensuring your application's resilience. Check out our documentation on [using Tenacity](../integrations/tenacity.md) for how to easily add retries to your error handling logic.
-- Streaming for Long Tasks: Utilize streaming for long-running tasks or when providing real-time updates to users, improving the user experience. Check out the [`Streams`](./streams.md) documentation for more details.
-- Modular Function Design: Break down complex tasks into smaller, modular functions that can be chained together, enhancing reusability and maintainability. Check out the [`Chaining`](./chaining.md) documentation for more details.
-- Custom Clients: Leverage custom clients when working with self-hosted models or specific API configurations, allowing for greater flexibility in deployment scenarios. For example, you can use open-source models by serving OpenAI compatible endpoints (e.g. with `vLLM`, `Ollama`, etc).
-- Structured Outputs: Use `response_models` to ensure consistency and type safety when you need structured data from your LLM calls. Check out the [`Response Models`](./response_models.md) documentation for more details.
-- Parameterized Calls: Take advantage of `call_params` to customoize model behavior without changing your core function logic.
+To make the most of Mirascope's `call` decorator and ensure you're building robust, efficient, and maintainable LLM applications, consider the following best practices:
 
-Mastering the `call` decorator is the next step towards building robust LLM applications with Mirascope that are flexible, efficient, and adaptable to various providers and use cases.
+- **Provider Flexibility**: Design functions to be provider-agnostic, allowing easy switching between different LLM providers for comparison or fallback strategies.
+   ```python
+   @prompt_template("Recommend a {genre} book")
+   def recommend_book(genre: str):
+       ...
+
+   # Can easily switch between providers
+   openai_response = openai.call("gpt-4o-mini")(recommend_book)("fantasy")
+   anthropic_response = anthropic.call("claude-3-5-sonnet-20240620")(recommend_book)("fantasy")
+   ```
+
+- **Provider-Specific Prompts**: When necessary, tailor prompts to leverage unique features of specific providers using provider-specific `call` decorators. For example, Anthropic's Claude model is known to handle prompts with XML particularly well.
+   ```python
+   @anthropic.call("claude-3-5-sonnet-20240620")
+   @prompt_template(
+       """
+       <task>Recommend a {genre} book</task>
+       <format>
+         <title>Book Title</title>
+         <author>Author Name</author>
+         <description>Brief description</description>
+       </format>
+       """
+   )
+   def recommend_book_claude(genre: str):
+       ...
+   ```
+
+- **Error Handling**: Implement robust error handling to manage API failures, timeouts, or content policy violations, ensuring your application's resilience.
+   ```python
+   from openai import OpenAIError
+   from anthropic import AnthropicError
+
+   try:
+       response = recommend_book("fantasy")
+   except OpenAIError as e:
+       print(f"OpenAI error: {e}")
+       # Fallback to another provider or retry logic
+   except AnthropicError as e:
+       print(f"Anthropic error: {e}")
+       # Fallback to another provider or retry logic
+   except Exception as e:
+       print(f"Unexpected error: {e}")
+       # General error handling
+   ```
+
+   For more advanced retry logic, check out our documentation on [using Tenacity](../integrations/tenacity.md).
+
+- **Streaming for Long Tasks**: Utilize streaming for long-running tasks or when providing real-time updates to users, improving the user experience.
+   ```python
+   @openai.call("gpt-4o-mini", stream=True)
+   @prompt_template("Write a short story about {topic}")
+   def write_story(topic: str):
+       ...
+
+   for chunk in write_story("a space adventure"):
+       print(chunk.content, end="", flush=True)
+   ```
+
+   For more details on streaming, check out the [`Streams`](./streams.md) documentation.
+
+- **Modular Function Design**: Break down complex tasks into smaller, modular functions that can be chained together, enhancing reusability and maintainability.
+   ```python
+   @openai.call("gpt-4o-mini")
+   @prompt_template("Summarize this text: {text}")
+   def summarize(text: str):
+       ...
+
+   @openai.call("gpt-4o-mini")
+   @prompt_template("Translate this text to {language}: {summary}")
+   def translate(summary: str, language: str):
+       ...
+
+   def summarize_and_translate(original_text: str, target_language: str):
+       summary = summarize(original_text)
+       return translate(summary.content, target_language)
+   ```
+
+   For more on chaining, see the [`Chaining`](./chaining.md) documentation.
+
+- **Custom Clients**: Leverage custom clients when working with self-hosted models or specific API configurations, allowing for greater flexibility in deployment scenarios.
+   ```python
+   from openai import OpenAI
+
+   custom_client = OpenAI(
+       api_key="your-api-key",
+       base_url="https://your-custom-endpoint.com/v1"
+   )
+
+   @openai.call("gpt-4o-mini", client=custom_client)
+   @prompt_template("Recommend a {genre} book")
+   def recommend_book(genre: str):
+       ...
+   ```
+
+   This approach allows you to use open-source models by serving OpenAI compatible endpoints (e.g., with `vLLM`, `Ollama`, etc).
+
+- **Structured Outputs**: Use `response_models` to ensure consistency and type safety when you need structured data from your LLM calls.
+   ```python
+   from pydantic import BaseModel
+
+   class BookRecommendation(BaseModel):
+       title: str
+       author: str
+       reason: str
+
+   @openai.call("gpt-4o-mini", response_model=BookRecommendation)
+   @prompt_template("Recommend a {genre} book")
+   def recommend_book(genre: str):
+       ...
+
+   recommendation = recommend_book("fantasy")
+   print(f"Title: {recommendation.title}")
+   print(f"Author: {recommendation.author}")
+   print(f"Reason: {recommendation.reason}")
+   ```
+
+   For more details, check out the [`Response Models`](./response_models.md) documentation.
+
+- **Parameterized Calls**: Take advantage of `call_params` to customize model behavior without changing your core function logic.
+   ```python
+   @openai.call("gpt-4o-mini", call_params={"temperature": 0.7, "max_tokens": 150})
+   @prompt_template("Write a short poem about {topic}")
+   def write_poem(topic: str):
+       ...
+   ```
+
+By following these best practices, you can create more robust, flexible, and efficient LLM applications with Mirascope. Remember that mastering the `call` decorator is key to building applications that are adaptable to various providers and use cases.
