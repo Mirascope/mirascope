@@ -30,23 +30,29 @@ Mirascope addresses these pain points with a philosophy centered on transparency
 
 Mirascope offers advantages over official SDKs like OpenAI's, particularly in terms of simplicity and developer experience. Let's compare the two:
 
-1. **Simplified Syntax**: 
-   
+1. **Simplified Syntax**:
+
+Mirascope's approach streamlines the process using decorators, making it more concise and easier to manage. This is particularly evident in handling complex scenarios like streaming, tools, and agents.
+
+Basic Usage:
+
 OpenAI's official SDK:
+
 ```python
 from openai import OpenAI
 
 client = OpenAI()
 completion = client.chat.completions.create(
- model="gpt-3.5-turbo",
- messages=[
-   {"role": "user", "content": "Hello world"}
- ]
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": "Hello world"}
+    ]
 )
 print(completion.choices[0].message.content)
 ```
 
 Mirascope:
+
 ```python
 from mirascope.core import openai, prompt_template
 
@@ -59,31 +65,27 @@ response = hello_world()
 print(response.content)
 ```
 
-   Mirascope's approach streamlines the process using decorators, making it more concise.
+Streaming Example:
 
-2. **Provider Agnosticism**: Mirascope allows you to easily switch between providers without changing your core logic. This is not possible with official SDKs, which are tied to specific providers.
+OpenAI's official SDK:
 
-3. **Prompt Management**: Mirascope's `@prompt_template` decorator provides a way to manage prompts separately from logic. Official SDKs often mix prompts with API calls.
-
-4. **Streaming Support**: Let's compare Mirascope and the official streaming implementation:
-
-OpenAI's official streaming implementation:
 ```python
 response = client.chat.completions.create(
-model='gpt-3.5-turbo',
-messages=[
- {'role': 'user', 'content': 'Count to 5.'}
-],
-temperature=0,
-stream=True
+    model='gpt-3.5-turbo',
+    messages=[
+        {'role': 'user', 'content': 'Count to 5.'}
+    ],
+    temperature=0,
+    stream=True
 )
 
 for chunk in response:
- if chunk.choices[0].delta.content is not None:
-     print(chunk.choices[0].delta.content, end="")
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end="")
 ```
 
 Mirascope:
+
 ```python
 @openai.call("gpt-3.5-turbo", stream=True)
 @prompt_template("Count to 5.")
@@ -91,10 +93,173 @@ def count_to_five():
    ...
 
 for chunk, _ in count_to_five():
-   print(chunk.content, end="", flush=True)
+    print(chunk.content, end="", flush=True)
 ```
 
-Mirascope's implementation uses decorators to set up streaming and provides a more intuitive interface.
+Tools Example:
+
+OpenAI's official SDK:
+
+```python
+import json
+
+def get_current_weather(location, unit="fahrenheit"):
+    # Mock weather data
+    weather_info = f"The current weather in {location} is 72°F."
+    return weather_info
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {"type": "string", "description": "The city and state, e.g. San Francisco, CA"},
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+messages = [{"role": "user", "content": "What's the weather like in Boston?"}]
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=messages,
+    tools=tools,
+    tool_choice="auto",
+)
+if tool_call := response.choices[0].message.tool_calls[0]:
+    function_arguments = json.loads(tool_call.function.arguments)
+    print(get_current_weather(**function_arguments))
+else:
+    print(response.choices[0].message.content)
+```
+
+Mirascope:
+
+```python
+from mirascope.core import BaseTool
+
+class WeatherTool(BaseTool):
+    location: str
+    unit: str = "fahrenheit"
+
+    def call(self) -> str:
+        return f"The current weather in {self.location} is 72°F."
+
+@openai.call("gpt-3.5-turbo", tools=[WeatherTool])
+@prompt_template("What's the weather like in {location}?")
+def get_weather(location: str): ...
+
+response = get_weather("Boston")
+if tool := response.tool:
+    print(tool.call())
+else:
+    print(response.content)
+```
+
+As you can see, Mirascope significantly reduces the amount of boilerplate code, making your LLM interactions more concise and easier to understand at a glance.
+
+2. **Prompt Management**:
+
+Mirascope's `@prompt_template` decorator provides a clean way to manage prompts separately from logic. Official SDKs often mix prompts with API calls.
+
+OpenAI's official SDK:
+
+```python
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f"Translate the following English text to French: '{text}'"}
+    ]
+)
+```
+
+Mirascope:
+
+```python
+@openai.call("gpt-3.5-turbo")
+@prompt_template("""
+    SYSTEM: You are a helpful assistant.
+    USER: Translate the following English text to French: '{text}'
+""")
+def translate_to_french(text: str):
+    ...
+```
+
+This separation of concerns makes it easier to manage and update prompts without touching the core logic of your application.
+
+3. **Provider Agnostic**:
+
+Mirascope allows you to easily switch between providers without changing your core logic. This is not possible with official SDKs, which are tied to specific providers.
+
+Using multiple providers with official SDKs:
+
+OpenAI's official SDK:
+
+```python
+from openai import OpenAI
+
+client = OpenAI()
+completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": "Translate 'Hello, world!' to French"}
+    ]
+)
+print(completion.choices[0].message.content)
+```
+
+Anthropic's official SDK:
+
+```python
+from anthropic import Anthropic
+
+client = Anthropic()
+message = client.messages.create(
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": "Translate 'Hello, world!' to French",
+        }
+    ],
+    model="claude-3-5-sonnet-20240620",
+)
+print(message.content)
+```
+
+Using multiple providers with Mirascope:
+
+```python
+from mirascope.core import openai, anthropic, prompt_template
+
+# Using OpenAI
+@openai.call("gpt-3.5-turbo")
+@prompt_template("Translate '{text}' to French")
+def openai_translate(text: str):
+    ...
+
+# Using Anthropic
+@anthropic.call("claude-3-5-sonnet-20240620")
+@prompt_template("Translate '{text}' to French")
+def anthropic_translate(text: str):
+    ...
+
+openai_translation = openai_translate("Hello, world!")
+anthropic_translation = anthropic_translate("Hello, world!")
+
+print("OpenAI translation:", openai_translation.content)
+print("Anthropic translation:", anthropic_translation.content)
+```
+
+With Mirascope, you can easily switch between providers or use multiple providers while keeping your core logic (the `translate_to_french` function) unchanged. This approach provides more flexibility compared to using provider-specific SDKs, allowing for easier experimentation and provider comparisons.
 
 By choosing Mirascope, you'll significantly enhance the efficiency and flexibility of your LLM application development. With its intuitive interface, consistency across providers, and powerful prompt management features, developers can focus on implementing core functionality. Mirascope extends the capabilities of official SDKs, offering a more productive and maintainable development experience. We recommend adopting Mirascope for new projects or improving existing codebases.
 
@@ -116,6 +281,3 @@ Mirascope is ideal for:
 Ready to experience the Mirascope difference? Check out our [Learn](./learn/index.md) documentation to begin learning how to build cleaner, more maintainable LLM applications today.
 
 By choosing Mirascope, you're opting for a tool that respects your expertise as a developer while providing the conveniences you need to work efficiently with LLMs. We believe that the best tools get out of your way and let you focus on building great applications.
-```
-
-This updated version removes unsubstantiated claims, includes a comparison with OpenAI's official streaming implementation, and maintains a more balanced tone throughout the document.
