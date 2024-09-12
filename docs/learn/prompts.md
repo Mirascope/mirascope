@@ -8,7 +8,7 @@ Prompts are the foundation of effective communication with Large Language Models
 
     [`mirascope.core.base.prompt.prompt_template`](../api/core/base/prompt.md#mirascope.core.base.prompt.prompt_template)
 
-The primary means of writing prompts in Mirascope is through prompt templates, which are formatted strings with additional conveniences. This allows you to define prompts that are dynamic and reusable.
+The primary means of writing prompts in Mirascope is through prompt templates, which are just formatted strings (as they should be) with a few additional conveniences. This allows you to define prompts such that they are dynamic and reusable.
 
 Prompt templates in Mirascope work similarly to f-strings in Python, but with added functionality specifically designed for LLM interactions. The `@prompt_template` decorator automatically injects variables from your class or function into the template.
 
