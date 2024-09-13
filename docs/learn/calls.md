@@ -24,14 +24,14 @@ The `call` decorator is a core feature of the Mirascope library, designed to sim
 
 ## Purpose and Benefits
 
-The primary purpose of the `call` decorator are to:
+The primary purposes and benefits of the `call` decorator are to:
 
-- Abstract away the complexities of different LLM APIs
-- Provide a unified interface for making LLM calls
+- Reduce the learning curve necessary to use various different LLM providers
+- Provide a unified interface for making LLM calls that abstracts away the various differences between provider APIs
 - Enable easy switching between different LLM providers
 - Enhance code readability and maintainability
 
-By using the `call` decorator, you can focus on designing your prompts and handling the LLM responses, rather than dealing with the intricacies of each provider's API.
+By using the `call` decorator, you can focus on engineering your prompts and handling the LLM responses, rather than dealing with the intricacies of each provider's API.
 
 ## Basic Usage and Syntax
 
@@ -52,11 +52,10 @@ print(response.content)
 
 In this example:
 
-We're using OpenAI's `gpt-4o-mini` model to generate a book recommendation.
-The `@openai.call` decorator transforms the recommend_book function into an LLM API call.
-The [`@prompt_template`](./prompts.md#prompt-templates) decorator defines the prompt structure.
-The `genre` argument is automatically injected into the prompt template.
-
+- The [`@prompt_template`](./prompts.md#prompt-templates) decorator turns the function into a prompt template.
+- The `@openai.call` decorator transforms the prompt template into an LLM API call.
+- We're using OpenAI's `gpt-4o-mini` model to make the call.
+- When we call the function with `genre="fantasy"`, the argument is automatically injected into the prompt template and used in the call.
 
 !!! info "Function Body"
 
@@ -76,7 +75,7 @@ Mirascope's `call` decorator supports multiple LLM providers, allowing you to ea
 - [Azure AI](https://azure.microsoft.com/en-us/solutions/ai)
 - [Vertex AI](https://cloud.google.com/vertex-ai)
 
-To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same function:
+To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same prompt template:
 
 ```python hl_lines="9 12 15"
 from mirascope.core import anthropic, mistral, openai, prompt_template
@@ -188,6 +187,32 @@ In this example, we're creating a custom OpenAI client with a specific API key, 
 
 Any custom client is supported so long as it has the same API as the original base client.
 
+## Using the `run` Method
+
+As an alternative to the functional prompt template approach, you can use the `run` method to execute your prompts with different providers. This method allows for more flexibility and easier provider switching. Here's an example:
+
+```python hl_lines="8 12"
+from mirascope.core import anthropic, openai, prompt_template
+
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+# Using OpenAI
+openai_response = recommend_book.run(openai.call(model="gpt-4o-mini"))("fantasy")
+print("OpenAI recommendation:", openai_response.content)
+
+# Using Anthropic
+anthropic_response = recommend_book.run(anthropic.call(model="claude-3-5-sonnet-20240620"))("fantasy")
+print("Anthropic recommendation:", anthropic_response.content)
+```
+
+This approach allows you to easily switch between providers or compare outputs without changing your core prompt logic.
+
+## Metadata
+
+You can add metadata to your calls using the `@metadata` decorator. This can be useful for tracking, categorizing, or adding any additional information to your LLM calls. For more information on using metadata, see the [Metadata documentation](./metadata.md).
+
 ## Handling Responses
 
 ??? api "API Documentation"
@@ -221,7 +246,7 @@ All `BaseCallResponse` objects share these common properties:
 - `message_param`: The assistant's response formatted as a message parameter.
 - `tools`: A list of provider-specific tools used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](./tools.md) documentation for more details.
 - `tool`: The first tool used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](./tools.md) documentation for more details.
-- `metadata`: Any metadata provided using the [`@metadata`](./prompts.md#metadata) decorator.
+- `metadata`: Any metadata provided using the [`@metadata`](./metadata.md) decorator.
 - `tool_types`: A list of tool types used in the call, if any. Otherwise this will be `None`.
 - `prompt_template`: The prompt template used for the call.
 - `fn_args`: The arguments passed to the function.
@@ -260,12 +285,10 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 from openai import OpenAIError
 from mirascope.core import openai, prompt_template
 
-
 @openai.call(model="gpt-4o-mini")
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str):
     ...
-
 
 try:
     response = recommend_book("fantasy")
@@ -304,8 +327,8 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
        ...
 
    # Can easily switch between providers
-   openai_response = openai.call("gpt-4o-mini")(recommend_book)("fantasy")
-   anthropic_response = anthropic.call("claude-3-5-sonnet-20240620")(recommend_book)("fantasy")
+   openai_response = recommend_book.run(openai.call("gpt-4o-mini"))("fantasy")
+   anthropic_response = recommend_book.run(anthropic.call("claude-3-5-sonnet-20240620"))("fantasy")
    ```
 
 - **Provider-Specific Prompts**: When necessary, tailor prompts to leverage unique features of specific providers using provider-specific `call` decorators. For example, Anthropic's Claude model is known to handle prompts with XML particularly well.
@@ -348,11 +371,11 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
 - **Streaming for Long Tasks**: Utilize streaming for long-running tasks or when providing real-time updates to users, improving the user experience.
    ```python
    @openai.call("gpt-4o-mini", stream=True)
-   @prompt_template("Write a short story about {topic}")
-   def write_story(topic: str):
+   @prompt_template("Summarize this book: {title}")
+   def summarize_book(title: str):
        ...
 
-   for chunk in write_story("a space adventure"):
+   for chunk, _ in summarize_book("The Lord of the Rings"):
        print(chunk.content, end="", flush=True)
    ```
 
@@ -401,7 +424,6 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
    class BookRecommendation(BaseModel):
        title: str
        author: str
-       reason: str
 
    @openai.call("gpt-4o-mini", response_model=BookRecommendation)
    @prompt_template("Recommend a {genre} book")
@@ -411,7 +433,6 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
    recommendation = recommend_book("fantasy")
    print(f"Title: {recommendation.title}")
    print(f"Author: {recommendation.author}")
-   print(f"Reason: {recommendation.reason}")
    ```
 
    For more details, check out the [`Response Models`](./response_models.md) documentation.
