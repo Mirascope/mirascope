@@ -16,7 +16,7 @@ This feature can be extremely useful when extracting structured information or u
 
 #### Tools
 
-To use structured outputs with tools, use the `OpenAIToolConfig` and set `strict=True`. You can then use the tool just like you normally would:
+To use structured outputs with tools, use the `OpenAIToolConfig` and set `strict=True`. You can then use the tool as described in our [Tools documentation](../learn/tools.md):
 
 ```python hl_lines="9"
 from mirascope.core import BaseTool, openai, prompt_template
@@ -53,36 +53,68 @@ For comparison, here's how you might implement this using the official OpenAI SD
 
 ```python
 from openai import OpenAI
-import json
+from pydantic import BaseModel
 
 client = OpenAI()
 
-def format_book(title: str, author: str) -> str:
-    return f"{title} by {author}"
-
-function_json = {
-    "name": "format_book",
-    "description": "Format a book's title and author",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "title": {"type": "string", "description": "The title of the book"},
-            "author": {"type": "string", "description": "The author of the book"}
-        },
-        "required": ["title", "author"]
-    }
-}
+class Book(BaseModel):
+    title: str
+    author: str
 
 response = client.chat.completions.create(
     model="gpt-4o-2024-08-06",
-    messages=[{"role": "user", "content": "Recommend a fantasy book"}],
-    functions=[function_json],
-    function_call={"name": "format_book"}
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant that recommends books to output JSON.."},
+        {"role": "user", "content": "Recommend a fantasy book"}
+    ],
+    response_format={"type": "json_object"},
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": "format_book",
+            "description": "Format a book's title and author",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "author": {"type": "string"}
+                },
+                "required": ["title", "author"]
+            }
+        }
+    }],
+    tool_choice={"type": "function", "function": {"name": "format_book"}}
 )
 
-function_args = json.loads(response.choices[0].message.function_call.arguments)
-result = format_book(**function_args)
-print(result)
+book_info = response.choices[0].message.tool_calls[0].function.arguments
+book = Book.model_validate_json(book_info)
+print(f"{book.title} by {book.author}")
+# > The Name of the Wind by Patrick Rothfuss
+```
+
+OpenAI also provides a beta endpoint that allows for more direct use of Pydantic models:
+
+```python
+from pydantic import BaseModel
+from openai import OpenAI
+
+client = OpenAI()
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+completion = client.beta.chat.completions.parse(
+    model="gpt-4o-2024-08-06",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant that recommends books."},
+        {"role": "user", "content": "Recommend a fantasy book"}
+    ],
+    response_format=Book,
+)
+book = completion.choices[0].message.parsed
+
+print(f"{book.title} by {book.author}")
 # > The Name of the Wind by Patrick Rothfuss
 ```
 
