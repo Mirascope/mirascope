@@ -8,6 +8,7 @@ from typing import (
     ClassVar,
     ParamSpec,
     Protocol,
+    TypeAlias,
     TypeVar,
     overload,
 )
@@ -21,12 +22,13 @@ from ._utils import (
     get_fn_args,
     get_metadata,
     get_prompt_template,
+    parse_content_template,
     parse_prompt_messages,
 )
 from ._utils._protocols import fn_is_async
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
-from .message_param import BaseMessageParam
+from .message_param import BaseMessageParam, Messages
 from .metadata import Metadata
 from .stream import BaseStream
 
@@ -307,18 +309,24 @@ class BasePrompt(BaseModel):
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_MessageFuncReturnTypes: TypeAlias = (
+    str | BaseMessageParam | list[BaseMessageParam] | list[Any]
+)
+_MessageFuncReturnT = TypeVar(
+    "_MessageFuncReturnT", bound=_MessageFuncReturnTypes, covariant=True
+)
 
 
 class PromptDecorator(Protocol):
     @overload
     def __call__(
         self, prompt: Callable[_P, BaseDynamicConfig]
-    ) -> Callable[_P, list[BaseMessageParam]]: ...
+    ) -> Callable[_P, Messages]: ...
 
     @overload
     def __call__(
         self, prompt: Callable[_P, Awaitable[BaseDynamicConfig]]
-    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+    ) -> Callable[_P, Awaitable[Messages]]: ...
 
     @overload
     def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
@@ -329,9 +337,7 @@ class PromptDecorator(Protocol):
         | Callable[_P, BaseDynamicConfig]
         | Callable[_P, Awaitable[BaseDynamicConfig]],
     ) -> (
-        Callable[_P, list[BaseMessageParam]]
-        | Callable[_P, Awaitable[list[BaseMessageParam]]]
-        | type[_BasePromptT]
+        Callable[_P, Messages] | Callable[_P, Awaitable[Messages]] | type[_BasePromptT]
     ): ...
 
 
@@ -345,7 +351,151 @@ def _is_function(
     return isinstance(prompt, types.FunctionType)
 
 
-def prompt_template(template: str) -> PromptDecorator:
+def _is_message_param_function(
+    messages_fn: Callable | None | str,
+) -> TypeIs[Callable]:
+    return isinstance(messages_fn, types.FunctionType)
+
+
+class WrappedMessagesAsyncFunction(Protocol[_P]):
+    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> Awaitable[Messages]: ...
+
+
+class WrappedMessagesSyncFunction(Protocol[_P]):
+    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> Messages: ...
+
+
+class MessagesSyncFunction(Protocol[_P, _MessageFuncReturnT]):
+    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> _MessageFuncReturnT: ...
+
+
+class MessagesAsyncFunction(Protocol[_P, _MessageFuncReturnT]):
+    def __call__(
+        *args: _P.args, **kwargs: _P.kwargs
+    ) -> Awaitable[_MessageFuncReturnT]: ...
+
+
+MessagesFunction = MessagesSyncFunction | MessagesAsyncFunction
+
+
+class MessagesDecorator(Protocol[_P]):
+    @overload
+    def __call__(
+        self,
+        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesSyncFunction[_P]: ...
+
+    @overload
+    def __call__(
+        self,
+        messages_fn: MessagesAsyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesAsyncFunction[_P]: ...
+
+    def __call__(
+        self,
+        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]
+        | MessagesAsyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesSyncFunction[_P] | WrappedMessagesAsyncFunction[_P]: ...
+
+
+def _parse_messages(value: object, attrs: dict[str, Any]) -> Messages:
+    if isinstance(value, str):
+        if parsed_message := parse_content_template("user", value, attrs):
+            return [parsed_message]
+        return []
+    if isinstance(value, BaseMessageParam):
+        return [value]
+    if isinstance(value, list):
+        if all(isinstance(item, BaseMessageParam) for item in value):
+            return value
+        if all(isinstance(item, str) for item in value):
+            if parsed_messages := parse_content_template("user", value, attrs):
+                return [parsed_messages]
+            return []
+        # How to detect non-text types?
+
+    raise ValueError(f"Invalid message type: {type(value)} for value: {value}")
+
+
+def _messages_decorator() -> MessagesDecorator:
+    @overload
+    def inner(
+        messages_fn: Callable[
+            ..., Awaitable[str | BaseMessageParam | list[BaseMessageParam] | list[Any]]
+        ],
+    ) -> WrappedMessagesAsyncFunction: ...
+
+    @overload
+    def inner(
+        messages_fn: Callable[
+            ..., str | BaseMessageParam | list[BaseMessageParam] | list[Any]
+        ],
+    ) -> WrappedMessagesSyncFunction: ...
+
+    def inner(
+        messages_fn: Callable[
+            ..., str | BaseMessageParam | list[BaseMessageParam] | list[Any]
+        ]
+        | Callable[
+            ..., Awaitable[str | BaseMessageParam | list[BaseMessageParam] | list[Any]]
+        ],
+    ) -> WrappedMessagesAsyncFunction | WrappedMessagesSyncFunction:
+        if fn_is_async(messages_fn):
+
+            @wraps(messages_fn)
+            async def get_base_message_params_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> Messages:
+                raw_messages = await messages_fn(*args, **kwargs)
+                return _parse_messages(
+                    raw_messages, get_fn_args(messages_fn, args, kwargs)
+                )
+
+            return get_base_message_params_async
+        else:
+
+            @wraps(messages_fn)
+            def get_base_message_params(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> Messages:
+                raw_messages = messages_fn(*args, **kwargs)
+                return _parse_messages(
+                    raw_messages, get_fn_args(messages_fn, args, kwargs)
+                )
+
+            return get_base_message_params
+
+    return inner
+
+
+@overload
+def prompt_template(template_or_message_function: str) -> PromptDecorator: ...
+
+
+@overload
+def prompt_template(
+    template_or_message_function: MessagesSyncFunction,
+) -> WrappedMessagesSyncFunction: ...
+
+
+@overload
+def prompt_template(
+    template_or_message_function: MessagesAsyncFunction,
+) -> WrappedMessagesAsyncFunction: ...
+
+
+@overload
+def prompt_template(template_or_message_function: None = None) -> MessagesDecorator: ...
+
+
+def prompt_template(
+    template_or_message_function: str | MessagesFunction | None = None,
+) -> (
+    PromptDecorator
+    | MessagesDecorator
+    | WrappedMessagesSyncFunction
+    | WrappedMessagesAsyncFunction
+):
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#prompt-templates
@@ -372,15 +522,23 @@ def prompt_template(template: str) -> PromptDecorator:
             attribute of the decorated input prompt or call.
     """
 
+    if template_or_message_function is None:
+        # For @prompt_template() case
+        return _messages_decorator()
+
+    if _is_message_param_function(template_or_message_function):
+        # For @prompt_template case
+        return _messages_decorator()(template_or_message_function)
+
     @overload
     def inner(
         prompt: Callable[_P, BaseDynamicConfig],
-    ) -> Callable[_P, list[BaseMessageParam]]: ...
+    ) -> Callable[_P, Messages]: ...
 
     @overload
     def inner(
         prompt: Callable[_P, Awaitable[BaseDynamicConfig]],
-    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+    ) -> Callable[_P, Awaitable[Messages]]: ...
 
     @overload
     def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
@@ -390,12 +548,10 @@ def prompt_template(template: str) -> PromptDecorator:
         | Callable[_P, BaseDynamicConfig]
         | Callable[_P, Awaitable[BaseDynamicConfig]],
     ) -> (
-        Callable[_P, list[BaseMessageParam]]
-        | Callable[_P, Awaitable[list[BaseMessageParam]]]
-        | type[_BasePromptT]
+        Callable[_P, Messages] | Callable[_P, Awaitable[Messages]] | type[_BasePromptT]
     ):
         """Updates the `prompt_template` class attribute to the given value."""
-        prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
+        prompt._prompt_template = template_or_message_function  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
 
         if not _is_function(prompt):
             return prompt
@@ -405,10 +561,10 @@ def prompt_template(template: str) -> PromptDecorator:
             @wraps(prompt)
             async def get_base_message_params_async(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> list[BaseMessageParam]:
+            ) -> Messages:
                 return parse_prompt_messages(
                     roles=["system", "user", "assistant"],
-                    template=template,
+                    template=template_or_message_function,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=await prompt(*args, **kwargs),
                 )
@@ -421,10 +577,10 @@ def prompt_template(template: str) -> PromptDecorator:
             @wraps(prompt)
             def get_base_message_params(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> list[BaseMessageParam]:
+            ) -> Messages:
                 return parse_prompt_messages(
                     roles=["system", "user", "assistant"],
-                    template=template,
+                    template=template_or_message_function,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=prompt(*args, **kwargs),
                 )

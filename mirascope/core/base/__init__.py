@@ -13,6 +13,7 @@ from .message_param import (
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
+    Messages,
     TextPart,
 )
 from .metadata import Metadata
@@ -42,6 +43,7 @@ __all__ = [
     "GenerateJsonSchemaNoTitles",
     "ImagePart",
     "metadata",
+    "Messages",
     "Metadata",
     "prompt_template",
     "ResponseModelConfigDict",

@@ -1,13 +1,19 @@
 """Tests for the `base_prompt` module."""
 
 import os
-from typing import ClassVar
+from typing import ClassVar, Any
 from unittest.mock import AsyncMock, MagicMock
 
+import PIL.Image as Image
 import pytest
 from pydantic import computed_field
 
-from mirascope.core.base.message_param import BaseMessageParam
+from mirascope.core.base.message_param import (
+    BaseMessageParam,
+    Message,
+    Messages,
+    TextPart,
+)
 from mirascope.core.base.prompt import BasePrompt, metadata, prompt_template
 
 
@@ -229,3 +235,113 @@ def test_metadata_decorator() -> None:
     def fn() -> None: ...
 
     assert hasattr(fn, "_metadata") and fn._metadata == {"tags": {"version:0001"}}  # pyright: ignore [reportFunctionMemberAccess]
+
+
+def test_prompt_template_str_return():
+    @prompt_template
+    def recommend_book(genre: str) -> str:
+        return f"recommend a {genre} book"
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert result[0].content == "recommend a fantasy book"
+
+def test_prompt_template_with_none_argument_str_return():
+    @prompt_template()
+    def recommend_book(genre: str) -> str:
+        return f"recommend a {genre} book"
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert result[0].content == "recommend a fantasy book"
+
+@pytest.mark.asyncio
+async def test_prompt_template_str_return_async():
+    @prompt_template
+    async def recommend_book(genre: str) -> str:
+        return f"recommend a {genre} book"
+
+    result = await recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert result[0].content == "recommend a fantasy book"
+
+def test_list_str_return():
+    @prompt_template
+    def recommend_book(genre: str) -> list[str]:
+        return ["hello!", f"recommend a {genre} book"]
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result == [
+        BaseMessageParam(
+            role="user",
+            content=[
+                TextPart(type="text", text="hello!"),
+                TextPart(type="text", text="recommend a fantasy book"),
+            ],
+        )
+    ]
+
+
+def test_list_message_role_return():
+    @prompt_template
+    def recommend_book(genre: str) -> Messages:
+        return [
+            Message.System("You are a librarian"),
+            Message.User(f"recommend a {genre} book"),
+        ]
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "system"
+    assert result[0].content == "You are a librarian"
+    assert isinstance(result[1], BaseMessageParam)
+    assert result[1].role == "user"
+    assert result[1].content == "recommend a fantasy book"
+
+
+def test_base_message_param_return():
+    @prompt_template
+    def recommend_book(genre: str) -> BaseMessageParam:
+        return BaseMessageParam(
+            role="user", content=f"hello! recommend a {genre} book"
+        )
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert result[0].content == "hello! recommend a fantasy book"
+
+
+def test_multimodal_return():
+    @prompt_template
+    def recommend_book(previous_book: Image.Image) -> list[Any]:
+        return ["I just read this book:", previous_book, "What should I read next?"]
+
+    # Create a dummy image
+    dummy_image = Image.new("RGB", (100, 100))
+
+    result = recommend_book(dummy_image)
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert len(result[0].content) == 3
+    assert result[0].content[0] == "I just read this book:"
+    assert isinstance(result[0].content[1], Image.Image)
+    assert result[0].content[2] == "What should I read next?"

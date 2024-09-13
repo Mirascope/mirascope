@@ -147,17 +147,25 @@ def _construct_parts(
 
 
 def parse_content_template(
-    role: str, template: str, attrs: dict[str, Any]
+    role: str, template: str | list[Any], attrs: dict[str, Any]
 ) -> BaseMessageParam | None:
     """Returns the content template parsed and formatted as a message parameter."""
     if not template:
         return None
 
-    parts = [
-        item
-        for part in _parse_parts(template)
-        for item in _construct_parts(part, attrs)
-    ]
+    if isinstance(template, list):
+        parts = [
+            item
+            for template_part in template
+            for part in _parse_parts(template_part)
+            for item in _construct_parts(part, attrs)
+        ]
+    else:
+        parts = [
+            item
+            for part in _parse_parts(template)
+            for item in _construct_parts(part, attrs)
+        ]
 
     if not parts:
         return None
