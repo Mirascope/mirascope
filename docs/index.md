@@ -75,7 +75,7 @@ print(book)
 - LLM Calls: Simplified API interactions across multiple providers
 - Streaming: Real-time responses for improved user experience
 - Custom Tools: Extend LLM capabilities with your own functions
-- Agent: Effortless manage state and integrate custom tools
+- Agent: Effortlessly manage state and integrate custom tools
 
 ## Next Steps
 
