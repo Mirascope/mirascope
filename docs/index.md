@@ -1,6 +1,6 @@
 # Getting Started with Mirascope
 
-Mirascope: Build powerful LLM applications with ease.
+Mirascope: LLM abstractions that aren't obstructions.
 
 ## Quick Start
 
