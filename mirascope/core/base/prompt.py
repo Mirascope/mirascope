@@ -313,7 +313,7 @@ _MessageFuncReturnTypes: TypeAlias = (
     str | BaseMessageParam | list[BaseMessageParam] | list[Any]
 )
 _MessageFuncReturnT = TypeVar(
-    "_MessageFuncReturnT", bound=_MessageFuncReturnTypes, covariant=True
+    "_MessageFuncReturnT", bound=_MessageFuncReturnTypes, contravariant=True
 )
 
 
@@ -351,34 +351,14 @@ def _is_function(
     return isinstance(prompt, types.FunctionType)
 
 
-def _is_message_param_function(
-    messages_fn: Callable | None | str,
-) -> TypeIs[Callable]:
-    return isinstance(messages_fn, types.FunctionType)
+WrappedMessagesAsyncFunction: TypeAlias = Callable[_P, Awaitable[Messages]]
+WrappedMessagesSyncFunction: TypeAlias = Callable[_P, Messages]
+
+MessagesSyncFunction: TypeAlias = Callable[_P, _MessageFuncReturnT]
+MessagesAsyncFunction: TypeAlias = Callable[_P, Awaitable[_MessageFuncReturnT]]
 
 
-class WrappedMessagesAsyncFunction(Protocol[_P]):
-    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> Awaitable[Messages]: ...
-
-
-class WrappedMessagesSyncFunction(Protocol[_P]):
-    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> Messages: ...
-
-
-class MessagesSyncFunction(Protocol[_P, _MessageFuncReturnT]):
-    def __call__(*args: _P.args, **kwargs: _P.kwargs) -> _MessageFuncReturnT: ...
-
-
-class MessagesAsyncFunction(Protocol[_P, _MessageFuncReturnT]):
-    def __call__(
-        *args: _P.args, **kwargs: _P.kwargs
-    ) -> Awaitable[_MessageFuncReturnT]: ...
-
-
-MessagesFunction = MessagesSyncFunction | MessagesAsyncFunction
-
-
-class MessagesDecorator(Protocol[_P]):
+class MessagesDecorator(Protocol):
     @overload
     def __call__(
         self,
@@ -396,6 +376,18 @@ class MessagesDecorator(Protocol[_P]):
         messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]
         | MessagesAsyncFunction[_P, _MessageFuncReturnT],
     ) -> WrappedMessagesSyncFunction[_P] | WrappedMessagesAsyncFunction[_P]: ...
+
+
+def _is_message_param_function(
+    messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]
+    | MessagesAsyncFunction[_P, _MessageFuncReturnT]
+    | None
+    | str,
+) -> TypeIs[
+    MessagesSyncFunction[_P, _MessageFuncReturnT]
+    | MessagesAsyncFunction[_P, _MessageFuncReturnT]
+]:
+    return isinstance(messages_fn, types.FunctionType)
 
 
 def _parse_messages(value: object, attrs: dict[str, Any]) -> Messages:
@@ -420,26 +412,18 @@ def _parse_messages(value: object, attrs: dict[str, Any]) -> Messages:
 def _messages_decorator() -> MessagesDecorator:
     @overload
     def inner(
-        messages_fn: Callable[
-            ..., Awaitable[str | BaseMessageParam | list[BaseMessageParam] | list[Any]]
-        ],
-    ) -> WrappedMessagesAsyncFunction: ...
+        messages_fn: MessagesAsyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesAsyncFunction[_P]: ...
 
     @overload
     def inner(
-        messages_fn: Callable[
-            ..., str | BaseMessageParam | list[BaseMessageParam] | list[Any]
-        ],
-    ) -> WrappedMessagesSyncFunction: ...
+        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesSyncFunction[_P]: ...
 
     def inner(
-        messages_fn: Callable[
-            ..., str | BaseMessageParam | list[BaseMessageParam] | list[Any]
-        ]
-        | Callable[
-            ..., Awaitable[str | BaseMessageParam | list[BaseMessageParam] | list[Any]]
-        ],
-    ) -> WrappedMessagesAsyncFunction | WrappedMessagesSyncFunction:
+        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]
+        | MessagesAsyncFunction[_P, _MessageFuncReturnT],
+    ) -> WrappedMessagesAsyncFunction[_P] | WrappedMessagesSyncFunction[_P]:
         if fn_is_async(messages_fn):
 
             @wraps(messages_fn)
@@ -474,14 +458,14 @@ def prompt_template(template_or_message_function: str) -> PromptDecorator: ...
 
 @overload
 def prompt_template(
-    template_or_message_function: MessagesSyncFunction,
-) -> WrappedMessagesSyncFunction: ...
+    template_or_message_function: MessagesSyncFunction[_P, _MessageFuncReturnT],
+) -> WrappedMessagesSyncFunction[_P]: ...
 
 
 @overload
 def prompt_template(
-    template_or_message_function: MessagesAsyncFunction,
-) -> WrappedMessagesAsyncFunction: ...
+    template_or_message_function: MessagesAsyncFunction[_P, _MessageFuncReturnT],
+) -> WrappedMessagesAsyncFunction[_P]: ...
 
 
 @overload
@@ -489,12 +473,15 @@ def prompt_template(template_or_message_function: None = None) -> MessagesDecora
 
 
 def prompt_template(
-    template_or_message_function: str | MessagesFunction | None = None,
+    template_or_message_function: str
+    | MessagesSyncFunction[_P, _MessageFuncReturnT]
+    | MessagesAsyncFunction[_P, _MessageFuncReturnT]
+    | None = None,
 ) -> (
     PromptDecorator
     | MessagesDecorator
-    | WrappedMessagesSyncFunction
-    | WrappedMessagesAsyncFunction
+    | WrappedMessagesSyncFunction[_P]
+    | WrappedMessagesAsyncFunction[_P]
 ):
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
@@ -588,7 +575,7 @@ def prompt_template(
             get_base_message_params._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
             return get_base_message_params
 
-    return inner
+    return inner  # pyright: ignore [reportReturnType]
 
 
 class MetadataDecorator(Protocol):

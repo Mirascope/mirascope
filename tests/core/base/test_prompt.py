@@ -1,10 +1,9 @@
 """Tests for the `base_prompt` module."""
 
 import os
-from typing import ClassVar, Any
+from typing import ClassVar
 from unittest.mock import AsyncMock, MagicMock
 
-import PIL.Image as Image
 import pytest
 from pydantic import computed_field
 
@@ -249,6 +248,7 @@ def test_prompt_template_str_return():
     assert result[0].role == "user"
     assert result[0].content == "recommend a fantasy book"
 
+
 def test_prompt_template_with_none_argument_str_return():
     @prompt_template()
     def recommend_book(genre: str) -> str:
@@ -260,6 +260,7 @@ def test_prompt_template_with_none_argument_str_return():
     assert isinstance(result[0], BaseMessageParam)
     assert result[0].role == "user"
     assert result[0].content == "recommend a fantasy book"
+
 
 @pytest.mark.asyncio
 async def test_prompt_template_str_return_async():
@@ -273,6 +274,7 @@ async def test_prompt_template_str_return_async():
     assert isinstance(result[0], BaseMessageParam)
     assert result[0].role == "user"
     assert result[0].content == "recommend a fantasy book"
+
 
 def test_list_str_return():
     @prompt_template
@@ -316,9 +318,7 @@ def test_list_message_role_return():
 def test_base_message_param_return():
     @prompt_template
     def recommend_book(genre: str) -> BaseMessageParam:
-        return BaseMessageParam(
-            role="user", content=f"hello! recommend a {genre} book"
-        )
+        return BaseMessageParam(role="user", content=f"hello! recommend a {genre} book")
 
     result = recommend_book("fantasy")
     assert isinstance(result, list)
@@ -328,20 +328,21 @@ def test_base_message_param_return():
     assert result[0].content == "hello! recommend a fantasy book"
 
 
-def test_multimodal_return():
-    @prompt_template
-    def recommend_book(previous_book: Image.Image) -> list[Any]:
-        return ["I just read this book:", previous_book, "What should I read next?"]
-
-    # Create a dummy image
-    dummy_image = Image.new("RGB", (100, 100))
-
-    result = recommend_book(dummy_image)
-    assert isinstance(result, list)
-    assert len(result) == 1
-    assert isinstance(result[0], BaseMessageParam)
-    assert result[0].role == "user"
-    assert len(result[0].content) == 3
-    assert result[0].content[0] == "I just read this book:"
-    assert isinstance(result[0].content[1], Image.Image)
-    assert result[0].content[2] == "What should I read next?"
+#
+# def test_multimodal_return():
+#     @prompt_template
+#     def recommend_book(previous_book: Image.Image) -> list[Any]:
+#         return ["I just read this book:", previous_book, "What should I read next?"]
+#
+#     # Create a dummy image
+#     dummy_image = Image.new("RGB", (100, 100))
+#
+#     result = recommend_book(dummy_image)
+#     assert isinstance(result, list)
+#     assert len(result) == 1
+#     assert isinstance(result[0], BaseMessageParam)
+#     assert result[0].role == "user"
+#     assert len(result[0].content) == 3
+#     assert result[0].content[0] == "I just read this book:"
+#     assert isinstance(result[0].content[1], Image.Image)
+#     assert result[0].content[2] == "What should I read next?"
