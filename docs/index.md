@@ -26,23 +26,32 @@ Create your first LLM-powered function:
 from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
-@prompt_template("What is the capital of {country}?")
-def get_capital(country: str): ...
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
 
-response = get_capital("Japan")
-print(response.content)
-# Output: The capital of Japan is Tokyo.
+print(recommend_book("fantasy"))
+# > I recommend "The Name of the Wind" by Patrick Rothfuss.
 ```
 
-Example of streaming responses:
+Easily generate a structured output instead:
 
 ```python
-@openai.call("gpt-4o-mini", stream=True)
-@prompt_template("Write a short story about {topic}")
-def stream_story(topic: str): ...
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
 
-for chunk, _ in stream_story("a magical forest"):
-    print(chunk.content, end="", flush=True)
+class Book(BaseModel):
+    title: str
+    author: str
+
+@openai.call("gpt-4o-mini", response_model=Book)
+@prompt_template("Extract {book}")
+def extract_book(book: str): ...
+
+book = extract_book("The Name of the Wind by Patrick Rothfuss")
+assert isinstance(book, Book)
+print(book)
+# > title='The Name of the Wind' author='Patrick Rothfuss'
 ```
 
 ## Choose Your Path
@@ -62,11 +71,11 @@ for chunk, _ in stream_story("a magical forest"):
 
 ## Key Features
 
-- LLM Calls: Simplified API interactions across multiple providers
 - Prompt Templates: Dynamic prompt creation with type-safe templating
-- Custom Tools: Extend LLM capabilities with your own functions
+- LLM Calls: Simplified API interactions across multiple providers
 - Streaming: Real-time responses for improved user experience
-- Agent State Management: Maintain conversation context and history effortlessly
+- Custom Tools: Extend LLM capabilities with your own functions
+- Agent: Effortless manage state and integrate custom tools
 
 ## Next Steps
 
@@ -74,4 +83,4 @@ for chunk, _ in stream_story("a magical forest"):
 - Join our [Slack Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) for support and collaboration
 - Star us on [GitHub](https://github.com/Mirascope/mirascope) to stay updated with the latest developments
 
-Ready to revolutionize your LLM development? Let's get started with Mirascope!
+We're excited to see what you'll build with Mirascope, and we're here to help! Don't hesitate to reach out :)
