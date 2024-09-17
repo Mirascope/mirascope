@@ -109,7 +109,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
         }
 
     @abstractmethod
-    def call(self) -> Any:  # noqa: ANN401
+    def call(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         """The method to call the tool."""
         ...
 
