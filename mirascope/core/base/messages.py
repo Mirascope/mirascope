@@ -1,22 +1,12 @@
-"""This module contains the base class for message parameters."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
 
-from . import AudioPart, BaseMessageParam, CacheControlPart, ImagePart, TextPart
+from . import AudioPart, BaseMessageParam, ImagePart, TextPart
 from ._utils._convert_messages_to_message_params import (
     Image,
-    convert_message_sequence_to_content,
+    get_content_from_message,
 )
-
-
-def _get_content_from_message(
-    content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-) -> str | list[TextPart | ImagePart | AudioPart | CacheControlPart]:
-    if isinstance(content, str):
-        return content
-    return convert_message_sequence_to_content(content)
 
 
 class Messages:
@@ -33,7 +23,7 @@ class Messages:
             content: str
             | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
         ) -> None:
-            super().__init__(content=_get_content_from_message(content), role="system")
+            super().__init__(content=get_content_from_message(content), role="system")
 
     class User(BaseMessageParam):
         def __init__(
@@ -41,7 +31,7 @@ class Messages:
             content: str
             | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
         ) -> None:
-            super().__init__(content=_get_content_from_message(content), role="user")
+            super().__init__(content=get_content_from_message(content), role="user")
 
     class Assistant(BaseMessageParam):
         def __init__(
@@ -50,6 +40,6 @@ class Messages:
             | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
         ) -> None:
             super().__init__(
-                content=_get_content_from_message(content),
+                content=get_content_from_message(content),
                 role="assistant",
             )

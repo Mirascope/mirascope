@@ -2,15 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    try:
-        from PIL import Image
-    except ImportError:
-        Image = object
 
 
 class TextPart(BaseModel):

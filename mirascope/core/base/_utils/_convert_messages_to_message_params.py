@@ -46,7 +46,15 @@ def _convert_message_sequence_part_to_content_part(
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")
 
 
-def convert_message_sequence_to_content(
+def get_content_from_message(
+    content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+) -> str | list[TextPart | ImagePart | AudioPart | CacheControlPart]:
+    if isinstance(content, str):
+        return content
+    return _convert_message_sequence_to_content(content)
+
+
+def _convert_message_sequence_to_content(
     message_sequence: Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
 ) -> list[TextPart | ImagePart | AudioPart | CacheControlPart]:
     return [
@@ -77,7 +85,7 @@ def convert_messages_to_message_params(
     elif isinstance(messages, Sequence):
         return [
             BaseMessageParam(
-                content=convert_message_sequence_to_content(messages), role=role
+                content=_convert_message_sequence_to_content(messages), role=role
             )
         ]
     else:

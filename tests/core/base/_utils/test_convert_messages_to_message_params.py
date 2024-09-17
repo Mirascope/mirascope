@@ -6,8 +6,8 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.base import AudioPart, ImagePart, TextPart
 from mirascope.core.base._utils._convert_messages_to_message_params import (
     _convert_message_sequence_part_to_content_part,
+    _convert_message_sequence_to_content,
     _is_base_message_params,
-    convert_message_sequence_to_content,
     convert_messages_to_message_params,
 )
 
@@ -120,7 +120,7 @@ def test_convert_message_sequence_to_content():
             audio=b"audio_bytes",
         ),
     ]
-    result = convert_message_sequence_to_content(input_sequence)
+    result = _convert_message_sequence_to_content(input_sequence)
     assert result == expected_output
 
 
