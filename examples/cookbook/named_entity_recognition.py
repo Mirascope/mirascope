@@ -9,12 +9,9 @@ class SimpleEntity(BaseModel):
     entity: str = Field(description="The entity found in the text")
     label: str = Field(description="The label of the entity (e.g., PERSON, ORGANIZATION, LOCATION)")
 
-class SimpleNER(BaseModel):
-    entities: List[SimpleEntity] = Field(description="List of named entities found in the text")
-
 @groq.call(
     model="llama-3.1-8b-instant",
-    response_model=SimpleNER,
+    response_model=List[SimpleEntity],
     json_mode=True,
     call_params=call_params,
 )
@@ -31,12 +28,9 @@ class NestedEntity(BaseModel):
     parent: Optional[str] = Field(description="The parent entity if this entity is nested within another entity", default=None)
     children: List['NestedEntity'] = Field(default_factory=list, description="Nested entities within this entity")
 
-class ImprovedNER(BaseModel):
-    entities: List[NestedEntity] = Field(description="List of top-level named entities found in the text")
-
 @groq.call(
     model="llama-3.1-8b-instant",
-    response_model=ImprovedNER,
+    response_model=List[NestedEntity],
     json_mode=True,
     call_params=call_params,
 )
@@ -74,7 +68,7 @@ Apple Inc., the tech giant founded by Steve Jobs and Steve Wozniak, recently ann
 
 print("Simple NER Results:")
 simple_result = simple_ner(complex_text)
-for entity in simple_result.entities:
+for entity in simple_result:
     print(f"Entity: {entity.entity}, Label: {entity.label}")
 
 print("\nImproved NER Results:")
@@ -88,7 +82,7 @@ def print_nested_entities(entities, level=0):
         if entity.children:
             print_nested_entities(entity.children, level + 1)
 
-print_nested_entities(improved_result.entities)
+print_nested_entities(improved_result)
 
 
 
@@ -169,7 +163,7 @@ def test_ner_system(recognize_entities_func):
     for i, test_case in enumerate(test_cases, 1):
         print(f"\n--- Test Case {i} ---")
         response = recognize_entities_func(test_case)
-        for entity in response.entities:
+        for entity in response:
             print_entity_tree(entity)
         print("\n" + "=" * 50)
 
