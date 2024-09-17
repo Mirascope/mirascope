@@ -2,84 +2,288 @@
 
 Prompts are the foundation of effective communication with Large Language Models (LLMs). Mirascope provides powerful tools to help you create, manage, and optimize your prompts for various LLM interactions. This guide will walk you through the features and best practices for prompt engineering using Mirascope.
 
+## What Are "Prompts"
+
+When working with Large Language Model (LLMs) APIs, the "prompt" is generally a list of messages where each message has a particular role. First, let's take a look at a call to the OpenAI API for reference:
+
+```python hl_lines="8"
+from openai import OpenAI
+
+client = OpenAI()
+
+def recommend_book(genre: str) -> str | None:
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini,
+        messages=[{"role": "user", "content": f"recommend a {genre} book"}]
+    )
+    return completion.choices[0].message.content
+```
+
+Here, the prompt is the messages array with a single user message. You can also specify multiple messages with different roles. For example, we can provide what is called a "system prompt" by first including a message with the system role:
+
+```python hl_lines="8-11"
+from openai import OpenAI
+
+client = OpenAI()
+
+def recommend_book(genre: str) -> str | None:
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini,
+        messages=[
+            {"role": "system", "content": "You are a librarian"},
+            {"role": "user", "content": f"recommend a {genre} book"},
+        ]
+    )
+    return completion.choices[0].message.content
+```
+
+In these examples, we're only showing how to use the OpenAI API. One of the core values of Mirascope is that we offer tooling to make your prompts more reusable and work across the various different LLM providers.
+
+Let's take a look at how we can write these same prompts in a provider-agnostic way.
+
+!!! note "Calls Will Come Later"
+
+    For the following explanations we will be talking *only* about the messages aspect and will discuss calling the API later in the [Calls](./calls.md) documentation, which will show how to use these provider-agnostic prompts to actually call a provider's API.
+
+## Messages
+
+??? api "API Documentation"
+
+    [`mirascope.core.base.message_param`](../api/core/base/message_param.md)
+
+The core concept to understand here is [`BaseMessageParam`](../api/core/base/message_param.md#basemessageparam). This class operates as the base class for message parameters that Mirascope can handle and use across all supported providers.
+
+Let's look at a basic example:
+
+```python hl_lines="5"
+from mirascope.core import BaseMessageParam
+
+def recommend_book_prompt(genre: str) -> list[BaseMessageParam]:
+    return [
+        BaseMessageParam(role="user", content=f"recommend a {genre} book")
+    ]
+```
+
+In this example:
+
+1. The `recommend_book_prompt` method's signature defines the prompt's template variables.
+2. We define and return a list with a single `BaseMessageParam` with role `user`.
+
+As before, we can also define additional messages with different roles:
+
+```python hl_lines="5-6"
+from mirascope.core import BaseMessageParam
+
+def recommend_book_prompt(genre: str) -> list[BaseMessageParam]:
+    return [
+        BaseMessageParam(role="system", content="You are a librarian"),
+        BaseMessageParam(role="user", content=f"Recommend a {genre} book"),
+    ]
+```
+
+And that's it! Prompts written in this functional way are provider-agnostic, reusable, and properly typed, making them easier to write and maintain.
+
+The `BaseMessageParam` class currently supports the `system`, `user`, `assistant`, and `tool` roles.
+
+### Message Writing Convenience
+
+We understand that writing the full `BaseMessageParam` class can often feel like a lot of unnecessary boilerplate, and we strive to reduce the amount of boilerplate code you need to write as much as possible.
+
+To this end, we've implemented shorthand methods of writing messages to make writing them simpler. All you need to do is add the `@prompt_template` decorator to your method to access these shorthand forms.
+
+#### Single User Message
+
+When writing a single message with the `user` role, you can simply return the string content of the message:
+
+```python hl_lines="5 8"
+from mirascope.core import Messages, prompt_template
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> Messages.Type:
+    return f"Recommend a {genre} book"
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book')]
+```
+
+In this example:
+
+1. We decorate our method with the `@prompt_template` decorator
+2. We specify the `Messages.Type` return type that the decorator expects
+3. We return the single user message as a formatted string
+4. Calling the method automatically converts the output into the corresponding `BaseMessageParam` with role `user` and content equal to the returned string.
+
+#### Single User Message With Multiple Parts
+
+Many providers also support writing messages with multiple content parts. For such providers, you can return a list containing each content part:
+
+```python hl_lines="5 11"
+from mirascope.core import Messages, prompt_template
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> Messages.Type:
+    return ["Hi!", f"Recommend a {genre} book"]
+
+print(recommend_book_prompt("fantasy"))
+# Output: [
+#   BaseMessageParam(
+#       role='user',
+#       content=[{"type": "text", "text": "Hi!"}, {"type": "text", "text": 'Recommend a fantasy book'}],
+#   )
+# ]
+```
+
+!!! warning "Not All Providers Support Multiple Parts"
+
+    Only certain providers support writing messages where the content can be written as multiple parts. To our knowledge, this includes OpenAI, Anthropic, Gemini, Groq, and any other provider that hosts models from those providers. Using multiple content parts with any other provider will not work.
+
+    If there are any providers that support multiple parts that we've missed, let us know so we can support them!
+
+#### Multiple Messages With Roles
+
+The prompt templates in the above examples results in a single user message. To use the same shorthand with other message roles, you can use the `Messages.{Role}` class, which accepts the same shorthand as described above for writing content:
+
+```python hl_lines="6-7 12-13"
+from mirascope.core import Messages, prompt_template
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> Messages.Type:
+    return [
+        Messages.System("You are a librarian"),
+        Messages.User(f"Recommend a {genre} book"),
+    ]
+
+print(recommend_book_prompt("fantasy"))
+# Output: [
+#   BaseMessageParam(role='system', content='You are a librarian'),
+#   BaseMessageParam(role='user', content='Recommend a fantasy book'),
+# ]
+```
+
+### Multi-Modal Inputs
+
+Recent advancements in Large Language Model architecture has enabled many model providers to support multi-modal inputs (text, images, audio, etc.) for a single endpoint. The `BaseMessageParam` class supports these types:
+
+```python hl_lines="9-16"
+from mirascope.core import BaseMessageParam
+from mirascope.core.base import ImagePart, TextPart
+
+def recommend_book_prompt(previous_book_jpeg: bytes) -> list[BaseMessageParam]:
+    return [
+        BaseMessageParam(
+            role="user",
+            content=[
+                TextPart(type="text", text="I just read this book:"),
+                ImagePart(
+                    type="image",
+                    media_type="image/jpeg",
+                    image=previous_book_jpeg,
+                    detail=None,
+                ),
+                TextPart(type="text", text="What should I read next?"),
+            ],
+        )
+    ]
+```
+
+!!! warning "Not All Providers Support Multi-Modal Inputs"
+
+    Unfortunately, not all providers support multi-modal inputs. To our knowledge, only OpenAI, Anthropic, Gemini, and Groq support multimodal LLMs. If there are any providers that we've missed, let us know so we can add support!
+
+We recognize that writing these message parameters directly contains a lot of boilerplate code, so we've implemented similar convenience here for passing multi-modal types in more directly and succinctly:
+
+```python hl_lines="6-8"
+from mirascope.core import Messages, prompt_template
+from PIL import Image
+
+def recommend_book_prompt(previous_book: Image.Image) -> Messages.Type:
+    return [
+        "I just read this book:",
+        previous_book,
+        "What should I read next?",
+    ]
+```
+
+!!! tip "Multi-Modal Works With All Shorthands"
+
+    You can also use this shorthand when using the shorthand methods for writing messages with specific roles (e.g. `Messages.User`)
+
+!!! info "Shorthand Audio Support Coming Soon"
+
+    We are working on providing similar convenience for handling audio inputs. If this is of particular interest to you, let us know and we can work to prioritize it!
+
+### Writing Messages With Dynamic Configuration
+
+Certain features in Mirascope offer dynamic configuration, which we cover in more detail in each applicable section. However, it's worth noting here that using dynamic configuration also relies on the return value of your prompt method and thus changes how to return your messages.
+
+When using dynamic configuration, you just need to include your messages as part of the dynamic config through the `messages` key:
+
+```python hl_lines="6-8"
+from mirascope.core import BaseDynamicConfig, BaseMessageParam, prompt_template
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> BaseDynamicConfig:
+    return {
+        "messages": [
+            BaseMessageParam(role="user", content=f"Recommend a {genre} book")
+        ],
+    }
+```
+
+!!! tip "Using Shorthand"
+
+    Even when using dynamic configuration you can still use the shorthand method of writing messages as described above (e.g. `Messages.User`)
+
 ## Prompt Templates
 
 ??? api "API Documentation"
 
     [`mirascope.core.base.prompt.prompt_template`](../api/core/base/prompt.md#mirascope.core.base.prompt.prompt_template)
 
-The primary means of writing prompts in Mirascope is through prompt templates, which are just formatted strings (as they should be) with a few additional conveniences. This allows you to define prompts such that they are dynamic and reusable.
+For even more convenience and readability, Mirascope offers full support for writing prompts as templates. These prompt templates are just formatted strings (as they should be) but with added functionality designed specifically for LLM interactions.
 
-For the purposes of explaining how prompt templates work, we will use:
+This allows you to define and write prompts in a more readable way while ensuring prompts remain dynamic, reusable, and properly typed.
 
-- `@prompt_template`: a decorator for attaching a prompt template to a function or class
-- `BasePrompt`: a base class for writing provider-agnostic prompts.
+Let's look at a basic example:
 
-We will cover `BasePrompt` in more detail later. For now, all you need to know is that we inject fields with names that match template variables and that we've implemented the `__str__` method for easily viewing how template variables get injected:
-
-```python
-from mirascope.core import BasePrompt, prompt_template
-
+```python hl_lines="3 7"
+from mirascope.core import prompt_template
 
 @prompt_template("Recommend a {genre} book")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
+def book_recommendation_prompt(genre: str): ...
 
-
-prompt = BookRecommendationPrompt(genre="fantasy")
-print(prompt)
-# > Recommend a fantasy book
+print(book_recommendation_prompt("fantasy"))
+# > [BaseMessageParam(role='user', content='Recommend a fantasy book')]
 ```
 
-For your convenience, we will also automatically dedent and strip the prompt template. This makes writing multi-line prompts a breeze:
+In this example:
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
-@prompt_template(
-    """
-    Recommend a book.
-    It should be a {genre} book.
-    """
-)
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-
-
-prompt = BookRecommendationPrompt(genre="fantasy")
-print(prompt)
-# > Recommend a book.
-#   It should be a fantasy book.
-```
+1. The `@prompt_template` decorator defines the template string.
+2. The `{genre}` placeholder in the template is replaced with the argument passed to the function.
+3. The resulting prompt is a list containing a single `BaseMessageParam` object with the role `user` and the content `"Recommend a fantasy book"`.
 
 ### Format Specifiers
 
-Since Mirascope prompt templates are just formatted strings, standard specifiers will work as expected:
+Since Mirascope prompt templates are just formatted strings, standard Python format specifiers work as expected:
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
+```python hl_lines="1 5"
 @prompt_template("Recommend a book cheaper than ${price:.2f}")
-class BookRecommendationPrompt(BasePrompt):
-    price: float
+def book_recommendation_prompt(price: float): ...
 
-
-prompt = BookRecommendationPrompt(price=12.3456)
-print(prompt)
-# > Recommend a book cheaper than $12.34
+print(book_recommendation_prompt(12.3456))
+# > [BaseMessageParam(role='user', content='Recommend a book cheaper than $12.34')]
 ```
+
+In this example, we use the `.2f` format specifier to limit the price to two decimal places.
 
 We also provide additional specifiers we've found useful in our own prompt engineering:
 
 - `list`: formats an input list as a newline-separated string
 - `lists`: formats an input list of lists as newline-separated strings separated by double newlines
 
-```python
-from mirascope.core import BasePrompt, prompt_template
+Here's an example demonstrating these custom specifiers:
 
-
+```python hl_lines="4 7 13-17 21-23 26-30"
 @prompt_template(
     """
     Recommend a book from one of the following genres:
@@ -89,19 +293,16 @@ from mirascope.core import BasePrompt, prompt_template
     {examples:lists}
     """
 )
-class BookRecommendationPrompt(BasePrompt):
-    genres: list[str]
-    examples: list[tuple[str, str]]
+def book_recommendation_prompt(genres: list[str], examples: list[tuple[str, str]]): ...
 
-
-prompt = BookRecommendationPrompt(
+prompt = book_recommendation_prompt(
     genres=["fantasy", "scifi", "mystery"],
     examples=[
         ("Title: The Name of the Wind", "Author: Patrick Rothfuss"),
         ("Title: Mistborn: The Final Empire", "Author: Brandon Sanderson"),
     ]
 )
-print(prompt)
+print(prompt[0].content)
 # > Recommend a book from one of the following genres:
 #   fantasy
 #   scifi
@@ -115,43 +316,41 @@ print(prompt)
 #   Author: Brandon Sanderson
 ```
 
+This example showcases how the `list` and `lists` specifiers can be used to format complex data structures within your prompts.
+
 If there are any other such specifiers you would find useful, let us know!
 
-### Message Roles
+### Specifying Message Roles
 
 ??? api "API Documentation"
 
     [`mirascope.core.base.message_param`](../api/core/base/message_param.md)
 
-By default, Mirascope treats the entire prompt as a single user message. However, you can use the `SYSTEM`, `USER`, and `ASSISTANT` keywords to specify different message roles, which we will parse into `BaseMessageParam` instances:
+By default, Mirascope treats the entire prompt template as a single user message. However, you can use the `SYSTEM`, `USER`, and `ASSISTANT` keywords to specify different message roles, which we will parse into `BaseMessageParam` instances:
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
+```python hl_lines="3 4 11 12"
 @prompt_template(
     """
     SYSTEM: You are the world's greatest librarian
     USER: Recommend a {genre} book
     """
 )
-class RecommendBookPrompt(BasePrompt):
-    genre: str
+def book_recommendation_prompt(genre: str): ...
 
-
-prompt = RecommendBookPrompt(genre="fantasy")
-print(prompt)
-# > SYSTEM: You are the world's greatest librarian
-#   USER: Recommend a fantasy book
-print(prompt.message_params())
-# > [BaseMessageParam(role='system', content="You are the world's greatest librarian"), BaseMessageParam(role='user', content='Recommend a fantasy book')]
+print(book_recommendation_prompt("fantasy"))
+# > [
+#     BaseMessageParam(role='system', content="You are the world's greatest librarian"),
+#     BaseMessageParam(role='user', content='Recommend a fantasy book')
+#   ]
 ```
+
+This example demonstrates how to use different roles (`SYSTEM` and `USER`) within a single prompt template.
 
 !!! note "Order Of Operations"
 
     When parsing prompt templates, we first parse each message parameter and then format the content of each parameter individually. We have implemented this specifically to prevent injecting new message parameters through a template variable.
 
-Make sure when writing multi-line prompts with message roles that you start the prompt on the following line so it is properly dedented:
+When writing multi-line prompts with message roles, start the prompt on the following line to ensure proper dedenting:
 
 ```python
 # BAD
@@ -172,13 +371,14 @@ Make sure when writing multi-line prompts with message roles that you start the 
 )
 ```
 
+This ensures that the content for each role is properly formatted and aligned without unintended indentation.
+
 ### `MESSAGES` Keyword
 
 Often you'll want to inject messages (such as previous chat messages) into the prompt. We provide a `MESSAGES` keyword for this injection, which you can add in whatever position and as many times as you'd like:
 
-```python
-from mirascope.core import BaseMessageParam, BasePrompt, prompt_template
-
+```python hl_lines="6 13-19 25-26"
+from mirascope.core import BaseMessageParam, prompt_template
 
 @prompt_template(
     """
@@ -187,12 +387,9 @@ from mirascope.core import BaseMessageParam, BasePrompt, prompt_template
     USER: {query}
     """
 )
-class BookRecommendationPrompt(BasePrompt):
-    history: list[BaseMessageParam]
-    query: str
+def book_recommendation_prompt(history: list[BaseMessageParam], query: str): ...
 
-
-prompt = BookRecommendationPrompt(
+prompt = book_recommendation_prompt(
     history=[
         BaseMessageParam(role="user", content="What should I read next?"),
         BaseMessageParam(
@@ -202,7 +399,7 @@ prompt = BookRecommendationPrompt(
     ],
     query="Anything similar you would recommend?",
 )
-print(prompt.message_params())
+print(prompt)
 # > [
 #     BaseMessageParam(role='system', content="You are the world's greatest librarian."),
 #     BaseMessageParam(role='user', content='What should I read next?'),
@@ -211,86 +408,24 @@ print(prompt.message_params())
 #   ]
 ```
 
-### Inject Accessed Attributes
-
-When the fields of your class or arguments of your function are more complex objects with attributes, you can access and use these attributes directly in the prompt template:
-
-```python
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel
-
-
-class Book(BaseModel):
-    title: str
-    author: str
-
-@prompt_template(
-    """
-    I just read {book.title} by {book.author}.
-    What should I read next?
-    """
-)
-class MyPrompt(BasePrompt):
-    book: Book
-
-book = Book(title="The Great Gatsby", author="F. Scott Fitzgerald")
-my_prompt = MyPrompt(book=book)
-print(my_prompt.message_params())
-# > [BaseMessageParam(role="user", content="I just read The Great Gatsby by F. Scott Fitzgerald.\nWhat should I read next?")]
-```
-
-### Empty Messages
-
-When a template variable is set to `None` it will be injected as the empty string.
-
-If the content of a message is empty, that message will be excluded from the final list of message parameters:
-
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
-@prompt_template(
-    """
-    SYSTEM: You are the world's greatest librarian.
-    USER: {query}
-    """
-)
-class BookRecommendationPrompt(BasePrompt):
-    query: str | None
-
-
-prompt = BookRecommendationPrompt(query=None)
-print(prompt.message_params())
-# >[BaseMessageParam(role='system', content="You are the world's greatest librarian.")]
-```
-
-!!! note "Why exclude them?"
-
-    While it might not be immediately clear yet, this exclusion of empty messages can be extremely useful, particularly when calling an LLM where you may want to exclude the final user message as the model iteratively calls tools.
-
-### Multi-Modal Inputs
-
-Recent advancements in Large Language Model architecture has enabled many model providers to support multi-modal inputs (text, images, audio, etc.) for a single endpoint. For all multi-modal inputs, we handle URLs, local filepaths, and raw bytes.
+### Multi-Modal Templates
 
 To inject multimodal inputs into your prompt template, simply tag the input with the multimodal type:
 
 - `image` / `images`: injects a (list of) image(s) into the message parameter
 - `audio` / `audios`: injects a (list of) audio file(s) into the message parameter
 
+For inputs in prompt templates tagged as multi-modal, we handle URLs, local filepaths, and raw bytes.
+
 We find that this method of templating multi-modal inputs enables writing prompts in a far more natural, readable format:
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
+```python hl_lines="1 10-17"
 @prompt_template("I just read this book: {book:image}. What should I read next?")
-class BookRecommendationPrompt(BasePrompt):
-    book: str | bytes
-
+def book_recommendation_prompt(book: str | bytes): ...
 
 url = "https://upload.wikimedia.org/wikipedia/en/5/56/TheNameoftheWind_cover.jpg"
-prompt = BookRecommendationPrompt(book=url)
-print(prompt.message_params())
+prompt = book_recommendation_prompt(book=url)
+print(prompt)
 # > [BaseMessageParam(
 #       role='user',
 #       content=[
@@ -306,20 +441,17 @@ print(prompt.message_params())
 #   )]
 ```
 
+This example shows how to include an image in your prompt, which can be particularly useful for tasks like visual question answering or image captioning.
+
 Some providers (e.g. OpenAI) offer additional options for multi-modal inputs such as image detail. You can specify additional options as though you are initializing the image format spec with keyword arguments for the options:
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
+```python hl_lines="1 13"
 @prompt_template("I just read this book: {book:image(detail=high)}. What should I read next?")
-class BookRecommendationPrompt(BasePrompt):
-    book: str | bytes
-
+def book_recommendation_prompt(book: str | bytes): ...
 
 url = "https://upload.wikimedia.org/wikipedia/en/5/56/TheNameoftheWind_cover.jpg"
-prompt = BookRecommendationPrompt(book=url)
-print(prompt.message_params())
+prompt = book_recommendation_prompt(book=url)
+print(prompt)
 # > [BaseMessageParam(
 #       role='user',
 #       content=[
@@ -333,212 +465,53 @@ print(prompt.message_params())
 #   )]
 ```
 
-## The `BasePrompt` Class
-
-??? api "API Documentation"
-
-    [`mirascope.core.base.prompt.BasePrompt`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt)
-
-So far we've only used `BasePrompt` to demonstrate the functionality of Mirascope prompt templates; however, the class has much more to offer as a provider-agnostic base class for creating reusable prompts.
-
-It leverages Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/concepts/models/) for easy validation and serialization of prompt data as well as additional convenience around writing more complex template variables.
-
-To recap, you can create a prompt using `BasePrompt` by defining a class that inherits from it:
-
-```python
-from mirascope.core import BasePrompt, prompt_template
-
-
-@prompt_template("Recommend a {genre} book for a {age_group} reader")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-    age_group: str
-
-prompt = BookRecommendationPrompt(genre="fantasy", age_group="young adult")
-print(prompt)
-# > Recommend a fantasy book for a young adult reader
-print(prompt.message_params())
-# > [BaseMessageParam(role="user", content="Recommend a fantasy book for a young adult reader")]
-```
-
-Again, note that we've implemented the `__str__` and `message_param` methods for easy verification of how variables are templated.
-
 ### Computed Fields
 
-You can use Pydantic's `@computed_field` decorator to inject more complex template variables into your prompt. These computed fields can be written just like any other function of the class and can thus compute their value using other fields:
+When writing messages directly, it's easy to inject variables that are generated dynamically based on the original input arguments to your prompt method. When using prompt templates, computed fields allow you to similarly inject dynamically generated variables.
 
-```python
-from mirascope.core import BasePrompt, prompt_template
-from pydantic import computed_field
+Here is an example:
 
+```python hl_lines="10 13"
+from mirascope.core import BaseDynamicConfig, prompt_template
 
-@prompt_template("Recommend a {genre} {book_type} for a {age_group} reader.")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-    age_group: str
+@prompt_template("Recommend a {reading_level} {genre} book")
+def recommend_book(genre: str, age: int) -> BaseDynamicConfig:
+    reading_level = "adult"
+    if age < 12:
+        reading_level = "elementary"
+    elif age < 18:
+        reading_level = "young adult"
+    return {"computed_fields": {"reading_level": reading_level}}
 
-    @computed_field
-    @property
-    def book_type(self) -> str:
-        if self.age_group == "child":
-            return "picture book"
-        elif self.age_group == "young adult":
-            return "novel"
-        else:
-            return "book"
-
-
-prompt = BookRecommendationPrompt(genre="fantasy", age_group="child")
-print(prompt)
-# > Recommend a fantasy picture book for a child reader.
+print(recommend_book_prompt("fantasy", 15))
+# Output: [BaseMessageParam(role='user', content='Recommend a young adult fantasy book')]
 ```
 
-!!! tip "Retrieving External Data"
-
-    Computed fields can be particularly useful when you want to inject information you retrieve from an external source. For example, perhaps you want to retrieve context from a document store to augment the generation with relevant information (RAG).
-
-### Metadata
-
-??? api "API Documentation"
-
-    [`mirascope.core.base.prompt.metadata`](../api/core/base/prompt.md#mirascope.core.base.prompt.metadata)
-
-You can add metadata to your prompts using the `@metadata` decorator. This will attach a `Metadata` object, which is a simple `TypedDict` with a single typed key `tags: set[str]`.
-
-This can be useful for tracking versions, categories, or any other relevant information.
-
-```python
-from mirascope.core import BasePrompt, prompt_template, metadata
-
-
-@metadata({"tags": {"version:0001", "category:books"}})
-@prompt_template("Recommend a {genre} book for a {age_group} reader.")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-    age_group: str
-
-
-prompt = BookRecommendationPrompt(genre="fantasy", age_group="adult")
-print(prompt.dump()['metadata'])
-# > {'tags': {'version:0001', 'category:books'}}
-```
-
-!!! note "Adding Additional Fields"
-
-    Although `Metadata` is a `TypedDict` with only the `tags` key, there is nothing stopping you from adding additional keys. The only issue is that this will throw a type error, which you can ignore. We recommend ignoring the specific error. For example, if you're using pyright you should add `# pyright: ignore [reportArgumentType]`.
-    
-    If there are particular keys you find yourself using frequently, let us know so we can add them!
-
-### Running Prompts
-
-??? api "API Documentation"
-
-    [`mirascope.core.base.prompt.BasePrompt.run`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt.run)
-
-    [`mirascope.core.base.prompt.BasePrompt.run_async`](../api/core/base/prompt.md#mirascope.core.base.prompt.BasePrompt.run_async)
-
-One of the key benefits of `BasePrompt` is that it is provider-agnostic. You can use the same prompt with different LLM providers, making it easy to compare performance or switch providers.
-
-You can do this with the `run` and `run_async` methods that run the prompt using the configuration of a call decorator. For now, just know that the decorator is configuring a call to the LLM, and the return value of the `run` and `run_async` methods match that of the decorator:
-
-```python
-from mirascope.core import BasePrompt, anthropic, openai, prompt_template
-
-
-@prompt_template("Recommend a {genre} book")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-
-
-prompt = BookRecommendationPrompt(genre="fantasy")
-
-# Running the prompt with OpenAI
-print(prompt.run(openai.call(model="gpt-4o-mini")))
-# > Sure! If you're looking for a captivating fantasy novel, I recommend...
-
-# Running the prompt with Anthropic
-print(prompt.run(anthropic.call(model="claude-3-5-sonnet-20240620")))
-# > There are many great fantasy books to choose from, but...
-```
-
-We will begin covering these decorators in more detail in the [following section](./calls.md).
-
-!!! note "Agnostic Assuming Support"
-
-    While `BasePrompt` is provider-agnostic, some features (like multi-modal inputs) may not be supported by all providers. We try to maximize support across providers, but you should always check the provider's capabilities when using more advanced features.
-
-### Additional Decorators
-
-When you want to run additional decorators on top of the `call` decorator, simply supply the decorators as additional arguments to the run function. They will then be applied in the order in which they are provided. This is most commonly used in conjunction with [tenacity](../integrations/tenacity.md), [custom middleware](../integrations/middleware.md) and other [integrations](../integrations/index.md).
-
-```python
-from mirascope.core import BasePrompt, openai, prompt_template
-from tenacity import retry, stop_after_attempt, wait_exponential
-
-
-@prompt_template("Recommend a {genre} book")
-class BookRecommendationPrompt(BasePrompt):
-    genre: str
-
-
-prompt = BookRecommendationPrompt(genre="fantasy")
-print(
-    prompt.run(
-        openai.call(model="gpt-4o-mini"),
-        retry(
-            stop=stop_after_attempt(3),
-            wait=wait_exponential(multiplier=1, min=4, max=10),
-        ),
-    ),
-)
-```
-
-## Docstring Prompt Templates
-
-While the `@prompt_template` decorator is the recommended way to define prompt templates, Mirascope also supports using class and function docstrings as prompt templates. This feature is disabled by default to prevent unintended use of docstrings as templates. To enable this feature, you need to set the `MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE` environment variable to `"ENABLED"`.
-
-Once enabled, you can use the class or function's docstring as the prompt template:
-
-```python
-import os
-from mirascope.core import BasePrompt, openai
-
-# Enable docstring prompt templates
-os.environ["MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE"] = "ENABLED"
-
-
-class BookRecommendationPrompt(BasePrompt):
-    """Recommend a {genre} book"""
-
-    genre: str
-
-
-prompt = BookRecommendationPrompt(genre="fantasy")
-print(prompt)
-# > Recommend a fantasy book
-
-
-@openai.call(model="gpt-4o-mini")
-def recommend_book(genre: str):
-    """Recommend a {genre} book"""
-    ...
-
-
-response = recommend_book("mystery")
-print(response.content)
-# > Here's a recommendation for a fantasy book: ...
-```
-
-!!! warning
-
-    Using docstrings as prompt templates can make your code less explicit and harder to maintain. It's generally recommended to use the `@prompt_template` decorator for clarity and separation of concerns. Enable this feature at your own risk.
+In this example, the `reading_level` template variable is computed dynamically based on the `age` input, allowing for dynamic customization of the prompt.
 
 ## Best Practices
 
-- Provider Comparison: Use `BasePrompt` to easily test the same prompt across different providers to compare performance and output quality.
-- Prompt Versioning: Utilize the metadata decorator to keep track of different versions of your prompts as you refine them.
-- Dynamic Content: Leverage `@computed_field` for injecting dynamic content or API calls into your prompts.
-- Cached Properties: Use `@functools.cached_property` to cache frequently used properties that you only want to compute once.
-- Prompt Libraries: Build libraries of commonly used prompts that can be easily shared across projects or teams.
+To make the most of Mirascope's prompt features, consider the following best practices:
 
-Mastering `BasePrompt` is the first step towards building robust LLM applications with Mirascope that are flexible, reusable, and provider-agnostic.
+- **Prompt Libraries**: Build libraries of commonly used prompts that can be easily shared across projects or teams.
+
+   ```python
+   # prompts/book_recommendations.py
+   @prompt_template("Recommend a {genre} book by {author}")
+   def book_recommendation_prompt(genre: str, author: str): ...
+
+   # In your main code
+   from prompts.book_recommendations import book_recommendation_prompt
+   ```
+
+- **Testing Your Prompts**: Create unit tests for your prompts to ensure they generate the expected output.
+
+   ```python
+   def test_book_recommendation_prompt():
+       prompt = book_recommendation_prompt("mystery")
+       assert "Recommend a mystery book" in prompt[0].content
+   ```
+
+By mastering prompts in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
+
+Next, we recommend taking a look at the [Calls](./calls.md) documentation, which shows you how to use your prompt templates to actually call LLM APIs and generate a response.

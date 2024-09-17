@@ -65,7 +65,7 @@ class AudioPart(BaseModel):
 class BaseMessageParam(BaseModel):
     """A base class for message parameters.
 
-    usage docs: learn/prompts.md#message-roles
+    usage docs: learn/prompts.md#messages
 
     Attributes:
         role: The role of the message (e.g. "system", "user", "assistant")
