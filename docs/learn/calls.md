@@ -59,7 +59,7 @@ In this example:
 
 !!! info "Function Body"
 
-    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. For now, you can safely ignore how we use the function body, which we cover in more detail in the documentation for [dynamic configuration](./dynamic_configuration.md).
+    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we'll cover in the [Call Parameters](#provider-specific-parameters) section.
 
 ## Supported Providers
 
@@ -155,6 +155,34 @@ print(response.content)
 
 In this example, we're setting the `temperature` parameter to 0.7, which affects the randomness of the model's output. A higher temperature (closer to 1.0) will result in more diverse and creative outputs, while a lower temperature (closer to 0.0) will make the outputs more focused and deterministic.
 
+### Dynamic Configuration
+
+You can also dynamically configure call parameters based on the function's input or other runtime conditions. This is done by returning a dictionary from the function body. Here's an example:
+
+```python hl_lines="6 8-11"
+from mirascope.core import openai, prompt_template
+
+
+@openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
+    temperature = 0.9 if genre == "fantasy" else 0.5
+    return {
+        "call_params": {"temperature": temperature},
+        "metadata": {"genre": genre}
+    }
+
+
+response = recommend_book("fantasy")
+print(response.content)
+print(f"Temperature used: {response.call_kwargs['temperature']}")
+print(f"Metadata: {response.metadata}")
+```
+
+In this example, we're dynamically setting the `temperature` based on the genre, and also adding metadata to the call. The `OpenAIDynamicConfig` (or the equivalent for other providers) allows you to specify various dynamic configurations, including `call_params`, `metadata`, `computed_fields`, and more.
+
+This approach allows for flexible, context-dependent configuration of your LLM calls.
+
 ## Custom Client
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
@@ -186,32 +214,6 @@ print(response.content)
 In this example, we're creating a custom OpenAI client with a specific API key, organization ID, and base URL. This custom client is then passed to the call decorator, allowing us to use a custom endpoint or configuration for our LLM calls.
 
 Any custom client is supported so long as it has the same API as the original base client.
-
-## Using the `run` Method
-
-As an alternative to the functional prompt template approach, you can use the `run` method to execute your prompts with different providers. This method allows for more flexibility and easier provider switching. Here's an example:
-
-```python hl_lines="8 12"
-from mirascope.core import anthropic, openai, prompt_template
-
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
-
-# Using OpenAI
-openai_response = recommend_book.run(openai.call(model="gpt-4o-mini"))("fantasy")
-print("OpenAI recommendation:", openai_response.content)
-
-# Using Anthropic
-anthropic_response = recommend_book.run(anthropic.call(model="claude-3-5-sonnet-20240620"))("fantasy")
-print("Anthropic recommendation:", anthropic_response.content)
-```
-
-This approach allows you to easily switch between providers or compare outputs without changing your core prompt logic.
-
-## Metadata
-
-You can add metadata to your calls using the `@metadata` decorator. This can be useful for tracking, categorizing, or adding any additional information to your LLM calls. For more information on using metadata, see the [Metadata documentation](./metadata.md).
 
 ## Handling Responses
 
@@ -246,11 +248,11 @@ All `BaseCallResponse` objects share these common properties:
 - `message_param`: The assistant's response formatted as a message parameter.
 - `tools`: A list of provider-specific tools used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](./tools.md) documentation for more details.
 - `tool`: The first tool used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](./tools.md) documentation for more details.
-- `metadata`: Any metadata provided using the [`@metadata`](./metadata.md) decorator.
 - `tool_types`: A list of tool types used in the call, if any. Otherwise this will be `None`.
 - `prompt_template`: The prompt template used for the call.
 - `fn_args`: The arguments passed to the function.
-- `dynamic_config`: The dynamic configuration used for the call. Check out the [`Dynamic Configuration`](./dynamic_configuration.md) documentation for more details.
+- `dynamic_config`: The dynamic configuration used for the call.
+- `metadata`: Any metadata provided using the dynamic configuration.
 - `messages`: The list of messages sent in the request.
 - `call_params`: The call parameters provided to the `call` decorator.
 - `call_kwargs`: The finalized keyword arguments used to make the API call.
