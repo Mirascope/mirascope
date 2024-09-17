@@ -5,9 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from . import AudioPart, BaseMessageParam, CacheControlPart, ImagePart, TextPart
-from ._utils._get_message_params import (
+from ._utils._convert_messages_to_message_params import (
     Image,
-    get_content_from_message_sequence,
+    convert_message_sequence_to_content,
 )
 
 
@@ -16,7 +16,7 @@ def _get_content_from_message(
 ) -> str | list[TextPart | ImagePart | AudioPart | CacheControlPart]:
     if isinstance(content, str):
         return content
-    return get_content_from_message_sequence(content)
+    return convert_message_sequence_to_content(content)
 
 
 class Messages:

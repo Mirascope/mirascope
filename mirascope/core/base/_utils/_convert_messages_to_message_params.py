@@ -25,7 +25,7 @@ else:
                 def tobytes(self) -> bytes: ...
 
 
-def _get_content_part_from_message(
+def _convert_message_sequence_part_to_content_part(
     message_sequence_part: str | Image.Image | TextPart | ImagePart | AudioPart,
 ) -> TextPart | ImagePart | AudioPart | CacheControlPart:
     if isinstance(message_sequence_part, str):
@@ -46,10 +46,13 @@ def _get_content_part_from_message(
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")
 
 
-def get_content_from_message_sequence(
+def convert_message_sequence_to_content(
     message_sequence: Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
 ) -> list[TextPart | ImagePart | AudioPart | CacheControlPart]:
-    return [_get_content_part_from_message(message) for message in message_sequence]
+    return [
+        _convert_message_sequence_part_to_content_part(message)
+        for message in message_sequence
+    ]
 
 
 def _is_base_message_params(
@@ -59,7 +62,7 @@ def _is_base_message_params(
     return isinstance(value[0], BaseMessageParam)
 
 
-def get_message_params(
+def convert_messages_to_message_params(
     messages: str
     | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
     | list[BaseMessageParam]
@@ -75,7 +78,7 @@ def get_message_params(
     elif isinstance(messages, Sequence):
         return [
             BaseMessageParam(
-                content=get_content_from_message_sequence(messages), role=role
+                content=convert_message_sequence_to_content(messages), role=role
             )
         ]
     else:

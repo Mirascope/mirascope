@@ -24,7 +24,9 @@ from ._utils import (
     get_prompt_template,
     parse_prompt_messages,
 )
-from ._utils._get_message_params import get_message_params
+from ._utils._convert_messages_to_message_params import (
+    convert_messages_to_message_params,
+)
 from ._utils._protocols import fn_is_async
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -419,7 +421,7 @@ def _messages_decorator() -> MessagesDecorator:
             ) -> list[BaseMessageParam] | BaseDynamicConfig:
                 raw_messages = await messages_fn(*args, **kwargs)
                 if _is_messages_type(raw_messages):
-                    return get_message_params(raw_messages)
+                    return convert_messages_to_message_params(raw_messages)
                 return raw_messages
 
             return get_base_message_params_async
@@ -431,7 +433,7 @@ def _messages_decorator() -> MessagesDecorator:
             ) -> list[BaseMessageParam] | BaseDynamicConfig:
                 raw_messages = messages_fn(*args, **kwargs)
                 if _is_messages_type(raw_messages):
-                    return get_message_params(raw_messages)
+                    return convert_messages_to_message_params(raw_messages)
                 return raw_messages
 
             return get_base_message_params
