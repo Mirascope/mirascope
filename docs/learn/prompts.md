@@ -259,6 +259,20 @@ print(response.content)
 
 In this example, the `reading_level` is computed based on the `age` input, allowing for dynamic customization of the prompt.
 
+### Custom Messages
+
+For cases where you need more control over the message structure, you can use the `messages` field in dynamic configuration:
+
+```python
+from mirascope.core import BaseMessageParam
+from mirascope.core.base import BaseDynamicConfig
+
+def custom_book_recommendation(genre: str) -> BaseDynamicConfig:
+    return {"messages": [BaseMessageParam(role="user", content=f"recommend a {genre} book")]}
+```
+
+This approach gives you full control over the structure of your prompts.
+
 ## Messages
 
 Mirascope allows you to write prompts using formatted strings directly, providing flexibility in how you structure your prompts. When combined with the `@prompt_template()` decorator, you can leverage both the convenience of direct string formatting and the power of Mirascope's prompt template system.
@@ -363,5 +377,6 @@ For more advanced features, see the respective sections in our documentation:
 
 - [Calls](./calls.md)
 - [Response Models](./response_models.md)
+- [Dynamic Configuration](./dynamic_configuration.md)
 
 By mastering prompts in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
