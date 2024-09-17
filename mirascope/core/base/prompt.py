@@ -393,18 +393,6 @@ class MessagesDecorator(Protocol):
     ): ...
 
 
-def _is_message_param_function(
-    messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]
-    | MessagesAsyncFunction[_P, _MessageFuncReturnT]
-    | None
-    | str,
-) -> TypeIs[
-    MessagesSyncFunction[_P, _MessageFuncReturnT]
-    | MessagesAsyncFunction[_P, _MessageFuncReturnT]
-]:
-    return isinstance(messages_fn, types.FunctionType)
-
-
 def _messages_decorator() -> MessagesDecorator:
     @overload
     def inner(
