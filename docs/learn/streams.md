@@ -20,10 +20,11 @@ Streaming is a powerful feature when using LLMs that allows you to process LLM r
 
 Streaming in the context of LLMs refers to the process of receiving and processing the model's output in chunks as it's being generated, rather than waiting for the entire response to be completed. This approach offers several benefits:
 
-1. Immediate feedback to users
-2. Reduced latency for long responses
-3. Ability to process partial results
-4. Efficient use of resources
+1. **Immediate feedback**: Users can see responses as they're being generated, creating a more interactive experience.
+2. **Reduced latency**: For long responses, users don't have to wait for the entire generation to complete before seeing results.
+3. **Incremental processing**: Applications can process and act on partial results as they arrive.
+4. **Efficient resource use**: Memory usage can be optimized by processing chunks instead of storing the entire response.
+5. **Early termination**: If the desired information is found early in the response, processing can be stopped without waiting for the full generation.
 
 Here's a diagram illustrating the difference between standard and streaming responses:
 
@@ -48,11 +49,18 @@ sequenceDiagram
     end
 ```
 
+Streaming is particularly useful in scenarios such as:
+
+- Interactive chatbots where immediate responses enhance user engagement
+- Long-form content generation (e.g., articles, reports) where progress feedback is valuable
+- Real-time translation services
+- Live coding assistants that provide suggestions as you type
+
 ## Basic Usage and Syntax
 
 To use streaming with Mirascope, you simply need to set the `stream` parameter to `True` in your [`call`](./calls.md) decorator. Here's a basic example:
 
-```python hl_lines="4 10"
+```python hl_lines="4 10-11"
 from mirascope.core import openai, prompt_template
 
 
@@ -64,6 +72,7 @@ def recommend_book(genre: str):
 
 for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
+# > The Name of the Wind by Patrick Rothfuss is an excellent fantasy...
 ```
 
 In this example:
@@ -77,6 +86,10 @@ The `end=""` and `flush=True` parameters in the print function ensure that the o
 !!! info "Supported Providers"
 
     Mirascope supports standard streaming (without tools) for all supported providers. While we use OpenAI in this example, the interface is the same across all supported providers.
+
+!!! tip "Streaming with Other Providers"
+
+    To use streaming with other providers, simply replace `openai.call` with the appropriate provider's call decorator (e.g., `anthropic.call`, `gemini.call`, etc.).
 
 ## Handling Streamed Responses
 
@@ -116,12 +129,12 @@ All `BaseCallResponseChunk` objects share these common properties:
 
 ### Provider-Specific Response Details
 
-While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `chunk` property of the `BaseCallResponseChunk` object.
+While Mirascope provides a consistent interface, you can always access the full, provider-specific response object if needed. This is available through the `chunk` property of the `BaseCallResponseChunk` object:
 
 ```python
 # Accessing OpenAI-specific chat completion details
 completion_chunk = chunk.chunk
-print(f"Content: {completion_chunk.choices[0].delta.content}")
+print(f"Delta Content: {completion_chunk.choices[0].delta.content}")
 ```
 
 !!! note "Reasoning For Provider-Specific `BaseCallResponseChunk` Objects"
@@ -130,20 +143,13 @@ print(f"Content: {completion_chunk.choices[0].delta.content}")
 
 ### Common Stream Properties and Methods
 
-All `BaseStream` objects share the same [common properties and methods](./calls.md#common-response-properties-and-methods) as `BaseCallResponse` except for `usage`, `tools`, `tool`, and `__str__`. You can access these properties by using the additional shared method `construct_call_response` to reconstruct a `BaseCallResponse` instance.
-
-!!! note "Not Necessarily 1:1"
-
-    While we try our best to reconstruct the `BaseCallResponse` instance from the stream, there is always a chance that some information that may have been present in a standard call is missing from the stream.
-
-### Error Handling
-
-Error handling in streams is the same as standard non-streaming calls:
+All `BaseStream` objects share the same common properties and methods as [`BaseCallResponse`](./calls.md#common-response-properties-and-methods), except for `usage`, `tools`, `tool`, and `__str__`. You can access these properties by using the additional shared method `construct_call_response` to reconstruct a `BaseCallResponse` instance:
 
 ```python
 stream = recommend_book("fantasy")
 response = stream.construct_call_response()
 print(response.model_dump())
+# > {'metadata': {...}, 'response': {...}, 'fn_args': {'genre': 'fantasy'}, ...}
 ```
 
 !!! note "Reconstructed Response Limitations"
@@ -172,11 +178,13 @@ except OpenAIError as e:
     print(f"\nStreaming Error: {str(e)}")
 ```
 
-!!! info "When The Error Will Occur"
+In this example, we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming.
 
-    The initial response when calling an LLM function with `stream=True` will return a generator. This means that any errors that may occur during streaming will not occur until you actually iterate through the generator, which is why we wrap the generation loop in the try/except and not just the call to `recommend_book`.
+!!! warning "When Errors Occur"
 
-### Type Safety with Streams
+    The initial response when calling an LLM function with `stream=True` will return a generator. Any errors that may occur during streaming will not happen until you actually iterate through the generator. This is why we wrap the generation loop in the try/except block and not just the call to `recommend_book`.
+
+## Type Safety with Streams
 
 Mirascope's `call` decorator provides proper type hints and safety when working with streams. When you enable streaming, the return type of your function will accurately reflect the stream type:
 
@@ -207,6 +215,8 @@ When working with streaming in Mirascope, consider the following best practices:
    print("Generating story...")
    for chunk, _ in write_story("a magical forest"):
        print(chunk.content, end="", flush=True)
+   # > Generating story...
+   # Once upon a time, in a magical forest...
    ```
 
 2. **Progress Indicators**: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
