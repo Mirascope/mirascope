@@ -17,7 +17,7 @@ else:
         from PIL import Image  # pyright: ignore [reportAssignmentType]
 
         has_pil_module = True
-    except ImportError:
+    except ImportError:  # pragma: no cover
         has_pil_module = False
 
         class Image:
@@ -56,10 +56,9 @@ def convert_message_sequence_to_content(
 
 
 def _is_base_message_params(
-    value: Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
-    | list[BaseMessageParam],
+    value: object,
 ) -> TypeIs[list[BaseMessageParam]]:
-    return isinstance(value[0], BaseMessageParam)
+    return isinstance(value, list) and isinstance(value[0], BaseMessageParam)
 
 
 def convert_messages_to_message_params(
