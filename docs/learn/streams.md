@@ -16,15 +16,43 @@
 
 Streaming is a powerful feature when using LLMs that allows you to process LLM responses in real-time as they are generated. This can be particularly useful for long-running tasks, providing immediate feedback to users, or implementing more responsive applications.
 
-!!! info "Supported Providers"
+## What is Streaming?
 
-    Mirascope supports standard streaming (without tools) for all supported providers. For the purposes of this documentation, we will use OpenAI to demonstrate streaming functionality, but the interface is the same across all supported providers.
+Streaming in the context of LLMs refers to the process of receiving and processing the model's output in chunks as it's being generated, rather than waiting for the entire response to be completed. This approach offers several benefits:
+
+1. Immediate feedback to users
+2. Reduced latency for long responses
+3. Ability to process partial results
+4. Efficient use of resources
+
+Here's a diagram illustrating the difference between standard and streaming responses:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App
+    participant LLM
+
+    User->>App: Request
+    App->>LLM: Query
+    Note right of LLM: Standard Response
+    LLM-->>App: Complete Response
+    App-->>User: Display Result
+
+    User->>App: Request
+    App->>LLM: Query (Stream)
+    Note right of LLM: Streaming Response
+    loop For each chunk
+        LLM-->>App: Response Chunk
+        App-->>User: Display Chunk
+    end
+```
 
 ## Basic Usage and Syntax
 
-To use streaming with Mirascope, you simply need to set the `stream` parameter to `True` in your `call` decorator. Here's a basic example:
+To use streaming with Mirascope, you simply need to set the `stream` parameter to `True` in your [`call`](./calls.md) decorator. Here's a basic example:
 
-```python
+```python hl_lines="4 10"
 from mirascope.core import openai, prompt_template
 
 
@@ -38,7 +66,17 @@ for chunk, _ in recommend_book("fantasy"):
     print(chunk.content, end="", flush=True)
 ```
 
-In this example, the recommendation will be printed to the console as it's being generated, providing a real-time generation experience.
+In this example:
+
+1. We use the `@openai.call` decorator with `stream=True` to enable streaming.
+2. The `recommend_book` function now returns a generator that yields chunks of the response.
+3. We iterate over the chunks, printing each one as it's received.
+
+The `end=""` and `flush=True` parameters in the print function ensure that the output is displayed in real-time without line breaks.
+
+!!! info "Supported Providers"
+
+    Mirascope supports standard streaming (without tools) for all supported providers. While we use OpenAI in this example, the interface is the same across all supported providers.
 
 ## Handling Streamed Responses
 
@@ -103,13 +141,27 @@ All `BaseStream` objects share the same [common properties and methods](./calls.
 Error handling in streams is the same as standard non-streaming calls:
 
 ```python
+stream = recommend_book("fantasy")
+response = stream.construct_call_response()
+print(response.model_dump())
+```
+
+!!! note "Reconstructed Response Limitations"
+
+    While we try our best to reconstruct the `BaseCallResponse` instance from the stream, there's always a chance that some information present in a standard call might be missing from the stream.
+
+## Error Handling
+
+Error handling in streams is similar to standard non-streaming calls. However, it's important to note that errors may occur during iteration rather than at the initial function call:
+
+```python hl_lines="11 14-15"
 from openai import OpenAIError
 from mirascope.core import openai, prompt_template
 
 
 @openai.call(model="gpt-4o-mini", stream=True)
 @prompt_template("Recommend a {genre} book")
-def recommend_book(topic: str):
+def recommend_book(genre: str):
     ...
 
 
@@ -126,15 +178,96 @@ except OpenAIError as e:
 
 ### Type Safety with Streams
 
-Mirascope's `call` decorator provides proper type hints and safety when working with streams. When you enable streaming, the return type of your function will accurately reflect the stream type.
+Mirascope's `call` decorator provides proper type hints and safety when working with streams. When you enable streaming, the return type of your function will accurately reflect the stream type:
 
-Your IDE will recognize the response object when streaming as a provider-specific `BaseStream` instance and provide appropriate autocompletion and type checking for its methods and properties, improving your development experience when working with streamed LLM responses.
+```python
+@openai.call(model="gpt-4o-mini", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str) -> openai.OpenAIStream:
+    ...
+
+stream = recommend_book("fantasy")
+# Your IDE will provide autocompletion for stream methods and properties
+```
+
+This type safety ensures that your IDE can provide appropriate autocompletion and type checking for the stream's methods and properties, improving your development experience when working with streamed LLM responses.
 
 ## Best Practices
 
-- Real-time Feedback: Use streaming for applications where users benefit from seeing results immediately, such as chatbots or writing assistants.
-- Progress Indicators: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
-- Incremental Processing: Process streamed content incrementally for large outputs, reducing memory usage and allowing for early termination if needed.
-- Timeout Handling: Implement timeouts for streamed responses to handle cases where the LLM might take too long to generate content.
+When working with streaming in Mirascope, consider the following best practices:
 
-By leveraging streaming effectively, you can create more responsive and efficient LLM-powered applications with Mirascope.
+1. **Real-time Feedback**: Use streaming for applications where users benefit from seeing results immediately, such as chatbots or writing assistants.
+
+   ```python
+   @openai.call(model="gpt-4o-mini", stream=True)
+   @prompt_template("Write a short story about {topic}")
+   def write_story(topic: str):
+       ...
+
+   print("Generating story...")
+   for chunk, _ in write_story("a magical forest"):
+       print(chunk.content, end="", flush=True)
+   ```
+
+2. **Progress Indicators**: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
+
+   ```python
+   from tqdm import tqdm
+
+   @openai.call(model="gpt-4o-mini", stream=True)
+   @prompt_template("Summarize the following text: {text}")
+   def summarize_text(text: str):
+       ...
+
+   text = "..." # Long text to summarize
+   with tqdm(total=100, desc="Summarizing") as pbar:
+       for i, (chunk, _) in enumerate(summarize_text(text)):
+           print(chunk.content, end="", flush=True)
+           pbar.update(1)  # Update progress bar
+   ```
+
+3. **Incremental Processing**: Process streamed content incrementally for large outputs, reducing memory usage and allowing for early termination if needed.
+
+   ```python
+   @openai.call(model="gpt-4o-mini", stream=True)
+   @prompt_template("Generate a list of {n} random words")
+   def generate_words(n: int):
+       ...
+
+   word_count = 0
+   for chunk, _ in generate_words(1000):
+       words = chunk.content.split()
+       word_count += len(words)
+       process_words(words)  # Some processing function
+       if word_count >= 1000:
+           break  # Early termination
+   ```
+
+4. **Timeout Handling**: Implement timeouts for streamed responses to handle cases where the LLM might take too long to generate content.
+
+   ```python
+   import asyncio
+   from asyncio import TimeoutError
+
+   @openai.call(model="gpt-4o-mini", stream=True)
+   @prompt_template("Write a detailed essay about {topic}")
+   async def write_essay(topic: str):
+       ...
+
+   async def stream_with_timeout(topic: str, timeout: float):
+       try:
+           async for chunk, _ in asyncio.wait_for(write_essay(topic), timeout):
+               print(chunk.content, end="", flush=True)
+       except TimeoutError:
+           print("\nGeneration timed out")
+
+   asyncio.run(stream_with_timeout("artificial intelligence", 30.0))
+   ```
+
+By leveraging streaming effectively, you can create more responsive and efficient LLM-powered applications with Mirascope's streaming capabilities.
+
+## Conclusion
+
+Streaming in Mirascope offers a powerful way to handle real-time LLM responses, enabling more responsive and efficient applications. By understanding the basics of streaming, how to handle streamed responses, and following best practices, you can significantly enhance the user experience of your LLM-powered applications.
+
+For more advanced usage of streaming, including combining streaming with tools or response models, refer to the [Tools](./tools.md) and [Response Models](./response_models.md) documentation.
