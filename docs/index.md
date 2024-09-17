@@ -1,91 +1,86 @@
 # Getting Started with Mirascope
 
-Welcome to Mirascope! This guide will help you dive into building powerful LLM-powered applications with ease. We'll start with an interactive tutorial and then guide you through next steps to deepen your knowledge and understanding of Mirascope and all of its features.
+Mirascope: LLM abstractions that aren't obstructions.
 
-## Interactive Web Search Agent Tutorial
+## Quick Start
 
-Jump right in with our hands-on tutorial where you'll interact with a web search agent built using Mirascope. This will give you a practical taste of Mirascope's key features.
+Install Mirascope and set up your API key:
 
-### Replit Environment
+```bash
+pip install "mirascope[openai]"  # For OpenAI support
+pip install "mirascope[anthropic]"  # For Anthropic support
+# For other providers, use: pip install "mirascope[provider_name]"
+```
 
-We've set up a Replit environment for you to start immediately without any local setup:
+```python
+import os
+os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
+# For Anthropic: os.environ["ANTHROPIC_API_KEY"] = "YOUR_API_KEY"
+```
+Mirascope supports various LLM providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai).
 
-[Mirascope Getting Started Tutorial](https://replit.com/@willbakst/Mirascope-Getting-Started-Tutorial?v=1)
 
-### How to Use the Replit
+Create your first LLM-powered function:
 
-1. Open the Replit link above.
-2. Click the "Fork" button to create your own copy of the Replit.
-3. In the Secrets tab (lock icon on the left sidebar), add your OpenAI API key:
-   - Key: `OPENAI_API_KEY`
-   - Value: Your actual OpenAI API key
-4. Click the "Run" button at the top of the Replit interface.
-5. Interact with the agent in the console on the right side of the screen.
+```python
+from mirascope.core import openai, prompt_template
 
-### Understanding the Code
+@openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book.")
+def recommend_book(genre: str):
+    ...
 
-The Replit contains a Python script that runs a Web Search Agent implemented using Mirascope, DuckDuckGo Search, BeautifulSoup, and Requests. Here's a breakdown of the key components:
+print(recommend_book("fantasy"))
+# > I recommend "The Name of the Wind" by Patrick Rothfuss.
+```
 
-- `constants.py`: Constant values used across the various other files.
-- `tools.py`: The `web_search` and `parse_content` tools. These enable the agent to retrieve search results and parse them.
-- `agent.py`: The main `WebSearchAgent` implementation of a streaming agent with access to the web.
-- `main.py`: A simple script that runs the agent.
+Easily generate a structured output instead:
 
-### Experimenting with the Agent
+```python
+from mirascope.core import openai, prompt_template
+from pydantic import BaseModel
 
-Try asking the agent various questions. It can:
+class Book(BaseModel):
+    title: str
+    author: str
 
-- Answer general knowledge questions
-- Provide summaries of current events
-- Explain complex topics
-- And much more!
+@openai.call("gpt-4o-mini", response_model=Book)
+@prompt_template("Extract {book}")
+def extract_book(book: str): ...
 
-The agent will use its web search capability when it needs additional information.
+book = extract_book("The Name of the Wind by Patrick Rothfuss")
+assert isinstance(book, Book)
+print(book)
+# > title='The Name of the Wind' author='Patrick Rothfuss'
+```
 
-### Key Mirascope Features Demonstrated
+## Choose Your Path
 
-This tutorial showcases several key Mirascope features:
+### For Newcomers
+1. Explore our Jupyter notebooks:
+   - [Quickstart Guide](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/quickstart.ipynb): Comprehensive overview of core features
+   - [Dynamic Configuration and Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/dynamic_configuration_and_chaining.ipynb): Various examples ranging from basic usage to more complex chaining techniques
+   - [Tools and Agents](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/tools_and_agents.ipynb): Learn to build advanced AI agents
+   - [Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/evaluation.ipynb): Assess and improve LLM outputs
+2. Explore our [Cookbook](./cookbook/index.md): Advanced patterns and real-world applications
 
-1. **LLM Calls**: The `call` decorator simplifies interactions with LLM APIs.
-2. **Prompt Templates**: Dynamic prompt creation using the `@prompt_template` decorator.
-3. **Custom Tools**: Implementation of web search and content parsing tools.
-4. **Streaming**: Real-time responses using Mirascope's streaming capabilities.
-5. **Agent State Management**: Maintaining conversation history and context, including iteratively calling and inserting tools.
+### For Experienced Developers
+1. Check out our [Learn Documentation](./learn/index.md): In-depth exploration of Mirascope capabilities
+2. Refer to the [API Reference](./api/index.md): Detailed information on classes and functions
+3. Explore our [Cookbook](./cookbook/index.md): Advanced patterns and real-world applications
+
+## Key Features
+
+- Prompt Templates: Dynamic prompt creation with type-safe templating
+- LLM Calls: Simplified API interactions across multiple providers
+- Streaming: Real-time responses for improved user experience
+- Custom Tools: Extend LLM capabilities with your own functions
+- Agent: Effortlessly manage state and integrate custom tools
 
 ## Next Steps
 
-Once you're comfortable with the tutorial, here are some next steps to deepen your Mirascope knowledge:
+- Read [Why Use Mirascope?](WHY.md) to understand our unique advantages
+- Join our [Slack Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) for support and collaboration
+- Star us on [GitHub](https://github.com/Mirascope/mirascope) to stay updated with the latest developments
 
-### Explore the Documentation
-
-Dive into our comprehensive documentation to learn more about Mirascope's features:
-
-- [Learn Mirascope](./learn/index.md): In-depth guides on all Mirascope features.
-- [API Reference](./api/index.md): Detailed information on Mirascope's classes and functions.
-
-### Try More Examples
-
-Check out our Cookbook for more advanced examples and real-world applications:
-
-- [Mirascope Cookbook](./cookbook/index.md): A collection of recipes for common LLM application patterns.
-
-### Set Up Your Local Environment
-
-To start building your own projects, set up Mirascope in your local environment:
-
-```bash
-pip install mirascope
-pip install "mirascope[openai]"     # when using e.g. mirascope.core.openai
-pip install "mirascope[anthropic]"  # when using e.g. mirascope.core.anthropic
-```
-
-We provide tags for extras for your convenience when using additional modules. These tags will ensure that you install all of the packages necessary for using the modules matching said tags.
-
-### Join the Community
-
-Connect with other Mirascope developers:
-
-- [Slack Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA): Get support and share your projects.
-- [GitHub](https://github.com/Mirascope/mirascope): Star us on GitHub, request features, report bugs, and contribute to the project!
-
-We're excited to see what you'll build with Mirascope. Happy coding!
+We're excited to see what you'll build with Mirascope, and we're here to help! Don't hesitate to reach out :)
