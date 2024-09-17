@@ -248,7 +248,7 @@ def test_prompt_template_str_return():
     assert result[0].content == "recommend a fantasy book"
 
 
-async def test_prompt_template_dynamic_configuration_return():
+def test_prompt_template_dynamic_configuration_return():
     @prompt_template()
     def recommend_book(genre: str) -> DynamicConfigMessages:
         return cast(DynamicConfigMessages, {"messages": f"recommend a {genre} book"})
