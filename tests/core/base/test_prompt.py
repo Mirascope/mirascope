@@ -323,6 +323,7 @@ def test_list_message_role_return():
     def recommend_book(genre: str) -> Messages.Type:
         return [
             Messages.System("You are a librarian"),
+            Messages.Assistant("I can help you find a book"),
             Messages.User(
                 content=[
                     TextPart(text="recommend a", type="text"),
@@ -334,13 +335,15 @@ def test_list_message_role_return():
 
     result = recommend_book("fantasy")
     assert isinstance(result, list)
-    assert len(result) == 2
+    assert len(result) == 3
     assert isinstance(result[0], BaseMessageParam)
     assert result[0].role == "system"
     assert result[0].content == "You are a librarian"
-    assert isinstance(result[1], BaseMessageParam)
-    assert result[1].role == "user"
-    assert result[1].content == [
+    assert result[1].role == "assistant"
+    assert result[1].content == "I can help you find a book"
+    assert isinstance(result[2], BaseMessageParam)
+    assert result[2].role == "user"
+    assert result[2].content == [
         TextPart(type="text", text="recommend a"),
         TextPart(type="text", text="fantasy"),
         TextPart(type="text", text="book"),
