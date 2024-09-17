@@ -21,7 +21,10 @@ from ._utils import (
     get_metadata,
     get_possible_user_message_param,
 )
-from ._utils._get_dynamic_configuration import get_dynamic_configuration
+from ._utils._get_dynamic_configuration import (
+    get_dynamic_configuration_async,
+    get_dynamic_configuration_sync,
+)
 from ._utils._protocols import fn_is_async
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
@@ -285,7 +288,7 @@ def stream_factory(  # noqa: ANN201
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
+                dynamic_config = await get_dynamic_configuration_async(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,
@@ -328,7 +331,7 @@ def stream_factory(  # noqa: ANN201
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = get_dynamic_configuration(fn, args, kwargs)
+                dynamic_config = get_dynamic_configuration_sync(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,

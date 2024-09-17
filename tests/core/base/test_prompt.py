@@ -1,18 +1,16 @@
 """Tests for the `base_prompt` module."""
 
 import os
-from typing import ClassVar
-from unittest.mock import AsyncMock, MagicMock
+from typing import Any, ClassVar
+from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
+from PIL import Image
 from pydantic import computed_field
 
-from mirascope.core.base.message_param import (
-    BaseMessageParam,
-    Message,
-    Messages,
-    TextPart,
-)
+from mirascope.core import BaseMessageParam
+from mirascope.core.base import ImagePart, TextPart
+from mirascope.core.base.messages import Messages
 from mirascope.core.base.prompt import BasePrompt, metadata, prompt_template
 
 
@@ -237,7 +235,7 @@ def test_metadata_decorator() -> None:
 
 
 def test_prompt_template_str_return():
-    @prompt_template
+    @prompt_template()
     def recommend_book(genre: str) -> str:
         return f"recommend a {genre} book"
 
@@ -264,7 +262,7 @@ def test_prompt_template_with_none_argument_str_return():
 
 @pytest.mark.asyncio
 async def test_prompt_template_str_return_async():
-    @prompt_template
+    @prompt_template()
     async def recommend_book(genre: str) -> str:
         return f"recommend a {genre} book"
 
@@ -277,7 +275,7 @@ async def test_prompt_template_str_return_async():
 
 
 def test_list_str_return():
-    @prompt_template
+    @prompt_template()
     def recommend_book(genre: str) -> list[str]:
         return ["hello!", f"recommend a {genre} book"]
 
@@ -297,11 +295,11 @@ def test_list_str_return():
 
 
 def test_list_message_role_return():
-    @prompt_template
-    def recommend_book(genre: str) -> Messages:
+    @prompt_template()
+    def recommend_book(genre: str) -> Messages.Type:
         return [
-            Message.System("You are a librarian"),
-            Message.User(f"recommend a {genre} book"),
+            Messages.System("You are a librarian"),
+            Messages.User(f"recommend a {genre} book"),
         ]
 
     result = recommend_book("fantasy")
@@ -316,7 +314,7 @@ def test_list_message_role_return():
 
 
 def test_base_message_param_return():
-    @prompt_template
+    @prompt_template()
     def recommend_book(genre: str) -> BaseMessageParam:
         return BaseMessageParam(role="user", content=f"hello! recommend a {genre} book")
 
@@ -328,21 +326,29 @@ def test_base_message_param_return():
     assert result[0].content == "hello! recommend a fantasy book"
 
 
-#
-# def test_multimodal_return():
-#     @prompt_template
-#     def recommend_book(previous_book: Image.Image) -> list[Any]:
-#         return ["I just read this book:", previous_book, "What should I read next?"]
-#
-#     # Create a dummy image
-#     dummy_image = Image.new("RGB", (100, 100))
-#
-#     result = recommend_book(dummy_image)
-#     assert isinstance(result, list)
-#     assert len(result) == 1
-#     assert isinstance(result[0], BaseMessageParam)
-#     assert result[0].role == "user"
-#     assert len(result[0].content) == 3
-#     assert result[0].content[0] == "I just read this book:"
-#     assert isinstance(result[0].content[1], Image.Image)
-#     assert result[0].content[2] == "What should I read next?"
+@pytest.fixture
+def mock_image():
+    return Mock(spec=Image.Image)
+
+
+def test_multimodal_return(mock_image):
+    mock_image.tobytes.return_value = b"\xff\xd8\xff"  # JPEG magic number
+
+    @prompt_template()
+    def recommend_book(previous_book: Image.Image) -> list[Any]:
+        return ["I just read this book:", previous_book, "What should I read next?"]
+
+    result = recommend_book(mock_image)
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "user"
+    assert len(result[0].content) == 3
+    assert result[0].content[0] == TextPart(type="text", text="I just read this book:")
+    assert result[0].content[1] == ImagePart(
+        type="image", media_type="image/jpeg", image=b"\xff\xd8\xff", detail=None
+    )
+    assert result[0].content[2] == TextPart(
+        type="text", text="What should I read next?"
+    )

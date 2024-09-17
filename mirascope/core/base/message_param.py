@@ -1,8 +1,16 @@
 """This module contains the base class for message parameters."""
 
-from typing import Literal, TypeAlias
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    try:
+        from PIL import Image
+    except ImportError:
+        Image = object
 
 
 class TextPart(BaseModel):
@@ -74,29 +82,3 @@ class BaseMessageParam(BaseModel):
 
     role: str
     content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart]
-
-
-Messages: TypeAlias = list[BaseMessageParam]
-
-
-class Message:
-    class System(BaseMessageParam):
-        def __init__(
-            self,
-            content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart],
-        ) -> None:
-            super().__init__(content=content, role="system")
-
-    class User(BaseMessageParam):
-        def __init__(
-            self,
-            content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart],
-        ) -> None:
-            super().__init__(content=content, role="user")
-
-    class Assistant(BaseMessageParam):
-        def __init__(
-            self,
-            content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart],
-        ) -> None:
-            super().__init__(content=content, role="assistant")

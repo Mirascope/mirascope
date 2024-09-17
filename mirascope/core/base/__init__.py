@@ -13,9 +13,9 @@ from .message_param import (
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
-    Messages,
     TextPart,
 )
+from .messages import Messages
 from .metadata import Metadata
 from .prompt import BasePrompt, metadata, prompt_template
 from .response_model_config_dict import ResponseModelConfigDict
