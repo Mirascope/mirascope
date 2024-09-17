@@ -332,15 +332,19 @@ def test_list_message_role_return():
             ),
         ]
 
-        result = recommend_book("fantasy")
-        assert isinstance(result, list)
-        assert len(result) == 2
-        assert isinstance(result[0], BaseMessageParam)
-        assert result[0].role == "system"
-        assert result[0].content == "You are a librarian"
-        assert isinstance(result[1], BaseMessageParam)
-        assert result[1].role == "user"
-        assert result[1].content == "recommend a fantasy book"
+    result = recommend_book("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].role == "system"
+    assert result[0].content == "You are a librarian"
+    assert isinstance(result[1], BaseMessageParam)
+    assert result[1].role == "user"
+    assert result[1].content == [
+        TextPart(type="text", text="recommend a"),
+        TextPart(type="text", text="fantasy"),
+        TextPart(type="text", text="book"),
+    ]
 
 
 def test_base_message_param_return():
