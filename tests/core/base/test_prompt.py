@@ -1,7 +1,7 @@
 """Tests for the `base_prompt` module."""
 
 import os
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
@@ -10,6 +10,7 @@ from pydantic import computed_field
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import ImagePart, TextPart
+from mirascope.core.base.dynamic_config import DynamicConfigMessages
 from mirascope.core.base.messages import Messages
 from mirascope.core.base.prompt import BasePrompt, metadata, prompt_template
 
@@ -247,6 +248,17 @@ def test_prompt_template_str_return():
     assert result[0].content == "recommend a fantasy book"
 
 
+async def test_prompt_template_dynamic_configuration_return():
+    @prompt_template()
+    def recommend_book(genre: str) -> DynamicConfigMessages:
+        return cast(DynamicConfigMessages, {"messages": f"recommend a {genre} book"})
+
+    result = recommend_book("fantasy")
+    assert isinstance(result, dict)
+    assert "messages" in result
+    assert result["messages"] == "recommend a fantasy book"
+
+
 def test_prompt_template_with_none_argument_str_return():
     @prompt_template()
     def recommend_book(genre: str) -> str:
@@ -272,6 +284,18 @@ async def test_prompt_template_str_return_async():
     assert isinstance(result[0], BaseMessageParam)
     assert result[0].role == "user"
     assert result[0].content == "recommend a fantasy book"
+
+
+@pytest.mark.asyncio
+async def test_prompt_template_dynamic_configuration_return_async():
+    @prompt_template()
+    async def recommend_book(genre: str) -> DynamicConfigMessages:
+        return cast(DynamicConfigMessages, {"messages": f"recommend a {genre} book"})
+
+    result = cast(DynamicConfigMessages, await recommend_book("fantasy"))
+    assert isinstance(result, dict)
+    assert "messages" in result
+    assert result["messages"] == "recommend a fantasy book"
 
 
 def test_list_str_return():

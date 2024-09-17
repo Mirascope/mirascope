@@ -355,13 +355,6 @@ def _is_function(
     return isinstance(prompt, types.FunctionType)
 
 
-# WrappedMessagesAsyncFunction: TypeAlias = Callable[
-#     _P, Awaitable[list[BaseMessageParam] | BaseDynamicConfig]
-# ]
-# WrappedMessagesSyncFunction: TypeAlias = Callable[
-#     _P, list[BaseMessageParam] | BaseDynamicConfig
-# ]
-
 MessagesSyncFunction: TypeAlias = Callable[_P, _MessageFuncReturnT]
 MessagesAsyncFunction: TypeAlias = Callable[_P, Awaitable[_MessageFuncReturnT]]
 
