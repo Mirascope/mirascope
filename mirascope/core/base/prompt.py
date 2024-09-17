@@ -304,8 +304,6 @@ class BasePrompt(BaseModel):
 
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
-_MessageParamT = TypeVar("_MessageParamT", bound=Any)
-_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageFuncReturnTypes: TypeAlias = BaseDynamicConfig | Messages.Type
 _MessageFuncReturnT = TypeVar(
     "_MessageFuncReturnT", bound=_MessageFuncReturnTypes, contravariant=True
@@ -345,7 +343,7 @@ class PromptDecorator(Protocol):
     ): ...
 
 
-def _is_function(
+def _is_base_dynamic_config_function(
     prompt: type[_BasePromptT]
     | Callable[_P, BaseDynamicConfig]
     | Callable[_P, Awaitable[BaseDynamicConfig]],
@@ -494,7 +492,7 @@ def prompt_template(
         """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
 
-        if not _is_function(prompt):
+        if not _is_base_dynamic_config_function(prompt):
             return prompt
 
         if fn_is_async(prompt):
