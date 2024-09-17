@@ -29,6 +29,23 @@ def test_base_tool() -> None:
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
 
 
+def test_base_tool_additional_call_args() -> None:
+    """Tests the `BaseTool` class with additional call arguments."""
+
+    class FormatBook(BaseTool):
+        title: str
+        author: str
+
+        def call(self, genre: str, *, topic: str) -> str:
+            return f"{self.title} by {self.author} (genre: {genre}, topic: {topic})"
+
+    tool = FormatBook(title="title", author="author")
+    assert (
+        tool.call("genre", topic="topic")
+        == "title by author (genre: genre, topic: topic)"
+    )
+
+
 @pytest.mark.asyncio
 async def test_base_tool_call_async() -> None:
     """Tests the `BaseTool.call` method with an async function."""
