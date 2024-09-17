@@ -11,22 +11,6 @@ _BaseDynamicConfigT = TypeVar(
 )
 
 
-# @overload
-# def get_dynamic_configuration(
-#     fn: Callable[..., _BaseDynamicConfigT | list[BaseMessageParam]],
-#     args: tuple[Any, ...],
-#     kwargs: dict[str, Any],
-# ) -> _BaseDynamicConfigT: ...
-#
-#
-# @overload
-# def get_dynamic_configuration(
-#     fn: Callable[..., Awaitable[_BaseDynamicConfigT | list[BaseMessageParam]]],
-#     args: tuple[Any, ...],
-#     kwargs: dict[str, Any],
-# ) -> Awaitable[_BaseDynamicConfigT]: ...
-
-
 def _is_message_param_list(result: object) -> TypeIs[list[BaseMessageParam]]:
     return isinstance(result, list)
 
