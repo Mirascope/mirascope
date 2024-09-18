@@ -224,6 +224,8 @@ stream = recommend_book("fantasy")
 # Your IDE will provide autocompletion for stream methods and properties
 ```
 
+![stream-attributes.png](../assets/stream-attributes.png)
+
 This type safety ensures that your IDE can provide appropriate autocompletion and type checking for the stream's methods and properties, improving your development experience when working with streamed LLM responses.
 
 ## Best Practices
@@ -231,7 +233,6 @@ This type safety ensures that your IDE can provide appropriate autocompletion an
 When working with streaming in Mirascope, consider the following best practices:
 
 1. **Real-time Feedback**: Use streaming for applications where users benefit from seeing results immediately, such as chatbots or writing assistants.
-
    ```python
    @openai.call(model="gpt-4o-mini", stream=True)
    @prompt_template("Write a short story about {topic}")
@@ -246,7 +247,6 @@ When working with streaming in Mirascope, consider the following best practices:
    ```
 
 2. **Progress Indicators**: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
-
    ```python
    from tqdm import tqdm
 
@@ -254,6 +254,7 @@ When working with streaming in Mirascope, consider the following best practices:
    @prompt_template()
    def summarize_text(text: str) -> Messages.Type:
          return f"Summarize the following text: {text}"
+
    text = "..." # Long text to summarize
    summary = []
    with tqdm(desc="Summarizing", unit=" chunks") as pbar:
@@ -264,7 +265,6 @@ When working with streaming in Mirascope, consider the following best practices:
    ```
 
 3. **Incremental Processing**: Process streamed content incrementally for large outputs, reducing memory usage and allowing for early termination if needed.
-
    ```python
    from mirascope.core import openai, prompt_template
    
@@ -281,7 +281,6 @@ When working with streaming in Mirascope, consider the following best practices:
    ```
 
 4. **Timeout Handling**: Implement timeouts for streamed responses to handle cases where the LLM might take too long to generate content.
-
    ```python
    import asyncio
    from asyncio import TimeoutError
