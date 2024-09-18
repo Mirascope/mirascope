@@ -6,14 +6,15 @@ JSON Mode is a feature in Mirascope that allows you to request structured JSON o
 
 JSON Mode support varies across different LLM providers:
 
-| Provider | Support Type | Implementation |
-|----------|--------------|----------------|
-| OpenAI   | Explicit     | Native API feature |
-| Gemini   | Explicit     | Native API feature |
-| Groq     | Explicit     | Native API feature |
-| Mistral  | Explicit     | Native API feature |
-| Anthropic| Pseudo       | Prompt engineering |
-| Cohere   | Pseudo       | Prompt engineering |
+| Provider  | Support Type | Implementation      |
+|-----------|--------------|---------------------|
+| Anthropic | Pseudo       | Prompt engineering  |
+| Cohere    | Pseudo       | Prompt engineering  |
+| Gemini    | Explicit     | Native API feature  |
+| Groq      | Explicit     | Native API feature  |
+| Mistral   | Explicit     | Native API feature  |
+| OpenAI    | Explicit     | Native API feature  |
+
 
 For providers with explicit support, Mirascope uses the native JSON Mode feature of the API. For providers without explicit support (Anthropic and Cohere), Mirascope implements a pseudo JSON Mode by instructing the model in the prompt to output JSON.
 
@@ -49,11 +50,10 @@ print(json.loads(response.content))
 
 In this example:
 
-1. We import the necessary modules: `json` for parsing the JSON response, and `openai` and `prompt_template` from Mirascope.
-2. The `@openai.call` decorator is used with `json_mode=True` to enable JSON Mode.
-3. The `@prompt_template` decorator defines the structure of our prompt.
-4. Our `get_book_info` function takes a `book_title` parameter and returns structured information about the book.
-5. We call the function with "The Great Gatsby" and print the parsed JSON response.
+1. The `@openai.call` decorator is used with json_mode=True to enable JSON Mode.
+2. The `@prompt_template` decorator defines the structure of our prompt.
+3. Our `get_book_info` function takes a book_title parameter and returns structured information about the book.
+4. We call the function with `"The Great Gatsby"` and print the parsed JSON response.
 
 This approach instructs the model to return its response in JSON format, which we can then easily parse and use in our application.
 
@@ -119,7 +119,6 @@ JSON Mode is particularly useful in scenarios where you need to extract structur
 Here's a more complex example demonstrating how JSON Mode can be used in a product recommendation engine:
 
 ```python
-from typing import List
 from pydantic import BaseModel
 from mirascope.core import openai, prompt_template
 
@@ -128,9 +127,9 @@ class Book(BaseModel):
     author: str
     genre: str
     publication_year: int
-    themes: List[str]
+    themes: list[str]
 
-@openai.call(model="gpt-4o-mini", json_mode=True, response_model=List[Book])
+@openai.call(model="gpt-4o-mini", json_mode=True, response_model=list[Book])
 @prompt_template(
     """
     Based on the user's reading preferences, recommend 3 books.
