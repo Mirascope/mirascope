@@ -4,15 +4,21 @@
 
     [`mirascope.core.anthropic.stream`](../api/core/anthropic/stream.md)
 
+    [`mirascope.core.azure.stream`](../api/core/azure/stream.md)
+
     [`mirascope.core.cohere.stream`](../api/core/cohere/stream.md)
 
     [`mirascope.core.gemini.stream`](../api/core/gemini/stream.md)
 
     [`mirascope.core.groq.stream`](../api/core/groq/stream.md)
 
+    [`mirascope.core.litellm.stream`](../api/core/litellm/stream.md)
+
     [`mirascope.core.mistral.stream`](../api/core/mistral/stream.md)
 
     [`mirascope.core.openai.stream`](../api/core/openai/stream.md)
+
+    [`mirascope.core.vertex.stream`](../api/core/vertex/stream.md)
 
 Streaming is a powerful feature when using LLMs that allows you to process LLM responses in real-time as they are generated. This can be particularly useful for long-running tasks, providing immediate feedback to users, or implementing more responsive applications.
 
@@ -87,9 +93,29 @@ The `end=""` and `flush=True` parameters in the print function ensure that the o
 
     Mirascope supports standard streaming (without tools) for all supported providers. While we use OpenAI in this example, the interface is the same across all supported providers.
 
-!!! tip "Streaming with Other Providers"
+??? tip "Streaming with Other Providers"
+    
+    To use streaming with other providers, simply replace `openai.call` with the appropriate provider's call decorator.
+    
+    Supported providers include:
 
-    To use streaming with other providers, simply replace `openai.call` with the appropriate provider's call decorator (e.g., `anthropic.call`, `gemini.call`, etc.).
+    [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
+
+    [`mirascope.core.azure.call`](../api/core/azure/call.md)
+
+    [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
+
+    [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
+
+    [`mirascope.core.groq.call`](../api/core/groq/call.md)
+
+    [`mirascope.core.litellm.call`](../api/core/litellm/call.md)
+
+    [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
+
+    [`mirascope.core.openai.call`](../api/core/openai/call.md)
+
+    [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
 
 ## Handling Streamed Responses
 
@@ -211,12 +237,12 @@ When working with streaming in Mirascope, consider the following best practices:
    @prompt_template("Write a short story about {topic}")
    def write_story(topic: str):
        ...
-
+   
    print("Generating story...")
    for chunk, _ in write_story("a magical forest"):
        print(chunk.content, end="", flush=True)
-   # > Generating story...
-   # Once upon a time, in a magical forest...
+       # > Generating story...
+       # Once upon a time, in a magical forest...
    ```
 
 2. **Progress Indicators**: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
@@ -225,32 +251,33 @@ When working with streaming in Mirascope, consider the following best practices:
    from tqdm import tqdm
 
    @openai.call(model="gpt-4o-mini", stream=True)
-   @prompt_template("Summarize the following text: {text}")
-   def summarize_text(text: str):
-       ...
-
+   @prompt_template()
+   def summarize_text(text: str) -> Messages.Type:
+         return f"Summarize the following text: {text}"
    text = "..." # Long text to summarize
-   with tqdm(total=100, desc="Summarizing") as pbar:
-       for i, (chunk, _) in enumerate(summarize_text(text)):
-           print(chunk.content, end="", flush=True)
+   summary = []
+   with tqdm(desc="Summarizing", unit=" chunks") as pbar:
+        for chunk, _ in summarize_text(text):
+           summary.append(chunk.content)
            pbar.update(1)  # Update progress bar
+   print("Summary:", "".join(summary))
    ```
 
 3. **Incremental Processing**: Process streamed content incrementally for large outputs, reducing memory usage and allowing for early termination if needed.
 
    ```python
-   @openai.call(model="gpt-4o-mini", stream=True)
-   @prompt_template("Generate a list of {n} random words")
-   def generate_words(n: int):
-       ...
-
-   word_count = 0
-   for chunk, _ in generate_words(1000):
-       words = chunk.content.split()
-       word_count += len(words)
-       process_words(words)  # Some processing function
-       if word_count >= 1000:
-           break  # Early termination
+   from mirascope.core import openai, prompt_template
+   
+   @openai.call("gpt-4o-mini")
+   @prompt_template()
+   def generate_story(genre: str, length: str) -> Messages.Type: 
+       return f"Generate a {length} {genre} story."
+   
+   stream = generate_story("fantasy", "short")
+   # Open a file for writing the generated story
+   with open("output.txt", "w") as file:
+       for chunk, _ in stream:
+           file.write(chunk.content)
    ```
 
 4. **Timeout Handling**: Implement timeouts for streamed responses to handle cases where the LLM might take too long to generate content.
@@ -260,9 +287,9 @@ When working with streaming in Mirascope, consider the following best practices:
    from asyncio import TimeoutError
 
    @openai.call(model="gpt-4o-mini", stream=True)
-   @prompt_template("Write a detailed essay about {topic}")
-   async def write_essay(topic: str):
-       ...
+   @prompt_template()
+   async def write_essay(topic: str) -> Messages.Type:
+         return f"Write an essay on {topic}"
 
    async def stream_with_timeout(topic: str, timeout: float):
        try:
@@ -275,9 +302,3 @@ When working with streaming in Mirascope, consider the following best practices:
    ```
 
 By leveraging streaming effectively, you can create more responsive and efficient LLM-powered applications with Mirascope's streaming capabilities.
-
-## Conclusion
-
-Streaming in Mirascope offers a powerful way to handle real-time LLM responses, enabling more responsive and efficient applications. By understanding the basics of streaming, how to handle streamed responses, and following best practices, you can significantly enhance the user experience of your LLM-powered applications.
-
-For more advanced usage of streaming, including combining streaming with tools or response models, refer to the [Tools](./tools.md) and [Response Models](./response_models.md) documentation.
