@@ -22,6 +22,42 @@
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
+## What are "Calls"
+
+To understand the benefits of Mirascope's `call` decorator, let's compare making a call to OpenAI using their official SDK versus using Mirascope:
+
+Using OpenAI SDK:
+
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+def recommend_book(genre: str) -> str | None:
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": f"recommend a {genre} book"}]
+    )
+    return completion.choices[0].message.content
+
+print(recommend_book("fantasy"))
+```
+
+Using Mirascope:
+
+```python
+from mirascope.core import openai, prompt_template
+
+@openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+print(recommend_book("fantasy").content)
+```
+
+As you can see, Mirascope simplifies the process and makes it more readable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
+
 ## Purpose and Benefits
 
 The primary purposes and benefits of the `call` decorator are to:
@@ -59,7 +95,7 @@ In this example:
 
 !!! info "Function Body"
 
-    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we'll cover in the [Call Parameters](#provider-specific-parameters) section.
+    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
 
 ## Supported Providers
 
@@ -112,8 +148,8 @@ While each LLM provider has its own specific parameters, there are several commo
 - `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](./response_models.md) documentation.
 - `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](./output_parsers.md) documentation.
 - `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](./json_mode.md) documentation.
-- `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](./calls.md#custom-client) section below.
-- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Parameters`](./calls.md#provider-specific-parameters) section below.
+- `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](#custom-client) section below.
+- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Parameters`](#provider-specific-parameters) section below.
 
 These common parameters provide a consistent way to control the behavior of LLM calls across different providers. Keep in mind that while these parameters are widely supported, there might be slight variations in how they're implemented or their exact effects across different providers (and the documentation should cover any such differences).
 
@@ -179,9 +215,11 @@ print(f"Temperature used: {response.call_kwargs['temperature']}")
 print(f"Metadata: {response.metadata}")
 ```
 
-In this example, we're dynamically setting the `temperature` based on the genre, and also adding metadata to the call. The `OpenAIDynamicConfig` (or the equivalent for other providers) allows you to specify various dynamic configurations, including `call_params`, `metadata`, `computed_fields`, and more.
+In this example, we're dynamically setting the `temperature` based on the genre, and also adding metadata to the call. The `OpenAIDynamicConfig` (or the equivalent for other providers) allows you to specify various dynamic configurations, including `call_params`, `metadata`, `computed_fields`, and more. For more information on computed fields, refer to the [Computed Fields](./prompts.md#computed-fields) section in the prompts documentation.
 
 This approach allows for flexible, context-dependent configuration of your LLM calls.
+
+It's worth noting that you can use either `BaseDynamicConfig` or provider-specific versions like `openai.OpenAIDynamicConfig`. The `BaseDynamicConfig` allows you to use provider-agnostic configuration options (such as computed fields and metadata), while the provider-specific configs tie the prompt to a specific provider and provide provider-specific type hints for things like call params and messages.
 
 ## Custom Client
 
@@ -231,7 +269,7 @@ Any custom client is supported so long as it has the same API as the original ba
 
     [`mirascope.core.openai.call_response`](../api/core/openai/call_response.md)
 
-When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific `BaseCallResponse` object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
+When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific [`BaseCallResponse`](../api/core/base/call_response.md#mirascope.core.base.call_response.BaseCallResponse) object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
 
 ### Common Response Properties and Methods
 
@@ -329,8 +367,8 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
        ...
 
    # Can easily switch between providers
-   openai_response = recommend_book.run(openai.call("gpt-4o-mini"))("fantasy")
-   anthropic_response = recommend_book.run(anthropic.call("claude-3-5-sonnet-20240620"))("fantasy")
+   openai_response = openai.call("gpt-4o-mini")(recommend_book)("fantasy")
+   anthropic_response = anthropic.call("claude-3-5-sonnet-20240620")(recommend_book)("fantasy")
    ```
 
 - **Provider-Specific Prompts**: When necessary, tailor prompts to leverage unique features of specific providers using provider-specific `call` decorators. For example, Anthropic's Claude model is known to handle prompts with XML particularly well.
@@ -417,7 +455,7 @@ To make the most of Mirascope's `call` decorator and ensure you're building robu
        ...
    ```
 
-   This approach allows you to use open-source models by serving OpenAI compatible endpoints (e.g., with `vLLM`, `Ollama`, etc).
+   This approach allows you to use open-source models by serving OpenAI compatible endpoints (e.g., with [vLLM](https://github.com/vllm-project/vllm), [Ollama](https://github.com/ollama/ollama), etc).
 
 - **Structured Outputs**: Use `response_models` to ensure consistency and type safety when you need structured data from your LLM calls.
    ```python
