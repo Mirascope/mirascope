@@ -46,17 +46,11 @@ def _convert_message_sequence_part_to_content_part(
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")
 
 
-def get_content_from_message(
-    content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-) -> str | list[TextPart | ImagePart | AudioPart | CacheControlPart]:
-    if isinstance(content, str):
-        return content
-    return _convert_message_sequence_to_content(content)
-
-
-def _convert_message_sequence_to_content(
+def convert_message_content_to_message_param_content(
     message_sequence: Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-) -> list[TextPart | ImagePart | AudioPart | CacheControlPart]:
+) -> list[TextPart | ImagePart | AudioPart | CacheControlPart] | str:
+    if isinstance(message_sequence, str):
+        return message_sequence
     return [
         _convert_message_sequence_part_to_content_part(message)
         for message in message_sequence
@@ -66,7 +60,9 @@ def _convert_message_sequence_to_content(
 def _is_base_message_params(
     value: object,
 ) -> TypeIs[list[BaseMessageParam]]:
-    return isinstance(value, list) and isinstance(value[0], BaseMessageParam)
+    return isinstance(value, list) and all(
+        isinstance(v, BaseMessageParam) for v in value
+    )
 
 
 def convert_messages_to_message_params(
@@ -76,16 +72,15 @@ def convert_messages_to_message_params(
     | BaseMessageParam,
     role: str = "user",
 ) -> list[BaseMessageParam]:
-    if isinstance(messages, str):
-        return [BaseMessageParam(content=messages, role=role)]
-    elif isinstance(messages, BaseMessageParam):
+    if isinstance(messages, BaseMessageParam):
         return [messages]
     elif _is_base_message_params(messages):
         return messages
-    elif isinstance(messages, Sequence):
+    elif isinstance(messages, str | Sequence):
         return [
             BaseMessageParam(
-                content=_convert_message_sequence_to_content(messages), role=role
+                content=convert_message_content_to_message_param_content(messages),
+                role=role,
             )
         ]
     else:
