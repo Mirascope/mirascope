@@ -6,8 +6,7 @@ import pytest
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import BaseDynamicConfig
 from mirascope.core.base._utils._get_dynamic_configuration import (
-    get_dynamic_configuration_async,
-    get_dynamic_configuration_sync,
+    get_dynamic_configuration,
 )
 
 
@@ -15,7 +14,7 @@ def test_get_dynamic_configuration_sync_returns_config():
     def fn(*args: Any, **kwargs: Any) -> BaseDynamicConfig:
         return cast(BaseDynamicConfig, {"metadata": {"some_key": "some_value"}})
 
-    result = get_dynamic_configuration_sync(fn, (), {})
+    result = get_dynamic_configuration(fn, (), {})
     assert result == {"metadata": {"some_key": "some_value"}}
 
 
@@ -23,7 +22,7 @@ def test_get_dynamic_configuration_sync_returns_message_param_list():
     def fn(*args: Any, **kwargs: Any) -> list[BaseMessageParam]:
         return [BaseMessageParam(role="user", content="Hello, World!")]
 
-    result = get_dynamic_configuration_sync(fn, (), {})
+    result = get_dynamic_configuration(fn, (), {})
     assert result == {
         "messages": [BaseMessageParam(role="user", content="Hello, World!")]
     }
@@ -36,7 +35,7 @@ def test_get_dynamic_configuration_sync_with_original_fn():
     fn = Mock()
     fn._original_fn = original_fn
 
-    result = get_dynamic_configuration_sync(fn, (), {})
+    result = get_dynamic_configuration(fn, (), {})
     assert result == {"computed_fields": {"field1": "value1"}}
 
 
@@ -47,7 +46,7 @@ def test_get_dynamic_configuration_sync_with_original_fn_returns_message_param_l
     fn = Mock()
     fn._original_fn = original_fn
 
-    result = get_dynamic_configuration_sync(fn, (), {})
+    result = get_dynamic_configuration(fn, (), {})
     assert result == {
         "messages": [
             BaseMessageParam(role="assistant", content="How can I assist you?")
@@ -64,7 +63,7 @@ def test_get_dynamic_configuration_sync_passes_args_kwargs():
             {"metadata": {"args_received": args, "kwargs_received": kwargs}},
         )
 
-    result = get_dynamic_configuration_sync(fn, (1, 2), {"key": "value"})
+    result = get_dynamic_configuration(fn, (1, 2), {"key": "value"})
     assert result == {
         "metadata": {
             "args_received": (1, 2),
@@ -78,7 +77,7 @@ async def test_get_dynamic_configuration_async_returns_config():
     async def fn(*args: Any, **kwargs: Any) -> BaseDynamicConfig:
         return cast(BaseDynamicConfig, {"metadata": {"some_key": "some_value"}})
 
-    result = await get_dynamic_configuration_async(fn, (), {})
+    result = await get_dynamic_configuration(fn, (), {})
     assert result == {"metadata": {"some_key": "some_value"}}
 
 
@@ -87,7 +86,7 @@ async def test_get_dynamic_configuration_async_returns_message_param_list():
     async def fn(*args: Any, **kwargs: Any) -> list[BaseMessageParam]:
         return [BaseMessageParam(role="user", content="Hello, World!")]
 
-    result = await get_dynamic_configuration_async(fn, (), {})
+    result = await get_dynamic_configuration(fn, (), {})
     assert result == {
         "messages": [BaseMessageParam(role="user", content="Hello, World!")]
     }
@@ -101,7 +100,7 @@ async def test_get_dynamic_configuration_async_with_original_fn():
     fn = Mock()
     fn._original_fn = original_fn
 
-    result = await get_dynamic_configuration_async(fn, (), {})
+    result = await get_dynamic_configuration(fn, (), {})
     assert result == {"computed_fields": {"field1": "value1"}}
 
 
@@ -113,7 +112,7 @@ async def test_get_dynamic_configuration_async_with_original_fn_returns_message_
     fn = Mock()
     fn._original_fn = original_fn
 
-    result = await get_dynamic_configuration_async(fn, (), {})
+    result = await get_dynamic_configuration(fn, (), {})
     assert result == {
         "messages": [
             BaseMessageParam(role="assistant", content="How can I assist you?")
@@ -131,7 +130,7 @@ async def test_get_dynamic_configuration_async_passes_args_kwargs():
             {"metadata": {"args_received": args, "kwargs_received": kwargs}},
         )
 
-    result = await get_dynamic_configuration_async(fn, (1, 2), {"key": "value"})
+    result = await get_dynamic_configuration(fn, (1, 2), {"key": "value"})
     assert result == {
         "metadata": {
             "args_received": (1, 2),
