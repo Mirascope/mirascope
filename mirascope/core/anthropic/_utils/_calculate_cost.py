@@ -46,6 +46,40 @@ def calculate_cost(
             "prompt": 0.000_003,
             "completion": 0.000_015,
         },
+        # Bedrock models
+        "anthropic.claude-3-haiku-20240307-v1:0": {
+            "prompt": 0.000_002_5,
+            "completion": 0.000_012_5,
+        },
+        "anthropic.claude-3-sonnet-20240229-v1:0": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+        },
+        "anthropic.claude-3-opus-20240229-v1:0": {
+            "prompt": 0.000_015,
+            "completion": 0.000_075,
+        },
+        "anthropic.claude-3-5-sonnet-20240620-v1:0": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+        },
+        # Vertex AI models
+        "claude-3-haiku@20240307": {
+            "prompt": 0.000_002_5,
+            "completion": 0.000_012_5,
+        },
+        "claude-3-sonnet@20240229": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+        },
+        "claude-3-opus@20240229": {
+            "prompt": 0.000_015,
+            "completion": 0.000_075,
+        },
+        "claude-3-5-sonnet@20240620": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+        },
     }
 
     if input_tokens is None or output_tokens is None:
