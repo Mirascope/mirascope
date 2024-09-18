@@ -18,11 +18,11 @@ from mirascope.core import openai, Messages, prompt_template
 
 @openai.call(model="gpt-4o-mini")
 @prompt_template()
-async def recommend_book_prompt(genre: str) -> Messages.Type:
+async def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 async def main():
-    response = await recommend_book_prompt("fantasy")
+    response = await recommend_book("fantasy")
     print(response.content)
 
 asyncio.run(main())
@@ -30,8 +30,8 @@ asyncio.run(main())
 
 This code does the following:
 
-1. Defines an asynchronous function `recommend_book_prompt` that uses the OpenAI model to recommend a book of a given genre.
-2. Creates a `main` function that calls `recommend_book_prompt` asynchronously.
+1. Defines an asynchronous function `recommend_book` that uses the OpenAI model to recommend a book of a given genre.
+2. Creates a `main` function that calls `recommend_book` asynchronously.
 3. Uses `asyncio.run(main())` to start the asynchronous event loop and run the main function.
 
 ## Async Streaming
@@ -44,11 +44,11 @@ from mirascope.core import openai, prompt_template
 
 @openai.call(model="gpt-4o-mini", stream=True)
 @prompt_template()
-async def recommend_book_prompt(genre: str) -> Messages.Type:
+async def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 async def main():
-    stream = await recommend_book_prompt("fantasy")
+    stream = await recommend_book("fantasy")
     async for chunk, _ in stream:
         print(chunk.content, end="", flush=True)
 
@@ -80,11 +80,11 @@ class FormatBook(BaseTool):
 
 @openai.call(model="gpt-4o-mini", tools=[FormatBook])
 @prompt_template()
-async def recommend_book_prompt(genre: str) -> Messages.Type:
+async def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 async def main():
-    response = await recommend_book_prompt("fantasy")
+    response = await recommend_book("fantasy")
     if isinstance((tool := response.tool), FormatBook):
         output = await tool.call()
         print(output)
@@ -98,32 +98,9 @@ This example:
 
 1. Defines an asynchronous tool `FormatBook` with an async `call` method.
 2. Uses this tool in an asynchronous OpenAI call.
-3. In the main function, it checks if the response includes a tool call, and if so, calls the tool asynchronously.
-
-## Async with BasePrompt
-
-For `BasePrompt`, Mirascope provides a `run_async` method to access async functionality:
-
-```python hl_lines="5 10"
-import asyncio
-from mirascope.core import BasePrompt, openai, prompt_template
-
-@prompt_template()
-class SentimentAnalysisPrompt(BasePrompt):
-    text: str
-
-async def main():
-    prompt = SentimentAnalysisPrompt(text="I love using Mirascope!")
-    result = await prompt.run_async(openai.call(model="gpt-4o-mini"))
-    print(result.content)
-
-asyncio.run(main())
-```
-
-This code:
-
-1. Defines a `SentimentAnalysisPrompt` class that inherits from `BasePrompt`.
-2. Uses the `run_async` method to execute the prompt asynchronously with the OpenAI model.
+3. In the main function, it checks the instance type of the returned tool using `isinstance()`. This type check is crucial because it ensures that we're dealing with a `FormatBook` instance, which has an async `call` method that we can safely await.
+4. If the tool is indeed a `FormatBook` instance, it calls the tool asynchronously using `await`. This is only possible and correct because we've confirmed the tool type.
+5. If the response doesn't contain a `FormatBook` tool, it prints the response content instead.
 
 ## Parallel Async Calls
 
