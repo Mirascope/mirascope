@@ -5,8 +5,14 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import TypeIs
 
-from .. import AudioPart, BaseMessageParam, CacheControlPart, ImagePart, TextPart
 from .._utils import get_image_type
+from ..message_param import (
+    AudioPart,
+    BaseMessageParam,
+    CacheControlPart,
+    ImagePart,
+    TextPart,
+)
 
 if TYPE_CHECKING:
     from PIL import Image

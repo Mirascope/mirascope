@@ -234,7 +234,7 @@ def test_metadata_decorator() -> None:
 
 def test_prompt_template_with_none() -> None:
     """Tests the `prompt_template` decorator with `None` arguments."""
-    with mock.patch("mirascope.core.base.prompt._messages_decorator") as mock_decorator:
+    with mock.patch("mirascope.core.base.prompt.messages_decorator") as mock_decorator:
         mock_decorated_function = mock.MagicMock()
         mock_decorator.return_value.return_value = mock_decorated_function
 

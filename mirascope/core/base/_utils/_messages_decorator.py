@@ -4,7 +4,9 @@ from typing import ParamSpec, Protocol, TypeAlias, TypeVar, overload
 
 from typing_extensions import TypeIs
 
-from .. import BaseDynamicConfig, BaseMessageParam, Messages
+from ..dynamic_config import BaseDynamicConfig
+from ..message_param import BaseMessageParam
+from ..messages import Messages
 from ._convert_messages_to_message_params import (
     convert_messages_to_message_params,
 )
@@ -51,7 +53,7 @@ class MessagesDecorator(Protocol):
     ): ...
 
 
-def _messages_decorator() -> MessagesDecorator:
+def messages_decorator() -> MessagesDecorator:
     @overload
     def inner(
         messages_fn: MessagesAsyncFunction[_P, _MessageFuncReturnT],

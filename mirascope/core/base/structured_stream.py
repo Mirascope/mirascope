@@ -24,9 +24,9 @@ from ._utils import (
     GetJsonOutput,
     SetupCall,
     extract_tool_return,
+    fn_is_async,
     setup_extract_tool,
 )
-from ._utils._protocols import fn_is_async
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk

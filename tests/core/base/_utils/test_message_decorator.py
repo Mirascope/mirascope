@@ -6,12 +6,12 @@ from PIL import Image
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import ImagePart, Messages, TextPart
-from mirascope.core.base._utils._messages_decorator import _messages_decorator
+from mirascope.core.base._utils._messages_decorator import messages_decorator
 from mirascope.core.base.dynamic_config import DynamicConfigMessages
 
 
 def test_messages_decorator_str_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> str:
         return f"recommend a {genre} book"
 
@@ -24,7 +24,7 @@ def test_messages_decorator_str_return():
 
 
 def test_messages_decorator_dynamic_configuration_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> DynamicConfigMessages:
         return cast(DynamicConfigMessages, {"messages": f"recommend a {genre} book"})
 
@@ -35,7 +35,7 @@ def test_messages_decorator_dynamic_configuration_return():
 
 
 def test_messages_decorator_with_none_argument_str_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> str:
         return f"recommend a {genre} book"
 
@@ -49,7 +49,7 @@ def test_messages_decorator_with_none_argument_str_return():
 
 @pytest.mark.asyncio
 async def test_messages_decorator_str_return_async():
-    @_messages_decorator()
+    @messages_decorator()
     async def recommend_book(genre: str) -> str:
         return f"recommend a {genre} book"
 
@@ -63,7 +63,7 @@ async def test_messages_decorator_str_return_async():
 
 @pytest.mark.asyncio
 async def test_prompt_messages_decorator_configuration_return_async():
-    @_messages_decorator()
+    @messages_decorator()
     async def recommend_book(genre: str) -> DynamicConfigMessages:
         return cast(DynamicConfigMessages, {"messages": f"recommend a {genre} book"})
 
@@ -74,7 +74,7 @@ async def test_prompt_messages_decorator_configuration_return_async():
 
 
 def test_list_str_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> list[str]:
         return ["hello!", f"recommend a {genre} book"]
 
@@ -94,7 +94,7 @@ def test_list_str_return():
 
 
 def test_list_message_role_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> Messages.Type:
         return [
             Messages.System("You are a librarian"),
@@ -126,7 +126,7 @@ def test_list_message_role_return():
 
 
 def test_base_message_param_return():
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(genre: str) -> BaseMessageParam:
         return BaseMessageParam(role="user", content=f"hello! recommend a {genre} book")
 
@@ -146,7 +146,7 @@ def mock_image():
 def test_multimodal_return(mock_image):
     mock_image.tobytes.return_value = b"\xff\xd8\xff"  # JPEG magic number
 
-    @_messages_decorator()
+    @messages_decorator()
     def recommend_book(previous_book: Image.Image) -> list[Any]:
         return ["I just read this book:", previous_book, "What should I read next?"]
 

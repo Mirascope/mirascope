@@ -17,14 +17,15 @@ from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
+    MessagesDecorator,
+    fn_is_async,
     format_template,
     get_fn_args,
     get_metadata,
     get_prompt_template,
+    messages_decorator,
     parse_prompt_messages,
 )
-from ._utils._messages_decorator import MessagesDecorator, _messages_decorator
-from ._utils._protocols import fn_is_async
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
@@ -377,7 +378,7 @@ def prompt_template(
 
     if template is None:
         # For @prompt_template() case
-        return _messages_decorator()
+        return messages_decorator()
 
     @overload
     def inner(
