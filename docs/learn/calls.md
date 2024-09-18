@@ -24,9 +24,7 @@ The `call` decorator is a core feature of the Mirascope library, designed to sim
 
 ## What are "Calls"
 
-In Mirascope, "calls" refer to the process of interacting with Large Language Model (LLM) APIs. To understand the benefits of Mirascope's `call` decorator, let's compare making calls to different LLM providers using their official SDKs versus using Mirascope:
-
-### OpenAI
+To understand the benefits of Mirascope's `call` decorator, let's compare making a call to OpenAI using their official SDK versus using Mirascope:
 
 Using OpenAI SDK:
 
@@ -38,7 +36,7 @@ client = OpenAI()
 def recommend_book(genre: str) -> str | None:
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
+        messages=[{"role": "user", "content": f"recommend a {genre} book"}]
     )
     return completion.choices[0].message.content
 
@@ -58,43 +56,7 @@ def recommend_book(genre: str):
 print(recommend_book("fantasy").content)
 ```
 
-### Anthropic
-
-Using Anthropic SDK:
-
-```python
-from anthropic import Anthropic
-
-client = Anthropic()
-
-def recommend_book(genre: str):
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
-        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
-    )
-    return response.content
-
-print(recommend_book("fantasy"))
-```
-
-Using Mirascope:
-
-```python
-from mirascope.core import anthropic, prompt_template
-
-@anthropic.call("claude-3-5-sonnet-20240620")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
-
-print(recommend_book("fantasy").content)
-```
-
-As you can see, Mirascope provides a consistent, simplified interface across different providers, reducing boilerplate code and making your functions more readable and maintainable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
-
-!!! info "Function Body"
-
-    In the Mirascope examples above, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
+As you can see, Mirascope simplifies the process and makes it more readable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
 
 ## Purpose and Benefits
 
@@ -131,6 +93,11 @@ In this example:
 - We're using OpenAI's `gpt-4o-mini` model to make the call.
 - When we call the function with `genre="fantasy"`, the argument is automatically injected into the prompt template and used in the call.
 
+!!! info "Function Body"
+
+    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
+
+
 ## Supported Providers
 
 Mirascope's `call` decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
@@ -144,6 +111,70 @@ Mirascope's `call` decorator supports multiple LLM providers, allowing you to ea
 - [LiteLLM](https://www.litellm.ai/) (for multi-provider support)
 - [Azure AI](https://azure.microsoft.com/en-us/solutions/ai)
 - [Vertex AI](https://cloud.google.com/vertex-ai)
+
+To illustrate how Mirascope simplifies working with different providers, let's compare making calls with various providers directly versus using Mirascope:
+
+### OpenAI
+
+Direct API call:
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+def recommend_book(genre: str):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
+    )
+    return response.choices[0].message.content
+
+print(recommend_book("fantasy"))
+```
+
+Using Mirascope:
+```python
+from mirascope.core import openai, prompt_template
+
+@openai.call("gpt-4o-mini")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+print(recommend_book("fantasy").content)
+```
+
+### Anthropic
+
+Direct API call:
+```python
+from anthropic import Anthropic
+
+client = Anthropic()
+
+def recommend_book(genre: str):
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20240620",
+        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
+    )
+    return response.content
+
+print(recommend_book("fantasy"))
+```
+
+Using Mirascope:
+```python
+from mirascope.core import anthropic, prompt_template
+
+@anthropic.call("claude-3-5-sonnet-20240620")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+print(recommend_book("fantasy").content)
+```
+
+As you can see, Mirascope provides a consistent, simplified interface across different providers, reducing boilerplate code and making your functions more readable and maintainable.
 
 To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same prompt template:
 
