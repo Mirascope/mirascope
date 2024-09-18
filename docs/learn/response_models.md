@@ -13,7 +13,7 @@ Response Models in Mirascope provide a powerful way to structure and validate th
 
 To use a Response Model, define a Pydantic model and pass it to the `response_model` parameter in the `call` decorator:
 
-```python hl_lines="5-7 10"
+```python hl_lines="5-7 10 16"
 from mirascope.core import openai, prompt_template, Messages
 from pydantic import BaseModel
 
@@ -67,7 +67,7 @@ def recommend_books(genre: str, num: int) -> Messages.Type:
     return f"Recommend a list of {num} {genre} books"
 
 
-books = recommend_books("fantasy", 3)
+books = recommend_books("fantasy", 3)  # return is type `list[str]`
 for book in books:
     print(book)
 # > The Name of the Wind by Patrick Rothfuss
@@ -81,7 +81,7 @@ Here, we're using `list[str]` as the `response_model`, which Mirascope handles w
 
 Adding few-shot examples to your response model can improve results by demonstrating exactly how to adhere to your desired output:
 
-```python hl_lines="9-15 18"
+```python hl_lines="6-7 11-13 18"
 from mirascope.core import openai, prompt_template
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -124,7 +124,7 @@ This example demonstrates:
 
 If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
 
-```python hl_lines="10 17 18"
+```python hl_lines="13 20-21"
 from mirascope.core import openai, prompt_template
 from pydantic import BaseModel
 
@@ -134,7 +134,11 @@ class Book(BaseModel):
     author: str
 
 
-@openai.call(model="gpt-4o-mini", response_model=Book, stream=True)
+@openai.call(
+    "gpt-4o-mini",
+    response_model=Book,
+    stream=True,
+)
 @prompt_template()
 def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
@@ -168,7 +172,7 @@ In the above example, your IDE will provide proper autocompletion and type check
 
 When using Response Models, the default setting is `json_mode=False`, which will use [`Tools`](./tools.md) under the hood to perform the structured output extraction. However, for some providers setting `json_mode=True` enables support for field types that may not be supported by tools.
 
-```python hl_lines="8"
+```python hl_lines="11"
 from mirascope.core import openai, prompt_template
 from pydantic import BaseModel
 
@@ -176,7 +180,11 @@ class BookOutline(BaseModel):
     title: str
     chapters: list[str]
 
-@openai.call("gpt-4o-mini", response_model=BookOutline, json_mode=True)
+@openai.call(
+    "gpt-4o-mini",
+    response_model=BookOutline,
+    json_mode=True,
+)
 @prompt_template()
 def outline_book(genre: str) -> Messages.Type:
     return f"Outline a {genre} book with chapter titles"
@@ -327,7 +335,6 @@ Here are some best practices to follow when using Response Models:
    except Exception as e:
        print(f"Failed to get recipe after retries: {e}")
    ```
-
    For more advanced error handling techniques, check out our [Tenacity integration documentation](../integrations/tenacity.md).
  
 5. **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
@@ -340,52 +347,33 @@ Here are some best practices to follow when using Response Models:
 
 6. **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
    ```python
-   import pytest
- 
-   class Book(BaseModel):
-       title: str
-       author: str
-       genre: str
-   
-   @openai.call("gpt-4o-mini", response_model=Book)
-   @prompt_template()
-   def recommend_book(genre: str) -> Messages.Type:
-       return f"Recommend a {genre} book"
-   
-   @openai.call("gpt-4o-mini", response_model=bool)
-   @prompt_template("""
-   Validate if the following book recommendation is appropriate and accurate:
-   Genre requested: {requested_genre}
-   Book recommended: {book.title} by {book.author} (Genre: {book.genre})
-   
-   Consider the following:
-   1. Does the recommended book's genre match or closely relate to the requested genre?
-      2. Is the book title and author combination valid and real?
-      3. Is the recommendation appropriate for general audiences?
-   
-   Respond with True if the recommendation is valid and appropriate, False otherwise.
-   """)
-   def validate_recommendation(book: Book, requested_genre: str):
-       ...
-   
-   @pytest.mark.parametrize("genre", [
-       "sci-fi", "romance", "mystery", "non-fiction",
-       "children's", "18+ only", "nonsensical genre",
-       "very very very long genre name that is unlikely to be recognized"
-   ])
-   def test_book_recommendation(genre):
-       book = recommend_book(genre)
-   
-       is_valid = validate_recommendation(
-           book=book,
-           requested_genre=genre,
-       )
-   
-       assert is_valid, f"Invalid recommendation for genre '{genre}': {book.title} by {book.author} (Genre: {book.genre})"
+    import pytest
 
-       # Additional specific checks can be added here if needed
-       assert len(book.title) > 0, "Book title should not be empty"
-       assert len(book.author) > 0, "Book author should not be empty"
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    @openai.call("gpt-4o-mini", response_model=Book)
+    @prompt_template()
+    def extract_book(book: str) -> Messages.Type:
+        return f"Extract {book}"
+
+    @pytest.mark.parametrize(
+        "book,expected_output",
+        [
+            (
+                "The Name of the Wind",
+                Book(title="The Name of the Wind", author="Patrick Rothfuss"),
+            ),
+            (
+                "Mistborn: The Final Empire",
+                Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),
+            ),
+        ],
+    )
+    def test_extract_book(book: str, expected_output: Book) -> None:
+        output = extract_book(book)
+        assert output.model_dump() == expected_output.model_dump()
    ```
 
 By following these best practices and leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
