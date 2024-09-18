@@ -14,7 +14,7 @@ Response Models in Mirascope provide a powerful way to structure and validate th
 To use a Response Model, define a Pydantic model and pass it to the `response_model` parameter in the `call` decorator:
 
 ```python hl_lines="5-7 10"
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai, prompt_template, Messages
 from pydantic import BaseModel
 
 
@@ -25,7 +25,7 @@ class Book(BaseModel):
 
 @openai.call(model="gpt-4o-mini", response_model=Book)
 @prompt_template()
-def recommend_book(genre: str) -> str:
+def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 
@@ -37,9 +37,9 @@ print(f"Author: {book.author}")
 
 In this example:
 
-1. We define a `Book` class that inherits from Pydantic's `BaseModel`.
-2. We use the `@openai.call` decorator with the `response_model` parameter set to our `Book` class.
-3. The `recommend_book` function is decorated with both `@openai.call` and `@prompt_template`.
+1. We define a prompt template using the `@prompt_template()` decorator.
+2. We wrap the function with the `@openai.call` decorator, specifying the model to use.
+3. We set the `response_model` parameter to our `Book` class, which inherits from Pydantic's `BaseModel`.
 
 This approach works consistently across all supported providers in Mirascope.
 
@@ -56,8 +56,6 @@ This approach works consistently across all supported providers in Mirascope.
     completion = response.response
     ```
 
-    Note that this is a private attribute included for access to the original response and is not an official property of the response model type.
-
 ## Extracting Built-in Types
 
 For simpler cases where you want to extract just a single built-in type, Mirascope provides a shorthand:
@@ -65,7 +63,7 @@ For simpler cases where you want to extract just a single built-in type, Mirasco
 ```python hl_lines="1 7"
 @openai.call("gpt-4o-mini", response_model=list[str])
 @prompt_template()
-def recommend_books(genre: str, num: int) -> str:
+def recommend_books(genre: str, num: int) -> Messages.Type:
     return f"Recommend a list of {num} {genre} books"
 
 
@@ -103,7 +101,7 @@ class Book(BaseModel):
 
 @openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
 @prompt_template()
-def recommend_book(genre: str) -> str:
+def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book. Match example format."
 
 
@@ -138,7 +136,7 @@ class Book(BaseModel):
 
 @openai.call(model="gpt-4o-mini", response_model=Book, stream=True)
 @prompt_template()
-def recommend_book(genre: str) -> str:
+def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 
@@ -174,13 +172,13 @@ When using Response Models, the default setting is `json_mode=False`, which will
 from mirascope.core import openai, prompt_template
 from pydantic import BaseModel
 
-class ComplexBook(BaseModel):
+class BookOutline(BaseModel):
     title: str
     chapters: list[str]
 
-@openai.call("gpt-4o-mini", response_model=ComplexBook, json_mode=True)
+@openai.call("gpt-4o-mini", response_model=BookOutline, json_mode=True)
 @prompt_template()
-def outline_book(genre: str) -> str:
+def outline_book(genre: str) -> Messages.Type:
     return f"Outline a {genre} book with chapter titles"
 
 book_outline = outline_book("mystery")
@@ -189,13 +187,6 @@ print("Chapters:")
 for chapter in book_outline.chapters:
     print(f"- {chapter}")
 ```
-
-!!! note "Provider Support"
-
-    Not all providers have explicit JSON Mode support. Mirascope implements a pseudo JSON Mode for these providers by instructing the model to output JSON in the prompt.
-
-For more details on JSON Mode, refer to the [JSON Mode documentation](./json_mode.md).
-
 
 !!! note "Not All Providers Have Explicit JSON Mode Support"
 
@@ -264,7 +255,7 @@ class Book(BaseModel):
 
 @openai.call("gpt-4o-mini", response_model=Book)
 @prompt_template()
-def recommend_book(genre: str) -> str:
+def recommend_book(genre: str) -> Messages.Type:
     return f"Recommend a {genre} book"
 
 try:
@@ -327,7 +318,7 @@ Here are some best practices to follow when using Response Models:
    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
    @openai.call("gpt-4o-mini", response_model=Recipe)
    @prompt_template()
-   def get_recipe(dish: str) -> str:
+   def get_recipe(dish: str) -> Messages.Type:
        return f"Provide a recipe for {dish}"
 
    try:
@@ -336,25 +327,65 @@ Here are some best practices to follow when using Response Models:
    except Exception as e:
        print(f"Failed to get recipe after retries: {e}")
    ```
+
+   For more advanced error handling techniques, check out our [Tenacity integration documentation](../integrations/tenacity.md).
  
 5. **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
    ```python
    @openai.call("gpt-4o-mini", response_model=ComplexDataStructure, json_mode=True)
    @prompt_template()
-   def get_complex_data(query: str) -> str:
+   def get_complex_data(query: str) -> Messages.Type:
        return f"Generate complex data for {query}"
    ```
 
 6. **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
    ```python
    import pytest
-
-   @pytest.mark.parametrize("genre", ["sci-fi", "romance", "mystery", "non-fiction"])
+ 
+   class Book(BaseModel):
+       title: str
+       author: str
+       genre: str
+   
+   @openai.call("gpt-4o-mini", response_model=Book)
+   @prompt_template()
+   def recommend_book(genre: str) -> Messages.Type:
+       return f"Recommend a {genre} book"
+   
+   @openai.call("gpt-4o-mini", response_model=bool)
+   @prompt_template("""
+   Validate if the following book recommendation is appropriate and accurate:
+   Genre requested: {requested_genre}
+   Book recommended: {book.title} by {book.author} (Genre: {book.genre})
+   
+   Consider the following:
+   1. Does the recommended book's genre match or closely relate to the requested genre?
+      2. Is the book title and author combination valid and real?
+      3. Is the recommendation appropriate for general audiences?
+   
+   Respond with True if the recommendation is valid and appropriate, False otherwise.
+   """)
+   def validate_recommendation(book: Book, requested_genre: str):
+       ...
+   
+   @pytest.mark.parametrize("genre", [
+       "sci-fi", "romance", "mystery", "non-fiction",
+       "children's", "18+ only", "nonsensical genre",
+       "very very very long genre name that is unlikely to be recognized"
+   ])
    def test_book_recommendation(genre):
        book = recommend_book(genre)
-       assert isinstance(book, Book)
-       assert book.title
-       assert book.author
+   
+       is_valid = validate_recommendation(
+           book=book,
+           requested_genre=genre,
+       )
+   
+       assert is_valid, f"Invalid recommendation for genre '{genre}': {book.title} by {book.author} (Genre: {book.genre})"
+
+       # Additional specific checks can be added here if needed
+       assert len(book.title) > 0, "Book title should not be empty"
+       assert len(book.author) > 0, "Book author should not be empty"
    ```
 
 By following these best practices and leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
