@@ -12,7 +12,7 @@
 
     [`mirascope.core.groq.stream`](../api/core/groq/stream.md)
 
-    [`mirascope.core.litellm.stream`](../api/core/litellm/stream.md)
+    [`mirascope.core.litellm.stream`](../api/core/openai/stream.md)
 
     [`mirascope.core.mistral.stream`](../api/core/mistral/stream.md)
 
@@ -125,15 +125,21 @@ The `end=""` and `flush=True` parameters in the print function ensure that the o
 
     [`mirascope.core.anthropic.call_response_chunk`](../api/core/anthropic/call_response_chunk.md)
 
+    [`mirascope.core.azure.call_response_chunk`](../api/core/azure/call_response_chunk.md)
+
     [`mirascope.core.cohere.call_response_chunk`](../api/core/cohere/call_response_chunk.md) 
 
     [`mirascope.core.gemini.call_response_chunk`](../api/core/gemini/call_response_chunk.md)
 
     [`mirascope.core.groq.call_response_chunk`](../api/core/groq/call_response_chunk.md) 
 
+    [`mirascope.core.litellm.call_response_chunk`](../api/core/openai/call_response_chunk.md) 
+
     [`mirascope.core.mistral.call_response_chunk`](../api/core/mistral/call_response_chunk.md)
 
     [`mirascope.core.openai.call_response_chunk`](../api/core/openai/call_response_chunk.md) 
+
+    [`mirascope.core.vertex.call_response_chunk`](../api/core/vertex/call_response_chunk.md) 
 
 When streaming, the initial response will be a provider-specific `BaseStream` instance (e.g. `OpenAIStream`), which is a generator that yields tuples `(chunk, tool)` where `chunk` is a provider-specific `BaseCallResponseChunk` (e.g. `OpenAICallResponseChunk`) that wraps the original chunk in the provider's response. These objects provide a consistent interface across providers while still allowing access to provider-specific details.
 
@@ -233,18 +239,18 @@ This type safety ensures that your IDE can provide appropriate autocompletion an
 When working with streaming in Mirascope, consider the following best practices:
 
 1. **Real-time Feedback**: Use streaming for applications where users benefit from seeing results immediately, such as chatbots or writing assistants.
-   ```python
-   @openai.call(model="gpt-4o-mini", stream=True)
-   @prompt_template("Write a short story about {topic}")
-   def write_story(topic: str):
+    ```python
+    @openai.call(model="gpt-4o-mini", stream=True)
+    @prompt_template("Write a short story about {topic}")
+    def write_story(topic: str):
        ...
-   
-   print("Generating story...")
-   for chunk, _ in write_story("a magical forest"):
-       print(chunk.content, end="", flush=True)
-       # > Generating story...
-       # Once upon a time, in a magical forest...
-   ```
+    
+    print("Generating story...")
+    for chunk, _ in write_story("a magical forest"):
+        print(chunk.content, end="", flush=True)
+    # > Generating story...
+    #   Once upon a time, in a magical forest...
+    ```
 
 2. **Progress Indicators**: Implement progress bars or loading animations that update based on the streamed response, improving user experience for longer generations.
    ```python
