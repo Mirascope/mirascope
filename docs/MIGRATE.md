@@ -726,6 +726,6 @@ def recommend_book(genre: str):
 
 Migrating to Mirascope v1 offers a more streamlined and flexible approach to working with LLMs. The new decorator-based syntax simplifies code structure and makes it easier to implement advanced features like streaming, tools, and structured information extraction. 
 
-Remember to update your import statements to use `from mirascope.core import ...` instead of the provider-specific imports used in v0. Also, be sure to familiarize yourself with the updated [`BasePrompt`](./learn/prompts.md#the-baseprompt-class) class for provider-agnostic prompt definitions.
+Remember to update your import statements to use `from mirascope.core import ...` instead of the provider-specific imports used in v0. Also, be sure to familiarize yourself with the updated recommendations for writing [prompts](./learn/prompts.md) in the more functional form we now recommend.
 
 If you encounter any issues during migration or have questions about the new features, please refer to the [Learn](./learn/index.md) documentation or reach out to the Mirascope community for support.
