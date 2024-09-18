@@ -24,7 +24,9 @@ The `call` decorator is a core feature of the Mirascope library, designed to sim
 
 ## What are "Calls"
 
-To understand the benefits of Mirascope's `call` decorator, let's compare making a call to OpenAI using their official SDK versus using Mirascope:
+In Mirascope, "calls" refer to the process of interacting with Large Language Model (LLM) APIs. To understand the benefits of Mirascope's `call` decorator, let's compare making calls to different LLM providers using their official SDKs versus using Mirascope:
+
+### OpenAI
 
 Using OpenAI SDK:
 
@@ -36,7 +38,7 @@ client = OpenAI()
 def recommend_book(genre: str) -> str | None:
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"recommend a {genre} book"}]
+        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
     )
     return completion.choices[0].message.content
 
@@ -56,7 +58,43 @@ def recommend_book(genre: str):
 print(recommend_book("fantasy").content)
 ```
 
-As you can see, Mirascope simplifies the process and makes it more readable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
+### Anthropic
+
+Using Anthropic SDK:
+
+```python
+from anthropic import Anthropic
+
+client = Anthropic()
+
+def recommend_book(genre: str):
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20240620",
+        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
+    )
+    return response.content
+
+print(recommend_book("fantasy"))
+```
+
+Using Mirascope:
+
+```python
+from mirascope.core import anthropic, prompt_template
+
+@anthropic.call("claude-3-5-sonnet-20240620")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+print(recommend_book("fantasy").content)
+```
+
+As you can see, Mirascope provides a consistent, simplified interface across different providers, reducing boilerplate code and making your functions more readable and maintainable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
+
+!!! info "Function Body"
+
+    In the Mirascope examples above, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
 
 ## Purpose and Benefits
 
@@ -92,10 +130,6 @@ In this example:
 - The `@openai.call` decorator transforms the prompt template into an LLM API call.
 - We're using OpenAI's `gpt-4o-mini` model to make the call.
 - When we call the function with `genre="fantasy"`, the argument is automatically injected into the prompt template and used in the call.
-
-!!! info "Function Body"
-
-    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
 
 ## Supported Providers
 
@@ -159,15 +193,21 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
     [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
 
+    [`mirascope.core.azure.call_params`](../api/core/anthropic/azure.md)
+
     [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
 
     [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
 
     [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
 
+    [`mirascope.core.litellm.call_params`](../api/core/litellm/call_params.md)
+
     [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
 
     [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
+
+    [`mirascope.core.vertex.call_params`](../api/core/vertex/call_params.md)
 
 While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
 
@@ -259,15 +299,21 @@ Any custom client is supported so long as it has the same API as the original ba
 
     [`mirascope.core.anthropic.call_response`](../api/core/anthropic/call_response.md)
 
+    [`mirascope.core.azure.call_response`](../api/core/azure/call_response.md)
+
     [`mirascope.core.cohere.call_response`](../api/core/cohere/call_response.md)
 
     [`mirascope.core.gemini.call_response`](../api/core/gemini/call_response.md)
 
     [`mirascope.core.groq.call_response`](../api/core/groq/call_response.md)
 
+    [`mirascope.core.litellm.call_response`](../api/core/litellm/call_response.md)
+
     [`mirascope.core.mistral.call_response`](../api/core/mistral/call_response.md)
 
     [`mirascope.core.openai.call_response`](../api/core/openai/call_response.md)
+
+    [`mirascope.core.vertex.call_response`](../api/core/vertex/call_response.md)
 
 When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific [`BaseCallResponse`](../api/core/base/call_response.md#mirascope.core.base.call_response.BaseCallResponse) object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
 
