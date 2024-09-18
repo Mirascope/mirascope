@@ -232,7 +232,7 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
     [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
 
-    [`mirascope.core.litellm.call_params`](../api/core/litellm/call_params.md)
+    [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
 
     [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
 
