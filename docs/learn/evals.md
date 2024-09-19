@@ -79,7 +79,7 @@ The `Eval` class defines the structure of the evaluation response, including a s
 For a more thorough evaluation, you can use multiple models as a panel of judges. This approach can provide a more balanced assessment by combining perspectives from different LLMs. Here's an example using OpenAI's GPT-4o-mini and Anthropic's Claude 3.5 Sonnet:
 
 ```python hl_lines="5-9 16-21 35"
-from mirascope.core import BasePrompt, anthropic, openai, prompt_template
+from mirascope.core import anthropic, openai, prompt_template
 from pydantic import BaseModel, Field
 
 
@@ -104,19 +104,17 @@ class Eval(BaseModel):
     Text to evaluate: {text}
     """
 )
-class ToxicityEvaluationPrompt(BasePrompt):
-    text: str
-
+def toxicity_evaluation_prompt(text: str):
+   ...
 
 toxic_input = "Why even bother trying? With your laziness and abilities, it's probably not even possible anyway."
-prompt = ToxicityEvaluationPrompt(text=toxic_input)
 
 judges = [
-    openai.call("gpt-4o", response_model=Eval),
+    openai.call("gpt-4o-mini", response_model=Eval),
     anthropic.call("claude-3-5-sonnet-20240620", response_model=Eval),
 ]
 
-evaluations: list[Eval] = [prompt.run(judge) for judge in judges]
+evaluations: list[Eval] = [judge(toxicity_evaluation_prompt)(text=toxic_input) for judge in judges]
 
 for evaluation in evaluations:
     print(evaluation)
@@ -135,18 +133,8 @@ We then create a list of `judges`, each representing a different LLM. By using d
 
 Here's an example of how you can implement asynchronous evaluation:
 
-```python hl_lines="6-10 17-22 35"
+```python hl_lines="7-12 17 29-32"
 import asyncio
-from mirascope.core import BasePrompt, anthropic, openai, prompt_template
-from pydantic import BaseModel, Field
-
-
-class Eval(BaseModel):
-    score: float = Field(..., description="A score between [0.0, 5.0]")
-    reasoning: str = Field(
-        ..., description="The reasoning for the score in 100 characters or less."
-    )
-
 
 @prompt_template(
     """
@@ -162,12 +150,11 @@ class Eval(BaseModel):
     Text to evaluate: {text}
     """
 )
-class ToxicityEvaluationPrompt(BasePrompt):
-    text: str
+async def async_judge_prompt(text: str):
+   ...
 
 
 toxic_input = "Why even bother trying? With your laziness and abilities, it's probably not even possible anyway."
-prompt = ToxicityEvaluationPrompt(text=toxic_input)
 
 judges = [
     openai.call("gpt-4o", response_model=Eval),
@@ -175,7 +162,9 @@ judges = [
 ]
 
 async def run_evaluations():
-    tasks = [prompt.run_async(judge) for judge in judges]
+    tasks = [
+        async_judge_prompt.run(judge)(text=toxic_input) for judge in judges
+    ]
     return await asyncio.gather(*tasks)
 
 evaluations = asyncio.run(run_evaluations())
@@ -361,7 +350,7 @@ This prompt provides a comprehensive framework for evaluating bias in text. It d
 
 2. **Consistent Scaling**: When using numerical scores, ensure consistent scaling across different evaluation criteria.
 
-    ```python  hl_lines="4-7 12-13"
+    ```python  hl_lines="4-7 12-14"
     from mirascope.core import openai, prompt_template
     from pydantic import BaseModel, Field
     
@@ -404,19 +393,16 @@ This prompt provides a comprehensive framework for evaluating bias in text. It d
         score: float = Field(..., description="Score between 0.0 and 1.0")
         reasoning: str
     
-    @openai.call(model="gpt-4o", response_model=JudgeEval)
     @prompt_template("Rate the quality of this text from 0.0 to 1.0: {text}")
-    def openai_judge(text: str):
-        ...
-    
-    @anthropic.call(model="claude-3-5-sonnet-20240620", response_model=JudgeEval)
-    @prompt_template("Rate the quality of this text from 0.0 to 1.0: {text}")
-    def anthropic_judge(text: str):
+    def judge_prompt(text: str):
         ...
     
     async def panel_evaluation(text: str):
-        judges = [openai_judge, anthropic_judge]
-        tasks = [judge(text) for judge in judges]
+        judges = [
+            openai.call(model="gpt-4o", response_model=JudgeEval),
+            anthropic.call(model="claude-3-5-sonnet-20240620", response_model=JudgeEval)
+        ]
+        tasks = [judge(judge_prompt)(text) for judge in judges]
         results = await asyncio.gather(*tasks)
         
         scores = [result.score for result in results]
