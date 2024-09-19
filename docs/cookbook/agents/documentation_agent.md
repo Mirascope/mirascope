@@ -16,7 +16,6 @@ pip install llama-index
     - [Chaining](../../learn/chaining.md)
     - [Response Model](../../learn/response_models.md)
     - [JSON Mode](../../learn/json_mode.md)
-    - [Dynamic Configuration](../../learn/dynamic_configuration.md)
     - [Agents](../../learn/agents.md)
 
 ## Store Embeddings
