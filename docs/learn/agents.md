@@ -1,22 +1,14 @@
 # Agents
 
-Agents, in the context of Large Language Models (LLMs), are autonomous or semi-autonomous entities that can perform tasks, make decisions, and interact with their environment based on natural language inputs and outputs. Mirascope provides a powerful framework for building such agents, allowing developers to create sophisticated AI applications that can engage in complex interactions and perform a variety of tasks.
+??? api "API Documentation"
+    [`mirascope.core.base.tool`](../api/core/base/tool.md)
+    [`mirascope.core.base.toolkit`](../api/core/base/toolkit.md)
 
-Agents built with Mirascope can maintain state, use tools, make decisions, and carry out multi-step tasks. They combine the language understanding capabilities of LLMs with custom logic and external integrations, enabling a wide range of applications from conversational assistants to automated task executors.
+When working with Large Language Models (LLMs), an "agent" refers to an autonomous or semi-autonomous system that can perform tasks, make decisions, and interact with its environment based on natural language inputs and outputs. Agents combine the language understanding capabilities of LLMs with custom logic, external integrations, and often a sense of "memory" or state.
 
-Key benefits of using agents with Mirascope include:
+Let's look at a basic example of what an agent might look like in code:
 
-1. **State Management**: Easily maintain and update agent state using Pydantic models and agent-specific Mirascope features.
-2. **Tool Integration**: Seamlessly incorporate external tools and APIs into your agent's capabilities.
-3. **Flexible Configuration**: Dynamically adjust the agent's behavior and available tools based on context.
-4. **Provider Agnostic**: Build agents that can work with multiple LLM providers without changing core logic.
-5. **Streaming Support**: Create responsive agents that can provide real-time feedback and handle long-running tasks.
-
-## Basic Agent Structure
-
-Let's start by creating a simple agent using Mirascope. We'll build a basic Librarian agent that can engage in conversations and maintain a history of interactions.
-
-```python
+```python hl_lines="5-6 16 25"
 from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
@@ -53,23 +45,126 @@ librarian = Librarian()
 librarian.run()
 ```
 
-This basic structure demonstrates some key concepts we've covered in previous sections:
+In this example:
 
-- **State Management**: We use a Pydantic `BaseModel` to define our agent's state, in this case, the chat history as a list of message parameters.
-- **Core Logic**: The `_call` method encapsulates the main logic of our agent. It uses the `@openai.call` decorator to interface with the LLM.
-- **Prompt Engineering**: We use a multi-part prompt that includes a system message, conversation history, and the current user query.
-- **Accessed Attribute Injection**: We directly access and inject the `self.history` messages list.
-- **Conversation Loop**: The `run` method implements a simple loop that takes user input, processes it through the `_call` method, and updates the conversation history.
+1. The `Librarian` class defines the basic structure of an agent.
+2. It maintains a `history` of interactions, which serves as the agent's "memory".
+3. The `_call` method uses an LLM to generate responses based on the user's query and the conversation history.
+4. The `run` method implements a simple interaction loop, allowing the agent to engage in a conversation.
 
-This basic agent can engage in conversations about books, maintaining context through its history. However, it doesn't yet have any special capabilities beyond what the base LLM can do. In the next section, we'll enhance our Librarian by adding tools, allowing it to perform more specific tasks related to book management.
+This is a very basic agent. More sophisticated agents might include:
+
+- Multiple LLM calls for different purposes (e.g., planning, execution, reflection)
+- Integration with external tools or APIs
+- More complex state management
+- Ability to learn and adapt over time
+
+Agents are particularly useful for creating interactive AI systems that can perform complex tasks, maintain context over long conversations, and integrate with various external systems and data sources. They're commonly used in applications such as:
+
+- Chatbots and virtual assistants
+- Automated customer service systems
+- AI-powered tutoring systems
+- Task planning and execution systems
+- Game NPCs (Non-Player Characters)
+
+In the following sections, we'll explore how to build more advanced agents using Mirascope, including how to integrate tools, manage state, implement streaming for real-time responses, and apply best practices for robust and efficient agent design.
+
+## Real-World Example: Customer Support Agent
+
+To better understand how agents can be applied in practical scenarios, let's consider a customer support system for an e-commerce platform. An agent in this context could perform the following tasks:
+
+1. Answer product-related queries
+2. Process returns and refunds
+3. Escalate complex issues to human support
+4. Update order status
+5. Provide personalized product recommendations
+
+Here's a basic implementation of such an agent using Mirascope:
+
+```python hl_lines="10 11 13 19 35-38"
+from mirascope.core import BaseMessageParam, openai, prompt_template
+from pydantic import BaseModel
+
+class Order(BaseModel):
+    order_id: str
+    status: str
+    items: list[str]
+
+class CustomerSupportAgent(BaseModel):
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
+    orders: dict[str, Order] = {}
+
+    def update_order_status(self, order_id: str, new_status: str) -> str:
+        if order_id in self.orders:
+            self.orders[order_id].status = new_status
+            return f"Order {order_id} status updated to {new_status}"
+        return f"Order {order_id} not found"
+
+    def get_order_status(self, order_id: str) -> str:
+        if order_id in self.orders:
+            return f"Order {order_id} status: {self.orders[order_id].status}"
+        return f"Order {order_id} not found"
+
+    @openai.call(model="gpt-4o-mini")
+    @prompt_template(
+        """
+        SYSTEM: You are a customer support agent for an e-commerce platform.
+        Your tasks include answering product queries, processing returns,
+        and updating order statuses. Use the provided tools when necessary.
+
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def _call(self, query: str) -> openai.OpenAIDynamicConfig:
+        return {
+            "tools": [self.update_order_status, self.get_order_status]
+        }
+
+    def run(self):
+        while True:
+            query = input("Customer: ")
+            if query.lower() == "exit":
+                break
+            response = self._call(query)
+            print(f"Agent: {response.content}")
+            if response.tools:
+                for tool in response.tools:
+                    print(f"Tool used: {tool.name}")
+                    print(f"Result: {tool.call()}")
+            self.history.append(response.user_message_param)
+            self.history.append(response.message_param)
+
+agent = CustomerSupportAgent()
+agent.run()
+```
+
+This CustomerSupportAgent demonstrates several key features of a practical agent:
+
+1. **State Management**: The agent maintains a history of interactions and a database of orders.
+2. **Tool Integration**: It includes tools for updating and retrieving order statuses.
+3. **Contextual Responses**: The agent uses conversation history to provide context-aware responses.
+4. **Task-Specific Prompt**: The system prompt clearly defines the agent's role and capabilities.
+
+In a real-world scenario, this agent would be further enhanced with more sophisticated tools, integration with actual e-commerce systems, and possibly more advanced natural language processing capabilities.
+
+This example illustrates how agents can be designed to handle specific, real-world tasks while maintaining a conversation flow and leveraging external tools and data sources.
 
 ## Integrating Tools into Agents
+
+In this section, we'll explore how to enhance our agents by integrating tools. We'll cover:
+- Defining and implementing tools within an agent
+- Configuring an agent to use tools
+- Executing tool calls and handling their results
+- Reinserting tool results into the conversation flow
+
+This will demonstrate how to significantly expand an agent's capabilities beyond simple text generation.
 
 To make our Librarian agent more capable, we'll add tools that allow it to manage a book collection. This will demonstrate how to integrate tools into an agent, use the `tool_message_param` method, and reinsert tool results in a provider-agnostic way.
 
 Let's define a `Book` class and some corresponding tools for our Librarian to use:
 
-```python
+```python hl_lines="12 42 43 50"
 from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
@@ -138,7 +233,7 @@ class Librarian(BaseModel):
 
             result = self._step(query)
             print(f"Librarian: {result}")
-
+        print(f"Your book collection: {self.books}")
 
 librarian = Librarian()
 librarian.run()
@@ -154,11 +249,20 @@ This updated Librarian agent demonstrates several important concepts for integra
 
 This structure allows our Librarian to use tools to manage a book collection while maintaining a coherent conversation. The LLM can decide when to use tools based on the user's query, and the results of those tool uses are fed back into the conversation for further processing.
 
-By integrating tools in this way, we've significantly enhanced our agent's capabilities while keeping the implementation flexible and provider-agnostic. In the next section, we'll explore how to add streaming capabilities to our agent, allowing for more responsive interactions.
+Under the hood, Mirascope is doing the following:
+
+1. Converting the `add_book` and `remove_book` methods into `BaseTool` instances.
+2. Generating a tool schema for each tool based on the method's signature and docstring.
+3. Including these tool schemas in the API call to the LLM.
+4. Parsing the LLM's response to identify and execute tool calls.
 
 ## Streaming in Agents
 
-Streaming allows agents to provide real-time responses, which can be particularly nice for long-running tasks. By implementing streaming in our Librarian agent, we can create a more responsive and interactive experience. Let's update our agent to support streaming responses and handle streamed tool calls.
+This section focuses on implementing streaming responses in our agents. We'll discuss:
+
+Configuring an agent for streaming
+Handling streamed responses and tool calls in real-time
+Benefits and use cases of streaming in agent interactions
 
 First, we'll modify the `_call` method to enable streaming:
 
@@ -174,7 +278,7 @@ class Librarian(BaseModel):
 
 Now, let's update the `_step` method to handle streaming:
 
-```python hl_lines="4 8"
+```python hl_lines="4-8"
 def _step(self, query: str) -> str:
     response = self._call(query)
     tools_and_outputs = []
@@ -196,7 +300,7 @@ def _step(self, query: str) -> str:
 
 Finally, let's update the `run` method to handle the update to `_step`, which now prints the content of each chunk during the stream internally:
 
-```python hl_lines="7 8 9"
+```python hl_lines="8"
 def run(self):
     while True:
         query = input("User: ")
@@ -217,9 +321,11 @@ These changes implement streaming in our Librarian agent:
 
 This streaming implementation offers several benefits:
 
-- **Responsiveness**: Users see the agent's response as it's being generated, providing a more interactive experience.
-- **Long-running Tasks**: For complex queries or when using multiple tools, the agent can provide incremental updates rather than making the user wait for the entire response.
-- **Efficient Resource Use**: Streaming allows for processing of partial results, which can be more efficient for memory usage and allows for early termination if needed.
+- **Improved User Experience**: Users receive immediate feedback, creating a more engaging and interactive conversation.
+- **Efficient Processing of Long Responses**: For lengthy responses, streaming allows for processing and displaying content as it's generated, rather than waiting for the entire response.
+- **Real-time Tool Integration**: Tools can be called and their results processed as soon as they're identified in the stream, allowing for more dynamic and responsive agent behavior.
+- **Reduced Latency**: The perceived response time is shorter as users see content immediately, even if the full response takes longer to generate.
+- **Opportunity for Early Termination**: In cases where the initial part of a response is sufficient, the stream can be terminated early, saving processing time and resources.
 
 By implementing streaming, we've made our Librarian agent more interactive and responsive. In the next section, we'll explore how to dynamically configure the tools available to our agent based on the current context or state.
 
@@ -229,7 +335,7 @@ Dynamic configuration allows our agent to adapt its behavior and available tools
 
 Let's implement a toolkit for making recommendations and modify our Librarian class to support dynamic tool configuration:
 
-```python hl_lines="10-16 22 26-31 40-41 54-59"
+```python hl_lines="15-21 64"
 from typing import Literal
 
 from mirascope.core import (
@@ -311,7 +417,9 @@ This updated Librarian agent demonstrates several key aspects of dynamic tool co
 
 By using dynamic configuration in this way, we've created an agent that can adapt its capabilities based on the current state and context of the conversation. This dynamic configuration allows for more nuanced and relevant interactions.
 
-This approach to dynamic configuration makes our Librarian agent more flexible and capable of handling a wider range of user queries and scenarios. As the conversation progresses and the agent's state changes, its capabilities evolve to better serve the user's needs.
+1. Automatically converting the `RecommendationTools` class into a set of tools with dynamically injected properties (like `reading_level`).
+2. Dynamically updating the available tools for each LLM call based on the agent's current state.
+3. Generating and including the appropriate tool schemas in the API call to the LLM.
 
 ## Best Practices and Advanced Techniques
 
@@ -343,7 +451,33 @@ As you develop more sophisticated agents with Mirascope, it's crucial to follow 
 - **Multi-Provider Setups**: Use different LLM providers for specialized tasks within your agent system, taking advantage of each provider's strengths.
 - **Dynamic Tool Generation**: Use `BaseToolKit` to generate tools dynamically based on the current state or context of the conversation.
 - **Hierarchical Agents**: Implement a hierarchy of agents, with higher-level agents delegating tasks to more specialized sub-agents. Check out our cookbook recipe on implementing a [blog writing agent](../cookbook/agents/blog_writing_agent.md) for an example of how to implement an Agent Executor.
+  ```mermaid
+  graph TD
+      A[Main Agent] --> B[Sub-Agent 1: Query Understanding]
+      A --> C[Sub-Agent 2: Task Planning]
+      A --> D[Sub-Agent 3: Execution]
+      B --> E[Natural Language Processing]
+      C --> F[Task Breakdown]
+      C --> G[Resource Allocation]
+      D --> H[Tool Selection]
+      D --> I[Action Execution]
+  ```
+
 - **Adaptive Behavior**: Implement mechanisms for your agent to learn from interactions and adjust its behavior over time, such as fine-tuning prompts or adjusting tool selection strategies.
+  ```mermaid
+  graph LR
+      A[User Input] --> B[Agent Processing]
+      B --> C[Response Generation]
+      C --> D[User Feedback]
+      D --> E[Performance Evaluation]
+      E --> F[Behavior Adjustment]
+      F -->|Update| G[Prompt Templates]
+      F -->|Modify| H[Tool Selection Strategy]
+      F -->|Refine| I[Response Style]
+      G --> B
+      H --> B
+      I --> C
+  ```
 
 By following these best practices and leveraging advanced techniques, you can create sophisticated, reliable, and efficient agent systems with Mirascope. Remember to continuously test and refine your agents based on real-world performance and user feedback.
 
