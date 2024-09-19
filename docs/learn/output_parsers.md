@@ -25,7 +25,7 @@ Output Parsers are functions that take the call response object as input and ret
 
 Here's a basic example of how to use an Output Parser:
 
-```python hl_lines="10-12  16"
+```python hl_lines="10-12 16"
 from mirascope.core import anthropic, prompt_template
 from pydantic import BaseModel
 
@@ -70,25 +70,30 @@ For example, in the code above, your IDE will recognize `book` as a `Book` insta
 
 Let's compare the Mirascope approach with using the official Anthropic SDK directly:
 
-```python hl_lines="13-14"
-from anthropic import Anthropic
+```python hl_lines="8-11 15-17"
+from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+from pydantic import BaseModel
 
 client = Anthropic()
 
-def recommend_book(genre: str):
-    response = client.completions.create(
+class Book(BaseModel):
+    title: str
+    author: str
+
+def recommend_book(genre: str) -> Book:
+    response = client.messages.create(
         model="claude-3-5-sonnet-20240620",
-        prompt=f"Recommend a {genre} book in the format Title by Author",
-        max_tokens_to_sample=100
+        messages=[
+            {"role": "user", "content": f"{HUMAN_PROMPT}Recommend a {genre} book in the format Title by Author{AI_PROMPT}"}
+        ],
+        max_tokens=100,
     )
-    
-    # Manual parsing without type safety
-    title, author = response.completion.split(" by ")
-    return {"title": title, "author": author}
+    title, author = response.content[0].text.split(" by ")
+    return Book(title=title, author=author)
 
 result = recommend_book("science fiction")
-print(f"Title: {result['title']}")
-print(f"Author: {result['author']}")
+print(f"Title: {result.title}")
+print(f"Author: {result.author}")
 ```
 
 Key differences:
