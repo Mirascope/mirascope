@@ -25,21 +25,19 @@ Mirascope is built around the following core components, each designed to handle
 
 4. [Tools](./tools.md): Discover how to extend LLM capabilities with custom tools.
 
-5. [Dynamic Configuration](./dynamic_configuration.md): Learn to adjust LLM behavior at runtime.
+5. [Chaining](./chaining.md): Understand the art of chaining multiple LLM calls for complex tasks.
 
-6. [Chaining](./chaining.md): Understand the art of chaining multiple LLM calls for complex tasks.
+6. [JSON Mode](./json_mode.md): Work with structured data responses from LLMs.
 
-7. [JSON Mode](./json_mode.md): Work with structured data responses from LLMs.
+7. [Response Models](./response_models.md): Define and use structured output models with automatic validation.
 
-8. [Response Models](./response_models.md): Define and use structured output models with automatic validation.
+8. [Output Parsers](./output_parsers.md): Process and transform custom LLM output structures effectively.
 
-9. [Output Parsers](./output_parsers.md): Process and transform custom LLM output structures effectively.
+9. [Async](./async.md): Maximize efficiecy with asynchronous programming.
 
-10. [Async](./async.md): Maximize efficiecy with asynchronous programming.
+10. [Evals](./evals.md): Apply core components to build evaluation strategies for your LLM applications.
 
-11. [Evals](./evals.md): Apply core components to build evaluation strategies for your LLM applications.
-
-12. [Agents](./agents.md): Put everything together to build advanced AI agents using Mirascope.
+11. [Agents](./agents.md): Put everything together to build advanced AI agents using Mirascope.
 
 ## Next Steps
 
