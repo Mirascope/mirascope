@@ -168,7 +168,6 @@ ignore = [
     'ANN102',
 ]
 fixable = ["ALL"]
-isort = { known-first-party = ['mirascope', 'tests', 'examples'] }
 pydocstyle = { convention = 'google' }
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -178,6 +177,9 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ['mirascope', 'tests', 'examples']
 
 [tool.pyright]
 exclude = ["mirascope/beta"]
