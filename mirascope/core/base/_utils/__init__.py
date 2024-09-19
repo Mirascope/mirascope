@@ -9,6 +9,7 @@ from ._extract_tool_return import extract_tool_return
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
 from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_fn
+from ._get_dynamic_configuration import get_dynamic_configuration
 from ._get_fn_args import get_fn_args
 from ._get_image_type import get_image_type
 from ._get_metadata import get_metadata
@@ -18,6 +19,7 @@ from ._get_template_values import get_template_values
 from ._get_template_variables import get_template_variables
 from ._get_unsupported_tool_config_keys import get_unsupported_tool_config_keys
 from ._json_mode_content import json_mode_content
+from ._messages_decorator import MessagesDecorator, messages_decorator
 from ._parse_content_template import parse_content_template
 from ._parse_prompt_messages import parse_prompt_messages
 from ._protocols import (
@@ -29,6 +31,7 @@ from ._protocols import (
     HandleStreamAsync,
     LLMFunctionDecorator,
     SetupCall,
+    fn_is_async,
 )
 from ._setup_call import setup_call
 from ._setup_extract_tool import setup_extract_tool
@@ -43,11 +46,13 @@ __all__ = [
     "CreateFn",
     "DEFAULT_TOOL_DOCSTRING",
     "extract_tool_return",
+    "fn_is_async",
     "format_template",
     "GetJsonOutput",
     "get_audio_type",
     "get_async_create_fn",
     "get_create_fn",
+    "get_dynamic_configuration",
     "get_fn_args",
     "get_image_type",
     "get_metadata",
@@ -61,6 +66,8 @@ __all__ = [
     "is_base_type",
     "json_mode_content",
     "LLMFunctionDecorator",
+    "MessagesDecorator",
+    "messages_decorator",
     "parse_content_template",
     "parse_prompt_messages",
     "SetupCall",
