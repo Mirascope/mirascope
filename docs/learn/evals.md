@@ -123,7 +123,7 @@ for evaluation in evaluations:
 # score=2.5 reasoning='Discouraging, insulting laziness, and implying inability. Promotes negativity and is demeaning.'
 ```
 
-In this example, we define a `ToxicityEvaluationPrompt` class that inherits from `BasePrompt`. This class encapsulates the evaluation prompt and allows us to easily create instances of the prompt with different input texts.
+In this example, we define a `toxicity_evaluation_prompt` function that encapsulates the evaluation prompt. This function allows us to easily create instances of the prompt with different input texts.
 
 We then create a list of `judges`, each representing a different LLM. By using different models, we can get a more diverse set of evaluations, potentially capturing different aspects or interpretations of the input text.
 
