@@ -7,14 +7,12 @@ from typing import ParamSpec, TypeVar, overload
 
 from ._utils import (
     SetupCall,
+    fn_is_async,
+    get_dynamic_configuration,
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
 )
-from ._utils._get_dynamic_configuration import (
-    get_dynamic_configuration,
-)
-from ._utils._protocols import fn_is_async
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
