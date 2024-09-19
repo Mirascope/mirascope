@@ -23,102 +23,19 @@ Output Parsers in Mirascope provide a flexible way to process and structure the 
 
 Output Parsers are functions that take the call response object as input and return an output of a specified type. When you supply an output parser to a `call` decorator, it modifies the return type of the decorated function to match the output type of the parser.
 
-Here's a basic example of how to use an Output Parser:
-
-```python hl_lines="10-12 16"
-from mirascope.core import anthropic, prompt_template
-from pydantic import BaseModel
-
-
-class Book(BaseModel):
-    title: str
-    author: str
-
-
-def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> Book:
-    title, author = response.content.split(" by ")
-    return Book(title=title, author=author)
-
-
-@anthropic.call(
-    model="claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation
-)
-@prompt_template("Recommend a {genre} book in the format Title by Author")
-def recommend_book(genre: str):
-    ...
-
-
-book = recommend_book("science fiction")
-print(f"Title: {book.title}")
-print(f"Author: {book.author}")
-```
-
-In this example:
-
-1. We define a `Book` model using Pydantic.
-2. The `parse_book_recommendation` function serves as an Output Parser, transforming the raw response into a structured `Book` instance.
-3. We use the `output_parser` parameter in the `@anthropic.call` decorator to specify our parser.
-4. The `recommend_book` function now returns a `Book` object instead of a raw response.
-
-### Type Safety and Proper Hints
-
-When using output parsers with Mirascope's call decorator, you benefit from accurate type hints that reflect the parser's output type. This enhances code reliability and helps catch potential type-related errors early in the development process.
-
-For example, in the code above, your IDE will recognize `book` as a `Book` instance, providing appropriate autocompletion and type checking for `book.title` and `book.author`.
-
-## Comparison with Official SDK
-
-Let's compare the Mirascope approach with using the official Anthropic SDK directly:
-
-```python hl_lines="8-11 15-17"
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
-from pydantic import BaseModel
-
-client = Anthropic()
-
-class Book(BaseModel):
-    title: str
-    author: str
-
-def recommend_book(genre: str) -> Book:
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
-        messages=[
-            {"role": "user", "content": f"{HUMAN_PROMPT}Recommend a {genre} book in the format Title by Author{AI_PROMPT}"}
-        ],
-        max_tokens=100,
-    )
-    title, author = response.content[0].text.split(" by ")
-    return Book(title=title, author=author)
-
-result = recommend_book("science fiction")
-print(f"Title: {result.title}")
-print(f"Author: {result.author}")
-```
-
-Key differences:
-
-1. Mirascope provides a more declarative approach with decorators.
-2. Output parsing is more structured and type-safe in Mirascope.
-3. Mirascope's approach is more reusable and easier to maintain.
-
-## Real-World Example: Book Recommendation System
-
-Let's expand our example into a more realistic book recommendation system:
+Here's a basic example of how to use an Output Parser, leveraging Anthropic's strength with XML structures:
 
 ```python
 import xml.etree.ElementTree as ET
-
 from mirascope.core import anthropic, prompt_template
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Book(BaseModel):
-    title: str
-    author: str
-    year: int
-    summary: str
-
+    title: str = Field(..., description="The title of the book")
+    author: str = Field(..., description="The author of the book")
+    year: int = Field(..., description="The publication year of the book")
+    summary: str = Field(..., description="A brief summary of the book")
 
 def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
     try:
@@ -138,8 +55,7 @@ def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
 
 
 @anthropic.call(model="claude-3-5-sonnet-20240620", output_parser=parse_book_xml)
-@prompt_template(
-    """
+@prompt_template("""
     Recommend a {genre} book. Provide the information in the following XML format:
     <book>
         <title>Book Title</title>
@@ -165,227 +81,142 @@ else:
     print("Failed to parse the recommendation.")
 ```
 
-This example demonstrates a more complex use case where we:
+This example demonstrates:
 
-1. Define a more comprehensive `Book` model.
-2. Use XML parsing function `parse_book_xml` for structured output.
-3. Include error handling and validation in the parser.
-4. Provide a more detailed prompt with multiple parameters.
+1. We define a `Book` model using Pydantic with field descriptions.
+2. The `parse_book_xml` function serves as an Output Parser, transforming the XML response into a structured `Book` instance.
+3. We use the `output_parser` parameter in the `@anthropic.call` decorator to specify our parser.
+4. The prompt is engineered to request XML output, which Anthropic's Claude model handles particularly well.
+
+### Type Safety and Proper Hints
+
+When using output parsers with Mirascope's call decorator, you benefit from accurate type hints that reflect the parser's output type. This enhances code reliability and helps catch potential type-related errors early in the development process.
+
+For example, in the code above, your IDE will recognize `book` as a `Book` instance, providing appropriate autocompletion and type checking for `book.title`, `book.author`, etc.
+
+## Comparison with Official SDK
+
+Let's compare the Mirascope approach with using the official Anthropic SDK directly:
+
+```python
+from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+from pydantic import BaseModel
+import xml.etree.ElementTree as ET
+
+client = Anthropic()
+
+class Book(BaseModel):
+    title: str
+    author: str
+    year: int
+    summary: str
+
+def recommend_book(genre: str) -> Book:
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20240620",
+        messages=[
+            {"role": "user", "content": f"{HUMAN_PROMPT}Recommend a {genre} book. Provide the information in XML format with title, author, year, and summary elements.{AI_PROMPT}"}
+        ],
+        max_tokens=300,
+    )
+    root = ET.fromstring(response.content[0].text)
+    return Book(
+        title=root.find("title").text,
+        author=root.find("author").text,
+        year=int(root.find("year").text),
+        summary=root.find("summary").text
+    )
+
+result = recommend_book("science fiction")
+print(f"Title: {result.title}")
+print(f"Author: {result.author}")
+print(f"Year: {result.year}")
+print(f"Summary: {result.summary}")
+```
+
+Key differences:
+
+1. Mirascope provides a more declarative approach with decorators.
+2. Output parsing is more structured and type-safe in Mirascope.
+3. Mirascope's approach is more reusable and easier to maintain.
+4. Error handling is built into the Mirascope parser, making it more robust.
 
 ## Best Practices
 
 When working with Output Parsers in Mirascope, consider the following best practices:
 
-1. **Align with Prompt Engineering**: Design your prompts to generate outputs that match your parser's expectations. This improves consistency and reliability.
-
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    
-    def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> dict:
-        root = ET.fromstring(response.content)
-        return {
-            "title": root.find("title").text,
-            "author": root.find("author").text,
-            "year": int(root.find("year").text),
-            "summary": root.find("summary").text
-        }
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation)
-    @prompt_template("""
-        Recommend a {genre} book. Provide the information in the following XML format:
-        <book>
-            <title>Book Title</title>
-            <author>Author Name</author>
-            <year>Publication Year</year>
-            <summary>Brief summary of the book</summary>
-        </book>
-        Output ONLY the XML and no other text.
-        """)
-    def recommend_book(genre: str):
-        ...
-    
-    result = recommend_book("science fiction")
-    print(f"Title: {result['title']}")
-    print(f"Author: {result['author']}")
-    ```
+1. **Align with Prompt Engineering**: Design your prompts to generate outputs that match your parser's expectations. This improves consistency and reliability. As shown in our XML example, tailor your prompts to the strengths of the model you're using (e.g., Anthropic's Claude model excels with XML structures).
 
 2. **Handle Parsing Errors**: Always implement error handling in your parsers. LLMs may occasionally produce outputs that don't conform to the expected structure.
 
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    
-    def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> dict:
-        try:
-            root = ET.fromstring(response.content)
-            required_elements = ["title", "author", "year", "summary"]
-            if not all(root.find(elem) is not None for elem in required_elements):
-                raise ValueError("Missing required elements in the XML")
-            return {
-                "title": root.find("title").text,
-                "author": root.find("author").text,
-                "year": int(root.find("year").text),
-                "summary": root.find("summary").text
-            }
-        except ET.ParseError:
-            print("Failed to parse XML from the response")
-            return {}
-        except ValueError as e:
-            print(f"Invalid data structure: {e}")
-            return {}
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation)
-    @prompt_template("Recommend a {genre} book with title, author, year, and summary in XML format.")
-    def recommend_book(genre: str):
-        ...
-    
-    result = recommend_book("mystery")
-    if result:
-        print(f"Title: {result.get('title', 'N/A')}")
-        print(f"Author: {result.get('author', 'N/A')}")
-    else:
-        print("Failed to get a valid recommendation")
-    ```
-
 3. **Gradual Refinement**: Start with simple parsers and gradually increase complexity as you refine your prompts and understand the model's output patterns.
-
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    
-    # Simple parser
-    def parse_title_author(response: anthropic.AnthropicCallResponse) -> dict:
-        root = ET.fromstring(response.content)
-        return {
-            "title": root.find("title").text,
-            "author": root.find("author").text
-        }
-    
-    # More complex parser
-    def parse_book_details(response: anthropic.AnthropicCallResponse) -> dict:
-        root = ET.fromstring(response.content)
-        return {
-            "title": root.find("title").text,
-            "author": root.find("author").text,
-            "year": int(root.find("year").text),
-            "summary": root.find("summary").text,
-            "genres": [genre.text for genre in root.findall("genre")]
-        }
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_title_author)
-    @prompt_template("""
-        Recommend a {genre} book. Format the response as follows:
-        <book>
-            <title>Book Title</title>
-            <author>Author Name</author>
-        </book>
-        """)
-    def recommend_book_simple(genre: str):
-        ...
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_book_details)
-    @prompt_template("""
-        Recommend a {genre} book. Format the response as follows:
-        <book>
-            <title>Book Title</title>
-            <author>Author Name</author>
-            <year>Publication Year</year>
-            <summary>Brief summary</summary>
-            <genre>Primary Genre</genre>
-            <genre>Secondary Genre</genre>
-        </book>
-        """)
-    def recommend_book_detailed(genre: str):
-        ...
-    
-    simple_result = recommend_book_simple("fantasy")
-    detailed_result = recommend_book_detailed("science fiction")
-    
-    print("Simple result:", simple_result)
-    print("Detailed result:", detailed_result)
-    ```
 
 4. **Provide Clear Instructions**: In your prompts, be explicit about the structure you expect the LLM to produce. This helps ensure the output is parseable.
 
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    
-    def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> dict:
+5. **Validate Parsed Output**: After parsing, validate the extracted information to ensure it meets your application's requirements. Pydantic models are great for this, as shown in our earlier examples.
+
+6. **Consider Fallback Strategies**: Implement fallback strategies for cases where parsing fails, such as requesting a reformatted response from the LLM. Check out our [tenacity integration](../integrations/tenacity.md) for more details on how to easily reinsert caught errors into subsequent retries.
+
+Here's an example implementing these best practices:
+
+```python
+import xml.etree.ElementTree as ET
+from mirascope.core import anthropic, prompt_template
+from pydantic import BaseModel, Field, validator
+from mirascope.integrations.tenacity import collect_errors
+from tenacity import retry, stop_after_attempt
+
+class BookRecommendation(BaseModel):
+    title: str = Field(..., min_length=1)
+    author: str = Field(..., min_length=1)
+    year: int = Field(..., ge=1800, le=2100)
+    summary: str = Field(..., min_length=50, max_length=200)
+
+    @validator('summary')
+    def summary_word_count(cls, v):
+        if len(v.split()) < 10:
+            raise ValueError('Summary must be at least 10 words long')
+        return v
+
+def parse_and_validate_book(response: anthropic.AnthropicCallResponse) -> BookRecommendation:
+    try:
         root = ET.fromstring(response.content)
-        return {
+        data = {
             "title": root.find("title").text,
             "author": root.find("author").text,
             "year": int(root.find("year").text),
             "summary": root.find("summary").text
         }
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation)
-    @prompt_template("""
-        Recommend a {genre} book. Follow these instructions precisely:
-        1. Provide the information in XML format.
-        2. Include the following elements: title, author, year, and summary.
-        3. The 'year' element must contain only an integer.
-        4. The 'summary' element should contain 50-100 words.
-        5. Do not include any additional elements.
-        6. Do not include any text outside of the XML structure.
-    
-        Example format:
-        <book>
-            <title>Book Title</title>
-            <author>Author Name</author>
-            <year>2023</year>
-            <summary>A brief summary of the book...</summary>
-        </book>
-        """)
-    def recommend_book(genre: str):
-        ...
-    
-    result = recommend_book("historical fiction")
-    print(ET.tostring(ET.fromstring(result), encoding='unicode', method='xml'))
-    ```
+        return BookRecommendation(**data)
+    except (ET.ParseError, ValueError, AttributeError) as e:
+        print(f"Validation error: {e}")
+        return None
 
-5. **Validate Parsed Output**: After parsing, validate the extracted information to ensure it meets your application's requirements. Pydantic models are great for this.
+@retry(stop=stop_after_attempt(3), after=collect_errors(ET.ParseError, ValueError, AttributeError))
+@anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_and_validate_book)
+@prompt_template("""
+    Recommend a {genre} book. Follow these instructions precisely:
+    1. Provide the information in XML format.
+    2. Include the following elements: title, author, year, and summary.
+    3. The 'year' element must contain only an integer between 1800 and 2100.
+    4. The 'summary' element should contain 50-200 words.
+    5. Do not include any additional elements.
+    6. Do not include any text outside of the XML structure.
 
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    from pydantic import BaseModel, Field, validator
-    
-    class BookRecommendation(BaseModel):
-        title: str = Field(..., min_length=1)
-        author: str = Field(..., min_length=1)
-        year: int = Field(..., ge=1800, le=2100)
-        summary: str = Field(..., min_length=50, max_length=200)
-    
-        @validator('summary')
-        def summary_word_count(cls, v):
-            if len(v.split()) < 10:
-                raise ValueError('Summary must be at least 10 words long')
-            return v
-    
-    def parse_and_validate_book(response: anthropic.AnthropicCallResponse) -> BookRecommendation:
-        try:
-            root = ET.fromstring(response.content)
-            data = {
-                "title": root.find("title").text,
-                "author": root.find("author").text,
-                "year": int(root.find("year").text),
-                "summary": root.find("summary").text
-            }
-            return BookRecommendation(**data)
-        except (ET.ParseError, ValueError) as e:
-            print(f"Validation error: {e}")
-            return None
-    
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_and_validate_book)
-    @prompt_template("""
-        Recommend a {genre} book. Provide the information in XML format with title, author, year (1800-2100), and summary (50-200 words) elements.
-        """)
-    def recommend_book(genre: str):
-        ...
-    
+    Example format:
+    <book>
+        <title>Book Title</title>
+        <author>Author Name</author>
+        <year>2023</year>
+        <summary>A brief summary of the book...</summary>
+    </book>
+
+    If this is a retry, please ensure your response is valid XML with all required elements.
+    """)
+def recommend_book(genre: str):
+    ...
+
+try:
     result = recommend_book("science fiction")
     if result:
         print(f"Title: {result.title}")
@@ -394,41 +225,9 @@ When working with Output Parsers in Mirascope, consider the following best pract
         print(f"Summary: {result.summary}")
     else:
         print("Failed to get a valid recommendation")
-    ```
-
-6. **Consider Fallback Strategies**: Implement fallback strategies for cases where parsing fails, such as requesting a reformatted response from the LLM. Check out our [tenacity integration](../integrations/tenacity.md) for more details on how to easily reinsert caught errors into subsequent retries.
-
-    ```python
-    import xml.etree.ElementTree as ET
-    from mirascope.core import anthropic, prompt_template
-    from mirascope.integrations.tenacity import collect_errors
-    from tenacity import retry, stop_after_attempt
-    
-    def parse_book_recommendation(response: anthropic.AnthropicCallResponse) -> dict:
-        root = ET.fromstring(response.content)
-        return {
-            "title": root.find("title").text,
-            "author": root.find("author").text,
-            "year": int(root.find("year").text),
-            "summary": root.find("summary").text
-        }
-    
-    @retry(stop=stop_after_attempt(3), after=collect_errors(ET.ParseError, ValueError))
-    @anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_book_recommendation)
-    @prompt_template("""
-        Recommend a {genre} book. Provide the information in XML format with title, author, year, and summary elements.
-        If this is a retry, please ensure your response is valid XML with all required elements.
-        """)
-    def recommend_book(genre: str):
-        ...
-    
-    try:
-        result = recommend_book("mystery")
-        print(f"Title: {result['title']}")
-        print(f"Author: {result['author']}")
-    except Exception as e:
-        print(f"Failed to get a recommendation after multiple attempts: {e}")
-    ```
+except Exception as e:
+    print(f"Failed to get a recommendation after multiple attempts: {e}")
+```
 
 ## Limitations and Considerations
 
