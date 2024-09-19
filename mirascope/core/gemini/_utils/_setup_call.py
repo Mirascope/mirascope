@@ -13,8 +13,13 @@ from google.generativeai.types import (
 from google.generativeai.types.content_types import ToolConfigDict
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ...base._utils._protocols import fn_is_async
+from ...base._utils import (
+    AsyncCreateFn,
+    CreateFn,
+    fn_is_async,
+    get_async_create_fn,
+    get_create_fn,
+)
 from ..call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
