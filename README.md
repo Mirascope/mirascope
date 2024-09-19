@@ -263,7 +263,7 @@ class Book(BaseModel):
     title: str
     author: str
 
-def parse_book_recommendation(response: openai.AnthropicCallResponse) -> Book:
+def parse_book_recommendation(response: openai.OpenAICallResponse) -> Book:
     title, author = response.content.split(" by ")
     return Book(title=title, author=author)
 

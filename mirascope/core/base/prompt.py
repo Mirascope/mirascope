@@ -17,13 +17,15 @@ from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
+    MessagesDecorator,
+    fn_is_async,
     format_template,
     get_fn_args,
     get_metadata,
     get_prompt_template,
+    messages_decorator,
     parse_prompt_messages,
 )
-from ._utils._protocols import fn_is_async
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
@@ -40,8 +42,6 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 class BasePrompt(BaseModel):
     """The base class for engineering prompts.
-
-    usage docs: learn/prompts.md#the-baseprompt-class
 
     This class is implemented as the base for all prompting needs. It is intended to
     work across various providers by providing a common prompt interface.
@@ -164,8 +164,6 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
-        usage docs: learn/prompts.md#running-prompts
-
         Example:
 
         ```python
@@ -264,8 +262,6 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
-        usage docs: learn/prompts.md#running-prompts
-
         Example:
 
         ```python
@@ -305,8 +301,6 @@ class BasePrompt(BaseModel):
 
 
 _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
-_MessageParamT = TypeVar("_MessageParamT", bound=Any)
-_BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
 
 class PromptDecorator(Protocol):
@@ -335,7 +329,7 @@ class PromptDecorator(Protocol):
     ): ...
 
 
-def _is_function(
+def _is_base_dynamic_config_function(
     prompt: type[_BasePromptT]
     | Callable[_P, BaseDynamicConfig]
     | Callable[_P, Awaitable[BaseDynamicConfig]],
@@ -345,7 +339,17 @@ def _is_function(
     return isinstance(prompt, types.FunctionType)
 
 
-def prompt_template(template: str) -> PromptDecorator:
+@overload
+def prompt_template(template: str) -> PromptDecorator: ...
+
+
+@overload
+def prompt_template(template: None = None) -> MessagesDecorator: ...
+
+
+def prompt_template(
+    template: str | None = None,
+) -> PromptDecorator | MessagesDecorator:
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
     usage docs: learn/prompts.md#prompt-templates
@@ -372,6 +376,10 @@ def prompt_template(template: str) -> PromptDecorator:
             attribute of the decorated input prompt or call.
     """
 
+    if template is None:
+        # For @prompt_template() case
+        return messages_decorator()
+
     @overload
     def inner(
         prompt: Callable[_P, BaseDynamicConfig],
@@ -397,7 +405,7 @@ def prompt_template(template: str) -> PromptDecorator:
         """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
 
-        if not _is_function(prompt):
+        if not _is_base_dynamic_config_function(prompt):
             return prompt
 
         if fn_is_async(prompt):
@@ -450,8 +458,6 @@ class MetadataDecorator(Protocol):
 
 def metadata(metadata: Metadata) -> MetadataDecorator:
     """A decorator for adding metadata to a `BasePrompt` or `call`.
-
-    usage docs: learn/prompts.md#metadata
 
     Adding this decorator to a `BasePrompt` or `call` updates the `metadata` annotation
     to the given value. This is useful for adding metadata to a `BasePrompt` or `call`
