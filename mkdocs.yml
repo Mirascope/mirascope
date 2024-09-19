@@ -161,6 +161,7 @@ nav:
       - Speech Transcription: "cookbook/speech_transcription.md"
       - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.md"
       - Query Plan: "cookbook/query_plan.md"
+      - Named Entity Recognition: "cookbook/named_entity_recognition.md"
       - Agents:
           - "cookbook/agents/index.md"
           - Web Search Agent: "cookbook/agents/web_search_agent.md"
