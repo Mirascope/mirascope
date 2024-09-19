@@ -25,7 +25,7 @@ Output Parsers are functions that take the call response object as input and ret
 
 Here's a basic example of how to use an Output Parser, leveraging Anthropic's strength with XML structures:
 
-```python
+```python hl_lines="12-26 29"
 import xml.etree.ElementTree as ET
 from mirascope.core import anthropic, prompt_template
 from pydantic import BaseModel, Field
@@ -87,6 +87,7 @@ This example demonstrates:
 2. The `parse_book_xml` function serves as an Output Parser, transforming the XML response into a structured `Book` instance.
 3. We use the `output_parser` parameter in the `@anthropic.call` decorator to specify our parser.
 4. The prompt is engineered to request XML output, which Anthropic's Claude model handles particularly well.
+5. Detailed error handling is implemented to catch missing or invalid XML elements.
 
 ### Type Safety and Proper Hints
 
@@ -98,8 +99,8 @@ For example, in the code above, your IDE will recognize `book` as a `Book` insta
 
 Let's compare the Mirascope approach with using the official Anthropic SDK directly:
 
-```python
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+```python hl_lines="21-34"
+from anthropic import Anthropic
 from pydantic import BaseModel
 import xml.etree.ElementTree as ET
 
@@ -111,21 +112,28 @@ class Book(BaseModel):
     year: int
     summary: str
 
-def recommend_book(genre: str) -> Book:
+def recommend_book(genre: str) -> Book | None:
     response = client.messages.create(
         model="claude-3-5-sonnet-20240620",
         messages=[
-            {"role": "user", "content": f"{HUMAN_PROMPT}Recommend a {genre} book. Provide the information in XML format with title, author, year, and summary elements.{AI_PROMPT}"}
+            {"role": "user", "content": f"Recommend a {genre} book. Provide the information in XML format with title, author, year, and summary elements. without first header line"}
         ],
         max_tokens=300,
     )
-    root = ET.fromstring(response.content[0].text)
-    return Book(
-        title=root.find("title").text,
-        author=root.find("author").text,
-        year=int(root.find("year").text),
-        summary=root.find("summary").text
-    )
+    try:
+        root = ET.fromstring(response.content[0].text)
+        if (node := root.find("title")) is None or not (title := node.text):
+            raise ValueError("Missing title")
+        if (node := root.find("author")) is None or not (author := node.text):
+            raise ValueError("Missing author")
+        if (node := root.find("year")) is None or not (year := node.text):
+            raise ValueError("Missing year")
+        if (node := root.find("summary")) is None or not (summary := node.text):
+            raise ValueError("Missing summary")
+        return Book(title=title, author=author, year=int(year), summary=summary)
+    except (ET.ParseError, ValueError) as e:
+        print(f"Error parsing XML: {e}")
+        return None
 
 result = recommend_book("science fiction")
 print(f"Title: {result.title}")
@@ -133,13 +141,12 @@ print(f"Author: {result.author}")
 print(f"Year: {result.year}")
 print(f"Summary: {result.summary}")
 ```
-
 Key differences:
 
 1. Mirascope provides a more declarative approach with decorators.
 2. Output parsing is more structured and type-safe in Mirascope.
 3. Mirascope's approach is more reusable and easier to maintain.
-4. Error handling is built into the Mirascope parser, making it more robust.
+4. Error handling is similar in both approaches, but Mirascope's decorator pattern makes it easier to reuse across multiple functions.
 
 ## Best Practices
 
@@ -159,10 +166,10 @@ When working with Output Parsers in Mirascope, consider the following best pract
 
 Here's an example implementing these best practices:
 
-```python
+```python hl_lines="7-17 30 35"
 import xml.etree.ElementTree as ET
 from mirascope.core import anthropic, prompt_template
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from mirascope.integrations.tenacity import collect_errors
 from tenacity import retry, stop_after_attempt
 
@@ -170,24 +177,26 @@ class BookRecommendation(BaseModel):
     title: str = Field(..., min_length=1)
     author: str = Field(..., min_length=1)
     year: int = Field(..., ge=1800, le=2100)
-    summary: str = Field(..., min_length=50, max_length=200)
+    summary: str = Field(..., min_length=50, max_length=2000)
 
-    @validator('summary')
+    @field_validator('summary')
     def summary_word_count(cls, v):
         if len(v.split()) < 10:
             raise ValueError('Summary must be at least 10 words long')
         return v
 
-def parse_and_validate_book(response: anthropic.AnthropicCallResponse) -> BookRecommendation:
+def parse_and_validate_book(response: anthropic.AnthropicCallResponse) -> BookRecommendation | None:
     try:
         root = ET.fromstring(response.content)
-        data = {
-            "title": root.find("title").text,
-            "author": root.find("author").text,
-            "year": int(root.find("year").text),
-            "summary": root.find("summary").text
-        }
-        return BookRecommendation(**data)
+        if (node := root.find("title")) is None or not (title := node.text):
+            raise ValueError("Missing title")
+        if (node := root.find("author")) is None or not (author := node.text):
+            raise ValueError("Missing author")
+        if (node := root.find("year")) is None or not (year := node.text):
+            raise ValueError("Missing year")
+        if (node := root.find("summary")) is None or not (summary := node.text):
+            raise ValueError("Missing summary")
+        return BookRecommendation(title=title, author=author, year=int(year), summary=summary)
     except (ET.ParseError, ValueError, AttributeError) as e:
         print(f"Validation error: {e}")
         return None
@@ -228,6 +237,14 @@ try:
 except Exception as e:
     print(f"Failed to get a recommendation after multiple attempts: {e}")
 ```
+
+This example combines all the best practices:
+- It uses a structured XML format that Anthropic's Claude model handles well.
+- It includes comprehensive error handling and validation in the parser function.
+- It uses Pydantic for additional validation of the parsed data, including custom field validators.
+- It implements a retry mechanism using Tenacity for robustness.
+- It provides clear instructions in the prompt, including an example of the expected XML structure.
+- It uses type hints throughout, enhancing code readability and IDE support.
 
 ## Limitations and Considerations
 
