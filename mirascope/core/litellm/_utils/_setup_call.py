@@ -8,7 +8,7 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
-from ...base._utils._protocols import fn_is_async
+from ...base._utils import fn_is_async
 from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
 from ...openai._utils import setup_call as setup_call_openai
 from ...openai.call_kwargs import OpenAICallKwargs
