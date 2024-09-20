@@ -19,7 +19,7 @@ For our examples, we’ll use the [Wikipedia article on python](https://en.wikip
 We will be using a simple call as our baseline:
 
 ```python
---8<-- "examples/cookbook/text_classification/text_summarization.py:3:51"
+--8<-- "examples/cookbook/text_summarization.py:3:51"
 ```
 
 LLMs excel at summarizing shorter texts, but they often struggle with longer documents, failing to capture the overall structure while sometimes including minor, irrelevant details that detract from the summary's coherence and relevance.
@@ -31,7 +31,7 @@ One simple update we can make is to improve our prompt by providing an initial o
 This prompt engineering technique is an example of [Chain of Thought](https://www.promptingguide.ai/techniques/cot) (CoT), forcing the model to write out its thinking process. It also involves little work and can be done by modifying the text of the single call. With an outline, the summary is less likely to lose the general structure of the text.
 
 ```python
---8<-- "examples/cookbook/text_classification/text_summarization.py:53:186"
+--8<-- "examples/cookbook/text_summarization.py:53:188"
 ```
 
 By providing an outline, we enable the LLM to better adhere to the original article's structure, resulting in a more coherent and representative summary.
@@ -45,8 +45,8 @@ This more comprehensive approach not only ensures that the model adheres to the 
 To apply this technique, we create a `SegmentedSummary` Pydantic `BaseModel` to contain the outline and section summaries, and extract it in a chained call from the original summarize_text() call:
 
 ```python
---8<-- "examples/cookbook/text_classification/text_summarization.py:1:2"
---8<-- "examples/cookbook/text_classification/text_summarization.py:187:272"
+--8<-- "examples/cookbook/text_summarization.py:1:2"
+--8<-- "examples/cookbook/text_summarization.py:187:275"
 ```
 
 !!! tip "Additional Real-World Applications"
