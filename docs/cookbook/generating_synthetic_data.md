@@ -36,7 +36,7 @@ Sometimes, it will be easier to integrate your datapoints into your code if they
 
 ```python
 --8<-- "examples/cookbook/generating_synthetic_data.py:5:6"
---8<-- "examples/cookbook/generating_synthetic_data.py:42:70"
+--8<-- "examples/cookbook/generating_synthetic_data.py:42:71"
 ```
 
 ## Generate Data into a pandas `DataFrame`
@@ -50,7 +50,7 @@ To create a new `DataFrame`, we define a `BaseModel` schema with a simple functi
 ```python
 --8<-- "examples/cookbook/generating_synthetic_data.py:1:4"
 
---8<-- "examples/cookbook/generating_synthetic_data.py:72:115"
+--8<-- "examples/cookbook/generating_synthetic_data.py:72:117"
 ```
 
 ### Appending to a `DataFrame`
@@ -58,7 +58,7 @@ To create a new `DataFrame`, we define a `BaseModel` schema with a simple functi
 To append to a `DataFrame`, we can modify the prompt so that instead of describing the data we want to generate, we ask the LLM to match the type of data it already sees. Furthermore, we add a `append_dataframe()` function to append to an existing `DataFrame`. Finally, note that we use the generated `df` from above as the `DataFrame` to append to in the following example:
 
 ```python
---8<-- "examples/cookbook/generating_synthetic_data.py:131:148"
+--8<-- "examples/cookbook/generating_synthetic_data.py:131:150"
 ```
 
 ## Adding Constraints
@@ -67,7 +67,7 @@ While you cannot successfully add complex mathematical constraints to generated 
 
 ```python
 --8<-- "examples/cookbook/generating_synthetic_data.py:1:2"
---8<-- "examples/cookbook/generating_synthetic_data.py:148:183"
+--8<-- "examples/cookbook/generating_synthetic_data.py:153:187"
 ```
 
 To demonstrate the constraints’ being followed, you can graph the data using matplotlib, which shows the linear relationships between size and price, and QLEDs costing roughly twice as much as OLED:

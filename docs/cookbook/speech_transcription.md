@@ -37,7 +37,7 @@ We can start by creating a Pydantic Model with the content we want to analyze:
 Now we make our call passing in our `AudioTag` into the `response_model` field:
 
 ```python
---8<-- "examples/cookbook/speech_transcription.py:56:73"
+--8<-- "examples/cookbook/speech_transcription.py:56:74"
 ```
 
 ## Speaker Diarization
@@ -45,7 +45,7 @@ Now we make our call passing in our `AudioTag` into the `response_model` field:
 Now let's look at an audio file with multiple people talking. For the purposes of this recipe, I grabbed a snippet from Creative Commons[https://www.youtube.com/watch?v=v0l-u0ZUOSI], around 1:15 in the video and giving Gemini the audio file.
 
 ```python
---8<-- "examples/cookbook/speech_transcription.py:75:105"
+--8<-- "examples/cookbook/speech_transcription.py:75:106"
 ```
 
 !!! tip "Additional Real-World Examples"

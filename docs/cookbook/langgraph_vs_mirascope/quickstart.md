@@ -130,7 +130,7 @@ class WebSearch(openai.OpenAITool):
 
 Now that we have our tool defined, we can easily add the tool to our Mirascope call, like so:
 
-```python
+~~~python
 --8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:66:89"
     def _step(self, question: str | None = None):
         response = self._call(question)
@@ -182,16 +182,16 @@ Chatbot.run()
 
 ### Installation
 To install Mirascope, you can use the following command:
-\`\`\`bash
+```bash
 pip install mirascope
-\`\`\`
+```
 ### Compatibility
 Mirascope is compatible with Python versions 3.10 to 3.11 (not supporting Python 4.0 and above) and is licensed under the MIT License.
 
 ### Summary
 Mirascope positions itself as a simpler, less cumbersome alternative to other LLM frameworks like LangChain. It focuses on providing essential functionalities without unnecessary complexity, making development enjoyable and productive for software engineers looking to integrate LLMs into their applications.
 """
-```
+~~~
 
 We have enhanced our chatbot's functionality with several key modifications:
 

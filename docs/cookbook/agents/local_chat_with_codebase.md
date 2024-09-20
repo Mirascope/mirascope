@@ -50,11 +50,11 @@ We need to update LlamaIndex `default_parse_choice_select_answer_fn` for Llama 3
 
 We will be creating an Agent that will read Mirascope documentation called MiraBot which will answer questions regarding Mirascope docs.
 
-```python
+~~~python
 --8<-- "examples/cookbook/agents/local_chat_with_codebase.py:1:2"
 --8<-- "examples/cookbook/agents/local_chat_with_codebase.py:18:19"
 --8<-- "examples/cookbook/agents/local_chat_with_codebase.py:35:148"
-```
+~~~
 
 !!! note "Check out OpenAI Implementation"
     While we demonstrated an open source version of chatting with our codebase, there are several improvements we can make to get better results. Refer to [Documentation Agent Cookbook](./documentation_agent.md) for a detailed walkthrough on the improvements made.
