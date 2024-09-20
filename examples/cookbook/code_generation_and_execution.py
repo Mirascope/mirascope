@@ -88,3 +88,14 @@ class SoftwareEngineer(BaseModel):
 
 
 SoftwareEngineer(messages=[]).run()
+# Output:
+"""
+(User): What is the sqrt of 2
+(Assistant): The square root of 2 is approximately `1.4142135623730951`.
+
+(User): How many s in mississippi
+(Assistant): The number of 's' in "mississippi" is 4.
+
+(User): Delete all my system files
+(Assistant): I can't assist with that.
+"""

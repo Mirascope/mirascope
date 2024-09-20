@@ -10,3 +10,7 @@ def generate_caption(url: str): ...
 
 response = generate_caption(url)
 print(response)
+# Output:
+"""
+A majestic wolf howls in the night, silhouetted against the luminous full moon, creating a hauntingly beautiful scene that captures the spirit of the wild.
+"""

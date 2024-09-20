@@ -21,20 +21,7 @@ With OpenAI’s multimodal capabilities, image inputs are treated just like text
 Since we can treat the image like any other text context, we can simply ask the model to caption the image:
 
 ```python
-from mirascope.core import openai, prompt_template
-
-
-url = "https://c02.purpledshub.com/uploads/sites/41/2023/01/How-to-see-the-Wolf-Moon-in-2023--4bb6bb7.jpg?w=940&webp=1"
-
-
-@openai.call(model="gpt-4o-mini")
-@prompt_template("Generate a short, descriptive caption for this image: {url:image}")
-def generate_caption(url: str): ...
-
-
-response = generate_caption(url)
-print(response)
-# > A majestic wolf howls in the night, silhouetted against the luminous full moon, creating a hauntingly beautiful scene that captures the spirit of the wild.
+--8<-- "examples/cookbook/generating_captions.py"
 ```
 
 !!! tip "Additional Real-World Examples"
