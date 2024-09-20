@@ -76,7 +76,7 @@ Here are a few search tools you can use.
 
 Install the [DuckDuckGo](https://duckduckgo.com/) python library:
 
-```python
+```bash
 pip install duckduckgo-search, beautifulsoup4
 ```
 
@@ -85,46 +85,8 @@ No API key is required for DuckDuckGo.
 #### Define the DuckDuckGo tool
 
 ```python
-import requests
-from bs4 import BeautifulSoup
-from duckduckgo_search import DDGS
-from pydantic import Field
-
-
-class WebSearch(openai.OpenAITool):
-    """Search the web for the given text and parse the paragraphs of the results."""
-
-    query: str = Field(..., description="The text to search for.")
-
-    def call(self) -> str:
-        """Search the web for the given text and parse the paragraphs of the results.
-
-        Returns:
-            Parsed paragraphs of each of the webpages, separated by newlines.
-        """
-        try:
-            # Search the web for the given text
-            results = DDGS(proxy=None).text(self.query, max_results=2)
-
-            # Parse the paragraphs of each resulting webpage
-            parsed_results = []
-            for result in results:
-                link = result["href"]
-                try:
-                    response = requests.get(link)
-                    soup = BeautifulSoup(response.content, "html.parser")
-                    parsed_results.append(
-                        "\n".join([p.text for p in soup.find_all("p")])
-                    )
-                except Exception as e:
-                    parsed_results.append(
-                        f"{type(e)}: Failed to parse content from URL {link}"
-                    )
-
-            return "\n\n".join(parsed_results)
-
-        except Exception as e:
-            return f"{type(e)}: Failed to search the web for text"
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:7:10"
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:13:48"
 ```
 
 ### Tavily
@@ -133,7 +95,7 @@ class WebSearch(openai.OpenAITool):
 
 Install the [Tavily](https://tavily.com/) python library:
 
-```python
+```bash
 pip install tavily-python
 ```
 
@@ -169,30 +131,7 @@ class WebSearch(openai.OpenAITool):
 Now that we have our tool defined, we can easily add the tool to our Mirascope call, like so:
 
 ```python
-class WebSearch(openai.OpenAITool): ...
-
-class Chatbot(BaseModel):
-    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
-
-    @openai.call(model="gpt-4o-mini", stream=True, tools=[WebSearch])
-    @prompt_template(
-        """
-        SYSTEM:
-        You are an expert web searcher. 
-        Your task is to answer the user's question using the provided tools.
-        You have access to the following tools:
-            - `WebSearch`: Search the web for information.
-
-        Once you have gathered all of the information you need, generate a writeup that
-        strikes the right balance between brevity and completeness. The goal is to
-        provide as much information to the writer as possible without overwhelming them.
-
-        MESSAGES:{self.history}
-        USER:{question}
-        """
-    )
-    def _call(self, question: str | None = None): ...
-
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:66:89"
     def _step(self, question: str | None = None):
         response = self._call(question)
         tools_and_outputs = []
@@ -220,35 +159,38 @@ class Chatbot(BaseModel):
             print("")
 
 Chatbot.run()
-# (User): Can you tell me about the Mirascope python library?
-# (Assistant): The **Mirascope** library is a Python toolkit designed for creating applications using language model (LLM) APIs. Developed by William Bakst and released on August 18, 2024, Mirascope emphasizes simplicity, elegance, and developer experience. Here are some key features and details about the library:
-#
-# ### Key Features
-# 1. **Simplicity and Ease of Use**: Mirascope aims to provide straightforward abstractions that enhance the developer experience without overwhelming complexity. It is designed for ease of onboarding and development.
-#
-# 2. **Type Safety**: One of its strengths is the provision of proper type hints throughout the library. It actively manages Python typings, allowing developers to write their code intuitively while still benefiting from type safety.
-#
-# 3. **Modular Design**: Mirascope is modular and extensible, enabling developers to tailor the library to their specific needs. Most dependencies are optional and provider-specific, so you can include only the components you require.
-#
-# 4. **Core Primitives**: The library offers two main components:
-#    - **Call and BasePrompt**: These primitives facilitate interactions with LLMs. Developers can create functions that integrate seamlessly with multiple LLM providers through decorators.
-#
-# 5. **Advanced Functionality**: Mirascope supports features like asynchronous function calls, streaming responses, structured data extraction, custom output parsers, and dynamic variable injection.
-#
-# 6. **Integration with FastAPI**: Mirascope includes decorators for wrapping functions into FastAPI routes, making it easier to deploy applications as web services.
-#
-# 7. **Documentation and Examples**: The project comes with extensive usage documentation and example code to help users quickly understand how to utilize its features effectively.
-#
-# ### Installation
-# To install Mirascope, you can use the following command:
-# ```bash
-# pip install mirascope
-# ```
-# ### Compatibility
-# Mirascope is compatible with Python versions 3.10 to 3.11 (not supporting Python 4.0 and above) and is licensed under the MIT License.
-#
-# ### Summary
-# Mirascope positions itself as a simpler, less cumbersome alternative to other LLM frameworks like LangChain. It focuses on providing essential functionalities without unnecessary complexity, making development enjoyable and productive for software engineers looking to integrate LLMs into their applications.
+# Prompt:
+"""
+(User): Can you tell me about the Mirascope python library?
+(Assistant): The **Mirascope** library is a Python toolkit designed for creating applications using language model (LLM) APIs. Developed by William Bakst and released on August 18, 2024, Mirascope emphasizes simplicity, elegance, and developer experience. Here are some key features and details about the library:
+
+### Key Features
+1. **Simplicity and Ease of Use**: Mirascope aims to provide straightforward abstractions that enhance the developer experience without overwhelming complexity. It is designed for ease of onboarding and development.
+
+2. **Type Safety**: One of its strengths is the provision of proper type hints throughout the library. It actively manages Python typings, allowing developers to write their code intuitively while still benefiting from type safety.
+
+3. **Modular Design**: Mirascope is modular and extensible, enabling developers to tailor the library to their specific needs. Most dependencies are optional and provider-specific, so you can include only the components you require.
+
+4. **Core Primitives**: The library offers two main components:
+   - **Call and BasePrompt**: These primitives facilitate interactions with LLMs. Developers can create functions that integrate seamlessly with multiple LLM providers through decorators.
+
+5. **Advanced Functionality**: Mirascope supports features like asynchronous function calls, streaming responses, structured data extraction, custom output parsers, and dynamic variable injection.
+
+6. **Integration with FastAPI**: Mirascope includes decorators for wrapping functions into FastAPI routes, making it easier to deploy applications as web services.
+
+7. **Documentation and Examples**: The project comes with extensive usage documentation and example code to help users quickly understand how to utilize its features effectively.
+
+### Installation
+To install Mirascope, you can use the following command:
+\`\`\`bash
+pip install mirascope
+\`\`\`
+### Compatibility
+Mirascope is compatible with Python versions 3.10 to 3.11 (not supporting Python 4.0 and above) and is licensed under the MIT License.
+
+### Summary
+Mirascope positions itself as a simpler, less cumbersome alternative to other LLM frameworks like LangChain. It focuses on providing essential functionalities without unnecessary complexity, making development enjoyable and productive for software engineers looking to integrate LLMs into their applications.
+"""
 ```
 
 We have enhanced our chatbot's functionality with several key modifications:
@@ -268,42 +210,9 @@ Let us take a look at how we can slot in human input or approval using Mirascope
 Since we are just writing python code, we don't need to setup an `interrupt_before`. We can simply add a function `_interrupt_before` that we call before calling our tool, like so:
 
 ```python
-def _interrupt_before(self, tool: openai.OpenAITool) -> openai.OpenAITool | None:
-    """Interrupt before the tool is called. Return the modified tool or None."""
-    if not isinstance(tool, WebSearch):
-        return tool
-    response = input(f"Do you want to use the {tool._name()} tool? (y/n): ")
-    if response.lower() in ["n", "no"]:
-        response = input(
-            f"Do you want to modify the {tool._name()} tool's query? (y/n): "
-        )
-        if response.lower() in ["n", "no"]:
-            return None
-        else:
-            tool.query = input("(Assistant): Enter a new query: ")
-            return tool
-    else:
-        return tool
-
-def _step(self, question: str | None = None):
-    response = self._call(question)
-    tools_and_outputs = []
-    for chunk, tool in response:
-        if tool:
-            new_tool = self._interrupt_before(tool)
-            if new_tool:
-                tools_and_outputs.append((new_tool, new_tool.call()))
-            tools_and_outputs.append((tool, tool.call()))
-        else:
-            print(chunk.content, end="", flush=True)
-    if response.user_message_param:
-        self.history.append(response.user_message_param)
-    self.history.append(response.message_param)
-    if tools_and_outputs:
-        self.history += response.tool_message_params(tools_and_outputs)
-        return self._step()
-    return response.content
-
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:66:68"
+    ...
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:90:123"
 ```
 
 Now, before the LLM calls the tool, it will prompt the user requesting permission:
@@ -319,45 +228,9 @@ Chatbot.run()
 We can use prompt engineering techniques to help the LLM make a decision on whether it needs human intervention or not. Let's add a `RequestAssistance` tool and update our prompt so the LLM knows how to use our new tool.
 
 ```python
-class RequestAssistance(openai.OpenAITool):
-    """A tool that requests assistance from a human expert."""
-
-    query: str = Field(
-        ...,
-        description="The request for assistance needed to properly respond to the user",
-    )
-
-    def call(self) -> str:
-        """Prompts a human to enter a response."""
-        print(f"I am in need of assistance. {self.query}")
-        response = input("\t(Human): ")
-        return f"Human response: {response}"
-
-class Chatbot(BaseModel):
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:51:89"
     ...
-
-    @openai.call(model="gpt-4o-mini", stream=True, tools=[WebSearch, RequestAssistance])
-    @prompt_template(
-        """
-        SYSTEM:
-        You are an expert web searcher. 
-        Your task is to answer the user's question using the provided tools.
-        You have access to the following tools:
-            - `WebSearch`: Search the web for information.
-            - `RequestAssistance`: Request assistance from a human expert if you do not
-                know how to answer the question.
-
-        Once you have gathered all of the information you need, generate a writeup that
-        strikes the right balance between brevity and completeness. The goal is to
-        provide as much information to the writer as possible without overwhelming them.
-
-        MESSAGES: {self.history}
-        USER: {question}
-        """
-    )
-    def _call(self, question: str | None = None): ...
-
-    ...
+--8<-- "examples/cookbook/langgraph_vs_mirascope/quickstart.py:89:123"
 
 Chatbot.run()
 # > (User): What is my name?
