@@ -27,60 +27,9 @@ Make sure to also set your `OPENAI_API_KEY` if you haven't already.
 Let's start with a basic implementation of Self-Ask using few-shot learning examples:
 
 ```python
-import inspect
-from typing_extensions import TypedDict
-
-from mirascope.core import openai, prompt_template
-
-class FewShotExample(TypedDict):
-    question: str
-    answer: str
-
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    """
-    Examples:
-    {examples:lists}
-
-    Query: {query}
-    """
-)
-def self_ask(query: str, examples: list[FewShotExample]) -> openai.OpenAIDynamicConfig:
-    return {
-        "computed_fields": {
-            "examples": [
-                [example["question"], example["answer"]] for example in examples
-            ]
-        }
-    }
-
-# Define few-shot examples
-few_shot_examples = [
-    FewShotExample(
-        question="When does monsoon season end in the state the area code 575 is located?",
-        answer=inspect.cleandoc(
-            """
-            Are follow up questions needed here: Yes.
-            Follow up: Which state is the area code 575 located in?
-            Intermediate answer: The area code 575 is located in New Mexico.
-            Follow up: When does monsoon season end in New Mexico?
-            Intermediate answer: Monsoon season in New Mexico typically ends in mid-September.
-            So the final answer is: mid-September.
-            """
-        ),
-    ),
+--8<-- "examples/cookbook/prompt_engineering/text_based/self_ask/self_ask.py:1:45"
     # ... (add more examples here)
-]
-
-query = "The birth country of Jayantha Ketagoda left the British Empire when?"
-response = self_ask(query=query, examples=few_shot_examples)
-print(response.content)
-# > Are follow up questions needed here: Yes.
-#   Follow up: What is the birth country of Jayantha Ketagoda?
-#   Intermediate answer: Jayantha Ketagoda is from Sri Lanka.
-#   Follow up: When did Sri Lanka leave the British Empire?
-#   Intermediate answer: Sri Lanka, formerly known as Ceylon, gained independence from the British Empire on February 4, 1948.
-#   So the final answer is: February 4, 1948.
+--8<-- "examples/cookbook/prompt_engineering/text_based/self_ask/self_ask.py:98:108"
 ```
 
 This basic implementation demonstrates how to use few-shot learning with Self-Ask. The `self_ask` function takes a query and a list of examples, then uses Mirascope's `OpenAIDynamicConfig` to inject the examples into the prompt.
@@ -90,46 +39,10 @@ This basic implementation demonstrates how to use few-shot learning with Self-As
 Now, let's improve our implementation by adding dynamic example selection:
 
 ```python
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-def select_relevant_examples(
-    query: str, examples: list[FewShotExample], n: int = 3
-) -> list[FewShotExample]:
-    """Select the most relevant examples based on cosine similarity."""
-    vectorizer = TfidfVectorizer().fit([ex["question"] for ex in examples] + [query])
-    example_vectors = vectorizer.transform([ex["question"] for ex in examples])
-    query_vector = vectorizer.transform([query])
-
-    similarities = cosine_similarity(query_vector, example_vectors)[0]
-    most_similar_indices = np.argsort(similarities)[-n:][::-1]
-
-    return [examples[i] for i in most_similar_indices]
-
-@openai.call(model="gpt-4o-mini")
-@prompt_template(
-    """
-    Examples:
-    {examples:lists}
-
-    Query: {query}
-    """
-)
-def dynamic_self_ask(
-    query: str, examples: list[FewShotExample], n: int = 3
-) -> openai.OpenAIDynamicConfig:
-    relevant_examples = select_relevant_examples(query, examples, n)
-    return {
-        "computed_fields": {
-            "examples": [
-                [example["question"], example["answer"]]
-                for example in relevant_examples
-            ]
-        }
-    }
-
+--8<-- "examples/cookbook/prompt_engineering/text_based/self_ask/enhanced_self_ask.py:1:50"
 # Use the enhanced Self-Ask implementation
+--8<-- "examples/cookbook/prompt_engineering/text_based/self_ask/enhanced_self_ask.py:122:131"
+
 query = "What was the primary language spoken by the inventor of the phonograph?"
 response = dynamic_self_ask(query=query, examples=few_shot_examples, n=2)
 print(response.content)
