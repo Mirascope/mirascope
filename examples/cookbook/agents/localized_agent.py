@@ -153,3 +153,23 @@ class LocalizedRecommender(BaseModel):
 
 recommender = LocalizedRecommender(history=[])
 asyncio.run(recommender.run())
+# Output:
+"""
+
+(User): Can you recommend me some restaurants in San Francisco, CA?
+(Assistant): Sure! Here are some highly rated restaurants in San Francisco, CA:
+
+1. **The Grove - Yerba Buena**
+   - **Rating**: 4.4 stars
+   - **Hours**: 7:30 AM - 8:30 PM (Daily)
+
+2. **Aliment**
+   - **Rating**: 4.4 stars
+   - **Hours**: 12:00 PM - 9:30 PM (Monday to Thursday, closes later on Friday and opens for brunch on weekends)
+
+3. **The Melt**
+   - **Rating**: 4.3 stars
+   - **Hours**: 10:00 AM - 3:00 AM (Daily)
+
+...
+"""

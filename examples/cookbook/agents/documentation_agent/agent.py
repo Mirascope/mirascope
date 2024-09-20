@@ -163,3 +163,16 @@ class DocumentationAgent(BaseModel):
 
 if __name__ == "__main__":
     DocumentationAgent().run()
+    # Output:
+    """
+    (User): How do I make an LLM call using Mirascope?
+    (Assistant): from mirascope.core import openai
+    
+    @openai.call('gpt-4o-mini')
+    @prompt_template('Recommend a {genre} book')
+    def recommend_book(genre: str):
+        ...
+    
+    response = recommend_book('fantasy')
+    print(response.content)
+    """

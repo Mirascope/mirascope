@@ -68,6 +68,9 @@ def scrub_pii(article: str): ...
 
 def run():
     does_pii_exist = check_if_pii_exists(PII_ARTICLE)
+    print(does_pii_exist)
+    # Output:
+    # True
     if does_pii_exist:
         return scrub_pii(PII_ARTICLE)
     else:
@@ -75,3 +78,7 @@ def run():
 
 
 print(run())
+# Output:
+"""
+[NAME], born on [BIRTH_DATE], resides at [ADDRESS] in [CITY], [STATE]. His [IDENTIFICATION_NUMBER] is [SOCIAL_SECURITY_NUMBER] and he can be reached at [PHONE_NUMBER].
+"""
