@@ -37,7 +37,7 @@ We can use Pydantic's [`AfterValidator`](https://docs.pydantic.dev/latest/api/fu
 
 ```python
 --8<-- "examples/cookbook/llm_validation_with_retries/after_validator.py:1:4"
---8<-- "examples/cookbook/llm_validation_with_retries/after_validator.py:26:49"
+--8<-- "examples/cookbook/llm_validation_with_retries/after_validator.py:26:52"
 ```
 
 ## Reinsert Validation Errors For Improved Performance
