@@ -224,7 +224,7 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
     [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
 
-    [`mirascope.core.azure.call_params`](../api/core/anthropic/azure.md)
+    [`mirascope.core.azure.call_params`](../api/core/anthropic/call_params.md)
 
     [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
 
@@ -337,8 +337,6 @@ Any custom client is supported so long as it has the same API as the original ba
     [`mirascope.core.gemini.call_response`](../api/core/gemini/call_response.md)
 
     [`mirascope.core.groq.call_response`](../api/core/groq/call_response.md)
-
-    [`mirascope.core.litellm.call_response`](../api/core/litellm/call_response.md)
 
     [`mirascope.core.mistral.call_response`](../api/core/mistral/call_response.md)
 

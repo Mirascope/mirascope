@@ -189,8 +189,6 @@ The `response.tools` property returns a list of provider-specific tool instances
 
     [`mirascope.core.groq.tool`](../api/core/groq/tool.md)
 
-    [`mirascope.core.litellm.tool`](../api/core/litellm/tool.md)
-
     [`mirascope.core.mistral.tool`](../api/core/mistral/tool.md)
 
     [`mirascope.core.openai.tool`](../api/core/openai/tool.md)
