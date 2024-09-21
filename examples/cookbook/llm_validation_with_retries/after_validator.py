@@ -43,7 +43,10 @@ try:
     )
 except ValidationError as e:
     print(f"Validation error: {e}")
-    # > Validation error: 1 validation error for TextWithoutErrors
-    #   text
-    #     Value error, Text contains errors [type=value_error, input_value='I walkd to supermarket a... i picked up some fish?', input_type=str]
-    #       For further information visit https://errors.pydantic.dev/2.8/v/value_error
+    # Output:
+    """
+    > Validation error: 1 validation error for TextWithoutErrors
+      text
+        Value error, Text contains errors [type=value_error, input_value='I walkd to supermarket a... i picked up some fish?', input_type=str]
+          For further information visit https://errors.pydantic.dev/2.8/v/value_error
+    """

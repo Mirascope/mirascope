@@ -41,24 +41,7 @@ Binary classification involves categorizing text into one of two classes. We'll 
 For binary classification, we can extract a boolean value by setting `response_model=bool` and prompting the model to classify the text:
 
 ```python
-from mirascope.core import openai, prompt_template
-
-
-@openai.call("gpt-4o-mini", response_model=bool)
-@prompt_template(
-    """
-    Classify the following text as spam or not spam: {text}
-    """
-)
-def classify_spam(text: str): ...
-
-text = "Would you like to buy some cheap viagra?"
-label = classify_spam(text)
-assert label is True   # This text is classified as spam
-
-text = "Hi! It was great meeting you today. Let's stay in touch!"
-label = classify_spam(text)
-assert label is False  # This text is classified as not spam
+--8<-- "examples/cookbook/text_classification/binary_classification.py"
 ```
 
 ## Multi-Class Classification: Sentiment Analysis
@@ -68,40 +51,14 @@ Multi-class classification extends the concept to scenarios where we need to cat
 First, we define an `Enum` to represent our sentiment labels:
 
 ```python
-from enum import Enum
-
-
-class Sentiment(Enum):
-    NEGATIVE = "negative"
-    NEUTRAL = "neutral"
-    POSITIVE = "positive"
+--8<-- "examples/cookbook/text_classification/multiclass_classification.py:1:2"
+--8<-- "examples/cookbook/text_classification/multiclass_classification.py:5:9"
 ```
 
 Then, we set `response_model=Sentiment` to analyze the sentiment of the given text:
 
 ```python
-from mirascope.core import openai, prompt_template
-
-
-@openai.call("gpt-4o-mini", response_model=Sentiment)
-@prompt_template(
-    """
-    Classify the sentiment of the following text: {text}
-    """
-)
-def classify_sentiment(text: str): ...
-
-text = "I hate this product. It's terrible."
-label = classify_sentiment(text)
-assert label == Sentiment.NEGATIVE
-
-text = "I don't feel strongly about this product."
-label = classify_sentiment(text)
-assert label == Sentiment.NEUTRAL
-
-text = "I love this product. It's amazing!"
-label = classify_sentiment(text)
-assert label == Sentiment.POSITIVE
+--8<-- "examples/cookbook/text_classification/multiclass_classification.py"
 ```
 
 ## Classification with Reasoning
@@ -111,34 +68,7 @@ So far we've demonstrated using simple types like `bool` and `Enum` for classifi
 For example, we can gain insight to the LLMs reasoning for the classified label simply by including a reasoning field in our response model and updating the prompt:
 
 ```python
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel
-
-
-class SentimentWithReasoning(BaseModel):
-    reasoning: str
-    sentiment: Sentiment
-
-
-@openai.call("gpt-4o-mini", response_model=SentimentWithReasoning)
-@prompt_template(
-    """
-    Classify the sentiment of the following text: {text}.
-    Explain your reasoning for the classified sentiment.
-    """
-)
-def classify_sentiment_with_reasoning(text: str): ...
-
-
-text = "I would recommend this product if it were cheaper..."
-response = classify_sentiment_with_reasoning(text)
-print(response.sentiment)
-# > Sentiment.NEUTRAL
-print(f"Reasoning: {response.reasoning}")
-# > Reasoning: The statement expresses a conditional recommendation that is
-#   dependent on the price of the product. While the speaker has a positive
-#   inclination to recommend the product, the condition of it being cheaper
-#   introduces a level of uncertainty, leading to a neutral sentiment overall.
+--8<-- "examples/cookbook/text_classification/classification_with_reasoning.py"
 ```
 
 ## Handling Uncertainty
@@ -146,36 +76,8 @@ print(f"Reasoning: {response.reasoning}")
 When dealing with LLMs for classification tasks, it's important to account for cases where the model might be uncertain about its prediction. We can modify our approach to include a certainty score and handle cases where the model's confidence is below a certain threshold.
 
 ```python
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel
-
-
-class SentimentWithCertainty(BaseModel):
-    sentiment: Sentiment
-    reasoning: str
-    certainty: float
-
-
-@openai.call("gpt-4o-mini", response_model=SentimentWithCertainty)
-@prompt_template(
-    """
-    Classify the sentiment of the following text: {text}
-    Explain your reasoning for the classified sentiment.
-    Also provide a certainty score between 0 and 1, where 1 is absolute certainty.
-    """
-)
-def classify_sentiment_with_certainty(text: str): ...
-
-
-text = "This is the best product ever. And the worst."
-response = classify_sentiment_with_certainty(text)
-if response.certainty > 0.8:
-    print(f"Sentiment: {response.sentiment}")
-    print(f"Reasoning: {response.reasoning}")
-    print(f"Certainty: {response.certainty}")
-else:
-    print("The model is not certain enough about the classification.")
-    # Handle the uncertainty (e.g., flag for human review, use a fallback method, etc.)
+--8<-- "examples/cookbook/text_classification/handle_uncertainty.py:3:7"
+--8<-- "examples/cookbook/text_classification/handle_uncertainty.py:14:39"
 ```
 
 !!! tip "Additional Real-World Examples"

@@ -127,5 +127,65 @@ def execute_query_plan(query_plan: list[Query]):
 
 query_plan = create_query_plan("Compare the weather in Tokyo from 2020 to 2022")
 print(query_plan)
+# Output:
+"""
+  [
+      Query(
+          id=1,
+          question="What was the weather like in Tokyo in 2020?",
+          dependencies=[],
+          tools=["get_weather_by_year"],
+      ),
+      Query(
+          id=2,
+          question="What was the weather like in Tokyo in 2021?",
+          dependencies=[],
+          tools=["get_weather_by_year"],
+      ),
+      Query(
+          id=3,
+          question="What was the weather like in Tokyo in 2022?",
+          dependencies=[],
+          tools=["get_weather_by_year"],
+      ),
+      Query(
+          id=4,
+          question="Compare the weather data for Tokyo from 2020 to 2022",
+          dependencies=[1, 2, 3],
+          tools=[],
+      ),
+  ]
+"""
 result = execute_query_plan(query_plan)
 print(result)
+# Output:
+"""
+Comparing the weather data for Tokyo from 2020 to 2022, we can observe the following trends:
+
+1. Overall warming trend:
+   - There's a general increase in temperatures across all months from 2020 to 2022.
+   - The average annual temperature has risen each year.
+
+2. Winter months (Dec-Feb):
+   - 2020 had the coldest winters, with 2021 and 2022 progressively warmer.
+   - January saw the most significant increase: 42°F (2020) to 48°F (2022).
+
+3. Summer months (Jun-Aug):
+   - Summer temperatures have increased each year.
+   - August shows the most dramatic rise: 81°F (2020) to 87°F (2022).
+
+4. Spring and Fall:
+   - Both seasons show consistent warming trends.
+   - March temperatures rose from 49°F (2020) to 56°F (2022).
+   - October increased from 65°F (2020) to 71°F (2022).
+
+5. Month with highest temperature:
+   - In all three years, August was the hottest month.
+   - The peak temperature increased from 81°F (2020) to 87°F (2022).
+
+6. Month with lowest temperature:
+   - January was consistently the coldest month.
+   - The lowest temperature increased from 42°F (2020) to 48°F (2022).
+
+In summary, Tokyo experienced a clear warming trend from 2020 to 2022, with temperatures increasing across all months, most notably in winter and summer periods.
+"""

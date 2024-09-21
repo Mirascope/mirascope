@@ -26,6 +26,8 @@ def transcribe_speech_from_url(url: str): ...
 response = transcribe_speech_from_url(apollo_url)
 
 print(response)
+# Output:
+# T minus 10 nine eight We have a go for main engine start We have main engine start
 
 
 class AudioTag(BaseModel):
@@ -68,7 +70,8 @@ def analyze_audio(url: str): ...
 
 response = analyze_audio(apollo_url)
 print(response)
-
+# Output:
+# audio_quality='Medium' imperfections=['Background Noise'] description='A countdown from 10 to 0 with a voice that says, "We have a go for main engine start." ' primary_sound='Male Voice'
 
 with open("YOUR_MP3_HERE", "rb") as file:
     data = file.read()
@@ -89,3 +92,15 @@ with open("YOUR_MP3_HERE", "rb") as file:
 
     response = transcribe_speech_from_file(data)
     print(response)
+# Output:
+"""
+# Person 1: Good morning. 
+# Person 2: Good morning everyone.
+# Person 1:  Um, this is our uh wonderful uh legal Q&R Q&A session. I'm I'm sorry. I've I've lost my link to the notes document, so I'm I'm I'm not going to have the formal introduction.  I I can introduce myself. I'm I'm I know who I am most of the time.  
+# Person 2: That's good. Why not? Um,
+# Person 1: Let's see. So, I think Well, so welcome everyone. I'm sorry I'm a little flustered. I was I I had trouble getting into the room, and so Um, uh, welcome everyone. We We We We have the This is a wonderful opportunity as part of this course to um get to ask questions to some of the most amazing legal minds and who are wonderfully uh friendly and helpful and non-scary um and um We just are uh our privilege to talk to Mari-Jacob who is an amazing uh legal scholar and and uh speaker and and communicator. And I think um the plan will be that we have We have a document which have questions but which has questions that people have been putting in, but I think um it's also people who've been able to be here. Have we started the recording by the way?
+# Person 2: Yep. 
+# Person 3: Rebecca? 
+# Person 2: Yes.  Okay. Good. Good. So, just to warn people everyone we are recording, but um um 
+# Person 1:  So, that we have a a document with questions and um, but we'd like to prioritize anyone who's here as well. So, I think maybe um, I will just hand it over to P
+"""

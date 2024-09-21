@@ -44,4 +44,18 @@ def extract_receipt_info_anthropic(url: str): ...
 
 
 print(extract_receipt_info_openai(image_url))
+# Output:
+"""
+[
+    Item(name="Happy Meal 6 Pc", quantity=1, price=4.89),
+    Item(name="Snack Oreo McFlurry", quantity=1, price=2.69),
+]
+"""
 print(extract_receipt_info_anthropic(image_url))
+# Output:
+"""
+[
+    Item(name="Happy Meal 6 Pc", quantity=1, price=4.89),
+    Item(name="Snack Oreo McFlurry", quantity=1, price=2.69),
+]
+"""

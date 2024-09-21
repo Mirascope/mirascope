@@ -20,23 +20,16 @@ We will first test the functionality of our LLM Rerank function to ensure it per
 
 ```python
 
+--8<-- "examples/cookbook/agents/documentation_agent/documents.py:2:5"
 documents = [
-    {"id": 0, "text": "Bob eats burgers every day.", "semantic_score": 0.8},
-    {"id": 1, "text": "Bob's favorite food is not pizza.", "semantic_score": 0.9},
-    {"id": 2, "text": "I ate at In-N-Out with Bob yesterday", "semantic_score": 0.5},
-    {"id": 3, "text": "Bob said his favorite food is burgers", "semantic_score": 0.9},
-]
 
+]
 @pytest.mark.parametrize(
+    
     "query,documents,top_n_ids",
     ("What is Bob's favorite food", documents, {3, 0}),
 )
-def test_llm_query_rerank(query: str, documents: list[dict], top_n_ids: set[int]):
-    """Tests that the LLM query rerank ranks more relevant documents higher."""
-    response = llm_query_rerank(documents, query)
-    results = sorted(response, key=lambda x: x.score or 0, reverse=True)
-    assert all(result.score > 5 for result in results)
-    assert top_n_ids.issuperset({result.id for result in results[: len(top_n_ids)]})
+--8<-- "examples/cookbook/agents/documentation_agent/test_agent.py:119:124"
 ```
 
 Our tests:
@@ -58,99 +51,14 @@ To ensure the accuracy and functionality of the LLM-generated code, we implement
 * Import Verification: Since syntax validation alone is insufficient, we incorporate an additional check for proper imports. This step confirms all modules and dependencies are valid and no "magic" imports exist.
 
 ```python
-import ast
-import importlib.util
-
-def check_syntax(code_string: str) -> bool:
-    try:
-        compile(code_string, "<string>", "exec")
-        return True
-    except SyntaxError as e:
-        print(f"Syntax error: {e}")
-        return False
-
-
-def is_importable(code_string: str) -> bool:
-    try:
-        tree = ast.parse(code_string)
-    except SyntaxError:
-        return False
-
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import | ast.ImportFrom):
-            module_name = (
-                node.module if isinstance(node, ast.ImportFrom) else node.names[0].name
-            )
-            if not check_module(module_name):
-                return False
-
-            if isinstance(node, ast.ImportFrom):
-                for alias in node.names:
-                    if not check_attribute(module_name, alias.name):
-                        return False
-
-    return True
-
-
-def check_module(module_name):
-    try:
-        spec = importlib.util.find_spec(module_name)
-        return spec is not None
-    except (ImportError, AttributeError, ValueError):
-        return False
-
-
-def check_attribute(module_name, attribute):
-    try:
-        spec = importlib.util.find_spec(module_name)
-        if spec is None:
-            return False
-        module = importlib.util.module_from_spec(spec)
-        if spec.loader:
-            spec.loader.exec_module(module)
-        return hasattr(module, attribute)
-    except (ImportError, AttributeError):
-        return False
-
-@pytest.mark.parametrize(
-    "import_str,expected",
-    [
-        ("from mirascope.core import openai", True),
-        ("import math", True),
-        ("from datetime import datetime", True),
-        ("import non_existent_module", False),
-        ("from os import path, nonexistent_function", False),
-        ("from sys import exit, nonexistent_variable", False),
-        ("from openai import OpenAI", True),
-        ("from mirascope.core import openai", True),
-    ],
-)
-def test_is_importable(import_str: str, expected: bool):
-    assert is_importable(import_str) == expected
-
-
-@pytest.mark.parametrize(
-    "syntax,expected",
-    [("print('Hello, World!')", True), ("print('Hello, World!'", False)],
-)
-def test_check_syntax(syntax: str, expected: bool):
-    assert check_syntax(syntax) == expected
+--8<-- "examples/cookbook/agents/documentation_agent/test_agent.py:1:3"
+--8<-- "examples/cookbook/agents/documentation_agent/test_agent.py:18:92"
 ```
 
 Now that we have our `check_syntax` and `is_importable` tests working, we can test our LLM output:
 
 ```python
-@pytest.mark.parametrize(
-    "query,expected",
-    [
-        ("How do I make a basic OpenAI call using Mirascope?", None),
-    ],
-)
-def test_documentation_agent(query: str, expected: str):
-    documentation_agent = DocumentationAgent()
-    response = documentation_agent._call(query)
-    if response.classification == "code":
-        assert check_syntax(response.content) and is_importable(response.content)
+--8<-- "examples/cookbook/agents/documentation_agent/test_agent.py:127:140"
 ```
 
 ### Evaluating General Q&A

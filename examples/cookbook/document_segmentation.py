@@ -94,6 +94,52 @@ def semantic_segmentation(article: str): ...
 
 
 segments = semantic_segmentation(SAMPLE_ARTICLE)
+print(segments)
+# Output:
+"""
+[
+       Segment(
+           topic="Introduction to AI in Healthcare",
+           content="Artificial Intelligence (AI) is revolutionizing the healthcare industry, offering unprecedented opportunities to improve patient care, streamline operations, and advance medical research.",
+       ),
+       Segment(
+           topic="Regulatory Frameworks",
+           content="Regulatory bodies like the FDA are working to develop frameworks for evaluating and approving AI-based medical technologies, balancing the need for innovation with patient safety concerns.",
+       ),
+       Segment(
+           topic="AI in Diagnosis and Treatment",
+           content="From diagnosis to treatment planning, AI is making significant strides in various areas of healthcare, promising to transform the way we approach medicine and patient care in the 21st century.",
+       ),
+       Segment(
+           topic="Applications of AI in Medical Imaging",
+           content="One of the most promising applications of AI in healthcare is in medical imaging. For instance, AI-powered systems have shown impressive results in detecting early signs of breast cancer in mammograms, identifying lung nodules in chest X-rays, and spotting signs of diabetic retinopathy in eye scans.",
+       ),
+       Segment(
+           topic="AI in Drug Discovery",
+           content="Companies like Atomwise and Exscientia are already using AI to discover novel drug candidates for various diseases, including COVID-19. Traditional drug development is a time-consuming and expensive process, often taking over a decade and costing billions of dollars to bring a new drug to market.",
+       ),
+       Segment(
+           topic="Patient Monitoring and Clinical Decision Support",
+           content="In patient monitoring, AI algorithms can continuously analyze data from ICU equipment or wearable devices, alerting healthcare providers to subtle changes in a patient's condition before they become critical.",
+       ),
+       Segment(
+           topic="Machine Learning and Data Privacy Concerns",
+           content="AI in healthcare relies on machine learning algorithms and neural networks that can process vast amounts of medical data. Issues such as data privacy, algorithmic bias, and the need for regulatory frameworks are ongoing concerns.",
+       ),
+       Segment(
+           topic="Challenges in AI Integration",
+           content="However, the integration of AI in healthcare is not without challenges. Algorithmic bias is a particularly pressing issue, as AI systems trained on non-diverse datasets may perform poorly for underrepresented populations.",
+       ),
+       Segment(
+           topic="Future of AI in Healthcare",
+           content="As technology continues to advance, we can expect to see even more innovative applications of AI that will shape the future of medicine and improve patient outcomes worldwide.",
+       ),
+       Segment(
+           topic="Conclusion",
+           content="While AI will not replace human healthcare providers, it will undoubtedly become an indispensable tool in the medical toolkit, helping to address global healthcare challenges and improve patient outcomes on a massive scale.",
+       ),
+  ]
+"""
 
 
 @openai.call("gpt-4o-mini")
