@@ -28,6 +28,17 @@ def generate_csv_data(num_datapoints: int): ...
 
 
 print(generate_csv_data(5))
+# Output:
+"""
+ ```csv
+  Name,Price,Inventory
+  Stainless Steel Microwave,149.99,25
+  Cordless Vacuum Cleaner,199.99,15
+  4-Slice Toaster,39.99,50
+  Energy Star Dishwasher,699.00,10
+  Smart Air Purifier,249.50,8
+  ```
+"""
 
 
 class HomeAppliance(BaseModel):
@@ -50,6 +61,14 @@ def generate_home_appliance_data(num_datapoints: int): ...
 
 
 print(generate_home_appliance_data(5))
+# Output:
+"""
+  name='Refrigerator' price=799.99 inventory=15
+  name='Microwave Oven' price=129.99 inventory=30
+  name='Washing Machine' price=499.99 inventory=10
+  name='Air Conditioner' price=349.99 inventory=5
+  name='Dishwasher' price=599.99 inventory=8
+"""
 
 
 class DataFrameGenerator(BaseModel):
@@ -86,6 +105,16 @@ def generate_df_data(num_datapoints: int): ...
 
 df_data = generate_df_data(5)
 df = df_data.generate_dataframe()
+print(df)
+# Output:
+"""
+               Name   Price  Inventory
+  0  Microwave Oven   79.99         25
+  1         Blender   49.95         18
+  2       Air Fryer  129.99         30
+  3         Toaster   29.99         50
+  4    Coffee Maker   59.99         15
+"""
 
 
 @openai.call(model="gpt-4o-mini", response_model=DataFrameGenerator)
@@ -104,6 +133,21 @@ def generate_additional_df_data(num_datapoints: int, df: pd.DataFrame): ...
 
 df_data = generate_additional_df_data(5, df)
 df = df_data.append_dataframe(df)
+print(df)
+# Output:
+"""
+                 Name   Price  Inventory
+  0    Microwave Oven   79.99         25
+  1           Blender   49.95         18
+  2         Air Fryer  129.99         30
+  3           Toaster   29.99         50
+  4      Coffee Maker   59.99         15
+  5   Electric Kettle   39.99         20
+  6    Food Processor   89.99         12
+  7       Rice Cooker   59.99         27
+  8       Slow Cooker   49.99         22
+  9  Electric Griddle   69.99         15
+"""
 
 
 class TV(BaseModel):
@@ -128,3 +172,16 @@ def generate_tv_data(num_datapoints: int): ...
 
 for tv in generate_tv_data(10):
     print(tv)
+# Output:
+"""
+  size=32 price=399.99 tv_type='OLED'
+  size=32 price=799.99 tv_type='QLED'
+  size=42 price=599.99 tv_type='OLED'
+  size=42 price=1199.99 tv_type='QLED'
+  size=50 price=699.99 tv_type='OLED'
+  size=50 price=1399.99 tv_type='QLED'
+  size=55 price=899.99 tv_type='OLED'
+  size=55 price=1799.99 tv_type='QLED'
+  size=65 price=1099.99 tv_type='OLED'
+  size=65 price=2199.99 tv_type='QLED'
+"""

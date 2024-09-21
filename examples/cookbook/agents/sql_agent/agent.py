@@ -131,3 +131,18 @@ class Librarian(BaseModel):
 if __name__ == "__main__":
     librarian = Librarian()
     asyncio.run(librarian.run())
+    # Output:
+    """
+    (User): Can you recommend me a fantasy book?
+    (Assistant): I recommend "The Name of the Wind" by Patrick Rothfuss. It's the first book in the "Kingkiller Chronicle" series and follows the story of Kvothe, a gifted young man who grows up to be a notorious musician and magician. The storytelling is beautifully crafted, and it's a wonderful journey into a rich, imaginative world.
+    
+    If you're interested in more recommendations, just let me know!
+    (User): Oh, I have not read that yet, can you add it to my list?
+    (Assistant): INSERT INTO ReadingList (title, status) VALUES ('The Name of the Wind', 'Not Started');
+    I've added "The Name of the Wind" to your reading list with the status set to "Not Started." Enjoy your reading adventure! If you need any more recommendations or assistance, just let me know.
+    (User): I just finished reading The Name of the Wind and I really enjoyed it
+    (Assistant): That's wonderful to hear! I'm glad you enjoyed "The Name of the Wind." Would you like me to update the status to "Complete" and add a rating for it? If so, how many stars would you like to give it?
+    (User): Yes, I would. Can you give it 5 stars?
+    (Assistant): UPDATE ReadingList SET status = 'Complete', rating = 5 WHERE title = 'The Name of the Wind';
+    I've updated the status of "The Name of the Wind" to "Complete" and gave it a rating of 5 stars! If you're looking for your next great read or need any more assistance, feel free to ask. Happy reading!
+    """

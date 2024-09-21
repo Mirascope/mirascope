@@ -148,3 +148,28 @@ class WebAssistant(BaseModel):
 if __name__ == "__main__":
     web_assistant = WebAssistant()
     asyncio.run(web_assistant.run())
+# Output:
+"""
+(User): What are the top 5 smartphones
+(Assistant): 1. **iPhone 15 Pro Max**
+     - **Best Overall:**
+       - The iPhone 15 Pro Max offers a powerful A17 chipset, a versatile camera system with a 5x zoom telephoto lens, and a premium design with titanium sides. It's noted for its remarkable battery life and robust performance.
+
+  2. **Samsung Galaxy S24 Ultra**
+     - **Best Samsung Phone:**
+       - The Galaxy S24 Ultra features a Qualcomm Snapdragon 8 Gen 3 processor, a stunning OLED display, and a highly capable camera system with a new 50MP shooter for 5x zoom. It stands out for its AI capabilities and impressive battery life.
+
+  3. **Google Pixel 8 Pro**
+     - **Smartest Camera:**
+       - The Pixel 8 Pro is celebrated for its AI-driven photo-editing features, including Magic Editor and Magic Audio Eraser. It sports a Tensor G3 chip, a high-resolution display, and enhanced camera sensors, providing excellent low-light performance and a support period extending to seven years of updates.
+
+  4. **Google Pixel 8a**
+     - **Best Under $500:**
+       - The Pixel 8a delivers high performance with its Tensor G3 chipset, a bright OLED display, and strong camera capabilities for its price range. It also offers Google's AI features and promises seven years of updates, making it an excellent budget option.
+
+  5. **iPhone 15**
+     - **Best iPhone Value:**
+       - The iPhone 15 includes a 48MP main camera, supports USB-C, and features Apple's A16 Bionic chipset. It provides good value with solid performance, camera quality, and a user-friendly experience.
+
+  These smartphones have been chosen based on their overall performance, camera capabilities, battery life, and additional features like AI integration and long-term software support.
+"""

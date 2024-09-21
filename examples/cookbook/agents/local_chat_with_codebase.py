@@ -124,3 +124,25 @@ class MirascopeBot(BaseModel):
 
 
 MirascopeBot().run()
+# Output:
+"""
+(User): How do I make an LLM call using Mirascope?
+(Assistant): To make an LLM (Large Language Model) call using Mirascope, you can use the `call` decorator provided by Mirascope.
+
+Here are the basic steps:
+
+1. Import the `call` decorator from Mirascope.
+2. Define a function that takes any number of arguments and keyword arguments. This will be the function that makes the LLM call.
+3. Prepend this function definition with the `@call` decorator, specifying the name of the model you want to use (e.g., "gpt-4o").
+4. Optionally, pass additional keyword arguments to customize the behavior of the LLM call.
+
+For example:
+```python
+from mirascope import call
+
+@click('gpt-4o')
+def greet(name: str) -> dict:
+   return {'greeting': f"Hello, {name}!"}
+```
+In this example, `greet` is the function that makes an LLM call to a GPT-4o model. The `@call('gpt-4o')` decorator turns this function into an LLM call.
+"""

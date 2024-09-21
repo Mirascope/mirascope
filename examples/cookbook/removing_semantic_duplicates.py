@@ -45,6 +45,11 @@ def deduplicate_genres(genres: list[str]): ...
 response = deduplicate_genres(movie_genres)
 assert isinstance(response, DeduplicatedGenres)
 print(response.genres)
+# Output:
+# ['sci-fi', 'romance', 'action', 'horror', 'heist', 'crime', 'fantasy']
+print(response.duplicates)
+# Output:
+# [['sci-fi', 'science fiction'], ['romance', 'love story'], ['horror', 'scary']]
 
 
 class Book(BaseModel):
@@ -88,3 +93,9 @@ books = deduplicate_books(duplicate_books)
 assert isinstance(books, list)
 for book in books:
     print(book)
+# Output:
+"""
+  title='The War of the Worlds' author='H. G. Wells' genre='scifi'
+  title="Harry Potter and the Sorcerer's Stone" author='J. K. Rowling' genre='fantasy'
+  title='The Name of the Wind' author='Patrick Rothfuss' genre='fantasy'
+"""

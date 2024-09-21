@@ -96,3 +96,20 @@ def run(question: str):
 
 
 print(run("What is the average price of a house in the United States?"))
+# Output:
+"""
+[
+    SearchResponse(
+        sources=["https://www.fool.com/the-ascent/research/average-house-price-state/"],
+        answer="The average house price in the United States was approximately $495,100 in the second quarter of 2023.",
+    ),
+    SearchResponse(
+        sources=["https://www.instarem.com/blog/average-house-price-usa/"],
+        answer="The average house price in the USA is near record highs and was reported to be around $406,700 as of July 2023.",
+    ),
+    SearchResponse(
+        sources=["https://www.bankrate.com/real-estate/median-home-price/"],
+        answer="The National Association of Realtors reported the median price for an existing home was $387,600 as of November 2023.",
+    ),
+]
+"""

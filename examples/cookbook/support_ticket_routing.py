@@ -153,3 +153,15 @@ for transcript in [billing_transcript, sale_transcript, support_transcript]:
     response = handle_ticket(transcript)
     if tool := response.tool:
         tool.call()
+# Output:
+"""
+> Routed to: billing
+  Summary:
+  Customer, John Doe, is requesting a refund for a TV purchase showing a double charge on his bank statement, totaling $349.99.  
+> Routed to: sale
+  Summary:
+  Customer, John Doe, is interested in purchasing a new monitor and inquiring about discounts. Current promotion includes a monitor at half off for $80 and a 10% discount for loyalty.
+> Routed to: support
+  Summary:
+  Customer, John Doe, forgot their site password and is locked out of their email. Customer is requesting alternative methods for identity verification. They provided security question and answer: Childhood Pet Name - Piddles.
+"""

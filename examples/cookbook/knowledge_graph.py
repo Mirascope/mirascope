@@ -78,6 +78,19 @@ def run(question: str, knowledge_graph: KnowledgeGraph): ...
 
 print(kg)
 print(run(question, kg))
+# Output:
+"""
+The knowledge graph contains information about the pitfalls of using LLMs. Based on the existing entries, the pitfalls include:
+
+1. **Algorithmic Bias** - LLMs can inherit or amplify biases present in the training data.
+2. **Misinformation** - LLMs may generate misinformation.
+3. **Lack of Understanding** - There is a perception that LLMs can be understood like humans, which is not accurate.
+4. **Data Privacy** - LLMs can compromise data privacy.
+5. **Overfitting** - LLMs may be prone to overfitting, where they perform well on training data but poorly on new data.
+6. **Memorization** - LLMs can exhibit memorization issues, where they recall specific training data verbatim.
+7. **Stereotyping** - LLMs can reinforce stereotypes found in the training data.
+8. **Security Risks** - LLMs pose potential security risks and threats.
+"""
 
 
 def render_graph(kg: KnowledgeGraph):
