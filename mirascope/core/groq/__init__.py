@@ -4,6 +4,7 @@ from typing import TypeAlias
 
 from groq.types.chat import ChatCompletionMessageParam
 
+from ..base import BaseMessageParam
 from ._call import groq_call
 from ._call import groq_call as call
 from .call_params import GroqCallParams
@@ -13,7 +14,7 @@ from .dynamic_config import GroqDynamicConfig
 from .stream import GroqStream
 from .tool import GroqTool
 
-GroqMessageParam: TypeAlias = ChatCompletionMessageParam
+GroqMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
 
 __all__ = [
     "call",

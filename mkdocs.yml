@@ -1,7 +1,7 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
 site_url: https://docs.mirascope.io/
-site_description: Mirascope is an intuitive approach to building with LLMs.
+site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 strict: true
@@ -74,6 +74,7 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.mark
   - attr_list
+  - md_in_html
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
@@ -132,15 +133,14 @@ nav:
       - Prompts: "learn/prompts.md"
       - Calls: "learn/calls.md"
       - Streams: "learn/streams.md"
-      - Tools: "learn/tools.md"
-      - Dynamic Configuration: "learn/dynamic_configuration.md"
       - Chaining: "learn/chaining.md"
       - JSON Mode: "learn/json_mode.md"
       - Response Models: "learn/response_models.md"
       - Output Parsers: "learn/output_parsers.md"
       - Async: "learn/async.md"
-      - Evals: "learn/evals.md"
+      - Tools: "learn/tools.md"
       - Agents: "learn/agents.md"
+      - Evals: "learn/evals.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
   - Cookbook:
       - "cookbook/index.md"

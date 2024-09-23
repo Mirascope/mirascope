@@ -4,6 +4,7 @@ from typing import TypeAlias
 
 from anthropic.types import MessageParam
 
+from ..base import BaseMessageParam
 from ._call import anthropic_call
 from ._call import anthropic_call as call
 from .call_params import AnthropicCallParams
@@ -13,7 +14,7 @@ from .dynamic_config import AnthropicDynamicConfig
 from .stream import AnthropicStream
 from .tool import AnthropicTool, AnthropicToolConfig
 
-AnthropicMessageParam: TypeAlias = MessageParam
+AnthropicMessageParam: TypeAlias = MessageParam | BaseMessageParam
 
 __all__ = [
     "call",

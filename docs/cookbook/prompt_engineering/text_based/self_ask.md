@@ -6,7 +6,6 @@ This recipe demonstrates how to implement the Self-Ask technique using Large Lan
 
     - [Prompts](../../../learn/prompts.md)
     - [Calls](../../../learn/calls.md)
-    - [Dynamic Configuration](../../../learn/dynamic_configuration.md)
 
 !!! note "Background"
 

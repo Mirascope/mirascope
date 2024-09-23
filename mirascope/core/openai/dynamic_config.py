@@ -1,14 +1,13 @@
-"""This module defines the function return type for functions as LLM calls.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""This module defines the function return type for functions as LLM calls."""
 
 from openai.types.chat import ChatCompletionMessageParam
 
-from ..base import BaseDynamicConfig
+from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import OpenAICallParams
 
-OpenAIDynamicConfig = BaseDynamicConfig[ChatCompletionMessageParam, OpenAICallParams]
+OpenAIDynamicConfig = BaseDynamicConfig[
+    ChatCompletionMessageParam | BaseMessageParam, OpenAICallParams
+]
 """The function return type for functions wrapped with the `openai_call` decorator.
 
 Example:

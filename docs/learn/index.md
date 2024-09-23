@@ -2,8 +2,6 @@
 
 This section is designed to help you master Mirascope, a toolkit for building AI-powered applications with Large Language Models (LLMs).
 
-Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs. Whether you're building chatbots, content generators, or complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
-
 Our documentation is tailored for developers who have at least some experience with Python and LLMs. Whether you're coming from other development tool libraries or have worked directly with provider SDKs and APIs, Mirascope offers a familiar but enhanced experience.
 
 ## Key Features and Benefits

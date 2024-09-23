@@ -1,7 +1,4 @@
-"""This module defines the function return type for functions as LLM calls.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""This module defines the function return type for functions as LLM calls."""
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import CohereCallParams

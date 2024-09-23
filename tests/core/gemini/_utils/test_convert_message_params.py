@@ -23,7 +23,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
     message_params: list[BaseMessageParam | ContentDict] = [
         BaseMessageParam(role="system", content="You are a helpful assistant."),
         BaseMessageParam(role="user", content="Hello"),
-        {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
+        {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},  # pyright: ignore[reportAssignmentType]
         BaseMessageParam(
             role="user",
             content=[

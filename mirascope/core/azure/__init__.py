@@ -4,6 +4,7 @@ from typing import TypeAlias
 
 from azure.ai.inference.models import ChatRequestMessage
 
+from ..base import BaseMessageParam
 from ._call import azure_call
 from ._call import azure_call as call
 from .call_params import AzureCallParams
@@ -13,7 +14,7 @@ from .dynamic_config import AzureDynamicConfig
 from .stream import AzureStream
 from .tool import AzureTool, AzureToolConfig
 
-AzureMessageParam: TypeAlias = ChatRequestMessage
+AzureMessageParam: TypeAlias = ChatRequestMessage | BaseMessageParam
 
 __all__ = [
     "call",
