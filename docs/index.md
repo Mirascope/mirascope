@@ -15,7 +15,7 @@ Mirascope is a powerful, flexible, and user-friendly library that simplifies the
 
 Whether you're building chatbots, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
 
-!!! tip "Mirascope"
+!!! mira "Mirascope"
 
     === "OpenAI"
 
@@ -262,9 +262,7 @@ Set up your API key:
 
 ## Choose Your Path
 
-### Newcomers
-
-Explore our Jupyter Notebook getting started guides:
+### Getting Started Notebooks
 
 <div class="grid cards" markdown>
 
@@ -274,15 +272,15 @@ Explore our Jupyter Notebook getting started guides:
 
     Comprehensive overview of core features and building blocks
 
-    [:octicons-arrow-right-24: Quickstart](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/quickstart.ipynb)
+    [:octicons-arrow-right-24: Quickstart](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/quickstart.ipynb)
 
 -   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
 
     ---
 
-    Various examples ranging from basic usage to more complex chaining techniques
+    Examples ranging from basic usage to more complex chaining techniques
 
-    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/dynamic_configuration_and_chaining.ipynb)
+    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/dynamic_configuration_and_chaining.ipynb)
 
 -   :material-tools:{ .lg .middle } __Tools & Agents__
 
@@ -290,7 +288,7 @@ Explore our Jupyter Notebook getting started guides:
 
     Learn how to define tools for your LLM to build advanced AI agents
 
-    [:octicons-arrow-right-24: Tools & Agents](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/tools_and_agents.ipynb)
+    [:octicons-arrow-right-24: Tools & Agents](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/tools_and_agents.ipynb)
 
 -   :material-scale-balance:{ .lg .middle } __Evaluation Techniques__
 
@@ -298,19 +296,19 @@ Explore our Jupyter Notebook getting started guides:
 
     Explore various evaluation techniques such as LLM-as-a-judge
 
-    [:octicons-arrow-right-24: Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/evaluation.ipynb)
+    [:octicons-arrow-right-24: Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/evaluation.ipynb)
 
 </div>
 
-### Experienced Developers
+### Dive Deeper
 
 <div class="grid cards" markdown>
 
--   :material-school:{ .lg .middle } __Learn Documentation__
+-   :material-school:{ .lg .middle } __Learn__
 
     ---
 
-    In-depth exploration of Mirascope capabilities
+    In-depth exploration of Mirascope's many features and capabilities
 
     [:octicons-arrow-right-24: Learn](./learn/index.md)
 
@@ -318,7 +316,7 @@ Explore our Jupyter Notebook getting started guides:
 
     ---
 
-    Advanced patterns and real-world applications
+    Advanced usage patterns and real-world applications
 
     [:octicons-arrow-right-24: Cookbook](./cookbook/index.md)
 
@@ -334,7 +332,7 @@ Explore our Jupyter Notebook getting started guides:
 
     ---
 
-    Integrations with third-party tools
+    Integrations with third-party tools for enhanced usage
 
     [:octicons-arrow-right-24: Integrations](./integrations/index.md)
 
@@ -351,7 +349,7 @@ Explore our Jupyter Notebook getting started guides:
 
 ## Next Steps
 
-[:material-lightbulb: Read "Why Use Mirascope"](./WHY.md){: .md-button }
+[:material-lightbulb: Why Use Mirascope](./WHY.md){: .md-button }
 [:material-account-group: Join Our Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA){: .md-button }
 [:material-star: Star the Repo](https://github.com/Mirascope/mirascope){: .md-button }  
 
