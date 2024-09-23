@@ -274,6 +274,14 @@ Set up your API key:
 
     [:octicons-arrow-right-24: Quickstart](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/quickstart.ipynb)
 
+-   :material-database:{ .lg .middle } __Structured Outputs__
+
+    ---
+
+    Explore various techniques for generating structured outputs
+
+    [:octicons-arrow-right-24: Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/structured_outputs.ipynb)
+
 -   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
 
     ---
@@ -289,14 +297,6 @@ Set up your API key:
     Learn how to define tools for your LLM to build advanced AI agents
 
     [:octicons-arrow-right-24: Tools & Agents](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/tools_and_agents.ipynb)
-
--   :material-scale-balance:{ .lg .middle } __Evaluation Techniques__
-
-    ---
-
-    Explore various evaluation techniques such as LLM-as-a-judge
-
-    [:octicons-arrow-right-24: Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/evaluation.ipynb)
 
 </div>
 
