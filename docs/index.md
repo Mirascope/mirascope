@@ -288,7 +288,7 @@ Set up your API key:
 
     Examples ranging from basic usage to more complex chaining techniques
 
-    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/dynamic_configuration_and_chaining.ipynb)
+    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/dynamic_config_and_chaining.ipynb)
 
 -   :material-tools:{ .lg .middle } __Tools & Agents__
 
