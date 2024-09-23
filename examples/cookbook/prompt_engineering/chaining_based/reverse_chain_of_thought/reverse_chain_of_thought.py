@@ -1,8 +1,8 @@
 import asyncio
-
-from pydantic import BaseModel, Field
+from typing import Sequence
 
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 @openai.call(model="gpt-4o-mini")
@@ -109,7 +109,7 @@ def compare_questions(original_problem: str, reconstructed_problem: str): ...
     """
 )
 async def fine_grained_comparison(
-    history: list[openai.OpenAIMessageParam],
+    history: Sequence[openai.OpenAIMessageParam],
     query: str,
     reconstructed_query: str,
 ) -> openai.OpenAIDynamicConfig:
