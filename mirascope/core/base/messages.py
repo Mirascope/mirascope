@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Any
 
 from ._utils._convert_messages_to_message_params import (
     Image,
@@ -13,7 +14,7 @@ class Messages:
     Type = (
         str
         | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
-        | list[BaseMessageParam]
+        | list[BaseMessageParam | Any]
         | BaseMessageParam
     )
 

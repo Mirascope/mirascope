@@ -1,14 +1,13 @@
-"""This module defines the function return type for functions as LLM calls.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""This module defines the function return type for functions as LLM calls."""
 
 from anthropic.types import MessageParam
 
-from ..base import BaseDynamicConfig
+from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import AnthropicCallParams
 
-AnthropicDynamicConfig = BaseDynamicConfig[MessageParam, AnthropicCallParams]
+AnthropicDynamicConfig = BaseDynamicConfig[
+    MessageParam | BaseMessageParam, AnthropicCallParams
+]
 """The function return type for functions wrapped with the `anthropic_call` decorator.
 
 Example:

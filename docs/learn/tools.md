@@ -197,7 +197,6 @@ The `response.tools` property returns a list of provider-specific tool instances
 
     [`mirascope.core.vertex.tool`](../api/core/vertex/tool.md)
 
-
 ### Accessing Original Tool Calls
 
 All provider-specific `BaseTool` instances have a `tool_call` property for accessing the original LLM tool call.

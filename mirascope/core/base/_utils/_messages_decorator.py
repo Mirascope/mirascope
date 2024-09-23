@@ -34,14 +34,26 @@ class MessagesDecorator(Protocol):
     @overload
     def __call__(
         self,
-        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT],
-    ) -> Callable[_P, list[BaseMessageParam] | BaseDynamicConfig]: ...
+        messages_fn: Callable[_P, Messages.Type],
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
 
     @overload
     def __call__(
         self,
-        messages_fn: MessagesAsyncFunction[_P, _MessageFuncReturnT],
-    ) -> Callable[_P, Awaitable[list[BaseMessageParam] | BaseDynamicConfig]]: ...
+        messages_fn: Callable[_P, BaseDynamicConfig],
+    ) -> Callable[_P, BaseDynamicConfig]: ...
+
+    @overload
+    def __call__(
+        self,
+        messages_fn: Callable[_P, Awaitable[Messages.Type]],
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
+    @overload
+    def __call__(
+        self,
+        messages_fn: Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> Callable[_P, Awaitable[BaseDynamicConfig]]: ...
 
     def __call__(
         self,
@@ -56,13 +68,23 @@ class MessagesDecorator(Protocol):
 def messages_decorator() -> MessagesDecorator:
     @overload
     def inner(
-        messages_fn: MessagesAsyncFunction[_P, _MessageFuncReturnT],
-    ) -> Callable[_P, Awaitable[list[BaseMessageParam] | BaseDynamicConfig]]: ...
+        messages_fn: Callable[_P, Messages.Type],
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
 
     @overload
     def inner(
-        messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT],
-    ) -> Callable[_P, list[BaseMessageParam] | BaseDynamicConfig]: ...
+        messages_fn: Callable[_P, BaseDynamicConfig],
+    ) -> Callable[_P, BaseDynamicConfig]: ...
+
+    @overload
+    def inner(
+        messages_fn: Callable[_P, Awaitable[Messages.Type]],
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
+    @overload
+    def inner(
+        messages_fn: Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> Callable[_P, Awaitable[BaseDynamicConfig]]: ...
 
     def inner(
         messages_fn: MessagesSyncFunction[_P, _MessageFuncReturnT]

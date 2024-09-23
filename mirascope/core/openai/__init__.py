@@ -4,6 +4,7 @@ from typing import TypeAlias
 
 from openai.types.chat import ChatCompletionMessageParam
 
+from ..base import BaseMessageParam
 from ._call import openai_call
 from ._call import openai_call as call
 from .call_params import OpenAICallParams
@@ -13,7 +14,7 @@ from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool, OpenAIToolConfig
 
-OpenAIMessageParam: TypeAlias = ChatCompletionMessageParam
+OpenAIMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
 
 __all__ = [
     "call",

@@ -7,7 +7,6 @@ This recipe shows how to use LLMs — in this case, Anthropic’s Claude 3.5 Son
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)
     - [Tools](../learn/tools.md)
-    - [Dynamic Configuration](../learn/dynamic_configuration.md)
     - [Chaining](../learn/chaining.md)
     - [JSON Mode](../learn/json_mode.md)
     - [Response Models](../learn/response_models.md)

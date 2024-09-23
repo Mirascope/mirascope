@@ -1,14 +1,11 @@
-"""This module defines the function return type for functions as LLM calls.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""This module defines the function return type for functions as LLM calls."""
 
 from vertexai.generative_models import Content
 
-from ..base import BaseDynamicConfig
+from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import VertexCallParams
 
-VertexDynamicConfig = BaseDynamicConfig[Content, VertexCallParams]
+VertexDynamicConfig = BaseDynamicConfig[Content | BaseMessageParam, VertexCallParams]
 """The function return type for functions wrapped with the `vertex_call` decorator.
 
 Example:

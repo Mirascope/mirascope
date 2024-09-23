@@ -1,12 +1,13 @@
-"""This module defines the function return type for functions as LLM calls.
+"""This module defines the function return type for functions as LLM calls."""
 
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+from mistralai.models.chat_completion import ChatMessage
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import MistralCallParams
 
-MistralDynamicConfig = BaseDynamicConfig[BaseMessageParam, MistralCallParams]
+MistralDynamicConfig = BaseDynamicConfig[
+    ChatMessage | BaseMessageParam, MistralCallParams
+]
 """The function return type for functions wrapped with the `mistral_call` decorator.
 
 Example:

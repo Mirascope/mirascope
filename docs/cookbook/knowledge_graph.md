@@ -5,7 +5,6 @@ Often times, data is messy and not always stored in a structured manner ready fo
 ??? tip "Mirascope Concepts Used"
 
     - [Prompts](../learn/prompts.md)
-    - [Dynamic Configuration](../learn/dynamic_configuration.md)
     - [Calls](../learn/calls.md)
     - [Response Models](../learn/response_models.md)
 

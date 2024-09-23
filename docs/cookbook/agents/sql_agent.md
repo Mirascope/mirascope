@@ -7,7 +7,6 @@ In this recipe, we will be using OpenAI GPT-4o-mini to act as a co-pilot for a D
     - [Prompts](../../learn/prompts.md)
     - [Calls](../../learn/calls.md)
     - [Tools](../../learn/tools.md)
-    - [Dynamic Configuration](../../learn/dynamic_configuration.md)
     - [Async](../../learn/async.md)
     - [Agents](../../learn/agents.md)
 

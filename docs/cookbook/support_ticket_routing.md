@@ -7,7 +7,6 @@ This recipe shows how to take an incoming support ticket/call transcript then us
     - [Prompts](../learn/prompts.md)
     - [Calls](../learn/calls.md)
     - [Tools](../learn/tools.md)
-    - [Dynamic Configuration](../learn/dynamic_configuration.md)
     - [Chaining](../learn/chaining.md)
     - [Response Models](../learn/response_models.md)
 

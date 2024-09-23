@@ -1,14 +1,13 @@
-"""This module defines the function return type for functions as LLM calls.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""This module defines the function return type for functions as LLM calls."""
 
 from google.generativeai.types import ContentsType
 
-from ..base import BaseDynamicConfig
+from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import GeminiCallParams
 
-GeminiDynamicConfig = BaseDynamicConfig[ContentsType, GeminiCallParams]
+GeminiDynamicConfig = BaseDynamicConfig[
+    ContentsType | BaseMessageParam, GeminiCallParams
+]
 """The function return type for functions wrapped with the `gemini_call` decorator.
 
 Example:
