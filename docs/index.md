@@ -280,7 +280,7 @@ Set up your API key:
 
     Explore various techniques for generating structured outputs
 
-    [:octicons-arrow-right-24: Evaluation Techniques](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/structured_outputs.ipynb)
+    [:octicons-arrow-right-24: Structured Outputs](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/structured_outputs.ipynb)
 
 -   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
 
