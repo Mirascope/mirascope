@@ -116,8 +116,8 @@ However, we believe that the value of Mirascope will shine in particular for:
 
 ## Getting Started
 
-[:material-clock-fast: Getting Started](./WHY.md){: .md-button }
-[:material-school: Learn](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA){: .md-button }
+[:material-clock-fast: Getting Started](./index.md){: .md-button }
+[:material-school: Learn](./learn/index.md){: .md-button }
 [:material-account-group: Join Our Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA){: .md-button }
 
 By choosing Mirascope, you're opting for a tool that respects your expertise as a developer while providing the conveniences you need to work efficiently and effectively with LLMs.
