@@ -20,7 +20,7 @@ def test_openai_call_add_batch_creates() -> None:
         {
             "custom_id": f"task-{expected_uuid}",
             "method": "POST",
-            "url": "",
+            "url": "/v1/chat/completions",
             "body": {
                 "model": "gpt-4o-mini",
                 "messages": [{"content": "Recommend a fantasy book", "role": "user"}],
@@ -29,7 +29,7 @@ def test_openai_call_add_batch_creates() -> None:
         {
             "custom_id": f"task-{expected_uuid}",
             "method": "POST",
-            "url": "",
+            "url": "/v1/chat/completions",
             "body": {
                 "model": "gpt-4o-mini",
                 "messages": [{"content": "Recommend a horror book", "role": "user"}],
@@ -60,7 +60,7 @@ def test_openai_call_add_batch_appends() -> None:
     expected = {
         "custom_id": f"task-{expected_uuid}",
         "method": "POST",
-        "url": "",
+        "url": "/v1/chat/completions",
         "body": {
             "model": "gpt-4o-mini",
             "messages": [{"content": "Recommend a fantasy book", "role": "user"}],
