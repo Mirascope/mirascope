@@ -1,5 +1,6 @@
 """This module contains the base class for message parameters."""
 
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import BaseModel
@@ -73,4 +74,4 @@ class BaseMessageParam(BaseModel):
     """
 
     role: str
-    content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart]
+    content: str | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart]

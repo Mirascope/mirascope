@@ -18,35 +18,32 @@ class Messages:
         | BaseMessageParam
     )
 
-    class System(BaseMessageParam):
-        def __init__(
-            self,
-            content: str
-            | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-        ) -> None:
-            super().__init__(
-                content=convert_message_content_to_message_param_content(content),
-                role="system",
-            )
+    @classmethod
+    def System(
+        cls,
+        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+    ) -> BaseMessageParam:
+        return BaseMessageParam(
+            role="system",
+            content=convert_message_content_to_message_param_content(content),
+        )
 
-    class User(BaseMessageParam):
-        def __init__(
-            self,
-            content: str
-            | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-        ) -> None:
-            super().__init__(
-                content=convert_message_content_to_message_param_content(content),
-                role="user",
-            )
+    @classmethod
+    def User(
+        cls,
+        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+    ) -> BaseMessageParam:
+        return BaseMessageParam(
+            role="user",
+            content=convert_message_content_to_message_param_content(content),
+        )
 
-    class Assistant(BaseMessageParam):
-        def __init__(
-            self,
-            content: str
-            | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
-        ) -> None:
-            super().__init__(
-                content=convert_message_content_to_message_param_content(content),
-                role="assistant",
-            )
+    @classmethod
+    def Assistant(
+        cls,
+        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+    ) -> BaseMessageParam:
+        return BaseMessageParam(
+            role="assistant",
+            content=convert_message_content_to_message_param_content(content),
+        )
