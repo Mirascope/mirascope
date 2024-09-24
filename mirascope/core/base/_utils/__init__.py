@@ -18,6 +18,7 @@ from ._get_prompt_template import get_prompt_template
 from ._get_template_values import get_template_values
 from ._get_template_variables import get_template_variables
 from ._get_unsupported_tool_config_keys import get_unsupported_tool_config_keys
+from ._is_prompt_template import is_prompt_template
 from ._json_mode_content import json_mode_content
 from ._messages_decorator import MessagesDecorator, messages_decorator
 from ._parse_content_template import parse_content_template
@@ -64,6 +65,7 @@ __all__ = [
     "HandleStream",
     "HandleStreamAsync",
     "is_base_type",
+    "is_prompt_template",
     "json_mode_content",
     "LLMFunctionDecorator",
     "MessagesDecorator",

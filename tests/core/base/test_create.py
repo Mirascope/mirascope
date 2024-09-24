@@ -29,6 +29,7 @@ def mock_create_decorator_kwargs() -> dict:
     }
 
 
+@patch("mirascope.core.base._create.prompt_template", new_callable=MagicMock)
 @patch(
     "mirascope.core.base._create.get_possible_user_message_param",
     new_callable=MagicMock,
@@ -37,6 +38,7 @@ def mock_create_decorator_kwargs() -> dict:
 def test_create_factory_sync(
     mock_get_metadata: MagicMock,
     mock_get_possible_user_message_param: MagicMock,
+    mock_prompt_template_decorator: MagicMock,
     mock_setup_call: MagicMock,
     mock_create_decorator_kwargs: dict,
 ) -> None:
@@ -60,6 +62,8 @@ def test_create_factory_sync(
     def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
+
+    mock_prompt_template_decorator.return_value = lambda x: fn
 
     decorated_fn = decorator(fn)
     assert decorated_fn._model == mock_create_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
@@ -95,6 +99,7 @@ def test_create_factory_sync(
     mock_create.assert_called_once_with(stream=False, **mock_call_kwargs)
 
 
+@patch("mirascope.core.base._create.prompt_template", new_callable=MagicMock)
 @patch(
     "mirascope.core.base._create.get_possible_user_message_param",
     new_callable=MagicMock,
@@ -104,6 +109,7 @@ def test_create_factory_sync(
 async def test_create_factory_async(
     mock_get_metadata: MagicMock,
     mock_get_possible_user_message_param: MagicMock,
+    mock_prompt_template_decorator: MagicMock,
     mock_setup_call_async: MagicMock,
     mock_create_decorator_kwargs: dict,
 ) -> None:
@@ -127,6 +133,8 @@ async def test_create_factory_async(
     async def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
+
+    mock_prompt_template_decorator.return_value = lambda x: fn
 
     output: BaseCallResponse = await decorator(fn)("fantasy", topic="magic")  # type: ignore
 

@@ -1,30 +1,28 @@
 # Calls
 
-??? api "API Documentation"
+The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform prompt templates written as Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
-    [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
+!!! mira ""
 
-    [`mirascope.core.azure.call`](../api/core/azure/call.md)
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Prompts](./prompts.md)
+    </div>
 
-    [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
-
-    [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
-
-    [`mirascope.core.groq.call`](../api/core/groq/call.md)
-
-    [`mirascope.core.litellm.call`](../api/core/litellm/call.md)
-
-    [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
-
-    [`mirascope.core.openai.call`](../api/core/openai/call.md)
-
-    [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
-
-The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
-
-## What are "Calls"
+## What are Calls
 
 To understand the benefits of Mirascope's `call` decorator, let's compare making a call to OpenAI using their official SDK versus using Mirascope:
+
+!!! mira "Mirascope"
+
+    ```python
+    --8<-- "examples/learn/calls/basic_call/mirascope_call.py"
+    ```
+
+!!! note "Official OpenAI SDK"
+
+    ```python
+    --8<-- "examples/learn/calls/basic_call/openai_call.py"
+    ```
 
 Using OpenAI SDK:
 
@@ -70,6 +68,26 @@ The primary purposes and benefits of the `call` decorator are to:
 By using the `call` decorator, you can focus on engineering your prompts and handling the LLM responses, rather than dealing with the intricacies of each provider's API.
 
 ## Basic Usage and Syntax
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
+
+    [`mirascope.core.azure.call`](../api/core/azure/call.md)
+
+    [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
+
+    [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
+
+    [`mirascope.core.groq.call`](../api/core/groq/call.md)
+
+    [`mirascope.core.litellm.call`](../api/core/litellm/call.md)
+
+    [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
+
+    [`mirascope.core.openai.call`](../api/core/openai/call.md)
+
+    [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
 
 The basic syntax for using the `call` decorator is straightforward:
 
