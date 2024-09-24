@@ -352,7 +352,7 @@ def prompt_template(
 ) -> PromptDecorator | MessagesDecorator:
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
-    usage docs: learn/prompts.md#prompt-templates
+    usage docs: learn/prompts.md#prompt-templates-messages
 
     Example:
 
