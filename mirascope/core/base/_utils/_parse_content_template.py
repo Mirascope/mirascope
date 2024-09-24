@@ -67,7 +67,7 @@ def _load_media(source: str | bytes) -> bytes:
         # in a type hint of `str | bytearray | memoryview` for source in the else.
         if isinstance(source, bytes | bytearray | memoryview):
             data = source
-        elif source.startswith(("http://", "https://")):
+        elif source.startswith(("http://", "https://", "data:", "file://")):
             with urllib.request.urlopen(source) as response:
                 data = response.read()
         else:
