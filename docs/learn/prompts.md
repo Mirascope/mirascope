@@ -40,10 +40,10 @@ The core concept to understand here is [`BaseMessageParam`](../api/core/base/mes
 
 In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods. There are four methods of writing prompts:
 
-1. (Shorthand) Returning the `str` or `list` content for a single user message.
-2. (Messages) Using `Messages.{Role}` methods, which accept the full or shorthand content and output a `BaseMessageParam` instance.
-3. (String Template) Passing a string template to `@prompt_template` that gets parsed and then formatted like a normal Python formatted string.
-4. (BaseMessageParam) Directly writing `BaseMessageParam` instances.
+1. _(Shorthand)_ Returning the `str` or `list` content for a single user message.
+2. _(Messages)_ Using `Messages.{Role}` methods, which accept the full or shorthand content and output a `BaseMessageParam` instance.
+3. _(String Template)_ Passing a string template to `@prompt_template` that gets parsed and then formatted like a normal Python formatted string.
+4. _(BaseMessageParam)_ Directly writing `BaseMessageParam` instances.
 
 Which method you use is mostly up to your preference, so feel free to select which one you prefer in the following sections.
 
