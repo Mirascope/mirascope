@@ -38,14 +38,14 @@ Let's take a look at how we can write these same prompts in a provider-agnostic 
 
 The core concept to understand here is [`BaseMessageParam`](../api/core/base/message_param.md#basemessageparam). This class operates as the base class for message parameters that Mirascope can handle and use across all supported providers.
 
-In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods. There are four main ways of writing prompts using Mirascope:
+In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods. There are four methods of writing prompts:
 
-* Shorthand - Returning a `str` or `list` that automatically gets converted to a user role.
-* Messages - Returning a Mirascope `Message` object which has different roles.
-* String Template - Passing a str to `@prompt_template` which will be automatically parsed into `BaseMessageParam`
-* BaseMessageParam - Directly passing in `BaseMessageParam`.
+1. (Shorthand) Returning the `str` or `list` content for a single user message.
+2. (Messages) Using `Messages.{Role}` methods, which accept the full or shorthand content and output a `BaseMessageParam` instance.
+3. (String Template) Passing a string template to `@prompt_template` that gets parsed and then formatted like a normal Python formatted string.
+4. (BaseMessageParam) Directly writing `BaseMessageParam` instances.
 
-Which one you use is mostly up to preference, so in the following sections, feel free to select which one you prefer.
+Which method you use is mostly up to your preference, so feel free to select which one you prefer in the following sections.
 
 Let's look at a basic example:
 
