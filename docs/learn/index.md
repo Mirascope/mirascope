@@ -30,7 +30,7 @@ If you haven't already, we recommend checking out [Getting Started](../index.md)
 
 ## Core Components
 
-Mirascope is build around these core components, each designed to handle specific aspects of working with LLM provider APIs:
+Mirascope is built around these core components, each designed to handle specific aspects of working with LLM provider APIs:
 
 <div class="grid cards" markdown>
 
