@@ -18,11 +18,11 @@ If you haven't already, we recommend checking out [Getting Started](../index.md)
 
     Rich automplete, inline documentation, and type hints to catch errors before runtime
 
-- :material-lightbulb-auto: __Provider-Agnostic & Provider-Specific__
+- :material-compare: __Provider-Agnostic & Provider-Specific__
 
     Seamlessly engineer prompts agnostic or specific to various LLM providers
 
-- :material-lightbulb-auto: __Comprehensive Tooling__
+- :material-wrench: __Comprehensive Tooling__
 
     Complete suite of tools for every aspect of working with LLM provider APIs
 
