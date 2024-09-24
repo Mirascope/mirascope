@@ -4,38 +4,117 @@ This section is designed to help you master Mirascope, a toolkit for building AI
 
 Our documentation is tailored for developers who have at least some experience with Python and LLMs. Whether you're coming from other development tool libraries or have worked directly with provider SDKs and APIs, Mirascope offers a familiar but enhanced experience.
 
+If you haven't already, we recommend checking out [Getting Started](../index.md) and [Why Use Mirascope](../WHY.md).
+
 ## Key Features and Benefits
 
-- **Type Safety and Superior Editor Support**: We've prioritized proper type hints and type safety, ensuring you get world-class editor support. This means fewer errors, better autocomplete, and a smoother development experience in as simple and seamless an interface as possible.
-- **Provider-Agnostic Design**: Mirascope works seamlessly with multiple LLM providers, allowing you to switch between them effortlessly or use multiple providers in the same project.
-- **Simplicity and Ease of Use**: We've designed Mirascope with simplicity in mind. You get powerful features without unnecessary complexity, making it easy to get started and scale your projects.
-- **Comprehensive Tooling**: From prompt engineering to response parsing, Mirascope offers a complete suite of tools for every aspect of LLM application development.
+<div class="grid cards" markdown>
+
+- :material-language-python: __Pythonic By Design__
+
+    Our design approach is to remain Pythonic so you can build your way
+
+- :material-shield-check: __Editor Support & Type Hints__
+
+    Rich automplete, inline documentation, and type hints to catch errors before runtime
+
+- :material-lightbulb-auto: __Provider-Agnostic & Provider-Specific__
+
+    Seamlessly engineer prompts agnostic or specific to various LLM providers
+
+- :material-lightbulb-auto: __Comprehensive Tooling__
+
+    Complete suite of tools for every aspect of working with LLM provider APIs
+
+</div>
 
 ## Core Components
 
-Mirascope is built around the following core components, each designed to handle specific aspects of LLM interaction and application development. Here's a quick overview with links to detailed documentation:
+Mirascope is build around these core components, each designed to handle specific aspects of working with LLM provider APIs:
 
-1. [Prompts](./prompts.md): Learn how to create and manage prompts effectively.
+<div class="grid cards" markdown>
 
-2. [Calls](./calls.md): Understand how to make calls to LLMs using Mirascope.
+-   __Prompts__
 
-3. [Streams](./streams.md): Explore streaming responses for real-time applications.
+    ---
 
-4. [Tools](./tools.md): Discover how to extend LLM capabilities with custom tools.
+    Learn how to create and manage prompts effectively
 
-5. [Chaining](./chaining.md): Understand the art of chaining multiple LLM calls for complex tasks.
+    [:octicons-arrow-right-24: Docs](./prompts.md)
 
-6. [JSON Mode](./json_mode.md): Work with structured data responses from LLMs.
+-   __Calls__
 
-7. [Response Models](./response_models.md): Define and use structured output models with automatic validation.
+    ---
 
-8. [Output Parsers](./output_parsers.md): Process and transform custom LLM output structures effectively.
+    Understand how to make calls to LLMs using Mirascope
 
-9. [Async](./async.md): Maximize efficiecy with asynchronous programming.
+    [:octicons-arrow-right-24: Docs](./calls.md)
 
-10. [Evals](./evals.md): Apply core components to build evaluation strategies for your LLM applications.
+-   __Streams__
 
-11. [Agents](./agents.md): Put everything together to build advanced AI agents using Mirascope.
+    ---
+
+    Explore streaming responses for real-time applications
+
+    [:octicons-arrow-right-24: Docs](./streams.md)
+
+-   __Chaining__
+
+    ---
+
+    Understand the art of chaining multiple LLM calls for complex tasks
+
+    [:octicons-arrow-right-24: Docs](./chaining.md)
+
+-   __JSON Mode__
+
+    Work with structured JSON data responses from LLMs
+
+    [:octicons-arrow-right-24: Docs](./json_mode.md)
+
+-   __Response Models__
+
+    Define and use structured output models with automatic validation
+
+    [:octicons-arrow-right-24: Docs](./response_models.md)
+
+-   __Output Parsers__
+
+    Process and transform custom LLM output structures effectively
+
+    [:octicons-arrow-right-24: Docs](./output_parsers.md)
+
+-   __Async__
+
+    Maximize efficiecy with asynchronous programming
+
+    [:octicons-arrow-right-24: Docs](./async.md)
+
+-   __Tools__
+
+    Discover how to extend LLM capabilities with custom tools
+
+    [:octicons-arrow-right-24: Docs](./tools.md)
+
+-   __Agents__
+
+    Put everything together to build advanced AI agents using Mirascope
+
+    [:octicons-arrow-right-24: Docs](./agents.md)
+
+-   __Evals__
+
+    Apply core components to build evaluation strategies for your LLM applications
+
+    [:octicons-arrow-right-24: Docs](./evals.md)
+
+-   __Provider-Specific Features__
+
+    Understand how Mirascope support features only certain providers offer
+
+    [:octicons-arrow-right-24: Docs](./provider_specific_features.md)
+
+</div>
 
 ## Next Steps
 
