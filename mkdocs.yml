@@ -54,6 +54,26 @@ extra:
   analytics:
     provider: google
     property: G-DJHT1QG9GK
+  supported_llm_providers:
+    - OpenAI
+    - Anthropic
+    - Mistral
+    - Gemini
+    - Groq
+    - Cohere
+    - LiteLLM
+    - Azure AI
+    - Vertex AI
+  prompt_writing_methods:
+    - shorthand
+    - messages
+    - string_template
+    - base_message_param
+  prompt_writing_method_titles:
+    - Shorthand
+    - Messages
+    - String Template
+    - BaseMessageParam
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -88,6 +108,8 @@ plugins:
       alias_type: symlink
       canonical_version: latest
   - search
+  - macros:
+      module_name: docs/macros
   - mkdocstrings:
       handlers:
         python:

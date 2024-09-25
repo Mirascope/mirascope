@@ -6,7 +6,7 @@
         If you haven't already, we recommend first reading the section on writing [Prompts](./prompts.md)
     </div>
 
-When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to calling the LLM provider's API with a particular setting and prompt.
+When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to making a request to a LLM provider's API with a particular setting and prompt.
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various LLM providers. This powerful tool allows you to transform prompt templates written as Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
@@ -16,353 +16,79 @@ If there are any providers we don't yet support that you'd like to see supported
 
 ??? api "API Documentation"
 
-    [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
+    {% for provider in supported_llm_providers %}
+    [`mirascope.core.{{ provider | provider_dir }}.call`](../api/core/{{ provider | provider_dir}}/call.md)
+    {% endfor %}
 
-    [`mirascope.core.azure.call`](../api/core/azure/call.md)
+## Basic Usage and Syntax
 
-    [`mirascope.core.cohere.call`](../api/core/cohere/call.md)
-
-    [`mirascope.core.gemini.call`](../api/core/gemini/call.md)
-
-    [`mirascope.core.groq.call`](../api/core/groq/call.md)
-
-    [`mirascope.core.litellm.call`](../api/core/litellm/call.md)
-
-    [`mirascope.core.mistral.call`](../api/core/mistral/call.md)
-
-    [`mirascope.core.openai.call`](../api/core/openai/call.md)
-
-    [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
-
-## Basic Usage & Syntax
-
-### Provider-Specific
+### Provider-Specific Usage
 
 Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
 !!! mira "Mirascope"
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        === "OpenAI"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/openai/shorthand.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/anthropic/shorthand.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/mistral/shorthand.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/gemini/shorthand.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/groq/shorthand.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/cohere/shorthand.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/litellm/shorthand.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/azure/shorthand.py"
-            ```
-    
-        === "Vertex AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/vertex/shorthand.py"
-            ```
-
-    === "Messages"
-
-        === "OpenAI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/openai/messages.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/anthropic/messages.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/mistral/messages.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/gemini/messages.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/groq/messages.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/cohere/messages.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/litellm/messages.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/azure/messages.py"
-            ```
-    
-        === "Vertex AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/vertex/messages.py"
-            ```
-
-    === "String Template"
-
-        === "OpenAI"
-
+            {% if method == "string_template" %}
             ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/openai/string_template.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/anthropic/string_template.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/mistral/string_template.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/gemini/string_template.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/groq/string_template.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/cohere/string_template.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/litellm/string_template.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/azure/string_template.py"
-            ```
-    
-        === "Vertex AI"
-
-            ```python hl_lines="4 5"
-            --8<-- "examples/learn/calls/basic_call/vertex/string_template.py"
-            ```
-
-    === "BaseMessageParam"
-
-        === "OpenAI"
-
+            {% else %}
             ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/openai/base_message_param.py"
+            {% endif %}
+            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py"
             ```
+        {% endfor %}
 
-        === "Anthropic"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/anthropic/base_message_param.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/mistral/base_message_param.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/gemini/base_message_param.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/groq/base_message_param.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/cohere/base_message_param.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/litellm/base_message_param.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/azure/base_message_param.py"
-            ```
-    
-        === "Vertex AI"
-
-            ```python hl_lines="4 6"
-            --8<-- "examples/learn/calls/basic_call/vertex/base_message_param.py"
-            ```
+    {% endfor %}
 
 !!! note "Official SDK"
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
         ```python
-        --8<-- "examples/learn/calls/basic_call/openai/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/official_sdk_call.py"
         ```
 
-    === "Anthropic"
+    {% endfor %}
 
-        ```python
-        --8<-- "examples/learn/calls/basic_call/anthropic/official_sdk_call.py"
-        ```
+Notice how Mirascope makes calls more readable by reducing boilerplate and standardizing interactions with LLM providers.
 
-    === "Mistral"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/mistral/official_sdk_call.py"
-        ```
-
-    === "Gemini"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/gemini/official_sdk_call.py"
-        ```
-
-    === "Groq"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/groq/official_sdk_call.py"
-        ```
-
-    === "Cohere"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/cohere/official_sdk_call.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/litellm/official_sdk_call.py"
-        ```
-
-    === "Azure AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/azure/official_sdk_call.py"
-        ```
-    
-    === "Vertex AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/vertex/official_sdk_call.py"
-        ```
-
-As you can see, Mirascope reduces boilerplate and makes calls more readable.
-
-In these above examples, we are directly tying the prompt to a specific provider and call setting (i.e. provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
+In these above Mirascope examples, we are directly tying the prompt to a specific provider and call setting (provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
 
 ### Provider-Agnostic Usage
 
 We've implemented calls as decorators so that they work for both provider-specific cases (as seen above) as well as provider-agnostic cases.
 
-Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt vs. their official SDKs:
+Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt:
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="4-6 11 17"
-        --8<-- "examples/learn/calls/basic_call/provider_agnostic/shorthand.py"
-        ```
-
-    === "Messages"
-
-        ```python hl_lines="4-6 11 17"
-        --8<-- "examples/learn/calls/basic_call/provider_agnostic/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="4-5 10 16"
-        --8<-- "examples/learn/calls/basic_call/provider_agnostic/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="4-6 11 17"
-        --8<-- "examples/learn/calls/basic_call/provider_agnostic/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/calls/basic_call/provider_agnostic/{{ method }}.py"
         ```
+    {% endfor %}
 
 ## Handling Responses
 
 ### Common Response Properties and Methods
 
-All `BaseCallResponse` objects share these common properties:
+??? api "API Documentation"
+
+    [`mirascope.core.base.call_response`](../api/core/base/call_response.md)
+
+All [`BaseCallResponse`](../api/core/base/call_response.md) objects share these common properties:
 
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
@@ -394,63 +120,32 @@ There are also two common methods:
 
 ### Provider-Specific Response Details
 
+??? api "API Documentation"
+
+    {% for provider in supported_llm_providers %}
+    {% if provider == "LiteLLM" %}
+    [`mirascope.core.litellm.call_response`](../api/core/openai/call_response.md)
+    {% else %}
+    [`mirascope.core.{{ provider | provider_dir }}.call_response`](../api/core/{{ provider | provider_dir }}/call_response.md)
+    {% endif %}
+    {% endfor %}
+
 While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `BaseCallResponse` object.
 
 !!! mira ""
 
-    === "OpenAI"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/openai_response.py"
-        ```
+            ```python hl_lines="10"
+            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py::9"
+            original_response = response.response
+            ```
 
-    === "Anthropic"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/anthropic_response.py"
-        ```
-
-    === "Mistral"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/mistral_response.py"
-        ```
-
-    === "Gemini"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/gemini_response.py"
-        ```
-
-    === "Groq"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/groq_response.py"
-        ```
-
-    === "Cohere"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/cohere_response.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/litellm_response.py"
-        ```
-
-    === "Azure AI"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/azure_response.py"
-        ```
-
-    === "Vertex AI"
-
-        ```python hl_lines="10-11"
-        --8<-- "examples/learn/calls/provider_specific_response/vertex_response.py"
-        ```
+        {% endfor %}
+    {% endfor %}
 
 !!! note "Reasoning For Provider-Specific `BaseCallResponse` Objects"
 
@@ -475,23 +170,13 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
 ??? api "API Documentation"
 
-    [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
-
-    [`mirascope.core.azure.call_params`](../api/core/anthropic/call_params.md)
-
-    [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
-
-    [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
-
-    [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
-
+    {% for provider in supported_llm_providers %}
+    {% if provider == "LiteLLM" %}
     [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
-
-    [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
-
-    [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
-
-    [`mirascope.core.vertex.call_params`](../api/core/vertex/call_params.md)
+    {% else %}
+    [`mirascope.core.{{ provider | provider_dir }}.call_params`](../api/core/{{ provider | provider_dir }}/call_params.md)
+    {% endif %}
+    {% endfor %}
 
 While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
 
@@ -499,60 +184,17 @@ For all providers, we have only included additional call parameters that are not
 
 !!! mira ""
 
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-    === "OpenAI"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/openai_call_params.py"
-        ```
-
-    === "Anthropic"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/anthropic_call_params.py"
-        ```
-
-    === "Mistral"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/mistral_call_params.py"
-        ```
-
-    === "Gemini"
-
+        {% if provider in ["Gemini", "Vertex AI"] %}
         ```python hl_lines="1 7"
-        --8<-- "examples/learn/calls/call_params/gemini_call_params.py"
-        ```
-
-    === "Groq"
-
+        {% else %}
         ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/groq_call_params.py"
+        {% endif %}
+        --8<-- "examples/learn/calls/call_params/{{ provider | provider_dir }}_call_params.py"
         ```
-
-    === "Cohere"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/cohere_call_params.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/litellm_call_params.py"
-        ```
-
-    === "Azure AI"
-
-        ```python hl_lines="4"
-        --8<-- "examples/learn/calls/call_params/azure_call_params.py"
-        ```
-
-    === "Vertex AI"
-
-        ```python hl_lines="1 7"
-        --8<-- "examples/learn/calls/call_params/vertex_call_params.py"
-        ```
+    {% endfor %}
 
 ## Dynamic Configuration
 
@@ -564,457 +206,47 @@ In all cases, you will need to return your prompt messages through the `messages
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        === "OpenAI"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/shorthand.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/shorthand.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/shorthand.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/shorthand.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/shorthand.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/shorthand.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/shorthand.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/shorthand.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/shorthand.py"
-            ```
-
-    === "Messages"
-
-        === "OpenAI"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/messages.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/messages.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/messages.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/messages.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/messages.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/messages.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/messages.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/messages.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/messages.py"
-            ```
-
-    === "String Template"
-
-        === "OpenAI"
-
+            {% if method == 'string_template' %}
             ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/string_template.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/string_template.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/string_template.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/string_template.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/string_template.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/string_template.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/string_template.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/string_template.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="5 8"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/string_template.py"
-            ```
-
-    === "BaseMessageParam"
-
-        === "OpenAI"
-
+            {% elif method == "base_message_param" %}
             ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/base_message_param.py"
+            {% else %}
+            ```python hl_lines="7 8"
+            {% endif %}
+            --8<-- "examples/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
+        {% endfor %}
 
-        === "Anthropic"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/base_message_param.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/base_message_param.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/base_message_param.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/base_message_param.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/base_message_param.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/base_message_param.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/base_message_param.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7-10"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/base_message_param.py"
-            ```
+    {% endfor %}
 
 ### Metadata
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        === "OpenAI"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/shorthand.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/shorthand.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/shorthand.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/shorthand.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/shorthand.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/shorthand.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/shorthand.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/shorthand.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/shorthand.py"
-            ```
-
-    === "Messages"
-
-        === "OpenAI"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/messages.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/messages.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/messages.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/messages.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/messages.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/messages.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/messages.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/messages.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/messages.py"
-            ```
-
-    === "String Template"
-
-        === "OpenAI"
-
+            {% if method == 'string_template' %}
             ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/string_template.py"
-            ```
-
-        === "Anthropic"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/string_template.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/string_template.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/string_template.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/string_template.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/string_template.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/string_template.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/string_template.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="5 9"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/string_template.py"
-            ```
-
-    === "BaseMessageParam"
-
-        === "OpenAI"
-
+            {% elif method == "base_message_param" %}
             ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/openai/base_message_param.py"
+            {% else %}
+            ```python hl_lines="7 9"
+            {% endif %}
+            --8<-- "examples/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
+        {% endfor %}
 
-        === "Anthropic"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/base_message_param.py"
-            ```
-
-        === "Mistral"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/mistral/base_message_param.py"
-            ```
-
-        === "Gemini"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/gemini/base_message_param.py"
-            ```
-
-        === "Groq"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/groq/base_message_param.py"
-            ```
-
-        === "Cohere"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/cohere/base_message_param.py"
-            ```
-
-        === "LiteLLM"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/litellm/base_message_param.py"
-            ```
-
-        === "Azure AI"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/azure/base_message_param.py"
-            ```
-
-        === "Vertex AI"
-
-            ```python hl_lines="7-9 11"
-            --8<-- "examples/learn/calls/dynamic_configuration/vertex/base_message_param.py"
-            ```
+    {% endfor %}
 
 ## Custom Messages
 
@@ -1022,59 +254,19 @@ You can also always return the original message types for any provider. To do so
 
 !!! mira ""
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-        ```python hl_lines="6"
-        --8<-- "examples/learn/calls/custom_messages/openai_messages.py"
-        ```
-
-    === "Anthropic"
-
-        ```python hl_lines="6"
-        --8<-- "examples/learn/calls/custom_messages/anthropic_messages.py"
-        ```
-
-    === "Mistral"
-
-        ```python hl_lines="7"
-        --8<-- "examples/learn/calls/custom_messages/mistral_messages.py"
-        ```
-
-    === "Gemini"
-
-        ```python hl_lines="6"
-        --8<-- "examples/learn/calls/custom_messages/gemini_messages.py"
-        ```
-
-    === "Groq"
-
-        ```python hl_lines="6"
-        --8<-- "examples/learn/calls/custom_messages/groq_messages.py"
-        ```
-
-    === "Cohere"
-
-        ```python hl_lines="7"
-        --8<-- "examples/learn/calls/custom_messages/cohere_messages.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python hl_lines="6"
-        --8<-- "examples/learn/calls/custom_messages/litellm_messages.py"
-        ```
-
-    === "Azure AI"
-
-        ```python hl_lines="7"
-        --8<-- "examples/learn/calls/custom_messages/azure_messages.py"
-        ```
-
-    === "Vertex AI"
-
+        {% if provider == "Vertex AI" %}
         ```python hl_lines="8-10"
-        --8<-- "examples/learn/calls/custom_messages/vertex_messages.py"
+        {% elif provider in ["Mistral", "Cohere", "Azure AI"] %}
+        ```python hl_lines="7"
+        {% else %}
+        ```python hl_lines="6"
+        {% endif %}
+        --8<-- "examples/learn/calls/custom_messages/{{ provider | provider_dir }}_messages.py"
         ```
+    {% endfor %}
 
 ## Custom Client
 
@@ -1084,59 +276,23 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
 
 !!! mira ""
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
+        {% if provider == "LiteLLM" %}
+        ```python
+        {% elif provider in ["OpenAI", "Vertex AI"] %}
         ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/openai_client.py"
-        ```
-
-    === "Anthropic"
-
-        ```python hl_lines="1 5 10"
-        --8<-- "examples/learn/calls/custom_client/anthropic_client.py"
-        ```
-
-    === "Mistral"
-
+        {% elif provider == "Mistral" %}
         ```python hl_lines="2-3 6 11"
-        --8<-- "examples/learn/calls/custom_client/mistral_client.py"
+        {% elif provider == "Azure AI" %}
+        ```python hl_lines="1-3 9-11 19-21"
+        {% else %}
+        ```python hl_lines="1 5 10"
+        {% endif %}
+        --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}_client.py"
         ```
-
-    === "Gemini"
-
-        ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/gemini_client.py"
-        ```
-
-    === "Groq"
-
-        ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/groq_client.py"
-        ```
-
-    === "Cohere"
-
-        ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/cohere_client.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/litellm_client.py"
-        ```
-
-    === "Azure AI"
-
-        ```python hl_lines="1-3 5 9-11 19-21"
-        --8<-- "examples/learn/calls/custom_client/azure_client.py"
-        ```
-
-    === "Vertex AI"
-
-        ```python hl_lines="2 5 10"
-        --8<-- "examples/learn/calls/custom_client/vertex_client.py"
-        ```
+    {% endfor %}
 
 ## Error Handling
 
@@ -1144,59 +300,21 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 
 !!! mira ""
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-        ```python hl_lines="2 10 13"
-        --8<-- "examples/learn/calls/error_handling/openai_error.py"
-        ```
-
-    === "Anthropic"
-
-        ```python hl_lines="1 10 13"
-        --8<-- "examples/learn/calls/error_handling/anthropic_error.py"
-        ```
-
-    === "Mistral"
-
+        {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
+        ```python hl_lines="9 12"
+        {% elif provider == "Mistral" %}
         ```python hl_lines="2 10 13 16"
-        --8<-- "examples/learn/calls/error_handling/mistral_error.py"
+        {% elif provider == "OpenAI" %}
+        ```python hl_lines="2 10 13"
+        {% else %}
+        ```python hl_lines="1 10 13"
+        {% endif %}
+        --8<-- "examples/learn/calls/error_handling/{{ provider | provider_dir }}_error.py"
         ```
-
-    === "Gemini"
-
-        ```python hl_lines="9 12"
-        --8<-- "examples/learn/calls/error_handling/gemini_error.py"
-        ```
-
-    === "Groq"
-
-        ```python hl_lines="1 10 13 16"
-        --8<-- "examples/learn/calls/error_handling/groq_error.py"
-        ```
-
-    === "Cohere"
-
-        ```python hl_lines="1 10 13 15"
-        --8<-- "examples/learn/calls/error_handling/cohere_error.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python hl_lines="1 10 13 15"
-        --8<-- "examples/learn/calls/error_handling/litellm_error.py"
-        ```
-
-    === "Azure AI"
-
-        ```python hl_lines="9 12"
-        --8<-- "examples/learn/calls/error_handling/azure_error.py"
-        ```
-
-    === "Vertex AI"
-
-        ```python hl_lines="9 12"
-        --8<-- "examples/learn/calls/error_handling/vertex_error.py"
-        ```
+    {% endfor %}
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
 

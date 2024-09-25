@@ -22,29 +22,17 @@ First, let's look at a basic example:
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/single_user_message/shorthand.py"
-        ```
-
-    === "Messages"
-
-        ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/single_user_message/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="4-5 9"
-        --8<-- "examples/learn/prompts/single_user_message/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/single_user_message/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/single_user_message/{{ method }}.py"
         ```
+    {% endfor %}
 
 In this example:
 
@@ -70,29 +58,17 @@ We can also define additional messages with different roles, such as a system me
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/multiple_messages/shorthand.py"
-        ```
-
-    === "Messages"
-
-        ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/multiple_messages/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="6-7 15-16"
-        --8<-- "examples/learn/prompts/multiple_messages/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/multiple_messages/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/multiple_messages/{{ method }}.py"
         ```
+    {% endfor %}
 
 !!! note "`Messages.Type`"
 
@@ -110,29 +86,21 @@ When writing prompts that span multiple lines, it's important to ensure you don'
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
+        {% if method == "shorthand" %}
         ```python hl_lines="8-13 17"
-        --8<-- "examples/learn/prompts/multi_line/shorthand.py"
-        ```
-
-    === "Messages"
-
+        {% elif method == "messages" %}
         ```python hl_lines="9-14 19"
-        --8<-- "examples/learn/prompts/multi_line/messages.py"
-        ```
-
-    === "String Template"
-
+        {% elif method == "string_template" %}
         ```python hl_lines="6-7 14"
-        --8<-- "examples/learn/prompts/multi_line/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="11-16 22"
-        --8<-- "examples/learn/prompts/multi_line/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/multi_line/{{ method }}.py"
         ```
+    {% endfor %}
 
 In this example, we use `inspect.cleandoc` to remove unnecessary tokens while maintaining proper formatting in our codebase.
 
@@ -178,29 +146,21 @@ Legend: ✓ (Supported), - (Not Supported)
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
+        {% if method == "shorthand" %}
         ```python hl_lines="7 16-18"
-        --8<-- "examples/learn/prompts/multi_modal/image/shorthand.py"
-        ```
-
-    === "Messages"
-
+        {% elif method == "messages" %}
         ```python hl_lines="8 18-20"
-        --8<-- "examples/learn/prompts/multi_modal/image/messages.py"
-        ```
-
-    === "String Template"
-
+        {% elif method == "string_template" %}
         ```python hl_lines="5 15-17"
-        --8<-- "examples/learn/prompts/multi_modal/image/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-    
+        {% else %}
         ```python hl_lines="10-17 28-30"
-        --8<-- "examples/learn/prompts/multi_modal/image/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/multi_modal/image/{{ method }}.py"
         ```
+    {% endfor %}
 
 ??? info "Additional String Template Image Functionality"
 
@@ -214,29 +174,19 @@ Legend: ✓ (Supported), - (Not Supported)
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python
-        # Coming soon
-        ```
-
-    === "Messages"
-
-        ```python
-        # Coming soon
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="4 13-15"
-        --8<-- "examples/learn/prompts/multi_modal/audio/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-    
+        {% elif method == "base_message_param" %}
         ```python hl_lines="10-16 27-29"
-        --8<-- "examples/learn/prompts/multi_modal/audio/base_message_param.py"
+        {% else %}
+        ```python
+        {% endif %}
+        --8<-- "examples/learn/prompts/multi_modal/audio/{{ method }}.py"
         ```
+    {% endfor %}
 
 ??? info "Additional String Template Audio Functionality"
 
@@ -250,29 +200,19 @@ Often you'll want to inject messages (such as previous chat messages) into the p
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="6 10-11 15-18"
-        --8<-- "examples/learn/prompts/chat_history/shorthand.py"
-        ```
-    
-    === "Messages"
-
-        ```python hl_lines="6 10-11 15-18"
-        --8<-- "examples/learn/prompts/chat_history/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="6-8 15-16 20-23"
-        --8<-- "examples/learn/prompts/chat_history/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% elif method == "base_message_param" %}
         ```python hl_lines="7-9 14-15 19-22"
-        --8<-- "examples/learn/prompts/chat_history/base_message_param.py"
+        {% else %}
+        ```python hl_lines="6 10-11 15-18"
+        {% endif %}
+        --8<-- "examples/learn/prompts/chat_history/{{ method }}.py"
         ```
+    {% endfor %}
 
 ## Object Attribute Access
 
@@ -280,29 +220,21 @@ When using template variables that have attributes, you can easily inject these 
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
+        {% if method == "shorthand" %}
         ```python hl_lines="12 17"
-        --8<-- "examples/learn/prompts/object_attribute_access/shorthand.py"
-        ```
-    
-    === "Messages"
-
+        {% elif method == "messages" %}
         ```python hl_lines="13 19"
-        --8<-- "examples/learn/prompts/object_attribute_access/messages.py"
-        ```
-
-    === "String Template"
-
+        {% elif method == "string_template" %}
         ```python hl_lines="10 16"
-        --8<-- "examples/learn/prompts/object_attribute_access/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="15 22"
-        --8<-- "examples/learn/prompts/object_attribute_access/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/object_attribute_access/{{ method }}.py"
         ```
+    {% endfor %}
 
 It's worth noting that this also works with `self` when using prompt templates inside of a class, which is particularly important when building [Agents](./agents.md).
 
@@ -312,57 +244,39 @@ Since Mirascope prompt templates are just formatted strings, standard Python for
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="6 10"
-        --8<-- "examples/learn/prompts/format_specifiers/float_format/shorthand.py"
-        ```
-    
-    === "Messages"
-
-        ```python hl_lines="6 10"
-        --8<-- "examples/learn/prompts/format_specifiers/float_format/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="4 9"
-        --8<-- "examples/learn/prompts/format_specifiers/float_format/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% elif method == "base_message_param" %}
         ```python hl_lines="8 14"
-        --8<-- "examples/learn/prompts/format_specifiers/float_format/base_message_param.py"
+        {% else %}
+        ```python hl_lines="6 10"
+        {% endif %}
+        --8<-- "examples/learn/prompts/format_specifiers/float_format/{{ method }}.py"
         ```
+    {% endfor %}
 
 When writing string templates, we also offer additional `list` and `lists` format specifiers for convenience around formatting lists:
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
+        {% if method == "shorthand" %}
         ```python hl_lines="8-9 13 16 32 38-48"
-        --8<-- "examples/learn/prompts/format_specifiers/lists_format/shorthand.py"
-        ```
-    
-    === "Messages"
-
+        {% elif method == "messages" %}
         ```python hl_lines="10-11 16 19 36 42-52"
-        --8<-- "examples/learn/prompts/format_specifiers/lists_format/messages.py"
-        ```
-
-    === "String Template"
-
+        {% elif method == "string_template" %}
         ```python hl_lines="7 10 27 33-43"
-        --8<-- "examples/learn/prompts/format_specifiers/lists_format/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% else %}
         ```python hl_lines="10-11 18 21 39 45-55"
-        --8<-- "examples/learn/prompts/format_specifiers/lists_format/base_message_param.py"
+        {% endif %}
+        --8<-- "examples/learn/prompts/format_specifiers/lists_format/{{ method }}.py"
         ```
+    {% endfor %}
 
 ## Computed Fields (Dynamic Configuration)
 
@@ -374,29 +288,19 @@ However, there is value in always dynamically configuring computed fields for an
 
 !!! mira ""
 
-    === "Shorthand"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python hl_lines="6-7 9-10 16-17"
-        --8<-- "examples/learn/prompts/computed_fields/shorthand.py"
-        ```
-    
-    === "Messages"
-
-        ```python hl_lines="6-7 9-10 16-17"
-        --8<-- "examples/learn/prompts/computed_fields/messages.py"
-        ```
-
-    === "String Template"
-
+        {% if method == "string_template" %}
         ```python hl_lines="4 6 8 13"
-        --8<-- "examples/learn/prompts/computed_fields/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
+        {% elif method == "base_message_param" %}
         ```python hl_lines="6 8 11-12 19-20"
-        --8<-- "examples/learn/prompts/computed_fields/base_message_param.py"
+        {% else %}
+        ```python hl_lines="6-7 9-10 16-17"
+        {% endif %}
+        --8<-- "examples/learn/prompts/computed_fields/{{ method }}.py"
         ```
+    {% endfor %}
 
 There are various other parts of an LLM API call that we may want to configure dynamically as well, such as call parameters, tools, and more. We cover such cases in each of their respective sections.
 
