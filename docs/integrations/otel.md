@@ -12,7 +12,7 @@ pip install "mirascope[opentelemetry]"
 
 ### Calls
 
-The `with_otel` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md#supported-providers).
+The `with_otel` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md).
 
 Here is a simple example using tools:
 

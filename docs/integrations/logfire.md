@@ -12,7 +12,7 @@ pip install "mirascope[logfire]"
 
 ### Calls
 
-The `with_logfire` decorator can be used on all Mirascope functions to automatically log calls across all of our [supported LLM providers](../learn/calls.md#supported-providers).
+The `with_logfire` decorator can be used on all Mirascope functions to automatically log calls across all of our [supported LLM providers](../learn/calls.md).
 
 ```python
 import logfire
