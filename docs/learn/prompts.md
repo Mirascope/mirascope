@@ -1,26 +1,8 @@
 # Prompts
 
-Prompts are the foundation of effective communication with Large Language Models (LLMs). Mirascope provides powerful tools to help you create, manage, and optimize your prompts for various LLM interactions. This guide will walk you through the features and best practices for prompt engineering using Mirascope.
+When working with Large Language Model (LLM) APIs, the "prompt" is generally a list of messages where each message has a particular role. These prompts are the foundation of effectively working with LLMs, so Mirascope provides powerful tools to help you create, manage, and optimize your prompts for various LLM interactions.
 
-## What Are Prompts?
-
-When working with Large Language Model (LLMs) APIs, the "prompt" is generally a list of messages where each message has a particular role.
-
-First, let's take a look at a call to the OpenAI API for reference:
-
-```python hl_lines="9"
---8<-- "examples/learn/prompts/what_are_prompts/single_user_message.py"
-```
-
-Here, the prompt is the messages array with a single user message. You can also specify multiple messages with different roles. For example, we can provide what is called a "system message" by first including a message with the system role:
-
-```python hl_lines="9-12"
---8<-- "examples/learn/prompts/what_are_prompts/multiple_messages.py"
-```
-
-In these examples, we're only showing how to use the OpenAI API. One of the core values of Mirascope is that we offer tooling to make your prompts more reusable and work across the various different LLM providers.
-
-Let's take a look at how we can write these same prompts in a provider-agnostic way.
+Let's look at how we can write prompts using Mirascope in a reusable, modular, and provider-agnostic way.
 
 !!! info "Calls will come later"
 
@@ -36,9 +18,44 @@ Let's take a look at how we can write these same prompts in a provider-agnostic 
 
     [`mirascope.core.base.prompt.prompt_template`](../api/core/base/prompt.md#mirascope.core.base.prompt.prompt_template)
 
+First, let's look at a basic example:
+
+!!! mira ""
+
+    === "Shorthand"
+
+        ```python hl_lines="4-6 10"
+        --8<-- "examples/learn/prompts/single_user_message/shorthand.py"
+        ```
+
+    === "Messages"
+
+        ```python hl_lines="4-6 10"
+        --8<-- "examples/learn/prompts/single_user_message/messages.py"
+        ```
+
+    === "String Template"
+
+        ```python hl_lines="4-5 9"
+        --8<-- "examples/learn/prompts/single_user_message/string_template.py"
+        ```
+
+    === "BaseMessageParam"
+
+        ```python hl_lines="4-6 10"
+        --8<-- "examples/learn/prompts/single_user_message/base_message_param.py"
+        ```
+
+In this example:
+
+1. The `recommend_book_prompt` method's signature defines the prompt's template variables.
+2. Calling the method with `genre="fantasy"` returns a list with the corresponding `BaseMessageParam` instance with role `user` and content "Recommend a fantasy book".
+
 The core concept to understand here is [`BaseMessageParam`](../api/core/base/message_param.md#basemessageparam). This class operates as the base class for message parameters that Mirascope can handle and use across all supported providers.
 
-In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods. There are four methods of writing prompts:
+In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods that return the corresponding list of `BaseMessageParam` instances.
+
+There are four methods of writing prompts:
 
 1. _(Shorthand)_ Returning the `str` or `list` content for a single user message.
 2. _(Messages)_ Using `Messages.{Role}` methods, which accept the full or shorthand content and output a `BaseMessageParam` instance.
@@ -47,68 +64,35 @@ In Mirascope, we use the `@prompt_template` decorator to write prompt templates 
 
 Which method you use is mostly up to your preference, so feel free to select which one you prefer in the following sections.
 
-Let's look at a basic example:
+## Message Roles
 
-!!! mira ""
-
-    === "Shorthand"
-
-        ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/prompt_templates/single_user_message/shorthand.py"
-        ```
-
-    === "Messages"
-
-        ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/prompt_templates/single_user_message/messages.py"
-        ```
-
-    === "String Template"
-
-        ```python hl_lines="4-5 9"
-        --8<-- "examples/learn/prompts/prompt_templates/single_user_message/string_template.py"
-        ```
-
-    === "BaseMessageParam"
-
-        ```python hl_lines="4-6 10"
-        --8<-- "examples/learn/prompts/prompt_templates/single_user_message/base_message_param.py"
-        ```
-
-In this example:
-
-1. The `recommend_book_prompt` method's signature defines the prompt's template variables.
-2. Calling the method with `genre="fantasy"` returns a list with the corresponding `BaseMessageParam` instance with role `user` and content "Recommend a fantasy book".
-
-As before, we can also define additional messages with different roles:
+We can also define additional messages with different roles, such as a system message:
 
 !!! mira ""
 
     === "Shorthand"
 
         ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/prompt_templates/multiple_messages/shorthand.py"
+        --8<-- "examples/learn/prompts/multiple_messages/shorthand.py"
         ```
 
     === "Messages"
 
         ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/prompt_templates/multiple_messages/messages.py"
+        --8<-- "examples/learn/prompts/multiple_messages/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="6-7 15-16"
-        --8<-- "examples/learn/prompts/prompt_templates/multiple_messages/string_template.py"
+        --8<-- "examples/learn/prompts/multiple_messages/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="7-8 14-15"
-        --8<-- "examples/learn/prompts/prompt_templates/multiple_messages/base_message_param.py"
+        --8<-- "examples/learn/prompts/multiple_messages/base_message_param.py"
         ```
-
-And that's it! Prompts written in this functional way are provider-agnostic, reusable, and properly typed, making them easier to write and maintain.
 
 !!! note "`Messages.Type`"
 
@@ -129,25 +113,25 @@ When writing prompts that span multiple lines, it's important to ensure you don'
     === "Shorthand"
 
         ```python hl_lines="8-13 17"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_line/shorthand.py"
+        --8<-- "examples/learn/prompts/multi_line/shorthand.py"
         ```
 
     === "Messages"
 
         ```python hl_lines="9-14 19"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_line/messages.py"
+        --8<-- "examples/learn/prompts/multi_line/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="6-7 14"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_line/string_template.py"
+        --8<-- "examples/learn/prompts/multi_line/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="11-16 22"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_line/base_message_param.py"
+        --8<-- "examples/learn/prompts/multi_line/base_message_param.py"
         ```
 
 In this example, we use `inspect.cleandoc` to remove unnecessary tokens while maintaining proper formatting in our codebase.
@@ -197,25 +181,25 @@ Legend: ✓ (Supported), - (Not Supported)
     === "Shorthand"
 
         ```python hl_lines="7 16-18"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/image/shorthand.py"
+        --8<-- "examples/learn/prompts/multi_modal/image/shorthand.py"
         ```
 
     === "Messages"
 
         ```python hl_lines="8 18-20"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/image/messages.py"
+        --8<-- "examples/learn/prompts/multi_modal/image/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="5 15-17"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/image/string_template.py"
+        --8<-- "examples/learn/prompts/multi_modal/image/string_template.py"
         ```
 
     === "BaseMessageParam"
     
         ```python hl_lines="10-17 28-30"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/image/base_message_param.py"
+        --8<-- "examples/learn/prompts/multi_modal/image/base_message_param.py"
         ```
 
 ??? info "Additional String Template Image Functionality"
@@ -245,13 +229,13 @@ Legend: ✓ (Supported), - (Not Supported)
     === "String Template"
 
         ```python hl_lines="4 13-15"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/audio/string_template.py"
+        --8<-- "examples/learn/prompts/multi_modal/audio/string_template.py"
         ```
 
     === "BaseMessageParam"
     
         ```python hl_lines="10-16 27-29"
-        --8<-- "examples/learn/prompts/prompt_templates/multi_modal/audio/base_message_param.py"
+        --8<-- "examples/learn/prompts/multi_modal/audio/base_message_param.py"
         ```
 
 ??? info "Additional String Template Audio Functionality"
@@ -269,25 +253,25 @@ Often you'll want to inject messages (such as previous chat messages) into the p
     === "Shorthand"
 
         ```python hl_lines="6 10-11 15-18"
-        --8<-- "examples/learn/prompts/prompt_templates/chat_history/shorthand.py"
+        --8<-- "examples/learn/prompts/chat_history/shorthand.py"
         ```
     
     === "Messages"
 
         ```python hl_lines="6 10-11 15-18"
-        --8<-- "examples/learn/prompts/prompt_templates/chat_history/messages.py"
+        --8<-- "examples/learn/prompts/chat_history/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="6-8 15-16 20-23"
-        --8<-- "examples/learn/prompts/prompt_templates/chat_history/string_template.py"
+        --8<-- "examples/learn/prompts/chat_history/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="7-9 14-15 19-22"
-        --8<-- "examples/learn/prompts/prompt_templates/chat_history/base_message_param.py"
+        --8<-- "examples/learn/prompts/chat_history/base_message_param.py"
         ```
 
 ## Object Attribute Access
@@ -299,25 +283,25 @@ When using template variables that have attributes, you can easily inject these 
     === "Shorthand"
 
         ```python hl_lines="12 17"
-        --8<-- "examples/learn/prompts/prompt_templates/object_attribute_access/shorthand.py"
+        --8<-- "examples/learn/prompts/object_attribute_access/shorthand.py"
         ```
     
     === "Messages"
 
         ```python hl_lines="13 19"
-        --8<-- "examples/learn/prompts/prompt_templates/object_attribute_access/messages.py"
+        --8<-- "examples/learn/prompts/object_attribute_access/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="10 16"
-        --8<-- "examples/learn/prompts/prompt_templates/object_attribute_access/string_template.py"
+        --8<-- "examples/learn/prompts/object_attribute_access/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="15 22"
-        --8<-- "examples/learn/prompts/prompt_templates/object_attribute_access/base_message_param.py"
+        --8<-- "examples/learn/prompts/object_attribute_access/base_message_param.py"
         ```
 
 It's worth noting that this also works with `self` when using prompt templates inside of a class, which is particularly important when building [Agents](./agents.md).
@@ -331,25 +315,25 @@ Since Mirascope prompt templates are just formatted strings, standard Python for
     === "Shorthand"
 
         ```python hl_lines="6 10"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/float_format/shorthand.py"
+        --8<-- "examples/learn/prompts/format_specifiers/float_format/shorthand.py"
         ```
     
     === "Messages"
 
         ```python hl_lines="6 10"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/float_format/messages.py"
+        --8<-- "examples/learn/prompts/format_specifiers/float_format/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="4 9"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/float_format/string_template.py"
+        --8<-- "examples/learn/prompts/format_specifiers/float_format/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="8 14"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/float_format/base_message_param.py"
+        --8<-- "examples/learn/prompts/format_specifiers/float_format/base_message_param.py"
         ```
 
 When writing string templates, we also offer additional `list` and `lists` format specifiers for convenience around formatting lists:
@@ -359,25 +343,25 @@ When writing string templates, we also offer additional `list` and `lists` forma
     === "Shorthand"
 
         ```python hl_lines="8-9 13 16 32 38-48"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/lists_format/shorthand.py"
+        --8<-- "examples/learn/prompts/format_specifiers/lists_format/shorthand.py"
         ```
     
     === "Messages"
 
         ```python hl_lines="10-11 16 19 36 42-52"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/lists_format/messages.py"
+        --8<-- "examples/learn/prompts/format_specifiers/lists_format/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="7 10 27 33-43"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/lists_format/string_template.py"
+        --8<-- "examples/learn/prompts/format_specifiers/lists_format/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="10-11 18 21 39 45-55"
-        --8<-- "examples/learn/prompts/prompt_templates/format_specifiers/lists_format/base_message_param.py"
+        --8<-- "examples/learn/prompts/format_specifiers/lists_format/base_message_param.py"
         ```
 
 ## Computed Fields (Dynamic Configuration)
@@ -393,25 +377,25 @@ However, there is value in always dynamically configuring computed fields for an
     === "Shorthand"
 
         ```python hl_lines="6-7 9-10 16-17"
-        --8<-- "examples/learn/prompts/prompt_templates/computed_fields/shorthand.py"
+        --8<-- "examples/learn/prompts/computed_fields/shorthand.py"
         ```
     
     === "Messages"
 
         ```python hl_lines="6-7 9-10 16-17"
-        --8<-- "examples/learn/prompts/prompt_templates/computed_fields/messages.py"
+        --8<-- "examples/learn/prompts/computed_fields/messages.py"
         ```
 
     === "String Template"
 
         ```python hl_lines="4 6 8 13"
-        --8<-- "examples/learn/prompts/prompt_templates/computed_fields/string_template.py"
+        --8<-- "examples/learn/prompts/computed_fields/string_template.py"
         ```
 
     === "BaseMessageParam"
 
         ```python hl_lines="6 8 11-12 19-20"
-        --8<-- "examples/learn/prompts/prompt_templates/computed_fields/base_message_param.py"
+        --8<-- "examples/learn/prompts/computed_fields/base_message_param.py"
         ```
 
 There are various other parts of an LLM API call that we may want to configure dynamically as well, such as call parameters, tools, and more. We cover such cases in each of their respective sections.

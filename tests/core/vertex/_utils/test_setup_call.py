@@ -3,9 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.cloud.aiplatform_v1beta1.types import (
-    GenerationConfig as GenerationConfigType,
-)
 from vertexai.generative_models import (
     Content,
     GenerationConfig,
@@ -99,7 +96,7 @@ def test_setup_call_json_mode(
         Content(role="user", parts=[Part.from_text("test")])
     ]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
-    mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfigType(
+    mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfig(
         candidate_count=1,
         max_output_tokens=100,
         response_mime_type="application/xml",
@@ -124,14 +121,14 @@ def test_setup_call_json_mode(
     assert messages[-1].parts[-1].text == "mock content"
     assert "tools" not in call_kwargs
     assert "generation_config" in call_kwargs
-    generation_config = call_kwargs["generation_config"]
-    assert generation_config.temperature == 0.5
-    assert generation_config.top_p == 0
-    assert generation_config.top_k == 0
-    assert generation_config.candidate_count == 1
-    assert generation_config.max_output_tokens == 100
-    assert generation_config.stop_sequences == ["\n"]
-    assert generation_config.response_mime_type == "application/json"
+    generation_config = call_kwargs["generation_config"].to_dict()
+    assert generation_config["temperature"] == 0.5
+    assert generation_config["top_p"] == 0
+    assert generation_config["top_k"] == 0
+    assert generation_config["candidate_count"] == 1
+    assert generation_config["max_output_tokens"] == 100
+    assert generation_config["stop_sequences"] == ["\n"]
+    assert generation_config["response_mime_type"] == "application/xml"
 
 
 @patch(
