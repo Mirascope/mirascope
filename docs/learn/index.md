@@ -66,17 +66,17 @@ Mirascope is built around these core components, each designed to handle specifi
 
     [:octicons-arrow-right-24: Docs](./chaining.md)
 
--   __JSON Mode__
-
-    Work with structured JSON data responses from LLMs
-
-    [:octicons-arrow-right-24: Docs](./json_mode.md)
-
 -   __Response Models__
 
     Define and use structured output models with automatic validation
 
     [:octicons-arrow-right-24: Docs](./response_models.md)
+
+-   __JSON Mode__
+
+    Work with structured JSON data responses from LLMs
+
+    [:octicons-arrow-right-24: Docs](./json_mode.md)
 
 -   __Output Parsers__
 
