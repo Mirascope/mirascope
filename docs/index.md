@@ -20,55 +20,55 @@ Whether you're building chatbots, extracting structured information, or developi
     === "OpenAI"
 
         ```python
-        --8<-- "examples/getting_started/index/openai/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/openai/shorthand.py"
         ```
 
     === "Anthropic"
 
         ```python
-        --8<-- "examples/getting_started/index/anthropic/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/anthropic/shorthand.py"
         ```
 
     === "Mistral"
 
         ```python
-        --8<-- "examples/getting_started/index/mistral/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/mistral/shorthand.py"
         ```
 
     === "Gemini"
 
         ```python
-        --8<-- "examples/getting_started/index/gemini/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/gemini/shorthand.py"
         ```
 
     === "Groq"
 
         ```python
-        --8<-- "examples/getting_started/index/groq/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/groq/shorthand.py"
         ```
 
     === "Cohere"
 
         ```python
-        --8<-- "examples/getting_started/index/cohere/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/cohere/shorthand.py"
         ```
 
     === "LiteLLM"
 
         ```python
-        --8<-- "examples/getting_started/index/litellm/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/litellm/shorthand.py"
         ```
 
     === "Azure AI"
 
         ```python
-        --8<-- "examples/getting_started/index/azure/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/azure/shorthand.py"
         ```
   
     === "Vertex AI"
 
         ```python
-        --8<-- "examples/getting_started/index/vertex/mirascope_call.py"
+        --8<-- "examples/learn/calls/basic_call/vertex/shorthand.py"
         ```
 
 !!! note "Official SDK"
@@ -76,55 +76,55 @@ Whether you're building chatbots, extracting structured information, or developi
     === "OpenAI"
 
         ```python
-        --8<-- "examples/getting_started/index/openai/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/openai/official_sdk_call.py"
         ```
 
     === "Anthropic"
 
         ```python
-        --8<-- "examples/getting_started/index/anthropic/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/anthropic/official_sdk_call.py"
         ```
 
     === "Mistral"
 
         ```python
-        --8<-- "examples/getting_started/index/mistral/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/mistral/official_sdk_call.py"
         ```
 
     === "Gemini"
 
         ```python
-        --8<-- "examples/getting_started/index/gemini/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/gemini/official_sdk_call.py"
         ```
 
     === "Groq"
 
         ```python
-        --8<-- "examples/getting_started/index/groq/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/groq/official_sdk_call.py"
         ```
 
     === "Cohere"
 
         ```python
-        --8<-- "examples/getting_started/index/cohere/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/cohere/official_sdk_call.py"
         ```
 
     === "LiteLLM"
 
         ```python
-        --8<-- "examples/getting_started/index/litellm/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/litellm/official_sdk_call.py"
         ```
 
     === "Azure AI"
 
         ```python
-        --8<-- "examples/getting_started/index/azure/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/azure/official_sdk_call.py"
         ```
     
     === "Vertex AI"
 
         ```python
-        --8<-- "examples/getting_started/index/vertex/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/vertex/official_sdk_call.py"
         ```
 
 ## Installation

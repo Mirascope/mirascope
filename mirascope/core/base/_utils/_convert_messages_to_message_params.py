@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import TypeIs
 
-from .._utils import get_image_type
+from .._utils._get_image_type import get_image_type
 from ..message_param import (
     AudioPart,
     BaseMessageParam,

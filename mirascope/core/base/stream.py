@@ -10,6 +10,7 @@ from typing import (
     Generic,
     ParamSpec,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -22,13 +23,16 @@ from ._utils import (
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
+    is_prompt_template,
 )
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
+from .messages import Messages
 from .metadata import Metadata
+from .prompt import prompt_template
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -259,6 +263,15 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
+    @overload
+    def decorator(
+        fn: Callable[_P, Messages.Type],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, TStream]: ...
 
     @overload
     def decorator(
@@ -269,16 +282,37 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
+    @overload
+    def decorator(
+        fn: Callable[_P, Awaitable[Messages.Type]],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
+        | Callable[_P, Awaitable[Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
+        if not is_prompt_template(fn):
+            fn = cast(
+                Callable[_P, Messages.Type] | Callable[_P, Awaitable[Messages.Type]], fn
+            )
+            fn = prompt_template()(fn)
+            fn = cast(
+                Callable[_P, _BaseDynamicConfigT]
+                | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+                fn,
+            )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 

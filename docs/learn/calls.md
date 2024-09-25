@@ -1,5 +1,19 @@
 # Calls
 
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on writing [Prompts](./prompts.md)
+    </div>
+
+When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to calling the LLM provider's API with a particular setting and prompt.
+
+The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various LLM providers. This powerful tool allows you to transform prompt templates written as Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
+
+We currently support [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai)
+
+If there are any providers we don't yet support that you'd like to see supported, let us know!
+
 ??? api "API Documentation"
 
     [`mirascope.core.anthropic.call`](../api/core/anthropic/call.md)
@@ -20,331 +34,331 @@
 
     [`mirascope.core.vertex.call`](../api/core/vertex/call.md)
 
-The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various Large Language Model (LLM) providers. This powerful tool allows you to transform Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
+## Basic Usage & Syntax
 
-## What are "Calls"
+### Provider-Specific
 
-To understand the benefits of Mirascope's `call` decorator, let's compare making a call to OpenAI using their official SDK versus using Mirascope:
+Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
-Using OpenAI SDK:
+!!! mira "Mirascope"
 
-```python
-from openai import OpenAI
+    === "Shorthand"
 
-client = OpenAI()
+        === "OpenAI"
 
-def recommend_book(genre: str) -> str | None:
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"recommend a {genre} book"}]
-    )
-    return completion.choices[0].message.content
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/openai/shorthand.py"
+            ```
 
-print(recommend_book("fantasy"))
-```
+        === "Anthropic"
 
-Using Mirascope:
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/anthropic/shorthand.py"
+            ```
 
-```python
-from mirascope.core import openai, prompt_template
+        === "Mistral"
 
-@openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/mistral/shorthand.py"
+            ```
 
-print(recommend_book("fantasy").content)
-```
+        === "Gemini"
 
-As you can see, Mirascope simplifies the process and makes it more readable. It's important to note that the `call` decorator expects a prompt template. We recommend reading the [Prompts](./prompts.md) documentation before proceeding with this section to fully understand how to create effective prompt templates.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/gemini/shorthand.py"
+            ```
 
-## Purpose and Benefits
+        === "Groq"
 
-The primary purposes and benefits of the `call` decorator are to:
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/groq/shorthand.py"
+            ```
 
-- Reduce the learning curve necessary to use various different LLM providers
-- Provide a unified interface for making LLM calls that abstracts away the various differences between provider APIs
-- Enable easy switching between different LLM providers
-- Enhance code readability and maintainability
+        === "Cohere"
 
-By using the `call` decorator, you can focus on engineering your prompts and handling the LLM responses, rather than dealing with the intricacies of each provider's API.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/cohere/shorthand.py"
+            ```
 
-## Basic Usage and Syntax
+        === "LiteLLM"
 
-The basic syntax for using the `call` decorator is straightforward:
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/litellm/shorthand.py"
+            ```
 
-```python hl_lines="4"
-from mirascope.core import openai, prompt_template
+        === "Azure AI"
 
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/azure/shorthand.py"
+            ```
+    
+        === "Vertex AI"
 
-@openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/vertex/shorthand.py"
+            ```
 
-response = recommend_book("fantasy")
-print(response.content)
-```
+    === "Messages"
 
-In this example:
+        === "OpenAI"
 
-- The [`@prompt_template`](./prompts.md#prompt-templates) decorator turns the function into a prompt template.
-- The `@openai.call` decorator transforms the prompt template into an LLM API call.
-- We're using OpenAI's `gpt-4o-mini` model to make the call.
-- When we call the function with `genre="fantasy"`, the argument is automatically injected into the prompt template and used in the call.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/openai/messages.py"
+            ```
 
-!!! info "Function Body"
+        === "Anthropic"
 
-    In the above example, we've used an ellipsis (`...`) for the function body, which returns `None`. If you'd like, you can always explicitly `return None` to be extra clear. The function body is used for dynamic configuration, which we covered in the section on [Computed Fields](./prompts.md#computed-fields) and will also cover later on this page in the [Dynamic Configuration](#dynamic-configuration) section.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/anthropic/messages.py"
+            ```
 
+        === "Mistral"
 
-## Supported Providers
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/mistral/messages.py"
+            ```
 
-Mirascope's `call` decorator supports multiple LLM providers, allowing you to easily switch between different models or compare outputs. Each provider has its own module within the Mirascope library. We currently support the following providers:
+        === "Gemini"
 
-- [OpenAI](https://openai.com/) (and any provider with an OpenAI compatible endpoint)
-- [Anthropic](https://www.anthropic.com/)
-- [Mistral](https://mistral.ai/)
-- [Gemini](https://gemini.google.com)
-- [Groq](https://groq.com/)
-- [Cohere](https://cohere.com/)
-- [LiteLLM](https://www.litellm.ai/) (for multi-provider support)
-- [Azure AI](https://azure.microsoft.com/en-us/solutions/ai)
-- [Vertex AI](https://cloud.google.com/vertex-ai)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/gemini/messages.py"
+            ```
 
-To illustrate how Mirascope simplifies working with different providers, let's compare making calls with various providers directly versus using Mirascope:
+        === "Groq"
 
-### OpenAI
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/groq/messages.py"
+            ```
 
-Direct API call:
-```python
-from openai import OpenAI
+        === "Cohere"
 
-client = OpenAI()
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/cohere/messages.py"
+            ```
 
-def recommend_book(genre: str):
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
-    )
-    return response.choices[0].message.content
+        === "LiteLLM"
 
-print(recommend_book("fantasy"))
-```
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/litellm/messages.py"
+            ```
 
-Using Mirascope:
-```python
-from mirascope.core import openai, prompt_template
+        === "Azure AI"
 
-@openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/azure/messages.py"
+            ```
+    
+        === "Vertex AI"
 
-print(recommend_book("fantasy").content)
-```
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/vertex/messages.py"
+            ```
 
-### Anthropic
+    === "String Template"
 
-Direct API call:
-```python
-from anthropic import Anthropic
+        === "OpenAI"
 
-client = Anthropic()
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/openai/string_template.py"
+            ```
 
-def recommend_book(genre: str):
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
-        messages=[{"role": "user", "content": f"Recommend a {genre} book"}]
-    )
-    return response.content
+        === "Anthropic"
 
-print(recommend_book("fantasy"))
-```
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/anthropic/string_template.py"
+            ```
 
-Using Mirascope:
-```python
-from mirascope.core import anthropic, prompt_template
+        === "Mistral"
 
-@anthropic.call("claude-3-5-sonnet-20240620")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/mistral/string_template.py"
+            ```
 
-print(recommend_book("fantasy").content)
-```
+        === "Gemini"
 
-As you can see, Mirascope provides a consistent, simplified interface across different providers, reducing boilerplate code and making your functions more readable and maintainable.
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/gemini/string_template.py"
+            ```
 
-To use a specific provider, simply use the `call` decorator from the corresponding provider's module. Here's an example of how to use multiple different providers with the same prompt template:
+        === "Groq"
 
-```python hl_lines="9 12 15"
-from mirascope.core import anthropic, mistral, openai, prompt_template
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/groq/string_template.py"
+            ```
 
+        === "Cohere"
 
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/cohere/string_template.py"
+            ```
 
+        === "LiteLLM"
 
-openai_recommendation = openai.call("gpt-4o-mini")(recommend_book)("fantasy")
-print("OpenAI recommendation:", openai_recommendation.content)
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/litellm/string_template.py"
+            ```
 
-anthropic_recommendation = anthropic.call("claude-3-5-sonnet-20240620")(recommend_book)("fantasy")
-print("Anthropic recommendation:", anthropic_recommendation.content)
+        === "Azure AI"
 
-mistral_recommendation = mistral.call("mistral-large-latest")(recommend_book)("fantasy")
-print("Mistral recommendation:", mistral_recommendation.content)
-```
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/azure/string_template.py"
+            ```
+    
+        === "Vertex AI"
 
-This flexibility allows you to compare outputs from different providers or switch between them based on your specific needs without changing your core logic.
+            ```python hl_lines="4 5"
+            --8<-- "examples/learn/calls/basic_call/vertex/string_template.py"
+            ```
 
-!!! note "Import Structure"
+    === "BaseMessageParam"
 
-    We've shown importing each provider's module and using their respective `call` decorators. If preferred, you can instead directly import the non-aliased decorator (e.g. `from mirascope.core.openai import openai_call`).
+        === "OpenAI"
 
-## Common Parameters Across Providers
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/openai/base_message_param.py"
+            ```
 
-While each LLM provider has its own specific parameters, there are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
+        === "Anthropic"
 
-- `model`: The only required parameter for all providers, which may be passed in as a standard argument (whereas all others are optional and must be provided as keyword arguments). It specifies which language model to use for the generation. Each provider has its own set of available models.
-- `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](./streams.md) documentation.
-- `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](./tools.md) documentation.
-- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](./response_models.md) documentation.
-- `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](./output_parsers.md) documentation.
-- `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](./json_mode.md) documentation.
-- `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](#custom-client) section below.
-- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Parameters`](#provider-specific-parameters) section below.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/anthropic/base_message_param.py"
+            ```
 
-These common parameters provide a consistent way to control the behavior of LLM calls across different providers. Keep in mind that while these parameters are widely supported, there might be slight variations in how they're implemented or their exact effects across different providers (and the documentation should cover any such differences).
+        === "Mistral"
 
-## Provider-Specific Parameters
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/mistral/base_message_param.py"
+            ```
 
-??? api "API Documentation"
+        === "Gemini"
 
-    [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/gemini/base_message_param.py"
+            ```
 
-    [`mirascope.core.azure.call_params`](../api/core/anthropic/call_params.md)
+        === "Groq"
 
-    [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/groq/base_message_param.py"
+            ```
 
-    [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
+        === "Cohere"
 
-    [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/cohere/base_message_param.py"
+            ```
 
-    [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
+        === "LiteLLM"
 
-    [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/litellm/base_message_param.py"
+            ```
 
-    [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
+        === "Azure AI"
 
-    [`mirascope.core.vertex.call_params`](../api/core/vertex/call_params.md)
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/azure/base_message_param.py"
+            ```
+    
+        === "Vertex AI"
 
-While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
+            ```python hl_lines="4 6"
+            --8<-- "examples/learn/calls/basic_call/vertex/base_message_param.py"
+            ```
 
-For all providers, we have only included additional call parameters that are not already covered as shared arguments to the `call` decorator (e.g. `model`). We have also opted to exclude currently deprecated parameters entirely. However, since `call_params` is just a `TypedDict`, you can always include any additional keys at the expense of type errors (and potentially unknown behavior).
+!!! note "Official SDK"
 
-Here is an example using custom OpenAI call parameters to change the temperature:
+    === "OpenAI"
 
-```python hl_lines="4"
-from mirascope.core import openai, prompt_template
+        ```python
+        --8<-- "examples/learn/calls/basic_call/openai/official_sdk_call.py"
+        ```
 
+    === "Anthropic"
 
-@openai.call("gpt-4o-mini", call_params={"temperature": 0.7})
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+        ```python
+        --8<-- "examples/learn/calls/basic_call/anthropic/official_sdk_call.py"
+        ```
 
+    === "Mistral"
 
-response = recommend_book("fantasy")
-print(response.content)
-```
+        ```python
+        --8<-- "examples/learn/calls/basic_call/mistral/official_sdk_call.py"
+        ```
 
-In this example, we're setting the `temperature` parameter to 0.7, which affects the randomness of the model's output. A higher temperature (closer to 1.0) will result in more diverse and creative outputs, while a lower temperature (closer to 0.0) will make the outputs more focused and deterministic.
+    === "Gemini"
 
-### Dynamic Configuration
+        ```python
+        --8<-- "examples/learn/calls/basic_call/gemini/official_sdk_call.py"
+        ```
 
-You can also dynamically configure call parameters based on the function's input or other runtime conditions. This is done by returning a dictionary from the function body. Here's an example:
+    === "Groq"
 
-```python hl_lines="6 8-11"
-from mirascope.core import openai, prompt_template
+        ```python
+        --8<-- "examples/learn/calls/basic_call/groq/official_sdk_call.py"
+        ```
 
+    === "Cohere"
 
-@openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
-    temperature = 0.9 if genre == "fantasy" else 0.5
-    return {
-        "call_params": {"temperature": temperature},
-        "metadata": {"genre": genre}
-    }
+        ```python
+        --8<-- "examples/learn/calls/basic_call/cohere/official_sdk_call.py"
+        ```
 
+    === "LiteLLM"
 
-response = recommend_book("fantasy")
-print(response.content)
-print(f"Temperature used: {response.call_kwargs['temperature']}")
-print(f"Metadata: {response.metadata}")
-```
+        ```python
+        --8<-- "examples/learn/calls/basic_call/litellm/official_sdk_call.py"
+        ```
 
-In this example, we're dynamically setting the `temperature` based on the genre, and also adding metadata to the call. The `OpenAIDynamicConfig` (or the equivalent for other providers) allows you to specify various dynamic configurations, including `call_params`, `metadata`, `computed_fields`, and more. For more information on computed fields, refer to the [Computed Fields](./prompts.md#computed-fields) section in the prompts documentation.
+    === "Azure AI"
 
-This approach allows for flexible, context-dependent configuration of your LLM calls.
+        ```python
+        --8<-- "examples/learn/calls/basic_call/azure/official_sdk_call.py"
+        ```
+    
+    === "Vertex AI"
 
-It's worth noting that you can use either `BaseDynamicConfig` or provider-specific versions like `openai.OpenAIDynamicConfig`. The `BaseDynamicConfig` allows you to use provider-agnostic configuration options (such as computed fields and metadata), while the provider-specific configs tie the prompt to a specific provider and provide provider-specific type hints for things like call params and messages.
+        ```python
+        --8<-- "examples/learn/calls/basic_call/vertex/official_sdk_call.py"
+        ```
 
-## Custom Client
+As you can see, Mirascope reduces boilerplate and makes calls more readable.
 
-Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
+In these above examples, we are directly tying the prompt to a specific provider and call setting (i.e. provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
 
-To use a custom client, you can pass it to the `call` decorator using the `client` parameter. Here's an example using a custom OpenAI client:
+### Provider-Agnostic Usage
 
-```python hl_lines="5-9 12"
-from openai import OpenAI
-from mirascope.core import openai, prompt_template
+We've implemented calls as decorators so that they work for both provider-specific cases (as seen above) as well as provider-agnostic cases.
 
-# Create a custom OpenAI client
-custom_client = OpenAI(
-    api_key="your-api-key",
-    organization="your-organization-id",
-    base_url="https://your-custom-endpoint.com/v1"
-)
+Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt vs. their official SDKs:
 
+!!! mira ""
 
-@openai.call(model="gpt-4o-mini", client=custom_client)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+    === "Shorthand"
 
+        ```python hl_lines="4-6 11 17"
+        --8<-- "examples/learn/calls/basic_call/provider_agnostic/shorthand.py"
+        ```
 
-response = recommend_book("fantasy")
-print(response.content)
-```
+    === "Messages"
 
-In this example, we're creating a custom OpenAI client with a specific API key, organization ID, and base URL. This custom client is then passed to the call decorator, allowing us to use a custom endpoint or configuration for our LLM calls.
+        ```python hl_lines="4-6 11 17"
+        --8<-- "examples/learn/calls/basic_call/provider_agnostic/messages.py"
+        ```
 
-Any custom client is supported so long as it has the same API as the original base client.
+    === "String Template"
+
+        ```python hl_lines="4-5 10 16"
+        --8<-- "examples/learn/calls/basic_call/provider_agnostic/string_template.py"
+        ```
+
+    === "BaseMessageParam"
+
+        ```python hl_lines="4-6 11 17"
+        --8<-- "examples/learn/calls/basic_call/provider_agnostic/base_message_param.py"
+        ```
 
 ## Handling Responses
-
-??? api "API Documentation"
-
-    [`mirascope.core.anthropic.call_response`](../api/core/anthropic/call_response.md)
-
-    [`mirascope.core.azure.call_response`](../api/core/azure/call_response.md)
-
-    [`mirascope.core.cohere.call_response`](../api/core/cohere/call_response.md)
-
-    [`mirascope.core.gemini.call_response`](../api/core/gemini/call_response.md)
-
-    [`mirascope.core.groq.call_response`](../api/core/groq/call_response.md)
-
-    [`mirascope.core.mistral.call_response`](../api/core/mistral/call_response.md)
-
-    [`mirascope.core.openai.call_response`](../api/core/openai/call_response.md)
-
-    [`mirascope.core.vertex.call_response`](../api/core/vertex/call_response.md)
-
-When you make a call to an LLM using Mirascope's `call` decorator, the response is wrapped in a provider-specific [`BaseCallResponse`](../api/core/base/call_response.md#mirascope.core.base.call_response.BaseCallResponse) object (e.g. `OpenAICallResponse`). This object provides a consistent interface for accessing the response data across different providers while still offering access to provider-specific details.
 
 ### Common Response Properties and Methods
 
@@ -382,182 +396,812 @@ There are also two common methods:
 
 While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `BaseCallResponse` object.
 
-```python
-# Accessing OpenAI-specific chat completion details
-completion = response.response
-print(f"Content: {completion.choices[0].message.content}")
-```
+!!! mira ""
+
+    === "OpenAI"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/openai_response.py"
+        ```
+
+    === "Anthropic"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/anthropic_response.py"
+        ```
+
+    === "Mistral"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/mistral_response.py"
+        ```
+
+    === "Gemini"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/gemini_response.py"
+        ```
+
+    === "Groq"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/groq_response.py"
+        ```
+
+    === "Cohere"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/cohere_response.py"
+        ```
+
+    === "LiteLLM"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/litellm_response.py"
+        ```
+
+    === "Azure AI"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/azure_response.py"
+        ```
+
+    === "Vertex AI"
+
+        ```python hl_lines="10-11"
+        --8<-- "examples/learn/calls/provider_specific_response/vertex_response.py"
+        ```
 
 !!! note "Reasoning For Provider-Specific `BaseCallResponse` Objects"
 
     The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
 
-### Error Handling
+## Common Parameters Across Providers
+
+While each LLM provider has its own specific parameters, there are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
+
+- `model`: The only required parameter for all providers, which may be passed in as a standard argument (whereas all others are optional and must be provided as keyword arguments). It specifies which language model to use for the generation. Each provider has its own set of available models.
+- `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](./streams.md) documentation.
+- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](./response_models.md) documentation.
+- `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](./output_parsers.md) documentation.
+- `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](./json_mode.md) documentation.
+- `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](./tools.md) documentation.
+- `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](#custom-client) section below.
+- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Parameters`](#provider-specific-parameters) section below.
+
+These common parameters provide a consistent way to control the behavior of LLM calls across different providers. Keep in mind that while these parameters are widely supported, there might be slight variations in how they're implemented or their exact effects across different providers (and the documentation should cover any such differences).
+
+## Provider-Specific Parameters
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
+
+    [`mirascope.core.azure.call_params`](../api/core/anthropic/call_params.md)
+
+    [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
+
+    [`mirascope.core.gemini.call_params`](../api/core/gemini/call_params.md)
+
+    [`mirascope.core.groq.call_params`](../api/core/groq/call_params.md)
+
+    [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
+
+    [`mirascope.core.mistral.call_params`](../api/core/mistral/call_params.md)
+
+    [`mirascope.core.openai.call_params`](../api/core/openai/call_params.md)
+
+    [`mirascope.core.vertex.call_params`](../api/core/vertex/call_params.md)
+
+While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
+
+For all providers, we have only included additional call parameters that are not already covered as shared arguments to the `call` decorator (e.g. `model`). We have also opted to exclude currently deprecated parameters entirely. However, since `call_params` is just a `TypedDict`, you can always include any additional keys at the expense of type errors (and potentially unknown behavior).
+
+!!! mira ""
+
+
+    === "OpenAI"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/openai_call_params.py"
+        ```
+
+    === "Anthropic"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/anthropic_call_params.py"
+        ```
+
+    === "Mistral"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/mistral_call_params.py"
+        ```
+
+    === "Gemini"
+
+        ```python hl_lines="1 7"
+        --8<-- "examples/learn/calls/call_params/gemini_call_params.py"
+        ```
+
+    === "Groq"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/groq_call_params.py"
+        ```
+
+    === "Cohere"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/cohere_call_params.py"
+        ```
+
+    === "LiteLLM"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/litellm_call_params.py"
+        ```
+
+    === "Azure AI"
+
+        ```python hl_lines="4"
+        --8<-- "examples/learn/calls/call_params/azure_call_params.py"
+        ```
+
+    === "Vertex AI"
+
+        ```python hl_lines="1 7"
+        --8<-- "examples/learn/calls/call_params/vertex_call_params.py"
+        ```
+
+## Dynamic Configuration
+
+Often you will want (or need) to configure your calls dynamically at runtime. Mirascope supports returning a `BaseDynamicConfig` from your prompt template, which will then be used to dynamically update the settings of the call.
+
+In all cases, you will need to return your prompt messages through the `messages` keyword of the dynamic config unless you're using string templates.
+
+### Call Params
+
+!!! mira ""
+
+    === "Shorthand"
+
+        === "OpenAI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/shorthand.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/shorthand.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/shorthand.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/shorthand.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/shorthand.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/shorthand.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/shorthand.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/shorthand.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/shorthand.py"
+            ```
+
+    === "Messages"
+
+        === "OpenAI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/messages.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/messages.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/messages.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/messages.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/messages.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/messages.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/messages.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/messages.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/messages.py"
+            ```
+
+    === "String Template"
+
+        === "OpenAI"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/string_template.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/string_template.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/string_template.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/string_template.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/string_template.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/string_template.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/string_template.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/string_template.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="5 8"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/string_template.py"
+            ```
+
+    === "BaseMessageParam"
+
+        === "OpenAI"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/base_message_param.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/base_message_param.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/base_message_param.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/base_message_param.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/base_message_param.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/base_message_param.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/base_message_param.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/base_message_param.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7-10"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/base_message_param.py"
+            ```
+
+### Metadata
+
+!!! mira ""
+
+    === "Shorthand"
+
+        === "OpenAI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/shorthand.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/shorthand.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/shorthand.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/shorthand.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/shorthand.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/shorthand.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/shorthand.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/shorthand.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/shorthand.py"
+            ```
+
+    === "Messages"
+
+        === "OpenAI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/messages.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/messages.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/messages.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/messages.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/messages.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/messages.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/messages.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/messages.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/messages.py"
+            ```
+
+    === "String Template"
+
+        === "OpenAI"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/string_template.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/string_template.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/string_template.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/string_template.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/string_template.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/string_template.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/string_template.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/string_template.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="5 9"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/string_template.py"
+            ```
+
+    === "BaseMessageParam"
+
+        === "OpenAI"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/openai/base_message_param.py"
+            ```
+
+        === "Anthropic"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/anthropic/base_message_param.py"
+            ```
+
+        === "Mistral"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/mistral/base_message_param.py"
+            ```
+
+        === "Gemini"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/gemini/base_message_param.py"
+            ```
+
+        === "Groq"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/groq/base_message_param.py"
+            ```
+
+        === "Cohere"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/cohere/base_message_param.py"
+            ```
+
+        === "LiteLLM"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/litellm/base_message_param.py"
+            ```
+
+        === "Azure AI"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/azure/base_message_param.py"
+            ```
+
+        === "Vertex AI"
+
+            ```python hl_lines="7-9 11"
+            --8<-- "examples/learn/calls/dynamic_configuration/vertex/base_message_param.py"
+            ```
+
+## Custom Messages
+
+You can also always return the original message types for any provider. To do so, simply return the provider-specific dynamic config:
+
+!!! mira ""
+
+    === "OpenAI"
+
+        ```python hl_lines="6"
+        --8<-- "examples/learn/calls/custom_messages/openai_messages.py"
+        ```
+
+    === "Anthropic"
+
+        ```python hl_lines="6"
+        --8<-- "examples/learn/calls/custom_messages/anthropic_messages.py"
+        ```
+
+    === "Mistral"
+
+        ```python hl_lines="7"
+        --8<-- "examples/learn/calls/custom_messages/mistral_messages.py"
+        ```
+
+    === "Gemini"
+
+        ```python hl_lines="6"
+        --8<-- "examples/learn/calls/custom_messages/gemini_messages.py"
+        ```
+
+    === "Groq"
+
+        ```python hl_lines="6"
+        --8<-- "examples/learn/calls/custom_messages/groq_messages.py"
+        ```
+
+    === "Cohere"
+
+        ```python hl_lines="7"
+        --8<-- "examples/learn/calls/custom_messages/cohere_messages.py"
+        ```
+
+    === "LiteLLM"
+
+        ```python hl_lines="6"
+        --8<-- "examples/learn/calls/custom_messages/litellm_messages.py"
+        ```
+
+    === "Azure AI"
+
+        ```python hl_lines="7"
+        --8<-- "examples/learn/calls/custom_messages/azure_messages.py"
+        ```
+
+    === "Vertex AI"
+
+        ```python hl_lines="8-10"
+        --8<-- "examples/learn/calls/custom_messages/vertex_messages.py"
+        ```
+
+## Custom Client
+
+Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
+
+To use a custom client, you can pass it to the `call` decorator using the `client` parameter. Here's an example using a custom OpenAI client:
+
+!!! mira ""
+
+    === "OpenAI"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/openai_client.py"
+        ```
+
+    === "Anthropic"
+
+        ```python hl_lines="1 5 10"
+        --8<-- "examples/learn/calls/custom_client/anthropic_client.py"
+        ```
+
+    === "Mistral"
+
+        ```python hl_lines="2-3 6 11"
+        --8<-- "examples/learn/calls/custom_client/mistral_client.py"
+        ```
+
+    === "Gemini"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/gemini_client.py"
+        ```
+
+    === "Groq"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/groq_client.py"
+        ```
+
+    === "Cohere"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/cohere_client.py"
+        ```
+
+    === "LiteLLM"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/litellm_client.py"
+        ```
+
+    === "Azure AI"
+
+        ```python hl_lines="1-3 5 9-11 19-21"
+        --8<-- "examples/learn/calls/custom_client/azure_client.py"
+        ```
+
+    === "Vertex AI"
+
+        ```python hl_lines="2 5 10"
+        --8<-- "examples/learn/calls/custom_client/vertex_client.py"
+        ```
+
+## Error Handling
 
 When making LLM calls, it's important to handle potential errors. Mirascope preserves the original error messages from providers, allowing you to catch and handle them appropriately:
 
-```python
-from openai import OpenAIError
-from mirascope.core import openai, prompt_template
+!!! mira ""
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+    === "OpenAI"
 
-try:
-    response = recommend_book("fantasy")
-    print(response.content)
-except OpenAIError as e:
-    print(f"Error: {str(e)}")
-```
+        ```python hl_lines="2 10 13"
+        --8<-- "examples/learn/calls/error_handling/openai_error.py"
+        ```
 
-By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base `Exception` instead of provider-specific exceptions.
+    === "Anthropic"
 
-### Type Safety and Proper Hints
+        ```python hl_lines="1 10 13"
+        --8<-- "examples/learn/calls/error_handling/anthropic_error.py"
+        ```
 
-One of the primary benefits of Mirascope is the enhanced type safety and proper type hints provided by the `call` decorator. This feature ensures that your IDE and type checker can accurately infer the return types of your LLM calls based on the parameters you've set.
+    === "Mistral"
 
-For example:
+        ```python hl_lines="2 10 13 16"
+        --8<-- "examples/learn/calls/error_handling/mistral_error.py"
+        ```
 
-- When using a basic call, the output will be properly typed as the provider-specific call response.
-- When you set a `response_model`, the output will be properly typed as the `ResponseModelT` type of the `response_model` you passed in.
-- When streaming is enabled, the return type will reflect the stream type.
-- If you use an `output_parser`, the return type will match the parser's output type.
+    === "Gemini"
 
-This type safety extends across all the different settings of the `call` decorator, providing a robust development experience and helping to catch potential type-related errors early in the development process.
+        ```python hl_lines="9 12"
+        --8<-- "examples/learn/calls/error_handling/gemini_error.py"
+        ```
 
-![calls-type-hint](../assets/calls-type-hint.png)
+    === "Groq"
 
-In this example, your IDE will provide proper autocompletion and type checking for `recommendation.content` and `recommendation.response`, enhancing code reliability and developer productivity.
+        ```python hl_lines="1 10 13 16"
+        --8<-- "examples/learn/calls/error_handling/groq_error.py"
+        ```
 
-## Best Practices
+    === "Cohere"
 
-To make the most of Mirascope's `call` decorator and ensure you're building robust, efficient, and maintainable LLM applications, consider the following best practices:
+        ```python hl_lines="1 10 13 15"
+        --8<-- "examples/learn/calls/error_handling/cohere_error.py"
+        ```
 
-- **Provider Flexibility**: Design functions to be provider-agnostic, allowing easy switching between different LLM providers for comparison or fallback strategies.
-   ```python
-   @prompt_template("Recommend a {genre} book")
-   def recommend_book(genre: str):
-       ...
+    === "LiteLLM"
 
-   # Can easily switch between providers
-   openai_response = openai.call("gpt-4o-mini")(recommend_book)("fantasy")
-   anthropic_response = anthropic.call("claude-3-5-sonnet-20240620")(recommend_book)("fantasy")
-   ```
+        ```python hl_lines="1 10 13 15"
+        --8<-- "examples/learn/calls/error_handling/litellm_error.py"
+        ```
 
-- **Provider-Specific Prompts**: When necessary, tailor prompts to leverage unique features of specific providers using provider-specific `call` decorators. For example, Anthropic's Claude model is known to handle prompts with XML particularly well.
-   ```python
-   @anthropic.call("claude-3-5-sonnet-20240620")
-   @prompt_template(
-       """
-       <task>Recommend a {genre} book</task>
-       <format>
-         <title>Book Title</title>
-         <author>Author Name</author>
-         <description>Brief description</description>
-       </format>
-       """
-   )
-   def recommend_book_claude(genre: str):
-       ...
-   ```
+    === "Azure AI"
 
-- **Error Handling**: Implement robust error handling to manage API failures, timeouts, or content policy violations, ensuring your application's resilience.
-   ```python
-   from openai import OpenAIError
-   from anthropic import AnthropicError
+        ```python hl_lines="9 12"
+        --8<-- "examples/learn/calls/error_handling/azure_error.py"
+        ```
 
-   try:
-       response = recommend_book("fantasy")
-   except OpenAIError as e:
-       print(f"OpenAI error: {e}")
-       # Fallback to another provider or retry logic
-   except AnthropicError as e:
-       print(f"Anthropic error: {e}")
-       # Fallback to another provider or retry logic
-   except Exception as e:
-       print(f"Unexpected error: {e}")
-       # General error handling
-   ```
+    === "Vertex AI"
 
-   For more advanced retry logic, check out our documentation on [using Tenacity](../integrations/tenacity.md).
+        ```python hl_lines="9 12"
+        --8<-- "examples/learn/calls/error_handling/vertex_error.py"
+        ```
 
-- **Streaming for Long Tasks**: Utilize streaming for long-running tasks or when providing real-time updates to users, improving the user experience.
-   ```python
-   @openai.call("gpt-4o-mini", stream=True)
-   @prompt_template("Summarize this book: {title}")
-   def summarize_book(title: str):
-       ...
+By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
 
-   for chunk, _ in summarize_book("The Lord of the Rings"):
-       print(chunk.content, end="", flush=True)
-   ```
+## Next Steps
 
-   For more details on streaming, check out the [`Streams`](./streams.md) documentation.
+By mastering calls in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
 
-- **Modular Function Design**: Break down complex tasks into smaller, modular functions that can be chained together, enhancing reusability and maintainability.
-   ```python
-   @openai.call("gpt-4o-mini")
-   @prompt_template("Summarize this text: {text}")
-   def summarize(text: str):
-       ...
-
-   @openai.call("gpt-4o-mini")
-   @prompt_template("Translate this text to {language}: {summary}")
-   def translate(summary: str, language: str):
-       ...
-
-   def summarize_and_translate(original_text: str, target_language: str):
-       summary = summarize(original_text)
-       return translate(summary.content, target_language)
-   ```
-
-   For more on chaining, see the [`Chaining`](./chaining.md) documentation.
-
-- **Custom Clients**: Leverage custom clients when working with self-hosted models or specific API configurations, allowing for greater flexibility in deployment scenarios.
-   ```python
-   from openai import OpenAI
-
-   custom_client = OpenAI(
-       api_key="your-api-key",
-       base_url="https://your-custom-endpoint.com/v1"
-   )
-
-   @openai.call("gpt-4o-mini", client=custom_client)
-   @prompt_template("Recommend a {genre} book")
-   def recommend_book(genre: str):
-       ...
-   ```
-
-   This approach allows you to use open-source models by serving OpenAI compatible endpoints (e.g., with [vLLM](https://github.com/vllm-project/vllm), [Ollama](https://github.com/ollama/ollama), etc).
-
-- **Structured Outputs**: Use `response_models` to ensure consistency and type safety when you need structured data from your LLM calls.
-   ```python
-   from pydantic import BaseModel
-
-   class BookRecommendation(BaseModel):
-       title: str
-       author: str
-
-   @openai.call("gpt-4o-mini", response_model=BookRecommendation)
-   @prompt_template("Recommend a {genre} book")
-   def recommend_book(genre: str):
-       ...
-
-   recommendation = recommend_book("fantasy")
-   print(f"Title: {recommendation.title}")
-   print(f"Author: {recommendation.author}")
-   ```
-
-   For more details, check out the [`Response Models`](./response_models.md) documentation.
-
-- **Parameterized Calls**: Take advantage of `call_params` to customize model behavior without changing your core function logic.
-   ```python
-   @openai.call("gpt-4o-mini", call_params={"temperature": 0.7, "max_tokens": 150})
-   @prompt_template("Write a short poem about {topic}")
-   def write_poem(topic: str):
-       ...
-   ```
-
-By following these best practices, you can create more robust, flexible, and efficient LLM applications with Mirascope. Remember that mastering the `call` decorator is key to building applications that are adaptable to various providers and use cases.
+Next, we recommend taking a look at the [Streams](./streams.md) documentation, which shows you how to stream your call responses for a more real-time interaction.

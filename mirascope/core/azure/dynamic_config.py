@@ -1,8 +1,6 @@
 """This module defines the function return type for functions as LLM calls."""
 
-from azure.ai.inference.models import (
-    ChatRequestMessage,
-)
+from azure.ai.inference.models import ChatRequestMessage
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import AzureCallParams

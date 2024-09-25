@@ -30,13 +30,12 @@ from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
 from .metadata import Metadata
-from .stream import BaseStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _T = TypeVar("_T", bound=Callable)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
+_BaseStreamT = TypeVar("_BaseStreamT")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 
@@ -378,7 +377,9 @@ def prompt_template(
 
     if template is None:
         # For @prompt_template() case
-        return messages_decorator()
+        decorator = messages_decorator()
+        decorator.__mirascope_prompt_template__ = True  # pyright: ignore [reportAttributeAccessIssue]
+        return decorator
 
     @overload
     def inner(
@@ -440,6 +441,7 @@ def prompt_template(
             get_base_message_params._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
             return get_base_message_params
 
+    inner.__mirascope_prompt_template__ = True  # pyright: ignore [reportFunctionMemberAccess]
     return inner
 
 

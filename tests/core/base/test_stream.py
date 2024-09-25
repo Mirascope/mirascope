@@ -21,9 +21,11 @@ def mock_stream_decorator_kwargs() -> dict:
     }
 
 
+@patch("mirascope.core.base.stream.prompt_template", new_callable=MagicMock)
 @patch("mirascope.core.base.stream.get_metadata", new_callable=MagicMock)
 def test_stream_factory_sync(
     mock_get_metadata: MagicMock,
+    mock_prompt_template_decorator: MagicMock,
     mock_setup_call: MagicMock,
     mock_stream_decorator_kwargs: dict,
 ) -> None:
@@ -57,6 +59,8 @@ def test_stream_factory_sync(
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
 
+    mock_prompt_template_decorator.return_value = lambda x: fn
+
     decorated_fn = decorator(fn)
     assert decorated_fn._model == mock_stream_decorator_kwargs["model"]  # pyright: ignore [reportFunctionMemberAccess]
     stream: BaseStream = decorated_fn(genre="fantasy", topic="magic")  # type: ignore
@@ -88,10 +92,12 @@ def test_stream_factory_sync(
     mock_create.assert_called_once_with(stream=True, **mock_call_kwargs)
 
 
+@patch("mirascope.core.base.stream.prompt_template", new_callable=MagicMock)
 @patch("mirascope.core.base.stream.get_metadata", new_callable=MagicMock)
 @pytest.mark.asyncio
 async def test_stream_factory_async(
     mock_get_metadata: MagicMock,
+    mock_prompt_template_decorator: MagicMock,
     mock_setup_call_async: MagicMock,
     mock_stream_decorator_kwargs: dict,
 ) -> None:
@@ -124,6 +130,8 @@ async def test_stream_factory_async(
     async def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
         return dynamic_config
+
+    mock_prompt_template_decorator.return_value = lambda x: fn
 
     stream: BaseStream = await decorator(fn)(genre="fantasy", topic="magic")  # type: ignore
     stream_response = []

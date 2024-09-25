@@ -3,7 +3,7 @@
 import datetime
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar, overload
+from typing import ParamSpec, TypeVar, cast, overload
 
 from ._utils import (
     SetupCall,
@@ -12,10 +12,13 @@ from ._utils import (
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
+    is_prompt_template,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
+from .messages import Messages
+from .prompt import prompt_template
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -56,7 +59,32 @@ def create_factory(  # noqa: ANN202
 
     @overload
     def decorator(
+        fn: Callable[_P, Messages.Type],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
+
+    @overload
+    def decorator(
         fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[
+        _P,
+        Awaitable[_BaseCallResponseT | _ParsedOutputT],
+    ]: ...
+
+    @overload
+    def decorator(
+        fn: Callable[_P, Awaitable[Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
@@ -70,7 +98,9 @@ def create_factory(  # noqa: ANN202
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
+        | Callable[_P, Awaitable[Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
@@ -83,6 +113,16 @@ def create_factory(  # noqa: ANN202
         | _ParsedOutputT
         | Awaitable[_BaseCallResponseT | _ParsedOutputT],
     ]:
+        if not is_prompt_template(fn):
+            fn = cast(
+                Callable[_P, Messages.Type] | Callable[_P, Awaitable[Messages.Type]], fn
+            )
+            fn = prompt_template()(fn)
+            fn = cast(
+                Callable[_P, _BaseDynamicConfigT]
+                | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+                fn,
+            )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
