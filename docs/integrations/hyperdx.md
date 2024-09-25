@@ -12,7 +12,7 @@ pip install "mirascope[hyperdx]"
 
 ### Calls
 
-Our integration with HyperDX is a simple wrapper on top of our OpenTelemetry integration. The `with_hyperdx` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md#supported-providers).
+Our integration with HyperDX is a simple wrapper on top of our OpenTelemetry integration. The `with_hyperdx` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md).
 
 Here is a simple example using tools:
 
