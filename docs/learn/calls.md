@@ -6,7 +6,7 @@
         If you haven't already, we recommend first reading the section on writing [Prompts](./prompts.md)
     </div>
 
-When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to calling the LLM provider's API with a particular setting and prompt.
+When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to making a request to a LLM provider's API with a particular setting and prompt.
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various LLM providers. This powerful tool allows you to transform prompt templates written as Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
@@ -322,15 +322,15 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         --8<-- "examples/learn/calls/basic_call/vertex/official_sdk_call.py"
         ```
 
-As you can see, Mirascope reduces boilerplate and makes calls more readable.
+Notice how Mirascope makes calls more readable by reducing boilerplate and standardizing interactions with LLM providers.
 
-In these above examples, we are directly tying the prompt to a specific provider and call setting (i.e. provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
+In these above Mirascope examples, we are directly tying the prompt to a specific provider and call setting (provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
 
 ### Provider-Agnostic Usage
 
 We've implemented calls as decorators so that they work for both provider-specific cases (as seen above) as well as provider-agnostic cases.
 
-Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt vs. their official SDKs:
+Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt:
 
 !!! mira ""
 
@@ -360,9 +360,14 @@ Let's take a look at a basic example using Mirascope to call both OpenAI and Ant
 
 ## Handling Responses
 
+??? api "API Documentation"
+
+    [`mirascope.core.base.call_response`](../api/core/base/call_response.md)
+
 ### Common Response Properties and Methods
 
 All `BaseCallResponse` objects share these common properties:
+
 
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
@@ -393,6 +398,27 @@ There are also two common methods:
 - `tool_message_params`: Creates message parameters for tool call results. Check out the [`Tools`](./tools.md) documentation for more information.
 
 ### Provider-Specific Response Details
+
+??? api "API Documentation"
+
+    [`mirascope.core.anthropic.call_response`](../api/core/anthropic/call_response.md)
+
+    [`mirascope.core.azure.call_response`](../api/core/azure/call_response.md)
+
+    [`mirascope.core.cohere.call_response`](../api/core/cohere/call_response.md)
+
+    [`mirascope.core.gemini.call_response`](../api/core/gemini/call_response.md)
+
+    [`mirascope.core.groq.call_response`](../api/core/groq/call_response.md)
+
+    [`mirascope.core.litellm.call_response`](../api/core/openai/call_response.md)
+
+    [`mirascope.core.mistral.call_response`](../api/core/mistral/call_response.md)
+
+    [`mirascope.core.openai.call_response`](../api/core/openai/call_response.md)
+
+    [`mirascope.core.vertex.call_response`](../api/core/vertex/call_response.md)
+
 
 While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `BaseCallResponse` object.
 
@@ -477,7 +503,7 @@ These common parameters provide a consistent way to control the behavior of LLM 
 
     [`mirascope.core.anthropic.call_params`](../api/core/anthropic/call_params.md)
 
-    [`mirascope.core.azure.call_params`](../api/core/anthropic/call_params.md)
+    [`mirascope.core.azure.call_params`](../api/core/azure/call_params.md)
 
     [`mirascope.core.cohere.call_params`](../api/core/cohere/call_params.md)
 
