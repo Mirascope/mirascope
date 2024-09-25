@@ -17,173 +17,45 @@ Whether you're building chatbots, extracting structured information, or developi
 
 !!! mira "Mirascope"
 
-    === "OpenAI"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        ```python
-        --8<-- "examples/learn/calls/basic_call/openai/shorthand.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-    === "Anthropic"
+            {% if method == "string_template" %}
+            ```python hl_lines="4 5"
+            {% else %}
+            ```python hl_lines="4 6"
+            {% endif %}
+            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-        ```python
-        --8<-- "examples/learn/calls/basic_call/anthropic/shorthand.py"
-        ```
-
-    === "Mistral"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/mistral/shorthand.py"
-        ```
-
-    === "Gemini"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/gemini/shorthand.py"
-        ```
-
-    === "Groq"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/groq/shorthand.py"
-        ```
-
-    === "Cohere"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/cohere/shorthand.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/litellm/shorthand.py"
-        ```
-
-    === "Azure AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/azure/shorthand.py"
-        ```
-  
-    === "Vertex AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/vertex/shorthand.py"
-        ```
+    {% endfor %}
 
 !!! note "Official SDK"
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
         ```python
-        --8<-- "examples/learn/calls/basic_call/openai/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/official_sdk_call.py"
         ```
 
-    === "Anthropic"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/anthropic/official_sdk_call.py"
-        ```
-
-    === "Mistral"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/mistral/official_sdk_call.py"
-        ```
-
-    === "Gemini"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/gemini/official_sdk_call.py"
-        ```
-
-    === "Groq"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/groq/official_sdk_call.py"
-        ```
-
-    === "Cohere"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/cohere/official_sdk_call.py"
-        ```
-
-    === "LiteLLM"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/litellm/official_sdk_call.py"
-        ```
-
-    === "Azure AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/azure/official_sdk_call.py"
-        ```
-    
-    === "Vertex AI"
-
-        ```python
-        --8<-- "examples/learn/calls/basic_call/vertex/official_sdk_call.py"
-        ```
+    {% endfor %}
 
 ## Installation
 
 Install Mirascope, specifying the provider(s) you intend to use:
 
-=== "OpenAI"
+{% for provider in supported_llm_providers %}
+=== "{{ provider }}"
 
     ```bash
-    pip install "mirascope[openai]"
+    pip install "mirascope[{{ provider | provider_dir }}]"
     ```
-
-=== "Anthropic"
-
-    ```bash
-    pip install "mirascope[anthropic]"
-    ```
-
-=== "Mistral"
-
-    ```bash
-    pip install "mirascope[mistral]"
-    ```
-
-=== "Gemini"
-
-    ```bash
-    pip install "mirascope[gemini]"
-    ```
-
-=== "Groq"
-
-    ```bash
-    pip install "mirascope[groq]"
-    ```
-
-=== "Cohere"
-
-    ```bash
-    pip install "mirascope[cohere]"
-    ```
-
-=== "LiteLLM"
-
-    ```bash
-    pip install "mirascope[litellm]"
-    ```
-
-=== "Azure AI"
-
-    ```bash
-    pip install "mirascope[azure]"
-    ```
-
-=== "Vertex AI"
-
-    ```bash
-    pip install "mirascope[vertex]"
-    ```
+{% endfor %}
 
 Set up your API key:
 

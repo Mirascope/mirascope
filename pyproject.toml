@@ -84,6 +84,7 @@ dev-dependencies = [
     "mkdocs-material>=9.5.32",
     "mkdocstrings>=0.25.2",
     "mkdocstrings-python>=1.10.8",
+    "mkdocs-macros-plugin>=1.2.0",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
     "chromadb>=0.5.5",
