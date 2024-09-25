@@ -368,7 +368,6 @@ Let's take a look at a basic example using Mirascope to call both OpenAI and Ant
 
 All `BaseCallResponse` objects share these common properties:
 
-
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
 - `model`: The name of the model used for generation.
