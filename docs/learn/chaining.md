@@ -40,11 +40,11 @@ Mirascope is designed to be Pythonic. Since calls are defined as functions, chai
         {% endfor %}
     {% endfor %}
 
-One benefit of this approach is that you can implement modular calls that you can chain together any which way. You can then always wrap these functional chains in a parent function that operates as the single call to the chain.
+One benefit of this approach is that you can chain your calls together any which way since they are just functions. You can then always wrap these functional chains in a parent function that operates as the single call to the chain.
 
 ### Nested Chains
 
-In some cases you'll want the prompt engineer an entire chain rather than just chaining together individual calls. You can do this simply by calling the subchain inside the function body of the parent:
+In some cases you'll want to prompt engineer an entire chain rather than just chaining together individual calls. You can do this simply by calling the subchain inside the function body of the parent:
 
 !!! mira ""
 
@@ -66,7 +66,7 @@ In some cases you'll want the prompt engineer an entire chain rather than just c
         {% endfor %}
     {% endfor %}
 
-When using ops tools, nesting these calls will often provide a better trace in the tool.
+We recommend using nested chains for better observability when using tracing tools or applications.
 
 ??? tip "Improved tracing through computed fields"
 
@@ -120,10 +120,10 @@ Here are a few examples:
 
 [Response Models](./response_models.md) are a great way to add more structure to your chains, and [parallel async calls](./async.md#parallel-async-calls) can be particularly powerful for making your chains more efficient.
 
-For inspiration on even more ways you can chain calls together, check out our cookbook section on [chaining-based prompt engineering](../cookbook/prompt_engineering/chaining_based/index.md), which covers various more advanced chaining techniques used to apply prompt engineering concepts.
+For inspiration on even more ways you can chain calls together, check out our cookbook section on [chaining-based prompt engineering](../cookbook/prompt_engineering/chaining_based/index.md), which covers many advanced chaining techniques used to apply prompt engineering concepts.
 
 ## Next Steps
 
-By mastering Mirascope's chaining techniques, you can create sophisticated LLM-powered applications that tackle complex, multi-step problems with greater accuracy, control, and traceability.
+By mastering Mirascope's chaining techniques, you can create sophisticated LLM-powered applications that tackle complex, multi-step problems with greater accuracy, control, and observability.
 
 Next, we recommend taking a look at the [Response Models](./response_models.md) documentation, which shows you how to generate structured outputs.
