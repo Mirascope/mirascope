@@ -40,7 +40,7 @@ Mirascope is designed to be Pythonic. Since calls are defined as functions, chai
         {% endfor %}
     {% endfor %}
 
-One benefit of this approach is that you can arrange your modular calls in any order. You can then always wrap these functional chains in a parent function that operates as the single call to the chain.
+One benefit of this approach is that you can chain your calls together any which way since they are just functions. You can then always wrap these functional chains in a parent function that operates as the single call to the chain.
 
 ### Nested Chains
 
