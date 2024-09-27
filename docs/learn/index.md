@@ -32,6 +32,10 @@ If you haven't already, we recommend checking out [Getting Started](../index.md)
 
 Mirascope is built around these core components, each designed to handle specific aspects of working with LLM provider APIs:
 
+![Learn Flow Chart](../assets/learn_flow_chart)
+
+We encourage you to dive into each component's documentation to gain a deeper understanding of Mirascope's capabilities. Start with the topics that align most closely with your immediate needs, but don't hesitate to explore all areas – you might discover new ways to enhance your LLM applications!
+
 <div class="grid cards" markdown>
 
 -   __Prompts__
@@ -115,10 +119,6 @@ Mirascope is built around these core components, each designed to handle specifi
     [:octicons-arrow-right-24: Docs](./provider_specific_features.md)
 
 </div>
-
-## Next Steps
-
-We encourage you to dive into each component's documentation to gain a deeper understanding of Mirascope's capabilities. Start with the topics that align most closely with your immediate needs, but don't hesitate to explore all areas – you might discover new ways to enhance your LLM applications!
 
 As you progress, you'll find advanced topics and best practices throughout the documentation. These will help you optimize your use of Mirascope and build increasingly sophisticated AI-powered applications.
 

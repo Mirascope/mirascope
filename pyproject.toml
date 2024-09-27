@@ -45,6 +45,7 @@ dependencies = [
     "docstring-parser>=0.15,<1.0",
     "jiter>=0.5.0",
     "typing-extensions>=4.10.0",
+    "mkdocs-jupyter>=0.25.0",
 ]
 
 [project.urls]
@@ -140,7 +141,7 @@ target-version = "py310"
 "__init__.py" = ["F401"]
 "tests/*.py" = ["S101", "ANN"]
 "examples/*.{py,ipynb}" = ["T201", "ANN"]
-"docs/*.py" = ["ANN401"]
+"docs/*.{py,ipynb}" = ["T201", "ANN"]
 
 [tool.ruff.lint]
 select = [

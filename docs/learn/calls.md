@@ -45,12 +45,22 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
     {% endfor %}
 
-!!! note "Official SDK"
+??? note "Official SDK"
 
     {% for provider in supported_llm_providers %}
     === "{{ provider }}"
 
-        ```python
+        {% if provider == "Anthropic" %}
+        ```python hl_lines="7-13"
+        {% elif provider in ["Gemini", "Vertex AI"] %}
+        ```python hl_lines="7-10"
+        {% elif provider == "LiteLLM" %}
+        ```python hl_lines="5-9"
+        {% elif provider == "Azure AI" %}
+        ```python hl_lines="11-18"
+        {% else %}
+        ```python hl_lines="7-11"
+        {% endif %}
         --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/official_sdk_call.py"
         ```
 
@@ -184,16 +194,22 @@ For all providers, we have only included additional call parameters that are not
 
 !!! mira ""
 
-    {% for provider in supported_llm_providers %}
-    === "{{ provider }}"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-        {% if provider in ["Gemini", "Vertex AI"] %}
-        ```python hl_lines="1 7"
-        {% else %}
-        ```python hl_lines="4"
-        {% endif %}
-        --8<-- "examples/learn/calls/call_params/{{ provider | provider_dir }}_call_params.py"
-        ```
+            {% if provider == "Gemini" %}
+            ```python hl_lines="1 7"
+            {% elif provider == "Vertex AI" %}
+            ```python hl_lines="2 7"
+            {% else %}
+            ```python hl_lines="4"
+            {% endif %}
+            --8<-- "examples/learn/calls/call_params/{{ provider | provider_dir }}/{{ method }}.py::9"
+            ```
+
+        {% endfor %}
     {% endfor %}
 
 ## Dynamic Configuration
@@ -276,22 +292,26 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
 
 !!! mira ""
 
-    {% for provider in supported_llm_providers %}
-    === "{{ provider }}"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-        {% if provider == "LiteLLM" %}
-        ```python
-        {% elif provider in ["OpenAI", "Vertex AI"] %}
-        ```python hl_lines="2 5 10"
-        {% elif provider == "Mistral" %}
-        ```python hl_lines="2-3 6 11"
-        {% elif provider == "Azure AI" %}
-        ```python hl_lines="1-3 9-11 19-21"
-        {% else %}
-        ```python hl_lines="1 5 10"
-        {% endif %}
-        --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}_client.py"
-        ```
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider in ["OpenAI", "Vertex AI"] %}
+            ```python hl_lines="2 5 10"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="2-3 6 11"
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-3 9-11 19-21"
+            {% else %}
+            ```python hl_lines="1 5 10"
+            {% endif %}
+            --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
     {% endfor %}
 
 ## Error Handling
@@ -300,20 +320,24 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 
 !!! mira ""
 
-    {% for provider in supported_llm_providers %}
-    === "{{ provider }}"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-        {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
-        ```python hl_lines="9 12"
-        {% elif provider == "Mistral" %}
-        ```python hl_lines="2 10 13 16"
-        {% elif provider == "OpenAI" %}
-        ```python hl_lines="2 10 13"
-        {% else %}
-        ```python hl_lines="1 10 13"
-        {% endif %}
-        --8<-- "examples/learn/calls/error_handling/{{ provider | provider_dir }}_error.py"
-        ```
+            {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
+            ```python hl_lines="9 12"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="2 10 13 16"
+            {% elif provider == "OpenAI" %}
+            ```python hl_lines="2 10 13"
+            {% else %}
+            ```python hl_lines="1 10 13"
+            {% endif %}
+            --8<-- "examples/learn/calls/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
     {% endfor %}
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
@@ -322,4 +346,11 @@ By catching provider-specific errors, you can implement appropriate error handli
 
 By mastering calls in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
 
-Next, we recommend taking a look at the [Streams](./streams.md) documentation, which shows you how to stream your call responses for a more real-time interaction.
+Next, we recommend choosing one of:
+
+- [Streams](./streams.md) to see how to stream call responses for a more real-time interaction.
+- [Chaining](./chaining.md) to see how to chain calls together.
+- [Response Models](./response_models.md) to see how to generate structured outputs.
+- [Tools](./tools.md) to see how to give LLMs access to custom tools to extend their capabilities.
+
+Pick whichever path aligns best with what you're hoping to get from Mirascope.

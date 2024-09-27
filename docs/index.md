@@ -13,7 +13,52 @@ LLM abstractions that aren't obstructions.
 
 Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai).
 
-Whether you're building chatbots, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
+Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
+
+## 30 Second Quickstart
+
+Install Mirascope, specifying the provider(s) you intend to use, and set your API key:
+
+{% set operating_systems = ["MacOS / Linux", "Windows"] %}
+{% for os in operating_systems %}
+=== "{{ os }}"
+
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
+
+        ```bash
+        pip install "mirascope[{{ provider | provider_dir }}]"
+        {% if provider == "Gemini" %}
+        {% if os == "Windows" %}set GOOGLE_API_KEY=XXXXX
+        {% else %}export GOOGLE_API_KEY=XXXXX
+        {% endif %}
+        {% elif provider == "Cohere" %}
+        {% if os == "Windows" %}set CO_API_KEY=XXXXX
+        {% else %}export CO_API_KEY=XXXXX
+        {% endif %}
+        {% elif provider == "LiteLLM" %}
+        {% if os == "Windows" %}set OPENAI_API_KEY=XXXXX  # set keys for providers you will use
+        {% else %}export OPENAI_API_KEY=XXXXX  # set keys for providers you will use
+        {% endif %}
+        {% elif provider == "Azure AI" %}
+        {% if os == "Windows" %}set AZURE_INFERENCE_ENDPOINT=XXXXX
+        set AZURE_INFERENCE_CREDENTIAL=XXXXX
+        {% else %}export AZURE_INFERENCE_ENDPOINT=XXXXX
+        export AZURE_INFERENCE_CREDENTIAL=XXXXX
+        {% endif %}
+        {% elif provider == "Vertex AI" %}
+        gcloud init
+        gcloud auth application-default login
+        {% else %}
+        {% if os == "Windows" %}set {{ upper(provider | provider_dir) }}_API_KEY=XXXXX
+        {% else %}export {{ upper(provider | provider_dir) }}_API_KEY=XXXXX
+        {% endif %}
+        {% endif %}
+        ```
+    {% endfor %}
+{% endfor %}
+
+Make your first call:
 
 !!! mira "Mirascope"
 
@@ -34,7 +79,7 @@ Whether you're building chatbots, extracting structured information, or developi
 
     {% endfor %}
 
-!!! note "Official SDK"
+??? note "Official SDK"
 
     {% for provider in supported_llm_providers %}
     === "{{ provider }}"
@@ -45,96 +90,9 @@ Whether you're building chatbots, extracting structured information, or developi
 
     {% endfor %}
 
-## Installation
-
-Install Mirascope, specifying the provider(s) you intend to use:
-
-{% for provider in supported_llm_providers %}
-=== "{{ provider }}"
-
-    ```bash
-    pip install "mirascope[{{ provider | provider_dir }}]"
-    ```
-{% endfor %}
-
-Set up your API key:
-
-=== "OpenAI"
-
-    ```python
-    import os
-
-    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "Anthropic"
-
-    ```python
-    import os
-
-    os.environ["ANTHROPIC_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "Mistral"
-
-    ```python
-    import os
-
-    os.environ["MISTRAL_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "Gemini"
-
-    ```python
-    import os
-
-    os.environ["GOOGLE_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "Groq"
-
-    ```python
-    import os
-
-    os.environ["GROQ_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "Cohere"
-
-    ```python
-    import os
-
-    os.environ["CO_API_KEY"] = "YOUR_API_KEY"
-    ```
-
-=== "LiteLLM"
-
-    ```python
-    import os
-
-    os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"  # set keys for providers you will use
-    ```
-
-=== "Azure AI"
-
-    ```python
-    import os
-
-    os.environ["AZURE_INFERENCE_ENDPOINT"] = "YOUR_ENDPOINT"
-    os.environ["AZURE_INFERENCE_CREDENTIAL"] = "YOUR_CREDENTIAL"
-    ```
-
-=== "Vertex AI"
-
-    ```python
-    import vertexai
-
-    vertexai.init(...)  # provide necessary settings/credentials
-    ```
-
 ## Choose Your Path
 
-### Getting Started Notebooks
+### Tutorials
 
 <div class="grid cards" markdown>
 
@@ -144,7 +102,7 @@ Set up your API key:
 
     Comprehensive overview of core features and building blocks
 
-    [:octicons-arrow-right-24: Quickstart](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/quickstart.ipynb)
+    [:octicons-arrow-right-24: Quickstart](./tutorials/quickstart.ipynb)
 
 -   :material-database:{ .lg .middle } __Structured Outputs__
 
@@ -152,7 +110,7 @@ Set up your API key:
 
     Explore various techniques for generating structured outputs
 
-    [:octicons-arrow-right-24: Structured Outputs](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/structured_outputs.ipynb)
+    [:octicons-arrow-right-24: Structured Outputs](./tutorials/structured_outputs.ipynb)
 
 -   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
 
@@ -160,7 +118,7 @@ Set up your API key:
 
     Examples ranging from basic usage to more complex chaining techniques
 
-    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/dynamic_config_and_chaining.ipynb)
+    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](./tutorials/dynamic_configuration_and_chaining.ipynb)
 
 -   :material-tools:{ .lg .middle } __Tools & Agents__
 
@@ -168,7 +126,7 @@ Set up your API key:
 
     Learn how to define tools for your LLM to build advanced AI agents
 
-    [:octicons-arrow-right-24: Tools & Agents](https://github.com/Mirascope/mirascope/blob/dev/examples/getting_started/notebooks/tools_and_agents.ipynb)
+    [:octicons-arrow-right-24: Tools & Agents](./tutorials/tools_and_agents.ipynb)
 
 </div>
 
@@ -192,14 +150,6 @@ Set up your API key:
 
     [:octicons-arrow-right-24: Cookbook](./cookbook/index.md)
 
--   :material-text-search:{ .lg .middle } __API Reference__
-
-    ---
-
-    Detailed information on classes and functions
-
-    [:octicons-arrow-right-24: Reference](./api/index.md)
-
 -   :material-connection:{ .lg .middle } __Integrations__
 
     ---
@@ -208,16 +158,15 @@ Set up your API key:
 
     [:octicons-arrow-right-24: Integrations](./integrations/index.md)
 
+-   :material-text-search:{ .lg .middle } __API Reference__
+
+    ---
+
+    Detailed information on classes and functions
+
+    [:octicons-arrow-right-24: Reference](./api/index.md)
+
 </div>
-
-## Key Features
-
-- [Prompt Templates](./learn/prompts.md): Dynamic prompt creation with type-safe templating
-- [LLM Calls](./learn/calls.md): Simplified API interactions across multiple providers
-- [Streaming](./learn/streams.md): Real-time responses for improved user experience
-- [Response Models](./learn/response_models.md): Easily extract and validate structured information with Pydantic
-- [Custom Tools](./learn/tools.md): Extend LLM capabilities with your own functions
-- [Agents](./learn/tools.md): Effortlessly manage state and integrate custom tools
 
 ## Next Steps
 
