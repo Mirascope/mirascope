@@ -63,7 +63,9 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
 Notice how Mirascope makes generating structured outputs significantly simpler than the official SDKs. It also greatly reduces boilerplate and standardizes the interaction across all supported LLM providers.
 
-??? info "Tools By Default"
+Every `response_model` that uses a Pydantic `BaseModel` will automatically have a private `_response` property `CallResponse` object. You can then access the original provider response through the `response` property.
+
+!!! info "Tools By Default"
 
     By default, `response_model` will use [Tools](./tools.md) under the hood, forcing to the LLM to call that specific tool and constructing the response model from the tool's arguments.
 
@@ -89,6 +91,29 @@ For cases where you want to extract just a single built-in type, Mirascope provi
     {% endfor %}
 
 Here, we are using `list[str]` as the `response_model`, which Mirascope handles without needing to define a full `BaseModel`. You could of course set `response_model=list[Book]` as well.
+
+Note that we have no way of injecting `CallResponse` to built-in types, so creating a Pydantic `BaseModel` is often times the recommended choice for tracing.
+
+## Supported Field Types
+
+While Mirascope provides a consistent interface, type support varies among providers:
+
+|     Type      | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
+|---------------|-----------|--------|--------|------|---------|--------|
+|     str       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     int       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|    float      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     bool      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     bytes     |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|
+|     list      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     set       |✓✓|✓✓|--|✓✓|✓✓|✓✓|
+|     tuple     |✓✓|✓✓|-✓|✓✓|✓✓|-✓|
+|     dict      |✓✓|✓✓|✓✓|✓✓|✓✓|-✓|
+|  Literal/Enum |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|   BaseModel   |✓✓|-✓|✓✓|✓✓|✓✓|✓✓|
+| Nested ($def) |✓✓|--|--|✓✓|✓✓|✓✓|
+
+✓✓ : Fully Supported, -✓: Only JSON Mode Support, -- : Not supported
 
 ## Validation and Error Handling
 
@@ -156,27 +181,6 @@ By default, `response_model` uses [Tools](./tools.md) under the hood. You can in
 
     {% endfor %}
 
-## Supported Field Types
-
-While Mirascope provides a consistent interface, type support varies among providers:
-
-|     Type      | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
-|---------------|-----------|--------|--------|------|---------|--------|
-|     str       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     int       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|    float      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     bool      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     bytes     |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|
-|     list      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     set       |✓✓|✓✓|--|✓✓|✓✓|✓✓|
-|     tuple     |✓✓|✓✓|-✓|✓✓|✓✓|-✓|
-|     dict      |✓✓|✓✓|✓✓|✓✓|✓✓|-✓|
-|  Literal/Enum |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|   BaseModel   |✓✓|-✓|✓✓|✓✓|✓✓|✓✓|
-| Nested ($def) |✓✓|--|--|✓✓|✓✓|✓✓|
-
-✓✓ : Fully Supported, -✓: Only JSON Mode Support, -- : Not supported
-
 ## Few-Shot Examples
 
 Adding few-shot examples to your response model can improve results by demonstrating exactly how to adhere to your desired output.
@@ -217,7 +221,7 @@ If you set `stream=True` when `response_model` is set, your LLM call will return
 
     {% endfor %}
 
-Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream.
+Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream. This will give you access to the same `._response` property that every `BaseModel` receives.
 
 You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](./streams.md#common-stream-properties-and-methods).
 
