@@ -40,3 +40,7 @@
     -webkit-mask-image: var(--md-admonition-icon--mira);
             mask-image: var(--md-admonition-icon--mira);
   }
+
+.jp-InputPrompt, .jp-OutputPrompt {
+  display: none !important;
+}

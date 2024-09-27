@@ -110,6 +110,10 @@ plugins:
   - search
   - macros:
       module_name: docs/macros
+  - mkdocs-jupyter:
+      execute: false
+      include_source: True
+      ignore: ["*.py"]
   - mkdocstrings:
       handlers:
         python:
@@ -150,6 +154,11 @@ nav:
       - Migration Guide: "MIGRATE.md"
       - Contributing: "CONTRIBUTING.md"
       - Changelog: "CHANGELOG.md"
+  - Tutorials:
+      - Quickstart: "tutorials/quickstart.ipynb"
+      - Structured Outputs: "tutorials/structured_outputs.ipynb"
+      - Dynamic Configuration & Chaining: "tutorials/dynamic_configuration_and_chaining.ipynb"
+      - Tools & Agents: "tutorials/tools_and_agents.ipynb"
   - Learn:
       - "learn/index.md"
       - Prompts: "learn/prompts.md"

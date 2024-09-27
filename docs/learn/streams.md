@@ -186,20 +186,26 @@ Error handling in streams is similar to standard non-streaming calls. However, i
 
 !!! mira ""
 
-    {% for provider in supported_llm_providers %}
-    === "{{ provider }}"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-        {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
-        ```python hl_lines="9 12"
-        {% elif provider == "Mistral" %}
-        ```python hl_lines="2 10 13 16"
-        {% elif provider == "OpenAI" %}
-        ```python hl_lines="2 10 13"
-        {% else %}
-        ```python hl_lines="1 10 13"
-        {% endif %}
-        --8<-- "examples/learn/streams/error_handling/{{ provider | provider_dir }}_error.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
+            ```python hl_lines="9 12"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="2 10 13 16"
+            {% elif provider == "OpenAI" %}
+            ```python hl_lines="2 10 13"
+            {% else %}
+            ```python hl_lines="1 10 13"
+            {% endif %}
+            --8<-- "examples/learn/streams/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+
     {% endfor %}
 
 In these examples, we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming.

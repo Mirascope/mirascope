@@ -12,5 +12,9 @@ def define_env(env: Any) -> None:
         return first_word
 
     @env.macro
+    def upper(v: str) -> str:
+        return v.upper()
+
+    @env.macro
     def zip(*args: list) -> Any:
         return builtins.zip(*args, strict=True)

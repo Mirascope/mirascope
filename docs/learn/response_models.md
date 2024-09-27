@@ -1,6 +1,12 @@
 # Response Models
 
-Response Models in Mirascope provide a powerful way to structure and validate the output from Large Language Models (LLMs). By leveraging Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/usage/models/), Response Models offer type safety, automatic validation, and easier data manipulation for your LLM responses. While we cover some details in this documentation, we highly recommend reading through Pydantic's documentation for a deeper, comprehensive dive into everything you can do with Pydantic and `BaseModel`s.
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
+
+Response Models in Mirascope provide a powerful way to structure and validate the output from Large Language Models (LLMs). By leveraging Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/usage/models/), Response Models offer type safety, automatic validation, and easier data manipulation for your LLM responses. While we cover some details in this documentation, we highly recommend reading through Pydantic's documentation for a deeper, comprehensive dive into everything you can do with Pydantic's `BaseModel`.
 
 ## Why Use Response Models?
 
@@ -9,202 +15,150 @@ Response Models in Mirascope provide a powerful way to structure and validate th
 3. **Improved Type Hinting**: Better IDE support and clearer code structure.
 4. **Easier Data Manipulation**: Work with Python objects instead of raw strings or dictionaries.
 
-## Using Response Models
+## Basic Usage and Syntax
 
-To use a Response Model, define a Pydantic model and pass it to the `response_model` parameter in the `call` decorator:
+Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
-```python hl_lines="5-7 10 16"
-from mirascope.core import openai, prompt_template, Messages
-from pydantic import BaseModel
+!!! mira "Mirascope"
 
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-class Book(BaseModel):
-    title: str
-    author: str
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
+            ```python hl_lines="12 19"
+            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-@openai.call(model="gpt-4o-mini", response_model=Book)
-@prompt_template()
-def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
+    {% endfor %}
 
+??? note "Official SDK"
 
-book = recommend_book("science fiction")
-assert isinstance(book, Book)
-print(f"Title: {book.title}")
-print(f"Author: {book.author}")
-```
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-In this example:
+        {% if provider == "Anthropic" %}
+        ```python hl_lines="19-38 43"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="19-40 45"
+        {% elif provider == "Gemini" %}
+        ```python hl_lines="19-57 62"
+        {% elif provider == "Cohere" %}
+        ```python hl_lines="19-36 41"
+        {% elif provider == "LiteLLM" %}
+        ```python hl_lines="16-37 42"
+        {% elif provider == "Azure AI" %}
+        ```python hl_lines="26-46 51"
+        {% elif provider == "Vertex AI" %}
+        ```python hl_lines="23-62 67"
+        {% else %}
+        ```python hl_lines="18-39 44"
+        {% endif %}
+        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
+        ```
 
-1. We define a prompt template using the `@prompt_template()` decorator.
-2. We wrap the function with the `@openai.call` decorator, specifying the model to use.
-3. We set the `response_model` parameter to our `Book` class, which inherits from Pydantic's `BaseModel`.
+    {% endfor %}
 
-This approach works consistently across all supported providers in Mirascope.
+Notice how Mirascope makes generating structured outputs significantly simpler than the official SDKs. It also greatly reduces boilerplate and standardizes the interaction across all supported LLM providers.
 
-!!! tip "Accessing the Original Response"
+??? info "Tools By Default"
 
-    You can always access the original response through the `_response` property on the returned response model. However, this is a private attribute we've included for such access and is not an official property of the response model type, meaning that you'll need to ignore type errors when accessing the property and cast the property to get editor support on the original response object.
+    By default, `response_model` will use [Tools](./tools.md) under the hood, forcing to the LLM to call that specific tool and constructing the response model from the tool's arguments.
 
-    Example:
-    
-    ```python hl_lines="2 4"
-    # original `OpenAICallResponse`
-    response = cast(openai.OpenAICallResponse, book._response)  # pyright: ignore [reportAttributeAccessIssue]
-    # original `ChatCompletion`
-    completion = response.response
-    ```
+    We default to using tools because all supported providers support tools. You can also optionally set `json_mode=True` to use [JSON Mode](./json_mode.md) instead, which we cover in [more detail below](#json-mode).
 
-## Extracting Built-in Types
+### Built-In Types
 
-For simpler cases where you want to extract just a single built-in type, Mirascope provides a shorthand:
+For cases where you want to extract just a single built-in type, Mirascope provides a shorthand:
 
-```python hl_lines="1 7"
-@openai.call("gpt-4o-mini", response_model=list[str])
-@prompt_template()
-def recommend_books(genre: str, num: int) -> Messages.Type:
-    return f"Recommend a list of {num} {genre} books"
+!!! mira ""
 
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-books = recommend_books("fantasy", 3)  # return is type `list[str]`
-for book in books:
-    print(book)
-# > The Name of the Wind by Patrick Rothfuss
-#   Mistborn: The Final Empire by Brandon Sanderson
-#   The Way of Kings by Brandon Sanderson
-```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-Here, we're using `list[str]` as the `response_model`, which Mirascope handles without needing to define a full `BaseModel`.
+            ```python hl_lines="4 16"
+            --8<-- "examples/learn/response_models/builtin_types/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-## Few-Shot Examples
+    {% endfor %}
 
-Adding few-shot examples to your response model can improve results by demonstrating exactly how to adhere to your desired output:
+Here, we are using `list[str]` as the `response_model`, which Mirascope handles without needing to define a full `BaseModel`. You could of course set `response_model=list[Book]` as well.
 
-```python hl_lines="6-7 11-13 18"
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel, ConfigDict, Field
+## Validation and Error Handling
 
+While `response_model` significantly improves output structure and validation, it's important to handle potential errors.
 
-class Book(BaseModel):
-    title: str = Field(..., examples=["THE NAME OF THE WIND"])
-    author: str = Field(..., examples=["Rothfuss, Patrick"])
+Let's take a look at an example where we want to validate that all fields are uppercase:
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "examples": [
-                {"title": "THE NAME OF THE WIND", "author": "Rothfuss, Patrick"}
-            ]
-        }
-    )
+!!! mira ""
 
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-@openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
-@prompt_template()
-def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book. Match example format."
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
+            ```python hl_lines="1 4 7-9 15-16 24 28"
+            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::36"
+            ```
+        {% endfor %}
 
-book = recommend_book("scifi")
-print(book)
-# > title='DUNE' author='Herbert, Frank'
-```
+    {% endfor %}
 
-This example demonstrates:
+Without additional prompt engineering, this call will fail every single time. It's important to engineer your prompts to reduce errors, but LLMs are far from perfect, so always remember to catch and handle validation errors gracefully.
 
-1. Using `Field` to provide examples for individual fields.
-2. Using `ConfigDict` to provide a full example of the model structure.
-3. Setting `json_mode=True` to improve the effectiveness of examples.
+We highly recommend taking a look at our section on [tenacity](../integrations/tenacity.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
 
-!!! note "Example Effectiveness"
+### Accessing Original Response On Error
 
-    We have found that examples are more effective when used in conjunction with additional prompt engineering. In the above example, you can see that we added "Match example format" to the prompt. We have also found that examples often work better when using `json_mode=True`. We believe that this is the result of models not being trained specifically on JSON schemas with examples and more often trained on few-shot examples that are directly part of the prompt itself.
+In case of a `ValidationError`, you can access the original response for debugging:
 
-## Streaming Response Models
+!!! mira ""
 
-If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-```python hl_lines="13 20-21"
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
+            ```python hl_lines="28-31"
+            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::28"
+            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py:37:39"
+            ```
+        {% endfor %}
 
-class Book(BaseModel):
-    title: str
-    author: str
+    {% endfor %}
 
+This allows you to gracefully handle errors as well as inspect the original LLM response when validation fails.
 
-@openai.call(
-    "gpt-4o-mini",
-    response_model=Book,
-    stream=True,
-)
-@prompt_template()
-def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
+## JSON Mode
 
+By default, `response_model` uses [Tools](./tools.md) under the hood. You can instead use [JSON Mode](./json_mode.md) in conjunction with `response_model` by setting `json_mode=True`:
 
-book_stream = recommend_book("science fiction")
-for partial_book in book_stream:
-    print(partial_book)
-# title=None author=None
-# title=None author=None
-# title='' author=None
-# title='D' author=None
-# title='Dune' author=None
-# title='Dune' author=None
-# title='Dune' author=None
-# title='Dune' author=''
-# title='Dune' author='Frank'
-# title='Dune' author='Frank Herbert'
-# title='Dune' author='Frank Herbert'
-# title='Dune' author='Frank Herbert'
-# title='Dune' author='Frank Herbert'
-```
+!!! mira ""
 
-### Type Safety with Response Models
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-When using response models with Mirascope's `call` decorator, you benefit from enhanced type safety and accurate type hints. The decorator ensures that the return type of your function matches the response model you specify.
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-In the above example, your IDE will provide proper autocompletion and type checking for `recommendation.title` and `recommendation.author`, enhancing code reliability and developer productivity.
+            ```python hl_lines="12"
+            --8<-- "examples/learn/response_models/json_mode/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-## JSON Mode and Response Models
+    {% endfor %}
 
-When using Response Models, the default setting is `json_mode=False`, which will use [`Tools`](./tools.md) under the hood to perform the structured output extraction. However, for some providers setting `json_mode=True` enables support for field types that may not be supported by tools.
+## Supported Field Types
 
-```python hl_lines="11"
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel
-
-class BookOutline(BaseModel):
-    title: str
-    chapters: list[str]
-
-@openai.call(
-    "gpt-4o-mini",
-    response_model=BookOutline,
-    json_mode=True,
-)
-@prompt_template()
-def outline_book(genre: str) -> Messages.Type:
-    return f"Outline a {genre} book with chapter titles"
-
-book_outline = outline_book("mystery")
-print(f"Title: {book_outline.title}")
-print("Chapters:")
-for chapter in book_outline.chapters:
-    print(f"- {chapter}")
-```
-
-!!! note "Not All Providers Have Explicit JSON Mode Support"
-
-    In cases where a model provider does not have explicit JSON Mode support, Mirascope implements a pseudo JSON Mode by instructing the model to output JSON in the prompt. Since all providers support [`Tools`](./tools.md), the default when using `response_model` is `json_mode=False`.
-
-We generally recommend testing both settings to see which works better for your use-case. For more details on JSON Mode, refer to the [JSON Mode documentation](./json_mode.md).
-
-### Field Type Support Across Providers
-
-The support for different field types varies across providers. Here's a comprehensive overview:
+While Mirascope provides a consistent interface, type support varies among providers:
 
 |     Type      | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
 |---------------|-----------|--------|--------|------|---------|--------|
@@ -223,157 +177,52 @@ The support for different field types varies across providers. Here's a comprehe
 
 ✓✓ : Fully Supported, -✓: Only JSON Mode Support, -- : Not supported
 
-## Error Handling and Validation
+## Few-Shot Examples
 
-While Response Models significantly improve output structure and validation, it's important to handle potential errors:
+Adding few-shot examples to your response model can improve results by demonstrating exactly how to adhere to your desired output.
 
-```python hl_lines="3 6"
-from pydantic import ValidationError
+We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/concepts/fields/) and [`ConfigDict`](https://docs.pydantic.dev/latest/concepts/config/) to add these examples to response models:
 
-try:
-    response = recommend_book("science fiction")
-    print(response.title)
-except ValidationError as e:
-    print(f"Validation error: {e}")
-```
+!!! mira ""
 
-For robust applications, consider implementing retry logic with validation error feedback. Check out the [Tenacity integration documentation](../integrations/tenacity.md) to learn how to easily reinsert validation errors into subsequent retry calls.
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-### Accessing Original Response On Error
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-In case of a `ValidationError`, you can access the original response for debugging:
+            ```python hl_lines="6-7 11-13 25"
+            --8<-- "examples/learn/response_models/few_shot_examples/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-```python hl_lines="26 32 33"
-from typing import cast
+    {% endfor %}
 
-from mirascope.core import openai, prompt_template
-from pydantic import BaseModel, ValidationError, field_validator
+## Streaming Response Models
 
+If you set `stream=True` when `response_model` is set, your LLM call will return an `Iterable` where each item will be a partial version of your response model representing the current state of the streamed information. The final model returned by the iterator will be the full response model.
 
-class Book(BaseModel):
-    title: str
+!!! mira ""
 
-    @field_validator("title")
-    @classmethod
-    def isupper(cls, title: str) -> str:
-        if not title.isupper():
-            raise ValueError(f"title is not uppercase: {title}")
-        return title
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-@openai.call("gpt-4o-mini", response_model=Book)
-@prompt_template()
-def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
+            ```python hl_lines="10 16-17"
+            --8<-- "examples/learn/response_models/streaming/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-try:
-    book = recommend_book("fantasy")
-    print(book)
-except ValidationError as e:
-    print(e)
-    # > 1 validation error for Book
-    #   title
-    #     Value error, title is not uppercase: The Name of the Wind [type=value_error, input_value='The Name of the Wind', input_type=str]
-    #       For further information visit https://errors.pydantic.dev/2.7/v/value_error
-    response = cast(openai.OpenAICallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
-    print(response.model_dump())
-    # > {'metadata': {}, 'response': {'id': ...}, ...}
-```
+    {% endfor %}
 
-This allows you to inspect the raw LLM response when validation fails.
+Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream.
 
-## Best Practices
+You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](./streams.md#common-stream-properties-and-methods).
 
-Here are some best practices to follow when using Response Models:
-
-1. **Use Clear Field Names**: Choose descriptive names for your model fields to guide the LLM's output.
-   ```python
-   class BookReview(BaseModel):
-       book_title: str
-       author_name: str
-       rating: int
-       review_text: str
-   ```
-
-2. **Provide Field Descriptions**: Use Pydantic's `Field` with descriptions to give the LLM more context.
-   ```python
-   class MovieRecommendation(BaseModel):
-       title: str = Field(..., description="The full title of the movie")
-       director: str = Field(..., description="The name of the movie's director")
-       year: int = Field(..., description="The year the movie was released")
-       genre: str = Field(..., description="The primary genre of the movie")
-   ```
-
-3. **Start Simple**: Begin with basic types and gradually increase complexity as needed.
-   ```python
-   # Start with this:
-   class SimpleRecipe(BaseModel):
-       name: str
-       ingredients: list[str]
-
-   # Then evolve to this:
-   class DetailedRecipe(BaseModel):
-       name: str
-       ingredients: list[Ingredient]
-       preparation_time: int
-       cooking_time: int
-       instructions: list[str]
-   ```
-4. **Handle Errors Gracefully**: Implement proper error handling and consider using retry mechanisms.
-   ```python
-   from tenacity import retry, stop_after_attempt, wait_fixed
-
-   @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-   @openai.call("gpt-4o-mini", response_model=Recipe)
-   @prompt_template()
-   def get_recipe(dish: str) -> Messages.Type:
-       return f"Provide a recipe for {dish}"
-
-   try:
-       recipe = get_recipe("spaghetti carbonara")
-       print(recipe)
-   except Exception as e:
-       print(f"Failed to get recipe after retries: {e}")
-   ```
-   For more advanced error handling techniques, check out our [Tenacity integration documentation](../integrations/tenacity.md).
- 
-5. **Leverage JSON Mode**: When possible, use `json_mode=True` for better type support and consistency.
-   ```python
-   @openai.call("gpt-4o-mini", response_model=ComplexDataStructure, json_mode=True)
-   @prompt_template()
-   def get_complex_data(query: str) -> Messages.Type:
-       return f"Generate complex data for {query}"
-   ```
-
-6. **Test Thoroughly**: Validate your Response Models across different inputs and edge cases.
-   ```python
-    import pytest
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    @openai.call("gpt-4o-mini", response_model=Book)
-    @prompt_template()
-    def extract_book(book: str) -> Messages.Type:
-        return f"Extract {book}"
-
-    @pytest.mark.parametrize(
-        "book,expected_output",
-        [
-            (
-                "The Name of the Wind",
-                Book(title="The Name of the Wind", author="Patrick Rothfuss"),
-            ),
-            (
-                "Mistborn: The Final Empire",
-                Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),
-            ),
-        ],
-    )
-    def test_extract_book(book: str, expected_output: Book) -> None:
-        output = extract_book(book)
-        assert output.model_dump() == expected_output.model_dump()
-   ```
+## Next Steps
 
 By following these best practices and leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
+
+Next, we recommend taking a look at the [JSON Mode](./json_mode.md) documentation, which shows you an alternate way to generate structured outputs where using Pydantic to validate outputs is optional.

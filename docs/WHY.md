@@ -8,35 +8,44 @@ Mirascope provides powerful abstractions that simplify LLM interactions without 
 
 By eliminating boilerplate, Mirascope allows you to focus on what matter most: your prompt.
 
-Let's compare structured outputs using Mirascope vs. the official OpenAI and Anthropic SDKs:
+Let's compare structured outputs using Mirascope vs. the official SDKs:
 
 !!! mira "Mirascope"
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-        ```python
-        --8<-- "examples/getting_started/why/boilerplate_reduction/openai/mirascope_call.py"
+        ```python hl_lines="12 19"
+        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/shorthand.py"
         ```
-
-    === "Anthropic"
-
-        ```python
-        --8<-- "examples/getting_started/why/boilerplate_reduction/anthropic/mirascope_call.py"
-        ```
+    {% endfor %}
 
 !!! note "Official SDK"
 
-    === "OpenAI"
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-        ```python
-        --8<-- "examples/getting_started/why/boilerplate_reduction/openai/official_sdk_call.py"
+        {% if provider == "Anthropic" %}
+        ```python hl_lines="19-38 43"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="19-40 45"
+        {% elif provider == "Gemini" %}
+        ```python hl_lines="19-57 62"
+        {% elif provider == "Cohere" %}
+        ```python hl_lines="19-36 41"
+        {% elif provider == "LiteLLM" %}
+        ```python hl_lines="16-37 42"
+        {% elif provider == "Azure AI" %}
+        ```python hl_lines="26-46 51"
+        {% elif provider == "Vertex AI" %}
+        ```python hl_lines="23-62 67"
+        {% else %}
+        ```python hl_lines="18-39 44"
+        {% endif %}
+        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
         ```
-   
-    === "Anthropic"
 
-        ```python
-        --8<-- "examples/getting_started/why/boilerplate_reduction/anthropic/official_sdk_call.py"
-        ```
+    {% endfor %}
 
 Reducing this boilerplate becomes increasingly important as the number and complexity of your calls grows beyond a single basic example. Furthermore, the Mirascope interface works across all of our various supported providers, so you don't need to learn the intracacies of each provider to use them the same way.
 
@@ -48,27 +57,35 @@ Mirascope's functional approach promotes modularity and reusability. You can eas
 
     === "Separate Calls"
 
-        ```python hl_lines="6 12 16 22"
-        --8<-- "examples/getting_started/why/modular_design/separate_calls.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "string_template" %}
+            ```python hl_lines="6 11 14-15"
+            {% elif method == "base_message_param" %}
+            ```python hl_lines="5 10 19-20"
+            {% else %}
+            ```python hl_lines="5 10 14-15"
+            {% endif %}
+            --8<-- "examples/learn/chaining/function_chaining/{{ provider | provider_dir }}/shorthand.py"
+            ```
+        {% endfor %}
 
     === "Nested Calls"
 
-        ```python hl_lines="6 12 17"
-        --8<-- "examples/getting_started/why/modular_design/nested_calls.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-    === "Mixed Separate Calls"
-
-        ```python hl_lines="7 17 21 27"
-        --8<-- "examples/getting_started/why/modular_design/mixed_separate_calls.py"
-        ```
-
-    === "Mixed Nested Calls"
-
-        ```python hl_lines="7 17 22"
-        --8<-- "examples/getting_started/why/modular_design/mixed_nested_calls.py"
-        ```
+            {% if method == "string_template" %}
+            ```python hl_lines="6 10 12 15"
+            {% elif method == "base_message_param" %}
+            ```python hl_lines="5 11 15 20"
+            {% else %}
+            ```python hl_lines="5 11-12 15"
+            {% endif %}
+            --8<-- "examples/learn/chaining/nested_chains/{{ provider | provider_dir }}/shorthand.py"
+            ```
+        {% endfor %}
 
 The goal of our design approach is to remain __Pythonic__ so you can __build your way__.
 
@@ -82,14 +99,14 @@ By implementing our LLM API call functionality as decorators, Mirascope makes im
 
     === "Provider-Specific"
 
-        ```python hl_lines="6 12"
-        --8<-- "examples/getting_started/why/provider_agnostic_specific/specific.py"
+        ```python hl_lines="4-5 9-10 14 17"
+        --8<-- "examples/getting_started/provider_specific.py"
         ```
 
     === "Provider-Agnostic"
 
-        ```python hl_lines="5 9 13"
-        --8<-- "examples/getting_started/why/provider_agnostic_specific/agnostic.py"
+        ```python hl_lines="4-5 11-12 17-18"
+        --8<-- "examples/getting_started/provider_agnostic.py"
         ```
 
 ### Type Hints & Editor Support
