@@ -1,6 +1,6 @@
 from typing import Annotated, cast
 
-from mirascope.core import Messages, litellm, openai
+from mirascope.core import Messages, litellm
 from pydantic import AfterValidator, BaseModel, ValidationError
 
 
@@ -34,6 +34,6 @@ except ValidationError as e:
     # author
     #   Assertion failed, Field must be uppercase [type=assertion_error, input_value='Patrick Rothfuss', input_type=str]
     #     For further information visit https://errors.pydantic.dev/2.7/v/assertion_error
-    response = cast(openai.OpenAICallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
+    response = cast(litellm.OpenAICallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
     print(response.model_dump())
     # > {'metadata': {}, 'response': {'id': ...}, ...}

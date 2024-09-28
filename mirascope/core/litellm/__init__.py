@@ -2,7 +2,12 @@
 
 from typing import TypeAlias
 
-from ..openai import OpenAIMessageParam
+from ..openai import (
+    OpenAICallResponse,
+    OpenAICallResponseChunk,
+    OpenAIDynamicConfig,
+    OpenAIMessageParam,
+)
 from ._call import litellm_call
 from ._call import litellm_call as call
 

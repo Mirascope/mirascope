@@ -28,7 +28,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         === "{{ provider }}"
 
             ```python hl_lines="12 19"
-            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:21"
             ```
         {% endfor %}
 
@@ -63,13 +63,30 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
 Notice how Mirascope makes generating structured outputs significantly simpler than the official SDKs. It also greatly reduces boilerplate and standardizes the interaction across all supported LLM providers.
 
-Every `response_model` that uses a Pydantic `BaseModel` will automatically have a private `_response` property `CallResponse` object. You can then access the original provider response through the `response` property.
-
 !!! info "Tools By Default"
 
     By default, `response_model` will use [Tools](./tools.md) under the hood, forcing to the LLM to call that specific tool and constructing the response model from the tool's arguments.
 
     We default to using tools because all supported providers support tools. You can also optionally set `json_mode=True` to use [JSON Mode](./json_mode.md) instead, which we cover in [more detail below](#json-mode).
+
+### Accessing Original Call Response
+
+Every `response_model` that uses a Pydantic `BaseModel` will automatically have the original `BaseCallResponse` instance accessible through the `_response` property:
+
+!!! mira "Mirascope"
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="1 23-25"
+            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+
+    {% endfor %}
 
 ### Built-In Types
 
@@ -92,7 +109,7 @@ For cases where you want to extract just a single built-in type, Mirascope provi
 
 Here, we are using `list[str]` as the `response_model`, which Mirascope handles without needing to define a full `BaseModel`. You could of course set `response_model=list[Book]` as well.
 
-Note that we have no way of injecting `CallResponse` to built-in types, so creating a Pydantic `BaseModel` is often times the recommended choice for tracing.
+Note that we have no way of attaching `BaseCallResponse` to built-in types, so using a Pydantic `BaseModel` is recommended if you anticipate needing access to the original call response.
 
 ## Supported Field Types
 
@@ -140,7 +157,7 @@ Without additional prompt engineering, this call will fail every single time. It
 
 We highly recommend taking a look at our section on [tenacity](../integrations/tenacity.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
 
-### Accessing Original Response On Error
+### Accessing Original Call Response On Error
 
 In case of a `ValidationError`, you can access the original response for debugging:
 
@@ -221,7 +238,7 @@ If you set `stream=True` when `response_model` is set, your LLM call will return
 
     {% endfor %}
 
-Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream. This will give you access to the same `._response` property that every `BaseModel` receives.
+Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream. Note that this will also give you access to the [`._response` property](#accessing-original-call-response) that every `BaseModel` receives.
 
 You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](./streams.md#common-stream-properties-and-methods).
 
