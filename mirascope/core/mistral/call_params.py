@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mistralai.models.chat_completion import ResponseFormat, ToolChoice
+from mistralai.models import ResponseFormat, ToolChoice
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams

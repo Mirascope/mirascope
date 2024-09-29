@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 import jiter
-from mistralai.models.chat_completion import ToolCall
+from mistralai.models import ToolCall
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool

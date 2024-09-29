@@ -5,8 +5,14 @@ usage docs: learn/calls.md#handling-responses
 
 from typing import Any
 
-from mistralai.models.chat_completion import ChatCompletionResponse, ChatMessage
-from mistralai.models.common import UsageInfo
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionResponse,
+    SystemMessage,
+    ToolMessage,
+    UsageInfo,
+    UserMessage,
+)
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
@@ -22,9 +28,9 @@ class MistralCallResponse(
         MistralTool,
         dict[str, Any],
         MistralDynamicConfig,
-        ChatMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralCallParams,
-        ChatMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
     ]
 ):
     """A convenience wrapper around the Mistral `ChatCompletion` response.
@@ -96,7 +102,9 @@ class MistralCallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> ChatMessage:
+    def message_param(
+        self,
+    ) -> AssistantMessage | SystemMessage | ToolMessage | UserMessage:
         """Returns the assistants's response as a message parameter."""
         return self.response.choices[0].message
 
@@ -136,7 +144,7 @@ class MistralCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[MistralTool, str]]
-    ) -> list[ChatMessage]:
+    ) -> list[AssistantMessage | SystemMessage | ToolMessage | UserMessage]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -147,8 +155,7 @@ class MistralCallResponse(
             The list of constructed `ChatMessage` parameters.
         """
         return [
-            ChatMessage(
-                role="tool",
+            ToolMessage(
                 content=output,
                 tool_call_id=tool.tool_call.id,
                 name=tool._name(),

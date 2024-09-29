@@ -1,15 +1,14 @@
 """Tests the `mistral.call_response` module."""
 
-from mistralai.models.chat_completion import (
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionChoice,
     ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatMessage,
-    FinishReason,
     FunctionCall,
     ToolCall,
-    ToolType,
+    ToolMessage,
+    UsageInfo,
 )
-from mistralai.models.common import UsageInfo
 
 from mirascope.core.mistral.call_response import MistralCallResponse
 from mirascope.core.mistral.tool import MistralTool
@@ -18,10 +17,10 @@ from mirascope.core.mistral.tool import MistralTool
 def test_mistral_call_response() -> None:
     """Tests the `MistralCallResponse` class."""
     choices = [
-        ChatCompletionResponseChoice(
+        ChatCompletionChoice(
             index=0,
-            message=ChatMessage(role="assistant", content="content"),
-            finish_reason=FinishReason.stop,
+            message=AssistantMessage(content="content"),
+            finish_reason="stop",
         )
     ]
     usage = UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2)
@@ -56,9 +55,7 @@ def test_mistral_call_response() -> None:
     assert call_response.input_tokens == 1
     assert call_response.output_tokens == 1
     assert call_response.cost == 1.2e-5
-    assert call_response.message_param == ChatMessage(
-        role="assistant", content="content"
-    )
+    assert call_response.message_param == AssistantMessage(content="content")
     assert call_response.tools is None
     assert call_response.tool is None
 
@@ -79,17 +76,15 @@ def test_mistral_call_response_with_tools() -> None:
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
     completion = ChatCompletionResponse(
         id="id",
         choices=[
-            ChatCompletionResponseChoice(
-                finish_reason=FinishReason.stop,
+            ChatCompletionChoice(
+                finish_reason="stop",
                 index=0,
-                message=ChatMessage(
-                    role="assistant", content="content", tool_calls=[tool_call]
-                ),
+                message=AssistantMessage(content="content", tool_calls=[tool_call]),
             )
         ],
         created=0,
@@ -120,7 +115,7 @@ def test_mistral_call_response_with_tools() -> None:
     output = tool.call()
     assert output == "The Name of the Wind by Patrick Rothfuss"
     assert call_response.tool_message_params([(tool, output)]) == [
-        ChatMessage(
+        ToolMessage(
             role="tool",
             content=output,
             tool_call_id=tool_call.id,

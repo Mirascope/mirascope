@@ -3,12 +3,12 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from mistralai.async_client import MistralAsyncClient
-from mistralai.models.chat_completion import (
+from mistralai import Chat, Mistral
+from mistralai.models import (
+    AssistantMessage,
     ChatCompletionResponse,
-    ChatCompletionStreamResponse,
-    ChatMessage,
-    ToolChoice,
+    CompletionChunk,
+    UserMessage,
 )
 
 from mirascope.core.mistral._utils._setup_call import setup_call
@@ -24,11 +24,7 @@ def mock_base_setup_call() -> MagicMock:
 
 
 @patch(
-    "mirascope.core.mistral._utils._setup_call.MistralClient.chat_stream",
-    return_value=MagicMock(),
-)
-@patch(
-    "mirascope.core.mistral._utils._setup_call.MistralClient.chat",
+    "mirascope.core.mistral._utils._setup_call.Mistral",
     return_value=MagicMock(),
 )
 @patch(
@@ -39,19 +35,19 @@ def mock_base_setup_call() -> MagicMock:
 def test_setup_call(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
-    mock_mistral_chat: MagicMock,
-    mock_mistral_chat_stream: MagicMock,
+    mock_mistral: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
     mock_utils.setup_call = mock_base_setup_call
     mock_chat_iterator = MagicMock()
     mock_chat_iterator.__iter__.return_value = ["chat"]
-    mock_mistral_chat_stream.return_value = mock_chat_iterator
+    mock_mistral.chat = MagicMock()
+    mock_mistral.chat.stream.return_value = mock_chat_iterator
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="mistral-large-latest",
-        client=None,
+        client=mock_mistral,
         fn=fn,
         fn_args={},
         dynamic_config=None,
@@ -70,9 +66,9 @@ def test_setup_call(
     )
     assert messages == mock_convert_message_params.return_value
     create(stream=False, **call_kwargs)
-    mock_mistral_chat.assert_called_once_with(**call_kwargs)
+    mock_mistral.chat.complete.assert_called_once_with(**call_kwargs)
     stream = create(stream=True, **call_kwargs)
-    mock_mistral_chat_stream.assert_called_once_with(**call_kwargs)
+    mock_mistral.chat.stream.assert_called_once_with(**call_kwargs)
     assert next(stream) == "chat"  # pyright: ignore [reportArgumentType]
 
 
@@ -91,7 +87,7 @@ async def test_async_setup_call(
     mock_mistral_chat = AsyncMock(spec=ChatCompletionResponse)
     mock_mistral_chat.__name__ = "chat"
 
-    mock_stream_response = AsyncMock(spec=ChatCompletionStreamResponse)
+    mock_stream_response = AsyncMock(spec=CompletionChunk)
     mock_stream_response.text = "chat"
 
     class AsyncMockIterator:
@@ -109,13 +105,16 @@ async def test_async_setup_call(
 
     mock_iterator = AsyncMockIterator([mock_stream_response])
 
-    mock_client = AsyncMock(spec=MistralAsyncClient, name="mock_client")
-    mock_client.chat_stream.return_value = mock_iterator
-    mock_client.chat.return_value = mock_mistral_chat
+    mock_client = MagicMock(spec=Mistral, name="mock_client")
+    mock_client.chat = MagicMock(spec=Chat)
+    mock_client.chat.stream_async = AsyncMock()
+    mock_client.chat.stream_async.return_value = mock_iterator
+    mock_client.chat.complete_async = AsyncMock()
+    mock_client.chat.complete_async.return_value = mock_mistral_chat
 
     mock_utils.setup_call = mock_base_setup_call
 
-    fn = MagicMock()
+    fn = AsyncMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="mistral-large-latest",
         client=mock_client,
@@ -136,7 +135,6 @@ async def test_async_setup_call(
         mock_base_setup_call.return_value[1]
     )
 
-    mock_mistral_chat.return_value = MagicMock(spec=ChatCompletionResponse)
     chat = await create(stream=False, **call_kwargs)
     stream = await create(stream=True, **call_kwargs)
     result = []
@@ -162,7 +160,7 @@ def test_setup_call_json_mode(
     mock_json_mode_content = MagicMock()
     mock_json_mode_content.return_value = "\n\njson_mode_content"
     mock_utils.json_mode_content = mock_json_mode_content
-    mock_base_setup_call.return_value[1] = [ChatMessage(role="user", content="test")]
+    mock_base_setup_call.return_value[1] = [UserMessage(content="test")]
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
@@ -180,7 +178,7 @@ def test_setup_call_json_mode(
     assert "tools" not in call_kwargs
 
     mock_base_setup_call.return_value[1] = [
-        ChatMessage(role="assistant", content="test"),
+        AssistantMessage(content="test"),
     ]
     _, _, messages, _, call_kwargs = setup_call(
         model="mistral-large-latest",
@@ -193,7 +191,7 @@ def test_setup_call_json_mode(
         call_params={},
         extract=False,
     )
-    assert messages[-1] == ChatMessage(role="user", content="json_mode_content")
+    assert messages[-1] == UserMessage(content="json_mode_content")
 
 
 @patch(
@@ -219,4 +217,4 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
-    assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == ToolChoice.any
+    assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "any"

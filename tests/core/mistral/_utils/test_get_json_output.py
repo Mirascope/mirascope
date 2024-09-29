@@ -1,18 +1,17 @@
 """Tests the `mistral._utils.get_json_output` module."""
 
 import pytest
-from mistralai.models.chat_completion import (
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionChoice,
     ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
-    ChatMessage,
+    CompletionChunk,
+    CompletionResponseStreamChoice,
     DeltaMessage,
     FunctionCall,
     ToolCall,
-    ToolType,
+    UsageInfo,
 )
-from mistralai.models.common import UsageInfo
 
 from mirascope.core.mistral._utils._get_json_output import get_json_output
 from mirascope.core.mistral.call_response import MistralCallResponse
@@ -21,21 +20,20 @@ from mirascope.core.mistral.call_response_chunk import MistralCallResponseChunk
 
 def test_get_json_output_call_response() -> None:
     """Tests the `get_json_output` function with a call response."""
+
     tool_call = ToolCall(
         id="id",
         function=FunctionCall(
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
     choices = [
-        ChatCompletionResponseChoice(
+        ChatCompletionChoice(
             index=0,
-            message=ChatMessage(
-                role="assistant", content="json_output", tool_calls=[tool_call]
-            ),
-            finish_reason=None,
+            message=AssistantMessage(content="json_output", tool_calls=[tool_call]),
+            finish_reason="stop",
         )
     ]
     completion = ChatCompletionResponse(
@@ -82,16 +80,16 @@ def test_get_json_output_call_response_chunk() -> None:
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
             name="function",
         ),
-        type=ToolType.function,
+        type="function",
     )
     choices = [
-        ChatCompletionResponseStreamChoice(
+        CompletionResponseStreamChoice(
             index=0,
             delta=DeltaMessage(content="json_output", tool_calls=[tool_call]),
             finish_reason=None,
         )
     ]
-    chunk = ChatCompletionStreamResponse(
+    chunk = CompletionChunk(
         id="id",
         model="mistral-large-latest",
         choices=choices,
