@@ -5,13 +5,16 @@ usage docs: learn/streams.md
 
 from typing import Any
 
-from mistralai.models.chat_completion import (
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionChoice,
     ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatMessage,
     FinishReason,
+    SystemMessage,
+    ToolMessage,
+    UsageInfo,
+    UserMessage,
 )
-from mistralai.models.common import UsageInfo
 
 from ..base.stream import BaseStream
 from ._utils import calculate_cost
@@ -26,10 +29,10 @@ class MistralStream(
     BaseStream[
         MistralCallResponse,
         MistralCallResponseChunk,
-        ChatMessage,
-        ChatMessage,
-        ChatMessage,
-        ChatMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralTool,
         dict[str, Any],
         MistralDynamicConfig,
@@ -66,9 +69,9 @@ class MistralStream(
 
     def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
-    ) -> ChatMessage:
-        message_param = ChatMessage(
-            role="assistant", content=content if content else "", tool_calls=tool_calls
+    ) -> AssistantMessage | SystemMessage | ToolMessage | UserMessage:
+        message_param = AssistantMessage(
+            content=content if content else "", tool_calls=tool_calls
         )
         return message_param
 
@@ -90,7 +93,7 @@ class MistralStream(
         completion = ChatCompletionResponse(
             id=self.id if self.id else "",
             choices=[
-                ChatCompletionResponseChoice(
+                ChatCompletionChoice(
                     finish_reason=self.finish_reasons[0]
                     if self.finish_reasons
                     else None,

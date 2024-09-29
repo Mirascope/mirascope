@@ -2,11 +2,10 @@
 
 from collections.abc import AsyncGenerator, Generator
 
-from mistralai.models.chat_completion import (
-    ChatCompletionStreamResponse,
+from mistralai.models import (
+    CompletionEvent,
     FunctionCall,
     ToolCall,
-    ToolType,
 )
 
 from ..call_response_chunk import MistralCallResponseChunk
@@ -14,7 +13,7 @@ from ..tool import MistralTool
 
 
 def _handle_chunk(
-    chunk: ChatCompletionStreamResponse,
+    chunk: CompletionEvent,
     current_tool_call: ToolCall,
     current_tool_type: type[MistralTool] | None,
     tool_types: list[type[MistralTool]] | None,
@@ -38,7 +37,7 @@ def _handle_chunk(
                 arguments="",
                 name=tool_call.function.name if tool_call.function.name else "",
             ),
-            type=ToolType.function,
+            type="function",
         )
         current_tool_type = None
         for tool_type in tool_types:
@@ -64,12 +63,12 @@ def _handle_chunk(
 
 
 def handle_stream(
-    stream: Generator[ChatCompletionStreamResponse, None, None],
+    stream: Generator[CompletionEvent, None, None],
     tool_types: list[type[MistralTool]] | None,
 ) -> Generator[tuple[MistralCallResponseChunk, MistralTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(
-        id="", function=FunctionCall(arguments="", name=""), type=ToolType.function
+        id="", function=FunctionCall(arguments="", name=""), type="function"
     )
     current_tool_type = None
     for chunk in stream:
@@ -93,12 +92,12 @@ def handle_stream(
 
 
 async def handle_stream_async(
-    stream: AsyncGenerator[ChatCompletionStreamResponse, None],
+    stream: AsyncGenerator[CompletionEvent, None],
     tool_types: list[type[MistralTool]] | None,
 ) -> AsyncGenerator[tuple[MistralCallResponseChunk, MistralTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(
-        id="", function=FunctionCall(arguments="", name=""), type=ToolType.function
+        id="", function=FunctionCall(arguments="", name=""), type="function"
     )
     current_tool_type = None
     async for chunk in stream:

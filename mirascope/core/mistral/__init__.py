@@ -2,7 +2,12 @@
 
 from typing import TypeAlias
 
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models import (
+    AssistantMessage,
+    SystemMessage,
+    ToolMessage,
+    UserMessage,
+)
 
 from ..base import BaseMessageParam
 from ._call import mistral_call
@@ -14,7 +19,9 @@ from .dynamic_config import MistralDynamicConfig
 from .stream import MistralStream
 from .tool import MistralTool
 
-MistralMessageParam: TypeAlias = ChatMessage | BaseMessageParam
+MistralMessageParam: TypeAlias = (
+    AssistantMessage | SystemMessage | ToolMessage | UserMessage | BaseMessageParam
+)
 
 __all__ = [
     "call",
