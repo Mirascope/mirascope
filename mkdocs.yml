@@ -180,7 +180,7 @@ nav:
       - Text Translation: "cookbook/text_translation.md"
       - Search with Sources: "cookbook/search_with_sources.md"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
-      - Extract from PDF: "cookbook/extract_from_pdf.md"
+      - Extract from PDF: "cookbook/extract_from_pdf.ipynb"
       - Knowledge Graph: "cookbook/knowledge_graph.md"
       - Generating Captions: "cookbook/generating_captions.md"
       - PII Scrubbing: "cookbook/pii_scrubbing.md"
