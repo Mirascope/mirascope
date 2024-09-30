@@ -187,7 +187,7 @@ nav:
       - Extraction using Vision: "cookbook/extraction_using_vision.ipynb"
       - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
       - Support Ticket Routing: "cookbook/support_ticket_routing.ipynb"
-      - Document Segmentation: "cookbook/document_segmentation.md"
+      - Document Segmentation: "cookbook/document_segmentation.ipynb"
       - Generating Synthetic Data: "cookbook/generating_synthetic_data.ipynb"
       - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.ipynb"
       - Speech Transcription: "cookbook/speech_transcription.ipynb"
