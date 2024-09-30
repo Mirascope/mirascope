@@ -184,7 +184,7 @@ nav:
       - Knowledge Graph: "cookbook/knowledge_graph.ipynb"
       - Generating Captions: "cookbook/generating_captions.ipynb"
       - PII Scrubbing: "cookbook/pii_scrubbing.ipynb"
-      - Extraction using Vision: "cookbook/extraction_using_vision.md"
+      - Extraction using Vision: "cookbook/extraction_using_vision.ipynb"
       - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
       - Support Ticket Routing: "cookbook/support_ticket_routing.ipynb"
       - Document Segmentation: "cookbook/document_segmentation.md"
