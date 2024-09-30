@@ -179,7 +179,7 @@ nav:
       - Text Translation: "cookbook/text_translation.ipynb"
       - Text Summarization: "cookbook/text_summarization.ipynb"
       - Search with Sources: "cookbook/search_with_sources.ipynb"
-      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
+      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.ipynb"
       - Extract from PDF: "cookbook/extract_from_pdf.md"
       - Knowledge Graph: "cookbook/knowledge_graph.ipynb"
       - Generating Captions: "cookbook/generating_captions.md"
