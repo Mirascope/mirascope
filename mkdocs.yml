@@ -181,7 +181,7 @@ nav:
       - Search with Sources: "cookbook/search_with_sources.md"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
       - Extract from PDF: "cookbook/extract_from_pdf.md"
-      - Knowledge Graph: "cookbook/knowledge_graph.md"
+      - Knowledge Graph: "cookbook/knowledge_graph.ipynb"
       - Generating Captions: "cookbook/generating_captions.md"
       - PII Scrubbing: "cookbook/pii_scrubbing.md"
       - Extraction using Vision: "cookbook/extraction_using_vision.md"
