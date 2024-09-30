@@ -189,8 +189,8 @@ nav:
       - Support Ticket Routing: "cookbook/support_ticket_routing.ipynb"
       - Document Segmentation: "cookbook/document_segmentation.md"
       - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
+      - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.ipynb"
       - Speech Transcription: "cookbook/speech_transcription.ipynb"
-      - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.md"
       - Query Plan: "cookbook/query_plan.md"
       - Named Entity Recognition: "cookbook/named_entity_recognition.ipynb"
       - Agents:
