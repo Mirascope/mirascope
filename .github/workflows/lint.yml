@@ -17,7 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: codespell-project/actions-codespell@v2
-
+        with:
+          exclude_file:
+             docs/cookbook/evals/evaluating_web_search_agent.ipynb
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/0.3.0/install.sh | sh
 

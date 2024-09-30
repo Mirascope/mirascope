@@ -131,7 +131,7 @@ The `run` function will keep running until the LLM feels that the users question
 
 Note that by giving the LLM the current date, it'll automatically search for the most up-to-date information.
 
-Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.md) for an in-depth guide on how we evaluate the quality of our agent.
+Check out [Evaluating Web Search Agent](../evals/evaluating_web_search_agent.ipynb) for an in-depth guide on how we evaluate the quality of our agent.
 
 !!! tip "Additional Real-World Applications"
 

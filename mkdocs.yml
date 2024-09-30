@@ -209,9 +209,9 @@ nav:
           - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
       - Evaluations:
           - "cookbook/evals/index.md"
-          - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.md"
-          - Evaluating Web Search Agent: "cookbook/evals/evaluating_web_search_agent.md"
-          - Evaluating Documentation Agent: "cookbook/evals/evaluating_documentation_agent.md"
+          - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.ipynb"
+          - Evaluating Web Search Agent: "cookbook/evals/evaluating_web_search_agent.ipynb"
+          - Evaluating Documentation Agent: "cookbook/evals/evaluating_documentation_agent.ipynb"
       - LangGraph vs. Mirascope:
           - "cookbook/langgraph_vs_mirascope/index.md"
           - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"

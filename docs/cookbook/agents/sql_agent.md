@@ -68,7 +68,7 @@ After writing our prompt, we go through our agent loop and we can now use our Li
 
 Note that the SQL statements in the dialogue are there for development purposes.
 
-Having established that we can have a quality conversation with our `Librarian`, we can now enhance our prompt. However, we must ensure that these improvements don't compromise the Librarian's core functionality. Check out [Evaluating SQL Agent](../evals/evaluating_sql_agent.md) for an in-depth guide on how we evaluate the quality of our prompt.
+Having established that we can have a quality conversation with our `Librarian`, we can now enhance our prompt. However, we must ensure that these improvements don't compromise the Librarian's core functionality. Check out [Evaluating SQL Agent](../evals/evaluating_sql_agent.ipynb) for an in-depth guide on how we evaluate the quality of our prompt.
 
 
 
