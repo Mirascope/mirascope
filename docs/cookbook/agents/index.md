@@ -28,11 +28,11 @@ When working with agents, you'll encounter several important concepts:
 
 Explore the following recipes to learn how to build and use agents with Mirascope:
 
-1. [Web Search Agent](./web_search_agent.md): Implement an agent that performs web searches and answers questions.
-2. [Blog Writing Agent](./blog_writing_agent.md): Create an agent that researches topics and writes blog posts.
-3. [SQL Agent](./sql_agent.md): Create an agent that generates and executes SQL queries based on natural language input.
-4. [Localized Agent](./localized_agent.md): Build an agent that provides location-specific information and recommendations.
-5. [Local Chat with Codebase](./local_chat_with_codebase.md): Develop an agent that can answer questions about a local codebase.
+1. [Web Search Agent](./web_search_agent.ipynb): Implement an agent that performs web searches and answers questions.
+2. [Blog Writing Agent](./blog_writing_agent.ipynb): Create an agent that researches topics and writes blog posts.
+3. [SQL Agent](./sql_agent.ipynb): Create an agent that generates and executes SQL queries based on natural language input.
+4. [Localized Agent](./localized_agent.ipynb): Build an agent that provides location-specific information and recommendations.
+5. [Local Chat with Codebase](./local_chat_with_codebase.ipynb): Develop an agent that can answer questions about a local codebase.
 
 Each recipe demonstrates different aspects of agent design and implementation, providing you with a comprehensive toolkit for building sophisticated AI agents using Mirascope.
 

@@ -15,8 +15,8 @@ Each recipe in our cookbook:
 
 Here are some popular recipes to get you started:
 
-- [Web Search Agent](./agents/web_search_agent.md): Build an agent that can search the web and answer questions
-- [SQL Agent](./agents/sql_agent.md): Use LLMs to generate SQL and operate as a data analysis co-pilot
+- [Web Search Agent](./agents/web_search_agent.ipynb): Build an agent that can search the web and answer questions
+- [SQL Agent](./agents/sql_agent.ipynb): Use LLMs to generate SQL and operate as a data analysis co-pilot
 - [Text Classification](./text_classification.ipynb): Learn how to classify text into labels
 - [Text Summarization](./text_summarization.ipynb): Learn how to create concise summaries of long texts
 - [Support Ticket Routing](./support_ticket_routing.ipynb): Automate customer support ticket classification and routing

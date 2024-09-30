@@ -5,7 +5,7 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
-        exclude: "^docs/cookbook/knowledge_graph.ipynb"
+        exclude: "docs/cookbook/knowledge_graph.ipynb|docs/cookbook/evals/evaluating_web_search_agent.ipynb|docs/cookbook/agents/web_search_agent.ipynb"
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.6.1"
     hooks:
