@@ -175,7 +175,7 @@ nav:
       - Provider-Specific Features: "learn/provider_specific_features.md"
   - Cookbook:
       - "cookbook/index.md"
-      - Text Classification: "cookbook/text_classification.md"
+      - Text Classification: "cookbook/text_classification.ipynb"
       - Text Summarization: "cookbook/text_summarization.md"
       - Text Translation: "cookbook/text_translation.md"
       - Search with Sources: "cookbook/search_with_sources.md"
