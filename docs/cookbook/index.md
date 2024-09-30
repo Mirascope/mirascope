@@ -19,7 +19,7 @@ Here are some popular recipes to get you started:
 - [SQL Agent](./agents/sql_agent.md): Use LLMs to generate SQL and operate as a data analysis co-pilot
 - [Text Classification](./text_classification.ipynb): Learn how to classify text into labels
 - [Text Summarization](./text_summarization.ipynb): Learn how to create concise summaries of long texts
-- [Support Ticket Routing](./support_ticket_routing.md): Automate customer support ticket classification and routing
+- [Support Ticket Routing](./support_ticket_routing.ipynb): Automate customer support ticket classification and routing
 - [Query Plan Generation](./query_plan.md): Generate efficient query plans for complex questions
 
 ## How to Use This Cookbook
