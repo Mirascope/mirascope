@@ -191,7 +191,7 @@ nav:
       - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
       - Speech Transcription: "cookbook/speech_transcription.md"
       - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.md"
-      - Query Plan: "cookbook/query_plan.md"
+      - Query Plan: "cookbook/query_plan.ipynb"
       - Named Entity Recognition: "cookbook/named_entity_recognition.md"
       - Agents:
           - "cookbook/agents/index.md"

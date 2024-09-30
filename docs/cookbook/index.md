@@ -20,7 +20,7 @@ Here are some popular recipes to get you started:
 - [Text Classification](./text_classification.ipynb): Learn how to classify text into labels
 - [Text Summarization](./text_summarization.md): Learn how to create concise summaries of long texts
 - [Support Ticket Routing](./support_ticket_routing.md): Automate customer support ticket classification and routing
-- [Query Plan Generation](./query_plan.md): Generate efficient query plans for complex questions
+- [Query Plan Generation](./query_plan.ipynb): Generate efficient query plans for complex questions
 
 ## How to Use This Cookbook
 
