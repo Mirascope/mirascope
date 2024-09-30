@@ -4,7 +4,7 @@ site_url: https://docs.mirascope.io/
 site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
-strict: true
+strict: false
 theme:
   name: material
   custom_dir: docs/overrides
@@ -21,6 +21,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
+    - navigation.sections
     - search.highlight
     - search.suggest
     - toc.follow
@@ -155,10 +156,49 @@ nav:
       - Contributing: "CONTRIBUTING.md"
       - Changelog: "CHANGELOG.md"
   - Tutorials:
-      - Quickstart: "tutorials/quickstart.ipynb"
-      - Structured Outputs: "tutorials/structured_outputs.ipynb"
-      - Dynamic Configuration & Chaining: "tutorials/dynamic_configuration_and_chaining.ipynb"
-      - Tools & Agents: "tutorials/tools_and_agents.ipynb"
+      - Getting Started:
+          - Quickstart: "tutorials/getting_started/quickstart.ipynb"
+          - Structured Outputs: "tutorials/getting_started/structured_outputs.ipynb"
+          - Dynamic Configuration & Chaining: "tutorials/getting_started/dynamic_configuration_and_chaining.ipynb"
+          - Tools & Agents: "tutorials/getting_started/tools_and_agents.ipynb"
+      - More Advanced:
+          - Text Classification: "tutorials/more_advanced/text_classification.ipynb"
+          - Text Translation: "tutorials/more_advanced/text_translation.ipynb"
+          - Text Summarization: "tutorials/more_advanced/text_summarization.ipynb"
+          - Search with Sources: "tutorials/more_advanced/search_with_sources.ipynb"
+          - LLM Validation With Retries: "tutorials/more_advanced/llm_validation_with_retries.ipynb"
+          - Extract from PDF: "tutorials/more_advanced/extract_from_pdf.ipynb"
+          - Knowledge Graph: "tutorials/more_advanced/knowledge_graph.ipynb"
+          - Generating Captions: "tutorials/more_advanced/generating_captions.ipynb"
+          - PII Scrubbing: "tutorials/more_advanced/pii_scrubbing.ipynb"
+          - Extraction using Vision: "tutorials/more_advanced/extraction_using_vision.ipynb"
+          - Code Generation and Execution: "tutorials/more_advanced/code_generation_and_execution.ipynb"
+          - Support Ticket Routing: "tutorials/more_advanced/support_ticket_routing.ipynb"
+          - Document Segmentation: "tutorials/more_advanced/document_segmentation.ipynb"
+          - Generating Synthetic Data: "tutorials/more_advanced/generating_synthetic_data.ipynb"
+          - Removing Semantic Duplicates: "tutorials/more_advanced/removing_semantic_duplicates.ipynb"
+          - Speech Transcription: "tutorials/more_advanced/speech_transcription.ipynb"
+          - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
+          - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
+      - Agents:
+          - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
+          - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
+          - SQL Agent: "tutorials/agents/sql_agent.ipynb"
+          - Localized Agent: "tutorials/agents/localized_agent.ipynb"
+          - Local Chat with Codebase: "tutorials/agents/local_chat_with_codebase.ipynb"
+          - Documentation Agent: "tutorials/agents/documentation_agent.ipynb"
+      - Prompt Engineering:
+          - Text Based:
+              - "tutorials/prompt_engineering/text_based/index.md"
+              - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
+          - Chaining Based:
+              - "tutorials/prompt_engineering/chaining_based/index.md"
+      - Evaluations:
+          - Evaluating SQL Agent: "tutorials/evals/evaluating_sql_agent.ipynb"
+          - Evaluating Web Search Agent: "tutorials/evals/evaluating_web_search_agent.ipynb"
+          - Evaluating Documentation Agent: "tutorials/evals/evaluating_documentation_agent.ipynb"
+      - LangGraph vs. Mirascope:
+          - Quickstart: "tutorials/langgraph_vs_mirascope/quickstart.ipynb"
   - Learn:
       - "learn/index.md"
       - Prompts: "learn/prompts.md"
@@ -173,48 +213,6 @@ nav:
       - Agents: "learn/agents.md"
       - Evals: "learn/evals.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
-  - Cookbook:
-      - "cookbook/index.md"
-      - Text Classification: "cookbook/text_classification.ipynb"
-      - Text Translation: "cookbook/text_translation.ipynb"
-      - Text Summarization: "cookbook/text_summarization.ipynb"
-      - Search with Sources: "cookbook/search_with_sources.ipynb"
-      - LLM Validation With Retries: "cookbook/llm_validation_with_retries.ipynb"
-      - Extract from PDF: "cookbook/extract_from_pdf.ipynb"
-      - Knowledge Graph: "cookbook/knowledge_graph.ipynb"
-      - Generating Captions: "cookbook/generating_captions.ipynb"
-      - PII Scrubbing: "cookbook/pii_scrubbing.ipynb"
-      - Extraction using Vision: "cookbook/extraction_using_vision.ipynb"
-      - Code Generation and Execution: "cookbook/code_generation_and_execution.ipynb"
-      - Support Ticket Routing: "cookbook/support_ticket_routing.ipynb"
-      - Document Segmentation: "cookbook/document_segmentation.ipynb"
-      - Generating Synthetic Data: "cookbook/generating_synthetic_data.ipynb"
-      - Removing Semantic Duplicates: "cookbook/removing_semantic_duplicates.ipynb"
-      - Speech Transcription: "cookbook/speech_transcription.ipynb"
-      - Query Plan: "cookbook/query_plan.ipynb"
-      - Named Entity Recognition: "cookbook/named_entity_recognition.ipynb"
-      - Agents:
-          - "cookbook/agents/index.md"
-          - Web Search Agent: "cookbook/agents/web_search_agent.ipynb"
-          - Blog Writing Agent: "cookbook/agents/blog_writing_agent.ipynb"
-          - SQL Agent: "cookbook/agents/sql_agent.ipynb"
-          - Localized Agent: "cookbook/agents/localized_agent.ipynb"
-          - Local Chat with Codebase: "cookbook/agents/local_chat_with_codebase.ipynb"
-          - Documentation Agent: "cookbook/agents/documentation_agent.ipynb"
-      - Prompt Engineering:
-          - "cookbook/prompt_engineering/index.md"
-          - Text Based:
-              - "cookbook/prompt_engineering/text_based/index.md"
-              - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.ipynb"
-          - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
-      - Evaluations:
-          - "cookbook/evals/index.md"
-          - Evaluating SQL Agent: "cookbook/evals/evaluating_sql_agent.ipynb"
-          - Evaluating Web Search Agent: "cookbook/evals/evaluating_web_search_agent.ipynb"
-          - Evaluating Documentation Agent: "cookbook/evals/evaluating_documentation_agent.ipynb"
-      - LangGraph vs. Mirascope:
-          - "cookbook/langgraph_vs_mirascope/index.md"
-          - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.ipynb"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_provider.md"

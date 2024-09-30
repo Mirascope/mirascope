@@ -313,5 +313,3 @@ compile_legal_report(parties, clauses, risks)
 ```
 
 In this example, we cache a long legal document once and then efficiently execute multiple different analysis queries. This allows for detailed analysis while avoiding the need to resend the lengthy document that would consume a large number of tokens.
-
-For more information on how to effectively use these provider-specific features in your projects, please refer to our [cookbook recipes](../cookbook/index.md) and [advanced usage guides](../learn/index.md).

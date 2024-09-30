@@ -102,7 +102,7 @@ Make your first call:
 
     Comprehensive overview of core features and building blocks
 
-    [:octicons-arrow-right-24: Quickstart](./tutorials/quickstart.ipynb)
+    [:octicons-arrow-right-24: Quickstart](./tutorials/getting_started/quickstart.ipynb)
 
 -   :material-database:{ .lg .middle } __Structured Outputs__
 
@@ -110,7 +110,7 @@ Make your first call:
 
     Explore various techniques for generating structured outputs
 
-    [:octicons-arrow-right-24: Structured Outputs](./tutorials/structured_outputs.ipynb)
+    [:octicons-arrow-right-24: Structured Outputs](./tutorials/getting_started/structured_outputs.ipynb)
 
 -   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
 
@@ -118,7 +118,7 @@ Make your first call:
 
     Examples ranging from basic usage to more complex chaining techniques
 
-    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](./tutorials/dynamic_configuration_and_chaining.ipynb)
+    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](./tutorials/getting_started/dynamic_configuration_and_chaining.ipynb)
 
 -   :material-tools:{ .lg .middle } __Tools & Agents__
 
@@ -126,7 +126,7 @@ Make your first call:
 
     Learn how to define tools for your LLM to build advanced AI agents
 
-    [:octicons-arrow-right-24: Tools & Agents](./tutorials/tools_and_agents.ipynb)
+    [:octicons-arrow-right-24: Tools & Agents](./tutorials/getting_started/tools_and_agents.ipynb)
 
 </div>
 
@@ -142,13 +142,13 @@ Make your first call:
 
     [:octicons-arrow-right-24: Learn](./learn/index.md)
 
--   :material-book-open-variant:{ .lg .middle } __Cookbook__
+-   :material-book-open-variant:{ .lg .middle } __Tutorials__
 
     ---
 
     Advanced usage patterns and real-world applications
 
-    [:octicons-arrow-right-24: Cookbook](./cookbook/index.md)
+    [:octicons-arrow-right-24: Cookbook](./tutorials/more_advanced/text_classification.ipynb)
 
 -   :material-connection:{ .lg .middle } __Integrations__
 

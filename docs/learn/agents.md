@@ -450,7 +450,7 @@ As you develop more sophisticated agents with Mirascope, it's crucial to follow 
 - **Asynchronous Operations**: Leverage Python's asyncio to handle multiple operations concurrently, improving efficiency for I/O-bound tasks.
 - **Multi-Provider Setups**: Use different LLM providers for specialized tasks within your agent system, taking advantage of each provider's strengths.
 - **Dynamic Tool Generation**: Use `BaseToolKit` to generate tools dynamically based on the current state or context of the conversation.
-- **Hierarchical Agents**: Implement a hierarchy of agents, with higher-level agents delegating tasks to more specialized sub-agents. Check out our cookbook recipe on implementing a [blog writing agent](../cookbook/agents/blog_writing_agent.ipynb) for an example of how to implement an Agent Executor.
+- **Hierarchical Agents**: Implement a hierarchy of agents, with higher-level agents delegating tasks to more specialized sub-agents. Check out our tutorial on implementing a [blog writing agent](../tutorials/agents/blog_writing_agent.ipynb) for an example of how to implement an Agent Executor.
   ```mermaid
   graph TD
       A[Main Agent] --> B[Sub-Agent 1: Query Understanding]
