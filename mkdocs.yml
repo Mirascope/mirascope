@@ -205,7 +205,7 @@ nav:
           - "cookbook/prompt_engineering/index.md"
           - Text Based:
               - "cookbook/prompt_engineering/text_based/index.md"
-              - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.md"
+              - Self Ask: "cookbook/prompt_engineering/text_based/self_ask.ipynb"
           - Chaining Based: "cookbook/prompt_engineering/chaining_based/index.md"
       - Evaluations:
           - "cookbook/evals/index.md"
