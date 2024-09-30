@@ -183,7 +183,7 @@ nav:
       - Extract from PDF: "cookbook/extract_from_pdf.md"
       - Knowledge Graph: "cookbook/knowledge_graph.md"
       - Generating Captions: "cookbook/generating_captions.md"
-      - PII Scrubbing: "cookbook/pii_scrubbing.md"
+      - PII Scrubbing: "cookbook/pii_scrubbing.ipynb"
       - Extraction using Vision: "cookbook/extraction_using_vision.md"
       - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
       - Support Ticket Routing: "cookbook/support_ticket_routing.md"
