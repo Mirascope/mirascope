@@ -6,7 +6,7 @@ Mirascope offers a simpler, more intuitive approach to building complex AI appli
 
 ## Available Tutorials:
 
-1. [Quickstart: Building a Chatbot](quickstart.md)
+1. [Quickstart: Building a Chatbot](quickstart.ipynb)
 
 !!! note "More Tutorials Coming Soon!"
 

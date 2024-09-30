@@ -214,7 +214,7 @@ nav:
           - Evaluating Documentation Agent: "cookbook/evals/evaluating_documentation_agent.md"
       - LangGraph vs. Mirascope:
           - "cookbook/langgraph_vs_mirascope/index.md"
-          - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.md"
+          - Quickstart: "cookbook/langgraph_vs_mirascope/quickstart.ipynb"
   - Integrations:
       - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_provider.md"
