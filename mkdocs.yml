@@ -186,7 +186,7 @@ nav:
       - PII Scrubbing: "cookbook/pii_scrubbing.md"
       - Extraction using Vision: "cookbook/extraction_using_vision.md"
       - Code Generation and Execution: "cookbook/code_generation_and_execution.md"
-      - Support Ticket Routing: "cookbook/support_ticket_routing.md"
+      - Support Ticket Routing: "cookbook/support_ticket_routing.ipynb"
       - Document Segmentation: "cookbook/document_segmentation.md"
       - Generating Synthetic Data: "cookbook/generating_synthetic_data.md"
       - Speech Transcription: "cookbook/speech_transcription.md"
