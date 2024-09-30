@@ -44,3 +44,12 @@
 .jp-InputPrompt, .jp-OutputPrompt {
   display: none !important;
 }
+
+/* Target Jupyter-rendered admonitions */
+.jp-RenderedHTMLCommon .admonition p.admonition-title {
+  margin-bottom: 1em;  /* Adjust this value as needed */
+}
+
+.jp-RenderedHTMLCommon .admonition p:not(.admonition-title) {
+  margin-top: 1em;  /* Adjust this value as needed */
+}

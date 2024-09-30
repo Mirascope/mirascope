@@ -9,10 +9,10 @@ repos:
     rev: "v0.6.1"
     hooks:
       - id: ruff
-        files: "^mirascope|^tests|^examples"
+        files: "^mirascope|^tests|^examples|^docs"
         args: [--fix]
       - id: ruff-format
-        files: "^mirascope|^tests|^examples"
+        files: "^mirascope|^tests|^examples|^docs"
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.377
     hooks:
