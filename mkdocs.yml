@@ -178,7 +178,7 @@ nav:
       - Text Classification: "cookbook/text_classification.ipynb"
       - Text Translation: "cookbook/text_translation.ipynb"
       - Text Summarization: "cookbook/text_summarization.ipynb"
-      - Search with Sources: "cookbook/search_with_sources.md"
+      - Search with Sources: "cookbook/search_with_sources.ipynb"
       - LLM Validation With Retries: "cookbook/llm_validation_with_retries.md"
       - Extract from PDF: "cookbook/extract_from_pdf.md"
       - Knowledge Graph: "cookbook/knowledge_graph.md"
