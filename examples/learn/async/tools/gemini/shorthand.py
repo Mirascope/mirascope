@@ -1,6 +1,6 @@
 import asyncio
 
-from mirascope.core import BaseTool, openai, prompt_template
+from mirascope.core import BaseTool, gemini
 
 
 class FormatBook(BaseTool):
@@ -13,16 +13,17 @@ class FormatBook(BaseTool):
         return f"{self.title} by {self.author}"
 
 
-@openai.call(model="gpt-4o-mini", tools=[FormatBook])
-@prompt_template("Recommend a {genre} book")
-async def recommend_book(genre: str): ...
+@gemini.call("gemini-1.5-flash", tools=[FormatBook])
+async def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 async def main():
     response = await recommend_book("fantasy")
-    if isinstance((tool := response.tool), FormatBook):
-        output = await tool.call()
-        print(output)
+    if tool := response.tool:
+        if isinstance(tool, FormatBook):
+            output = await tool.call()
+            print(output)
     else:
         print(response.content)
 
