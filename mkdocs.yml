@@ -193,6 +193,7 @@ nav:
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
               - Demonstration Ensembling: "tutorials/prompt_engineering/chaining_based/demonstration_ensembling.ipynb"
+              - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
               - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
               - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
       - Evaluations:
