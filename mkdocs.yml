@@ -193,6 +193,9 @@ nav:
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
               - Chain of Verification: "tutorials/prompt_engineering/chaining_based/chain_of_verification.ipynb"
+              - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
+              - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
+              - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
       - Evaluations:
           - Evaluating SQL Agent: "tutorials/evals/evaluating_sql_agent.ipynb"
           - Evaluating Web Search Agent: "tutorials/evals/evaluating_web_search_agent.ipynb"
