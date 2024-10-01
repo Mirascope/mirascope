@@ -4,7 +4,7 @@ site_url: https://docs.mirascope.io/
 site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
-strict: false
+strict: true
 theme:
   name: material
   custom_dir: docs/overrides
@@ -17,7 +17,6 @@ theme:
     - content.code.copy
     - content.code.link
     - navigation.footer
-    - navigation.indexes
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
@@ -149,7 +148,7 @@ validation:
 
 nav:
   - Get Started:
-      - "index.md"
+      - Welcome to Mirascope: "index.md"
       - Why Use Mirascope: "WHY.md"
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
@@ -201,7 +200,7 @@ nav:
       - LangGraph vs. Mirascope:
           - Quickstart: "tutorials/langgraph_vs_mirascope/quickstart.ipynb"
   - Learn:
-      - "learn/index.md"
+      - Overview: "learn/index.md"
       - Prompts: "learn/prompts.md"
       - Calls: "learn/calls.md"
       - Streams: "learn/streams.md"
@@ -215,7 +214,6 @@ nav:
       - Evals: "learn/evals.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
   - Integrations:
-      - "integrations/index.md"
       - Custom LLM Provider: "integrations/custom_provider.md"
       - HyperDX: "integrations/hyperdx.md"
       - Langfuse: "integrations/langfuse.md"
@@ -224,9 +222,7 @@ nav:
       - OpenTelemetry: "integrations/otel.md"
       - Tenacity: "integrations/tenacity.md"
   - API Reference:
-      - "api/index.md"
       - Core:
-          - "api/core/index.md"
           - Anthropic:
               - call: "api/core/anthropic/call.md"
               - call_params: "api/core/anthropic/call_params.md"
@@ -307,7 +303,6 @@ nav:
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
       - Integrations:
-          - "api/integrations/index.md"
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
           - Middleware: "api/integrations/middleware.md"
