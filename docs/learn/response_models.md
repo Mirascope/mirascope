@@ -246,4 +246,7 @@ You can also use the `stream` property to access the `BaseStream` instance and [
 
 By following these best practices and leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
 
-Next, we recommend taking a look at the [JSON Mode](./json_mode.md) documentation, which shows you an alternate way to generate structured outputs where using Pydantic to validate outputs is optional.
+Next, we recommend taking a lookg at one of:
+
+- [JSON Mode](./json_mode.md) to see an alternate way to generate structured outputs where using Pydantic to validate outputs is optional.
+- [Evals](./evals.md) to see how to use `response_model` to evaluate your prompts.
