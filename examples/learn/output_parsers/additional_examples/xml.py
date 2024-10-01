@@ -1,8 +1,7 @@
 import xml.etree.ElementTree as ET
 
-from pydantic import BaseModel
-
 from mirascope.core import anthropic, prompt_template
+from pydantic import BaseModel
 
 
 class Book(BaseModel):
