@@ -100,13 +100,48 @@ By implementing our LLM API call functionality as decorators, Mirascope makes im
     === "Provider-Specific"
 
         ```python hl_lines="4-5 9-10 14 17"
-        --8<-- "examples/getting_started/provider_specific.py"
+        from mirascope.core import anthropic, openai
+
+
+        @openai.call("gpt-4o-mini")
+        def openai_recommend_book(genre: str) -> str:
+            return f"Recommend a {genre} book"
+
+
+        @anthropic.call("claude-3-5-sonnet-20240620")
+        def anthropic_recommend_book(genre: str) -> str:
+            return f"Recommend a {genre} book"
+
+
+        openai_response = openai_recommend_book("fantasy")
+        print(openai_response.content)
+
+        anthropic_response = anthropic_recommend_book("fantasy")
+        print(anthropic_response.content)
         ```
 
     === "Provider-Agnostic"
 
         ```python hl_lines="4-5 11-12 17-18"
-        --8<-- "examples/getting_started/provider_agnostic.py"
+        from mirascope.core import anthropic, openai, prompt_template
+
+
+        @prompt_template()
+        def recommend_book_prompt(genre: str) -> str:
+            return f"Recommend a {genre} book"
+
+
+        # OpenAI
+        openai_model = "gpt-4o-mini"
+        openai_recommend_book = openai.call(openai_model)(recommend_book_prompt)
+        openai_response = openai_recommend_book("fantasy")
+        print(openai_response.content)
+
+        # Anthropic
+        anthropic_model = "claude-3-5-sonnet-20240620"
+        anthropic_recommend_book = anthropic.call(anthropic_model)(recommend_book_prompt)
+        anthropic_response = anthropic_recommend_book("fantasy")
+        print(anthropic_response.content)
         ```
 
 ### Type Hints & Editor Support

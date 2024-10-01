@@ -1,4 +1,4 @@
-# Getting Started with Mirascope
+# Mirascope
 
 <p align="left">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
@@ -156,7 +156,7 @@ Make your first call:
 
     Integrations with third-party tools for enhanced usage
 
-    [:octicons-arrow-right-24: Integrations](./integrations/index.md)
+    [:octicons-arrow-right-24: Integrations](./integrations/custom_provider.md)
 
 -   :material-text-search:{ .lg .middle } __API Reference__
 
@@ -164,7 +164,7 @@ Make your first call:
 
     Detailed information on classes and functions
 
-    [:octicons-arrow-right-24: Reference](./api/index.md)
+    [:octicons-arrow-right-24: Reference](./api/core/anthropic/call.md)
 
 </div>
 
