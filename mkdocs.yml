@@ -192,6 +192,7 @@ nav:
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
+              - Self Verification: "tutorials/prompt_engineering/chaining_based/self_verification.ipynb"
               - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
               - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
               - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
