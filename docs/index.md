@@ -73,7 +73,7 @@ Make your first call:
             {% else %}
             ```python hl_lines="4 6"
             {% endif %}
-            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -85,7 +85,7 @@ Make your first call:
     === "{{ provider }}"
 
         ```python
-        --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/official_sdk_call.py"
         ```
 
     {% endfor %}
