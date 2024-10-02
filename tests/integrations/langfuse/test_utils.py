@@ -15,7 +15,7 @@ def test_get_call_response_observation() -> None:
     """Tests the `get_call_response_observation` function."""
     mock_result = MagicMock(spec=BaseCallResponse)
     mock_result.model = "test_model"
-    mock_result.prompt_template = "test_prompt_template"
+    mock_result.messages = "test_messages"
     mock_result.response = "test_response"
     mock_result.message_param = {"role": "assistant", "content": "test_content"}
     mock_fn = MagicMock(__name__="mock_fn")
@@ -24,7 +24,7 @@ def test_get_call_response_observation() -> None:
         mock_result, mock_fn
     )
     assert call_response_observation["name"] == "mock_fn with test_model"
-    assert call_response_observation["input"] == "test_prompt_template"
+    assert call_response_observation["input"] == "test_messages"
     assert call_response_observation["metadata"] == "test_response"
     assert call_response_observation["tags"] == {"tag1"}
     assert call_response_observation["model"] == "test_model"
