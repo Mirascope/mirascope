@@ -13,7 +13,7 @@ class Book(BaseModel):
 
 def extract_book(text: str) -> Book:
     completion = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="llama-3.1-70b-versatile",
         messages=[{"role": "user", "content": f"Extract {text}"}],
         tools=[
             {

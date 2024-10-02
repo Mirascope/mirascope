@@ -1,5 +1,11 @@
 # JSON Mode
 
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
+
 JSON Mode is a feature in Mirascope that allows you to request structured JSON output from Large Language Models (LLMs). This mode is particularly useful when you need to extract structured information from the model's responses, making it easier to parse and use the data in your applications.
 
 ??? warning "Not all providers have an official JSON Mode"
