@@ -16,7 +16,7 @@ class Book(BaseModel):
 
 
 @mistral.call("mistral-large-latest", response_model=Book, json_mode=True)
-@prompt_template("Extract {text}. Match examples format.")
+@prompt_template("Extract {text}. Match example format excluding 'examples' key.")
 def extract_book(text: str): ...
 
 
