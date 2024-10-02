@@ -1,7 +1,7 @@
 from mirascope.core import BaseMessageParam, groq
 
 
-@groq.call("llama-3.1-8b-instant", response_model=list[str])
+@groq.call("llama-3.1-70b-versatile", response_model=list[str])
 def extract_book(texts: list[str]) -> list[BaseMessageParam]:
     return [BaseMessageParam(role="user", content=f"Extract book titles from {texts}")]
 
