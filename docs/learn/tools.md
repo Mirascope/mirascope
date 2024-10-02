@@ -10,7 +10,7 @@
 
 Tools are user-defined functions that an LLM (Large Language Model) can ask the user to invoke on its behalf. This greatly enhances the capabilities of LLMs by enabling them to perform specific tasks, access external data, interact with other systems, and more.
 
-Mirascope enables tools to be defined in a provider-agnostic way, which can be used across all supported LLM providers without modification.
+Mirascope enables defining tools in a provider-agnostic way, which can be used across all supported LLM providers without modification.
 
 !!! info "How tools are called"
 
