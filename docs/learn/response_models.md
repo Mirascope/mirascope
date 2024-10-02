@@ -212,7 +212,15 @@ We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/conce
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
+            {% if provider in ["Gemini", "Vertex AI"] %}
+            ```python
+            {% elif method == "messages" %}
+            ```python hl_lines="6-7 11-13 27"
+            {% elif method == "base_message_param" %}
+            ```python hl_lines="6-7 11-13 30"
+            {% else %}
             ```python hl_lines="6-7 11-13 25"
+            {% endif %}
             --8<-- "examples/learn/response_models/few_shot_examples/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}

@@ -17,7 +17,9 @@ class Book(BaseModel):
 
 @anthropic.call("claude-3-5-sonnet-20240620", response_model=Book, json_mode=True)
 def extract_book(text: str) -> Messages.Type:
-    return Messages.User(f"Extract {text}. Match examples format.")
+    return Messages.User(
+        f"Extract {text}. Match example format excluding 'examples' key."
+    )
 
 
 book = extract_book("The Way of Kings by Brandon Sanderson")
