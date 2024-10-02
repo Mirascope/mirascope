@@ -6,7 +6,7 @@ def parse_recommendation(response: groq.GroqCallResponse) -> tuple[str, str]:
     return (title, author)
 
 
-@groq.call("llama-3.1-8b-instant", output_parser=parse_recommendation)
+@groq.call("llama-3.1-70b-versatile", output_parser=parse_recommendation)
 def recommend_book(genre: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(

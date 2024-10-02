@@ -16,7 +16,7 @@ class Book(BaseModel):
 
 
 @anthropic.call("claude-3-5-sonnet-20240620", response_model=Book, json_mode=True)
-@prompt_template("Extract {text}. Match examples format.")
+@prompt_template("Extract {text}. Match example format excluding 'examples' key.")
 def extract_book(text: str): ...
 
 

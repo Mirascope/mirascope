@@ -1,12 +1,7 @@
-from groq import AsyncGroq, Groq
+from groq import Groq
 from mirascope.core import BaseMessageParam, groq
 
 
-@groq.call("llama-3.1-8b-instant", client=Groq())
+@groq.call("llama-3.1-70b-versatile", client=Groq())
 def recommend_book(genre: str) -> list[BaseMessageParam]:
-    return [BaseMessageParam(role="user", content=f"Recommend a {genre} book")]
-
-
-@groq.call("llama-3.1-8b-instant", client=AsyncGroq())
-async def recommend_book_async(genre: str) -> list[BaseMessageParam]:
     return [BaseMessageParam(role="user", content=f"Recommend a {genre} book")]

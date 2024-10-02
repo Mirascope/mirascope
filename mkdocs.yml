@@ -193,6 +193,9 @@ nav:
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
               - Prompt Paraphrasing: "tutorials/prompt_engineering/chaining_based/prompt_paraphrasing.ipynb"
+              - Mixture of Reasoning: "tutorials/prompt_engineering/chaining_based/mixture_of_reasoning.ipynb"
+              - Demonstration Ensembling: "tutorials/prompt_engineering/chaining_based/demonstration_ensembling.ipynb"
+              - Chain of Verification: "tutorials/prompt_engineering/chaining_based/chain_of_verification.ipynb"
               - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
               - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
               - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
@@ -211,10 +214,10 @@ nav:
       - Response Models: "learn/response_models.md"
       - JSON Mode: "learn/json_mode.md"
       - Output Parsers: "learn/output_parsers.md"
-      - Async: "learn/async.md"
       - Tools: "learn/tools.md"
       - Agents: "learn/agents.md"
       - Evals: "learn/evals.md"
+      - Async: "learn/async.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
   - Integrations:
       - Custom LLM Provider: "integrations/custom_provider.md"

@@ -1,6 +1,34 @@
 # Async
 
-Asynchronous programming is a crucial concept when building LLM (Large Language Model) applications using Mirascope. This feature allows for efficient handling of I/O-bound operations (e.g., API calls), improving application responsiveness and scalability. Mirascope utilizes the [asyncio](https://docs.python.org/3/library/asyncio.html) library to implement asynchronous processing.
+Asynchronous programming is a crucial concept when building applications with LLMs (Large Language Models) using Mirascope. This feature allows for efficient handling of I/O-bound operations (e.g., API calls), improving application responsiveness and scalability. Mirascope utilizes the [asyncio](https://docs.python.org/3/library/asyncio.html) library to implement asynchronous processing.
+
+!!! tip "Best Practices"
+
+    - **Use asyncio for I/O-bound tasks**: Async is most beneficial for I/O-bound operations like API calls. It may not provide significant benefits for CPU-bound tasks.
+    - **Avoid blocking operations**: Ensure that you're not using blocking operations within async functions, as this can negate the benefits of asynchronous programming.
+    - **Consider using connection pools**: When making many async requests, consider using connection pools to manage and reuse connections efficiently.
+    - **Be mindful of rate limits**: While async allows for concurrent requests, be aware of API rate limits and implement appropriate throttling if necessary.
+    - **Use appropriate timeouts**: Implement timeouts for async operations to prevent hanging in case of network issues or unresponsive services.
+    - **Test thoroughly**: Async code can introduce subtle bugs. Ensure comprehensive testing of your async implementations.
+    - **Leverage async context managers**: Use async context managers (async with) for managing resources that require setup and cleanup in async contexts.
+
+??? info "Diagram illustrating the flow of asynchronous processing"
+
+    ```mermaid
+    sequenceDiagram
+        participant Main as Main Process
+        participant API1 as API Call 1
+        participant API2 as API Call 2
+        participant API3 as API Call 3
+
+        Main->>+API1: Send Request
+        Main->>+API2: Send Request
+        Main->>+API3: Send Request
+        API1-->>-Main: Response
+        API2-->>-Main: Response
+        API3-->>-Main: Response
+        Main->>Main: Process All Responses
+    ```
 
 ## Key Terms
 
@@ -8,193 +36,158 @@ Asynchronous programming is a crucial concept when building LLM (Large Language 
 - `await`: Keyword used to wait for the completion of an asynchronous operation
 - `asyncio`: Python library that supports asynchronous programming
 
-## Basic Async Usage
+## Basic Usage and Syntax
 
-To use async in Mirascope, you simply need to define your function as async and use the `await` keyword when calling it. Here's a basic example:
+!!! mira ""
 
-```python hl_lines="6 10 13"
-import asyncio
-from mirascope.core import openai, Messages, prompt_template
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template()
-async def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
+To use async in Mirascope, simply define the function as async and use the `await` keyword when calling it. Here's a basic example:
 
-async def main():
-    response = await recommend_book("fantasy")
-    print(response.content)
+!!! mira ""
 
-asyncio.run(main())
-```
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-This code does the following:
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-1. Defines an asynchronous function `recommend_book` that uses the OpenAI model to recommend a book of a given genre.
-2. Creates a `main` function that calls `recommend_book` asynchronously.
-3. Uses `asyncio.run(main())` to start the asynchronous event loop and run the main function.
+            {% if method == "string_template" %}
+            ```python hl_lines="8 12"
+            {% else %}
+            ```python hl_lines="7 12"
+            {% endif %}
+            --8<-- "examples/learn/async/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-## Async Streaming
+    {% endfor %}
 
-Streaming with async works similarly to synchronous streaming, but you use `async for` instead of a regular `for` loop:
+In this example we:
 
-```python hl_lines="4 6 10-11"
-import asyncio
-from mirascope.core import openai, prompt_template
-
-@openai.call(model="gpt-4o-mini", stream=True)
-@prompt_template()
-async def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
-
-async def main():
-    stream = await recommend_book("fantasy")
-    async for chunk, _ in stream:
-        print(chunk.content, end="", flush=True)
-
-asyncio.run(main())
-```
-
-This code:
-
-1. Sets up an asynchronous streaming call to the OpenAI model.
-2. Uses `async for` to iterate over the stream of response chunks.
-3. Prints each chunk of the response as it's received, providing a real-time output experience.
-
-## Async with Tools
-
-When using tools asynchronously, you can make the `call` method of a tool async. Here's an example:
-
-```python hl_lines="8 13 20-21"
-import asyncio
-from mirascope.core import openai, BaseTool, prompt_template
-
-class FormatBook(BaseTool):
-    title: str
-    author: str
-
-    async def call(self) -> str:
-        # Simulating an async API call
-        await asyncio.sleep(1)
-        return f"{self.title} by {self.author}"
-
-@openai.call(model="gpt-4o-mini", tools=[FormatBook])
-@prompt_template()
-async def recommend_book(genre: str) -> Messages.Type:
-    return f"Recommend a {genre} book"
-
-async def main():
-    response = await recommend_book("fantasy")
-    if isinstance((tool := response.tool), FormatBook):
-        output = await tool.call()
-        print(output)
-    else:
-        print(response.content)
-
-asyncio.run(main())
-```
-
-This example:
-
-1. Defines an asynchronous tool `FormatBook` with an async `call` method.
-2. Uses this tool in an asynchronous OpenAI call.
-3. In the main function, it checks the instance type of the returned tool using `isinstance()`. This type check is crucial because it ensures that we're dealing with a `FormatBook` instance, which has an async `call` method that we can safely await.
-4. If the tool is indeed a `FormatBook` instance, it calls the tool asynchronously using `await`. This is only possible and correct because we've confirmed the tool type.
-5. If the response doesn't contain a `FormatBook` tool, it prints the response content instead.
+1. Define `recommend_book` as an asynchronous function.
+2. Create a `main` function that calls `recommend_book` and awaits it.
+3. Use `asyncio.run(main())` to start the asynchronous event loop and run the main function.
 
 ## Parallel Async Calls
 
-One of the main benefits of async is the ability to run multiple operations concurrently. Here's an example of making parallel async calls:
+One of the main benefits of asynchronous programming is the ability to run multiple operations concurrently. Here's an example of making parallel async calls:
 
-```python hl_lines="10-12"
-import asyncio
-from mirascope.core import openai, prompt_template
+!!! mira ""
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template()
-async def summarize_movie_prompt(genre: str) -> Messages.Type:
-    return f"Summarize the plot of a {genre} movie"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-async def main():
-    genres = ["action", "comedy", "drama", "sci-fi"]
-    tasks = [summarize_movie_prompt(genre) for genre in genres]
-    results = await asyncio.gather(*tasks)
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-    for genre, result in zip(genres, results):
-        print(f"{genre.capitalize()} movie summary:")
-        print(result.content)
-        print()
+            {% if method == "string_template" %}
+            ```python hl_lines="8 13-14"
+            {% else %}
+            ```python hl_lines="7 13-14"
+            {% endif %}
+            --8<-- "examples/learn/async/parallel/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-asyncio.run(main())
-```
+    {% endfor %}
 
-This example demonstrates:
+We are using `asyncio.gather` to run and await multiple asynchronous tasks concurrently, printing the results for each task one all are completed.
 
-1. Creating multiple asynchronous tasks for different movie genres.
-2. Using `asyncio.gather` to run all tasks concurrently and wait for all results.
-3. Printing the results for each genre once all tasks are completed.
+## Async Streaming
 
-## Error Handling in Async Context
+!!! mira ""
 
-Error handling in async contexts is similar to synchronous code. You can use try/except blocks as usual:
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Streams](./streams.md)
+    </div>
 
-```python hl_lines="11-15"
-import asyncio
-from mirascope.core import openai, prompt_template
-from openai import APIError
+Streaming with async works similarly to synchronous streaming, but you use `async for` instead of a regular `for` loop:
 
-@openai.call(model="gpt-4o-mini")
-@prompt_template()
-async def explain_concept_prompt(concept: str) -> Messages.Type:
-    return f"Explain {concept} in simple terms"
+!!! mira ""
 
-async def main():
-    try:
-        response = await explain_concept_prompt("quantum computing")
-        print(response.content)
-    except APIError as e:
-        print(f"An error occurred: {e}")
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-asyncio.run(main())
-```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-This code:
+            {% if method == "string_template" %}
+            ```python hl_lines="6 8 12-13"
+            {% else %}
+            ```python hl_lines="6 7 12-13"
+            {% endif %}
+            --8<-- "examples/learn/async/streams/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-1. Defines an asynchronous function to explain a concept.
-2. Uses a try/except block in the main function to catch potential API errors.
-3. Prints the explanation if successful, or an error message if an exception occurs.
+    {% endfor %}
 
-## Best Practices and Considerations
+## Async Tools
 
-- **Use asyncio for I/O-bound tasks**: Async is most beneficial for I/O-bound operations like API calls. It may not provide significant benefits for CPU-bound tasks.
-- **Avoid blocking operations**: Ensure that you're not using blocking operations within async functions, as this can negate the benefits of asynchronous programming.
-- **Consider using connection pools**: When making many async requests, consider using connection pools to manage and reuse connections efficiently.
-- **Be mindful of rate limits**: While async allows for concurrent requests, be aware of API rate limits and implement appropriate throttling if necessary.
-- **Use appropriate timeouts**: Implement timeouts for async operations to prevent hanging in case of network issues or unresponsive services.
-- **Test thoroughly**: Async code can introduce subtle bugs. Ensure comprehensive testing of your async implementations.
-- **Leverage async context managers**: Use async context managers (async with) for managing resources that require setup and cleanup in async contexts.
+!!! mira ""
 
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Tools](./tools.md)
+    </div>
 
-## Visual Explanation
+When using tools asynchronously, you can make the `call` method of a tool async:
 
-Here's a simple diagram showing the flow of asynchronous processing:
+!!! mira ""
 
-```mermaid
-sequenceDiagram
-    participant Main as Main Process
-    participant API1 as API Call 1
-    participant API2 as API Call 2
-    participant API3 as API Call 3
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-    Main->>+API1: Send Request
-    Main->>+API2: Send Request
-    Main->>+API3: Send Request
-    API1-->>-Main: Response
-    API2-->>-Main: Response
-    API3-->>-Main: Response
-    Main->>Main: Process All Responses
-```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-This diagram illustrates the advantage of asynchronous processing, where multiple API calls can be made simultaneously, allowing the program to proceed to the next operation without waiting for each response.
+            {% if method == "string_template" %}
+            ```python hl_lines="10 16 18 24-25"
+            {% else %}
+            ```python hl_lines="10 16 17 24-25"
+            {% endif %}
+            --8<-- "examples/learn/async/tools/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+
+    {% endfor %}
+
+It's important to note that in this example we use `isinstance(tool, FormatBook)` to ensure the `call` method can be awaited safely. This also gives us proper type hints and editor support.
+
+## Custom Client
+
+You can use custom clients with async calls just like you can with standard [calls](./calls.md#custom-client) by using the `client` parameter in the `call` decorator.
+
+It's important to note that you must use the correct client that supports asynchronous calls:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            ```python hl_lines="2 5"
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 8-10"
+            {% else %}
+            ```python hl_lines="1 5"
+            {% endif %}
+            --8<-- "examples/learn/async/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+    {% endfor %}
+
+## Next Steps
 
 By leveraging these async features in Mirascope, you can build more efficient and responsive applications, especially when working with multiple LLM calls or other I/O-bound operations.
+
+This section concludes the core functionality Mirascope supports. If you haven't already, we recommend taking a look at any previous sections you've missed to learn about what you can do with Mirascope.
+
+You can also check out the section on [Provider-Specific Features](./provider_specific_features.md) to learn about how to use features that only certain providers support, such as Anthropic's prompt caching.
