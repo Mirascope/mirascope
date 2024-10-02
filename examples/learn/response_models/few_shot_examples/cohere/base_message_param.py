@@ -18,7 +18,10 @@ class Book(BaseModel):
 @cohere.call("command-r-plus", response_model=Book, json_mode=True)
 def extract_book(text: str) -> list[BaseMessageParam]:
     return [
-        BaseMessageParam(role="user", content=f"Extract {text}. Match examples format.")
+        BaseMessageParam(
+            role="user",
+            content=f"Extract {text}. Match example format excluding 'examples' key.",
+        )
     ]
 
 
