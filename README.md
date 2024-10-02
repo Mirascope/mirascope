@@ -10,6 +10,7 @@
     <a href="https://docs.mirascope.io/" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
+    <a href="https://github.com/Mirascope/mirascope/blog/dev/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
     <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
 </p>
 
@@ -20,13 +21,12 @@
 Beyond anything else, building with Mirascope is fun. Like seriously fun.
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 
 
 class Chatbot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-4o-mini", stream=True)
     @prompt_template(
@@ -264,7 +264,7 @@ class Book(BaseModel):
     title: str
     author: str
 
-def parse_book_recommendation(response: openai.AnthropicCallResponse) -> Book:
+def parse_book_recommendation(response: openai.OpenAICallResponse) -> Book:
     title, author = response.content.split(" by ")
     return Book(title=title, author=author)
 

@@ -1,5 +1,6 @@
 """This module contains the base class for message parameters."""
 
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import BaseModel
@@ -65,7 +66,7 @@ class AudioPart(BaseModel):
 class BaseMessageParam(BaseModel):
     """A base class for message parameters.
 
-    usage docs: learn/prompts.md#message-roles
+    usage docs: learn/prompts.md#prompt-templates-messages
 
     Attributes:
         role: The role of the message (e.g. "system", "user", "assistant")
@@ -73,4 +74,4 @@ class BaseMessageParam(BaseModel):
     """
 
     role: str
-    content: str | list[TextPart | ImagePart | AudioPart | CacheControlPart]
+    content: str | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart]

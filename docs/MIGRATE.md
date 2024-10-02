@@ -137,8 +137,7 @@ Some people may feel that "statelessness" is actually an inherent problem with L
 This provides a far clearer sense of what is "state" and what is an "argument" of the call. Consider the following example:
 
 ```python
-from mirascope.core import openai, prompt_template
-from openai.types.chat import ChatCompletionMessageParam
+from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel, computed_field
 
 
@@ -157,7 +156,7 @@ class Librarian(BaseModel):
 
     @computed_field
     @property
-    def history(self) -> list[ChatCompletionMessageParam]:
+    def history(self) -> list[BaseMessageParam | openai.OpenAIMessageParam]:
         """Returns dummy history for demonstration purposes"""
         return [
             {"role": "user", "content": "What book should I read?"},
@@ -727,6 +726,6 @@ def recommend_book(genre: str):
 
 Migrating to Mirascope v1 offers a more streamlined and flexible approach to working with LLMs. The new decorator-based syntax simplifies code structure and makes it easier to implement advanced features like streaming, tools, and structured information extraction. 
 
-Remember to update your import statements to use `from mirascope.core import ...` instead of the provider-specific imports used in v0. Also, be sure to familiarize yourself with the updated [`BasePrompt`](./learn/prompts.md#the-baseprompt-class) class for provider-agnostic prompt definitions.
+Remember to update your import statements to use `from mirascope.core import ...` instead of the provider-specific imports used in v0. Also, be sure to familiarize yourself with the updated recommendations for writing [prompts](./learn/prompts.md) in the more functional form we now recommend.
 
 If you encounter any issues during migration or have questions about the new features, please refer to the [Learn](./learn/index.md) documentation or reach out to the Mirascope community for support.

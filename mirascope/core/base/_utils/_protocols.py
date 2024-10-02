@@ -15,6 +15,7 @@ from typing_extensions import TypeIs
 
 from ..call_kwargs import BaseCallKwargs
 from ..call_response_chunk import BaseCallResponseChunk
+from ..messages import Messages
 from ..tool import BaseTool
 
 _BaseCallResponseChunkT = TypeVar(
@@ -39,12 +40,24 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncRespo
     ) -> Callable[_P, _ResponseT]: ...
 
     @overload
+    def __call__(self, fn: Callable[_P, Messages.Type]) -> Callable[_P, _ResponseT]: ...
+
+    @overload
     def __call__(
         self, fn: Callable[_P, Awaitable[_BaseDynamicConfigT]]
     ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
 
+    @overload
     def __call__(
-        self, fn: Callable[_P, _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
+        self, fn: Callable[_P, Awaitable[Messages.Type]]
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
+
+    def __call__(
+        self,
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[Messages.Type]],
     ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
 
 

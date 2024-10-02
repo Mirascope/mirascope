@@ -9,7 +9,10 @@ from pydantic import BaseModel
 
 def get_prompt_template(fn: Callable | BaseModel) -> str:
     """Get the metadata from the function and merge with any dynamic metadata."""
-    prompt_template = getattr(fn, "_prompt_template", None)
+
+    prompt_template = getattr(fn, "prompt_template", None) or getattr(
+        fn, "_prompt_template", None
+    )
     if prompt_template:
         return prompt_template
 

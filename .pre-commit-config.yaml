@@ -5,15 +5,16 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
+        exclude: "docs/tutorials/more_advanced/knowledge_graph.ipynb|docs/tutorials/evals/evaluating_web_search_agent.ipynb|docs/tutorials/agents/web_search_agent.ipynb
+        |docs/tutorials/prompt_engineering/chaining_based/self_verification.ipynb"
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.6.1"
     hooks:
       - id: ruff
-        files: "^mirascope|^tests|^examples"
-        args: [--fix, --config=pyproject.toml]
+        files: "^mirascope|^tests|^examples|^docs"
+        args: [--fix]
       - id: ruff-format
-        files: "^mirascope|^tests|^examples"
-        args: [--config=pyproject.toml]
+        files: "^mirascope|^tests|^examples|^docs"
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.377
     hooks:

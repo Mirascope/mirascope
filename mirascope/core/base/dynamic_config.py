@@ -1,7 +1,4 @@
-"""The base type in a function as an LLM call to return for dynamic configuration.
-
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+"""The base type in a function as an LLM call to return for dynamic configuration."""
 
 from collections.abc import Callable
 from typing import Any, Generic, TypeVar

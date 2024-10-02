@@ -1,9 +1,11 @@
 """The `BasePrompt` class for better prompt engineering."""
 
+import types
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
-from functools import reduce
+from functools import reduce, wraps
 from typing import (
     Any,
+    ClassVar,
     ParamSpec,
     Protocol,
     TypeVar,
@@ -11,32 +13,34 @@ from typing import (
 )
 
 from pydantic import BaseModel
+from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
+    MessagesDecorator,
+    fn_is_async,
     format_template,
+    get_fn_args,
     get_metadata,
     get_prompt_template,
+    messages_decorator,
     parse_prompt_messages,
 )
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
 from .message_param import BaseMessageParam
 from .metadata import Metadata
-from .stream import BaseStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _T = TypeVar("_T", bound=Callable)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
+_BaseStreamT = TypeVar("_BaseStreamT")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 
 class BasePrompt(BaseModel):
     """The base class for engineering prompts.
-
-    usage docs: learn/prompts.md#the-baseprompt-class
 
     This class is implemented as the base for all prompting needs. It is intended to
     work across various providers by providing a common prompt interface.
@@ -63,6 +67,8 @@ class BasePrompt(BaseModel):
     # > {"metadata": {"version:0001", "books"}}
     ```
     """
+
+    prompt_template: ClassVar[str]
 
     def __str__(self) -> str:
         """Returns the formatted template."""
@@ -157,8 +163,6 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
-        usage docs: learn/prompts.md#running-prompts
-
         Example:
 
         ```python
@@ -180,7 +184,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType, reportCallIssue]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),
@@ -257,8 +261,6 @@ class BasePrompt(BaseModel):
     ):
         """Returns the response of calling the API of the provided decorator.
 
-        usage docs: learn/prompts.md#running-prompts
-
         Example:
 
         ```python
@@ -286,7 +288,7 @@ class BasePrompt(BaseModel):
         namespace, fn_name = {}, self.__class__.__name__
         exec(f"async def {fn_name}({args_str}): ...", namespace)
         return reduce(
-            lambda res, f: f(res),  # pyright: ignore [reportArgumentType]
+            lambda res, f: f(res),  # pyright: ignore [reportArgumentType, reportCallIssue]
             [
                 metadata(get_metadata(self, self.dynamic_config())),
                 prompt_template(get_prompt_template(self)),
@@ -302,21 +304,54 @@ _BasePromptT = TypeVar("_BasePromptT", bound=BasePrompt)
 
 class PromptDecorator(Protocol):
     @overload
-    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
+    def __call__(
+        self, prompt: Callable[_P, BaseDynamicConfig]
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
 
     @overload
-    def __call__(self, prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
+    def __call__(
+        self, prompt: Callable[_P, Awaitable[BaseDynamicConfig]]
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
+    @overload
+    def __call__(self, prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
     def __call__(
         self,
-        prompt: type[_BasePromptT] | Callable[_P, _R],
-    ) -> type[_BasePromptT] | Callable[_P, _R]: ...
+        prompt: type[_BasePromptT]
+        | Callable[_P, BaseDynamicConfig]
+        | Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> (
+        Callable[_P, list[BaseMessageParam]]
+        | Callable[_P, Awaitable[list[BaseMessageParam]]]
+        | type[_BasePromptT]
+    ): ...
 
 
-def prompt_template(template: str) -> PromptDecorator:
+def _is_base_dynamic_config_function(
+    prompt: type[_BasePromptT]
+    | Callable[_P, BaseDynamicConfig]
+    | Callable[_P, Awaitable[BaseDynamicConfig]],
+) -> TypeIs[
+    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
+]:
+    return isinstance(prompt, types.FunctionType)
+
+
+@overload
+def prompt_template(template: str) -> PromptDecorator: ...
+
+
+@overload
+def prompt_template(template: None = None) -> MessagesDecorator: ...
+
+
+def prompt_template(
+    template: str | None = None,
+) -> PromptDecorator | MessagesDecorator:
     """A decorator for setting the `prompt_template` of a `BasePrompt` or `call`.
 
-    usage docs: learn/prompts.md#prompt-templates
+    usage docs: learn/prompts.md#prompt-templates-messages
 
     Example:
 
@@ -340,18 +375,73 @@ def prompt_template(template: str) -> PromptDecorator:
             attribute of the decorated input prompt or call.
     """
 
+    if template is None:
+        # For @prompt_template() case
+        decorator = messages_decorator()
+        decorator.__mirascope_prompt_template__ = True  # pyright: ignore [reportAttributeAccessIssue]
+        return decorator
+
+    @overload
+    def inner(
+        prompt: Callable[_P, BaseDynamicConfig],
+    ) -> Callable[_P, list[BaseMessageParam]]: ...
+
+    @overload
+    def inner(
+        prompt: Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> Callable[_P, Awaitable[list[BaseMessageParam]]]: ...
+
     @overload
     def inner(prompt: type[_BasePromptT]) -> type[_BasePromptT]: ...
 
-    @overload
-    def inner(prompt: Callable[_P, _R]) -> Callable[_P, _R]: ...
-
     def inner(
-        prompt: type[_BasePromptT] | Callable[_P, _R],
-    ) -> type[_BasePromptT] | Callable[_P, _R]:
+        prompt: type[_BasePromptT]
+        | Callable[_P, BaseDynamicConfig]
+        | Callable[_P, Awaitable[BaseDynamicConfig]],
+    ) -> (
+        Callable[_P, list[BaseMessageParam]]
+        | Callable[_P, Awaitable[list[BaseMessageParam]]]
+        | type[_BasePromptT]
+    ):
+        """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
-        return prompt
 
+        if not _is_base_dynamic_config_function(prompt):
+            return prompt
+
+        if fn_is_async(prompt):
+
+            @wraps(prompt)
+            async def get_base_message_params_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> list[BaseMessageParam]:
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
+                    dynamic_config=await prompt(*args, **kwargs),
+                )
+
+            get_base_message_params_async._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
+            return get_base_message_params_async
+
+        else:
+
+            @wraps(prompt)
+            def get_base_message_params(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> list[BaseMessageParam]:
+                return parse_prompt_messages(
+                    roles=["system", "user", "assistant"],
+                    template=template,
+                    attrs=get_fn_args(prompt, args, kwargs),
+                    dynamic_config=prompt(*args, **kwargs),
+                )
+
+            get_base_message_params._original_fn = prompt  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
+            return get_base_message_params
+
+    inner.__mirascope_prompt_template__ = True  # pyright: ignore [reportFunctionMemberAccess]
     return inner
 
 
@@ -370,8 +460,6 @@ class MetadataDecorator(Protocol):
 
 def metadata(metadata: Metadata) -> MetadataDecorator:
     """A decorator for adding metadata to a `BasePrompt` or `call`.
-
-    usage docs: learn/prompts.md#metadata
 
     Adding this decorator to a `BasePrompt` or `call` updates the `metadata` annotation
     to the given value. This is useful for adding metadata to a `BasePrompt` or `call`

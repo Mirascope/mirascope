@@ -1,9 +1,14 @@
 from typing import Literal
 
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import BaseToolKit, openai, prompt_template, toolkit_tool
+from mirascope.core import (
+    BaseMessageParam,
+    BaseToolKit,
+    openai,
+    prompt_template,
+    toolkit_tool,
+)
 
 
 class Book(BaseModel):
@@ -21,7 +26,7 @@ class RecommendationTools(BaseToolKit):
 
 
 class Librarian(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
     books: dict[str, str] = {}
     user_reading_level: str = "unknown"
 

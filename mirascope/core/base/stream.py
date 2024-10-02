@@ -10,6 +10,7 @@ from typing import (
     Generic,
     ParamSpec,
     TypeVar,
+    cast,
     overload,
 )
 
@@ -17,17 +18,21 @@ from ._utils import (
     HandleStream,
     HandleStreamAsync,
     SetupCall,
+    fn_is_async,
+    get_dynamic_configuration,
     get_fn_args,
     get_metadata,
     get_possible_user_message_param,
+    is_prompt_template,
 )
-from ._utils._protocols import fn_is_async
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
+from .messages import Messages
 from .metadata import Metadata
+from .prompt import prompt_template
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
@@ -258,6 +263,15 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
+    @overload
+    def decorator(
+        fn: Callable[_P, Messages.Type],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, TStream]: ...
 
     @overload
     def decorator(
@@ -268,22 +282,44 @@ def stream_factory(  # noqa: ANN201
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
+    @overload
+    def decorator(
+        fn: Callable[_P, Awaitable[Messages.Type]],
+        model: str,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        client: _BaseClientT | None,
+        call_params: _BaseCallParamsT,
+    ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
+        | Callable[_P, Awaitable[Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
+        if not is_prompt_template(fn):
+            fn = cast(
+                Callable[_P, Messages.Type] | Callable[_P, Awaitable[Messages.Type]], fn
+            )
+            fn = prompt_template()(fn)
+            fn = cast(
+                Callable[_P, _BaseDynamicConfigT]
+                | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+                fn,
+            )
+        fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = await fn(*args, **kwargs)
+                dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,
@@ -326,7 +362,7 @@ def stream_factory(  # noqa: ANN201
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = fn(*args, **kwargs)
+                dynamic_config = get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
                     client=client,

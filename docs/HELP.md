@@ -14,7 +14,7 @@ The [Learn](./learn/index.md) documentation is the most complete guide on how to
 
 ### :material-api: SDK API Documentation
 
-The [API Reference](./api/index.md) give reference docs for the **Mirascope** library, auto-generated directly from the code so it's always up-to-date.
+The [API Reference](./api/core/anthropic/call.md) give reference docs for the **Mirascope** library, auto-generated directly from the code so it's always up-to-date.
 
 ### :simple-github: GitHub Issues
 

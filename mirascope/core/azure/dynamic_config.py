@@ -1,16 +1,13 @@
-"""This module defines the function return type for functions as LLM calls.
+"""This module defines the function return type for functions as LLM calls."""
 
-usage docs: learn/dynamic_configuration.md#dynamic-configuration-options
-"""
+from azure.ai.inference.models import ChatRequestMessage
 
-from azure.ai.inference.models import (
-    ChatRequestMessage,
-)
-
-from ..base import BaseDynamicConfig
+from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import AzureCallParams
 
-AzureDynamicConfig = BaseDynamicConfig[ChatRequestMessage, AzureCallParams]
+AzureDynamicConfig = BaseDynamicConfig[
+    ChatRequestMessage | BaseMessageParam, AzureCallParams
+]
 """The function return type for functions wrapped with the `azure_call` decorator.
 
 Example:

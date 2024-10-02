@@ -45,6 +45,7 @@ dependencies = [
     "docstring-parser>=0.15,<1.0",
     "jiter>=0.5.0",
     "typing-extensions>=4.10.0",
+    "mkdocs-jupyter>=0.25.0",
 ]
 
 [project.urls]
@@ -84,6 +85,7 @@ dev-dependencies = [
     "mkdocs-material>=9.5.32",
     "mkdocstrings>=0.25.2",
     "mkdocstrings-python>=1.10.8",
+    "mkdocs-macros-plugin>=1.2.0",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
     "chromadb>=0.5.5",
@@ -101,6 +103,8 @@ dev-dependencies = [
     "slack-bolt>=1.20.0",
     "sqlmodel>=0.0.21",
     "azure-identity>=1.17.1",
+    "pillow>=10.4.0",
+    "notebook>=7.2.2",
 ]
 
 [tool.pytest.ini_options]
@@ -136,8 +140,8 @@ target-version = "py310"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*.py" = ["S101", "ANN"]
-"examples/*.py" = ["T201", "ANN"]
-"docs/*.py" = ["ANN401"]
+"examples/*.{py,ipynb}" = ["T201", "ANN"]
+"docs/*.{py,ipynb}" = ["T201", "ANN"]
 
 [tool.ruff.lint]
 select = [
@@ -167,7 +171,6 @@ ignore = [
     'ANN102',
 ]
 fixable = ["ALL"]
-isort = { known-first-party = ['mirascope', 'tests', 'examples'] }
 pydocstyle = { convention = 'google' }
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -177,6 +180,9 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ['mirascope', 'tests', 'examples']
 
 [tool.pyright]
 exclude = ["mirascope/beta"]

@@ -1,90 +1,90 @@
 # JSON Mode
 
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
+
 JSON Mode is a feature in Mirascope that allows you to request structured JSON output from Large Language Models (LLMs). This mode is particularly useful when you need to extract structured information from the model's responses, making it easier to parse and use the data in your applications.
 
-## Support Across Providers
+??? warning "Not all providers have an official JSON Mode"
 
-JSON Mode support varies across different LLM providers:
+    For providers with explicit support, Mirascope uses the native JSON Mode feature of the API. For providers without explicit support (Anthropic and Cohere), Mirascope implements a pseudo JSON Mode by instructing the model in the prompt to output JSON.
 
-- **Explicit Support**: OpenAI, Gemini, Groq, Mistral
-- **Pseudo Support**: Anthropic, Cohere
-
-For providers with explicit support, Mirascope uses the native JSON Mode feature of the API. For providers without explicit support (Anthropic and Cohere), Mirascope implements a pseudo JSON Mode by instructing the model in the prompt to output JSON.
-
-!!! note "Do It Yourself"
+    | Provider  | Support Type | Implementation      |
+    |-----------|--------------|---------------------|
+    | OpenAI    | Explicit     | Native API feature  |
+    | Anthropic | Pseudo       | Prompt engineering  |
+    | Mistral   | Explicit     | Native API feature  |
+    | Gemini    | Explicit     | Native API feature  |
+    | Groq      | Explicit     | Native API feature  |
+    | Cohere    | Pseudo       | Prompt engineering  |
 
     If you'd prefer not to have any internal updates made to your prompt, you can always set JSON mode yourself through `call_params` rather than using the `json_mode` argument, which provides provider-agnostic support but is certainly not required to use JSON mode.
 
-## Using JSON Mode
+## Basic Usage and Syntax
 
-To enable JSON Mode, set `json_mode=True` when using the `call` decorator:
+Let's take a look at a basic example using JSON Mode:
 
-```python
-import json
-from mirascope.core import openai, prompt_template
+!!! mira ""
 
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-@openai.call(model="gpt-4o-mini", json_mode=True)
-@prompt_template(
-    """
-    Provide the following information about {book_title}:
-    - author
-    - date published
-    - genre
-    """)
-def get_book_info(book_title: str):
-    ...
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
+            {% if method == "base_message_param" %}
+            ```python hl_lines="6 10 17"
+            {% elif method == "string_template" %}
+            ```python hl_lines="6 7 13"
+            {% else %}
+            ```python hl_lines="6 8 13"
+            {% endif %}
+            --8<-- "examples/learn/json_mode/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-response = get_book_info("The Great Gatsby")
-print(json.loads(response.content))
-# > {"author": "F. Scott Fitzgerald", "date_published": "1925", "genre": "Tragedy"}
-```
+    {% endfor %}
 
-This will instruct the model to return its response in JSON format.
+In this example we
 
-## Handling JSON Responses
-
-When JSON Mode is enabled, the model's response will be a JSON string. You can parse this string using Python's built-in `json` module or other JSON parsing libraries (such as `jiter`):
-
-```python
-import json
-
-
-response = get_book_info("The Great Gatsby")
-book_info = json.loads(response.content)
-print(book_info['author'])
-```
+1. Enable JSON Mode with `json_mode=True` in the `call` decorator
+2. Instruct the model what fields to include in our prompt
+3. Load the JSON string response into a Python object and print it
 
 ## Error Handling and Validation
 
-While JSON Mode significantly improves the structure of model outputs, it's important to note that it's not infallible. LLMs may occasionally produce invalid JSON or deviate from the expected structure. Therefore, it's crucial to implement proper error handling and validation in your code:
+While JSON Mode can signifanctly improve the structure of model outputs, it's important to note that it's far from infallible. LLMs often produce invalid JSON or deviate from the expected structure, so it's crucial to implement proper error handling and validation in your code:
 
-```python
-import json
+!!! mira ""
 
-try:
-    response = get_book_info("The Great Gatsby")
-    json_obj = json.loads(response.content)
-    print(json_obj["author"])
-except json.JSONDecodeError:
-    print("The model produced invalid JSON")
-```
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-In the above example, we are only catching errors for invalid JSON. There is always still a chance that the LLM returns valid JSON that does not conform to your expected schema (such as field types). We recommend using [`Response Models`](./response_models.md) for easier structuring and validation of LLM outputs.
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-## Limitations and Considerations
+            {% if method == "base_message_param" %}
+            ```python hl_lines="15 18"
+            {% else %}
+            ```python hl_lines="11 14"
+            {% endif %}
+            --8<-- "examples/learn/json_mode/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-- **Provider Differences**: The quality and consistency of JSON output may vary between providers, especially those using pseudo JSON Mode.
-- **Performance**: Requesting structured JSON output may sometimes result in slightly longer response times compared to free-form text responses.
+    {% endfor %}
 
-## Common Use Cases
+!!! warning "Beyond JSON Validation"
 
-JSON Mode is particularly useful in scenarios where you need to extract structured information from LLM responses, such as:
+    While this example catches errors for invalid JSON, there's always a chance that the LLM returns valid JSON that doesn't conform to your expected schema (such as missing fields or incorrect types).
 
-- Extracting specific details from text (e.g., names, dates, locations)
-- Generating structured data for database entries
-- Creating machine-readable summaries of documents
-- Standardizing outputs for APIs or data pipelines
+    For more robust validation, we recommend using [Response Models](./response_models.md) for easier structuring and validation of LLM outputs.
 
-By leveraging JSON Mode, you can create more robust and data-driven applications that efficiently process and utilize LLM outputs.
+## Next Steps
+
+By leveraging JSON Mode, you can create more robust and data-driven applications that efficiently process and utilize LLM outputs. This approach allows for easy integration with databases, APIs, or user interfaces, demonstrating the power of JSON Mode in creating robust, data-driven applications.
+
+Next, we recommend reading the section on [Output Parsers](./output_parsers.md) to see how to engineer prompts with specific output structures and parse the outputs automatically on every call.

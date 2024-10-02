@@ -3,12 +3,10 @@
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from typing import Any, cast, overload
 
-from google.cloud.aiplatform_v1beta1.types import (
-    FunctionCallingConfig,
-    GenerationConfig,
-)
+from google.cloud.aiplatform_v1beta1.types import FunctionCallingConfig
 from vertexai.generative_models import (
     Content,
+    GenerationConfig,
     GenerationResponse,
     GenerativeModel,
     Part,
@@ -16,8 +14,13 @@ from vertexai.generative_models import (
 )
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ...base._utils._protocols import fn_is_async
+from ...base._utils import (
+    AsyncCreateFn,
+    CreateFn,
+    fn_is_async,
+    get_async_create_fn,
+    get_create_fn,
+)
 from ..call_kwargs import VertexCallKwargs
 from ..call_params import VertexCallParams
 from ..dynamic_config import VertexDynamicConfig
@@ -93,8 +96,9 @@ def setup_call(
     messages = cast(list[BaseMessageParam | Content], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        generation_config = call_kwargs.get("generation_config", GenerationConfig())
-        generation_config.response_mime_type = "application/json"
+        generation_config = call_kwargs.get(
+            "generation_config", GenerationConfig(response_mime_type="application/json")
+        )
         call_kwargs["generation_config"] = generation_config
         messages[-1] = Content(
             role="user",

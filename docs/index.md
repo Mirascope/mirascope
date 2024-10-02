@@ -1,91 +1,177 @@
-# Getting Started with Mirascope
+# Mirascope
 
-Welcome to Mirascope! This guide will help you dive into building powerful LLM-powered applications with ease. We'll start with an interactive tutorial and then guide you through next steps to deepen your knowledge and understanding of Mirascope and all of its features.
+<p align="left">
+    <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
+    <a href="https://codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
+    <a href="https://docs.mirascope.io/" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
+    <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
+    <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
+    <a href="https://github.com/Mirascope/mirascope/blob/dev/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
+</p>
 
-## Interactive Web Search Agent Tutorial
+LLM abstractions that aren't obstructions.
 
-Jump right in with our hands-on tutorial where you'll interact with a web search agent built using Mirascope. This will give you a practical taste of Mirascope's key features.
+Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai).
 
-### Replit Environment
+Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
 
-We've set up a Replit environment for you to start immediately without any local setup:
+## 30 Second Quickstart
 
-[Mirascope Getting Started Tutorial](https://replit.com/@willbakst/Mirascope-Getting-Started-Tutorial?v=1)
+Install Mirascope, specifying the provider(s) you intend to use, and set your API key:
 
-### How to Use the Replit
+{% set operating_systems = ["MacOS / Linux", "Windows"] %}
+{% for os in operating_systems %}
+=== "{{ os }}"
 
-1. Open the Replit link above.
-2. Click the "Fork" button to create your own copy of the Replit.
-3. In the Secrets tab (lock icon on the left sidebar), add your OpenAI API key:
-   - Key: `OPENAI_API_KEY`
-   - Value: Your actual OpenAI API key
-4. Click the "Run" button at the top of the Replit interface.
-5. Interact with the agent in the console on the right side of the screen.
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-### Understanding the Code
+        ```bash
+        pip install "mirascope[{{ provider | provider_dir }}]"
+        {% if provider == "Gemini" %}
+        {% if os == "Windows" %}set GOOGLE_API_KEY=XXXXX
+        {% else %}export GOOGLE_API_KEY=XXXXX
+        {% endif %}
+        {% elif provider == "Cohere" %}
+        {% if os == "Windows" %}set CO_API_KEY=XXXXX
+        {% else %}export CO_API_KEY=XXXXX
+        {% endif %}
+        {% elif provider == "LiteLLM" %}
+        {% if os == "Windows" %}set OPENAI_API_KEY=XXXXX  # set keys for providers you will use
+        {% else %}export OPENAI_API_KEY=XXXXX  # set keys for providers you will use
+        {% endif %}
+        {% elif provider == "Azure AI" %}
+        {% if os == "Windows" %}set AZURE_INFERENCE_ENDPOINT=XXXXX
+        set AZURE_INFERENCE_CREDENTIAL=XXXXX
+        {% else %}export AZURE_INFERENCE_ENDPOINT=XXXXX
+        export AZURE_INFERENCE_CREDENTIAL=XXXXX
+        {% endif %}
+        {% elif provider == "Vertex AI" %}
+        gcloud init
+        gcloud auth application-default login
+        {% else %}
+        {% if os == "Windows" %}set {{ upper(provider | provider_dir) }}_API_KEY=XXXXX
+        {% else %}export {{ upper(provider | provider_dir) }}_API_KEY=XXXXX
+        {% endif %}
+        {% endif %}
+        ```
+    {% endfor %}
+{% endfor %}
 
-The Replit contains a Python script that runs a Web Search Agent implemented using Mirascope, DuckDuckGo Search, BeautifulSoup, and Requests. Here's a breakdown of the key components:
+Make your first call:
 
-- `constants.py`: Constant values used across the various other files.
-- `tools.py`: The `web_search` and `parse_content` tools. These enable the agent to retrieve search results and parse them.
-- `agent.py`: The main `WebSearchAgent` implementation of a streaming agent with access to the web.
-- `main.py`: A simple script that runs the agent.
+!!! mira "Mirascope"
 
-### Experimenting with the Agent
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-Try asking the agent various questions. It can:
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-- Answer general knowledge questions
-- Provide summaries of current events
-- Explain complex topics
-- And much more!
+            {% if method == "string_template" %}
+            ```python hl_lines="4 5"
+            {% else %}
+            ```python hl_lines="4 6"
+            {% endif %}
+            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-The agent will use its web search capability when it needs additional information.
+    {% endfor %}
 
-### Key Mirascope Features Demonstrated
+??? note "Official SDK"
 
-This tutorial showcases several key Mirascope features:
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
 
-1. **LLM Calls**: The `call` decorator simplifies interactions with LLM APIs.
-2. **Prompt Templates**: Dynamic prompt creation using the `@prompt_template` decorator.
-3. **Custom Tools**: Implementation of web search and content parsing tools.
-4. **Streaming**: Real-time responses using Mirascope's streaming capabilities.
-5. **Agent State Management**: Maintaining conversation history and context, including iteratively calling and inserting tools.
+        ```python
+        --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/official_sdk_call.py"
+        ```
+
+    {% endfor %}
+
+## Choose Your Path
+
+### Tutorials
+
+<div class="grid cards" markdown>
+
+-   :material-clock-fast:{ .lg .middle } __Quickstart Guide__
+
+    ---
+
+    Comprehensive overview of core features and building blocks
+
+    [:octicons-arrow-right-24: Quickstart](./tutorials/getting_started/quickstart.ipynb)
+
+-   :material-database:{ .lg .middle } __Structured Outputs__
+
+    ---
+
+    Explore various techniques for generating structured outputs
+
+    [:octicons-arrow-right-24: Structured Outputs](./tutorials/getting_started/structured_outputs.ipynb)
+
+-   :material-link-variant:{ .lg .middle } __Dynamic Configuration & Chaining__
+
+    ---
+
+    Examples ranging from basic usage to more complex chaining techniques
+
+    [:octicons-arrow-right-24: Dynamic Configuration & Chaining](./tutorials/getting_started/dynamic_configuration_and_chaining.ipynb)
+
+-   :material-tools:{ .lg .middle } __Tools & Agents__
+
+    ---
+
+    Learn how to define tools for your LLM to build advanced AI agents
+
+    [:octicons-arrow-right-24: Tools & Agents](./tutorials/getting_started/tools_and_agents.ipynb)
+
+</div>
+
+### Dive Deeper
+
+<div class="grid cards" markdown>
+
+-   :material-school:{ .lg .middle } __Learn__
+
+    ---
+
+    In-depth exploration of Mirascope's many features and capabilities
+
+    [:octicons-arrow-right-24: Learn](./learn/index.md)
+
+-   :material-book-open-variant:{ .lg .middle } __Tutorials__
+
+    ---
+
+    Advanced usage patterns and real-world applications
+
+    [:octicons-arrow-right-24: Cookbook](./tutorials/more_advanced/text_classification.ipynb)
+
+-   :material-connection:{ .lg .middle } __Integrations__
+
+    ---
+
+    Integrations with third-party tools for enhanced usage
+
+    [:octicons-arrow-right-24: Integrations](./integrations/custom_provider.md)
+
+-   :material-text-search:{ .lg .middle } __API Reference__
+
+    ---
+
+    Detailed information on classes and functions
+
+    [:octicons-arrow-right-24: Reference](./api/core/anthropic/call.md)
+
+</div>
 
 ## Next Steps
 
-Once you're comfortable with the tutorial, here are some next steps to deepen your Mirascope knowledge:
+[:material-lightbulb: Why Use Mirascope](./WHY.md){: .md-button }
+[:material-account-group: Join Our Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA){: .md-button }
+[:material-star: Star the Repo](https://github.com/Mirascope/mirascope){: .md-button }  
 
-### Explore the Documentation
-
-Dive into our comprehensive documentation to learn more about Mirascope's features:
-
-- [Learn Mirascope](./learn/index.md): In-depth guides on all Mirascope features.
-- [API Reference](./api/index.md): Detailed information on Mirascope's classes and functions.
-
-### Try More Examples
-
-Check out our Cookbook for more advanced examples and real-world applications:
-
-- [Mirascope Cookbook](./cookbook/index.md): A collection of recipes for common LLM application patterns.
-
-### Set Up Your Local Environment
-
-To start building your own projects, set up Mirascope in your local environment:
-
-```bash
-pip install mirascope
-pip install "mirascope[openai]"     # when using e.g. mirascope.core.openai
-pip install "mirascope[anthropic]"  # when using e.g. mirascope.core.anthropic
-```
-
-We provide tags for extras for your convenience when using additional modules. These tags will ensure that you install all of the packages necessary for using the modules matching said tags.
-
-### Join the Community
-
-Connect with other Mirascope developers:
-
-- [Slack Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA): Get support and share your projects.
-- [GitHub](https://github.com/Mirascope/mirascope): Star us on GitHub, request features, report bugs, and contribute to the project!
-
-We're excited to see what you'll build with Mirascope. Happy coding!
+We're excited to see what you'll build with Mirascope, and we're here to help! Don't hesitate to reach out :)

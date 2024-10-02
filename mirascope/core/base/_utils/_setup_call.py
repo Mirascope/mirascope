@@ -16,17 +16,18 @@ from ..call_params import BaseCallParams
 from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
 from ..tool import BaseTool
+from . import get_prompt_template, parse_prompt_messages
 from ._convert_base_model_to_base_tool import convert_base_model_to_base_tool
 from ._convert_function_to_base_tool import convert_function_to_base_tool
-from ._get_prompt_template import get_prompt_template
-from ._parse_prompt_messages import parse_prompt_messages
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 
 
 def setup_call(
-    fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+    fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
+    | Callable[..., list[BaseMessageParam]]
+    | Callable[..., Awaitable[list[BaseMessageParam]]],
     fn_args: dict[str, Any],
     dynamic_config: _BaseDynamicConfigT,
     tools: list[type[BaseTool] | Callable] | None,
@@ -39,9 +40,8 @@ def setup_call(
     BaseCallKwargs,
 ]:
     call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
-    prompt_template, messages, computed_fields = None, None, None
+    prompt_template, messages = None, None
     if dynamic_config is not None:
-        computed_fields = dynamic_config.get("computed_fields", None)
         tools = dynamic_config.get("tools", tools)
         messages = dynamic_config.get("messages", None)
         dynamic_call_params = dynamic_config.get("call_params", None)
@@ -50,13 +50,12 @@ def setup_call(
 
     if not messages:
         prompt_template = get_prompt_template(fn)
-        assert prompt_template is not None, "The function must have a docstring."
-        if computed_fields:
-            fn_args |= computed_fields
+        assert prompt_template is not None, "The function must have a prompt template."
         messages = parse_prompt_messages(
             roles=["system", "user", "assistant"],
             template=prompt_template,
             attrs=fn_args,
+            dynamic_config=dynamic_config,
         )
 
     tool_types = None

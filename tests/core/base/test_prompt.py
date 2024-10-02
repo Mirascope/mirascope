@@ -1,12 +1,14 @@
 """Tests for the `base_prompt` module."""
 
 import os
+from typing import ClassVar
+from unittest import mock
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pydantic import computed_field
 
-from mirascope.core.base.message_param import BaseMessageParam
+from mirascope.core import BaseMessageParam
 from mirascope.core.base.prompt import BasePrompt, metadata, prompt_template
 
 
@@ -53,6 +55,60 @@ def test_base_prompt_with_computed_fields() -> None:
 
     prompt = BookRecommendationPrompt()
     assert str(prompt) == "Recommend a fantasy book."
+
+
+def test_base_prompt_with_prompt_template() -> None:
+    """Tests the `BasePrompt` class with prompt_template."""
+
+    class BookRecommendationPrompt(BasePrompt):
+        prompt_template: ClassVar[str] = "Recommend a {genre} book."
+        genre: str
+
+    prompt = BookRecommendationPrompt(genre="fantasy")
+    assert str(prompt) == "Recommend a fantasy book."
+    assert prompt.dump() == {
+        "metadata": {},
+        "prompt": "Recommend a fantasy book.",
+        "template": "Recommend a {genre} book.",
+        "inputs": {"genre": "fantasy"},
+    }
+
+    class BookRecommendationPromptWithoutClassVar(BasePrompt):
+        prompt_template = "Recommend a {genre} book."
+        genre: str
+
+    prompt = BookRecommendationPromptWithoutClassVar(genre="fantasy")
+    assert str(prompt) == "Recommend a fantasy book."
+    assert prompt.dump() == {
+        "metadata": {},
+        "prompt": "Recommend a fantasy book.",
+        "template": "Recommend a {genre} book.",
+        "inputs": {"genre": "fantasy"},
+    }
+
+    class MessagesPrompt(BasePrompt):
+        prompt_template: ClassVar[str] = """
+        SYSTEM: You are a helpful assistant.
+        USER: Please help me.
+        """
+
+    prompt = MessagesPrompt()
+    assert prompt.message_params() == [
+        BaseMessageParam(role="system", content="You are a helpful assistant."),
+        BaseMessageParam(role="user", content="Please help me."),
+    ]
+
+    class MessagesPromptWithoutClassVar(BasePrompt):
+        prompt_template = """
+        SYSTEM: You are a helpful assistant.
+        USER: Please help me.
+        """
+
+    prompt = MessagesPromptWithoutClassVar()
+    assert prompt.message_params() == [
+        BaseMessageParam(role="system", content="You are a helpful assistant."),
+        BaseMessageParam(role="user", content="Please help me."),
+    ]
 
 
 def test_base_prompt_run() -> None:
@@ -126,12 +182,38 @@ def test_prompt_template_docstring() -> None:
 def test_prompt_template_with_function() -> None:
     """Tests the `prompt_template` decorator on a function."""
 
-    @prompt_template("Recommend a book.")
-    def fn() -> None: ...
+    @prompt_template("Recommend a {genre} book.")
+    def fn(genre: str) -> None: ...
 
     assert (
-        hasattr(fn, "_prompt_template") and fn._prompt_template == "Recommend a book."  # pyright: ignore [reportFunctionMemberAccess]
+        hasattr(fn, "_prompt_template")
+        and fn._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
     )
+    assert fn("fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+    assert fn(genre="fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+
+
+@pytest.mark.asyncio
+async def test_prompt_template_with_async_function() -> None:
+    """Tests the `prompt_template` decorator on a async function."""
+
+    @prompt_template("Recommend a {genre} book.")
+    async def fn(genre: str) -> None: ...
+
+    assert (
+        hasattr(fn, "_prompt_template")
+        and fn._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
+    )
+    assert await fn("fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
+    assert await fn(genre="fantasy") == [
+        BaseMessageParam(role="user", content="Recommend a fantasy book.")
+    ]
 
 
 def test_metadata_decorator() -> None:
@@ -148,3 +230,15 @@ def test_metadata_decorator() -> None:
     def fn() -> None: ...
 
     assert hasattr(fn, "_metadata") and fn._metadata == {"tags": {"version:0001"}}  # pyright: ignore [reportFunctionMemberAccess]
+
+
+def test_prompt_template_with_none() -> None:
+    """Tests the `prompt_template` decorator with `None` arguments."""
+    with mock.patch("mirascope.core.base.prompt.messages_decorator") as mock_decorator:
+        mock_decorated_function = mock.MagicMock()
+        mock_decorator.return_value.return_value = mock_decorated_function
+
+        @prompt_template()
+        def fn() -> None: ...
+
+        assert fn == mock_decorated_function

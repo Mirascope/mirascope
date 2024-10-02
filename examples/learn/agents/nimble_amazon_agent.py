@@ -1,8 +1,7 @@
 import requests
-from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import BaseMessageParam, openai, prompt_template
 
 NIMBLE_TOKEN = "YOUR_NIMBLE_TOKEN"
 
@@ -40,7 +39,7 @@ def amazon_search(question: str):
 
 
 class NimbleAmazonBot(BaseModel):
-    history: list[ChatCompletionMessageParam] = []
+    history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
     @openai.call(model="gpt-3.5-turbo", tools=[amazon_search])
     @prompt_template(

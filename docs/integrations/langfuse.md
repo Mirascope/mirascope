@@ -12,7 +12,7 @@ pip install "mirascope[langfuse]"
 
 ### Calls
 
-The `with_langfuse` decorator can be used on all Mirascope functions to automatically log calls across all of our [supported LLM providers](../learn/calls.md#supported-providers).
+The `with_langfuse` decorator can be used on all Mirascope functions to automatically log calls across all of our [supported LLM providers](../learn/calls.md).
 
 Here is a simple example using tools:
 
