@@ -1,4 +1,4 @@
-from mirascope.core import vertex, prompt_template
+from mirascope.core import prompt_template, vertex
 
 
 def get_book_author(title: str) -> str:
@@ -22,7 +22,7 @@ def identify_authors(books: list[str]): ...
 
 stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
 for chunk, tool in stream:
-    if tool:
+    if tool:  # will always be None, not supported at the provider level
         print(tool.call())
     else:
         print(chunk.content, end="", flush=True)
