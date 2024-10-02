@@ -4,7 +4,7 @@ site_url: https://docs.mirascope.io/
 site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
-strict: false
+strict: true
 theme:
   name: material
   custom_dir: docs/overrides
@@ -110,10 +110,10 @@ plugins:
   - search
   - macros:
       module_name: docs/macros
-  # - mkdocs-jupyter:
-  #     execute: false
-  #     include_source: True
-  #     ignore: ["*.py"]
+  - mkdocs-jupyter:
+      execute: false
+      include_source: True
+      ignore: ["*.py"]
   - mkdocstrings:
       handlers:
         python:
@@ -154,53 +154,53 @@ nav:
       - Migration Guide: "MIGRATE.md"
       - Contributing: "CONTRIBUTING.md"
       - Changelog: "CHANGELOG.md"
-  # - Tutorials:
-  #     - Getting Started:
-  #         - Quickstart: "tutorials/getting_started/quickstart.ipynb"
-  #         - Structured Outputs: "tutorials/getting_started/structured_outputs.ipynb"
-  #         - Dynamic Configuration & Chaining: "tutorials/getting_started/dynamic_configuration_and_chaining.ipynb"
-  #         - Tools & Agents: "tutorials/getting_started/tools_and_agents.ipynb"
-  #     - More Advanced:
-  #         - Text Classification: "tutorials/more_advanced/text_classification.ipynb"
-  #         - Text Translation: "tutorials/more_advanced/text_translation.ipynb"
-  #         - Text Summarization: "tutorials/more_advanced/text_summarization.ipynb"
-  #         - Search with Sources: "tutorials/more_advanced/search_with_sources.ipynb"
-  #         - LLM Validation With Retries: "tutorials/more_advanced/llm_validation_with_retries.ipynb"
-  #         - Extract from PDF: "tutorials/more_advanced/extract_from_pdf.ipynb"
-  #         - Knowledge Graph: "tutorials/more_advanced/knowledge_graph.ipynb"
-  #         - Generating Captions: "tutorials/more_advanced/generating_captions.ipynb"
-  #         - PII Scrubbing: "tutorials/more_advanced/pii_scrubbing.ipynb"
-  #         - Extraction using Vision: "tutorials/more_advanced/extraction_using_vision.ipynb"
-  #         - Code Generation and Execution: "tutorials/more_advanced/code_generation_and_execution.ipynb"
-  #         - Support Ticket Routing: "tutorials/more_advanced/support_ticket_routing.ipynb"
-  #         - Document Segmentation: "tutorials/more_advanced/document_segmentation.ipynb"
-  #         - Generating Synthetic Data: "tutorials/more_advanced/generating_synthetic_data.ipynb"
-  #         - Removing Semantic Duplicates: "tutorials/more_advanced/removing_semantic_duplicates.ipynb"
-  #         - Speech Transcription: "tutorials/more_advanced/speech_transcription.ipynb"
-  #         - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
-  #         - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
-  #     - Agents:
-  #         - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
-  #         - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
-  #         - SQL Agent: "tutorials/agents/sql_agent.ipynb"
-  #         - Localized Agent: "tutorials/agents/localized_agent.ipynb"
-  #         - Local Chat with Codebase: "tutorials/agents/local_chat_with_codebase.ipynb"
-  #         - Documentation Agent: "tutorials/agents/documentation_agent.ipynb"
-  #     - Prompt Engineering:
-  #         - Text Based:
-  #             - "tutorials/prompt_engineering/text_based/index.md"
-  #             - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
-  #         - Chaining Based:
-  #             - "tutorials/prompt_engineering/chaining_based/index.md"
-  #             - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
-  #             - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
-  #             - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
-  #     - Evaluations:
-  #         - Evaluating SQL Agent: "tutorials/evals/evaluating_sql_agent.ipynb"
-  #         - Evaluating Web Search Agent: "tutorials/evals/evaluating_web_search_agent.ipynb"
-  #         - Evaluating Documentation Agent: "tutorials/evals/evaluating_documentation_agent.ipynb"
-  #     - LangGraph vs. Mirascope:
-  #         - Quickstart: "tutorials/langgraph_vs_mirascope/quickstart.ipynb"
+  - Tutorials:
+      - Getting Started:
+          - Quickstart: "tutorials/getting_started/quickstart.ipynb"
+          - Structured Outputs: "tutorials/getting_started/structured_outputs.ipynb"
+          - Dynamic Configuration & Chaining: "tutorials/getting_started/dynamic_configuration_and_chaining.ipynb"
+          - Tools & Agents: "tutorials/getting_started/tools_and_agents.ipynb"
+      - More Advanced:
+          - Text Classification: "tutorials/more_advanced/text_classification.ipynb"
+          - Text Translation: "tutorials/more_advanced/text_translation.ipynb"
+          - Text Summarization: "tutorials/more_advanced/text_summarization.ipynb"
+          - Search with Sources: "tutorials/more_advanced/search_with_sources.ipynb"
+          - LLM Validation With Retries: "tutorials/more_advanced/llm_validation_with_retries.ipynb"
+          - Extract from PDF: "tutorials/more_advanced/extract_from_pdf.ipynb"
+          - Knowledge Graph: "tutorials/more_advanced/knowledge_graph.ipynb"
+          - Generating Captions: "tutorials/more_advanced/generating_captions.ipynb"
+          - PII Scrubbing: "tutorials/more_advanced/pii_scrubbing.ipynb"
+          - Extraction using Vision: "tutorials/more_advanced/extraction_using_vision.ipynb"
+          - Code Generation and Execution: "tutorials/more_advanced/code_generation_and_execution.ipynb"
+          - Support Ticket Routing: "tutorials/more_advanced/support_ticket_routing.ipynb"
+          - Document Segmentation: "tutorials/more_advanced/document_segmentation.ipynb"
+          - Generating Synthetic Data: "tutorials/more_advanced/generating_synthetic_data.ipynb"
+          - Removing Semantic Duplicates: "tutorials/more_advanced/removing_semantic_duplicates.ipynb"
+          - Speech Transcription: "tutorials/more_advanced/speech_transcription.ipynb"
+          - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
+          - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
+      - Agents:
+          - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
+          - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
+          - SQL Agent: "tutorials/agents/sql_agent.ipynb"
+          - Localized Agent: "tutorials/agents/localized_agent.ipynb"
+          - Local Chat with Codebase: "tutorials/agents/local_chat_with_codebase.ipynb"
+          - Documentation Agent: "tutorials/agents/documentation_agent.ipynb"
+      - Prompt Engineering:
+          - Text Based:
+              - "tutorials/prompt_engineering/text_based/index.md"
+              - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
+          - Chaining Based:
+              - "tutorials/prompt_engineering/chaining_based/index.md"
+              - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
+              - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
+              - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
+      - Evaluations:
+          - Evaluating SQL Agent: "tutorials/evals/evaluating_sql_agent.ipynb"
+          - Evaluating Web Search Agent: "tutorials/evals/evaluating_web_search_agent.ipynb"
+          - Evaluating Documentation Agent: "tutorials/evals/evaluating_documentation_agent.ipynb"
+      - LangGraph vs. Mirascope:
+          - Quickstart: "tutorials/langgraph_vs_mirascope/quickstart.ipynb"
   - Learn:
       - Overview: "learn/index.md"
       - Prompts: "learn/prompts.md"
