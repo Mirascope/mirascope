@@ -11,7 +11,7 @@ class Book(BaseModel):
     author: str
 
 
-@groq.call("llama-3.1-8b-instant", response_model=Book)
+@groq.call("llama-3.1-70b-versatile", response_model=Book)
 def extract_book(text: str) -> Messages.Type:
     return Messages.User(f"Extract {text}")
 
