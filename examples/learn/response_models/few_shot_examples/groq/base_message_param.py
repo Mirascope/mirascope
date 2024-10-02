@@ -18,7 +18,10 @@ class Book(BaseModel):
 @groq.call("llama-3.1-70b-versatile", response_model=Book, json_mode=True)
 def extract_book(text: str) -> list[BaseMessageParam]:
     return [
-        BaseMessageParam(role="user", content=f"Extract {text}. Match examples format.")
+        BaseMessageParam(
+            role="user",
+            content=f"Extract {text}. Match example format excluding 'examples' key.",
+        )
     ]
 
 

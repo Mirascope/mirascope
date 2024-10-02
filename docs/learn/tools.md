@@ -224,7 +224,9 @@ Mirascope supports streaming responses with tools, which is useful for long-runn
 
 !!! warning "Not all providers support streaming tools"
 
-    Currently only OpenAI, Anthropic, Mistral, and Groq support streaming tools. If you think we're missing any, let us know!
+    Currently only OpenAI, Anthropic, Mistral, and Groq support streaming tools. All other providers will always return `None` for tools.
+    
+    If you think we're missing any, let us know!
 
 ## Validation and Error Handling
 
