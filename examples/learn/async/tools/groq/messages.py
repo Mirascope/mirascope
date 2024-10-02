@@ -13,7 +13,7 @@ class FormatBook(BaseTool):
         return f"{self.title} by {self.author}"
 
 
-@groq.call("llama-3.1-8b-instant", tools=[FormatBook])
+@groq.call("llama-3.1-70b-versatile", tools=[FormatBook])
 async def recommend_book(genre: str) -> Messages.Type:
     return Messages.User(f"Recommend a {genre} book")
 
