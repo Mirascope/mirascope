@@ -17,7 +17,7 @@ class Book(BaseModel):
 
 @mistral.call("mistral-large-latest", response_model=Book, json_mode=True)
 def extract_book(text: str) -> str:
-    return f"Extract {text}. Match examples format."
+    return f"Extract {text}. Match example format excluding 'examples' key."
 
 
 book = extract_book("The Way of Kings by Brandon Sanderson")
