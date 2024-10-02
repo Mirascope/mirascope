@@ -190,6 +190,7 @@ nav:
           - Text Based:
               - "tutorials/prompt_engineering/text_based/index.md"
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
+              - Thread of Thought: "tutorials/prompt_engineering/text_based/thread_of_thought.ipynb"
               - Rereading: "tutorials/prompt_engineering/text_based/rereading.ipynb"
               - Emotion Prompting: "tutorials/prompt_engineering/text_based/emotion_prompting.ipynb"
               - Rephrase and Respond: "tutorials/prompt_engineering/text_based/rephrase_and_respond.ipynb"
