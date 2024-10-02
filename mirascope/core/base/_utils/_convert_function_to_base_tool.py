@@ -50,7 +50,7 @@ def convert_function_to_base_tool(
                 examples.append(jiter.from_json(example.description.encode()))
 
     field_definitions = {}
-    hints = get_type_hints(fn)
+    hints = get_type_hints(fn, include_extras=True)
     has_self = False
     for i, parameter in enumerate(inspect.signature(fn).parameters.values()):
         if parameter.name == "self":
