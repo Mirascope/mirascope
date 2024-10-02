@@ -15,7 +15,7 @@ class Book(BaseModel):
     )
 
 
-@groq.call("llama-3.1-8b-instant", response_model=Book, json_mode=True)
+@groq.call("llama-3.1-70b-versatile", response_model=Book, json_mode=True)
 @prompt_template("Extract {text}. Match examples format.")
 def extract_book(text: str): ...
 
