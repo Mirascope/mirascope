@@ -1,7 +1,7 @@
 from mirascope.core import BaseDynamicConfig, Messages, groq
 
 
-@groq.call("llama-3.1-8b-instant")
+@groq.call("llama-3.1-70b-versatile")
 def recommend_book(genre: str) -> BaseDynamicConfig:
     return {
         "messages": [Messages.User(f"Recommend a {genre} book")],
