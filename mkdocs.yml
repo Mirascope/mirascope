@@ -203,6 +203,7 @@ nav:
               - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
               - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
               - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
+              - Sim to M: "tutorials/prompt_engineering/chaining_based/sim_to_m.ipynb"
       - Evaluations:
           - Evaluating SQL Agent: "tutorials/evals/evaluating_sql_agent.ipynb"
           - Evaluating Web Search Agent: "tutorials/evals/evaluating_web_search_agent.ipynb"
