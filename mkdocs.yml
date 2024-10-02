@@ -190,6 +190,7 @@ nav:
           - Text Based:
               - "tutorials/prompt_engineering/text_based/index.md"
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
+              - Emotion Prompting: "tutorials/prompt_engineering/text_based/emotion_prompting.ipynb"
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
               - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
