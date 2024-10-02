@@ -203,6 +203,7 @@ nav:
               - Least to Most: "tutorials/prompt_engineering/chaining_based/least_to_most.ipynb"
               - DiVeRSe: "tutorials/prompt_engineering/chaining_based/diverse.ipynb"
               - Decomposed Prompting: "tutorials/prompt_engineering/chaining_based/decomposed_prompting.ipynb"
+              - Step-back Prompting: "tutorials/prompt_engineering/chaining_based/step_back.ipynb"
               - Skeleton of Thought: "tutorials/prompt_engineering/chaining_based/skeleton_of_thought.ipynb"
               - Sim to M: "tutorials/prompt_engineering/chaining_based/sim_to_m.ipynb"
       - Evaluations:
