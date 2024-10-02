@@ -192,6 +192,7 @@ nav:
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
+              - Self-Consistency: "tutorials/prompt_engineering/chaining_based/self_consistency.ipynb"
               - Reverse Chain of Thought: "tutorials/prompt_engineering/chaining_based/reverse_chain_of_thought.ipynb"
               - Prompt Paraphrasing: "tutorials/prompt_engineering/chaining_based/prompt_paraphrasing.ipynb"
               - Mixture of Reasoning: "tutorials/prompt_engineering/chaining_based/mixture_of_reasoning.ipynb"
