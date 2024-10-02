@@ -211,10 +211,10 @@ nav:
       - Response Models: "learn/response_models.md"
       - JSON Mode: "learn/json_mode.md"
       - Output Parsers: "learn/output_parsers.md"
-      - Async: "learn/async.md"
       - Tools: "learn/tools.md"
       - Agents: "learn/agents.md"
       - Evals: "learn/evals.md"
+      - Async: "learn/async.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
   - Integrations:
       - Custom LLM Provider: "integrations/custom_provider.md"

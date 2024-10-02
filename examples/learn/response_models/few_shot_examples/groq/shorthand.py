@@ -15,9 +15,9 @@ class Book(BaseModel):
     )
 
 
-@groq.call("llama-3.1-8b-instant", response_model=Book, json_mode=True)
+@groq.call("llama-3.1-70b-versatile", response_model=Book, json_mode=True)
 def extract_book(text: str) -> str:
-    return f"Extract {text}. Match examples format."
+    return f"Extract {text}. Match example format excluding 'examples' key."
 
 
 book = extract_book("The Way of Kings by Brandon Sanderson")

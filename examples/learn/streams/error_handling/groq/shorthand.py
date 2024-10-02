@@ -2,7 +2,7 @@ from groq import GroqError
 from mirascope.core import groq
 
 
-@groq.call(model="llama-3.1-8b-instant", stream=True)
+@groq.call(model="llama-3.1-70b-versatile", stream=True)
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
