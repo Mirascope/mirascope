@@ -1,5 +1,11 @@
 # Output Parsers
 
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
+
 Output Parsers in Mirascope provide a flexible way to process and structure the raw output from Large Language Models (LLMs). They allow you to transform the LLM's response into a more usable format, enabling easier integration with your application logic and improving the overall reliability of your LLM-powered features.
 
 ## Basic Usage and Syntax
@@ -63,4 +69,4 @@ Here are a few examples:
 
 By leveraging Output Parsers effectively, you can create more robust and reliable LLM-powered applications, ensuring that the raw model outputs are transformed into structured data that's easy to work with in your application logic.
 
-Next, we recommend taking a look at the section on [Async](./async.md) to see how to better take advantage of asynchronous programming and parallelization for improved performance.
+Next, we recommend taking a look at the section on [Tools](./tools.md) to learn how to extend the capabilities of LLMs with custom functions.
