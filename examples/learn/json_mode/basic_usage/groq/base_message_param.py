@@ -3,7 +3,7 @@ import json
 from mirascope.core import BaseMessageParam, groq
 
 
-@groq.call("llama-3.1-8b-instant", json_mode=True)
+@groq.call("llama-3.1-70b-versatile", json_mode=True)
 def get_book_info(book_title: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(

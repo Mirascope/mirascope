@@ -63,7 +63,7 @@ To use streaming, simply set the `stream` parameter to `True` in your [`call`](c
         === "{{ provider }}"
 
             ```python hl_lines="4 9-11"
-            --8<-- "examples/learn/streams/basic_stream/{{ provider | provider_dir }}/{{ method }}.py::11"
+            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::11"
             ```
 
         {% endfor %}
@@ -125,7 +125,7 @@ Once exhausted, all `BaseStream` objects share the [same common properties and m
         === "{{ provider }}"
 
             ```python hl_lines="13"
-            --8<-- "examples/learn/streams/basic_stream/{{ provider | provider_dir }}/{{ method }}.py::13"
+            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::13"
             ```
 
         {% endfor %}
@@ -143,7 +143,7 @@ You can access the additional missing properties by using the method `construct_
         === "{{ provider }}"
 
             ```python hl_lines="15-16"
-            --8<-- "examples/learn/streams/basic_stream/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
@@ -167,9 +167,9 @@ While Mirascope provides a consistent interface, you can always access the full,
         === "{{ provider }}"
 
             ```python hl_lines="11"
-            --8<-- "examples/learn/streams/basic_stream/{{ provider | provider_dir }}/{{ method }}.py::10"
+            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::10"
                 print(f"Original chunk: {chunk.chunk}")
-            --8<-- "examples/learn/streams/basic_stream/{{ provider | provider_dir }}/{{ method }}.py:11:11"
+            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:11:11"
             ```
 
         {% endfor %}

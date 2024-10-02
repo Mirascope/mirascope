@@ -39,7 +39,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
             {% else %}
             ```python hl_lines="4 6"
             {% endif %}
-            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -61,7 +61,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         {% else %}
         ```python hl_lines="7-11"
         {% endif %}
-        --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/official_sdk_call.py"
         ```
 
     {% endfor %}
@@ -86,7 +86,7 @@ Let's take a look at a basic example using Mirascope to call both OpenAI and Ant
         {% else %}
         ```python hl_lines="4-6 11 17"
         {% endif %}
-        --8<-- "examples/learn/calls/basic_call/provider_agnostic/{{ method }}.py"
+        --8<-- "examples/learn/calls/basic_usage/provider_agnostic/{{ method }}.py"
         ```
     {% endfor %}
 
@@ -150,7 +150,7 @@ While Mirascope provides a consistent interface, you can also always access the 
         === "{{ provider }}"
 
             ```python hl_lines="10"
-            --8<-- "examples/learn/calls/basic_call/{{ provider | provider_dir }}/{{ method }}.py::9"
+            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::9"
             original_response = response.response
             ```
 
@@ -299,20 +299,22 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Vertex AI"] %}
-            ```python hl_lines="2 5 10"
-            {% elif provider == "Mistral" %}
-            ```python hl_lines="2-3 6 11"
+            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
-            ```python hl_lines="1-3 9-11 19-21"
+            ```python hl_lines="1-2 8-10"
             {% else %}
-            ```python hl_lines="1 5 10"
+            ```python hl_lines="1 5"
             {% endif %}
             --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
     {% endfor %}
+
+!!! warning "Make sure to use the correct client!"
+
+    A common mistake is to use the synchronous client with async calls. Read the section on [Async Custom Client](./async.md#custom-client) to see how to use a custom client with asynchronous calls.
 
 ## Error Handling
 
@@ -352,5 +354,6 @@ Next, we recommend choosing one of:
 - [Chaining](./chaining.md) to see how to chain calls together.
 - [Response Models](./response_models.md) to see how to generate structured outputs.
 - [Tools](./tools.md) to see how to give LLMs access to custom tools to extend their capabilities.
+- [Async](./async.md) to see how to better take advantage of asynchronous programming and parallelization for improved performance.
 
 Pick whichever path aligns best with what you're hoping to get from Mirascope.
