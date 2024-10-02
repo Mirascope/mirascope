@@ -25,7 +25,7 @@ def get_call_response_observation(
     tags = metadata.get("tags", [])
     return {
         "name": f"{fn.__name__} with {result.model}",
-        "input": result.prompt_template,
+        "input": result.messages,
         "metadata": result.response,
         "tags": tags,
         "model": result.model,
