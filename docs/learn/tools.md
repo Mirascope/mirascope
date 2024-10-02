@@ -8,13 +8,13 @@
         If you haven't already, we recommend first reading the section on [Calls](./calls.md)
     </div>
 
-Tools are user-defined functioins that an LLM (Large Language Model) can ask the user to invoke on its behalf. This greatly enhances the cabailities of LLMs by enabling them to perform specific tasks, access external data, interact with other systems, and more.
+Tools are user-defined functions that an LLM (Large Language Model) can ask the user to invoke on its behalf. This greatly enhances the capabilities of LLMs by enabling them to perform specific tasks, access external data, interact with other systems, and more.
 
-Mirascope provides a provider-agnostic way of defining tools, which can be used across all supported LLM providers without modification.
+Mirascope enables tools to be defined in a provider-agnostic way, which can be used across all supported LLM providers without modification.
 
 !!! info "How tools are called"
 
-    When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, checkout our [Agents](./agents.md) documentation.
+    When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out our [Agents](./agents.md) documentation.
 
 ## Basic Usage and Syntax
 
@@ -31,7 +31,7 @@ Mirascope provides a provider-agnostic way of defining tools, which can be used 
 
 There are two ways of defining tools in Mirascope: [`BaseTool`](../api/core/base/tool.md) and functions.
 
-You can consider the functional definitions a shorthand form of writing the `BaseTool` vesrion of the same tool. Under the hood, tools defined as functions will get converted automatically into their corresponding `BaseTool`.
+You can consider the functional definitions a shorthand form of writing the `BaseTool` version of the same tool. Under the hood, tools defined as functions will get converted automatically into their corresponding `BaseTool`.
 
 Let's take a look at a basic example of each using Mirascope vs. official provider SDKs:
 
@@ -94,8 +94,8 @@ In this example we:
 2. Set the `tools` argument in the `call` decorator to give the LLM access to the tool.
 3. We call `identify_author`, which automatically generates the corresponding provider-specific tool schema under the hood.
 4. Check if the response from `identify_author` contains a tool, which is the `BaseTool` instance constructed from the underlying tool call
-5. If yes, we call the constructed tool's `call` method and print its output. This calls the tool with the arguments provided by the LLM.
-6. If no, we print the content of the response (assuming no tool was called).
+    - If yes, we call the constructed tool's `call` method and print its output. This calls the tool with the arguments provided by the LLM.
+    - If no, we print the content of the response (assuming no tool was called).
 
 The core idea to understand here is that the LLM is asking us to call the tool on its behalf with arguments that it has provided. In the above example, the LLM chooses to call the tool to get the author rather than relying on its world knowledge.
 

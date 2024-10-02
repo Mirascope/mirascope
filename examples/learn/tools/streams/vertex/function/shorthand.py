@@ -22,7 +22,7 @@ def identify_authors(books: list[str]) -> str:
 
 stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
 for chunk, tool in stream:
-    if tool:
+    if tool:  # will always be None, not supported at the provider level
         print(tool.call())
     else:
         print(chunk.content, end="", flush=True)
