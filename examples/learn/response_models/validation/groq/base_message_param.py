@@ -16,7 +16,7 @@ class Book(BaseModel):
     author: Annotated[str, AfterValidator(validate_upper)]
 
 
-@groq.call("llama-3.1-8b-instant", response_model=Book)
+@groq.call("llama-3.1-70b-versatile", response_model=Book)
 def extract_book(text: str) -> list[BaseMessageParam]:
     return [BaseMessageParam(role="user", content=f"Extract {text}")]
 
