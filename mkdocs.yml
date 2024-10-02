@@ -190,6 +190,7 @@ nav:
           - Text Based:
               - "tutorials/prompt_engineering/text_based/index.md"
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
+              - Contrastive Chain of Thought: "tutorials/prompt_engineering/text_based/contrastive_chain_of_thought.ipynb"
               - Tabular Chain of Thought: "tutorials/prompt_engineering/text_based/tabular_chain_of_thought.ipynb"
               - Chain of Thought: "tutorials/prompt_engineering/text_based/chain_of_thought.ipynb"
               - Thread of Thought: "tutorials/prompt_engineering/text_based/thread_of_thought.ipynb"
