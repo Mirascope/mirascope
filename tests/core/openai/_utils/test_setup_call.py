@@ -43,12 +43,15 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "gpt-4o"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, OpenAITool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, OpenAITool, {}, set()
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -98,6 +101,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert messages[-1] == {"role": "user", "content": "json output"}
     assert "tools" not in call_kwargs
@@ -115,6 +119,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert isinstance(messages[-1], dict) and "content" in messages[-1]
 
@@ -138,6 +143,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert "response_format" in call_kwargs and call_kwargs["response_format"] == {
         "type": "json_schema",
@@ -191,5 +197,6 @@ def test_setup_call_extract(
             json_mode=False,
             call_params={},
             extract=True,
+            exclude_tool_fields=set(),
         )
     assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "required"

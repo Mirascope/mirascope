@@ -1,6 +1,6 @@
 """This module contains the function to extract the return value of a tool."""
 
-from typing import TypeAlias, TypeVar
+from typing import Any, TypeAlias, TypeVar
 
 import jiter
 from pydantic import BaseModel
@@ -19,6 +19,7 @@ def extract_tool_return(
     response_model: type[_ResponseModelT],
     json_output: str | object,
     allow_partial: bool,
+    fields_from_call_args: dict[str, Any],
 ) -> _ResponseModelT:
     json_obj = (
         jiter.from_json(
@@ -28,6 +29,9 @@ def extract_tool_return(
         if isinstance(json_output, str)
         else json_output
     )
+    if isinstance(json_obj, dict):
+        # Support only dict for now
+        json_obj.update(fields_from_call_args)
     if is_base_type(response_model):
         temp_model = convert_base_type_to_base_tool(response_model, BaseModel)
         if allow_partial:

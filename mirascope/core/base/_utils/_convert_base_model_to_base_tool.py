@@ -12,7 +12,7 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def convert_base_model_to_base_tool(
-    model: type[BaseModel], base: type[BaseToolT]
+    model: type[BaseModel], base: type[BaseToolT], exclude_fields: set[str]
 ) -> type[BaseToolT]:
     """Converts a `BaseModel` schema to a `BaseToolT` type.
 
@@ -30,6 +30,7 @@ def convert_base_model_to_base_tool(
     field_definitions = {
         field_name: (field_info.annotation, field_info)
         for field_name, field_info in model.model_fields.items()
+        if field_name not in exclude_fields
     }
     tool_type = create_model(
         f"{model.__name__}",

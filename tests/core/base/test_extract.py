@@ -71,6 +71,7 @@ def test_extract_factory_sync(
         json_mode=mock_extract_decorator_kwargs["json_mode"],
         client=mock_extract_decorator_kwargs["client"],
         call_params=mock_extract_decorator_kwargs["call_params"],
+        exclude_tool_fields=set(),
     )
     mock_create_inner.assert_called_once_with(genre="fantasy", topic="magic")
     mock_get_json_output.assert_called_once_with(
@@ -80,6 +81,7 @@ def test_extract_factory_sync(
         mock_extract_decorator_kwargs["response_model"],
         mock_get_json_output.return_value,
         False,
+        {},
     )
     assert output == mock_extract_tool_return.return_value
 
@@ -139,6 +141,7 @@ async def test_extract_factory_async(
         json_mode=mock_extract_decorator_kwargs["json_mode"],
         client=mock_extract_decorator_kwargs["client"],
         call_params=mock_extract_decorator_kwargs["call_params"],
+        exclude_tool_fields=set(),
     )
     mock_get_json_output.assert_called_once_with(
         mock_create_inner.return_value, mock_extract_decorator_kwargs["json_mode"]
@@ -147,6 +150,7 @@ async def test_extract_factory_async(
         mock_extract_decorator_kwargs["response_model"],
         mock_get_json_output.return_value,
         False,
+        {},
     )
     assert output == mock_extract_tool_return.return_value
 

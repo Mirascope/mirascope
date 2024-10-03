@@ -19,7 +19,7 @@ def test_convert_base_model_to_base_tool() -> None:
         def call(self) -> str:
             return f"{self.title} by {self.author}"
 
-    tool = convert_base_model_to_base_tool(Book, BaseTool)
+    tool = convert_base_model_to_base_tool(Book, BaseTool, set())
     assert tool._name() == "Book"
     assert tool._description() == DEFAULT_TOOL_DOCSTRING
     assert (

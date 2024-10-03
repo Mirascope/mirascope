@@ -10,6 +10,7 @@ from collections.abc import (
 )
 from functools import wraps
 from typing import (
+    Any,
     Generic,
     ParamSpec,
     TypeVar,
@@ -25,7 +26,11 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     fn_is_async,
+    get_fn_args,
     setup_extract_tool,
+)
+from ._utils._get_call_args_field_names_and_validate import (
+    get_call_args_field_names_and_validate,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -56,10 +61,12 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
         *,
         stream: BaseStream,
         response_model: type[_ResponseModelT],
+        fields_from_call_args: dict[str, Any],
     ) -> None:
         """Initializes an instance of `BaseStructuredStream`."""
         self.stream = stream
         self.response_model = response_model
+        self.fields_from_call_args = fields_from_call_args
 
     def __iter__(self) -> Generator[_ResponseModelT, None, None]:
         """Iterates over the stream and extracts structured outputs."""
@@ -75,11 +82,13 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
             if chunk.model is not None:
                 self.stream.model = chunk.model
             if json_output:
-                yield extract_tool_return(self.response_model, json_output, True)
+                yield extract_tool_return(
+                    self.response_model, json_output, True, self.fields_from_call_args
+                )
         if json_output:
             json_output = json_output[: json_output.rfind("}") + 1]
         self.constructed_response_model = extract_tool_return(
-            self.response_model, json_output, False
+            self.response_model, json_output, False, self.fields_from_call_args
         )
         yield self.constructed_response_model
 
@@ -99,11 +108,16 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
                 if chunk.model is not None:
                     self.stream.model = chunk.model
                 if json_output:
-                    yield extract_tool_return(self.response_model, json_output, True)
+                    yield extract_tool_return(
+                        self.response_model,
+                        json_output,
+                        True,
+                        self.fields_from_call_args,
+                    )
             if json_output:
                 json_output = json_output[: json_output.rfind("}") + 1]
             self.constructed_response_model = extract_tool_return(
-                self.response_model, json_output, False
+                self.response_model, json_output, False, self.fields_from_call_args
             )
             yield self.constructed_response_model
 
@@ -211,8 +225,10 @@ def structured_stream_factory(  # noqa: ANN201
             handle_stream=handle_stream,
             handle_stream_async=handle_stream_async,
         )
-
-        tool = setup_extract_tool(response_model, TToolType)
+        call_args_field_names = get_call_args_field_names_and_validate(
+            response_model, fn
+        )
+        tool = setup_extract_tool(response_model, TToolType, call_args_field_names)
         stream_decorator_kwargs = {
             "model": model,
             "tools": [tool],
@@ -227,11 +243,14 @@ def structured_stream_factory(  # noqa: ANN201
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> AsyncIterable[_ResponseModelT]:
+                fn_args = get_fn_args(fn, args, kwargs)
+                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 return BaseStructuredStream[_ResponseModelT](
                     stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
                     ),
                     response_model=response_model,
+                    fields_from_call_args=fields_from_call_args,
                 )
 
             return inner_async
@@ -239,11 +258,14 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
+                fn_args = get_fn_args(fn, args, kwargs)
+                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 return BaseStructuredStream[_ResponseModelT](
                     stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
                     ),
                     response_model=response_model,
+                    fields_from_call_args=fields_from_call_args,
                 )
 
             return inner

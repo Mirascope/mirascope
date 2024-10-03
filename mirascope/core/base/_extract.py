@@ -13,7 +13,11 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     fn_is_async,
+    get_fn_args,
     setup_extract_tool,
+)
+from ._utils._get_call_args_field_names_and_validate import (
+    get_call_args_field_names_and_validate,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -87,7 +91,10 @@ def extract_factory(  # noqa: ANN202
         _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
     ]:
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
-        tool = setup_extract_tool(response_model, TToolType)
+        call_args_field_names = get_call_args_field_names_and_validate(
+            response_model, fn
+        )
+        tool = setup_extract_tool(response_model, TToolType, call_args_field_names)
         create_decorator_kwargs = {
             "model": model,
             "tools": [tool],
@@ -95,6 +102,7 @@ def extract_factory(  # noqa: ANN202
             "json_mode": json_mode,
             "client": client,
             "call_params": call_params,
+            "exclude_tool_fields": call_args_field_names,
         }
 
         if fn_is_async(fn):
@@ -107,8 +115,12 @@ def extract_factory(  # noqa: ANN202
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
                 json_output = get_json_output(call_response, json_mode)
+                fn_args = get_fn_args(fn, args, kwargs)
+                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 try:
-                    output = extract_tool_return(response_model, json_output, False)
+                    output = extract_tool_return(
+                        response_model, json_output, False, fields_from_call_args
+                    )
                 except ValidationError as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
@@ -125,8 +137,12 @@ def extract_factory(  # noqa: ANN202
                     *args, **kwargs
                 )
                 json_output = get_json_output(call_response, json_mode)
+                fn_args = get_fn_args(fn, args, kwargs)
+                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 try:
-                    output = extract_tool_return(response_model, json_output, False)
+                    output = extract_tool_return(
+                        response_model, json_output, False, fields_from_call_args
+                    )
                 except ValidationError as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e

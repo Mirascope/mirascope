@@ -39,6 +39,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
     str | None,
@@ -60,6 +61,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse],
     str | None,
@@ -80,6 +82,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse]
     | AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
@@ -89,7 +92,7 @@ def setup_call(
     GeminiCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GeminiTool, call_params
+        fn, fn_args, dynamic_config, tools, GeminiTool, call_params, exclude_tool_fields
     )
     call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)

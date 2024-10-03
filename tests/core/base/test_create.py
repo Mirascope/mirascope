@@ -26,6 +26,7 @@ def mock_create_decorator_kwargs() -> dict:
         "json_mode": True,
         "client": MagicMock(),
         "call_params": MagicMock(),
+        "exclude_tool_fields": set(),
     }
 
 
@@ -95,6 +96,7 @@ def test_create_factory_sync(
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
         extract=False,
+        exclude_tool_fields=mock_create_decorator_kwargs["exclude_tool_fields"],
     )
     mock_create.assert_called_once_with(stream=False, **mock_call_kwargs)
 
@@ -164,5 +166,6 @@ async def test_create_factory_async(
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
         extract=False,
+        exclude_tool_fields=mock_create_decorator_kwargs["exclude_tool_fields"],
     )
     mock_create.assert_called_once_with(stream=False, **mock_call_kwargs)

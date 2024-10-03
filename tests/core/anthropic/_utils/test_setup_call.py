@@ -42,6 +42,7 @@ def test_setup_call(
         json_mode=False,
         call_params={"max_tokens": 1000},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
@@ -50,7 +51,7 @@ def test_setup_call(
     )
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, AnthropicTool, {"max_tokens": 1000}
+        fn, {}, None, None, AnthropicTool, {"max_tokens": 1000}, set()
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
@@ -78,6 +79,7 @@ def test_setup_call_system_message(
         json_mode=False,
         call_params={"max_tokens": 1000},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert "system" in call_kwargs
     assert call_kwargs["system"] == [{"type": "text", "text": "test"}]
@@ -111,6 +113,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={"max_tokens": 1000},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert messages[-1]["content"][-1] == {  # type: ignore
         "type": "text",
@@ -130,6 +133,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={"max_tokens": 1000},
         extract=False,
+        exclude_tool_fields=set(),
     )
     assert messages[-1]["content"] == "test\n\njson"  # type: ignore
 
@@ -160,6 +164,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={"max_tokens": 1000},
         extract=True,
+        exclude_tool_fields=set(),
     )
     assert isinstance(tool_types, list)
     assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == {
