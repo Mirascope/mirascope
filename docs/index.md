@@ -68,11 +68,7 @@ Make your first call:
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if method == "string_template" %}
-            ```python hl_lines="4 5"
-            {% else %}
-            ```python hl_lines="4 6"
-            {% endif %}
+            ```python
             --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
