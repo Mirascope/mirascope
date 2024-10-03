@@ -2,6 +2,7 @@ import inspect
 from collections.abc import Callable
 
 from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 
 
 class FromCallArgs:
@@ -39,6 +40,10 @@ def get_call_args_field_names_and_validate(
     return call_args_fields
 
 
+def is_from_call_args(field: FieldInfo) -> bool:
+    return any(isinstance(m, FromCallArgs) for m in field.metadata)
+
+
 def _get_call_args_field_names(response_model: type[BaseModel]) -> set[str]:
     """
     This function is used to get the field names that are marked with the `FromCallArgs` metadata.
@@ -47,7 +52,7 @@ def _get_call_args_field_names(response_model: type[BaseModel]) -> set[str]:
 
     exclude_fields: set[str] = set()
     for field_name, field in response_model.model_fields.items():
-        if any(isinstance(m, FromCallArgs) for m in field.metadata):
+        if is_from_call_args(field):
             exclude_fields.add(field_name)
     return exclude_fields
 

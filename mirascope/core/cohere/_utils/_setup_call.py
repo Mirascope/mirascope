@@ -44,7 +44,6 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -66,7 +65,6 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -87,7 +85,6 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse]
     | AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],
@@ -97,7 +94,12 @@ def setup_call(
     CohereCallKwargs,
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, CohereTool, call_params, exclude_tool_fields
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        CohereTool,
+        call_params,
     )
     call_kwargs = cast(CohereCallKwargs, call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)

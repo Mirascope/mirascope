@@ -15,14 +15,11 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 def setup_extract_tool(
     response_model: type[BaseModel] | type[BaseType],
     tool_type: type[BaseToolT],
-    exclude_fields: set[str],
 ) -> type[BaseToolT]:
     if is_base_type(response_model):
         converted_tool_type = convert_base_type_to_base_tool(response_model, tool_type)
     elif issubclass(response_model, BaseModel):
-        converted_tool_type = convert_base_model_to_base_tool(
-            response_model, tool_type, exclude_fields
-        )
+        converted_tool_type = convert_base_model_to_base_tool(response_model, tool_type)
     else:  # pragma: no cover
         # pyright should work with IsType for the case of BaseModel | BaseType
         # But it doesn't, so we need to cover this

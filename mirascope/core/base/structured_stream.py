@@ -228,7 +228,7 @@ def structured_stream_factory(  # noqa: ANN201
         call_args_field_names = get_call_args_field_names_and_validate(
             response_model, fn
         )
-        tool = setup_extract_tool(response_model, TToolType, call_args_field_names)
+        tool = setup_extract_tool(response_model, TToolType)
         stream_decorator_kwargs = {
             "model": model,
             "tools": [tool],

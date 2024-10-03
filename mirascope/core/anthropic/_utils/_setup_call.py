@@ -41,7 +41,6 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[Message, MessageStreamEvent],
     str | None,
@@ -69,7 +68,6 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[Message, MessageStreamEvent],
     str | None,
@@ -96,7 +94,6 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     Callable[..., Message | Awaitable[Message]],
     str | None,
@@ -111,7 +108,6 @@ def setup_call(
         tools,
         AnthropicTool,
         call_params,
-        exclude_tool_fields,
     )
     call_kwargs = cast(AnthropicCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | MessageParam], messages)

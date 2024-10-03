@@ -136,7 +136,6 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        exclude_tool_fields: set[str],
     ) -> tuple[
         AsyncCreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -158,7 +157,6 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        exclude_tool_fields: set[str],
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -179,7 +177,6 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        exclude_tool_fields: set[str],
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_ResponseT, _ResponseChunkT],

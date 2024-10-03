@@ -32,7 +32,6 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -54,7 +53,6 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -75,7 +73,6 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
     | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -85,7 +82,7 @@ def setup_call(
     GroqCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GroqTool, call_params, exclude_tool_fields
+        fn, fn_args, dynamic_config, tools, GroqTool, call_params
     )
     call_kwargs = cast(GroqCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)

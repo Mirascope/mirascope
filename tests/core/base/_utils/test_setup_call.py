@@ -20,7 +20,6 @@ def test_setup_call() -> None:
         None,
         BaseTool,
         {"arg": "value"},  # type: ignore
-        set(),
     )
 
     assert template == "Recommend a {genre} book."
@@ -41,7 +40,6 @@ def test_setup_call() -> None:
         None,
         BaseTool,
         {"arg": "value"},  # type: ignore
-        set(),
     ) == (template, messages, tool_types, call_kwargs)
 
 
@@ -73,7 +71,7 @@ def test_setup_call_with_dynamic_config() -> None:
     def fn() -> None: ...  # pragma: no cover
 
     template, messages, tool_types, call_kwargs = setup_call(
-        fn, {}, dynamic_config, None, FormatBook, {}, set()
+        fn, {}, dynamic_config, None, FormatBook, {}
     )
 
     assert template == "Recommend a {genre} book."
@@ -108,7 +106,7 @@ def test_setup_call_with_custom_messages() -> None:
         """Normal docstr."""
 
     template, messages, tool_types, call_kwargs = setup_call(
-        fn, {}, dynamic_config, None, BaseTool, {}, set()
+        fn, {}, dynamic_config, None, BaseTool, {}
     )
     assert template is None
     assert custom_messages == messages

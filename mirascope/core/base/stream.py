@@ -262,7 +262,6 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, TStream]: ...
     @overload
     def decorator(
@@ -272,7 +271,6 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, TStream]: ...
 
     @overload
@@ -283,7 +281,6 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, Awaitable[TStream]]: ...
     @overload
     def decorator(
@@ -293,7 +290,6 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
@@ -306,7 +302,6 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if not is_prompt_template(fn):
             fn = cast(
@@ -336,7 +331,6 @@ def stream_factory(  # noqa: ANN201
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
-                    exclude_tool_fields=exclude_tool_fields,
                 )
 
                 async def generator() -> (
@@ -380,7 +374,6 @@ def stream_factory(  # noqa: ANN201
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
-                    exclude_tool_fields=exclude_tool_fields,
                 )
 
                 def generator() -> (

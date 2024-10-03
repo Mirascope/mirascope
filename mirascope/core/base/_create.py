@@ -55,7 +55,6 @@ def create_factory(  # noqa: ANN202
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
     @overload
@@ -67,7 +66,6 @@ def create_factory(  # noqa: ANN202
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
     @overload
@@ -79,7 +77,6 @@ def create_factory(  # noqa: ANN202
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[
         _P,
         Awaitable[_BaseCallResponseT | _ParsedOutputT],
@@ -94,7 +91,6 @@ def create_factory(  # noqa: ANN202
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[
         _P,
         Awaitable[_BaseCallResponseT | _ParsedOutputT],
@@ -111,7 +107,6 @@ def create_factory(  # noqa: ANN202
         json_mode: bool,
         client: _BaseClientT | None,
         call_params: _BaseCallParamsT,
-        exclude_tool_fields: set[str],
     ) -> Callable[
         _P,
         _BaseCallResponseT
@@ -148,7 +143,6 @@ def create_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
-                    exclude_tool_fields=exclude_tool_fields,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = await create(stream=False, **call_kwargs)
@@ -189,7 +183,6 @@ def create_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
-                    exclude_tool_fields=exclude_tool_fields,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = create(stream=False, **call_kwargs)

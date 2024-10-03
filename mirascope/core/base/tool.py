@@ -126,7 +126,6 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
     def type_from_base_model_type(
         cls: type[_BaseToolT],
         tool_type: type[BaseModel],
-        exclude_fields: set[str] | None = None,
     ) -> type[_BaseToolT]:
         """Returns this tool type converted from a given base tool type.
 
@@ -135,7 +134,8 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
                 custom `BaseTool` or `BaseModel` definition.
         """
         return _utils.convert_base_model_to_base_tool(
-            tool_type, cls, set() if exclude_fields is None else exclude_fields
+            tool_type,
+            cls,
         )
 
     @classmethod

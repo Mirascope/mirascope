@@ -94,7 +94,7 @@ def extract_factory(  # noqa: ANN202
         call_args_field_names = get_call_args_field_names_and_validate(
             response_model, fn
         )
-        tool = setup_extract_tool(response_model, TToolType, call_args_field_names)
+        tool = setup_extract_tool(response_model, TToolType)
         create_decorator_kwargs = {
             "model": model,
             "tools": [tool],
@@ -102,7 +102,6 @@ def extract_factory(  # noqa: ANN202
             "json_mode": json_mode,
             "client": client,
             "call_params": call_params,
-            "exclude_tool_fields": call_args_field_names,
         }
 
         if fn_is_async(fn):

@@ -71,15 +71,12 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
-        exclude_tool_fields=set(),
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "command-r-plus"
     assert "message" in call_kwargs and call_kwargs["message"] == messages[-1].message
-    mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, CohereTool, {}, set()
-    )
+    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, CohereTool, {})
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -126,7 +123,6 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
-        exclude_tool_fields=set(),
     )
     assert messages[-1] == ChatMessage(
         role="user",  # type: ignore
@@ -158,7 +154,6 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
-        exclude_tool_fields=set(),
     )
     assert "model" in call_kwargs
     assert "message" in call_kwargs

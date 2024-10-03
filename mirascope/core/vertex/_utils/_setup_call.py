@@ -40,7 +40,6 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],
     str | None,
@@ -62,7 +61,6 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]],
     str | None,
@@ -83,7 +81,6 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]]
     | AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],
@@ -93,7 +90,7 @@ def setup_call(
     VertexCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, VertexTool, call_params, exclude_tool_fields
+        fn, fn_args, dynamic_config, tools, VertexTool, call_params
     )
     call_kwargs = cast(VertexCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | Content], messages)

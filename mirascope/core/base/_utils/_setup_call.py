@@ -33,7 +33,6 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     tool_type: type[_BaseToolT],
     call_params: BaseCallParams,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     str | None,
     list[BaseMessageParam | Any],
@@ -62,7 +61,7 @@ def setup_call(
     tool_types = None
     if tools:
         tool_types = [
-            convert_base_model_to_base_tool(tool, tool_type, exclude_tool_fields)
+            convert_base_model_to_base_tool(tool, tool_type)
             if inspect.isclass(tool)
             else convert_function_to_base_tool(tool, tool_type)
             for tool in tools

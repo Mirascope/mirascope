@@ -39,7 +39,6 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -61,7 +60,6 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -83,7 +81,6 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
-    exclude_tool_fields: set[str],
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate]
     | AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
@@ -93,7 +90,7 @@ def setup_call(
     AzureCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, AzureTool, call_params, exclude_tool_fields
+        fn, fn_args, dynamic_config, tools, AzureTool, call_params
     )
     call_kwargs = cast(AzureCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatRequestMessage], messages)
