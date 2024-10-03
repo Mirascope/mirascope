@@ -124,8 +124,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
 
     @classmethod
     def type_from_base_model_type(
-        cls: type[_BaseToolT],
-        tool_type: type[BaseModel],
+        cls: type[_BaseToolT], tool_type: type[BaseModel]
     ) -> type[_BaseToolT]:
         """Returns this tool type converted from a given base tool type.
 
@@ -133,10 +132,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
             tool_type: The tool type to convert into this tool type. This can be a
                 custom `BaseTool` or `BaseModel` definition.
         """
-        return _utils.convert_base_model_to_base_tool(
-            tool_type,
-            cls,
-        )
+        return _utils.convert_base_model_to_base_tool(tool_type, cls)
 
     @classmethod
     def type_from_base_type(

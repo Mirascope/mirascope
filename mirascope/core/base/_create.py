@@ -124,7 +124,6 @@ def create_factory(  # noqa: ANN202
                 fn,
             )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
-
         if fn_is_async(fn):
 
             @wraps(fn)

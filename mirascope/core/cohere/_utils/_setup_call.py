@@ -94,12 +94,7 @@ def setup_call(
     CohereCallKwargs,
 ]:
     prompt_template, messages, tool_types, call_kwargs = _utils.setup_call(
-        fn,
-        fn_args,
-        dynamic_config,
-        tools,
-        CohereTool,
-        call_params,
+        fn, fn_args, dynamic_config, tools, CohereTool, call_params
     )
     call_kwargs = cast(CohereCallKwargs, call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)

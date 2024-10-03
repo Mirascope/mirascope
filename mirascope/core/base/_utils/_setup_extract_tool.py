@@ -13,8 +13,7 @@ BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
 
 def setup_extract_tool(
-    response_model: type[BaseModel] | type[BaseType],
-    tool_type: type[BaseToolT],
+    response_model: type[BaseModel] | type[BaseType], tool_type: type[BaseToolT]
 ) -> type[BaseToolT]:
     if is_base_type(response_model):
         converted_tool_type = convert_base_type_to_base_tool(response_model, tool_type)

@@ -89,12 +89,7 @@ def setup_call(
     MistralCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn,
-        fn_args,
-        dynamic_config,
-        tools,
-        MistralTool,
-        call_params,
+        fn, fn_args, dynamic_config, tools, MistralTool, call_params
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)
