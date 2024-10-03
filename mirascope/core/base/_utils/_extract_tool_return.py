@@ -5,7 +5,6 @@ from typing import Any, TypeAlias, TypeVar
 import jiter
 from pydantic import BaseModel
 
-from ._get_call_args_field_names_and_validate import is_from_call_args
 from .._partial import partial
 from ._base_type import BaseType, is_base_type
 from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
