@@ -5,6 +5,7 @@ from typing import Any, TypeAlias, TypeVar
 import jiter
 from pydantic import BaseModel
 
+from ._get_call_args_field_names_and_validate import is_from_call_args
 from .._partial import partial
 from ._base_type import BaseType, is_base_type
 from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
@@ -29,14 +30,14 @@ def extract_tool_return(
         if isinstance(json_output, str)
         else json_output
     )
-    if isinstance(json_obj, dict):
-        # Support only dict for now
-        json_obj.update(fields_from_call_args)
     if is_base_type(response_model):
         temp_model = convert_base_type_to_base_tool(response_model, BaseModel)
         if allow_partial:
             return partial(temp_model).model_validate(json_obj).value  # pyright: ignore [reportAttributeAccessIssue]
         return temp_model.model_validate(json_obj).value  # pyright: ignore [reportAttributeAccessIssue]
-    elif allow_partial:
+    if fields_from_call_args and isinstance(json_obj, dict):
+        # Support only top-level dict
+        json_obj.update(fields_from_call_args)
+    if allow_partial:
         return partial(response_model).model_validate(json_obj)
     return response_model.model_validate(json_obj)
