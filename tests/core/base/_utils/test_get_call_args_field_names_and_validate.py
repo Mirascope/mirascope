@@ -16,8 +16,7 @@ def test_get_call_args_field_names_and_validate_non_pydantic_model():
     # Test when response_model is not a subclass of BaseModel
     response_model = object()
 
-    def fn(x):
-        return x  # Dummy function
+    def fn(x): ...  # pragma: no cover
 
     result = get_call_args_field_names_and_validate(response_model, fn)
     assert result == set()
@@ -28,8 +27,7 @@ def test_get_call_args_field_names_and_validate_no_from_call_args():
         field1: int
         field2: str
 
-    def dummy_fn(field1, field2):
-        pass
+    def dummy_fn(field1, field2): ...
 
     result = get_call_args_field_names_and_validate(ResponseModel, dummy_fn)
     assert result == set()
@@ -40,8 +38,7 @@ def test_get_call_args_field_names_and_validate_with_from_call_args():
         field1: Annotated[int, FromCallArgs()]
         field2: str
 
-    def dummy_fn(field1, field2):
-        pass
+    def dummy_fn(field1, field2): ...
 
     result = get_call_args_field_names_and_validate(ResponseModel, dummy_fn)
     assert result == {"field1"}
@@ -52,8 +49,7 @@ def test_get_call_args_field_names_and_validate_missing_function_args():
         field1: Annotated[int, FromCallArgs()]
         field2: str
 
-    def dummy_fn(field2):
-        pass
+    def dummy_fn(field2): ...
 
     with pytest.raises(ValueError) as exc_info:
         get_call_args_field_names_and_validate(ResponseModel, dummy_fn)
