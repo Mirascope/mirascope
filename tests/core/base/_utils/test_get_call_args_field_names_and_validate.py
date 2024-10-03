@@ -5,11 +5,11 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope.core.base._utils._get_call_args_field_names_and_validate import (
-    FromCallArgs,
     _get_call_args_field_names,
     _validate_call_args,
     get_call_args_field_names_and_validate,
 )
+from mirascope.core.base.from_call_args import FromCallArgs
 
 
 def test_get_call_args_field_names_and_validate_non_pydantic_model():

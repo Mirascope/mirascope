@@ -5,9 +5,7 @@ from typing import Annotated
 from pydantic import BaseModel, RootModel
 
 from mirascope.core.base._utils._extract_tool_return import extract_tool_return
-from mirascope.core.base._utils._get_call_args_field_names_and_validate import (
-    FromCallArgs,
-)
+from mirascope.core.base.from_call_args import FromCallArgs
 
 
 def test_extract_tool_return() -> None:
