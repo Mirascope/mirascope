@@ -1,10 +1,13 @@
 """Tests the `_utils.extract_tool_return` module."""
+
 from typing import Annotated
 
 from pydantic import BaseModel, RootModel
 
 from mirascope.core.base._utils._extract_tool_return import extract_tool_return
-from mirascope.core.base._utils._get_call_args_field_names_and_validate import FromCallArgs
+from mirascope.core.base._utils._get_call_args_field_names_and_validate import (
+    FromCallArgs,
+)
 
 
 def test_extract_tool_return() -> None:
@@ -46,12 +49,14 @@ def test_extract_tool_return_base_type() -> None:
     assert isinstance(title, str)
     assert title == "The Name"
 
+
 def test_extract_tool_return_parse_obj_with_fields_from_call_args() -> None:
     """Tests the `extract_tool_return` function parsing obj and fields from call args."""
 
     class Book(BaseModel):
         title: Annotated[str, FromCallArgs()]
         author: str
+
     book = extract_tool_return(
         Book,
         '{"author": "Patrick Rothfuss"}',
@@ -61,6 +66,7 @@ def test_extract_tool_return_parse_obj_with_fields_from_call_args() -> None:
     assert isinstance(book, Book)
     assert book.title == "The Name of the Wind"
     assert book.author == "Patrick Rothfuss"
+
 
 def test_extract_tool_return_parse_array_with_fields_from_call_args() -> None:
     """Tests the `extract_tool_return` function parsing array and fields from call args."""
@@ -72,6 +78,7 @@ def test_extract_tool_return_parse_array_with_fields_from_call_args() -> None:
     # Nested models are not supported in this
     class ListModel(RootModel):
         root: list[Book]
+
     list_model = extract_tool_return(
         ListModel,
         '[{"author": "Patrick Rothfuss", "title": "The Name of the Wind"}]',
