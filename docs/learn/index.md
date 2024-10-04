@@ -118,6 +118,11 @@ We encourage you to dive into each component's documentation to gain a deeper un
 
     [:octicons-arrow-right-24: Docs](./provider_specific_features.md)
 
+- __FromCallArgs__
+
+    Learn how to integrate function inputs with LLM outputs
+
+    [:octicons-arrow-right-24: Docs](./from_call_args.md)
 </div>
 
 As you progress, you'll find advanced topics and best practices throughout the documentation. These will help you optimize your use of Mirascope and build increasingly sophisticated AI-powered applications.

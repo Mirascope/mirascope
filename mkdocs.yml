@@ -237,6 +237,7 @@ nav:
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
+      - From Call Args: "learn/from_call_args.md"
   - Integrations:
       - Custom LLM Provider: "integrations/custom_provider.md"
       - HyperDX: "integrations/hyperdx.md"
