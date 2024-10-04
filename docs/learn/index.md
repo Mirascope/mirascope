@@ -30,11 +30,11 @@ If you haven't already, we recommend checking out [Getting Started](../index.md)
 
 ## Core Components
 
-Mirascope is built around these core components, each designed to handle specific aspects of working with LLM provider APIs:
-
-![Learn Flow Chart](../assets/learn_flow.png)
+Mirascope is built around these core components, each designed to handle specific aspects of working with LLM provider APIs.
 
 We encourage you to dive into each component's documentation to gain a deeper understanding of Mirascope's capabilities. Start with the topics that align most closely with your immediate needs, but don't hesitate to explore all areas – you might discover new ways to enhance your LLM applications!
+
+![Learn Flow Chart](../assets/learn_flow.svg)
 
 <div class="grid cards" markdown>
 

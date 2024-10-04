@@ -4,6 +4,7 @@ from typing import TypeAlias
 
 from vertexai.generative_models import Content
 
+from ..base import BaseMessageParam
 from ._call import vertex_call
 from ._call import vertex_call as call
 from .call_params import VertexCallParams
@@ -13,7 +14,7 @@ from .dynamic_config import VertexDynamicConfig
 from .stream import VertexStream
 from .tool import VertexTool
 
-VertexMessageParam: TypeAlias = Content
+VertexMessageParam: TypeAlias = Content | BaseMessageParam
 
 __all__ = [
     "call",

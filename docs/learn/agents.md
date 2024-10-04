@@ -1,5 +1,119 @@
 # Agents
 
+> __Definition__: a person who acts on behalf of another person or group
+
+When working with Large Language Models (LLMs), an "agent" refers to an autonomous or semi-autonomous system that can act on your behalf. The core concept is the use of tools to enable the LLM to interact with its environment.
+
+In this section we will implement a toy `Librarian` agent to demonstrate key concepts in Mirascope that will help you build agents.
+
+## State Management
+
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+    </div>
+
+Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. You can introduce state in many ways ranging from local variables to a database.
+
+Let's take a look at a basic chatbot (not an agent) that uses a class to maintain the chat's history:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "string_template" %}
+            ```python hl_lines="6 12 26-29"
+            {% else %}
+            ```python hl_lines="6 12 24-27"
+            {% endif %}
+            --8<-- "examples/learn/agents/state_management/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+    {% endfor %}
+
+In this example we:
+
+- Create a `Librarian` class with a `history` attribute.
+- Implement a private `_call` method that injects `history`.
+- Run the `_call` method in a loop, saving the history at each step.
+
+Of course, this is just a chatbot -- not an agent.
+
+??? tip "Provider-agnostic agent"
+
+    NEEDS TO HAVE MULTIPLE METHODS ADDED WITH HIGHLIGHTS!!
+
+    !!! mira ""
+
+        ```python
+        --8<-- "examples/learn/agents/state_management"
+        ```
+
+## Integrating Tools
+
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Tools](./tools.md)
+    </div>
+
+...
+
+!!! mira ""
+
+    ...
+
+### State Access
+
+...
+
+!!! mira ""
+
+    ...
+
+### Human-In-The-Loop
+
+...
+
+!!! mira ""
+
+    ...
+
+### Tool Interrupts
+
+...
+
+!!! mira ""
+
+    ...
+
+## Streaming
+
+!!! mira ""
+
+    <div align="center">
+        If you haven't already, we recommend first reading the section on [Streaming Tools](./tools.md#streaming-tools)
+    </div>
+
+...
+
+!!! mira ""
+
+    ...
+
+## Next Steps
+
+This section is just the tip of the iceberg when it comes to building agents. It's important to remember that "agent" is quite a general term and can mean different things for different use-cases. Mirascope's various features make building agents easier, but it will be up to you to determine the architecture that best suits your goals.
+
+Next, we recommend taking a look at our [Agent Tutorials](../tutorials/agents/web_search_agent.ipynb) to see examples of more complex, real-world agents.
+
+# OLD OLD OLD
+
 ??? api "API Documentation"
     [`mirascope.core.base.tool`](../api/core/base/tool.md)
     [`mirascope.core.base.toolkit`](../api/core/base/toolkit.md)
@@ -441,8 +555,8 @@ As you develop more sophisticated agents with Mirascope, it's crucial to follow 
 ### Error Handling and Reliability
 
 - **Graceful Degradation**: Design your agent to handle cases where the LLM response is unexpected or tools fail to execute.
-- **Retry Mechanisms**: Implement retry logic for LLM calls and tool executions to handle transient errors. We recommend using [tenacity](../integrations/tenacity.md)
-- **Validation**: Use Pydantic's validation capabilities to ensure that tool inputs and outputs meet your expected schema. You can use our [`collect_errors`](../integrations/tenacity.md#error-reinsertion) helper method for easy reinsertion of errors into subsequent retries.
+- **Retry Mechanisms**: Implement retry logic for LLM calls and tool executions to handle transient errors. We recommend using [tenacity](./retries.md)
+- **Validation**: Use Pydantic's validation capabilities to ensure that tool inputs and outputs meet your expected schema. You can use our [`collect_errors`](./retries.md#error-reinsertion) helper method for easy reinsertion of errors into subsequent retries.
 - **Logging**: Implement comprehensive logging to track agent behavior, tool usage, and error states for debugging and improvement.
 
 ### Advanced Techniques
