@@ -1,6 +1,6 @@
 """The module for defining the toolkit class for LLM call tools.
 
-usage docs: learn/tools.md#basetoolkit
+usage docs: learn/tools.md#toolkit
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """The `GroqTool` class for easy tool usage with Groq LLM calls.
 
-usage docs: learn/tools.md#using-tools-with-standard-calls
+usage docs: learn/tools.md
 """
 
 from __future__ import annotations
