@@ -2,7 +2,7 @@ import logfire
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai
 from mirascope.integrations.logfire import with_logfire
 
 app = FastAPI()

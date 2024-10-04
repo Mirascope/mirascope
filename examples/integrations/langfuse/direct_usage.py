@@ -1,6 +1,6 @@
 from langfuse.openai import OpenAI
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai
 
 
 @openai.call(model="gpt-4o-mini", client=OpenAI())

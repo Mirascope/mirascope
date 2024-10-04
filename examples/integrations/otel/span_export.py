@@ -3,7 +3,7 @@ from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
 )
 
-from mirascope.core import anthropic, prompt_template
+from mirascope.core import anthropic
 from mirascope.integrations.otel import configure, with_otel
 
 OBSERVABILITY_TOOL_ENDPOINT = "..."

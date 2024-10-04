@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai
 from mirascope.integrations.langfuse import with_langfuse
 
 

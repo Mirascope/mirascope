@@ -1,6 +1,6 @@
 import logfire
 
-from mirascope.core import anthropic, prompt_template
+from mirascope.core import anthropic
 from mirascope.integrations.logfire import with_logfire
 
 logfire.configure()

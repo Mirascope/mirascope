@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, Session, SQLModel, create_engine
 
-from mirascope.core import anthropic, prompt_template
+from mirascope.core import anthropic
 from mirascope.core.base import BaseCallResponse, BaseType
 from mirascope.core.base.stream import BaseStream
 from mirascope.core.base.structured_stream import BaseStructuredStream

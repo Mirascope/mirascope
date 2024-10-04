@@ -1,6 +1,6 @@
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from mirascope.core import anthropic, prompt_template
+from mirascope.core import anthropic
 
 
 @retry(

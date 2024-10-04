@@ -1,4 +1,4 @@
-from mirascope.core import ResponseModelConfigDict, openai, prompt_template
+from mirascope.core import ResponseModelConfigDict, openai
 from pydantic import BaseModel
 
 

@@ -1,7 +1,7 @@
 import logfire
 from openai import Client
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai
 
 client = Client()
 logfire.configure()

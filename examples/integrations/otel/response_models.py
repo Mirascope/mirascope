@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from mirascope.core import openai, prompt_template
+from mirascope.core import openai
 from mirascope.integrations.otel import configure, with_otel
 
 configure()

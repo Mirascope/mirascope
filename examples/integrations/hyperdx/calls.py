@@ -1,4 +1,4 @@
-from mirascope.core import anthropic, prompt_template
+from mirascope.core import anthropic
 from mirascope.integrations.otel import with_hyperdx
 
 
