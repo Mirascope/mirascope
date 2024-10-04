@@ -4,7 +4,7 @@ Making an API call to a provider can fail due to various reasons, such as rate l
 
 Mirascope combined with [Tenacity](https://tenacity.readthedocs.io/en/latest/) increases the chance for these requests to succeed while maintaining end user transparency.
 
-You can install the necessary packages directly or using the `tenacity` extras flag:
+You can install the necessary packages directly or use the `tenacity` extras flag:
 
 ```python
 pip install "mirascope[tenacity]"
@@ -79,9 +79,9 @@ You need to handle retries in this case the same way as streams:
 
 Every example above simply retries after a failed attempt without making any updates to the call. This approach can be sufficient for some use-cases where we can safely expect the call to succeed on subsequent attempts (e.g. rate limits).
 
-However, there are some cases where the LLM is likely to make the same mistake over and over again. For example, when using tools or response models, the LLM may return incorrect or missing arguments where it's highly likely the LLM will continuously make the same mistake on subsequent calls. In these cases, it's important that we update subsequent calls bsaed on resulting errors to improve the chance of success on the next call.
+However, there are some cases where the LLM is likely to make the same mistake over and over again. For example, when using tools or response models, the LLM may return incorrect or missing arguments where it's highly likely the LLM will continuously make the same mistake on subsequent calls. In these cases, it's important that we update subsequent calls based on resulting errors to improve the chance of success on the next call.
 
-To make it easier to make such updates, we provide a `collect_errors` handler that can collect any errors of your choice and insert them into subsequent calls through an `errors` keyword argument.
+To make it easier to make such updates, Mirascope provides a `collect_errors` handler that can collect any errors of your choice and insert them into subsequent calls through an `errors` keyword argument.
 
 !!! mira ""
 
@@ -106,4 +106,4 @@ To make it easier to make such updates, we provide a `collect_errors` handler th
 
 In this example the first attempt fails because the identified author is not all uppercase. The `ValidationError` is then reinserted into the subsequent call, which enables the model to learn from it's mistake and correct its error.
 
-Of course, we could always engineer a better prompt (i.e. ask for all caps), but even prompt engineering is perfect. The purpose of this example is to demonstrate the power of reinserting errors to build more robust systems.
+Of course, we could always engineer a better prompt (i.e. ask for all caps), but even prompt engineering does not guarantee perfect results. The purpose of this example is to demonstrate the power of a feedback loop by reinserting errors to build more robust systems.
