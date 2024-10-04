@@ -54,9 +54,8 @@ class AzureStream(
 
 
     @azure_call("gpt-4o-mini", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     stream = recommend_book("fantasy")  # returns `AzureStream` instance

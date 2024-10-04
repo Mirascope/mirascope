@@ -359,20 +359,18 @@ def prompt_template(
     from mirascope.core import openai, prompt_template
 
 
-    @openai.call("gpt-4o-mini")
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    @prompt_template()
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
-    response = recommend_book("fantasy")
-    print(response.prompt_template)
-    print(response.fn_args)
+    print(recommend_book("fantasy"))
+    # Output: [BaseMessageParam(role='user', content='Recommend a fantasy book')]
     ```
 
     Returns:
-        decorator (Callable): The decorator function that updates the `_prompt_template`
-            attribute of the decorated input prompt or call.
+        decorator (Callable): The decorator function that turns the decorated function
+            into a prompt template.
     """
 
     if template is None:

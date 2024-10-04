@@ -27,9 +27,8 @@ class CohereTool(BaseTool[Tool]):
 
 
     @cohere_call("command-r-plus", tools=[format_book])
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     response = recommend_book("fantasy")

@@ -31,10 +31,8 @@ class GroqTool(BaseTool[ChatCompletionToolParam]):
 
 
     @groq_call("llama-3.1-8b-instant", tools=[format_book])
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
-
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
     response = recommend_book("fantasy")
     if tool := response.tool:  # returns an `GroqTool` instance
