@@ -205,12 +205,9 @@ custom_provider_call = call_factory(
 After implementing your custom provider, you can use it like any other Mirascope provider:
 
 ```python
-from mirascope.core import prompt_template
-
 @custom_provider_call(model="your-custom-model")
-@prompt_template("Your prompt template here")
-def your_function(param: str):
-    ...
+def your_function(param: str) -> str:
+    return f"Your prompt template here with {param}"
 
 result = your_function("example parameter")
 ```

@@ -27,9 +27,8 @@ def format_book(title: str, author: str):
 
 @with_langfuse()
 @anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 print(recommend_book("fantasy"))
@@ -59,9 +58,8 @@ from mirascope.integrations.langfuse import with_langfuse
     stream=True,
     call_params={"stream_options": {"include_usage": True}},
 )
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 for chunk, _ in recommend_book("fantasy"):
@@ -92,9 +90,8 @@ class Book(BaseModel):
 
 @with_langfuse()
 @openai.call(model="gpt-4o-mini", response_model=Book)
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 print(recommend_book("fantasy"))
@@ -117,9 +114,8 @@ from mirascope.core import openai, prompt_template
 
 
 @openai.call(model="gpt-4o-mini", client=OpenAI())
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 print(recommend_book("fantasy"))

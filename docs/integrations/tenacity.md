@@ -24,9 +24,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential
     wait=wait_exponential(multiplier=1, min=4, max=10),
 )
 @anthropic.call("claude-3-5-sonnet-20240620")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 response = recommend_book("fantasy")
@@ -48,9 +47,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential
     wait=wait_exponential(multiplier=1, min=4, max=10),
 )
 @anthropic.call("claude-3-5-sonnet-20240620", stream=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 def stream():
@@ -75,9 +73,8 @@ def format_book(title: str, author: str) -> str:
 
 
 @anthropic.call("claude-3-5-sonnet-20240620", tools=[format_book])
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 @retry(
@@ -115,9 +112,8 @@ class Book(BaseModel):
     wait=wait_exponential(multiplier=1, min=4, max=10),
 )
 @anthropic.call("claude-3-5-sonnet-20240620", response_model=Book)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 book = recommend_book("fantasy")
