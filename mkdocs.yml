@@ -236,15 +236,16 @@ nav:
       - Agents: "learn/agents.md"
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
-      - Provider-Specific Features: "learn/provider_specific_features.md"
+      - Retries: "learn/retries.md"
+      - Extensions:
+          - Provider-Specific Features: "learn/provider_specific_features.md"
+          - Middleware: "learn/middleware.md"
+          - Custom LLM Provider: "learn/custom_provider.md"
   - Integrations:
-      - Custom LLM Provider: "integrations/custom_provider.md"
-      - HyperDX: "integrations/hyperdx.md"
-      - Langfuse: "integrations/langfuse.md"
-      - Logfire: "integrations/logfire.md"
-      - Middleware: "integrations/middleware.md"
       - OpenTelemetry: "integrations/otel.md"
-      - Tenacity: "integrations/tenacity.md"
+      - HyperDX: "integrations/hyperdx.md"
+      - Logfire: "integrations/logfire.md"
+      - Langfuse: "integrations/langfuse.md"
   - API Reference:
       - Core:
           - Anthropic:

@@ -13,8 +13,4 @@ with suppress(ImportError):
 with suppress(ImportError):
     from . import otel as otel
 
-with suppress(ImportError):
-    from . import tenacity as tenacity
-
-
-__all__ = ["langfuse", "logfire", "middleware_factory", "otel", "tenacity"]
+__all__ = ["langfuse", "logfire", "middleware_factory", "otel"]

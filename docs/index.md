@@ -152,7 +152,7 @@ Make your first call:
 
     Integrations with third-party tools for enhanced usage
 
-    [:octicons-arrow-right-24: Integrations](./integrations/custom_provider.md)
+    [:octicons-arrow-right-24: Integrations](./integrations/otel.md)
 
 -   :material-text-search:{ .lg .middle } __API Reference__
 

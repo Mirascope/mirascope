@@ -155,7 +155,7 @@ Let's take a look at an example where we want to validate that all fields are up
 
 Without additional prompt engineering, this call will fail every single time. It's important to engineer your prompts to reduce errors, but LLMs are far from perfect, so always remember to catch and handle validation errors gracefully.
 
-We highly recommend taking a look at our section on [tenacity](../integrations/tenacity.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
+We highly recommend taking a look at our section on [retries](./retries.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
 
 ### Accessing Original Call Response On Error
 
