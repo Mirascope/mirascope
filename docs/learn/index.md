@@ -32,7 +32,7 @@ If you haven't already, we recommend checking out [Getting Started](../index.md)
 
 Mirascope is built around these core components, each designed to handle specific aspects of working with LLM provider APIs:
 
-![Learn Flow Chart](../assets/learn_flow_chart)
+![Learn Flow Chart](../assets/learn_flow.png)
 
 We encourage you to dive into each component's documentation to gain a deeper understanding of Mirascope's capabilities. Start with the topics that align most closely with your immediate needs, but don't hesitate to explore all areas – you might discover new ways to enhance your LLM applications!
 
@@ -88,12 +88,6 @@ We encourage you to dive into each component's documentation to gain a deeper un
 
     [:octicons-arrow-right-24: Docs](./output_parsers.md)
 
--   __Async__
-
-    Maximize efficiecy with asynchronous programming
-
-    [:octicons-arrow-right-24: Docs](./async.md)
-
 -   __Tools__
 
     Discover how to extend LLM capabilities with custom tools
@@ -112,11 +106,17 @@ We encourage you to dive into each component's documentation to gain a deeper un
 
     [:octicons-arrow-right-24: Docs](./evals.md)
 
--   __Provider-Specific Features__
+-   __Async__
 
-    Understand how Mirascope support features only certain providers offer
+    Maximize efficiecy with asynchronous programming
 
-    [:octicons-arrow-right-24: Docs](./provider_specific_features.md)
+    [:octicons-arrow-right-24: Docs](./async.md)
+
+-   __Retries__
+
+    Understand how to automatically retry failed API calls
+
+    [:octicons-arrow-right-24: Docs](./retries.md)
 
 </div>
 

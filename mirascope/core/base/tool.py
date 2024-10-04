@@ -1,6 +1,6 @@
 """This module defines the base class for tools used in LLM calls.
 
-usage-docs: learn/tools.md#the-basetool-class
+usage-docs: learn/tools.md
 """
 
 from __future__ import annotations
