@@ -81,7 +81,7 @@ While JSON Mode can signifanctly improve the structure of model outputs, it's im
 
     While this example catches errors for invalid JSON, there's always a chance that the LLM returns valid JSON that doesn't conform to your expected schema (such as missing fields or incorrect types).
 
-    For more robust validation, we recommend using [Response Models](./response_models.md) for easier structuring and validation of LLM outputs.
+    For more robust validation, we recommend using [Response Models](./response_models/index.md) for easier structuring and validation of LLM outputs.
 
 ## Next Steps
 

@@ -3,7 +3,7 @@
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [Response Models](./response_models.md)
+        If you haven't already, we recommend first reading the section on [Response Models](./index.md)
     </div>
 
 

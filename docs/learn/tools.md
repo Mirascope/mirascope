@@ -260,7 +260,7 @@ In this example we've added additional validation, but it's important that you s
 
 ## Few-Shot Examples
 
-Just like with [Response Models](./response_models.md#few-shot-examples), you can add few-shot examples to your tools:
+Just like with [Response Models](response_models/index.md#few-shot-examples), you can add few-shot examples to your tools:
 
 !!! mira ""
 

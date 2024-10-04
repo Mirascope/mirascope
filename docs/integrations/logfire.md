@@ -83,7 +83,7 @@ For some providers, certain `call_params` will need to be set in order for usage
 
 Since Mirascope `response_model` is built on top of [Pydantic](https://docs.pydantic.dev/latest/), you can use the [Pydantic Plugin](https://docs.pydantic.dev/latest/concepts/plugins/) to track additional logs and metrics about model validation, which you can enable using the `pydantic_plugin` configuration.
 
-This can be particularly useful when [extracting structured information using LLMs](../learn/response_models.md):
+This can be particularly useful when [extracting structured information using LLMs](../learn/response_models/index.md):
 
 ```python
 import logfire

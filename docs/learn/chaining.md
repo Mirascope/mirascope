@@ -118,7 +118,7 @@ Here are a few examples:
         --8<-- "examples/learn/chaining/advanced_techniques/iterative_chaining.py"
         ```
 
-[Response Models](./response_models.md) are a great way to add more structure to your chains, and [parallel async calls](./async.md#parallel-async-calls) can be particularly powerful for making your chains more efficient.
+[Response Models](response_models/index.md) are a great way to add more structure to your chains, and [parallel async calls](./async.md#parallel-async-calls) can be particularly powerful for making your chains more efficient.
 
 For inspiration on even more ways you can chain calls together, check out our tutorial section on [chaining-based prompt engineering](../tutorials/prompt_engineering/chaining_based/index.md), which covers many advanced chaining techniques used to apply prompt engineering concepts.
 
@@ -126,4 +126,4 @@ For inspiration on even more ways you can chain calls together, check out our tu
 
 By mastering Mirascope's chaining techniques, you can create sophisticated LLM-powered applications that tackle complex, multi-step problems with greater accuracy, control, and observability.
 
-Next, we recommend taking a look at the [Response Models](./response_models.md) documentation, which shows you how to generate structured outputs.
+Next, we recommend taking a look at the [Response Models](response_models/index.md) documentation, which shows you how to generate structured outputs.

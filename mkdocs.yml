@@ -229,7 +229,9 @@ nav:
       - Calls: "learn/calls.md"
       - Streams: "learn/streams.md"
       - Chaining: "learn/chaining.md"
-      - Response Models: "learn/response_models.md"
+      - Response Models:
+        - "learn/response_models/index.md"
+        - From Call Args: "learn/response_models/from_call_args.md"
       - JSON Mode: "learn/json_mode.md"
       - Output Parsers: "learn/output_parsers.md"
       - Tools: "learn/tools.md"
@@ -237,7 +239,6 @@ nav:
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
       - Provider-Specific Features: "learn/provider_specific_features.md"
-      - From Call Args: "learn/from_call_args.md"
   - Integrations:
       - Custom LLM Provider: "integrations/custom_provider.md"
       - HyperDX: "integrations/hyperdx.md"
