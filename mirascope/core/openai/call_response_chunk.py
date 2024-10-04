@@ -28,9 +28,8 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
 
 
     @openai_call("gpt-4o-mini", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     stream = recommend_book("fantasy")  # response is an `OpenAIStream`

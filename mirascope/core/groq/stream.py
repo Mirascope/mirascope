@@ -52,10 +52,8 @@ class GroqStream(
 
 
     @groq_call("llama-3.1-8b-instant", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
-
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
     stream = recommend_book("fantasy")  # returns `GroqStream` instance
     for chunk, _ in stream:
