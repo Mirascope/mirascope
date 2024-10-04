@@ -6,8 +6,8 @@ from typing import Any, TypeVar, cast
 
 from pydantic import BaseModel, create_model
 
+from ..from_call_args import is_from_call_args
 from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
-from ._get_call_args_field_names_and_validate import is_from_call_args
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 
