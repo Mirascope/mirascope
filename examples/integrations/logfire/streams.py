@@ -12,8 +12,8 @@ logfire.configure()
     stream=True,
     call_params={"stream_options": {"include_usage": True}},
 )
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 for chunk, _ in recommend_book("fantasy"):

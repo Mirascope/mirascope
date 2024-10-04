@@ -9,8 +9,8 @@ logfire.instrument_openai(client)
 
 
 @openai.call(model="gpt-4o-mini", client=client)
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 recommend_book("fantasy")

@@ -222,8 +222,8 @@ from mirascope.core import anthropic, prompt_template
 
 @with_saving()
 @anthropic.call(model="claude-3-5-sonnet-20240620")
-@prompt_template("What is your purpose?")
-def run(): ...
+def run() -> str:
+    return "What is your purpose?"
 
 print(run())
 ```

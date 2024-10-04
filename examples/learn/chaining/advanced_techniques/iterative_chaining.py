@@ -13,8 +13,8 @@ class SummaryFeedback(BaseModel):
 
 
 @openai.call(model="gpt-4o")
-@prompt_template("Summarize the following text into one sentence: {original_text}")
-def summarizer(original_text: str): ...
+def summarizer(original_text: str) -> str:
+    return f"Summarize the following text into one sentence: {original_text}"
 
 
 @openai.call(model="gpt-4o", response_model=SummaryFeedback)

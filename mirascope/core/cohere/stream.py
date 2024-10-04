@@ -47,9 +47,8 @@ class CohereStream(
 
 
     @cohere_call("command-r-plus", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     stream = recommend_book("fantasy")  # returns `CohereStream` instance

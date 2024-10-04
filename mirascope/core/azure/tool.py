@@ -41,9 +41,8 @@ class AzureTool(BaseTool[ChatCompletionsToolDefinition]):
 
 
     @azure_call("gpt-4o-mini", tools=[format_book])
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     response = recommend_book("fantasy")

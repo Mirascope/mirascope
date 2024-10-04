@@ -43,9 +43,8 @@ from mirascope.core.groq import groq_call
 
 
 @groq_call("llama-3.1-8b-instant")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
 print(response.content)

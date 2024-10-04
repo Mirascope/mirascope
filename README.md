@@ -86,8 +86,8 @@ Every provider we support has a corresponding `call` decorator for **turning a f
 from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
     
 response = recommend_book("fantasy")
 print(response)
@@ -116,8 +116,8 @@ To **stream the response**, set `stream=True`:
 from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini", stream=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
     
 stream = recommend_book("fantasy")
 for chunk, _ in stream:
@@ -134,8 +134,8 @@ def format_book(title: str, author: str):
     return f"{title} by {author}"
     
 @openai.call("gpt-4o-mini", tools=[format_book], tool_choice="required")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
     
 response = recommend_book("fantasy")
 tool = response.tool
@@ -154,8 +154,8 @@ from mirascope.core import openai, prompt_template
     tools=[format_book],
     tool_choice="required"
 )
-@prompt_template("Recommend two (2) {genre} books")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend two (2) {genre} books"
     
 stream = recommend_book("fantasy")
 for chunk, tool in stream:
@@ -198,8 +198,8 @@ class Book(BaseModel):
     author: str
     
 @openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
     
 book = recommend_book("fantasy")
 assert isinstance(book, Book)
@@ -218,8 +218,8 @@ class Book(BaseModel):
     author: str
 
 @openai.call("gpt-4o-mini", stream=True, response_model=Book)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
     
 book_stream = recommend_book("fantasy")
 for partial_book in book_stream:
@@ -269,8 +269,8 @@ def parse_book_recommendation(response: openai.OpenAICallResponse) -> Book:
     return Book(title=title, author=author)
 
 @openai.call(model="gpt-4o-mini", output_parser=parse_book_recommendation)
-@prompt_template("Recommend a {genre} book in the format Title by Author")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book in the format Title by Author"
 
 book = recommend_book("science fiction")
 assert isinstance(book, Book)
@@ -311,8 +311,8 @@ To **dump all relevant information** from a call, run the `model_dump` method:
 from mirascope.core import openai, prompt_template
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
 print(response.model_dump())
