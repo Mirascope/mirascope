@@ -2,6 +2,7 @@
 
 from typing import TypeAlias
 
+from google.generativeai.protos import FunctionResponse
 from google.generativeai.types import ContentDict
 
 from ..base import BaseMessageParam
@@ -14,7 +15,7 @@ from .dynamic_config import GeminiDynamicConfig
 from .stream import GeminiStream
 from .tool import GeminiTool
 
-GeminiMessageParam: TypeAlias = ContentDict | BaseMessageParam
+GeminiMessageParam: TypeAlias = ContentDict | FunctionResponse | BaseMessageParam
 
 __all__ = [
     "call",
