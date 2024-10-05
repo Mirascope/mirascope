@@ -3,7 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from google.generativeai.protos import FunctionResponse  # type: ignore
+from google.generativeai.protos import FunctionResponse
 from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
