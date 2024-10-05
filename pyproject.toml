@@ -199,7 +199,11 @@ ignore-words-list = 'EHR'
 ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]
-omit = ["mirascope/beta/*", "mirascope/v0/*"]
+omit = [
+    "mirascope/beta/*",
+    "mirascope/v0/*",
+    "mirascope/integrations/tenacity.py",
+]
 
 [tool.coverage.report]
 exclude_also = ["@overload", "@abstractmethod", "if TYPE_CHECKING:"]
