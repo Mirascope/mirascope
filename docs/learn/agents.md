@@ -441,8 +441,8 @@ As you develop more sophisticated agents with Mirascope, it's crucial to follow 
 ### Error Handling and Reliability
 
 - **Graceful Degradation**: Design your agent to handle cases where the LLM response is unexpected or tools fail to execute.
-- **Retry Mechanisms**: Implement retry logic for LLM calls and tool executions to handle transient errors. We recommend using [tenacity](../integrations/tenacity.md)
-- **Validation**: Use Pydantic's validation capabilities to ensure that tool inputs and outputs meet your expected schema. You can use our [`collect_errors`](../integrations/tenacity.md#error-reinsertion) helper method for easy reinsertion of errors into subsequent retries.
+- **Retry Mechanisms**: Implement retry logic for LLM calls and tool executions to handle transient errors. We recommend using [retries](./retries.md)
+- **Validation**: Use Pydantic's validation capabilities to ensure that tool inputs and outputs meet your expected schema. You can use our [`collect_errors`](./retries.md#error-reinsertion) helper method for easy reinsertion of errors into subsequent retries.
 - **Logging**: Implement comprehensive logging to track agent behavior, tool usage, and error states for debugging and improvement.
 
 ### Advanced Techniques
