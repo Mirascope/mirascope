@@ -41,10 +41,8 @@ class MistralCallResponse(
 
 
     @mistral_call("mistral-largel-latest")
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
-
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
     response = recommend_book("fantasy")  # response is an `MistralCallResponse` instance
     print(response.content)

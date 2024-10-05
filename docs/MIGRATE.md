@@ -77,9 +77,8 @@ from mirascope.core import openai, prompt_template
 
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 response = recommend_book("fantasy")
@@ -203,9 +202,8 @@ from mirascope.core import openai, prompt_template
 
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-async def recommend_book(genre: str):
-    ...
+async def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 response = asyncio.run(recommend_book("fantasy"))
@@ -238,9 +236,8 @@ from mirascope.core import openai, prompt_template
 
 
 @openai.call("gpt-4o-mini", stream=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 stream = recommend_book("fantasy")
@@ -299,9 +296,8 @@ class FormatBook(BaseTool):
     tools=[FormatBook],
     call_params={"tool_choice": "required"},
 )
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book."
 
 
 response = recommend_book("fantasy")
@@ -358,9 +354,8 @@ def format_book(title: str, author: str):
     tools=[format_book],
     call_params={"tool_choice": "required"},
 )
-@prompt_template("Recommend two (2) {genre} books")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend two (2) {genre} books"
 
 
 stream = recommend_book("fantasy")
@@ -412,9 +407,8 @@ class Book(BaseModel):
 
 
 @openai.call("gpt-4o-mini", response_model=Book)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 book = recommend_book("fantasy")
@@ -464,9 +458,8 @@ class Book(BaseModel):
 
 
 @openai.call("gpt-4o-mini", response_model=Book, json_mode=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 book = recommend_book("fantasy")
@@ -512,9 +505,8 @@ class Book(BaseModel):
 
 
 @openai.call("gpt-4o-mini", stream=True, response_model=Book)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 book_stream = recommend_book("fantasy")
@@ -609,9 +601,8 @@ from mirascope.core import openai, prompt_template
 
 
 @openai.call("gpt-4o-mini")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 response = recommend_book("fantasy")
@@ -719,9 +710,8 @@ class Book(BaseModel):
 
 @app.get("/recommend_book")
 @openai.call("gpt-4o-mini", response_model=Book)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 ```
 
 Migrating to Mirascope v1 offers a more streamlined and flexible approach to working with LLMs. The new decorator-based syntax simplifies code structure and makes it easier to implement advanced features like streaming, tools, and structured information extraction. 

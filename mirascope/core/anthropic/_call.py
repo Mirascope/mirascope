@@ -43,9 +43,8 @@ from mirascope.core.anthropic import anthropic_call
 
 
 @anthropic_call("claude-3-5-sonnet-20240620")
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str):
-    ...
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 response = recommend_book("fantasy")
 print(response.content)

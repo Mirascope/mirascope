@@ -1,6 +1,6 @@
 """The `VertexTool` class for easy tool usage with Google's Vertex LLM calls.
 
-usage docs: learn/tools.md#using-tools-with-standard-calls
+usage docs: learn/tools.md
 """
 
 from __future__ import annotations
@@ -29,9 +29,8 @@ class VertexTool(BaseTool[Tool]):
 
 
     @vertex_call("gemini-1.5-flash", tools=[format_book])
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     response = recommend_book("fantasy")

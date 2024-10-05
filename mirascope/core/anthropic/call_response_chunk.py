@@ -35,9 +35,8 @@ class AnthropicCallResponseChunk(
 
 
     @anthropic_call("claude-3-5-sonnet-20240620", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     stream = recommend_book("fantasy")  # response is an `AnthropicStream`

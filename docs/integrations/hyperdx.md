@@ -8,35 +8,21 @@ You can install the necessary packages directly or using the `hyperdx` extras fl
 pip install "mirascope[hyperdx]"
 ```
 
-## How to use HyperDX with Mirascope
+You can then use the `with_hyperdx` decorator to automatically log calls:
 
-### Calls
+!!! mira ""
 
-Our integration with HyperDX is a simple wrapper on top of our OpenTelemetry integration. The `with_hyperdx` decorator can be used on all Mirascope functions to automatically log calls across all [supported LLM providers](../learn/calls.md).
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-Here is a simple example using tools:
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
 
-```python
-import os
+            ```python hl_lines="2 5"
+            --8<-- "examples/integrations/hyperdx/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
 
-from mirascope.core import anthropic, prompt_template
-from mirascope.integrations.otel import with_hyperdx
+    {% endfor %}
 
-os.environ["HYPERDX_API_KEY"] = "YOUR_API_KEY"
-
-
-def format_book(title: str, author: str):
-    return f"{title} by {author}"
-
-
-@with_hyperdx()
-@anthropic.call(model="claude-3-5-sonnet-20240620", tools=[format_book])
-@prompt_template("Recommend a {genre} book.")
-def recommend_book(genre: str):
-    ...
-
-
-print(recommend_book("fantasy"))
-```
-
-Refer to the [OpenTelemetry documentation](./otel.md) for more details.
+This decorator is a simple wrapper on top of our [OpenTelemetry integration](./otel.md)

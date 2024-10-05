@@ -158,7 +158,7 @@ While Mirascope provides a consistent interface, type support varies among provi
 
 Legend: ✓ (Supported), - (Not Supported)
 
-Consider provider-specific capabilities when working with advanced type structures. Even for supported types, LLM outputs may sometimes be incorrect or of the wrong type. In such cases, prompt engineering or error handling (like [reinserting validation errors](../integrations/tenacity.md#tools)) may be necessary.
+Consider provider-specific capabilities when working with advanced type structures. Even for supported types, LLM outputs may sometimes be incorrect or of the wrong type. In such cases, prompt engineering or error handling (like [retries](./retries.md) and [reinserting validation errors](./retries.md#error-reinsertion)) may be necessary.
 
 ## Parallel Tool Calls
 

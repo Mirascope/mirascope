@@ -1,6 +1,6 @@
 """The `MistralTool` class for easy tool usage with Mistral LLM calls.
 
-usage docs: learn/tools.md#using-tools-with-standard-calls
+usage docs: learn/tools.md
 """
 
 from __future__ import annotations
@@ -29,10 +29,8 @@ class MistralTool(BaseTool[dict[str, Any]]):
 
 
     @mistral_call("mistral-large-latest", tools=[format_book])
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
-
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
     response = recommend_book("fantasy")
     if tool := response.tool:  # returns a `MistralTool` instance

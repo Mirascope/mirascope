@@ -49,9 +49,8 @@ class VertexStream(
 
 
     @vertex_call("gemini-1.5-flash", stream=True)
-    @prompt_template("Recommend a {genre} book")
-    def recommend_book(genre: str):
-        ...
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
 
 
     stream = recommend_book("fantasy")  # returns `VertexStream` instance
