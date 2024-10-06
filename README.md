@@ -53,7 +53,7 @@ print(book)
 
 ## Tutorials
 
-Check out our [quickstart tutorial](https://www.mirascope.com/docs/tutorials/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
+Check out our [quickstart tutorial](https://www.mirascope.com/docs/tutorials/getting_started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
 
 ## Usage
 
