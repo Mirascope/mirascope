@@ -86,7 +86,7 @@ Let's take a look at a basic example where the `Librarian` can access the books 
             {% else %}
             ```python hl_lines="14-17 19-21 30 37-43"
             {% endif %}
-            --8<-- "examples/learn/agents/tools/{{ provider }}/{{ method }}.py"
+            --8<-- "examples/learn/agents/tools/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
