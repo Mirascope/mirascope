@@ -14,7 +14,7 @@ In this section we will implement a toy `Librarian` agent to demonstrate key con
         If you haven't already, we recommend first reading the section on [Calls](./calls.md)
     </div>
 
-Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. You can introduce state in many ways ranging from local variables to a database, or short-term memory and long-term memory respectively.
+Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. The goal of providing state to the agent is to give it memory. For example, we can think of local variables as "working memory" and a database as "long-term memory".
 
 Let's take a look at a basic chatbot (not an agent) that uses a class to maintain the chat's history:
 
