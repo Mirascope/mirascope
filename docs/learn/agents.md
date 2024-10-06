@@ -102,7 +102,7 @@ In this example we:
     - If yes, we call the tools, collect the outputs, and insert the tool calls into the chat history. We then recursively call `_step` again with an empty user query until the LLM is done calling tools and is ready to response
     - If no, the LLM is ready to respond and we return the response content.
 
-Now that our chatbot is capable of using tools, we now have a basic agent.
+Now that our chatbot is capable of using tools, we have a basic agent.
 
 ## Human-In-The-Loop
 

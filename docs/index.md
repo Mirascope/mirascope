@@ -144,7 +144,7 @@ Make your first call:
 
     Advanced usage patterns and real-world applications
 
-    [:octicons-arrow-right-24: Cookbook](./tutorials/more_advanced/text_classification.ipynb)
+    [:octicons-arrow-right-24: Tutorial](./tutorials/more_advanced/text_classification.ipynb)
 
 -   :material-connection:{ .lg .middle } __Integrations__
 
