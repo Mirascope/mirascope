@@ -14,7 +14,7 @@ In this section we will implement a toy `Librarian` agent to demonstrate key con
         If you haven't already, we recommend first reading the section on [Calls](./calls.md)
     </div>
 
-Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. You can introduce state in many ways ranging from local variables to a database.
+Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. You can introduce state in many ways ranging from local variables to a database, or short-term memory and long-term memory respectively.
 
 Let's take a look at a basic chatbot (not an agent) that uses a class to maintain the chat's history:
 
@@ -42,7 +42,7 @@ In this example we:
 - Implement a private `_call` method that injects `history`.
 - Run the `_call` method in a loop, saving the history at each step.
 
-Of course, this is just a chatbot -- not an agent.
+A chatbot with memory, while more advanced, is still not an agent.
 
 ??? tip "Provider-agnostic agent"
 
@@ -69,7 +69,7 @@ Of course, this is just a chatbot -- not an agent.
         If you haven't already, we recommend first reading the section on [Tools](./tools.md)
     </div>
 
-The next concept to cover is introducing tools to our agent such that it can act on our behalf. The most basic agent flow is to call tools on behalf of the agent, providing them back through the chat history until the agent is ready to response to the initial query.
+The next concept to cover is introducing tools to our chatbot, turning it into an agent capable of acting on our behalf. The most basic agent flow is to call tools on behalf of the agent, providing them back through the chat history until the agent is ready to response to the initial query.
 
 Let's take a look at a basic example where the `Librarian` can access the books available in the library:
 
@@ -93,7 +93,7 @@ Let's take a look at a basic example where the `Librarian` can access the books 
 
 In this example we:
 
-1. Added the `library` state the maintain the list of available books.
+1. Added the `library` state to maintain the list of available books.
 2. Implemented the `_available_books` tool that returns the library as a string.
 3. Updated `_call` to give the LLM access to the tool.
     - We used the `tools` dynamic configuration field so the tool has access to the library through `self`.
@@ -101,6 +101,8 @@ In this example we:
 5. For each step, we call the LLM and see if there are any tool calls.
     - If yes, we call the tools, collect the outputs, and insert the tool calls into the chat history. We then recursively call `_step` again with an empty user query until the LLM is done calling tools and is ready to response
     - If no, the LLM is ready to respond and we return the response content.
+
+Now that our chatbot is capable of using tools, we now have a basic agent.
 
 ## Human-In-The-Loop
 
