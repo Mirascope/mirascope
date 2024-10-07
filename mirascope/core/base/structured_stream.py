@@ -224,6 +224,7 @@ def structured_stream_factory(  # noqa: ANN201
             handle_stream=handle_stream,
             handle_stream_async=handle_stream_async,
         )
+
         tool = setup_extract_tool(response_model, TToolType)
         stream_decorator_kwargs = {
             "model": model,
