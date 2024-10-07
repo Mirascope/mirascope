@@ -104,9 +104,6 @@ markdown_extensions:
       permalink: true
 
 plugins:
-  - mike:
-      alias_type: symlink
-      canonical_version: latest
   - search
   - macros:
       module_name: docs/macros
@@ -153,7 +150,6 @@ nav:
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
       - Contributing: "CONTRIBUTING.md"
-      - Changelog: "CHANGELOG.md"
   - Tutorials:
       - Getting Started:
           - Quickstart: "tutorials/getting_started/quickstart.ipynb"
@@ -202,7 +198,6 @@ nav:
               - Role Prompting: "tutorials/prompt_engineering/text_based/role_prompting.ipynb"
           - Chaining Based:
               - "tutorials/prompt_engineering/chaining_based/index.md"
-              - Self Verification: "tutorials/prompt_engineering/chaining_based/self_verification.ipynb"
               - Self-Refine: "tutorials/prompt_engineering/chaining_based/self_refine.ipynb"
               - Self-Consistency: "tutorials/prompt_engineering/chaining_based/self_consistency.ipynb"
               - Reverse Chain of Thought: "tutorials/prompt_engineering/chaining_based/reverse_chain_of_thought.ipynb"

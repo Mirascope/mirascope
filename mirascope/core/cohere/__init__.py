@@ -2,7 +2,7 @@
 
 from typing import TypeAlias
 
-from cohere.types import ChatMessage
+from cohere.types import ChatMessage, ToolResult
 
 from ..base import BaseMessageParam
 from ._call import cohere_call
@@ -14,7 +14,7 @@ from .dynamic_config import CohereDynamicConfig
 from .stream import CohereStream
 from .tool import CohereTool
 
-CohereMessageParam: TypeAlias = ChatMessage | BaseMessageParam
+CohereMessageParam: TypeAlias = ChatMessage | ToolResult | BaseMessageParam
 
 __all__ = [
     "call",
