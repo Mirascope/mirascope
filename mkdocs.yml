@@ -11,6 +11,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   logo: assets/brandmark.png
+  favicon: assets/favicon.png
   features:
     - content.tabs.link
     - content.code.annotate
