@@ -13,11 +13,10 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     fn_is_async,
-    get_fn_args,
     setup_extract_tool,
 )
-from ._utils._get_call_args_field_names_and_validate import (
-    get_call_args_field_names_and_validate,
+from ._utils._get_fields_from_get_args import (
+    get_fields_from_get_args,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -91,9 +90,6 @@ def extract_factory(  # noqa: ANN202
         _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
     ]:
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
-        call_args_field_names = get_call_args_field_names_and_validate(
-            response_model, fn
-        )
         tool = setup_extract_tool(response_model, TToolType)
         create_decorator_kwargs = {
             "model": model,
@@ -110,12 +106,13 @@ def extract_factory(  # noqa: ANN202
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> _ResponseModelT:
+                fields_from_call_args = get_fields_from_get_args(
+                    response_model, fn, args, kwargs
+                )
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
                 json_output = get_json_output(call_response, json_mode)
-                fn_args = get_fn_args(fn, args, kwargs)
-                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 try:
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
@@ -132,12 +129,13 @@ def extract_factory(  # noqa: ANN202
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+                fields_from_call_args = get_fields_from_get_args(
+                    response_model, fn, args, kwargs
+                )
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
                 json_output = get_json_output(call_response, json_mode)
-                fn_args = get_fn_args(fn, args, kwargs)
-                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
                 try:
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args

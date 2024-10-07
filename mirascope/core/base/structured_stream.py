@@ -26,11 +26,10 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     fn_is_async,
-    get_fn_args,
     setup_extract_tool,
 )
-from ._utils._get_call_args_field_names_and_validate import (
-    get_call_args_field_names_and_validate,
+from ._utils._get_fields_from_get_args import (
+    get_fields_from_get_args,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -225,9 +224,6 @@ def structured_stream_factory(  # noqa: ANN201
             handle_stream=handle_stream,
             handle_stream_async=handle_stream_async,
         )
-        call_args_field_names = get_call_args_field_names_and_validate(
-            response_model, fn
-        )
         tool = setup_extract_tool(response_model, TToolType)
         stream_decorator_kwargs = {
             "model": model,
@@ -243,8 +239,9 @@ def structured_stream_factory(  # noqa: ANN201
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> AsyncIterable[_ResponseModelT]:
-                fn_args = get_fn_args(fn, args, kwargs)
-                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
+                fields_from_call_args = get_fields_from_get_args(
+                    response_model, fn, args, kwargs
+                )
                 return BaseStructuredStream[_ResponseModelT](
                     stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
@@ -258,8 +255,9 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-                fn_args = get_fn_args(fn, args, kwargs)
-                fields_from_call_args = {c: fn_args[c] for c in call_args_field_names}
+                fields_from_call_args = get_fields_from_get_args(
+                    response_model, fn, args, kwargs
+                )
                 return BaseStructuredStream[_ResponseModelT](
                     stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
