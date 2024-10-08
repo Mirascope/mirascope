@@ -3,7 +3,7 @@
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [Calls](../calls.md)
+        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
     </div>
 
 Response Models in Mirascope provide a powerful way to structure and validate the output from Large Language Models (LLMs). By leveraging Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/usage/models/), Response Models offer type safety, automatic validation, and easier data manipulation for your LLM responses. While we cover some details in this documentation, we highly recommend reading through Pydantic's documentation for a deeper, comprehensive dive into everything you can do with Pydantic's `BaseModel`.
@@ -65,9 +65,9 @@ Notice how Mirascope makes generating structured outputs significantly simpler t
 
 !!! info "Tools By Default"
 
-    By default, `response_model` will use [Tools](../tools.md) under the hood, forcing to the LLM to call that specific tool and constructing the response model from the tool's arguments.
+    By default, `response_model` will use [Tools](./tools.md) under the hood, forcing to the LLM to call that specific tool and constructing the response model from the tool's arguments.
 
-    We default to using tools because all supported providers support tools. You can also optionally set `json_mode=True` to use [JSON Mode](../json_mode.md) instead, which we cover in [more detail below](#json-mode).
+    We default to using tools because all supported providers support tools. You can also optionally set `json_mode=True` to use [JSON Mode](./json_mode.md) instead, which we cover in [more detail below](#json-mode).
 
 ### Accessing Original Call Response
 
@@ -155,7 +155,7 @@ Let's take a look at an example where we want to validate that all fields are up
 
 Without additional prompt engineering, this call will fail every single time. It's important to engineer your prompts to reduce errors, but LLMs are far from perfect, so always remember to catch and handle validation errors gracefully.
 
-We highly recommend taking a look at our section on [retries](../retries.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
+We highly recommend taking a look at our section on [retries](./retries.md) to learn more about automatically retrying and re-inserting validation errors, which enables retrying the call such that the LLM can learn from its previous mistakes.
 
 ### Accessing Original Call Response On Error
 
@@ -181,7 +181,7 @@ This allows you to gracefully handle errors as well as inspect the original LLM 
 
 ## JSON Mode
 
-By default, `response_model` uses [Tools](../tools.md) under the hood. You can instead use [JSON Mode](../json_mode.md) in conjunction with `response_model` by setting `json_mode=True`:
+By default, `response_model` uses [Tools](./tools.md) under the hood. You can instead use [JSON Mode](./json_mode.md) in conjunction with `response_model` by setting `json_mode=True`:
 
 !!! mira ""
 
@@ -248,7 +248,47 @@ If you set `stream=True` when `response_model` is set, your LLM call will return
 
 Once exhausted, you can access the final, full response model through the `constructed_response_model` property of the structured stream. Note that this will also give you access to the [`._response` property](#accessing-original-call-response) that every `BaseModel` receives.
 
-You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](../streams.md#common-stream-properties-and-methods).
+You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](./streams.md#common-stream-properties-and-methods).
+
+## FromCallArgs
+
+`FromCallArgs` is a feature in Mirascope that allows you to directly incorporate function arguments into your response models, enabling seamless integration between LLM outputs and function inputs.
+
+### How It Works and Basic Usage
+
+When you use `FromCallArgs` with a field in your response model, Mirascope populates that field with the corresponding argument from the function call, rather than expecting it in the LLM's response. Here's an example:
+
+!!! mira "Mirascope"
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "string_template" %}
+            ```python hl_lines="7 14"
+            {% else %}
+            ```python hl_lines="7 13"
+            {% endif %}
+            --8<-- "examples/learn/response_models/from_call_args/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+
+    {% endfor %}
+
+In this example, `FromCallArgs()` is applied to the `genre` field, ensuring that the `genre` argument passed to the `recommend_book` function is automatically set in the response model's `genre` field.
+
+### Benefits and Important Notes
+
+- **Benefits**: Input preservation, consistency between inputs and outputs, code simplification, and enhanced type safety.
+- **Notes**: 
+  - Field names using `FromCallArgs()` must match the function argument names.
+  - It can be used selectively for required fields.
+  - Currently supported only for top-level fields.
+  - Fields marked with `FromCallArgs()` are populated from function arguments, not from the LLM's response.
+
+By utilizing `FromCallArgs`, you can create more sophisticated LLM applications that seamlessly combine user inputs with AI-generated content, maintaining consistency between your function arguments and the final response model.
 
 ## Next Steps
 
@@ -256,5 +296,5 @@ By following these best practices and leveraging Response Models effectively, yo
 
 Next, we recommend taking a lookg at one of:
 
-- [JSON Mode](../json_mode.md) to see an alternate way to generate structured outputs where using Pydantic to validate outputs is optional.
-- [Evals](../evals.md) to see how to use `response_model` to evaluate your prompts.
+- [JSON Mode](./json_mode.md) to see an alternate way to generate structured outputs where using Pydantic to validate outputs is optional.
+- [Evals](./evals.md) to see how to use `response_model` to evaluate your prompts.

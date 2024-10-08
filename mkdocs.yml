@@ -223,9 +223,7 @@ nav:
       - Calls: "learn/calls.md"
       - Streams: "learn/streams.md"
       - Chaining: "learn/chaining.md"
-      - Response Models:
-        - "learn/response_models/index.md"
-        - From Call Args: "learn/response_models/from_call_args.md"
+      - Response Models: "learn/response_models.md"
       - JSON Mode: "learn/json_mode.md"
       - Output Parsers: "learn/output_parsers.md"
       - Tools: "learn/tools.md"

@@ -167,7 +167,7 @@ While each LLM provider has its own specific parameters, there are several commo
 
 - `model`: The only required parameter for all providers, which may be passed in as a standard argument (whereas all others are optional and must be provided as keyword arguments). It specifies which language model to use for the generation. Each provider has its own set of available models.
 - `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](./streams.md) documentation.
-- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](response_models/index.md) documentation.
+- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](./response_models.md) documentation.
 - `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](./output_parsers.md) documentation.
 - `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](./json_mode.md) documentation.
 - `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](./tools.md) documentation.
@@ -352,7 +352,7 @@ Next, we recommend choosing one of:
 
 - [Streams](./streams.md) to see how to stream call responses for a more real-time interaction.
 - [Chaining](./chaining.md) to see how to chain calls together.
-- [Response Models](response_models/index.md) to see how to generate structured outputs.
+- [Response Models](./response_models.md) to see how to generate structured outputs.
 - [Tools](./tools.md) to see how to give LLMs access to custom tools to extend their capabilities.
 - [Async](./async.md) to see how to better take advantage of asynchronous programming and parallelization for improved performance.
 

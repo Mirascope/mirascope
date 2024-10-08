@@ -74,7 +74,7 @@ We encourage you to dive into each component's documentation to gain a deeper un
 
     Define and use structured output models with automatic validation
 
-    [:octicons-arrow-right-24: Docs](response_models/index.md)
+    [:octicons-arrow-right-24: Docs](./response_models.md)
 
 -   __JSON Mode__
 
@@ -118,11 +118,6 @@ We encourage you to dive into each component's documentation to gain a deeper un
 
     [:octicons-arrow-right-24: Docs](./retries.md)
 
-- __FromCallArgs__
-
-    Learn how to integrate function inputs with LLM outputs
-
-    [:octicons-arrow-right-24: Docs](response_models/from_call_args.md)
 </div>
 
 As you progress, you'll find advanced topics and best practices throughout the documentation. These will help you optimize your use of Mirascope and build increasingly sophisticated AI-powered applications.

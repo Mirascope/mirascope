@@ -3,7 +3,7 @@
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [Response Models](./response_models/index.md)
+        If you haven't already, we recommend first reading the section on [Response Models](./response_models.md)
     </div>
 
 Evaluating the outputs of Large Language Models (LLMs) is a crucial step in developing robust and reliable AI applications. This section covers various approaches to evaluating LLM outputs, including using LLMs as evaluators as well as implementing hardcoded evaluation criteria.
