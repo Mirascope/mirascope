@@ -28,8 +28,8 @@ from ._utils import (
     fn_is_async,
     setup_extract_tool,
 )
-from ._utils._get_fields_from_get_args import (
-    get_fields_from_get_args,
+from ._utils._get_fields_from_call_args import (
+    get_fields_from_call_args,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -240,7 +240,7 @@ def structured_stream_factory(  # noqa: ANN201
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> AsyncIterable[_ResponseModelT]:
-                fields_from_call_args = get_fields_from_get_args(
+                fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
                 return BaseStructuredStream[_ResponseModelT](
@@ -256,7 +256,7 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
-                fields_from_call_args = get_fields_from_get_args(
+                fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
                 return BaseStructuredStream[_ResponseModelT](

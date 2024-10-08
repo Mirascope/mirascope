@@ -1,18 +1,32 @@
-from typing import Annotated
-from pydantic import BaseModel, Field
-from mirascope.core import Messages, cohere, FromCallArgs
+from typing import Annotated, Self
+from pydantic import BaseModel, model_validator
+from mirascope.core import anthropic, FromCallArgs, Messages, cohere
 
 
-class BookRecommendation(BaseModel):
-    genre: Annotated[str, FromCallArgs()]
-    title: str = Field(..., description="The title of the recommended book")
-    author: str = Field(..., description="The author of the recommended book")
+class Book(BaseModel):
+    title: str
+    author: str
 
 
-@cohere.call("command-r-plus", response_model=BookRecommendation)
-def recommend_book(genre: str) -> Messages.Type:
-    return Messages.User(f"Recommend a {genre} book")
+class Books(BaseModel):
+    texts: Annotated[list[str], FromCallArgs()]
+    books: list[Book]
+
+    @model_validator(mode="after")
+    def validate_output_length(self) -> Self:
+        if len(self.texts) != len(self.books):
+            raise ValueError("length mismatch...")
+        return self
 
 
-print(recommend_book("fantasy"))
-# Output: genre='fantasy' title='The Name of the Wind' author='Patrick Rothfuss'
+@cohere.call("command-r-plus", response_model=Books)
+def extract_books(texts: list[str]) -> Messages.Type:
+    return Messages.User(f"Extract the books from these texts: {texts}")
+
+
+texts = [
+    "The Name of the Wind by Patrick Rothfuss",
+    "Mistborn: The Final Empire by Brandon Sanderson",
+]
+print(extract_books(texts))
+# Output: texts=['The Name of the Wind by Patrick Rothfuss', 'Mistborn: The Final Empire by Brandon Sanderson'] books=[Book(title='The Name of the Wind', author='Patrick Rothfuss'), Book(title='Mistborn: The Final Empire', author='Brandon Sanderson')]

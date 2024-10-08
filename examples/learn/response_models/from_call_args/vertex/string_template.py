@@ -1,18 +1,32 @@
-from typing import Annotated
-from pydantic import BaseModel, Field
-from mirascope.core import prompt_template, vertex, FromCallArgs
+from typing import Annotated, Self
+from pydantic import BaseModel, model_validator
+from mirascope.core import anthropic, FromCallArgs, prompt_template, vertex
 
 
-class BookRecommendation(BaseModel):
-    genre: Annotated[str, FromCallArgs()]
-    title: str = Field(..., description="The title of the recommended book")
-    author: str = Field(..., description="The author of the recommended book")
+class Book(BaseModel):
+    title: str
+    author: str
 
 
-@vertex.call("gemini-1.5-flash", response_model=BookRecommendation)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+class Books(BaseModel):
+    texts: Annotated[list[str], FromCallArgs()]
+    books: list[Book]
+
+    @model_validator(mode="after")
+    def validate_output_length(self) -> Self:
+        if len(self.texts) != len(self.books):
+            raise ValueError("length mismatch...")
+        return self
 
 
-print(recommend_book("fantasy"))
-# Output: genre='fantasy' title='The Name of the Wind' author='Patrick Rothfuss'
+@vertex.call("gemini-1.5-flash", response_model=Books)
+@prompt_template("Extract the books from these texts: {texts}")
+def extract_books(texts: list[str]): ...
+
+
+texts = [
+    "The Name of the Wind by Patrick Rothfuss",
+    "Mistborn: The Final Empire by Brandon Sanderson",
+]
+print(extract_books(texts))
+# Output: texts=['The Name of the Wind by Patrick Rothfuss', 'Mistborn: The Final Empire by Brandon Sanderson'] books=[Book(title='The Name of the Wind', author='Patrick Rothfuss'), Book(title='Mistborn: The Final Empire', author='Brandon Sanderson')]

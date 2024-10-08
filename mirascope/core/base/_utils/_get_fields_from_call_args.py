@@ -1,3 +1,5 @@
+"""Get FromCallArgs() annotated fields from a function call's args/kwargs."""
+
 import inspect
 from collections.abc import Callable
 from typing import Any
@@ -8,12 +10,24 @@ from mirascope.core.base._utils import get_fn_args
 from mirascope.core.base.from_call_args import is_from_call_args
 
 
-def get_fields_from_get_args(
+def get_fields_from_call_args(
     response_model: object,
     fn: Callable,
     args: tuple[object, ...],
     kwargs: dict[str, Any],
 ) -> dict[str, Any]:
+    """Get the fields marked with `FromCallArgs` from the function arguments.
+
+    Args:
+        response_model: The response model.
+        fn: The function.
+        args: The function arguments.
+        kwargs: The function keyword arguments.
+
+    Returns:
+        A dictionary of the fields marked with `FromCallArgs` and their values.
+
+    """
     if not (inspect.isclass(response_model) and issubclass(response_model, BaseModel)):
         return {}
     call_args_fields = {

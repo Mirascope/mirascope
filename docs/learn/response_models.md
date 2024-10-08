@@ -252,11 +252,7 @@ You can also use the `stream` property to access the `BaseStream` instance and [
 
 ## FromCallArgs
 
-`FromCallArgs` is a feature in Mirascope that allows you to directly incorporate function arguments into your response models, enabling seamless integration between LLM outputs and function inputs.
-
-### How It Works and Basic Usage
-
-When you use `FromCallArgs` with a field in your response model, Mirascope populates that field with the corresponding argument from the function call, rather than expecting it in the LLM's response. Here's an example:
+Fields annotated with `FromCallArgs` will be populated with the corresponding argument from the function call rather than expecting it from the LLM's response. This enable seamless validation of LLM outputs against function inputs:
 
 !!! mira "Mirascope"
 
@@ -267,19 +263,15 @@ When you use `FromCallArgs` with a field in your response model, Mirascope popul
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="7 14"
+            ```python hl_lines="12 24"
             {% else %}
-            ```python hl_lines="7 13"
+            ```python hl_lines="12 23"
             {% endif %}
             --8<-- "examples/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
     {% endfor %}
-
-In this example, `FromCallArgs()` is applied to the `genre` field, ensuring that the `genre` argument passed to the `recommend_book` function is automatically set in the response model's `genre` field.
-
-By utilizing `FromCallArgs`, you can create more sophisticated LLM applications that seamlessly combine user inputs with AI-generated content, maintaining consistency between your function arguments and the final response model.
 
 ## Next Steps
 
