@@ -2,8 +2,8 @@ from mirascope.core import (
     BaseDynamicConfig,
     BaseToolKit,
     Messages,
-    vertex,
     toolkit_tool,
+    vertex,
 )
 
 

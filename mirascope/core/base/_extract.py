@@ -15,6 +15,7 @@ from ._utils import (
     fn_is_async,
     setup_extract_tool,
 )
+from ._utils._get_fields_from_call_args import get_fields_from_call_args
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .dynamic_config import BaseDynamicConfig
@@ -103,12 +104,17 @@ def extract_factory(  # noqa: ANN202
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> _ResponseModelT:
+                fields_from_call_args = get_fields_from_call_args(
+                    response_model, fn, args, kwargs
+                )
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
                 json_output = get_json_output(call_response, json_mode)
                 try:
-                    output = extract_tool_return(response_model, json_output, False)
+                    output = extract_tool_return(
+                        response_model, json_output, False, fields_from_call_args
+                    )
                 except ValidationError as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
@@ -121,12 +127,17 @@ def extract_factory(  # noqa: ANN202
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
+                fields_from_call_args = get_fields_from_call_args(
+                    response_model, fn, args, kwargs
+                )
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
                 json_output = get_json_output(call_response, json_mode)
                 try:
-                    output = extract_tool_return(response_model, json_output, False)
+                    output = extract_tool_return(
+                        response_model, json_output, False, fields_from_call_args
+                    )
                 except ValidationError as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
