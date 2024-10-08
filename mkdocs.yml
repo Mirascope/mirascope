@@ -11,6 +11,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   logo: assets/brandmark.png
+  favicon: assets/favicon.png
   features:
     - content.tabs.link
     - content.code.annotate
@@ -184,7 +185,6 @@ nav:
           - Documentation Agent: "tutorials/agents/documentation_agent.ipynb"
       - Prompt Engineering:
           - Text Based:
-              - "tutorials/prompt_engineering/text_based/index.md"
               - Self Ask: "tutorials/prompt_engineering/text_based/self_ask.ipynb"
               - Plan and Solve: "tutorials/prompt_engineering/text_based/plan_and_solve.ipynb"
               - Contrastive Chain of Thought: "tutorials/prompt_engineering/text_based/contrastive_chain_of_thought.ipynb"
@@ -197,7 +197,6 @@ nav:
               - Common Phrases: "tutorials/prompt_engineering/text_based/common_phrases.ipynb"
               - Role Prompting: "tutorials/prompt_engineering/text_based/role_prompting.ipynb"
           - Chaining Based:
-              - "tutorials/prompt_engineering/chaining_based/index.md"
               - Self-Refine: "tutorials/prompt_engineering/chaining_based/self_refine.ipynb"
               - Self-Consistency: "tutorials/prompt_engineering/chaining_based/self_consistency.ipynb"
               - Reverse Chain of Thought: "tutorials/prompt_engineering/chaining_based/reverse_chain_of_thought.ipynb"
