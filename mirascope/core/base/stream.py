@@ -234,6 +234,8 @@ class BaseStream(
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
+_AsyncResponseT = TypeVar("_AsyncResponseT")
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT")
 _P = ParamSpec("_P")
 
 
@@ -247,11 +249,13 @@ def stream_factory(  # noqa: ANN201
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ],
     handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
     handle_stream_async: HandleStreamAsync[
-        _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
+        _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
 ):
     @overload

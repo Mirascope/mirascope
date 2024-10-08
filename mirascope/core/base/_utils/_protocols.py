@@ -27,6 +27,7 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
 _AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)
 _ResponseChunkT = TypeVar("_ResponseChunkT", covariant=True)
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT", covariant=True)
 _InvariantResponseChunkT = TypeVar("_InvariantResponseChunkT", contravariant=True)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
@@ -120,6 +121,8 @@ class SetupCall(
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ]
 ):
@@ -137,7 +140,7 @@ class SetupCall(
         call_params: _BaseCallParamsT,
         extract: bool,
     ) -> tuple[
-        AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,
@@ -179,7 +182,7 @@ class SetupCall(
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
-        | AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,

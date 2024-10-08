@@ -114,6 +114,8 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
+_AsyncResponseT = TypeVar("_AsyncResponseT")
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT")
 _P = ParamSpec("_P")
 
 
@@ -129,6 +131,8 @@ def structured_stream_factory(  # noqa: ANN201
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseChunkT],
@@ -179,7 +183,7 @@ def structured_stream_factory(  # noqa: ANN201
         Iterable[_ResponseModelT] | Awaitable[AsyncIterable[_ResponseModelT]],
     ]:
         def handle_chunk(
-            chunk: _ResponseChunkT,
+            chunk: _ResponseChunkT | _AsyncResponseChunkT,
         ) -> tuple[_BaseCallResponseChunkT, None]:
             call_response_chunk = TCallResponseChunk(chunk=chunk)
             json_output = get_json_output(call_response_chunk, json_mode)
@@ -198,7 +202,7 @@ def structured_stream_factory(  # noqa: ANN201
                 yield handle_chunk(chunk)
 
         async def handle_stream_async(
-            stream: AsyncGenerator[_ResponseChunkT, None],
+            stream: AsyncGenerator[_AsyncResponseChunkT, None],
             tool_types: list[type[_BaseToolT]] | None,
         ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, None], None]:
             async for chunk in stream:
