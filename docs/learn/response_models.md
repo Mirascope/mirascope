@@ -279,15 +279,6 @@ When you use `FromCallArgs` with a field in your response model, Mirascope popul
 
 In this example, `FromCallArgs()` is applied to the `genre` field, ensuring that the `genre` argument passed to the `recommend_book` function is automatically set in the response model's `genre` field.
 
-### Benefits and Important Notes
-
-- **Benefits**: Input preservation, consistency between inputs and outputs, code simplification, and enhanced type safety.
-- **Notes**: 
-  - Field names using `FromCallArgs()` must match the function argument names.
-  - It can be used selectively for required fields.
-  - Currently supported only for top-level fields.
-  - Fields marked with `FromCallArgs()` are populated from function arguments, not from the LLM's response.
-
 By utilizing `FromCallArgs`, you can create more sophisticated LLM applications that seamlessly combine user inputs with AI-generated content, maintaining consistency between your function arguments and the final response model.
 
 ## Next Steps
