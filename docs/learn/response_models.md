@@ -271,7 +271,7 @@ When you use `FromCallArgs` with a field in your response model, Mirascope popul
             {% else %}
             ```python hl_lines="7 13"
             {% endif %}
-            --8<-- "examples/learn/response_models/from_call_args/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
