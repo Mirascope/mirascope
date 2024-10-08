@@ -22,6 +22,7 @@ from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -38,6 +39,7 @@ def extract_factory(  # noqa: ANN202
     TToolType: type[BaseTool],
     setup_call: SetupCall[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,

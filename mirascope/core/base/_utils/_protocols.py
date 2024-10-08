@@ -22,6 +22,7 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
 _BaseClientT = TypeVar("_BaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
@@ -116,6 +117,7 @@ def fn_is_async(
 class SetupCall(
     Protocol[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -128,7 +130,7 @@ class SetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | None,
         fn: Callable[..., Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
@@ -169,7 +171,7 @@ class SetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,

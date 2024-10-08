@@ -23,6 +23,7 @@ from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -37,6 +38,7 @@ def create_factory(  # noqa: ANN202
     TCallResponse: type[_BaseCallResponseT],
     setup_call: SetupCall[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -134,7 +136,7 @@ def create_factory(  # noqa: ANN202
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
-                    client=client,
+                    client=cast(_AsyncBaseClientT | None, client),
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

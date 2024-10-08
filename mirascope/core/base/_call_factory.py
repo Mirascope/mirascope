@@ -43,6 +43,7 @@ _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
@@ -59,6 +60,7 @@ def call_factory(  # noqa: ANN202
     default_call_params: _BaseCallParamsT,
     setup_call: SetupCall[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,

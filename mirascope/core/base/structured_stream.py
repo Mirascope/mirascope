@@ -112,6 +112,7 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
 
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -125,6 +126,7 @@ def structured_stream_factory(  # noqa: ANN201
     TToolType: type[_BaseToolT],
     setup_call: SetupCall[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,

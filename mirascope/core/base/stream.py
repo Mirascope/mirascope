@@ -232,6 +232,7 @@ class BaseStream(
 
 
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -243,6 +244,7 @@ def stream_factory(  # noqa: ANN201
     TStream: type[BaseStream],
     setup_call: SetupCall[
         _BaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -279,7 +281,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
     @overload
@@ -288,7 +290,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
@@ -300,7 +302,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if not is_prompt_template(fn):
@@ -322,7 +324,7 @@ def stream_factory(  # noqa: ANN201
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
-                    client=client,
+                    client=cast(_AsyncBaseClientT | None, client),
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -365,7 +367,7 @@ def stream_factory(  # noqa: ANN201
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
-                    client=client,
+                    client=cast(_BaseClientT | None, client),
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
