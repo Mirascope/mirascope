@@ -158,7 +158,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -171,7 +171,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -184,7 +184,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,

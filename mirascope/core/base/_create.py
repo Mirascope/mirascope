@@ -65,7 +65,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -76,7 +76,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -90,7 +90,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -104,7 +104,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -123,7 +123,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | _SyncBaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,

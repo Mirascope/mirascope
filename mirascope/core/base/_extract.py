@@ -70,7 +70,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...
 
@@ -81,7 +81,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
@@ -92,7 +92,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
