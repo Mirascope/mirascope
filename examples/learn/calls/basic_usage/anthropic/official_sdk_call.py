@@ -13,4 +13,5 @@ def recommend_book(genre: str) -> str:
     return block.text if block.type == "text" else ""
 
 
-print(recommend_book("fantasy"))
+output = recommend_book("fantasy")
+print(output)

@@ -1,4 +1,4 @@
-from mirascope.core import litellm, Messages
+from mirascope.core import Messages, litellm
 
 
 def get_book_author(title: str) -> str:

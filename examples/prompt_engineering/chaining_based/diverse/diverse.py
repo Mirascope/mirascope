@@ -1,8 +1,7 @@
 import asyncio
 
-from pydantic import BaseModel, Field
-
 from mirascope.core import openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 class PromptVariations(BaseModel):
