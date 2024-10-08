@@ -1,6 +1,6 @@
 from typing import Annotated, Self
 from pydantic import BaseModel, model_validator
-from mirascope.core import anthropic, FromCallArgs, litellm
+from mirascope.core import FromCallArgs, litellm
 
 
 class Book(BaseModel):

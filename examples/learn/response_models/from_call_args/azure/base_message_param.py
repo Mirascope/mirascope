@@ -1,6 +1,6 @@
 from typing import Annotated, Self
 from pydantic import BaseModel, model_validator
-from mirascope.core import BaseMessageParam, anthropic, FromCallArgs, azure
+from mirascope.core import BaseMessageParam, FromCallArgs, azure
 
 
 class Book(BaseModel):

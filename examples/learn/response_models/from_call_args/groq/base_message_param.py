@@ -1,6 +1,6 @@
 from typing import Annotated, Self
 from pydantic import BaseModel, model_validator
-from mirascope.core import BaseMessageParam, anthropic, FromCallArgs, groq
+from mirascope.core import BaseMessageParam, FromCallArgs, groq
 
 
 class Book(BaseModel):

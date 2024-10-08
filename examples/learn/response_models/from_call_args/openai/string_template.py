@@ -1,6 +1,6 @@
 from typing import Annotated, Self
 from pydantic import BaseModel, model_validator
-from mirascope.core import anthropic, FromCallArgs, prompt_template, openai
+from mirascope.core import FromCallArgs, prompt_template, openai
 
 
 class Book(BaseModel):
