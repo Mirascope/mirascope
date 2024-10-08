@@ -1,6 +1,8 @@
-from typing import Annotated, Self
+from typing import Annotated
+
+from mirascope.core import FromCallArgs, cohere, prompt_template
 from pydantic import BaseModel, model_validator
-from mirascope.core import FromCallArgs, prompt_template, cohere
+from typing_extensions import Self
 
 
 class Book(BaseModel):

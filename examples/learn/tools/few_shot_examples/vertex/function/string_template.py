@@ -1,4 +1,4 @@
-from mirascope.core import vertex, prompt_template
+from mirascope.core import prompt_template, vertex
 
 
 def get_book_author(title: str) -> str:

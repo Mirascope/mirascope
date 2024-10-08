@@ -16,18 +16,6 @@ def get_fields_from_call_args(
     args: tuple[object, ...],
     kwargs: dict[str, Any],
 ) -> dict[str, Any]:
-    """Get the fields marked with `FromCallArgs` from the function arguments.
-
-    Args:
-        response_model: The response model.
-        fn: The function.
-        args: The function arguments.
-        kwargs: The function keyword arguments.
-
-    Returns:
-        A dictionary of the fields marked with `FromCallArgs` and their values.
-
-    """
     if not (inspect.isclass(response_model) and issubclass(response_model, BaseModel)):
         return {}
     call_args_fields = {

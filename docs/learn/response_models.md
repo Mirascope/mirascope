@@ -252,7 +252,7 @@ You can also use the `stream` property to access the `BaseStream` instance and [
 
 ## FromCallArgs
 
-Fields annotated with `FromCallArgs` will be populated with the corresponding argument from the function call rather than expecting it from the LLM's response. This enable seamless validation of LLM outputs against function inputs:
+Fields annotated with `FromCallArgs` will be populated with the corresponding argument from the function call rather than expecting it from the LLM's response. This enables seamless validation of LLM outputs against function inputs:
 
 !!! mira "Mirascope"
 
@@ -263,9 +263,9 @@ Fields annotated with `FromCallArgs` will be populated with the corresponding ar
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="12 24"
+            ```python hl_lines="14 26"
             {% else %}
-            ```python hl_lines="12 23"
+            ```python hl_lines="14 25"
             {% endif %}
             --8<-- "examples/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
             ```
