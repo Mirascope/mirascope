@@ -1,9 +1,9 @@
 """The `create_factory` method for generating provider specific create decorators."""
 
 import datetime
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Coroutine
 from functools import wraps
-from typing import ParamSpec, TypeVar, cast, overload
+from typing import Any, ParamSpec, TypeVar, cast, overload
 
 from ._utils import (
     SetupCall,
@@ -72,12 +72,15 @@ def create_factory(  # noqa: ANN202
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -86,12 +89,12 @@ def create_factory(  # noqa: ANN202
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[Messages.Type]],
+        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -101,13 +104,16 @@ def create_factory(  # noqa: ANN202
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
         | Callable[_P, Messages.Type]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
-        | Callable[_P, Awaitable[Messages.Type]],
+        | Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ]
+        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _AsyncBaseClientT | _BaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -176,7 +182,7 @@ def create_factory(  # noqa: ANN202
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(
                     model=model,
-                    client=client,
+                    client=cast(_BaseClientT | None, client),
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

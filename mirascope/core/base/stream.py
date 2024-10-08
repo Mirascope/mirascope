@@ -2,7 +2,7 @@
 
 import datetime
 from abc import ABC, abstractmethod
-from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import (
     Any,
@@ -277,7 +277,10 @@ def stream_factory(  # noqa: ANN201
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
@@ -286,7 +289,7 @@ def stream_factory(  # noqa: ANN201
     ) -> Callable[_P, Awaitable[TStream]]: ...
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[Messages.Type]],
+        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
@@ -297,8 +300,11 @@ def stream_factory(  # noqa: ANN201
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
         | Callable[_P, Messages.Type]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
-        | Callable[_P, Awaitable[Messages.Type]],
+        | Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ]
+        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
