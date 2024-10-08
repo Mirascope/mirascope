@@ -1,4 +1,4 @@
-from mirascope.core import mistral, Messages
+from mirascope.core import Messages, mistral
 
 
 def get_book_author(title: str) -> str:

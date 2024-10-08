@@ -10,4 +10,5 @@ def recommend_book(genre: str) -> BaseDynamicConfig:
     }
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)
