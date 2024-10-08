@@ -11,7 +11,7 @@ from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
 from mirascope.core.bedrock.tool import BedrockTool
 
 
-class TestRecommendBook(BedrockTool):
+class MockRecommendBook(BedrockTool):
     def call(self, *args: Any, **kwargs: Any) -> Any: ...
 
     genre: str
@@ -23,7 +23,7 @@ class TestRecommendBook(BedrockTool):
         return "RecommendBook"
 
 
-class TestAnotherTool(BedrockTool):
+class MockAnotherTool(BedrockTool):
     def call(self, *args: Any, **kwargs: Any) -> Any: ...
 
     @classmethod
@@ -276,11 +276,11 @@ def test_handle_stream_with_text_and_tool(mock_response_text_with_tool):
     def mock_stream() -> Generator[dict, None, None]:
         yield from mock_response_text_with_tool
 
-    tool_types = [TestRecommendBook]
+    tool_types = [MockRecommendBook]
     results = list(handle_stream(mock_stream(), tool_types))  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
-    assert isinstance(results[-2][1], TestRecommendBook)
+    assert isinstance(results[-2][1], MockRecommendBook)
     assert results[-2][1].genre == "fantasy"
     assert results[-2][1].title == "The Name of the Wind"
     assert results[-2][1].author == "Patrick Rothfuss"
@@ -292,11 +292,11 @@ async def test_handle_stream_async_with_text_and_tool(mock_response_text_with_to
         for chunk in mock_response_text_with_tool:
             yield chunk
 
-    tool_types = [TestRecommendBook]
+    tool_types = [MockRecommendBook]
     results = tuple([c async for c in handle_stream_async(mock_stream(), tool_types)])  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
-    assert isinstance(results[-2][1], TestRecommendBook)
+    assert isinstance(results[-2][1], MockRecommendBook)
     assert results[-2][1].genre == "fantasy"
     assert results[-2][1].title == "The Name of the Wind"
     assert results[-2][1].author == "Patrick Rothfuss"
@@ -306,11 +306,11 @@ def test_handle_stream_with_only_tool(mock_response_only_tool):
     def mock_stream() -> Generator[dict, None, None]:
         yield from mock_response_only_tool
 
-    tool_types = [TestRecommendBook]
+    tool_types = [MockRecommendBook]
     results = list(handle_stream(mock_stream(), tool_types))  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
-    assert isinstance(results[2][1], TestRecommendBook)
+    assert isinstance(results[2][1], MockRecommendBook)
     assert results[2][1].genre == "fantasy"
     assert results[2][1].title == "The Way of Kings"
     assert results[2][1].author == "Brandon Sanderson"
@@ -330,7 +330,7 @@ def test_handle_stream_with_mismatched_tool_name(mock_response_text_with_tool):
     def mock_stream() -> Generator[dict, None, None]:
         yield from mock_response_text_with_tool
 
-    tool_types = [TestAnotherTool]
+    tool_types = [MockAnotherTool]
     results = list(handle_stream(mock_stream(), tool_types))  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
@@ -341,11 +341,11 @@ def test_handle_stream_with_multiple_tool_types(mock_response_text_with_tool):
     def mock_stream() -> Generator[dict, None, None]:
         yield from mock_response_text_with_tool
 
-    tool_types = [TestAnotherTool, TestRecommendBook]
+    tool_types = [MockAnotherTool, MockRecommendBook]
     results = list(handle_stream(mock_stream(), tool_types))  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
-    assert isinstance(results[-2][1], TestRecommendBook)
+    assert isinstance(results[-2][1], MockRecommendBook)
     assert results[-2][1].genre == "fantasy"
     assert results[-2][1].title == "The Name of the Wind"
     assert results[-2][1].author == "Patrick Rothfuss"
@@ -359,7 +359,7 @@ async def test_handle_stream_async_with_mismatched_tool_name(
         for chunk in mock_response_text_with_tool:
             yield chunk
 
-    tool_types = [TestAnotherTool]
+    tool_types = [MockAnotherTool]
     results = [c async for c in handle_stream_async(mock_stream(), tool_types)]  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
@@ -374,11 +374,11 @@ async def test_handle_stream_async_with_multiple_tool_types(
         for chunk in mock_response_text_with_tool:
             yield chunk
 
-    tool_types = [TestAnotherTool, TestRecommendBook]
+    tool_types = [MockAnotherTool, MockRecommendBook]
     results = [c async for c in handle_stream_async(mock_stream(), tool_types)]  # pyright: ignore [reportArgumentType]
 
     assert all(isinstance(chunk, BedrockCallResponseChunk) for chunk, tool in results)
-    assert isinstance(results[-2][1], TestRecommendBook)
+    assert isinstance(results[-2][1], MockRecommendBook)
     assert results[-2][1].genre == "fantasy"
     assert results[-2][1].title == "The Name of the Wind"
     assert results[-2][1].author == "Patrick Rothfuss"

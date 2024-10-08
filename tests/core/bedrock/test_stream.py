@@ -17,7 +17,7 @@ from mirascope.core.bedrock.stream import BedrockStream
 from mirascope.core.bedrock.tool import BedrockTool
 
 
-class TestTool(BedrockTool):
+class MockTool(BedrockTool):
     name: str
 
     def call(self) -> str:
@@ -144,7 +144,7 @@ def test_bedrock_stream_construct_call_response():
     stream = BedrockStream(
         stream=iter([]),
         metadata={},
-        tool_types=[TestTool],
+        tool_types=[MockTool],
         call_response_type=BedrockCallResponse,
         model="anthropic.claude-v2",
         prompt_template="Test prompt",
@@ -172,7 +172,7 @@ def test_bedrock_stream_construct_call_response():
     assert isinstance(response, BedrockCallResponse)
     assert response.content == "Test content"
     assert response.finish_reasons == ["end_turn"]
-    assert response.tool_types == [TestTool]
+    assert response.tool_types == [MockTool]
     assert response.prompt_template == "Test prompt"
     assert response.fn_args == {"arg": "value"}
 

@@ -21,8 +21,6 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 
 BedrockMessageParam: TypeAlias = SyncMessageUnionTypeDef | AsyncMessageUnionTypeDef
 
-UserRole = Literal["user"]
-AssistantRole = Literal["assistant"]
 Roles = Literal["user", "assistant"]
 
 
