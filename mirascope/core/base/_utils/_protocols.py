@@ -1,7 +1,7 @@
 """Protocols for reusable type hints."""
 
 import inspect
-from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from typing import (
     Any,
     Literal,
@@ -34,7 +34,33 @@ _P = ParamSpec("_P")
 _R = TypeVar("_R", contravariant=True)
 
 
-class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncResponseT]):
+class AsyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _AsyncResponseT]):
+    @overload
+    def __call__(
+        self,
+        fn: Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ],
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
+
+    def __call__(
+        self,
+        fn: Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ]
+        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+
+
+class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
     @overload
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT]
@@ -43,23 +69,9 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncRespo
     @overload
     def __call__(self, fn: Callable[_P, Messages.Type]) -> Callable[_P, _ResponseT]: ...
 
-    @overload
     def __call__(
-        self, fn: Callable[_P, Awaitable[_BaseDynamicConfigT]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    @overload
-    def __call__(
-        self, fn: Callable[_P, Awaitable[Messages.Type]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    def __call__(
-        self,
-        fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
-        | Callable[_P, Messages.Type]
-        | Callable[_P, Awaitable[Messages.Type]],
-    ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+        self, fn: Callable[_P, _BaseDynamicConfigT] | Callable[_P, Messages.Type]
+    ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
 
 
 class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):

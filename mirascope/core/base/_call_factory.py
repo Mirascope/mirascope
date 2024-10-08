@@ -23,6 +23,7 @@ from ._utils import (
     LLMFunctionDecorator,
     SetupCall,
 )
+from ._utils._protocols import AsyncLLMFunctionDecorator
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
@@ -107,9 +108,38 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[TDynamicConfig, TCallResponse, TCallResponse]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, TCallResponse]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, TCallResponse]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[TDynamicConfig, TCallResponse]
+        | LLMFunctionDecorator[TDynamicConfig, TCallResponse]
+    ): ...
 
     @overload
     def base_call(
@@ -120,9 +150,38 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[TCallResponse], _ParsedOutputT],
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]
+        | LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]
+    ): ...
 
     @overload
     def base_call(
@@ -133,7 +192,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _BaseClientT | _AsyncBaseClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -146,9 +205,38 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, TStream]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[True] = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, TStream]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[True] = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        LLMFunctionDecorator[TDynamicConfig, TStream]
+        | AsyncLLMFunctionDecorator[TDynamicConfig, TStream]
+    ): ...
 
     @overload
     def base_call(
@@ -159,7 +247,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _BaseClientT | _AsyncBaseClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -172,7 +260,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _BaseClientT | _AsyncBaseClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -185,9 +273,38 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ResponseModelT, _ResponseModelT]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, _ResponseModelT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ResponseModelT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[TDynamicConfig, _ResponseModelT]
+        | LLMFunctionDecorator[TDynamicConfig, _ResponseModelT]
+    ): ...
 
     @overload
     def base_call(
@@ -198,9 +315,38 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]
+        | LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]
+    ): ...
 
     @overload
     def base_call(
@@ -211,11 +357,38 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
-    ]: ...
+    ) -> AsyncLLMFunctionDecorator[TDynamicConfig, AsyncIterable[_ResponseModelT]]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[True],
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _BaseClientT = ...,
+        call_params: TCallParams | None = None,
+    ) -> LLMFunctionDecorator[TDynamicConfig, Iterable[_ResponseModelT]]: ...
+
+    @overload
+    def base_call(
+        model: str,
+        *,
+        stream: Literal[True],
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: None = None,
+        call_params: TCallParams | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[TDynamicConfig, AsyncIterable[_ResponseModelT]]
+        | LLMFunctionDecorator[TDynamicConfig, Iterable[_ResponseModelT]]
+    ): ...
 
     @overload
     def base_call(
@@ -229,7 +402,7 @@ def call_factory(  # noqa: ANN202
         | Callable[[_ResponseModelT], _ParsedOutputT]
         | None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT | _BaseClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -244,21 +417,26 @@ def call_factory(  # noqa: ANN202
         | Callable[[_ResponseModelT], _ParsedOutputT]
         | None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _AsyncBaseClientT | _BaseClientT | None = None,
         call_params: TCallParams | None = None,
-    ) -> LLMFunctionDecorator[
-        TDynamicConfig,
-        TCallResponse
-        | _ParsedOutputT
-        | TStream
-        | _ResponseModelT
-        | Iterable[_ResponseModelT],
-        TCallResponse
-        | _ParsedOutputT
-        | TStream
-        | _ResponseModelT
-        | AsyncIterable[_ResponseModelT],
-    ]:
+    ) -> (
+        AsyncLLMFunctionDecorator[
+            TDynamicConfig,
+            TCallResponse
+            | _ParsedOutputT
+            | TStream
+            | _ResponseModelT
+            | AsyncIterable[_ResponseModelT],
+        ]
+        | LLMFunctionDecorator[
+            TDynamicConfig,
+            TCallResponse
+            | _ParsedOutputT
+            | TStream
+            | _ResponseModelT
+            | Iterable[_ResponseModelT],
+        ]
+    ):
         if stream and output_parser:
             raise ValueError("Cannot use `output_parser` with `stream=True`.")
 
@@ -312,7 +490,7 @@ def call_factory(  # noqa: ANN202
                 json_mode=json_mode,
                 client=client,
                 call_params=call_params,
-            )  # pyright: ignore [reportReturnType]
+            )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
             create_factory(TCallResponse=TCallResponse, setup_call=setup_call),
             model=model,
