@@ -21,8 +21,9 @@ from ..tool import BaseTool
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
-_BaseClientT = TypeVar("_BaseClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
+_BaseClientT = TypeVar("_BaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
@@ -60,7 +61,7 @@ class AsyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _AsyncResponseT]):
     ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
 
 
-class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
+class SyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
     @overload
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT]
@@ -72,6 +73,34 @@ class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT] | Callable[_P, Messages.Type]
     ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
+
+
+class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT, _AsyncResponseT]):
+    @overload
+    def __call__(
+        self, fn: Callable[_P, _BaseDynamicConfigT]
+    ) -> Callable[_P, _ResponseT]: ...
+
+    @overload
+    def __call__(self, fn: Callable[_P, Messages.Type]) -> Callable[_P, _ResponseT]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Awaitable[_BaseDynamicConfigT]]
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Awaitable[Messages.Type]]
+    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
+
+    def __call__(
+        self,
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[Messages.Type]],
+    ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
 
 
 class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
@@ -121,14 +150,14 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
 
 
 def fn_is_async(
-    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R]],
-) -> TypeIs[Callable[_P, Awaitable[_R]]]:
+    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R] | Coroutine[Any, Any, _R]],
+) -> TypeIs[Callable[_P, Awaitable[_R] | Coroutine[Any, Any, _R]]]:
     return inspect.iscoroutinefunction(fn)
 
 
 class SetupCall(
     Protocol[
-        _BaseClientT,
+        _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
@@ -143,6 +172,80 @@ class SetupCall(
         *,
         model: str,
         client: _AsyncBaseClientT | None,
+        fn: Callable[..., Awaitable[_BaseDynamicConfigT]],
+        fn_args: dict[str, Any],
+        dynamic_config: _BaseDynamicConfigT,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        call_params: _BaseCallParamsT,
+        extract: bool,
+    ) -> tuple[
+        AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        str | None,
+        list[Any],
+        list[type[_BaseToolT]] | None,
+        BaseCallKwargs,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        *,
+        model: str,
+        client: _SyncBaseClientT | None,
+        fn: Callable[..., _BaseDynamicConfigT],
+        fn_args: dict[str, Any],
+        dynamic_config: _BaseDynamicConfigT,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        call_params: _BaseCallParamsT,
+        extract: bool,
+    ) -> tuple[
+        CreateFn[_ResponseT, _ResponseChunkT],
+        str | None,
+        list[Any],
+        list[type[_BaseToolT]] | None,
+        BaseCallKwargs,
+    ]: ...
+
+    def __call__(
+        self,
+        *,
+        model: str,
+        client: _SyncBaseClientT | _AsyncBaseClientT | None,
+        fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
+        fn_args: dict[str, Any],
+        dynamic_config: _BaseDynamicConfigT,
+        tools: list[type[BaseTool] | Callable] | None,
+        json_mode: bool,
+        call_params: _BaseCallParamsT,
+        extract: bool,
+    ) -> tuple[
+        CreateFn[_ResponseT, _ResponseChunkT]
+        | AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        str | None,
+        list[Any],
+        list[type[_BaseToolT]] | None,
+        BaseCallKwargs,
+    ]: ...  # pragma: no cover
+
+
+class BaseClientSetupCall(
+    Protocol[
+        _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
+    ]
+):
+    @overload
+    def __call__(
+        self,
+        *,
+        model: str,
+        client: _BaseClientT | None,
         fn: Callable[..., Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
@@ -183,7 +286,7 @@ class SetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _BaseClientT | None,
         fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,

@@ -6,6 +6,7 @@ from functools import wraps
 from typing import Any, ParamSpec, TypeVar, cast, overload
 
 from ._utils import (
+    BaseClientSetupCall,
     SetupCall,
     fn_is_async,
     get_dynamic_configuration,
@@ -22,8 +23,9 @@ from .prompt import prompt_template
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
+_BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -36,8 +38,16 @@ _P = ParamSpec("_P")
 def create_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
-    setup_call: SetupCall[
+    setup_call: BaseClientSetupCall[
         _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
+    ]
+    | SetupCall[
+        _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
@@ -55,7 +65,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -66,7 +76,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -113,7 +123,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | _BaseClientT | None,
+        client: _AsyncBaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -140,9 +150,9 @@ def create_factory(  # noqa: ANN202
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=cast(_AsyncBaseClientT | None, client),
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -180,9 +190,9 @@ def create_factory(  # noqa: ANN202
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=cast(_BaseClientT | None, client),
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

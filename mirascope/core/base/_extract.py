@@ -8,6 +8,7 @@ from pydantic import BaseModel, ValidationError
 
 from ._create import create_factory
 from ._utils import (
+    BaseClientSetupCall,
     BaseType,
     GetJsonOutput,
     SetupCall,
@@ -21,6 +22,7 @@ from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
 _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
@@ -37,8 +39,16 @@ def extract_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
     TToolType: type[BaseTool],
-    setup_call: SetupCall[
+    setup_call: BaseClientSetupCall[
         _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
+    ]
+    | SetupCall[
+        _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
@@ -60,7 +70,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...
 
@@ -71,7 +81,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
@@ -82,7 +92,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,

@@ -25,6 +25,7 @@ from ._parse_content_template import parse_content_template
 from ._parse_prompt_messages import parse_prompt_messages
 from ._protocols import (
     AsyncCreateFn,
+    BaseClientSetupCall,
     CalculateCost,
     CreateFn,
     GetJsonOutput,
@@ -39,6 +40,7 @@ from ._setup_extract_tool import setup_extract_tool
 
 __all__ = [
     "AsyncCreateFn",
+    "BaseClientSetupCall",
     "BaseType",
     "CalculateCost",
     "convert_base_model_to_base_tool",

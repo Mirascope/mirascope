@@ -15,6 +15,7 @@ from typing import (
 )
 
 from ._utils import (
+    BaseClientSetupCall,
     HandleStream,
     HandleStreamAsync,
     SetupCall,
@@ -231,8 +232,9 @@ class BaseStream(
         ...
 
 
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
+_BaseClientT = TypeVar("_BaseClientT", bound=object)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -242,8 +244,16 @@ def stream_factory(  # noqa: ANN201
     *,
     TCallResponse: type[_BaseCallResponseT],
     TStream: type[BaseStream],
-    setup_call: SetupCall[
+    setup_call: BaseClientSetupCall[
         _BaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _BaseToolT,
+    ]
+    | SetupCall[
+        _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
@@ -262,7 +272,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
     @overload
@@ -271,7 +281,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
 
@@ -284,16 +294,17 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
+
     @overload
     def decorator(
         fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _AsyncBaseClientT | None,
+        client: _BaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
@@ -308,7 +319,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _BaseClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if not is_prompt_template(fn):
@@ -328,9 +339,9 @@ def stream_factory(  # noqa: ANN201
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=cast(_AsyncBaseClientT | None, client),
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -371,9 +382,9 @@ def stream_factory(  # noqa: ANN201
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=cast(_BaseClientT | None, client),
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
