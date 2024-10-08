@@ -120,7 +120,7 @@ Here are a few examples:
 
 [Response Models](response_models/index.md) are a great way to add more structure to your chains, and [parallel async calls](./async.md#parallel-async-calls) can be particularly powerful for making your chains more efficient.
 
-For inspiration on even more ways you can chain calls together, check out our tutorial section on [chaining-based prompt engineering](../tutorials/prompt_engineering/chaining_based/index.md), which covers many advanced chaining techniques used to apply prompt engineering concepts.
+For inspiration on even more ways you can chain calls together, check out our tutorial section on [chaining-based prompt engineering](../tutorials/prompt_engineering/chaining_based/self_refine.ipynb), which covers many advanced chaining techniques used to apply prompt engineering concepts.
 
 ## Next Steps
 

@@ -62,8 +62,13 @@ This will ensure that your code is automatically checked and formatted before ea
     - Make sure you are in sync with the main repo:
 
     ```shell
-    git checkout dev
-    git pull upstream dev
+    # for anything that only requires a fix version bump (e.g. bug fixes)
+    git checkout main
+    git pull upstream main
+
+    # for anything that is "new" and requires at least a minor version bump
+    git checkout release/vX.Y  # replace X with the current major version and Y with the next minor version
+    git pull upstream release/vX.Y
     ```
 
     - Create a `git` feature branch with a meaningful name where you will add your contributions.
@@ -146,7 +151,7 @@ We use `pytest` as our testing framework. If you haven't worked with it before, 
 
 Furthermore, we have a full coverage requirement, so all incoming code must have 100% coverage. This policy ensures that every line of code is run in our tests. However, while achieving full coverage is essential, it is not sufficient on its own. Coverage metrics ensure code execution but do not guarantee correctness under all conditions. Make sure to stress test beyond coverage to reduce bugs.
 
-We use a [Codecov dashboard](https://app.codecov.io/github/Mirascope/mirascope/tree/dev) to monitor and track our coverage.
+We use a [Codecov dashboard](https://app.codecov.io/github/Mirascope/mirascope/tree/main) to monitor and track our coverage.
 
 ## Formatting and Linting
 
