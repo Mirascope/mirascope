@@ -20,8 +20,7 @@ from mirascope.core.bedrock.tool import BedrockTool
 class MockTool(BedrockTool):
     name: str
 
-    def call(self) -> str:
-        return f"Called {self.name}"
+    def call(self) -> str: ...
 
 
 def test_bedrock_stream_init():

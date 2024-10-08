@@ -230,8 +230,7 @@ def test_setup_call_client_creation(
     mock_get_sync_client.assert_called_once()
 
     # Test async client creation
-    async def async_fn():
-        pass
+    async def async_fn(): ...
 
     setup_call(
         model="anthropic.claude-v2",
