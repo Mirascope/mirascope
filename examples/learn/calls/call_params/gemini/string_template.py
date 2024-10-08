@@ -10,4 +10,5 @@ from mirascope.core import gemini, prompt_template
 def recommend_book(genre: str): ...
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

@@ -1,8 +1,7 @@
 import json
 
-from pydantic import BaseModel, Field
-
 from mirascope.core import BaseMessageParam, openai, prompt_template
+from pydantic import BaseModel, Field
 
 
 class Problem(BaseModel):

@@ -16,8 +16,6 @@
 
 ---
 
-LLM abstractions that aren't obstructions.
-
 Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai).
 
 Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
@@ -31,7 +29,7 @@ pip install "mirascope[openai]"
 export OPENAI_API_KEY=XXXXX
 ```
 
-Make your first call:
+Make your first call to an LLM to extract the title and author of a book from unstructured text:
 
 ```python
 from mirascope.core import openai

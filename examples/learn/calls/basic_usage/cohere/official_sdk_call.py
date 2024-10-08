@@ -11,4 +11,5 @@ def recommend_book(genre: str) -> str:
     return response.text
 
 
-print(recommend_book("fantasy"))
+output = recommend_book("fantasy")
+print(output)

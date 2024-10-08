@@ -23,6 +23,7 @@ def identify_author(book: str) -> str:
 response = identify_author("The Name of the Wind")
 if tool := response.tool:
     print(tool.call())
+    # Output: Patrick Rothfuss
     print(f"Original tool call: {tool.tool_call}")
 else:
     print(response.content)
