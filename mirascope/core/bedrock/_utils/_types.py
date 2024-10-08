@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Literal, TypeAlias, TypedDict
+from typing import Literal, TypeAlias
 
 from mypy_boto3_bedrock_runtime.type_defs import (
     ContentBlockUnionTypeDef,
@@ -18,6 +18,7 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 from types_aiobotocore_bedrock_runtime.type_defs import (
     ResponseMetadataTypeDef as AsyncResponseMetadataTypeDef,
 )
+from typing_extensions import TypedDict
 
 BedrockMessageParam: TypeAlias = SyncMessageUnionTypeDef | AsyncMessageUnionTypeDef
 

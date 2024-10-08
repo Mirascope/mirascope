@@ -2,11 +2,11 @@
 
 import json
 from collections.abc import AsyncGenerator, Generator
-from typing import TypedDict
 
 from mypy_boto3_bedrock_runtime.type_defs import (
     ToolUseBlockTypeDef,
 )
+from typing_extensions import TypedDict
 
 from ..call_response_chunk import BedrockCallResponseChunk
 from ..tool import BedrockTool
