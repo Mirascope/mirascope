@@ -26,7 +26,7 @@ from ._convert_message_params import convert_message_params
 def setup_call(
     *,
     model: str,
-    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
+    client: AsyncOpenAI | AsyncAzureOpenAI | None,
     fn: Callable[..., Awaitable[OpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
@@ -47,7 +47,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI | None,
+    client: OpenAI | AzureOpenAI | None,
     fn: Callable[..., OpenAIDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,

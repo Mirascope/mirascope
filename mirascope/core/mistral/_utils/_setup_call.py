@@ -31,7 +31,7 @@ from ._convert_message_params import convert_message_params
 def setup_call(
     *,
     model: str,
-    client: MistralClient | MistralAsyncClient | None,
+    client: MistralAsyncClient | None,
     fn: Callable[..., Awaitable[MistralDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: MistralDynamicConfig,
@@ -52,7 +52,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: MistralClient | MistralAsyncClient | None,
+    client: MistralClient | None,
     fn: Callable[..., MistralDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: MistralDynamicConfig,
