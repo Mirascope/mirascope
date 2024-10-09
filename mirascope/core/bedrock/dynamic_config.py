@@ -1,11 +1,11 @@
 """This module defines the function return type for functions as LLM calls."""
 
 from ..base import BaseDynamicConfig, BaseMessageParam
-from ._types import BedrockMessageParam
+from ._types import InternalBedrockMessageParam
 from .call_params import BedrockCallParams
 
 BedrockDynamicConfig = BaseDynamicConfig[
-    BedrockMessageParam | BaseMessageParam, BedrockCallParams
+    InternalBedrockMessageParam | BaseMessageParam, BedrockCallParams
 ]
 """The function return type for functions wrapped with the `bedrock_call` decorator.
 

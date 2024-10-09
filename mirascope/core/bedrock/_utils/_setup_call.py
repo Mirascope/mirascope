@@ -26,6 +26,7 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseStreamResponseTypeDef as AsyncConverseStreamResponseTypeDef,
 )
 
+from ... import BaseMessageParam
 from ...base import BaseTool, _utils
 from ...base._utils import (
     AsyncCreateFn,
@@ -36,7 +37,6 @@ from ...base._utils import (
 )
 from .._types import (
     AsyncStreamOutputChunk,
-    BedrockMessageParam,
     InternalBedrockMessageParam,
     StreamOutputChunk,
 )
@@ -153,7 +153,7 @@ def setup_call(
         fn, fn_args, dynamic_config, tools, BedrockTool, call_params
     )
     call_kwargs = cast(BedrockCallKwargs, base_call_kwargs)
-    messages = cast(list[BedrockMessageParam], messages)
+    messages = cast(list[InternalBedrockMessageParam | BaseMessageParam], messages)
     messages = convert_message_params(messages)
     if messages[0]["role"] == "system":
         call_kwargs["system"] = [
