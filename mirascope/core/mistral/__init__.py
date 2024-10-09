@@ -12,6 +12,7 @@ from mistralai.models import (
 from ..base import BaseMessageParam
 from ._call import mistral_call
 from ._call import mistral_call as call
+from ._utils._load_api_key import load_api_key
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
@@ -25,6 +26,7 @@ MistralMessageParam: TypeAlias = (
 
 __all__ = [
     "call",
+    "load_api_key",
     "MistralDynamicConfig",
     "MistralCallParams",
     "MistralCallResponse",
