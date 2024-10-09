@@ -11,4 +11,5 @@ def recommend_book(genre: str) -> vertex.VertexDynamicConfig:
     }
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

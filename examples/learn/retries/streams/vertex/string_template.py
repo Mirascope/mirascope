@@ -1,4 +1,4 @@
-from mirascope.core import vertex, prompt_template
+from mirascope.core import prompt_template, vertex
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 

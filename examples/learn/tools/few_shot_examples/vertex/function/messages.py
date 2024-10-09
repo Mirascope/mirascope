@@ -1,4 +1,4 @@
-from mirascope.core import vertex, Messages
+from mirascope.core import Messages, vertex
 
 
 def get_book_author(title: str) -> str:

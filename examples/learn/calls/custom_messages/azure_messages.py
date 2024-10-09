@@ -7,4 +7,5 @@ def recommend_book(genre: str) -> azure.AzureDynamicConfig:
     return {"messages": [UserMessage(content=f"Recommend a {genre} book")]}
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

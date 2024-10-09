@@ -10,4 +10,5 @@ from vertexai.generative_models import GenerationConfig
 def recommend_book(genre: str): ...
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

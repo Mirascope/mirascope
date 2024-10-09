@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
+from pydantic import BaseModel
 from typing_extensions import TypeIs
 
 from .._utils._get_image_type import get_image_type
@@ -66,8 +67,9 @@ def convert_message_content_to_message_param_content(
 def _is_base_message_params(
     value: object,
 ) -> TypeIs[list[BaseMessageParam]]:
+    # Note: we also need to catch the original provider message parameters here
     return isinstance(value, list) and all(
-        isinstance(v, BaseMessageParam) for v in value
+        isinstance(v, BaseMessageParam | dict | BaseModel) for v in value
     )
 
 

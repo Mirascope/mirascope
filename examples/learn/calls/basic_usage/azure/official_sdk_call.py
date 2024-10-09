@@ -18,4 +18,5 @@ def recommend_book(genre: str) -> str:
     return message.content if message.content is not None else ""
 
 
-print(recommend_book("fantasy"))
+output = recommend_book("fantasy")
+print(output)

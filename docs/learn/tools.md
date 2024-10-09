@@ -12,9 +12,24 @@ Tools are user-defined functions that an LLM (Large Language Model) can ask the 
 
 Mirascope enables defining tools in a provider-agnostic way, which can be used across all supported LLM providers without modification.
 
-!!! info "How tools are called"
+??? info "Diagram illustrating how tools are called"
 
-    When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out our [Agents](./agents.md) documentation.
+    When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out the [Tool Message Parameters](#tool-message-parameters) section below as well as the section on [Agents](./agents.md).
+
+    ```mermaid
+    sequenceDiagram
+        participant YC as Your Code
+        participant LLM
+
+        YC->>LLM: Call with prompt and function definitions
+        loop Tool Calls
+            LLM->>LLM: Decide to respond or call functions
+            LLM->>YC: Respond with function to call and arguments
+            YC->>YC: Execute function with given arguments
+            YC->>LLM: Call with prompt and function result
+        end
+        LLM->>YC: Final response
+    ```
 
 ## Basic Usage and Syntax
 
@@ -47,14 +62,14 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
             === "{{ provider }}"
 
                 {% if tool_method == "function" %}
-                ```python hl_lines="4-15 18 24-25"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::25"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:27:"
-                ```
-                {% else %}
-                ```python hl_lines="5-16 19 25-26"
+                ```python hl_lines="4-15 18 24-26"
                 --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::26"
                 --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:28:"
+                ```
+                {% else %}
+                ```python hl_lines="5-16 19 25-27"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::27"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:29:"
                 ```
                 {% endif %}
             {% endfor %}
@@ -120,11 +135,13 @@ All provider-specific `BaseTool` instances have a `tool_call` property for acces
 
                 {% if tool_method == "function" %}
                 ```python hl_lines="26"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::25"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:27:"
                 ```
                 {% else %}
                 ```python hl_lines="27"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::26"
+                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:28:"
                 ```
                 {% endif %}
             {% endfor %}
@@ -227,6 +244,53 @@ Mirascope supports streaming responses with tools, which is useful for long-runn
     Currently only OpenAI, Anthropic, Mistral, and Groq support streaming tools. All other providers will always return `None` for tools.
     
     If you think we're missing any, let us know!
+
+## Tool Message Parameters
+
+!!! mira ""
+
+    <div align="center">
+        Calling tools and inserting their outputs into subsequent LLM API calls in a loop in the most basic form of an agent. While we cover this briefly here, we recommend reading the section on [Agents](./agents.md) for more details and examples.
+    </div>
+
+Generally the next step after the LLM returns a tool call is for you to call the tool on its behalf and supply the output in a subsequent call.
+
+Let's take a look at a basic example of this:
+
+!!! mira ""
+
+    {% for tool_method, tool_method_title in tool_methods %}
+    === "{{ tool_method_title }}"
+
+        {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+        === "{{ method_title }}"
+
+            {% for provider in supported_llm_providers %}
+            === "{{ provider }}"
+
+                {% if tool_method == "function" and method == "string_template" %}
+                ```python hl_lines="16 21 30-32 35"
+                {% elif tool_method == "function" %}
+                ```python hl_lines="15 17 27-29 32"
+                {% elif method == "string_template" %}
+                ```python hl_lines="19 24 33-35 38"
+                {% else %}
+                ```python hl_lines="18 20 30-32 35"
+                {% endif %}
+                --8<-- "examples/learn/tools/tool_message_params/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                ```
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+In this example we:
+
+1. Add `history` to maintain the messages across multiple calls to the LLM.
+2. Loop until the response no longer has tools calls.
+3. While there are tool calls, call the tools, append their corresponding message parameters to the history, and make a subsequent call with an empty query and updated history. We use an empty query because the original user message is already included in the history.
+4. Print the final response content once the LLM is done calling tools.
 
 ## Validation and Error Handling
 

@@ -10,4 +10,5 @@ def recommend_book(genre: str) -> str:
     return generation.candidates[0].content.parts[0].text  # type: ignore
 
 
-print(recommend_book("fantasy"))
+output = recommend_book("fantasy")
+print(output)

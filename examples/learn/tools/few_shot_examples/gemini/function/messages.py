@@ -1,4 +1,4 @@
-from mirascope.core import gemini, Messages
+from mirascope.core import Messages, gemini
 
 
 def get_book_author(title: str) -> str:

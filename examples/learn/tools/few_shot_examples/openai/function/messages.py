@@ -1,4 +1,4 @@
-from mirascope.core import openai, Messages
+from mirascope.core import Messages, openai
 
 
 def get_book_author(title: str) -> str:

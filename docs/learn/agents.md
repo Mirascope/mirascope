@@ -6,13 +6,34 @@ When working with Large Language Models (LLMs), an "agent" refers to an autonomo
 
 In this section we will implement a toy `Librarian` agent to demonstrate key concepts in Mirascope that will help you build agents.
 
-## State Management
-
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [Calls](./calls.md)
+        If you haven't already, we recommend first reading the section on [Tools](./tools.md)
     </div>
+
+??? info "Diagram illustrating the agent flow"
+
+    ```mermaid
+    sequenceDiagram
+        participant YC as Your Code
+        participant LLM
+
+        loop Agent Loop
+            YC->>LLM: Call with prompt + history + function definitions
+            loop Tool Calling Cycle
+                LLM->>LLM: Decide to respond or call functions
+                LLM->>YC: Respond with function to call and arguments
+                YC->>YC: Execute function with given arguments
+                YC->>YC: Add tool call message parameters to history
+                YC->>LLM: Call with prompt + history including function result
+            end
+            LLM->>YC: Finish calling tools and return final response
+            YC->>YC: Update history with final response
+        end
+    ```
+
+## State Management
 
 Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. The goal of providing state to the agent is to give it memory. For example, we can think of local variables as "working memory" and a database as "long-term memory".
 
@@ -62,12 +83,6 @@ A chatbot with memory, while more advanced, is still not an agent.
     {% endfor %}
 
 ## Integrating Tools
-
-!!! mira ""
-
-    <div align="center">
-        If you haven't already, we recommend first reading the section on [Tools](./tools.md)
-    </div>
 
 The next concept to cover is introducing tools to our chatbot, turning it into an agent capable of acting on our behalf. The most basic agent flow is to call tools on behalf of the agent, providing them back through the chat history until the agent is ready to response to the initial query.
 
@@ -129,12 +144,6 @@ One common and easy way to help guide LLM agents is to give the agent the abilit
     {% endfor %}
 
 ## Streaming
-
-!!! mira ""
-
-    <div align="center">
-        If you haven't already, we recommend first reading the section on [Streaming Tools](./tools.md#streaming-tools)
-    </div>
 
 The previous examples print each tool call so you can see what the agent is doing before the final response; however, you still need to wait for the agent to generate its entire final response before you see the output.
 

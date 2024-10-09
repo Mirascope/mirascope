@@ -58,7 +58,7 @@ Install Mirascope, specifying the provider(s) you intend to use, and set your AP
     {% endfor %}
 {% endfor %}
 
-Make your first call:
+Make your first call to an LLM to recommend a book for a given genre:
 
 !!! mira "Mirascope"
 

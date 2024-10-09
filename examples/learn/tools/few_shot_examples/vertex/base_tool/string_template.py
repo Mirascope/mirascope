@@ -1,4 +1,4 @@
-from mirascope.core import BaseTool, vertex, prompt_template
+from mirascope.core import BaseTool, prompt_template, vertex
 from pydantic import ConfigDict, Field
 
 

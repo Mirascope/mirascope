@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from mirascope.core import vertex, prompt_template
+from mirascope.core import prompt_template, vertex
 from pydantic import AfterValidator, ValidationError
 
 

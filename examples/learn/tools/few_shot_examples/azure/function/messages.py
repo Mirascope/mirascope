@@ -1,4 +1,4 @@
-from mirascope.core import azure, Messages
+from mirascope.core import Messages, azure
 
 
 def get_book_author(title: str) -> str:

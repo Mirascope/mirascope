@@ -9,4 +9,5 @@ def recommend_book(genre: str) -> str:
     return str(response.choices[0].message.content)  # type: ignore
 
 
-print(recommend_book("fantasy"))
+output = recommend_book("fantasy")
+print(output)

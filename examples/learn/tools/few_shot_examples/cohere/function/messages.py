@@ -1,4 +1,4 @@
-from mirascope.core import cohere, Messages
+from mirascope.core import Messages, cohere
 
 
 def get_book_author(title: str) -> str:
