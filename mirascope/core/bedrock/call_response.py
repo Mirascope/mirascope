@@ -21,7 +21,11 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 
 from ..base import BaseCallResponse
-from ._types import AssistantMessageTypeDef, UserMessageTypeDef, InternalBedrockMessageParam
+from ._types import (
+    AssistantMessageTypeDef,
+    InternalBedrockMessageParam,
+    UserMessageTypeDef,
+)
 from ._utils import calculate_cost
 from .call_kwargs import BedrockCallKwargs
 from .call_params import BedrockCallParams

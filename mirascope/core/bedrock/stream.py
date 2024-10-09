@@ -23,7 +23,11 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 
 from ..base.stream import BaseStream
-from ._types import AssistantMessageTypeDef, UserMessageTypeDef, InternalBedrockMessageParam
+from ._types import (
+    AssistantMessageTypeDef,
+    InternalBedrockMessageParam,
+    UserMessageTypeDef,
+)
 from ._utils import (
     calculate_cost,
 )
