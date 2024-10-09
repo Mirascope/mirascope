@@ -81,7 +81,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
