@@ -20,7 +20,12 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 from typing_extensions import TypedDict
 
-BedrockMessageParam: TypeAlias = SyncMessageUnionTypeDef | AsyncMessageUnionTypeDef
+from mirascope.core import BaseMessageParam
+
+InternalBedrockMessageParam: TypeAlias = (
+    SyncMessageUnionTypeDef | AsyncMessageUnionTypeDef
+)
+BedrockMessageParam: TypeAlias = InternalBedrockMessageParam | BaseMessageParam
 
 Roles = Literal["user", "assistant"]
 

@@ -8,9 +8,9 @@ from mypy_boto3_bedrock_runtime.type_defs import (
 )
 from typing_extensions import TypedDict
 
+from .._types import AsyncStreamOutputChunk, StreamOutputChunk
 from ..call_response_chunk import BedrockCallResponseChunk
 from ..tool import BedrockTool
-from ._types import AsyncStreamOutputChunk, StreamOutputChunk
 
 
 class ToolUseChunk(TypedDict):

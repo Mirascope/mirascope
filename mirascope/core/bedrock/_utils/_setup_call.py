@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import asyncio
-import inspect
-from collections.abc import Awaitable, Callable
-from typing import Any, cast, overload
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
+from functools import wraps
+from typing import Any, ParamSpec, cast, overload
 
+from aiobotocore.session import AioSession, get_session
+from boto3.session import Session
 from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
 from mypy_boto3_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef,
+    ConverseStreamResponseTypeDef,
     ToolChoiceTypeDef,
     ToolConfigurationTypeDef,
 )
@@ -19,21 +22,69 @@ from types_aiobotocore_bedrock_runtime import (
 from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef as AsyncConverseResponseTypeDef,
 )
+from types_aiobotocore_bedrock_runtime.type_defs import (
+    ConverseStreamResponseTypeDef as AsyncConverseStreamResponseTypeDef,
+)
 
-from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base import BaseTool, _utils
+from ...base._utils import (
+    AsyncCreateFn,
+    CreateFn,
+    fn_is_async,
+    get_async_create_fn,
+    get_create_fn,
+)
+from .._types import (
+    AsyncStreamOutputChunk,
+    BedrockMessageParam,
+    InternalBedrockMessageParam,
+    StreamOutputChunk,
+)
 from ..call_kwargs import BedrockCallKwargs
 from ..call_params import BedrockCallParams
 from ..dynamic_config import BedrockDynamicConfig
 from ..tool import BedrockTool
 from ._convert_message_params import convert_message_params
-from ._extract_stream import _extract_async_stream_fn, _extract_sync_stream_fn
-from ._get_client import _get_async_client, _get_sync_client
-from ._types import (
-    AsyncStreamOutputChunk,
-    BedrockMessageParam,
-    StreamOutputChunk,
-)
+
+_P = ParamSpec("_P")
+
+
+def _extract_sync_stream_fn(
+    fn: Callable[_P, ConverseStreamResponseTypeDef], model: str
+) -> Callable[_P, Generator[StreamOutputChunk, None, None]]:
+    @wraps(fn)
+    def _inner(
+        *args: _P.args, **kwargs: _P.kwargs
+    ) -> Generator[StreamOutputChunk, None, None]:
+        response = fn(*args, **kwargs)
+        for chunk in response["stream"]:
+            yield StreamOutputChunk(
+                responseMetadata=response["ResponseMetadata"], model=model, **chunk
+            )
+
+    return _inner
+
+
+def _extract_async_stream_fn(
+    fn: Callable[_P, Coroutine[Any, Any, AsyncConverseStreamResponseTypeDef]],
+    model: str,
+) -> Callable[_P, AsyncGenerator[AsyncStreamOutputChunk, None]]:
+    @wraps(fn)
+    async def _inner(
+        *args: _P.args, **kwargs: _P.kwargs
+    ) -> AsyncGenerator[AsyncStreamOutputChunk, None]:
+        response = await fn(*args, **kwargs)
+        async for chunk in response["stream"]:
+            yield AsyncStreamOutputChunk(
+                responseMetadata=response["ResponseMetadata"], model=model, **chunk
+            )
+
+    return _inner
+
+
+async def _get_async_client(session: AioSession) -> AsyncBedrockRuntimeClient:
+    async with session.create_client("bedrock-runtime") as client:
+        return client
 
 
 @overload
@@ -51,7 +102,7 @@ def setup_call(
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk],
     str | None,
-    list[BedrockMessageParam],
+    list[InternalBedrockMessageParam],
     list[type[BedrockTool]] | None,
     BedrockCallKwargs,
 ]: ...
@@ -72,7 +123,7 @@ def setup_call(
 ) -> tuple[
     CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
     str | None,
-    list[BedrockMessageParam],
+    list[InternalBedrockMessageParam],
     list[type[BedrockTool]] | None,
     BedrockCallKwargs,
 ]: ...
@@ -94,7 +145,7 @@ def setup_call(
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk]
     | CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
     str | None,
-    list[BedrockMessageParam],
+    list[InternalBedrockMessageParam],
     list[type[BedrockTool]] | None,
     BedrockCallKwargs,
 ]:
@@ -102,7 +153,7 @@ def setup_call(
         fn, fn_args, dynamic_config, tools, BedrockTool, call_params
     )
     call_kwargs = cast(BedrockCallKwargs, base_call_kwargs)
-    messages = cast(list[BaseMessageParam | BedrockMessageParam], messages)
+    messages = cast(list[BedrockMessageParam], messages)
     messages = convert_message_params(messages)
     if messages[0]["role"] == "system":
         call_kwargs["system"] = [
@@ -139,11 +190,13 @@ def setup_call(
     call_kwargs |= cast(BedrockCallKwargs, {"modelId": model, "messages": messages})
 
     if client is None:
-        client = (
-            asyncio.run(_get_async_client())
-            if inspect.iscoroutinefunction(fn)
-            else _get_sync_client()
-        )
+        if fn_is_async(fn):
+            session = get_session()
+            client = asyncio.run(_get_async_client(session))
+        else:
+            session = Session()
+            client = session.client("bedrock-runtime")
+
     create = (
         get_async_create_fn(
             client.converse, _extract_async_stream_fn(client.converse_stream, model)

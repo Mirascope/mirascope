@@ -1,8 +1,16 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from types_aiobotocore_bedrock_runtime import (
+    BedrockRuntimeClient as AsyncBedrockRuntimeClient,
+)
 
-from mirascope.core.bedrock._utils._setup_call import setup_call
+from mirascope.core.bedrock._utils._setup_call import (
+    _extract_async_stream_fn,
+    _extract_sync_stream_fn,
+    _get_async_client,
+    setup_call,
+)
 from mirascope.core.bedrock.tool import BedrockTool
 
 
@@ -11,6 +19,66 @@ def mock_base_setup_call() -> MagicMock:
     mock_setup_call = MagicMock()
     mock_setup_call.return_value = [MagicMock() for _ in range(3)] + [{}]
     return mock_setup_call
+
+
+@pytest.mark.asyncio
+async def test_get_async_client():
+    mock_session = MagicMock()
+
+    mock_client = MagicMock(spec=AsyncBedrockRuntimeClient)
+    mock_session.create_client.return_value.__aenter__.return_value = mock_client
+
+    client = await _get_async_client(mock_session)
+
+    assert isinstance(client, MagicMock)
+    assert client == mock_client
+    mock_session.create_client.assert_called_once_with("bedrock-runtime")
+
+
+def test_extract_sync_stream_fn():
+    mock_fn = MagicMock()
+    mock_fn.return_value = {
+        "ResponseMetadata": {"RequestId": "123"},
+        "stream": [
+            {
+                "contentBlockDelta": {"delta": [{"text": "Hello"}]},
+            },
+            {
+                "contentBlockDelta": {"delta": [{"text": "World"}]},
+            },
+        ],
+    }
+
+    extracted_fn = _extract_sync_stream_fn(mock_fn, "test-model")
+    result = list(extracted_fn())
+
+    assert len(result) == 2
+    assert result[0]["contentBlockDelta"]["delta"][0]["text"] == "Hello"  # pyright: ignore [reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
+    assert result[1]["contentBlockDelta"]["delta"][0]["text"] == "World"  # pyright: ignore [reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
+    assert all(chunk["responseMetadata"] == {"RequestId": "123"} for chunk in result)
+    assert all(chunk["model"] == "test-model" for chunk in result)
+
+
+@pytest.mark.asyncio
+async def test_extract_async_stream_fn():
+    async def async_generator():
+        yield {"chunk1": "async_data1"}
+        yield {"chunk2": "async_data2"}
+
+    mock_fn = AsyncMock()
+    mock_fn.return_value = {
+        "ResponseMetadata": {"RequestId": "456"},
+        "stream": async_generator(),
+    }
+
+    extracted_fn = _extract_async_stream_fn(mock_fn, "test-async-model")
+    result = [chunk async for chunk in extracted_fn()]
+
+    assert len(result) == 2
+    assert result[0]["chunk1"] == "async_data1"  # pyright: ignore [reportGeneralTypeIssues]
+    assert result[1]["chunk2"] == "async_data2"  # pyright: ignore [reportGeneralTypeIssues]
+    assert all(chunk["responseMetadata"] == {"RequestId": "456"} for chunk in result)
+    assert all(chunk["model"] == "test-async-model" for chunk in result)
 
 
 @patch(
@@ -200,13 +268,11 @@ def test_setup_call_with_tools(
     assert call_kwargs["toolConfig"] == {"tools": [{"name": "test_tool"}]}
 
 
-@patch("mirascope.core.bedrock._utils._setup_call._get_sync_client")
 @patch("mirascope.core.bedrock._utils._setup_call._get_async_client")
 @patch("mirascope.core.bedrock._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_client_creation(
     mock_utils: MagicMock,
     mock_get_async_client: AsyncMock,
-    mock_get_sync_client: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     mock_utils.setup_call = mock_base_setup_call
@@ -227,7 +293,6 @@ def test_setup_call_client_creation(
         call_params={},
         extract=False,
     )
-    mock_get_sync_client.assert_called_once()
 
     # Test async client creation
     async def async_fn(): ...
@@ -258,5 +323,4 @@ def test_setup_call_client_creation(
         call_params={},
         extract=False,
     )
-    assert mock_get_sync_client.call_count == 1
     assert mock_get_async_client.call_count == 1

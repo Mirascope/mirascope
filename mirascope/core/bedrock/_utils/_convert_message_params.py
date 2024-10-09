@@ -3,12 +3,12 @@
 from typing import cast
 
 from ...base import BaseMessageParam
-from ._types import BedrockMessageParam, Roles
+from .._types import BedrockMessageParam, InternalBedrockMessageParam, Roles
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam | BedrockMessageParam],
-) -> list[BedrockMessageParam]:
+    message_params: list[BedrockMessageParam],
+) -> list[InternalBedrockMessageParam]:
     converted_message_params = []
     for message_param in message_params:
         if not isinstance(message_param, BaseMessageParam):

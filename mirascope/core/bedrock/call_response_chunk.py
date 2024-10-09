@@ -13,7 +13,7 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 
 from ..base import BaseCallResponseChunk
-from ._utils._types import AsyncStreamOutputChunk, StreamOutputChunk
+from ._types import AsyncStreamOutputChunk, StreamOutputChunk
 
 
 class BedrockCallResponseChunk(

@@ -4,8 +4,8 @@ from typing import Any, cast
 
 import pytest
 
+from mirascope.core.bedrock._types import StreamOutputChunk
 from mirascope.core.bedrock._utils._get_json_output import get_json_output
-from mirascope.core.bedrock._utils._types import StreamOutputChunk
 from mirascope.core.bedrock.call_params import BedrockCallParams
 from mirascope.core.bedrock.call_response import BedrockCallResponse
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk

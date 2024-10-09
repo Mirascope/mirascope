@@ -2,7 +2,7 @@
 
 from mypy_boto3_bedrock_runtime.type_defs import TokenUsageTypeDef
 
-from mirascope.core.bedrock._utils._types import StreamOutputChunk
+from mirascope.core.bedrock._types import StreamOutputChunk
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
 
 
