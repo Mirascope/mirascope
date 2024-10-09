@@ -250,6 +250,29 @@ Once exhausted, you can access the final, full response model through the `const
 
 You can also use the `stream` property to access the `BaseStream` instance and [all of it's properties](./streams.md#common-stream-properties-and-methods).
 
+## FromCallArgs
+
+Fields annotated with `FromCallArgs` will be populated with the corresponding argument from the function call rather than expecting it from the LLM's response. This enables seamless validation of LLM outputs against function inputs:
+
+!!! mira "Mirascope"
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "string_template" %}
+            ```python hl_lines="14 26"
+            {% else %}
+            ```python hl_lines="14 25"
+            {% endif %}
+            --8<-- "examples/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+
+    {% endfor %}
+
 ## Next Steps
 
 By following these best practices and leveraging Response Models effectively, you can create more robust, type-safe, and maintainable LLM-powered applications with Mirascope.
