@@ -65,6 +65,7 @@ extra:
     - LiteLLM
     - Azure AI
     - Vertex AI
+    - Bedrock
   prompt_writing_methods:
     - shorthand
     - messages
