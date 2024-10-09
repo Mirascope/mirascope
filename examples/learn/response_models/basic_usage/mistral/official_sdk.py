@@ -1,8 +1,9 @@
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ToolChoice
+from mirascope.core import mistral
+from mistralai import Mistral
+from mistralai.models import ToolChoice
 from pydantic import BaseModel
 
-client = MistralClient()
+client = Mistral(api_key=mistral.load_api_key())
 
 
 class Book(BaseModel):
