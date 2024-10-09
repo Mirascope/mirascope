@@ -29,9 +29,9 @@ class MistralStream(
     BaseStream[
         MistralCallResponse,
         MistralCallResponseChunk,
-        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
-        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
-        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
+        UserMessage,
+        AssistantMessage,
+        ToolMessage,
         AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralTool,
         dict[str, Any],
@@ -69,7 +69,7 @@ class MistralStream(
 
     def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
-    ) -> AssistantMessage | SystemMessage | ToolMessage | UserMessage:
+    ) -> AssistantMessage:
         message_param = AssistantMessage(
             content=content if content else "", tool_calls=tool_calls
         )

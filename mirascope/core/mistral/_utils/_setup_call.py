@@ -19,10 +19,9 @@ from mistralai.models import (
     UserMessage,
 )
 
-from mirascope.core.base._utils._protocols import fn_is_async
-
-from ...base import BaseMessageParam, BaseTool, _utils
+from ...base import BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base._utils._protocols import fn_is_async
 from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig

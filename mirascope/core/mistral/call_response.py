@@ -3,7 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from typing import Any
+from typing import Any, cast
 
 from mistralai.models import (
     AssistantMessage,
@@ -30,7 +30,7 @@ class MistralCallResponse(
         MistralDynamicConfig,
         AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralCallParams,
-        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
+        UserMessage,
     ]
 ):
     """A convenience wrapper around the Mistral `ChatCompletion` response.
@@ -104,9 +104,9 @@ class MistralCallResponse(
     @property
     def message_param(
         self,
-    ) -> AssistantMessage | SystemMessage | ToolMessage | UserMessage:
+    ) -> AssistantMessage:
         """Returns the assistants's response as a message parameter."""
-        return self.response.choices[0].message
+        return cast(AssistantMessage, self.response.choices[0].message)
 
     @computed_field
     @property
@@ -144,7 +144,7 @@ class MistralCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[MistralTool, str]]
-    ) -> list[AssistantMessage | SystemMessage | ToolMessage | UserMessage]:
+    ) -> list[ToolMessage]:
         """Returns the tool message parameters for tool call results.
 
         Args:
