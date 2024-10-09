@@ -21,9 +21,9 @@ from ..tool import BaseTool
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
-_BaseClientT = TypeVar("_BaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT", covariant=True)
@@ -230,9 +230,9 @@ class SetupCall(
     ]: ...  # pragma: no cover
 
 
-class BaseClientSetupCall(
+class SameSyncAndAsyncClientSetupCall(
     Protocol[
-        _BaseClientT,
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -245,7 +245,7 @@ class BaseClientSetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | None,
         fn: Callable[..., Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
@@ -266,7 +266,7 @@ class BaseClientSetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | None,
         fn: Callable[..., _BaseDynamicConfigT],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,
@@ -286,7 +286,7 @@ class BaseClientSetupCall(
         self,
         *,
         model: str,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | None,
         fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]],
         fn_args: dict[str, Any],
         dynamic_config: _BaseDynamicConfigT,

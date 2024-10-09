@@ -15,9 +15,9 @@ from typing import (
 )
 
 from ._utils import (
-    BaseClientSetupCall,
     HandleStream,
     HandleStreamAsync,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     fn_is_async,
     get_dynamic_configuration,
@@ -232,9 +232,9 @@ class BaseStream(
         ...
 
 
-_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
-_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _P = ParamSpec("_P")
@@ -244,8 +244,8 @@ def stream_factory(  # noqa: ANN201
     *,
     TCallResponse: type[_BaseCallResponseT],
     TStream: type[BaseStream],
-    setup_call: BaseClientSetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -272,7 +272,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
     @overload
@@ -281,7 +281,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
 
@@ -294,7 +294,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
@@ -304,7 +304,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
@@ -319,7 +319,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if not is_prompt_template(fn):

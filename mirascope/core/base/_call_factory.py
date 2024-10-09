@@ -16,12 +16,12 @@ from pydantic import BaseModel
 from ._create import create_factory
 from ._extract import extract_factory
 from ._utils import (
-    BaseClientSetupCall,
     BaseType,
     GetJsonOutput,
     HandleStream,
     HandleStreamAsync,
     LLMFunctionDecorator,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
 )
 from ._utils._protocols import (
@@ -47,9 +47,9 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
-_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
-_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
@@ -64,8 +64,8 @@ def call_factory(  # noqa: ANN202
     TStream: type[_BaseStreamT],
     TCallParams: type[_BaseCallParamsT],
     default_call_params: _BaseCallParamsT,
-    setup_call: BaseClientSetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -121,7 +121,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[TDynamicConfig, TCallResponse, TCallResponse]: ...
 
@@ -150,6 +150,7 @@ def call_factory(  # noqa: ANN202
         client: _SyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> SyncLLMFunctionDecorator[TDynamicConfig, TCallResponse]: ...
+
     @overload
     def base_call(
         model: str,
@@ -159,7 +160,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
     @overload
@@ -197,7 +198,10 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
-        client: _SyncBaseClientT | _AsyncBaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -210,7 +214,7 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
-        client: _BaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[TDynamicConfig, TStream, TStream]: ...
 
@@ -249,7 +253,10 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponseChunk], _ParsedOutputT],
         json_mode: bool = False,
-        client: _SyncBaseClientT | _AsyncBaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -262,7 +269,10 @@ def call_factory(  # noqa: ANN202
         response_model: None = None,
         output_parser: Callable[[TCallResponse], _ParsedOutputT],
         json_mode: bool = False,
-        client: _SyncBaseClientT | _AsyncBaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
     @overload
@@ -274,7 +284,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[TDynamicConfig, _ResponseModelT, _ResponseModelT]: ...
 
@@ -287,7 +297,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _AsyncBaseClientT,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> AsyncLLMFunctionDecorator[TDynamicConfig, _ResponseModelT]: ...
 
@@ -300,7 +310,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _SyncBaseClientT,
+        client: _SyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> SyncLLMFunctionDecorator[TDynamicConfig, _ResponseModelT]: ...
 
@@ -313,7 +323,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
-        client: None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[TDynamicConfig, _ParsedOutputT, _ParsedOutputT]: ...
 
@@ -326,7 +336,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
-        client: _AsyncBaseClientT,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> AsyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
 
@@ -339,7 +349,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
-        client: _SyncBaseClientT,
+        client: _SyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> SyncLLMFunctionDecorator[TDynamicConfig, _ParsedOutputT]: ...
 
@@ -352,7 +362,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: None = None,
+        client: _SameSyncAndAsyncClientT | None = None,
         call_params: TCallParams | None = None,
     ) -> LLMFunctionDecorator[
         TDynamicConfig, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
@@ -366,7 +376,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _AsyncBaseClientT,
+        client: _AsyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> AsyncLLMFunctionDecorator[TDynamicConfig, AsyncIterable[_ResponseModelT]]: ...
 
@@ -379,7 +389,7 @@ def call_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
-        client: _SyncBaseClientT,
+        client: _SyncBaseClientT = ...,
         call_params: TCallParams | None = None,
     ) -> SyncLLMFunctionDecorator[TDynamicConfig, Iterable[_ResponseModelT]]: ...
 
@@ -395,7 +405,10 @@ def call_factory(  # noqa: ANN202
         | Callable[[_ResponseModelT], _ParsedOutputT]
         | None,
         json_mode: bool = False,
-        client: _AsyncBaseClientT | _SyncBaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT
+        | _AsyncBaseClientT
+        | _SyncBaseClientT
+        | None = None,
         call_params: TCallParams | None = None,
     ) -> NoReturn: ...
 
@@ -410,7 +423,10 @@ def call_factory(  # noqa: ANN202
         | Callable[[_ResponseModelT], _ParsedOutputT]
         | None = None,
         json_mode: bool = False,
-        client: _AsyncBaseClientT | _SyncBaseClientT | None = None,
+        client: _SameSyncAndAsyncClientT
+        | _AsyncBaseClientT
+        | _SyncBaseClientT
+        | None = None,
         call_params: TCallParams | None = None,
     ) -> (
         AsyncLLMFunctionDecorator[

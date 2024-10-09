@@ -8,9 +8,9 @@ from pydantic import BaseModel, ValidationError
 
 from ._create import create_factory
 from ._utils import (
-    BaseClientSetupCall,
     BaseType,
     GetJsonOutput,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     extract_tool_return,
     fn_is_async,
@@ -22,9 +22,9 @@ from .dynamic_config import BaseDynamicConfig
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
-_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -39,8 +39,8 @@ def extract_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
     TToolType: type[BaseTool],
-    setup_call: BaseClientSetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -70,7 +70,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...
 
@@ -81,7 +81,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
 
@@ -92,7 +92,7 @@ def extract_factory(  # noqa: ANN202
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,

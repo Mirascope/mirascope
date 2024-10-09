@@ -6,7 +6,7 @@ from functools import wraps
 from typing import Any, ParamSpec, TypeVar, cast, overload
 
 from ._utils import (
-    BaseClientSetupCall,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     fn_is_async,
     get_dynamic_configuration,
@@ -23,9 +23,9 @@ from .prompt import prompt_template
 from .tool import BaseTool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
-_SyncBaseClientT = TypeVar("_SyncBaseClientT", bound=object)
-_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", bound=object)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
@@ -38,8 +38,8 @@ _P = ParamSpec("_P")
 def create_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
-    setup_call: BaseClientSetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -65,7 +65,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -76,7 +76,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, _BaseCallResponseT | _ParsedOutputT]: ...
 
@@ -90,7 +90,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -104,7 +104,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -123,7 +123,7 @@ def create_factory(  # noqa: ANN202
         tools: list[type[BaseTool] | Callable] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
-        client: _BaseClientT | _AsyncBaseClientT | _SyncBaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
