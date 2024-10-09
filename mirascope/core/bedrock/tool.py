@@ -8,12 +8,11 @@ from __future__ import annotations
 from mypy_boto3_bedrock_runtime.type_defs import (
     ToolSpecificationTypeDef,
     ToolTypeDef,
-    ToolUseBlockTypeDef,
-    ToolUseBlockUnionTypeDef,
 )
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+from ._types import ToolUseBlockContentTypeDef
 
 
 class GenerateBedrockStrictToolJsonSchema(GenerateJsonSchemaNoTitles):
@@ -55,7 +54,7 @@ class BedrockTool(BaseTool[ToolTypeDef]):
     __provider__ = "bedrock"
     __tool_config_type__ = BedrockToolConfig
 
-    tool_call: SkipJsonSchema[ToolUseBlockTypeDef]
+    tool_call: SkipJsonSchema[ToolUseBlockContentTypeDef]
 
     @classmethod
     def tool_schema(cls) -> ToolTypeDef:
@@ -86,10 +85,12 @@ class BedrockTool(BaseTool[ToolTypeDef]):
         )
 
     @classmethod
-    def from_tool_call(cls, tool_call: ToolUseBlockUnionTypeDef) -> BedrockTool:
+    def from_tool_call(cls, tool_call: ToolUseBlockContentTypeDef) -> BedrockTool:
         """Constructs an `BedrockTool` instance from a `tool_call`.
 
         Args:
             tool_call: The Bedrock tool call from which to construct this tool instance.
         """
-        return cls.model_validate({"tool_call": tool_call, **tool_call["input"]})
+        return cls.model_validate(
+            {"tool_call": tool_call, **tool_call["toolUse"]["input"]}
+        )

@@ -7,7 +7,6 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef,
     MessageOutputTypeDef,
     TokenUsageTypeDef,
-    ToolResultBlockTypeDef,
     ToolTypeDef,
 )
 from pydantic import ValidationError
@@ -162,11 +161,20 @@ def test_bedrock_call_response_with_tools() -> None:
     output = tool.call()
     assert output == "The Name of the Wind by Patrick Rothfuss"
     assert call_response.tool_message_params([(tool, output)]) == [
-        ToolResultBlockTypeDef(  # pyright: ignore [reportCallIssue]
-            toolUseId="id",
-            name="FormatBook",
-            content=[{"text": output}],
-        )
+        {
+            "role": "user",
+            "content": [
+                {
+                    "toolResult": {
+                        "content": [
+                            {"text": "The Name of the Wind by Patrick Rothfuss"}
+                        ],
+                        "toolUseId": "id",
+                        "name": "FormatBook",
+                    }
+                }
+            ],
+        }
     ]
 
 

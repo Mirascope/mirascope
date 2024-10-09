@@ -6,24 +6,24 @@ usage docs: learn/calls.md#handling-responses
 from typing import cast
 
 from mypy_boto3_bedrock_runtime.type_defs import (
-    ConverseResponseTypeDef,
-    MessageOutputTypeDef,
-    TokenUsageTypeDef,
-    ToolResultBlockTypeDef,
-    ToolTypeDef,
+    ConverseResponseTypeDef as SyncConverseResponseTypeDef,
 )
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef as AsyncConverseResponseTypeDef,
 )
-from types_aiobotocore_bedrock_runtime.type_defs import (
-    TokenUsageTypeDef as AsyncTokenUsageTypeDef,
-)
 
 from ..base import BaseCallResponse
 from ._types import (
     AssistantMessageTypeDef,
+    AsyncMessageTypeDef,
     InternalBedrockMessageParam,
+    SyncMessageTypeDef,
+    TokenUsageTypeDef,
+    ToolResultBlockContentTypeDef,
+    ToolResultBlockMessageTypeDef,
+    ToolTypeDef,
+    ToolUseBlockContentTypeDef,
     UserMessageTypeDef,
 )
 from ._utils import calculate_cost
@@ -35,7 +35,7 @@ from .tool import BedrockTool
 
 class BedrockCallResponse(
     BaseCallResponse[
-        ConverseResponseTypeDef | AsyncConverseResponseTypeDef,
+        SyncConverseResponseTypeDef | AsyncConverseResponseTypeDef,
         BedrockTool,
         ToolTypeDef,
         BedrockDynamicConfig,
@@ -68,16 +68,16 @@ class BedrockCallResponse(
     ```
     """
 
-    response: SkipValidation[ConverseResponseTypeDef | AsyncConverseResponseTypeDef]
+    response: SkipValidation[SyncConverseResponseTypeDef | AsyncConverseResponseTypeDef]
 
     _provider = "bedrock"
 
     @property
-    def message(self) -> MessageOutputTypeDef | None:
+    def message(self) -> SyncMessageTypeDef | AsyncMessageTypeDef | None:
         """Returns the message of the response."""
         message = self.response.get("output", {}).get("message", {})
         if message:
-            return cast(MessageOutputTypeDef, message)
+            return cast(SyncMessageTypeDef | AsyncMessageTypeDef, message)
         return None
 
     @property
@@ -105,7 +105,7 @@ class BedrockCallResponse(
         return self.response["ResponseMetadata"]["RequestId"]
 
     @property
-    def usage(self) -> TokenUsageTypeDef | AsyncTokenUsageTypeDef:
+    def usage(self) -> TokenUsageTypeDef:
         """Returns the usage of the chat completion."""
         return self.response["usage"]
 
@@ -154,7 +154,11 @@ class BedrockCallResponse(
         for tool_use in tool_uses:
             for tool_type in self.tool_types:
                 if tool_use["name"] == tool_type._name():
-                    extracted_tools.append(tool_type.from_tool_call(tool_use))
+                    extracted_tools.append(
+                        tool_type.from_tool_call(
+                            cast(ToolUseBlockContentTypeDef, {"toolUse": tool_use})
+                        )
+                    )
                     break
 
         return extracted_tools
@@ -176,7 +180,7 @@ class BedrockCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[BedrockTool, str]]
-    ) -> list[ToolResultBlockTypeDef]:
+    ) -> list[ToolResultBlockMessageTypeDef]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -187,10 +191,20 @@ class BedrockCallResponse(
             The list of constructed `ChatCompletionToolMessageParam` parameters.
         """
         return [
-            ToolResultBlockTypeDef(
-                content=[{"text": output}],
-                toolUseId=tool.tool_call["toolUseId"],
-                name=tool._name(),  # pyright: ignore [reportCallIssue]
+            ToolResultBlockMessageTypeDef(
+                role="user",
+                content=[
+                    cast(
+                        ToolResultBlockContentTypeDef,
+                        {
+                            "toolResult": {
+                                "content": [{"text": output}],
+                                "toolUseId": tool.tool_call["toolUse"]["toolUseId"],
+                                "name": tool._name(),
+                            }
+                        },
+                    )
+                ],
             )
             for tool, output in tools_and_outputs
         ]

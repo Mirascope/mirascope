@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
 from mypy_boto3_bedrock_runtime.type_defs import (
@@ -30,9 +30,9 @@ class BedrockCallParams(BaseCallParams):
         additionalModelResponseFieldPaths (Sequence[str]): Additional model response field paths to use in the API call.
     """
 
-    system: NotRequired[Sequence[SystemContentBlockTypeDef]]
+    system: NotRequired[list[SystemContentBlockTypeDef]]
     inferenceConfig: NotRequired[InferenceConfigurationTypeDef]
     toolConfig: NotRequired[ToolConfigurationTypeDef]
     guardrailConfig: NotRequired[GuardrailConfigurationTypeDef]
     additionalModelRequestFields: NotRequired[Mapping[str, Any]]
-    additionalModelResponseFieldPaths: NotRequired[Sequence[str]]
+    additionalModelResponseFieldPaths: NotRequired[list[str]]

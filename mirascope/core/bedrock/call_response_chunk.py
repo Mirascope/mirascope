@@ -3,17 +3,11 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from mypy_boto3_bedrock_runtime.type_defs import (
-    TokenUsageTypeDef,
-)
 from pydantic import SkipValidation
 from types_aiobotocore_bedrock_runtime.literals import StopReasonType as FinishReason
-from types_aiobotocore_bedrock_runtime.type_defs import (
-    TokenUsageTypeDef as AsyncTokenUsageTypeDef,
-)
 
 from ..base import BaseCallResponseChunk
-from ._types import AsyncStreamOutputChunk, StreamOutputChunk
+from ._types import AsyncStreamOutputChunk, StreamOutputChunk, TokenUsageTypeDef
 
 
 class BedrockCallResponseChunk(
@@ -73,7 +67,7 @@ class BedrockCallResponseChunk(
         return self.chunk["responseMetadata"]["RequestId"]
 
     @property
-    def usage(self) -> TokenUsageTypeDef | AsyncTokenUsageTypeDef | None:
+    def usage(self) -> TokenUsageTypeDef | None:
         """Returns the usage of the chat completion."""
         usage = self.chunk.get("metadata", {}).get("usage")
         if usage:

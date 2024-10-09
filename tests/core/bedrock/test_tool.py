@@ -3,10 +3,11 @@
 from mypy_boto3_bedrock_runtime.type_defs import (
     ToolSpecificationTypeDef,
     ToolTypeDef,
-    ToolUseBlockTypeDef,
+    ToolUseBlockOutputTypeDef,
 )
 
 from mirascope.core.base.tool import BaseTool
+from mirascope.core.bedrock._types import ToolUseBlockContentTypeDef
 from mirascope.core.bedrock.tool import BedrockTool, BedrockToolConfig
 
 
@@ -24,10 +25,12 @@ def test_bedrock_tool() -> None:
         def call(self) -> str:
             return f"{self.title} by {self.author}"
 
-    tool_call = ToolUseBlockTypeDef(
-        toolUseId="id",
-        input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
-        name="FormatBook",
+    tool_call = ToolUseBlockContentTypeDef(
+        toolUse=ToolUseBlockOutputTypeDef(
+            toolUseId="id",
+            input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+            name="FormatBook",
+        )
     )
 
     tool = FormatBook.from_tool_call(tool_call)
@@ -84,10 +87,12 @@ def test_bedrock_tool_from_function() -> None:
     )
     assert ToolType.tool_schema() == expected_schema
 
-    tool_call = ToolUseBlockTypeDef(
-        toolUseId="id",
-        input={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
-        name="format_book",
+    tool_call = ToolUseBlockContentTypeDef(
+        toolUse={
+            "toolUseId": "id",
+            "input": {"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
+            "name": "format_book",
+        }
     )
     tool = ToolType.from_tool_call(tool_call)
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"

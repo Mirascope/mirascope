@@ -4,11 +4,15 @@ import json
 from collections.abc import AsyncGenerator, Generator
 
 from mypy_boto3_bedrock_runtime.type_defs import (
-    ToolUseBlockTypeDef,
+    ToolUseBlockOutputTypeDef,
 )
 from typing_extensions import TypedDict
 
-from .._types import AsyncStreamOutputChunk, StreamOutputChunk
+from .._types import (
+    AsyncStreamOutputChunk,
+    StreamOutputChunk,
+    ToolUseBlockContentTypeDef,
+)
 from ..call_response_chunk import BedrockCallResponseChunk
 from ..tool import BedrockTool
 
@@ -55,17 +59,18 @@ def _handle_chunk(
     elif current_tool_use_chunk and current_tool_use_chunk["stop"]:
         for tool_type in tool_types:
             if current_tool_use_chunk["name"] == tool_type._name():
-                current_tool_use = ToolUseBlockTypeDef(
-                    toolUseId=current_tool_use_chunk["tool_use_id"],
-                    input=json.loads(current_tool_use_chunk["input_chunk"]),
-                    name=current_tool_use_chunk["name"],
+                current_tool_use = ToolUseBlockContentTypeDef(
+                    toolUse=ToolUseBlockOutputTypeDef(
+                        toolUseId=current_tool_use_chunk["tool_use_id"],
+                        input=json.loads(current_tool_use_chunk["input_chunk"]),
+                        name=current_tool_use_chunk["name"],
+                    )
                 )
                 return (
                     BedrockCallResponseChunk(chunk=chunk),
                     tool_type.from_tool_call(current_tool_use),
                     None,
                 )
-
     return BedrockCallResponseChunk(chunk=chunk), None, current_tool_use_chunk
 
 

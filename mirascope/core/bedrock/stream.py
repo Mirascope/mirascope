@@ -11,9 +11,6 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ConverseStreamMetadataEventTypeDef,
     MessageOutputTypeDef,
     ResponseMetadataTypeDef,
-    ToolTypeDef,
-    ToolUseBlockTypeDef,
-    ToolUseBlockUnionTypeDef,
 )
 from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseStreamMetadataEventTypeDef as AsyncConverseStreamMetadataEventTypeDef,
@@ -26,6 +23,9 @@ from ..base.stream import BaseStream
 from ._types import (
     AssistantMessageTypeDef,
     InternalBedrockMessageParam,
+    ToolTypeDef,
+    ToolUseBlockContentTypeDef,
+    ToolUseBlockMessageTypeDef,
     UserMessageTypeDef,
 )
 from ._utils import (
@@ -48,7 +48,7 @@ class BedrockStream(
         BedrockCallResponseChunk,
         UserMessageTypeDef,
         AssistantMessageTypeDef,
-        ToolUseBlockTypeDef,
+        ToolUseBlockMessageTypeDef,
         InternalBedrockMessageParam,
         BedrockTool,
         ToolTypeDef,
@@ -98,7 +98,7 @@ class BedrockStream(
 
     def _construct_message_param(
         self,
-        tool_calls: list[ToolUseBlockTypeDef] | None = None,
+        tool_calls: list[ToolUseBlockContentTypeDef] | None = None,
         content: str | None = None,
     ) -> AssistantMessageTypeDef:
         """Constructs the message parameter for the assistant."""
@@ -108,7 +108,7 @@ class BedrockStream(
 
         if tool_calls:
             contents += [
-                cast(ToolUseBlockUnionTypeDef, {"toolUse": tool_call})
+                cast(ToolUseBlockContentTypeDef, {"toolUse": tool_call})
                 for tool_call in tool_calls
             ]
         message_param = AssistantMessageTypeDef(role="assistant", content=contents)

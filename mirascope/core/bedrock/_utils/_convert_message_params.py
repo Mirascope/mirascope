@@ -3,7 +3,7 @@
 from typing import cast
 
 from ...base import BaseMessageParam
-from .._types import InternalBedrockMessageParam, Roles
+from .._types import ConversationRoleType, InternalBedrockMessageParam
 
 
 def convert_message_params(
@@ -16,7 +16,7 @@ def convert_message_params(
         elif isinstance((content := message_param.content), str):
             converted_message_params.append(
                 {
-                    "role": cast(Roles, message_param.role),
+                    "role": cast(ConversationRoleType, message_param.role),
                     "content": [{"text": content}],
                 }
             )
