@@ -116,7 +116,7 @@ def test_openai_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    assert stream.cost == 2e-5
+    assert stream.cost == 1.25e-05
 
     format_book = FormatBook.from_tool_call(
         ChatCompletionMessageToolCall(

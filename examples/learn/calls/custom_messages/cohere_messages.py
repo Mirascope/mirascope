@@ -7,4 +7,5 @@ def recommend_book(genre: str) -> cohere.CohereDynamicConfig:
     return {"messages": [ChatMessage(role="user", message=f"Recommend a {genre} book")]}  # pyright: ignore [reportCallIssue, reportReturnType]
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

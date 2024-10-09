@@ -6,4 +6,5 @@ def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
     return {"messages": [{"role": "user", "content": f"Recommend a {genre} book"}]}
 
 
-print(recommend_book("fantasy"))
+response = recommend_book("fantasy")
+print(response.content)

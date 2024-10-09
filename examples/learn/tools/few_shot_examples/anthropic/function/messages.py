@@ -1,4 +1,4 @@
-from mirascope.core import anthropic, Messages
+from mirascope.core import Messages, anthropic
 
 
 def get_book_author(title: str) -> str:
