@@ -28,6 +28,8 @@ _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
+_AsyncResponseT = TypeVar("_AsyncResponseT")
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _P = ParamSpec("_P")
 
@@ -41,6 +43,8 @@ def create_factory(  # noqa: ANN202
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ],
 ):

@@ -46,6 +46,8 @@ _BaseClientT = TypeVar("_BaseClientT", bound=object)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
+_AsyncResponseT = TypeVar("_AsyncResponseT")
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT")
 
 
 def call_factory(  # noqa: ANN202
@@ -63,12 +65,14 @@ def call_factory(  # noqa: ANN202
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseT | _BaseCallResponseChunkT],
     handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
     handle_stream_async: HandleStreamAsync[
-        _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
+        _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
 ):
     """A factory method for creating provider-specific call decorators.
