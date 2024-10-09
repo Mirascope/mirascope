@@ -6,6 +6,7 @@ from typing import Any, TypeVar, cast
 
 from pydantic import BaseModel, create_model
 
+from ..from_call_args import is_from_call_args
 from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
@@ -30,6 +31,7 @@ def convert_base_model_to_base_tool(
     field_definitions = {
         field_name: (field_info.annotation, field_info)
         for field_name, field_info in model.model_fields.items()
+        if not is_from_call_args(field_info)
     }
     tool_type = create_model(
         f"{model.__name__}",
