@@ -25,8 +25,8 @@ def test_convert_message_params() -> None:
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
         UserMessage(content="Hello"),
-        BaseMessageParam(role="user", content="Hello"),
-        BaseMessageParam(role="user", content="Hello"),
+        UserMessage(role="user", content="Hello"),
+        UserMessage(role="user", content="Hello"),
     ]
 
     with pytest.raises(
