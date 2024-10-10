@@ -10,6 +10,7 @@ from collections.abc import (
 )
 from functools import wraps
 from typing import (
+    Any,
     Generic,
     ParamSpec,
     TypeVar,
@@ -26,6 +27,9 @@ from ._utils import (
     extract_tool_return,
     fn_is_async,
     setup_extract_tool,
+)
+from ._utils._get_fields_from_call_args import (
+    get_fields_from_call_args,
 )
 from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
@@ -56,10 +60,12 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
         *,
         stream: BaseStream,
         response_model: type[_ResponseModelT],
+        fields_from_call_args: dict[str, Any],
     ) -> None:
         """Initializes an instance of `BaseStructuredStream`."""
         self.stream = stream
         self.response_model = response_model
+        self.fields_from_call_args = fields_from_call_args
 
     def __iter__(self) -> Generator[_ResponseModelT, None, None]:
         """Iterates over the stream and extracts structured outputs."""
@@ -75,11 +81,13 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
             if chunk.model is not None:
                 self.stream.model = chunk.model
             if json_output:
-                yield extract_tool_return(self.response_model, json_output, True)
+                yield extract_tool_return(
+                    self.response_model, json_output, True, self.fields_from_call_args
+                )
         if json_output:
             json_output = json_output[: json_output.rfind("}") + 1]
         self.constructed_response_model = extract_tool_return(
-            self.response_model, json_output, False
+            self.response_model, json_output, False, self.fields_from_call_args
         )
         yield self.constructed_response_model
 
@@ -99,11 +107,16 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
                 if chunk.model is not None:
                     self.stream.model = chunk.model
                 if json_output:
-                    yield extract_tool_return(self.response_model, json_output, True)
+                    yield extract_tool_return(
+                        self.response_model,
+                        json_output,
+                        True,
+                        self.fields_from_call_args,
+                    )
             if json_output:
                 json_output = json_output[: json_output.rfind("}") + 1]
             self.constructed_response_model = extract_tool_return(
-                self.response_model, json_output, False
+                self.response_model, json_output, False, self.fields_from_call_args
             )
             yield self.constructed_response_model
 
@@ -231,11 +244,15 @@ def structured_stream_factory(  # noqa: ANN201
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> AsyncIterable[_ResponseModelT]:
+                fields_from_call_args = get_fields_from_call_args(
+                    response_model, fn, args, kwargs
+                )
                 return BaseStructuredStream[_ResponseModelT](
                     stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
                     ),
                     response_model=response_model,
+                    fields_from_call_args=fields_from_call_args,
                 )
 
             return inner_async
@@ -243,11 +260,15 @@ def structured_stream_factory(  # noqa: ANN201
 
             @wraps(fn)
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> Iterable[_ResponseModelT]:
+                fields_from_call_args = get_fields_from_call_args(
+                    response_model, fn, args, kwargs
+                )
                 return BaseStructuredStream[_ResponseModelT](
                     stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
                     ),
                     response_model=response_model,
+                    fields_from_call_args=fields_from_call_args,
                 )
 
             return inner
