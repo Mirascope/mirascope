@@ -43,8 +43,6 @@ theme:
     text: Roboto
     code: Roboto Mono
 extra:
-  version:
-    provider: mike
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/Mirascope
