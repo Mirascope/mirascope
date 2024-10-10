@@ -190,8 +190,11 @@ By default, `response_model` uses [Tools](./tools.md) under the hood. You can in
 
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
+            {% if provider == "Bedrock" %}
+            ```python hl_lines="13"
+            {% else %}
             ```python hl_lines="12"
+            {% endif %}
             --8<-- "examples/learn/response_models/json_mode/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
@@ -238,8 +241,11 @@ If you set `stream=True` when `response_model` is set, your LLM call will return
 
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
+            {% if provider == "Bedrock" %}
+            ```python hl_lines="11 18-19"
+            {% else %}
             ```python hl_lines="10 16-17"
+            {% endif %}
             --8<-- "examples/learn/response_models/streaming/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
