@@ -189,7 +189,12 @@ line-ending = "auto"
 known-first-party = ['mirascope', 'tests', 'examples']
 
 [tool.pyright]
-exclude = ["mirascope/beta", "**/bedrock/official*.py"]
+exclude = [
+    "mirascope/beta",
+    "examples/learn/calls/basic_usage/bedrock/official_sdk_call.py",
+    "examples/learn/tools/basic_usage/bedrock/official_sdk.py",
+    "examples/learn/response_models/basic_usage/bedrock/official_sdk.py"
+]
 venvPath = "."
 venv = ".venv"
 

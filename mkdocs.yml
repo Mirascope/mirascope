@@ -272,6 +272,14 @@ nav:
               - structured_stream: "api/core/base/structured_stream.md"
               - tool: "api/core/base/tool.md"
               - toolkit: "api/core/base/toolkit.md"
+          - Bedrock:
+              - call: "api/core/bedrock/call.md"
+              - call_params: "api/core/bedrock/call_params.md"
+              - call_response: "api/core/bedrock/call_response.md"
+              - call_response_chunk: "api/core/bedrock/call_response_chunk.md"
+              - dynamic_config: "api/core/bedrock/dynamic_config.md"
+              - stream: "api/core/bedrock/stream.md"
+              - tool: "api/core/bedrock/tool.md"
           - Cohere:
               - call: "api/core/cohere/call.md"
               - call_params: "api/core/cohere/call_params.md"
