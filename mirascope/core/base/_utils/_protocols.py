@@ -225,7 +225,7 @@ class SetupCall(
         extract: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
-        | AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,
@@ -240,6 +240,8 @@ class SameSyncAndAsyncClientSetupCall(
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ]
 ):
@@ -257,7 +259,7 @@ class SameSyncAndAsyncClientSetupCall(
         call_params: _BaseCallParamsT,
         extract: bool,
     ) -> tuple[
-        AsyncCreateFn[_ResponseT, _ResponseChunkT],
+        AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
         list[Any],
         list[type[_BaseToolT]] | None,

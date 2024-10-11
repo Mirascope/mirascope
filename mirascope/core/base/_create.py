@@ -46,6 +46,8 @@ def create_factory(  # noqa: ANN202
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ]
     | SetupCall[

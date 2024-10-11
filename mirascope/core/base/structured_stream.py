@@ -147,6 +147,8 @@ def structured_stream_factory(  # noqa: ANN201
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ]
     | SetupCall[
