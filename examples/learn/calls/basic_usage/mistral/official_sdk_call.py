@@ -1,6 +1,9 @@
-from mistralai.client import MistralClient
+import os
 
-client = MistralClient()
+from mirascope.core import mistral
+from mistralai import Mistral
+
+client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY", ""))
 
 
 def recommend_book(genre: str) -> str:

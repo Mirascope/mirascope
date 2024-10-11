@@ -2,7 +2,12 @@
 
 from typing import Any
 
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models import (
+    AssistantMessage,
+    SystemMessage,
+    ToolMessage,
+    UserMessage,
+)
 
 from ..base import BaseCallKwargs
 from .call_params import MistralCallParams
@@ -10,4 +15,4 @@ from .call_params import MistralCallParams
 
 class MistralCallKwargs(MistralCallParams, BaseCallKwargs[dict[str, Any]]):
     model: str
-    messages: list[ChatMessage]
+    messages: list[AssistantMessage | SystemMessage | ToolMessage | UserMessage]

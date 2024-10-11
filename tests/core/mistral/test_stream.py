@@ -1,19 +1,17 @@
 """Tests the `mistral.stream` module."""
 
 import pytest
-from mistralai.models.chat_completion import (
+from mistralai import AssistantMessage
+from mistralai.models import (
+    ChatCompletionChoice,
     ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
-    ChatMessage,
+    CompletionChunk,
+    CompletionResponseStreamChoice,
     DeltaMessage,
-    FinishReason,
     FunctionCall,
     ToolCall,
-    ToolType,
+    UsageInfo,
 )
-from mistralai.models.common import UsageInfo
 
 from mirascope.core.mistral.call_response import MistralCallResponse
 from mirascope.core.mistral.call_response_chunk import MistralCallResponseChunk
@@ -40,14 +38,14 @@ def test_mistral_stream() -> None:
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
     usage = UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2)
     chunks = [
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     delta=DeltaMessage(content="content", tool_calls=None),
                     index=0,
                     finish_reason=None,
@@ -57,10 +55,10 @@ def test_mistral_stream() -> None:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -84,7 +82,7 @@ def test_mistral_stream() -> None:
                 tool_call = ToolCall(
                     id="id",
                     function=FunctionCall(**tool_calls[0].function.model_dump()),
-                    type=ToolType.function,
+                    type="function",
                 )
                 yield (
                     call_response_chunk,
@@ -124,12 +122,11 @@ def test_mistral_stream() -> None:
                 name="FormatBook",
                 arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
             ),
-            type=ToolType.function,
+            type="function",
         )
     )
     assert format_book.tool_call is not None
-    assert stream.message_param == ChatMessage(
-        role="assistant",
+    assert stream.message_param == AssistantMessage(
         content="content",
         tool_calls=[format_book.tool_call],
     )
@@ -151,14 +148,14 @@ def test_construct_call_response() -> None:
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
     usage = UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2)
     chunks = [
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     delta=DeltaMessage(content="content", tool_calls=None),
                     index=0,
                     finish_reason=None,
@@ -168,16 +165,16 @@ def test_construct_call_response() -> None:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
                         tool_calls=[tool_call_delta],
                     ),
-                    finish_reason=FinishReason.stop,
+                    finish_reason="stop",
                 )
             ],
             created=0,
@@ -195,7 +192,7 @@ def test_construct_call_response() -> None:
                 tool_call = ToolCall(
                     id="id",
                     function=FunctionCall(**tool_calls[0].function.model_dump()),
-                    type=ToolType.function,
+                    type="function",
                 )
                 yield (
                     call_response_chunk,
@@ -227,17 +224,15 @@ def test_construct_call_response() -> None:
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
     completion = ChatCompletionResponse(
         id="id",
         choices=[
-            ChatCompletionResponseChoice(
-                finish_reason=FinishReason.stop,
+            ChatCompletionChoice(
+                finish_reason="stop",
                 index=0,
-                message=ChatMessage(
-                    role="assistant", content="content", tool_calls=[tool_call]
-                ),
+                message=AssistantMessage(content="content", tool_calls=[tool_call]),
             )
         ],
         created=0,

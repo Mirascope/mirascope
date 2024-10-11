@@ -1,15 +1,13 @@
 """Tests the `mistral.call_response_chunk` module."""
 
-from mistralai.models.chat_completion import (
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
+from mistralai.models import (
+    CompletionChunk,
+    CompletionResponseStreamChoice,
     DeltaMessage,
-    FinishReason,
     FunctionCall,
     ToolCall,
-    ToolType,
+    UsageInfo,
 )
-from mistralai.models.common import UsageInfo
 
 from mirascope.core.mistral.call_response_chunk import MistralCallResponseChunk
 
@@ -19,17 +17,17 @@ def test_mistral_call_response_chunk() -> None:
     tool_call = ToolCall(
         id="id",
         function=FunctionCall(name="function", arguments='{"key": "value"}'),
-        type=ToolType.function,
+        type="function",
     )
     choices = [
-        ChatCompletionResponseStreamChoice(
+        CompletionResponseStreamChoice(
             index=0,
             delta=DeltaMessage(content="content", tool_calls=[tool_call]),
-            finish_reason=FinishReason.stop,
+            finish_reason="stop",
         )
     ]
     usage = UsageInfo(prompt_tokens=1, completion_tokens=1, total_tokens=2)
-    chunk = ChatCompletionStreamResponse(
+    chunk = CompletionChunk(
         id="id",
         choices=choices,
         created=0,
@@ -49,7 +47,7 @@ def test_mistral_call_response_chunk() -> None:
 
 def test_mistral_call_response_chunk_no_choices_or_usage() -> None:
     """Tests the `MistralCallResponseChunk` class with None values."""
-    chunk = ChatCompletionStreamResponse(
+    chunk = CompletionChunk(
         id="id",
         choices=[],
         created=0,

@@ -1,14 +1,12 @@
 """Tests the `mistral._utils.handle_stream` module."""
 
 import pytest
-from mistralai.models.chat_completion import (
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
+from mistralai.models import (
+    CompletionChunk,
+    CompletionResponseStreamChoice,
     DeltaMessage,
-    FinishReason,
     FunctionCall,
     ToolCall,
-    ToolType,
 )
 
 from mirascope.core.mistral._utils._handle_stream import (
@@ -29,7 +27,7 @@ class FormatBook(MistralTool):
 
 
 @pytest.fixture()
-def mock_chunks() -> list[ChatCompletionStreamResponse]:
+def mock_chunks() -> list[CompletionChunk]:
     """Returns a list of mock `ChatCompletionStreamResponse` instances."""
 
     new_tool_call = ToolCall(
@@ -38,7 +36,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             arguments="",
             name="FormatBook",
         ),
-        type=ToolType.function,
+        type="function",
     )
     tool_call = ToolCall(
         id="null",
@@ -46,13 +44,13 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
             name="FormatBook",
         ),
-        type=ToolType.function,
+        type="function",
     )
     return [
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(content="content", tool_calls=None),
                     finish_reason=None,
@@ -62,10 +60,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -78,10 +76,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -94,10 +92,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -110,10 +108,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -126,13 +124,13 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(content=None, tool_calls=None),
-                    finish_reason=FinishReason.tool_calls,
+                    finish_reason="tool_calls",
                 )
             ],
             created=0,
@@ -142,7 +140,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
     ]
 
 
-def test_handle_stream(mock_chunks: list[ChatCompletionStreamResponse]) -> None:
+def test_handle_stream(mock_chunks: list[CompletionChunk]) -> None:
     """Tests the `handle_stream` function."""
 
     result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
@@ -166,7 +164,7 @@ def test_handle_stream(mock_chunks: list[ChatCompletionStreamResponse]) -> None:
 
 @pytest.mark.asyncio
 async def test_handle_stream_async(
-    mock_chunks: list[ChatCompletionStreamResponse],
+    mock_chunks: list[CompletionChunk],
 ) -> None:
     """Tests the `handle_stream_async` function."""
 
