@@ -31,7 +31,7 @@ from ._get_credential import get_credential
 def setup_call(
     *,
     model: str,
-    client: ChatCompletionsClient | AsyncChatCompletionsClient | None,
+    client: AsyncChatCompletionsClient | None,
     fn: Callable[..., Awaitable[AzureDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: AzureDynamicConfig,
@@ -52,7 +52,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: ChatCompletionsClient | AsyncChatCompletionsClient | None,
+    client: ChatCompletionsClient | None,
     fn: Callable[..., AzureDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: AzureDynamicConfig,

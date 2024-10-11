@@ -23,6 +23,7 @@ from pydantic import BaseModel
 from ._utils import (
     BaseType,
     GetJsonOutput,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     extract_tool_return,
     fn_is_async,
@@ -124,7 +125,9 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
 
 
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
 _AsyncResponseT = TypeVar("_AsyncResponseT")
@@ -138,8 +141,19 @@ def structured_stream_factory(  # noqa: ANN201
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TStream: type[BaseStream],
     TToolType: type[_BaseToolT],
-    setup_call: SetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
+        _BaseToolT,
+    ]
+    | SetupCall[
+        _SyncBaseClientT,
+        _AsyncBaseClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
@@ -163,7 +177,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -176,7 +190,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
@@ -189,7 +203,7 @@ def structured_stream_factory(  # noqa: ANN201
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,

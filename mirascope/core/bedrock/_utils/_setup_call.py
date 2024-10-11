@@ -91,7 +91,7 @@ async def _get_async_client(session: AioSession) -> AsyncBedrockRuntimeClient:
 def setup_call(
     *,
     model: str,
-    client: BedrockRuntimeClient | AsyncBedrockRuntimeClient | None,
+    client: AsyncBedrockRuntimeClient | None,
     fn: Callable[..., Awaitable[BedrockDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: BedrockDynamicConfig,
@@ -112,7 +112,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: BedrockRuntimeClient | AsyncBedrockRuntimeClient | None,
+    client: BedrockRuntimeClient | None,
     fn: Callable[..., BedrockDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: BedrockDynamicConfig,
