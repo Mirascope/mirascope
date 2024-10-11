@@ -303,6 +303,8 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-10"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="1 6"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}

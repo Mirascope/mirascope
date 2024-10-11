@@ -24,7 +24,7 @@ from ._convert_message_params import convert_message_params
 def setup_call(
     *,
     model: str,
-    client: Groq | AsyncGroq | None,
+    client: AsyncGroq | None,
     fn: Callable[..., Awaitable[GroqDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: GroqDynamicConfig,
@@ -45,7 +45,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: Groq | AsyncGroq | None,
+    client: Groq | None,
     fn: Callable[..., GroqDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: GroqDynamicConfig,

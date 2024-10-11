@@ -175,6 +175,8 @@ It's important to note that you must use the correct client that supports asynch
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-10"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="7-10 14"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}

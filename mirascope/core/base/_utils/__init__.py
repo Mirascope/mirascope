@@ -31,6 +31,7 @@ from ._protocols import (
     HandleStream,
     HandleStreamAsync,
     LLMFunctionDecorator,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     fn_is_async,
 )
@@ -39,6 +40,7 @@ from ._setup_extract_tool import setup_extract_tool
 
 __all__ = [
     "AsyncCreateFn",
+    "SameSyncAndAsyncClientSetupCall",
     "BaseType",
     "CalculateCost",
     "convert_base_model_to_base_tool",
