@@ -39,7 +39,9 @@ Response: TypeAlias = Any
 
 
 class BaseRealtime(ABC):
-    def __init__(self, model: str, context: Context, **client_configs: dict[str, Any]) -> None:
+    def __init__(
+        self, model: str, context: Context, **client_configs: dict[str, Any]
+    ) -> None:
         self.model = model
         self.context = context
         self.senders: list[SenderFunc] = []

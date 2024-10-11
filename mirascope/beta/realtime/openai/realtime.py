@@ -31,7 +31,9 @@ class RawMessage(TypedDict, total=False):
 
 
 class OpenAIRealtime(BaseRealtime):
-    def __init__(self, model: str, context: dict[str, str], **client_configs: dict[str, Any]) -> None:
+    def __init__(
+        self, model: str, context: dict[str, str], **client_configs: dict[str, Any]
+    ) -> None:
         super().__init__(model, context, **client_configs)
         self._connection: connect | None = None
         self.vda_mode: bool = client_configs.get("vda_mode", True)
@@ -206,7 +208,11 @@ class OpenAIRealtime(BaseRealtime):
 
 
 if __name__ == "__main__":
-    app = OpenAIRealtime("gpt-4o-realtime-preview-2024-10-01", {"context": "context"}, **{"vda_mode":True})
+    app = OpenAIRealtime(
+        "gpt-4o-realtime-preview-2024-10-01",
+        {"context": "context"},
+        **{"vda_mode": True},
+    )
 
     @app.receiver("text")
     async def receive_text(response: str, context: dict[str, Any]) -> None:
