@@ -2,7 +2,7 @@
 
 import datetime
 from abc import ABC, abstractmethod
-from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import (
     Any,
@@ -17,6 +17,7 @@ from typing import (
 from ._utils import (
     HandleStream,
     HandleStreamAsync,
+    SameSyncAndAsyncClientSetupCall,
     SetupCall,
     fn_is_async,
     get_dynamic_configuration,
@@ -231,9 +232,13 @@ class BaseStream(
         ...
 
 
-_BaseClientT = TypeVar("_BaseClientT", bound=object)
+_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
+_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
+_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _ResponseT = TypeVar("_ResponseT")
 _ResponseChunkT = TypeVar("_ResponseChunkT")
+_AsyncResponseT = TypeVar("_AsyncResponseT")
+_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT")
 _P = ParamSpec("_P")
 
 
@@ -241,17 +246,30 @@ def stream_factory(  # noqa: ANN201
     *,
     TCallResponse: type[_BaseCallResponseT],
     TStream: type[BaseStream],
-    setup_call: SetupCall[
-        _BaseClientT,
+    setup_call: SameSyncAndAsyncClientSetupCall[
+        _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
+        _BaseToolT,
+    ]
+    | SetupCall[
+        _SyncBaseClientT,
+        _AsyncBaseClientT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        _ResponseT,
+        _ResponseChunkT,
+        _AsyncResponseT,
+        _AsyncResponseChunkT,
         _BaseToolT,
     ],
     handle_stream: HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT],
     handle_stream_async: HandleStreamAsync[
-        _ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
+        _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
 ):
     @overload
@@ -260,7 +278,7 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
     @overload
@@ -269,38 +287,45 @@ def stream_factory(  # noqa: ANN201
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream]: ...
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
+
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[Messages.Type]],
+        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, Awaitable[TStream]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
         | Callable[_P, Messages.Type]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]]
-        | Callable[_P, Awaitable[Messages.Type]],
+        | Callable[
+            _P,
+            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+        ]
+        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
-        client: _BaseClientT | None,
+        client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
         if not is_prompt_template(fn):
@@ -320,9 +345,9 @@ def stream_factory(  # noqa: ANN201
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=client,
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -363,9 +388,9 @@ def stream_factory(  # noqa: ANN201
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
-                create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+                create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=client,
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

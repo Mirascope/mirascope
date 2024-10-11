@@ -5,6 +5,7 @@ from collections.abc import (
     AsyncIterator,
     Awaitable,
     Callable,
+    Coroutine,
     Generator,
     Iterable,
     Iterator,
@@ -37,6 +38,7 @@ _AsyncGeneratorFunc: TypeAlias = (
     | Callable[..., AsyncGenerator[_StreamedResponse, None]]
     | Callable[..., AsyncIterator[_StreamedResponse]]
     | Callable[..., AsyncIterable[_StreamedResponse]]
+    | Callable[..., Coroutine[Any, Any, _StreamedResponse]]
 )
 
 _SyncFunc: TypeAlias = Callable[..., _NonStreamedResponse]

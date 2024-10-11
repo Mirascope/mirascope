@@ -244,7 +244,9 @@ def test_middleware_factory_structured_stream() -> None:
 
     base_stream = MagicMock()
     base_stream.__iter__.return_value = (t for t in [(mock_chunk, None)])
-    my_structured_stream = BaseStructuredStream(stream=base_stream, response_model=Foo)
+    my_structured_stream = BaseStructuredStream(
+        stream=base_stream, response_model=Foo, fields_from_call_args={}
+    )
 
     def sync_fn() -> BaseStructuredStream:
         return my_structured_stream
@@ -280,7 +282,9 @@ async def test_middleware_factory_structured_stream_async() -> None:
         yield mock_chunk, None
 
     base_stream.__aiter__ = generator
-    my_structured_stream = BaseStructuredStream(stream=base_stream, response_model=Foo)
+    my_structured_stream = BaseStructuredStream(
+        stream=base_stream, response_model=Foo, fields_from_call_args={}
+    )
 
     async def async_fn() -> BaseStructuredStream:
         return my_structured_stream

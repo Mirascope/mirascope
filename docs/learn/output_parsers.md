@@ -27,11 +27,18 @@ Let's take a look at a basic example:
 
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
             {% if method == "base_message_param" %}
+            {% if provider == "Bedrock" %}
+            ```python hl_lines="10 22"
+            {% else %}
             ```python hl_lines="9 20"
+            {% endif %}
+            {% else %}
+            {% if provider == "Bedrock" %} 
+            ```python hl_lines="10 17"
             {% else %}
             ```python hl_lines="9 15"
+            {% endif %}
             {% endif %}
             --8<-- "examples/learn/output_parsers/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```

@@ -1,9 +1,10 @@
-from mirascope.core import mistral
+import os
+
 from mistralai import Mistral
 from mistralai.models import ToolChoice
 from pydantic import BaseModel
 
-client = Mistral(api_key=mistral.load_api_key())
+client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY", ""))
 
 
 class Book(BaseModel):

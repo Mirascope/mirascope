@@ -27,13 +27,7 @@ from ._convert_message_params import convert_message_params
 def setup_call(
     *,
     model: str,
-    client: Anthropic
-    | AsyncAnthropic
-    | AnthropicBedrock
-    | AsyncAnthropicBedrock
-    | AnthropicVertex
-    | AsyncAnthropicVertex
-    | None,
+    client: AsyncAnthropic | AsyncAnthropicBedrock | AsyncAnthropicVertex | None,
     fn: Callable[..., Awaitable[AnthropicDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: AnthropicDynamicConfig,
@@ -54,13 +48,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: Anthropic
-    | AsyncAnthropic
-    | AnthropicBedrock
-    | AsyncAnthropicBedrock
-    | AnthropicVertex
-    | AsyncAnthropicVertex
-    | None,
+    client: Anthropic | AnthropicBedrock | AnthropicVertex | None,
     fn: Callable[..., AnthropicDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: AnthropicDynamicConfig,

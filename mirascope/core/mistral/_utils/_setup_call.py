@@ -1,5 +1,6 @@
 """This module contains the setup_call function for Mistral tools."""
 
+import os
 from collections.abc import (
     Awaitable,
     Callable,
@@ -11,15 +12,16 @@ from mistralai.models import (
     AssistantMessage,
     ChatCompletionResponse,
     CompletionEvent,
+    FunctionName,
     ResponseFormat,
     SystemMessage,
-    ToolChoiceEnum,
+    TextChunk,
+    ToolChoice,
     ToolMessage,
     UserMessage,
 )
 
-from ... import mistral
-from ...base import BaseTool, _utils
+from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ...base._utils._protocols import fn_is_async
 from ..call_kwargs import MistralCallKwargs
@@ -95,7 +97,14 @@ def setup_call(
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(
-        list[AssistantMessage | SystemMessage | ToolMessage | UserMessage], messages
+        list[
+            BaseMessageParam
+            | AssistantMessage
+            | SystemMessage
+            | ToolMessage
+            | UserMessage
+        ],
+        messages,
     )
     messages = convert_message_params(messages)
     if json_mode:
@@ -104,17 +113,22 @@ def setup_call(
             tool_types[0] if tool_types else None
         )
         if messages[-1].role == "user":
-            messages[-1].content += json_mode_content
+            if isinstance(messages[-1].content, str):
+                messages[-1].content += json_mode_content
+            else:
+                messages[-1].content.append(TextChunk(text=json_mode_content))
         else:
             messages.append(UserMessage(content=json_mode_content.strip()))
         call_kwargs.pop("tools", None)
     elif extract:
         assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs["tool_choice"] = cast(ToolChoiceEnum, "any")
+        call_kwargs["tool_choice"] = ToolChoice(
+            function=FunctionName(name=tool_types[0]._name())
+        )
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
-        client = Mistral(api_key=mistral.load_api_key())
+        client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY", ""))
     if fn_is_async(fn):
         create_or_stream = get_async_create_fn(
             client.chat.complete_async, client.chat.stream_async

@@ -223,9 +223,17 @@ Mirascope supports streaming responses with tools, which is useful for long-runn
             === "{{ provider }}"
 
                 {% if tool_method == "function" %}
+                {% if provider == "Bedrock" %}
+                ```python hl_lines="19 26-28"
+                {% else %}
                 ```python hl_lines="18 24-26"
+                {% endif %}
+                {% else %}
+                {% if provider == "Bedrock" %}
+                ```python hl_lines="20 27-29"
                 {% else %}
                 ```python hl_lines="19 25-27"
+                {% endif %}
                 {% endif %}
                 --8<-- "examples/learn/tools/streams/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
                 ```

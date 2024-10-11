@@ -8,6 +8,7 @@ from mistralai.models import (
     AssistantMessage,
     ChatCompletionResponse,
     CompletionChunk,
+    ToolChoice,
     UserMessage,
 )
 
@@ -19,7 +20,10 @@ from mirascope.core.mistral.tool import MistralTool
 def mock_base_setup_call() -> MagicMock:
     """Returns the mock setup_call function."""
     mock_setup_call = MagicMock()
-    mock_setup_call.return_value = [MagicMock() for _ in range(3)] + [{}]
+    mock_tool_types = [MagicMock()]
+    mock_tool_types[0]._name = MagicMock()
+    mock_tool_types[0]._name.return_value = "mock_tool_name"
+    mock_setup_call.return_value = [MagicMock(), MagicMock(), mock_tool_types, {}]
     return mock_setup_call
 
 
@@ -217,4 +221,8 @@ def test_setup_call_extract(
         call_params={},
         extract=True,
     )
-    assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "any"
+    assert (
+        "tool_choice" in call_kwargs
+        and isinstance(call_kwargs["tool_choice"], ToolChoice)
+        and call_kwargs["tool_choice"].function.name == "mock_tool_name"
+    )

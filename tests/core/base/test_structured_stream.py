@@ -192,19 +192,19 @@ async def test_base_structured_stream(mock_extract_tool_return: MagicMock) -> No
 
     base_stream.__aiter__ = generator
     structured_stream = BaseStructuredStream(
-        stream=base_stream, response_model=MagicMock
+        stream=base_stream, response_model=MagicMock, fields_from_call_args={}
     )
     for i, output in enumerate(structured_stream):
         assert output == "tool"
         mock_extract_tool_return.assert_called_once_with(
-            MagicMock, '{"title": "title"}', i == 0
+            MagicMock, '{"title": "title"}', i == 0, {}
         )
         mock_extract_tool_return.reset_mock()
     i = 0
     async for output in structured_stream:
         assert output == "tool"
         mock_extract_tool_return.assert_called_with(
-            MagicMock, '{"title": "title"}', i == 0
+            MagicMock, '{"title": "title"}', i == 0, {}
         )
         mock_extract_tool_return.reset_mock()
         i += 1

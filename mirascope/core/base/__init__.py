@@ -8,6 +8,7 @@ from .call_params import BaseCallParams
 from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
+from .from_call_args import FromCallArgs
 from .message_param import (
     AudioPart,
     BaseMessageParam,
@@ -40,6 +41,7 @@ __all__ = [
     "BaseType",
     "CacheControlPart",
     "call_factory",
+    "FromCallArgs",
     "GenerateJsonSchemaNoTitles",
     "ImagePart",
     "metadata",

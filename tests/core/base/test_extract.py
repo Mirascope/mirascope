@@ -80,6 +80,7 @@ def test_extract_factory_sync(
         mock_extract_decorator_kwargs["response_model"],
         mock_get_json_output.return_value,
         False,
+        {},
     )
     assert output == mock_extract_tool_return.return_value
 
@@ -147,6 +148,7 @@ async def test_extract_factory_async(
         mock_extract_decorator_kwargs["response_model"],
         mock_get_json_output.return_value,
         False,
+        {},
     )
     assert output == mock_extract_tool_return.return_value
 

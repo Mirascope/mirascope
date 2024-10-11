@@ -36,7 +36,7 @@ from ._convert_message_params import convert_message_params
 def setup_call(
     *,
     model: str,
-    client: Client | AsyncClient | None,
+    client: AsyncClient | None,
     fn: Callable[..., Awaitable[CohereDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: CohereDynamicConfig,
@@ -57,7 +57,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: Client | AsyncClient | None,
+    client: Client | None,
     fn: Callable[..., CohereDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: CohereDynamicConfig,
