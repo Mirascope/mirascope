@@ -3,16 +3,19 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from cohere import StreamedChatResponse_StreamEnd, StreamedChatResponse_StreamStart
 from cohere.types import (
     ApiMetaBilledUnits,
     ChatStreamEndEventFinishReason,
     StreamedChatResponse,
-    StreamedChatResponse_TextGeneration,
 )
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
+from ._types import (
+    StreamEndStreamedChatResponse,
+    StreamStartStreamedChatResponse,
+    TextGenerationStreamedChatResponse,
+)
 
 
 class CohereCallResponseChunk(
@@ -47,14 +50,14 @@ class CohereCallResponseChunk(
     @property
     def content(self) -> str:
         """Returns the content for the 0th choice delta."""
-        if isinstance(self.chunk, StreamedChatResponse_TextGeneration):
+        if isinstance(self.chunk, TextGenerationStreamedChatResponse):
             return self.chunk.text
         return ""
 
     @property
     def finish_reasons(self) -> list[ChatStreamEndEventFinishReason] | None:
         """Returns the finish reasons of the response."""
-        if isinstance(self.chunk, StreamedChatResponse_StreamEnd):
+        if isinstance(self.chunk, StreamEndStreamedChatResponse):
             return [self.chunk.finish_reason]
         return None
 
@@ -69,9 +72,9 @@ class CohereCallResponseChunk(
     @property
     def id(self) -> str | None:
         """Returns the id of the response."""
-        if isinstance(self.chunk, StreamedChatResponse_StreamStart):
+        if isinstance(self.chunk, StreamStartStreamedChatResponse):
             return self.chunk.generation_id
-        elif isinstance(self.chunk, StreamedChatResponse_StreamEnd):
+        elif isinstance(self.chunk, StreamEndStreamedChatResponse):
             return self.chunk.response.generation_id
         return None
 
@@ -79,7 +82,7 @@ class CohereCallResponseChunk(
     def usage(self) -> ApiMetaBilledUnits | None:
         """Returns the usage of the response."""
         if (
-            isinstance(self.chunk, StreamedChatResponse_StreamEnd)
+            isinstance(self.chunk, StreamEndStreamedChatResponse)
             and self.chunk.response.meta
         ):
             return self.chunk.response.meta.billed_units

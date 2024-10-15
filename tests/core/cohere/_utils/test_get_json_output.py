@@ -3,10 +3,10 @@
 import pytest
 from cohere.types import (
     NonStreamedChatResponse,
-    StreamedChatResponse_StreamEnd,
-    StreamedChatResponse_TextGeneration,
-    StreamedChatResponse_ToolCallsGeneration,
+    StreamEndStreamedChatResponse,
+    TextGenerationStreamedChatResponse,
     ToolCall,
+    ToolCallsGenerationStreamedChatResponse,
 )
 
 from mirascope.core.cohere._utils._get_json_output import get_json_output
@@ -74,7 +74,7 @@ def test_get_json_output_call_response() -> None:
 
 def test_get_json_output_call_response_chunk() -> None:
     """Tests the `get_json_output` function with a call response chunk."""
-    chunk_text_generation = StreamedChatResponse_TextGeneration(
+    chunk_text_generation = TextGenerationStreamedChatResponse(
         text="json_output",
     )
     call_response_chunk_text_generation = CohereCallResponseChunk(
@@ -88,13 +88,13 @@ def test_get_json_output_call_response_chunk() -> None:
         name="FormatBook",
         parameters={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
     )
-    chunk_tool_calls = StreamedChatResponse_ToolCallsGeneration(tool_calls=[tool_call])
+    chunk_tool_calls = ToolCallsGenerationStreamedChatResponse(tool_calls=[tool_call])
     call_response_chunk_tool_calls = CohereCallResponseChunk(chunk=chunk_tool_calls)
     assert (
         get_json_output(call_response_chunk_tool_calls, json_mode=False)
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
     )
-    chunk_end = StreamedChatResponse_StreamEnd(
+    chunk_end = StreamEndStreamedChatResponse(
         finish_reason="COMPLETE",
         response=NonStreamedChatResponse(generation_id="id", text="", meta=None),
     )
