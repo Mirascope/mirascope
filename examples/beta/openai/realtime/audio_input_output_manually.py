@@ -11,6 +11,7 @@ from mirascope.beta.openai import Realtime, record_as_stream, async_input
 
 app = Realtime(
     "gpt-4o-realtime-preview-2024-10-01",
+    turn_detection=None,
 )
 
 
@@ -24,7 +25,7 @@ async def receive_audio_transcript(response: str, context: dict[str, Any]) -> No
     print(f"AI(audio_transcript): {response}")
 
 
-@app.sender()
+@app.sender(wait_for_audio_transcript_response=True)
 async def send_audio_as_stream(
     context: dict[str, Any],
 ) -> AsyncGenerator[BytesIO, None]:

@@ -14,7 +14,7 @@ async def receive_text(response: str, context: dict[str, Any]) -> None:
     print(f"AI(text): {response}", flush=True)
 
 
-@app.sender()
+@app.sender(wait_for_text_response=True)
 async def send_message(context: Context) -> str:
     message = await async_input("Enter your message: ")
     return message

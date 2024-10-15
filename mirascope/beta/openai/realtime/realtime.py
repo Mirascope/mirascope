@@ -5,7 +5,7 @@ import base64
 import inspect
 import json
 import os
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import Callable
 from io import BytesIO
 from typing import (
     Any,
@@ -55,6 +55,7 @@ class RawMessage(TypedDict, total=False):
 class Sender(TypedDict):
     func: SenderFunc[_ResponseT]
     wait_for_text_response: bool
+    wait_for_audio_transcript_response: bool
 
 
 NotSet = object()
@@ -97,17 +98,28 @@ class Realtime:
             "tools": tools,
         }
         self._text_message_received: bool = True
+        self._audio_transcript_received: bool = True
 
     async def _wait_for_text_message(self) -> None:
         while not self._text_message_received:
             await asyncio.sleep(0.1)
 
+    async def _wait_for_audio_transcript(self) -> None:
+        while not self._audio_transcript_received:
+            await asyncio.sleep(0.1)
+
     def sender(
-        self, wait_for_text_response: bool = True
+        self,
+        wait_for_text_response: bool = False,
+        wait_for_audio_transcript_response: bool = False,
     ) -> Callable[[SenderFunc[_ResponseT]], SenderFunc[_ResponseT]]:
         def inner(func: SenderFunc[_ResponseT]) -> SenderFunc[_ResponseT]:
             self.senders.append(
-                {"func": func, "wait_for_text_response": wait_for_text_response}
+                {
+                    "func": func,
+                    "wait_for_text_response": wait_for_text_response,
+                    "wait_for_audio_transcript_response": wait_for_audio_transcript_response,
+                }
             )
             return func
 
@@ -156,29 +168,26 @@ class Realtime:
     async def _send_event(cls, conn: ClientConnection, event: dict[str, Any]) -> None:
         await conn.send(json.dumps(event))
 
+    async def _wait_for_responses(self, sender: Sender) -> None:
+        if sender["wait_for_text_response"]:
+            await self._wait_for_text_message()
+        if sender["wait_for_audio_transcript_response"]:
+            await self._wait_for_audio_transcript()
+
+    def _set_wait_for_flags(self, sender: Sender) -> None:
+        if sender["wait_for_audio_transcript_response"]:
+            self._audio_transcript_received = False
+        if sender["wait_for_text_response"]:
+            self._text_message_received = False
+
     async def _sender_process_loop(
         self, conn: ClientConnection, sender: Sender
     ) -> None:
         while True:
+            await self._wait_for_responses(sender)
             if inspect.isasyncgenfunction(sender["func"]):
-                if sender["wait_for_text_response"]:
-
-                    async def _async_generator_wrapper() -> (
-                        AsyncGenerator[_ResponseT, None]
-                    ):
-                        _original_async_generator = sender["func"](self.context)
-                        while True:
-                            await self._wait_for_text_message()
-                            try:
-                                yield await anext(_original_async_generator)
-                            except StopAsyncIteration:
-                                break
-
-                    async_generator = _async_generator_wrapper()
-                else:
-                    async_generator = sender["func"](self.context)
                 input_audio_buffer: bool = False
-                async for message in async_generator:
+                async for message in sender["func"](self.context):
                     match message:
                         case BytesIO() | bytes():
                             event = await async_audio_input_audio_buffer_append_event(
@@ -188,15 +197,11 @@ class Realtime:
                             input_audio_buffer = True
                         case str():
                             await self._create_conversation_item_create(conn, message)
-                            self._text_message_received = False
                         case _:
                             continue
                 if input_audio_buffer:
                     await self._create_audio_input_buffer_commit(conn)
-                await self._create_response(conn)
             else:
-                if sender["wait_for_text_response"]:
-                    await self._wait_for_text_message()
                 message = await sender["func"](self.context)
                 match message:
                     case BytesIO() | bytes():
@@ -204,10 +209,10 @@ class Realtime:
                         await self._send_event(conn, event)
                     case str():
                         await self._create_conversation_item_create(conn, message)
-                        self._text_message_received = False
                     case _:
                         continue
-                await self._create_response(conn)
+            await self._create_response(conn)
+            self._set_wait_for_flags(sender)
 
     async def _process_sender(self, conn: ClientConnection) -> None:
         try:
@@ -259,6 +264,7 @@ class Realtime:
                             audio_transcript_chunk, "audio_transcript"
                         )
                         audio_transcript_chunk = ""
+                        self._audio_transcript_received = True
                     case "response.audio_transcript.delta":
                         audio_transcript_chunk += message["delta"]
                         await self._process_specific_receiver(
