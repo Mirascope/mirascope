@@ -47,8 +47,8 @@ def test_convert_message_params() -> None:
                         "media_type": "image/jpeg",
                         "type": "base64",
                     },
+                    "cache_control": {"type": "ephemeral"},
                 },
-                {"type": "text", "text": "", "cache_control": {"type": "ephemeral"}},
             ],
         },
     ]
