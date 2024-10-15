@@ -33,7 +33,7 @@ async def record_as_stream(
     event = asyncio.Event()
     data_queue = Queue()
 
-    def callback(indata: np.ndarray, *args: Any) -> None:
+    def callback(indata: np.ndarray, *args: Any) -> None:  # noqa: ANN401
         if event.is_set():
             raise sd.CallbackStop
         data_queue.put(indata.copy())
@@ -46,7 +46,8 @@ async def record_as_stream(
         if custom_blocking_event:
             await custom_blocking_event()
         else:
-            await async_input("Press Enter to stop recording...")
+            while True:
+                await asyncio.sleep(0.01)
         event.set()
 
     with stream:

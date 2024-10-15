@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Awaitable
+from collections.abc import AsyncGenerator, Awaitable, Coroutine
 from typing import (
     Any,
     Protocol,
@@ -8,8 +8,8 @@ from typing import (
 
 from mirascope.beta.rag.base.embedding_response import ResponseT
 
-_RealtimeT = TypeVar("_RealtimeT", contravariant=True)
-_ResponseT = TypeVar("_ResponseT", covariant=True)
+_ResponseBaseType = str | bytes
+_ResponseT = TypeVar("_ResponseT", bound=_ResponseBaseType)
 
 # TODO: Improve the type of context
 Context: TypeAlias = dict[str, Any]
@@ -18,7 +18,11 @@ Context: TypeAlias = dict[str, Any]
 class SenderFunc(Protocol[_ResponseT]):
     def __call__(
         self, context: Context
-    ) -> AsyncGenerator[_ResponseT, None] | ResponseT: ...
+    ) -> (
+        AsyncGenerator[_ResponseT, None]
+        | Coroutine[Any, Any, _ResponseT]
+        | Awaitable[ResponseT]
+    ): ...
 
 
 class ReceiverFunc(Protocol[_ResponseT]):

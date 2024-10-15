@@ -1,3 +1,3 @@
-from .realtime import openai
+from . import openai
 
 __all__ = ["openai"]
