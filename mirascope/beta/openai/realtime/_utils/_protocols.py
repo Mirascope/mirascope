@@ -6,8 +6,6 @@ from typing import (
     TypeVar,
 )
 
-from mirascope.beta.rag.base.embedding_response import ResponseT
-
 _ResponseBaseType = str | bytes
 _ResponseT = TypeVar("_ResponseT", bound=_ResponseBaseType)
 
@@ -21,7 +19,7 @@ class SenderFunc(Protocol[_ResponseT]):
     ) -> (
         AsyncGenerator[_ResponseT, None]
         | Coroutine[Any, Any, _ResponseT]
-        | Awaitable[ResponseT]
+        | Awaitable[_ResponseT]
     ): ...
 
 
