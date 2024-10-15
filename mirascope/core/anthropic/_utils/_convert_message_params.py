@@ -21,14 +21,8 @@ def convert_message_params(
             for part in content:
                 if part.type == "text":
                     converted_content.append(part.model_dump())
-                elif part.type == "cache_control":
-                    converted_content.append(
-                        {
-                            "type": "text",
-                            "text": "",
-                            "cache_control": {"type": part.cache_type},
-                        }
-                    )
+                elif part.type == "cache_control" and converted_content:
+                    converted_content[-1]["cache_control"] = {"type": part.cache_type}
                 elif part.type == "image":
                     if part.media_type not in [
                         "image/jpeg",
