@@ -2,8 +2,7 @@
 
 import json
 
-from cohere.types import StreamedChatResponse_ToolCallsGeneration
-
+from .._types import ToolCallsGenerationStreamedChatResponse
 from ..call_response import CohereCallResponse
 from ..call_response_chunk import CohereCallResponseChunk
 
@@ -23,7 +22,7 @@ def get_json_output(
         if json_mode:
             return response.content
         elif (
-            isinstance(response.chunk, StreamedChatResponse_ToolCallsGeneration)
+            isinstance(response.chunk, ToolCallsGenerationStreamedChatResponse)
             and (tool_calls := response.chunk.tool_calls)
             and (parameters := tool_calls[0].parameters)
         ):
