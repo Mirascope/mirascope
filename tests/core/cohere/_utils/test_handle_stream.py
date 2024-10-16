@@ -4,10 +4,10 @@ import pytest
 from cohere.types import (
     NonStreamedChatResponse,
     StreamedChatResponse,
-    StreamedChatResponse_StreamEnd,
-    StreamedChatResponse_TextGeneration,
-    StreamedChatResponse_ToolCallsGeneration,
+    StreamEndStreamedChatResponse,
+    TextGenerationStreamedChatResponse,
     ToolCall,
+    ToolCallsGenerationStreamedChatResponse,
 )
 
 from mirascope.core.cohere._utils._handle_stream import (
@@ -35,11 +35,11 @@ def mock_chunks() -> list[StreamedChatResponse]:
         parameters={"title": "The Name of the Wind", "author": "Patrick Rothfuss"},
     )
     return [
-        StreamedChatResponse_TextGeneration(
+        TextGenerationStreamedChatResponse(
             text="json_output",
         ),
-        StreamedChatResponse_ToolCallsGeneration(tool_calls=[tool_call]),
-        StreamedChatResponse_StreamEnd(
+        ToolCallsGenerationStreamedChatResponse(tool_calls=[tool_call]),
+        StreamEndStreamedChatResponse(
             finish_reason="COMPLETE",
             response=NonStreamedChatResponse(generation_id="id", text="", meta=None),
         ),
