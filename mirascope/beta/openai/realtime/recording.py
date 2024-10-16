@@ -76,9 +76,7 @@ async def record_as_stream(
         yield data_queue.get_nowait()
 
 
-async def record(
-    custom_blocking_event: Callable[..., Awaitable[...]] | None = None,
-) -> BytesIO:
+async def record(custom_blocking_event: Callable[..., Awaitable[...]]) -> BytesIO:
     recording = []
     event = asyncio.Event()
 
@@ -92,10 +90,7 @@ async def record(
     )
 
     with stream:
-        if custom_blocking_event:
-            await custom_blocking_event()
-        else:
-            await async_input("Press Enter to stop recording...")
+        await custom_blocking_event()
         event.set()
 
     recording = np.concatenate(recording, axis=0)
