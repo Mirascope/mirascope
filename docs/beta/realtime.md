@@ -19,8 +19,10 @@ Mirascope's OpenAI Realtime API wrapper offers a range of powerful features that
 - **Simplified Session Management**: Abstract away the complexities of WebSocket connections and session handling.
 - **Easy-to-use Decorator Pattern**: Utilize intuitive Python decorators to define senders and receivers, streamlining your code structure.
 - **Asynchronous Support**: Built-in support for asynchronous operations, allowing for efficient handling of I/O-bound tasks.
+- **Tool Integration**: Incorporate custom tools into your Realtime API interactions, enabling more complex and dynamic conversations. Tools can be easily defined as functions and integrated into senders, allowing the AI model to use them during the interaction.
+- **Flexible Tool Handling**: Receive and process tool calls from the AI model, enabling your application to perform specific actions or retrieve information as part of the conversation flow.
 
-These features enable developers to create a wide range of applications, from voice assistants and interactive chatbots to complex multi-modal AI systems, all while leveraging the power of OpenAI's latest models through a clean, Pythonic interface.
+- These features enable developers to create a wide range of applications, from voice assistants and interactive chatbots to complex multi-modal AI systems, all while leveraging the power of OpenAI's latest models through a clean, Pythonic interface.
 
 
 ## Basic Usage
@@ -82,6 +84,24 @@ By using these decorators, you can easily define multiple senders and receivers 
 
 ```python
 --8<-- "examples/beta/openai/realtime/audio_stream_input_output_manually.py"
+```
+
+### Audio Interaction with Tools and Turn Detection
+
+```python
+--8<-- "examples/beta/openai/realtime/audio_stream_input_output_tools.py"
+```
+
+### Text-only Interaction with Tools
+
+```python
+--8<-- "examples/beta/openai/realtime/text_input_output_tools.py"
+```
+
+### Text-only Interaction with dynamic Tools
+
+```python
+--8<-- "examples/beta/openai/realtime/text_input_output_dynamic_tools.py"
 ```
 
 ## Notes
