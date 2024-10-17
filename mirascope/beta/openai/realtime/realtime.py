@@ -235,12 +235,21 @@ class Realtime:
             },
         )
 
-    async def _create_session_update(self, conn: ClientConnection) -> None:
+    async def _create_session_update(
+        self,
+        conn: ClientConnection,
+        tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
+    ) -> None:
         await self._send_event(
             conn,
             {
                 "type": "session.update",
-                "session": self._session,
+                "session": {
+                    **self._session,
+                    "tools": list(_get_tool_schemas(tools).values()),
+                }
+                if tools
+                else self._session,
             },
         )
 
@@ -267,7 +276,13 @@ class Realtime:
             await self._wait_for_responses(sender)
             if inspect.isasyncgenfunction(sender["func"]):
                 input_audio_buffer: bool = False
+                if tools := sender.get("tools"):
+                    await self._create_session_update(conn, tools)
                 async for message in sender["func"](self.context):
+                    if isinstance(message, tuple):
+                        message, tools = message
+                        if tools:
+                            await self._create_conversation_item_create(conn, message)
                     match message:
                         case BytesIO() | bytes():
                             event = await async_audio_input_audio_buffer_append_event(
@@ -281,10 +296,16 @@ class Realtime:
                             continue
                 if input_audio_buffer:
                     await self._create_audio_input_buffer_commit(conn)
+                await self._create_response(conn)
             else:
+                tools = None
                 message = await sender["func"](self.context)
+
+                if isinstance(message, tuple):
+                    message, tools = message
+                    await self._create_conversation_item_create(conn, message)
+                    await self._create_response(conn, tools)
                 match message:
-                    # TODO: Support tool in response
                     case BytesIO() | bytes():
                         event = await async_audio_to_item_create_event(message)
                         await self._send_event(conn, event)
@@ -292,7 +313,7 @@ class Realtime:
                         await self._create_conversation_item_create(conn, message)
                     case _:
                         continue
-            await self._create_response(conn, sender["tools"])
+                await self._create_response(conn, tools or sender.get("tools"))
             self._set_wait_for_flags(sender)
 
     async def _process_sender(self, conn: ClientConnection) -> None:

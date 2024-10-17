@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Awaitable, Coroutine
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine
 from typing import (
     Any,
     Protocol,
@@ -19,9 +19,18 @@ class SenderFunc(Protocol[_ResponseT]):
     def __call__(
         self, context: Context
     ) -> (
-        AsyncGenerator[_ResponseT | tuple[_ResponseT, OpenAIRealtimeTool], None]
-        | Coroutine[Any, Any, _ResponseT | tuple[_ResponseT, OpenAIRealtimeTool]]
-        | Awaitable[_ResponseT | tuple[_ResponseT, OpenAIRealtimeTool]]
+        AsyncGenerator[
+            _ResponseT | tuple[_ResponseT, list[type[OpenAIRealtimeTool] | Callable]],
+            None,
+        ]
+        | Coroutine[
+            Any,
+            Any,
+            _ResponseT | tuple[_ResponseT, list[type[OpenAIRealtimeTool] | Callable]],
+        ]
+        | Awaitable[
+            _ResponseT | tuple[_ResponseT, list[type[OpenAIRealtimeTool] | Callable]]
+        ]
     ): ...
 
 
