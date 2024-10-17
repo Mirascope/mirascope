@@ -6,9 +6,11 @@ from typing import (
     TypeVar,
 )
 
+from ..tool import OpenAIRealtimeTool
+
 _ResponseBaseType = str | bytes
 _ResponseT = TypeVar("_ResponseT", bound=_ResponseBaseType)
-
+_ReceiverArgumentT = TypeVar("_ReceiverArgumentT")
 # TODO: Improve the type of context
 Context: TypeAlias = dict[str, Any]
 
@@ -17,11 +19,13 @@ class SenderFunc(Protocol[_ResponseT]):
     def __call__(
         self, context: Context
     ) -> (
-        AsyncGenerator[_ResponseT, None]
-        | Coroutine[Any, Any, _ResponseT]
-        | Awaitable[_ResponseT]
+        AsyncGenerator[_ResponseT | tuple[_ResponseT, OpenAIRealtimeTool], None]
+        | Coroutine[Any, Any, _ResponseT | tuple[_ResponseT, OpenAIRealtimeTool]]
+        | Awaitable[_ResponseT | tuple[_ResponseT, OpenAIRealtimeTool]]
     ): ...
 
 
-class ReceiverFunc(Protocol[_ResponseT]):
-    def __call__(self, response: _ResponseT, context: Context) -> Awaitable[None]: ...
+class ReceiverFunc(Protocol[_ReceiverArgumentT]):
+    def __call__(
+        self, response: _ReceiverArgumentT, context: Context
+    ) -> Awaitable[None]: ...
