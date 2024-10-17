@@ -1,15 +1,15 @@
-# Realtime API (Beta)
+# OpenAI Realtime API (Beta)
 
-Mirascope's Realtime API provides a simple and intuitive way to leverage [OpenAI's cutting-edge Realtime API](https://platform.openai.com/docs/guides/realtime). This integration allows developers to easily create dynamic, interactive applications with real-time audio and text capabilities, all while abstracting away the complexities of WebSocket management and event handling.
+Mirascope provides a simple and intuitive way to leverage [OpenAI's cutting-edge Realtime API](https://platform.openai.com/docs/guides/realtime). This integration allows developers to easily create dynamic, interactive applications with real-time audio and text capabilities, all while abstracting away the complexities of WebSocket management and event handling.
 
 With Mirascope, you can quickly set up and use advanced features of OpenAI's Realtime API without dealing with low-level WebSocket operations or complex event structures. This allows you to focus on building your application logic rather than worrying about the intricacies of API communication.
 
 !!! warning "Beta Feature"
-    The Realtime API integration is currently in beta. As such, the interface is subject to change in future releases. We recommend using this feature with caution in production environments and staying updated with the latest documentation and releases.
+    The OpenAI Realtime API integration is currently in beta. As such, the interface is subject to change in future releases. We recommend using this feature with caution in production environments and staying updated with the latest documentation and releases.
 
 ## Key Features
 
-Mirascope's Realtime API wrapper offers a range of powerful features that make it easy to build sophisticated real-time applications:
+Mirascope's OpenAI Realtime API wrapper offers a range of powerful features that make it easy to build sophisticated real-time applications:
 
 - **Audio Input/Output**: Seamlessly handle both audio input from users and audio output from the model, enabling natural voice interactions.
 - **Audio Stream Input**: Support for streaming audio input, allowing for real-time processing of continuous audio data.
@@ -66,6 +66,12 @@ By using these decorators, you can easily define multiple senders and receivers 
 --8<-- "examples/beta/openai/realtime/text_input_output.py"
 ```
 
+### Audio Interaction with Turn Detection
+
+```python
+--8<-- "examples/beta/openai/realtime/audio_stream_input_output.py"
+```
+
 ### Audio Interaction without Turn Detection
 
 ```python
@@ -83,4 +89,4 @@ By using these decorators, you can easily define multiple senders and receivers 
 - The Realtime API is currently in beta, and its API may change in future releases.
 - Make sure to handle exceptions and cancellation appropriately in your senders and receivers.
 - The examples provided use the `pydub` library for audio playback. You may need to install additional dependencies for audio support.
-- [FFmpeg](https://www.ffmpeg.org/) is required for audio processing. Make sure to install FFmpeg on your system before using the audio features of the Realtime API.
+- [FFmpeg](https://www.ffmpeg.org/) is required for audio processing. Make sure to install FFmpeg on your system before using the audio features of Mirascope's OpenAI Realtime API support.

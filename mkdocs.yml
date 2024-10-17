@@ -240,7 +240,7 @@ nav:
       - Logfire: "integrations/logfire.md"
       - Langfuse: "integrations/langfuse.md"
   - Beta:
-      - Realtime: "beta/realtime.md"
+      - OpenAI Realtime API: "beta/openai_realtime_api.md"
   - API Reference:
       - Core:
           - Anthropic:
