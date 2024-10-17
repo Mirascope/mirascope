@@ -71,6 +71,7 @@ class RawMessage(TypedDict, total=False):
     delta: NotRequired[str]
     response_id: NotRequired[str]
     call_id: NotRequired[str]
+    response: NotRequired[dict]
 
 
 class Sender(TypedDict):
@@ -345,6 +346,11 @@ class Realtime:
             async for data in conn:
                 message = json.loads(data)  # type: RawMessage
                 match message["type"]:  # type:
+                    case "response.done":
+                        if message["response"]["status"] == "failed":
+                            print(  # noqa: T201
+                                f"Failed: {message["response"]["status_details"]["error"]}"
+                            )
                     case "session.created":
                         current_session = message["session"]
                         self._session = {
