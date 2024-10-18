@@ -240,6 +240,8 @@ nav:
       - HyperDX: "integrations/hyperdx.md"
       - Logfire: "integrations/logfire.md"
       - Langfuse: "integrations/langfuse.md"
+  - Beta:
+      - OpenAI Realtime API: "beta/openai_realtime_api.md"
   - API Reference:
       - Core:
           - Anthropic:
