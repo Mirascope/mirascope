@@ -97,7 +97,7 @@ def setup_call(
     messages = convert_message_params(messages)
 
     if messages[0]["role"] == "system":
-        call_kwargs["system"] = messages.pop(0)["content"]
+        call_kwargs["system"] = messages.pop(0)["content"]  # pyright: ignore [reportGeneralTypeIssues]
 
     if json_mode:
         json_mode_content = _utils.json_mode_content(

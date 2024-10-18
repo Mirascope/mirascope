@@ -1,6 +1,5 @@
 """Protocols for reusable type hints."""
 
-import inspect
 from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
@@ -24,7 +23,6 @@ from typing import (
 )
 
 from pydantic import BaseModel
-from typing_extensions import TypeIs
 
 from ..call_kwargs import BaseCallKwargs
 from ..call_response import BaseCallResponse
@@ -171,12 +169,6 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     def __call__(
         self, *, stream: bool = False, **kwargs: Any
     ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
-
-
-def fn_is_async(
-    fn: Callable[..., _R] | Callable[..., Awaitable[_R] | Coroutine[Any, Any, _R]],
-) -> TypeIs[Callable[..., Awaitable[_R] | Coroutine[Any, Any, _R]]]:
-    return inspect.iscoroutinefunction(fn)
 
 
 class SetupCall(
@@ -379,7 +371,7 @@ class CallDecorator(
         _BaseStreamT,
         _SyncBaseClientT,
         _AsyncBaseClientT,
-        _SameSyncAndAsyncClientT
+        _SameSyncAndAsyncClientT,
     ],
 ):
     @overload

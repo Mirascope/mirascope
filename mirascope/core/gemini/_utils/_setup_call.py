@@ -9,6 +9,7 @@ from google.generativeai.types import (
     AsyncGenerateContentResponse,
     ContentDict,
     GenerateContentResponse,
+    GenerationConfigDict,
 )
 from google.generativeai.types.content_types import ToolConfigDict
 
@@ -99,7 +100,7 @@ def setup_call(
         if is_dataclass(generation_config):
             generation_config = asdict(generation_config)
         generation_config["response_mime_type"] = "application/json"
-        call_kwargs["generation_config"] = generation_config
+        call_kwargs["generation_config"] = cast(GenerationConfigDict, generation_config)
         messages[-1]["parts"].append(
             _utils.json_mode_content(tool_types[0] if tool_types else None)
         )

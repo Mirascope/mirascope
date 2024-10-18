@@ -131,7 +131,7 @@ def test_base_prompt_run() -> None:
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
     assert hasattr(decorator_arg, "_prompt_template")
-    assert decorator_arg._prompt_template == "Recommend a {genre} book."
+    assert decorator_arg._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")
@@ -157,7 +157,7 @@ async def test_base_prompt_run_async() -> None:
     decorator_arg = mock_decorator.call_args[0][0]
     assert callable(decorator_arg)
     assert hasattr(decorator_arg, "_prompt_template")
-    assert decorator_arg._prompt_template == "Recommend a {genre} book."
+    assert decorator_arg._prompt_template == "Recommend a {genre} book."  # pyright: ignore [reportFunctionMemberAccess]
 
     # Ensure the decorated function was called with the correct arguments
     mock_call_fn.assert_called_once_with(genre="fantasy")

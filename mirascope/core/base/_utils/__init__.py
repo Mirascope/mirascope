@@ -6,6 +6,7 @@ from ._convert_base_type_to_base_tool import convert_base_type_to_base_tool
 from ._convert_function_to_base_tool import convert_function_to_base_tool
 from ._default_tool_docstring import DEFAULT_TOOL_DOCSTRING
 from ._extract_tool_return import extract_tool_return
+from ._fn_is_async import fn_is_async
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
 from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_fn
@@ -34,7 +35,6 @@ from ._protocols import (
     LLMFunctionDecorator,
     SameSyncAndAsyncClientSetupCall,
     SetupCall,
-    fn_is_async,
 )
 from ._setup_call import setup_call
 from ._setup_extract_tool import setup_extract_tool

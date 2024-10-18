@@ -56,7 +56,7 @@ def get_dynamic_configuration(
             async_result = await result
             if _is_message_param_list(async_result):
                 return cast(_BaseDynamicConfigT, {"messages": async_result})
-            return async_result
+            return cast(_BaseDynamicConfigT, async_result)
 
         return inner_async()
 
