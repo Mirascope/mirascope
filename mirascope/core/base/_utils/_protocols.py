@@ -436,6 +436,7 @@ class CallDecorator(
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> LLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT]: ...
+
     @overload
     def __call__(
         self,
