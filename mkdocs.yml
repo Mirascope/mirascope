@@ -175,6 +175,7 @@ nav:
           - Speech Transcription: "tutorials/more_advanced/speech_transcription.ipynb"
           - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
           - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
+          - o1 Style Thinking: "tutorials/more_advanced/o1_style_thinking.ipynb"
       - Agents:
           - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
           - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"

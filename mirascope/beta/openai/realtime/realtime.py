@@ -6,20 +6,21 @@ import inspect
 import json
 import os
 from collections.abc import Callable
+from functools import lru_cache
 from io import BytesIO
 from typing import (
     Any,
     Literal,
-    NotRequired,
     TypeAlias,
     TypedDict,
     TypeVar,
-    overload,
 )
 
 import websockets
 from black.trans import defaultdict
+from pydantic import BaseModel
 from pydub import AudioSegment
+from typing_extensions import NotRequired, overload
 from websockets.asyncio.client import ClientConnection, connect
 
 from mirascope.beta.openai.realtime._utils._audio import (
@@ -33,7 +34,7 @@ from mirascope.core.base._utils import (
     convert_function_to_base_tool,
 )
 
-from ._utils._protocols import ReceiverFunc, SenderFunc
+from ._utils._protocols import FunctionCallHandlerFunc, ReceiverFunc, SenderFunc
 from .tool import FunctionCallArguments, OpenAIRealtimeTool, RealtimeToolParam
 
 ChunkResponseType: TypeAlias = Literal[
@@ -47,21 +48,20 @@ TextResponseType: TypeAlias = Literal[
     "audio_transcript",
 ]
 AudioResponseType: TypeAlias = Literal["audio"]
-ToolResponseType: TypeAlias = Literal["tool"]
-ResponseType: TypeAlias = (
-    ChunkResponseType | TextResponseType | AudioResponseType | ToolResponseType
-)
+ResponseType: TypeAlias = ChunkResponseType | TextResponseType | AudioResponseType
 
 
 _ResponseT = TypeVar("_ResponseT")
 _ConnectionT = TypeVar("_ConnectionT")
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ToolSchemaT = TypeVar("_ToolSchemaT")
-BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
+
 # TODO: Improve the type of response
 Response: TypeAlias = Any
+ToolName: TypeAlias = str
 CallId: TypeAlias = str
 ResponseId: TypeAlias = str
+ToolType: TypeAlias = type[OpenAIRealtimeTool]
 
 
 class RawMessage(TypedDict, total=False):
@@ -70,30 +70,42 @@ class RawMessage(TypedDict, total=False):
     item: NotRequired[dict]
     delta: NotRequired[str]
     response_id: NotRequired[str]
-    call_id: NotRequired[str]
+    tool_name: NotRequired[str]
     response: NotRequired[dict]
+    name: NotRequired[str]
+    call_id: NotRequired[str]
 
 
 class Sender(TypedDict):
     func: SenderFunc[_ResponseT, OpenAIRealtimeTool]
     wait_for_text_response: bool
     wait_for_audio_transcript_response: bool
-    tools: list[type[OpenAIRealtimeTool] | Callable]
+    tools: list[type[BaseModel] | Callable]
+
+
+class FunctionCallHandler(TypedDict):
+    tool_name: ToolName
+    func: FunctionCallHandlerFunc
 
 
 NotSet = object()
 
 
-def _get_tool_schemas(
-    tools: list[type[OpenAIRealtimeTool] | Callable],
-) -> dict[CallId, RealtimeToolParam]:
-    tool_types = [
+@lru_cache
+def _convert_to_base_tool(tool: type[BaseModel] | Callable) -> type[ToolType]:
+    if inspect.isclass(tool):
         convert_base_model_to_base_tool(tool, OpenAIRealtimeTool)
-        if inspect.isclass(tool)
-        else convert_function_to_base_tool(tool, OpenAIRealtimeTool)
+    return convert_function_to_base_tool(tool, OpenAIRealtimeTool)
+
+
+def _get_tool_type_and_tool_schemas(
+    tools: list[type[BaseModel] | Callable],
+) -> dict[ToolName, tuple[ToolType, RealtimeToolParam]]:
+    return {
+        _tool_type._name(): (_tool_type, _tool_type.tool_schema())
         for tool in tools
-    ]
-    return {_tool_type._name(): _tool_type.tool_schema() for _tool_type in tool_types}
+        if (_tool_type := _convert_to_base_tool(tool))
+    }
 
 
 class Realtime:
@@ -112,18 +124,19 @@ class Realtime:
         tool_choice: str | NotSet = NotSet,
         temperature: float | NotSet = NotSet,
         max_response_output_tokens: int | float | Literal["inf"] = NotSet,
-        tools: list[type[OpenAIRealtimeTool] | Callable] | NotSet = NotSet,
+        tools: list[type[BaseModel] | Callable] | NotSet = NotSet,
     ) -> None:
         self.senders: list[Sender] = []
         self.receivers: defaultdict[ResponseType, ReceiverFunc] = defaultdict(list)
+        self.function_call_handlers: dict[ToolName, FunctionCallHandlerFunc] = {}
         self._connection: connect | None = None
         self.context = context or {}
-        self._tool_schemas: dict[CallId, RealtimeToolParam] = (
-            _get_tool_schemas(tools) if tools is not NotSet else {}
+        self._tool_schemas: dict[ToolName, tuple[ToolType, RealtimeToolParam]] = (
+            _get_tool_type_and_tool_schemas(tools) if tools is not NotSet else {}
         )
-        self._temporary_tool_schemas: defaultdict[CallId, list[RealtimeToolParam]] = (
-            defaultdict(list)
-        )
+        self._temporary_tool_schemas: defaultdict[
+            ToolName, list[tuple[ToolType, RealtimeToolParam]]
+        ] = defaultdict(list)
         self._session: dict[str, Any] = {
             "model": model,
             "modalities": modalities,
@@ -136,7 +149,9 @@ class Realtime:
             "tool_choice": tool_choice,
             "temperature": temperature,
             "max_response_output_tokens": max_response_output_tokens,
-            "tools": self._tool_schemas.values() if self._tool_schemas else NotSet,
+            "tools": [tool_schema for _, tool_schema in self._tool_schemas.values()]
+            if self._tool_schemas
+            else NotSet,
         }
         self._text_message_received: bool = True
         self._audio_transcript_received: bool = True
@@ -153,7 +168,7 @@ class Realtime:
         self,
         wait_for_text_response: bool = False,
         wait_for_audio_transcript_response: bool = False,
-        tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
+        tools: list[type[BaseModel] | Callable] | None = None,
     ) -> Callable[
         [SenderFunc[_ResponseT, OpenAIRealtimeTool]],
         SenderFunc[_ResponseT, OpenAIRealtimeTool],
@@ -186,12 +201,6 @@ class Realtime:
     def receiver(
         self, response_type: AudioResponseType
     ) -> Callable[[ReceiverFunc[AudioSegment]], ReceiverFunc[AudioSegment]]: ...
-    @overload
-    def receiver(
-        self, response_type: ToolResponseType
-    ) -> Callable[
-        [ReceiverFunc[OpenAIRealtimeTool]], ReceiverFunc[OpenAIRealtimeTool]
-    ]: ...
 
     def receiver(
         self, response_type: ResponseType
@@ -202,17 +211,29 @@ class Realtime:
 
         return inner
 
+    def function_call(
+        self, tool: type[BaseModel] | Callable
+    ) -> Callable[[FunctionCallHandlerFunc], FunctionCallHandlerFunc]:
+        def inner(func: FunctionCallHandlerFunc) -> FunctionCallHandlerFunc:
+            base_tool = _convert_to_base_tool(tool)
+            self.function_call_handlers[base_tool._name()] = func
+            return func
+
+        return inner
+
     async def _create_response(
         self,
         conn: ClientConnection,
-        tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
+        tools: list[type[BaseModel] | Callable] | None = None,
     ) -> None:
         if tools is not None:
-            tool_schemas = _get_tool_schemas(tools)
+            tool_schemas = _get_tool_type_and_tool_schemas(tools)
             schemas = []
-            for call_id, tool_schema in tool_schemas.items():
-                self._temporary_tool_schemas[call_id].append(tool_schema)
-                schemas.append(tool_schema)
+            for tool_name, tool_type_and_tool_schema in tool_schemas.items():
+                self._temporary_tool_schemas[tool_name].append(
+                    tool_type_and_tool_schema
+                )
+                schemas.append(tool_type_and_tool_schema[1])
             event = {"type": "response.create", "response": {"tools": schemas}}
         else:
             event = {"type": "response.create"}
@@ -239,7 +260,7 @@ class Realtime:
     async def _create_session_update(
         self,
         conn: ClientConnection,
-        tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
+        tools: list[type[BaseModel] | Callable] | None = None,
     ) -> None:
         await self._send_event(
             conn,
@@ -247,7 +268,12 @@ class Realtime:
                 "type": "session.update",
                 "session": {
                     **self._session,
-                    "tools": list(_get_tool_schemas(tools).values()),
+                    "tools": [
+                        tool_schema
+                        for _, tool_schema in _get_tool_type_and_tool_schemas(
+                            tools
+                        ).values()
+                    ],
                 }
                 if tools
                 else self._session,
@@ -327,6 +353,28 @@ class Realtime:
         finally:
             await conn.close()
 
+    async def _process_specific_function_call_handler(
+        self,
+        conn: ClientConnection,
+        call_id: CallId,
+        tool_name: ToolName,
+        tool: OpenAIRealtimeTool,
+    ) -> None:
+        function_call_handler = self.function_call_handlers[tool_name]
+        function_call_output = await function_call_handler(tool, self.context)
+        await self._send_event(
+            conn,
+            {
+                "type": "conversation.item.create",
+                "item": {
+                    "type": "function_call_output",
+                    "call_id": call_id,
+                    "output": function_call_output,
+                },
+            },
+        )
+        await self._send_event(conn, {"type": "response.create"})
+
     async def _process_specific_receiver(
         self,
         message: dict[str, Any] | str | AudioSegment | OpenAIRealtimeTool,
@@ -349,7 +397,7 @@ class Realtime:
                     case "response.done":
                         if message["response"]["status"] == "failed":
                             print(  # noqa: T201
-                                f"Failed: {message["response"]["status_details"]["error"]}"
+                                f"Failed: {message['response']['status_details']['error']}"
                             )
                     case "session.created":
                         current_session = message["session"]
@@ -395,25 +443,34 @@ class Realtime:
                         ] += message["delta"]
                         await self._process_specific_receiver(message, "tool_chunk")
                     case "response.function_call_arguments.done":
-                        response_id = message["response_id"]
-                        tool_schemas = self._temporary_tool_schemas.pop(response_id, [])
-                        if tool_schemas:
-                            tool_schema = tool_schemas.pop(0)
+                        tool_name, response_id, call_id = (
+                            message["name"],
+                            message["response_id"],
+                            message["call_id"],
+                        )
+
+                        tool_type_and_tool_schemas = self._temporary_tool_schemas.pop(
+                            tool_name, []
+                        )
+                        if tool_type_and_tool_schemas:
+                            tool_type, tool_schema = tool_type_and_tool_schemas.pop(0)
                         else:
-                            tool_schema = self._tool_schemas[message["call_id"]]
+                            tool_type, tool_schema = self._tool_schemas[tool_name]
                         function_call_arguments = function_call_arguments_chunks[
                             response_id
-                        ].pop(message["call_id"])
+                        ].pop(call_id)
                         if not function_call_arguments_chunks[response_id]:
                             del function_call_arguments_chunks[response_id]
-                        tool = tool_schema.from_tool_call(
+                        tool = tool_type.from_tool_call(
                             FunctionCallArguments(
-                                call_id=message["call_id"],
+                                call_id=call_id,
                                 arguments=function_call_arguments,
                             )
                         )
-                        await self._process_specific_receiver(tool, "tool")
-                        # TODO: type: "function_call_output".
+                        await self._process_specific_function_call_handler(
+                            conn, call_id, tool_name, tool
+                        )
+
                 # Call the receivers for all messages
                 for receiver in self.receivers[None]:
                     await receiver(message, self.context)
@@ -425,12 +482,12 @@ class Realtime:
             raise RuntimeError("Already running")
 
         headers = {
-            "Authorization": f"Bearer {os.environ["OPENAI_API_KEY"]}",
+            "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
             "OpenAI-Beta": "realtime=v1",
         }
 
         async for conn in connect(
-            uri=f"wss://api.openai.com/v1/realtime?model={self._session["model"]}",
+            uri=f"wss://api.openai.com/v1/realtime?model={self._session['model']}",
             additional_headers=headers,
         ):
             try:
