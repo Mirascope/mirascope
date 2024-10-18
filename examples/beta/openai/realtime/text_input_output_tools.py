@@ -26,9 +26,10 @@ async def receive_text(response: str, context: dict[str, Any]) -> None:
     print(f"AI(text): {response}", flush=True)
 
 
-@app.receiver("tool")
-async def recommend_book(response: OpenAIRealtimeTool, context: Context) -> None:
-    print(response.call())
+@app.function_call(format_book)
+async def recommend_book(tool: OpenAIRealtimeTool, context: Context) -> str:
+    result = tool.call()
+    return result
 
 
 asyncio.run(app.run())
