@@ -192,4 +192,4 @@ By leveraging these async features in Mirascope, you can build more efficient an
 
 This section concludes the core functionality Mirascope supports. If you haven't already, we recommend taking a look at any previous sections you've missed to learn about what you can do with Mirascope.
 
-You can also check out the section on [Provider-Specific Features](./provider_specific_features.md) to learn about how to use features that only certain providers support, such as Anthropic's prompt caching.
+You can also check out the section on [Provider-Specific Features](./provider_specific_features/openai.md) to learn about how to use features that only certain providers support, such as OpenAI's structured outputs.
