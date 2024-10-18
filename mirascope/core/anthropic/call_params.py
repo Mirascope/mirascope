@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
+from anthropic.types import TextBlockParam
 from anthropic.types.completion_create_params import Metadata
 from anthropic.types.message_create_params import ToolChoice
 from httpx import Timeout
@@ -31,7 +34,7 @@ class AnthropicCallParams(BaseCallParams):
     tool_choice: NotRequired[ToolChoice | None]
     metadata: NotRequired[Metadata | None]
     stop_sequences: NotRequired[list[str] | None]
-    system: NotRequired[str | None]
+    system: NotRequired[str | Iterable[TextBlockParam] | None]
     temperature: NotRequired[float | None]
     top_k: NotRequired[int | None]
     top_p: NotRequired[float | None]

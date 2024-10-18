@@ -12,9 +12,13 @@ _P = ParamSpec("_P")
 
 
 def is_prompt_template(
-    fn: Callable[_P, BaseDynamicConfig | Messages.Type]
-    | Callable[_P, Awaitable[BaseDynamicConfig | Messages.Type]],
+    fn: Callable[..., BaseDynamicConfig | Messages.Type]
+    | Callable[..., Awaitable[BaseDynamicConfig | Messages.Type]],
 ) -> TypeIs[
-    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
+    Callable[..., BaseDynamicConfig]
+    | Callable[
+        ...,
+        Awaitable[BaseDynamicConfig],
+    ]
 ]:
     return hasattr(fn, "__mirascope_prompt_template__")

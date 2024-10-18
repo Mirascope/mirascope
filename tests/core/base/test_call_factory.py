@@ -13,10 +13,8 @@ def mock_call_factory_kwargs() -> dict:
     return {
         "TCallResponse": MagicMock,
         "TCallResponseChunk": MagicMock,
-        "TDynamicConfig": MagicMock,
         "TToolType": MagicMock,
         "TStream": MagicMock,
-        "TCallParams": MagicMock,
         "default_call_params": MagicMock(),
         "setup_call": MagicMock(),
         "get_json_output": MagicMock(),

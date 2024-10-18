@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import AzureCallParams
 from .call_response import AzureCallResponse
 from .call_response_chunk import AzureCallResponseChunk
-from .dynamic_config import AzureDynamicConfig
 from .stream import AzureStream
 from .tool import AzureTool
 
 azure_call = call_factory(
     TCallResponse=AzureCallResponse,
     TCallResponseChunk=AzureCallResponseChunk,
-    TDynamicConfig=AzureDynamicConfig,
     TToolType=AzureTool,
     TStream=AzureStream,
-    TCallParams=AzureCallParams,
     default_call_params=AzureCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

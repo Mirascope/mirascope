@@ -10,7 +10,7 @@ from ..messages import Messages
 from ._convert_messages_to_message_params import (
     convert_messages_to_message_params,
 )
-from ._protocols import fn_is_async
+from ._fn_is_async import fn_is_async
 
 _P = ParamSpec("_P")
 

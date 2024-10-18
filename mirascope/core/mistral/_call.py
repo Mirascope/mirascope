@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
-from .dynamic_config import MistralDynamicConfig
 from .stream import MistralStream
 from .tool import MistralTool
 
 mistral_call = call_factory(
     TCallResponse=MistralCallResponse,
     TCallResponseChunk=MistralCallResponseChunk,
-    TDynamicConfig=MistralDynamicConfig,
     TToolType=MistralTool,
     TStream=MistralStream,
-    TCallParams=MistralCallParams,
     default_call_params=MistralCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

@@ -5,7 +5,6 @@ from ..openai import (
     OpenAICallParams,
     OpenAICallResponse,
     OpenAICallResponseChunk,
-    OpenAIDynamicConfig,
     OpenAIStream,
     OpenAITool,
 )
@@ -19,10 +18,8 @@ from ._utils import setup_call
 litellm_call = call_factory(
     TCallResponse=OpenAICallResponse,
     TCallResponseChunk=OpenAICallResponseChunk,
-    TDynamicConfig=OpenAIDynamicConfig,
     TToolType=OpenAITool,
     TStream=OpenAIStream,
-    TCallParams=OpenAICallParams,
     default_call_params=OpenAICallParams(),
     setup_call=setup_call,  # pyright: ignore [reportArgumentType]
     get_json_output=get_json_output,

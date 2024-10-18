@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool
 
 openai_call = call_factory(
     TCallResponse=OpenAICallResponse,
     TCallResponseChunk=OpenAICallResponseChunk,
-    TDynamicConfig=OpenAIDynamicConfig,
     TToolType=OpenAITool,
     TStream=OpenAIStream,
-    TCallParams=OpenAICallParams,
     default_call_params=OpenAICallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

@@ -64,7 +64,7 @@ Here's a complete example demonstrating how to set up a streaming audio interact
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py"
     ```
 
 Let's break down the key components of this example:
@@ -74,7 +74,7 @@ Let's break down the key components of this example:
     !!! mira ""
 
         ```python
-        --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py:10:13"
+        --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py:10:13"
         ```
 
 2. We define two receivers using the `@app.receiver` decorator:
@@ -82,7 +82,7 @@ Let's break down the key components of this example:
     !!! mira ""
 
         ```python
-        --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py:16:25"
+        --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py:16:25"
         ```
 
     The first receiver handles audio responses by playing them, while the second receiver prints the audio transcript.
@@ -91,7 +91,7 @@ Let's break down the key components of this example:
     !!! mira ""
 
         ```python
-        --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py:27:32"
+        --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py:27:32"
         ```
 
    This sender function streams audio data to the model using the `record_as_stream()` function.
@@ -101,7 +101,7 @@ Let's break down the key components of this example:
     !!! mira ""
 
         ```python
-        --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py:35"
+        --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py:35"
         ```
 
 This example demonstrates how to set up a streaming audio interaction with the Realtime API. The sender continuously streams audio data to the model, while the receivers handle the audio responses and transcripts from the model.
@@ -115,7 +115,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/text_input_output.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/text_input_output.py"
     ```
 
 #### Audio Interaction with Turn Detection
@@ -123,7 +123,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/audio_stream_input_output.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output.py"
     ```
 
 #### Audio Interaction without Turn Detection
@@ -131,7 +131,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/audio_input_output_manually.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_input_output_manually.py"
     ```
 
 #### Streaming Audio Interaction without Turn Detection
@@ -139,7 +139,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/audio_stream_input_output_manually.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output_manually.py"
     ```
 
 #### Audio Interaction with Tools and Turn Detection
@@ -147,7 +147,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/audio_stream_input_output_tools.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/audio_stream_input_output_tools.py"
     ```
 
 #### Text-only Interaction with Tools
@@ -155,7 +155,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/text_input_output_tools.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/text_input_output_tools.py"
     ```
 
 #### Text-only Interaction with dynamic Tools
@@ -163,7 +163,7 @@ By using these decorators, you can easily define multiple senders and receivers 
 !!! mira ""
 
     ```python
-    --8<-- "examples/beta/openai/realtime/text_input_output_dynamic_tools.py"
+    --8<-- "examples/learn/provider_specific_features/openai/realtime/text_input_output_dynamic_tools.py"
     ```
 
 ### Notes
