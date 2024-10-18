@@ -4,10 +4,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from mirascope.core.gemini import _utils
-from mirascope.core.gemini.call_params import GeminiCallParams
 from mirascope.core.gemini.call_response import GeminiCallResponse
 from mirascope.core.gemini.call_response_chunk import GeminiCallResponseChunk
-from mirascope.core.gemini.dynamic_config import GeminiDynamicConfig
 from mirascope.core.gemini.stream import GeminiStream
 from mirascope.core.gemini.tool import GeminiTool
 
@@ -26,10 +24,8 @@ def test_gemini_call() -> None:
         mock_call_factory.assert_called_once_with(
             TCallResponse=GeminiCallResponse,
             TCallResponseChunk=GeminiCallResponseChunk,
-            TDynamicConfig=GeminiDynamicConfig,
             TToolType=GeminiTool,
             TStream=GeminiStream,
-            TCallParams=GeminiCallParams,
             default_call_params={},
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,

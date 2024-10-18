@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.4.2"
+version = "1.5.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -77,13 +77,18 @@ mistral = ["mistralai>=0.4.2,<1"]
 openai = ["openai>=1.6.0,<2"]
 opentelemetry = ["opentelemetry-api>=1.22.0,<2", "opentelemetry-sdk>=1.22.0,<2"]
 vertex = ["google-cloud-aiplatform>=1.38.0,<2"]
-weave = ["weave>=0.50.14"]
+realtime = [
+    "numpy>=1.26.4,<2",
+    "pydub>=0.25.1,<1",
+    "sounddevice>=0.5.1,<1",
+    "websockets>=13.1,<14",
+]
 
 [tool.uv]
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.378",
+    "pyright>=1.1.385",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",
@@ -112,6 +117,9 @@ dev-dependencies = [
     "pillow>=10.4.0",
     "notebook>=7.2.2",
 ]
+
+[tool.uv.sources]
+mirascope = { workspace = true }
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

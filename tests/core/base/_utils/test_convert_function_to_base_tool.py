@@ -79,7 +79,7 @@ def test_convert_function_to_base_tool_with_self_argument() -> None:
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
     tool_type.title = "The Name of the Wind"  # pyright: ignore [reportAttributeAccessIssue]
-    tool = tool_type()
+    tool = tool_type()  # pyright: ignore [reportAbstractUsage]
     assert tool.call() == "The Name of the Wind"
 
 
@@ -90,7 +90,7 @@ def test_convert_function_to_base_tool_with_cls_argument() -> None:
         return "The Name of the Wind"
 
     tool_type = convert_function_to_base_tool(format_book, BaseTool)
-    tool = tool_type()
+    tool = tool_type()  # pyright: ignore [reportAbstractUsage]
     assert tool.call() == "The Name of the Wind"
 
 
