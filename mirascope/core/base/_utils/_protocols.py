@@ -377,6 +377,9 @@ class CallDecorator(
         _BaseDynamicConfigT,
         _BaseCallParamsT,
         _BaseStreamT,
+        _SyncBaseClientT,
+        _AsyncBaseClientT,
+        _SameSyncAndAsyncClientT
     ],
 ):
     @overload

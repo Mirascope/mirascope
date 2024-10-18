@@ -91,6 +91,9 @@ def call_factory(  # noqa: ANN202
     _BaseDynamicConfigT,
     _BaseCallParamsT,
     _BaseStreamT,
+    _SyncBaseClientT,
+    _AsyncBaseClientT,
+    _SameSyncAndAsyncClientT
 ]:
     """A factory method for creating provider-specific call decorators.
 
