@@ -11,7 +11,6 @@ from io import BytesIO
 from typing import (
     Any,
     Literal,
-    NotRequired,
     TypeAlias,
     TypedDict,
     TypeVar,
@@ -21,7 +20,7 @@ import websockets
 from black.trans import defaultdict
 from pydantic import BaseModel
 from pydub import AudioSegment
-from typing_extensions import overload
+from typing_extensions import NotRequired, overload
 from websockets.asyncio.client import ClientConnection, connect
 
 from mirascope.beta.openai.realtime._utils._audio import (
@@ -397,7 +396,7 @@ class Realtime:
                     case "response.done":
                         if message["response"]["status"] == "failed":
                             print(  # noqa: T201
-                                f"Failed: {message["response"]["status_details"]["error"]}"
+                                f"Failed: {message['response']['status_details']['error']}"
                             )
                     case "session.created":
                         current_session = message["session"]
