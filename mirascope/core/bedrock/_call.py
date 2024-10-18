@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import BedrockCallParams
 from .call_response import BedrockCallResponse
 from .call_response_chunk import BedrockCallResponseChunk
-from .dynamic_config import BedrockDynamicConfig
 from .stream import BedrockStream
 from .tool import BedrockTool
 
 bedrock_call = call_factory(
     TCallResponse=BedrockCallResponse,
     TCallResponseChunk=BedrockCallResponseChunk,
-    TDynamicConfig=BedrockDynamicConfig,
     TToolType=BedrockTool,
     TStream=BedrockStream,
-    TCallParams=BedrockCallParams,
     default_call_params=BedrockCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
-from .dynamic_config import GeminiDynamicConfig
 from .stream import GeminiStream
 from .tool import GeminiTool
 
 gemini_call = call_factory(
     TCallResponse=GeminiCallResponse,
     TCallResponseChunk=GeminiCallResponseChunk,
-    TDynamicConfig=GeminiDynamicConfig,
     TStream=GeminiStream,
     TToolType=GeminiTool,
-    TCallParams=GeminiCallParams,
     default_call_params=GeminiCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,
