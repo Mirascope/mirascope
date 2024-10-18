@@ -136,7 +136,9 @@ class Realtime:
             "tool_choice": tool_choice,
             "temperature": temperature,
             "max_response_output_tokens": max_response_output_tokens,
-            "tools": self._tool_schemas.values() if self._tool_schemas else NotSet,
+            "tools": list(self._tool_schemas.values())
+            if self._tool_schemas
+            else NotSet,
         }
         self._text_message_received: bool = True
         self._audio_transcript_received: bool = True
