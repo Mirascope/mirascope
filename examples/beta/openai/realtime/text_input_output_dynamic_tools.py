@@ -16,9 +16,9 @@ def format_book(title: str, author: str) -> str:
 
 
 @app.sender(wait_for_text_response=True)
-async def send_message(context: Context) -> tuple[str, Callable]:
+async def send_message(context: Context) -> tuple[str, list[Callable]]:
     genre = await async_input("Enter a genre: ")
-    return f"Recommend a {genre} book", format_book
+    return f"Recommend a {genre} book", [format_book]
 
 
 @app.receiver("text")
