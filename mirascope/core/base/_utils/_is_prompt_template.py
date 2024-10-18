@@ -1,6 +1,6 @@
 """Utility for determining if a prompt template has been decorated."""
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Coroutine
 from typing import ParamSpec
 
 from typing_extensions import TypeIs
@@ -15,6 +15,9 @@ def is_prompt_template(
     fn: Callable[_P, BaseDynamicConfig | Messages.Type]
     | Callable[_P, Awaitable[BaseDynamicConfig | Messages.Type]],
 ) -> TypeIs[
-    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
+    Callable[_P, BaseDynamicConfig]
+    | Callable[
+        _P, Awaitable[BaseDynamicConfig] | Callable[_P, Coroutine[BaseDynamicConfig]]
+    ]
 ]:
     return hasattr(fn, "__mirascope_prompt_template__")

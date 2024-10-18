@@ -174,8 +174,8 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
 
 
 def fn_is_async(
-    fn: Callable[_P, _R] | Callable[_P, Awaitable[_R] | Coroutine[Any, Any, _R]],
-) -> TypeIs[Callable[_P, Awaitable[_R] | Coroutine[Any, Any, _R]]]:
+    fn: Callable[..., _R] | Callable[..., Awaitable[_R] | Coroutine[Any, Any, _R]],
+) -> TypeIs[Callable[..., Awaitable[_R] | Coroutine[Any, Any, _R]]]:
     return inspect.iscoroutinefunction(fn)
 
 

@@ -330,10 +330,10 @@ class PromptDecorator(Protocol):
 
 def _is_base_dynamic_config_function(
     prompt: type[_BasePromptT]
-    | Callable[_P, BaseDynamicConfig]
-    | Callable[_P, Awaitable[BaseDynamicConfig]],
+    | Callable[..., BaseDynamicConfig]
+    | Callable[..., Awaitable[BaseDynamicConfig]],
 ) -> TypeIs[
-    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
+    Callable[..., BaseDynamicConfig] | Callable[..., Awaitable[BaseDynamicConfig]]
 ]:
     return isinstance(prompt, types.FunctionType)
 
