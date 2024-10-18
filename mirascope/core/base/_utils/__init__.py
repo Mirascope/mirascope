@@ -26,6 +26,7 @@ from ._parse_prompt_messages import parse_prompt_messages
 from ._protocols import (
     AsyncCreateFn,
     CalculateCost,
+    CallDecorator,
     CreateFn,
     GetJsonOutput,
     HandleStream,

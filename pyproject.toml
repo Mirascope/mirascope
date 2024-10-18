@@ -84,7 +84,7 @@ weave = ["weave>=0.50.14"]
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.378",
+    "pyright>=1.1.385",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",

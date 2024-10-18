@@ -1,6 +1,8 @@
 """The `openai_call` decorator for functions as LLM calls."""
 
-from ..base import call_factory
+from typing import cast
+
+from ..base import _utils, call_factory
 from ._utils import (
     get_json_output,
     handle_stream,
@@ -14,18 +16,27 @@ from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool
 
-openai_call = call_factory(
-    TCallResponse=OpenAICallResponse,
-    TCallResponseChunk=OpenAICallResponseChunk,
-    TDynamicConfig=OpenAIDynamicConfig,
-    TToolType=OpenAITool,
-    TStream=OpenAIStream,
-    TCallParams=OpenAICallParams,
-    default_call_params=OpenAICallParams(),
-    setup_call=setup_call,
-    get_json_output=get_json_output,
-    handle_stream=handle_stream,
-    handle_stream_async=handle_stream_async,
+openai_call = cast(
+    _utils.CallDecorator[
+        OpenAICallResponse,
+        OpenAICallResponseChunk,
+        OpenAIDynamicConfig,
+        OpenAICallParams,
+        OpenAIStream,
+    ],
+    call_factory(
+        TCallResponse=OpenAICallResponse,
+        TCallResponseChunk=OpenAICallResponseChunk,
+        TDynamicConfig=OpenAIDynamicConfig,
+        TToolType=OpenAITool,
+        TStream=OpenAIStream,
+        TCallParams=OpenAICallParams,
+        default_call_params=OpenAICallParams(),
+        setup_call=setup_call,
+        get_json_output=get_json_output,
+        handle_stream=handle_stream,
+        handle_stream_async=handle_stream_async,
+    ),
 )
 """A decorator for calling the OpenAI API with a typed function.
 
