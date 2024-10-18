@@ -373,6 +373,7 @@ class Realtime:
                 },
             },
         )
+        await self._send_event(conn, {"type": "response.create"})
 
     async def _process_specific_receiver(
         self,
