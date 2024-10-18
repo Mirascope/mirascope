@@ -231,17 +231,17 @@ nav:
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
       - Retries: "learn/retries.md"
+      - Provider-Specific Features:
+          - OpenAI: "learn/provider_specific_features/openai.md"
+          - Anthropic: "learn/provider_specific_features/anthropic.md"
       - Extensions:
-          - Provider-Specific Features: "learn/provider_specific_features.md"
-          - Middleware: "learn/middleware.md"
-          - Custom LLM Provider: "learn/custom_provider.md"
+          - Middleware: "learn/extensions/middleware.md"
+          - Custom LLM Provider: "learn/extensions/custom_provider.md"
   - Integrations:
       - OpenTelemetry: "integrations/otel.md"
       - HyperDX: "integrations/hyperdx.md"
       - Logfire: "integrations/logfire.md"
       - Langfuse: "integrations/langfuse.md"
-  - Beta:
-      - OpenAI Realtime API: "beta/openai_realtime_api.md"
   - API Reference:
       - Core:
           - Anthropic:

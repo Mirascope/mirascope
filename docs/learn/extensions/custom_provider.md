@@ -1,6 +1,6 @@
 # Implementing a Custom Provider
 
-This guide explains how to implement a custom provider for Mirascope using the `call_factory` method. Before proceeding, ensure you're familiar with Mirascope's core concepts as covered in the [Learn section](../learn/index.md) of the documentation.
+This guide explains how to implement a custom provider for Mirascope using the `call_factory` method. Before proceeding, ensure you're familiar with Mirascope's core concepts as covered in the [Learn section](../../learn/index.md) of the documentation.
 
 ## Overview
 
