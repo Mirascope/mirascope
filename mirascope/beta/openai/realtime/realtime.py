@@ -60,8 +60,10 @@ _ToolSchemaT = TypeVar("_ToolSchemaT")
 BaseToolT = TypeVar("BaseToolT", bound=BaseTool)
 # TODO: Improve the type of response
 Response: TypeAlias = Any
+ToolName: TypeAlias = str
 CallId: TypeAlias = str
 ResponseId: TypeAlias = str
+ToolType: TypeAlias = type[OpenAIRealtimeTool] | Callable
 
 
 class RawMessage(TypedDict, total=False):
@@ -70,8 +72,10 @@ class RawMessage(TypedDict, total=False):
     item: NotRequired[dict]
     delta: NotRequired[str]
     response_id: NotRequired[str]
-    call_id: NotRequired[str]
+    tool_name: NotRequired[str]
     response: NotRequired[dict]
+    name: NotRequired[str]
+    call_id: NotRequired[str]
 
 
 class Sender(TypedDict):
@@ -84,16 +88,19 @@ class Sender(TypedDict):
 NotSet = object()
 
 
-def _get_tool_schemas(
+def _get_tool_type_and_tool_schemas(
     tools: list[type[OpenAIRealtimeTool] | Callable],
-) -> dict[CallId, RealtimeToolParam]:
+) -> dict[ToolName, tuple[ToolType, RealtimeToolParam]]:
     tool_types = [
         convert_base_model_to_base_tool(tool, OpenAIRealtimeTool)
         if inspect.isclass(tool)
         else convert_function_to_base_tool(tool, OpenAIRealtimeTool)
         for tool in tools
     ]
-    return {_tool_type._name(): _tool_type.tool_schema() for _tool_type in tool_types}
+    return {
+        _tool_type._name(): (_tool_type, _tool_type.tool_schema())
+        for _tool_type in tool_types
+    }
 
 
 class Realtime:
@@ -118,12 +125,12 @@ class Realtime:
         self.receivers: defaultdict[ResponseType, ReceiverFunc] = defaultdict(list)
         self._connection: connect | None = None
         self.context = context or {}
-        self._tool_schemas: dict[CallId, RealtimeToolParam] = (
-            _get_tool_schemas(tools) if tools is not NotSet else {}
+        self._tool_schemas: dict[ToolName, tuple[ToolType, RealtimeToolParam]] = (
+            _get_tool_type_and_tool_schemas(tools) if tools is not NotSet else {}
         )
-        self._temporary_tool_schemas: defaultdict[CallId, list[RealtimeToolParam]] = (
-            defaultdict(list)
-        )
+        self._temporary_tool_schemas: defaultdict[
+            ToolName, list[tuple[ToolType, RealtimeToolParam]]
+        ] = defaultdict(list)
         self._session: dict[str, Any] = {
             "model": model,
             "modalities": modalities,
@@ -136,7 +143,7 @@ class Realtime:
             "tool_choice": tool_choice,
             "temperature": temperature,
             "max_response_output_tokens": max_response_output_tokens,
-            "tools": list(self._tool_schemas.values())
+            "tools": [tool_schema for _, tool_schema in self._tool_schemas.values()]
             if self._tool_schemas
             else NotSet,
         }
@@ -210,11 +217,13 @@ class Realtime:
         tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
     ) -> None:
         if tools is not None:
-            tool_schemas = _get_tool_schemas(tools)
+            tool_schemas = _get_tool_type_and_tool_schemas(tools)
             schemas = []
-            for call_id, tool_schema in tool_schemas.items():
-                self._temporary_tool_schemas[call_id].append(tool_schema)
-                schemas.append(tool_schema)
+            for tool_name, tool_type_and_tool_schema in tool_schemas.items():
+                self._temporary_tool_schemas[tool_name].append(
+                    tool_type_and_tool_schema
+                )
+                schemas.append(tool_type_and_tool_schema[1])
             event = {"type": "response.create", "response": {"tools": schemas}}
         else:
             event = {"type": "response.create"}
@@ -241,7 +250,7 @@ class Realtime:
     async def _create_session_update(
         self,
         conn: ClientConnection,
-        tools: list[type[OpenAIRealtimeTool] | Callable] | None = None,
+        tools: list[ToolType] | None = None,
     ) -> None:
         await self._send_event(
             conn,
@@ -249,7 +258,12 @@ class Realtime:
                 "type": "session.update",
                 "session": {
                     **self._session,
-                    "tools": list(_get_tool_schemas(tools).values()),
+                    "tools": [
+                        tool_schema
+                        for _, tool_schema in _get_tool_type_and_tool_schemas(
+                            tools
+                        ).values()
+                    ],
                 }
                 if tools
                 else self._session,
@@ -397,20 +411,27 @@ class Realtime:
                         ] += message["delta"]
                         await self._process_specific_receiver(message, "tool_chunk")
                     case "response.function_call_arguments.done":
-                        response_id = message["response_id"]
-                        tool_schemas = self._temporary_tool_schemas.pop(response_id, [])
-                        if tool_schemas:
-                            tool_schema = tool_schemas.pop(0)
+                        tool_name, response_id, call_id = (
+                            message["name"],
+                            message["response_id"],
+                            message["call_id"],
+                        )
+
+                        tool_type_and_tool_schemas = self._temporary_tool_schemas.pop(
+                            tool_name, []
+                        )
+                        if tool_type_and_tool_schemas:
+                            tool_type, tool_schema = tool_type_and_tool_schemas.pop(0)
                         else:
-                            tool_schema = self._tool_schemas[message["call_id"]]
+                            tool_type, tool_schema = self._tool_schemas[tool_name]
                         function_call_arguments = function_call_arguments_chunks[
                             response_id
-                        ].pop(message["call_id"])
+                        ].pop(call_id)
                         if not function_call_arguments_chunks[response_id]:
                             del function_call_arguments_chunks[response_id]
-                        tool = tool_schema.from_tool_call(
+                        tool = tool_type.from_tool_call(
                             FunctionCallArguments(
-                                call_id=message["call_id"],
+                                call_id=call_id,
                                 arguments=function_call_arguments,
                             )
                         )
