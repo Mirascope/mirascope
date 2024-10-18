@@ -280,7 +280,8 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream]: ...
+    ) -> Callable[_P, BaseStream]: ...
+
     @overload
     def decorator(
         fn: Callable[_P, Messages.Type],
@@ -289,7 +290,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream]: ...
+    ) -> Callable[_P, BaseStream]: ...
 
     @overload
     def decorator(
@@ -302,7 +303,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[TStream]]: ...
+    ) -> Callable[_P, Awaitable[BaseStream]]: ...
 
     @overload
     def decorator(
@@ -312,7 +313,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[TStream]]: ...
+    ) -> Callable[_P, Awaitable[BaseStream]]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
@@ -327,7 +328,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, TStream] | Callable[_P, Awaitable[TStream]]:
+    ) -> Callable[_P, BaseStream] | Callable[_P, Awaitable[BaseStream]]:
         if not is_prompt_template(fn):
             fn = cast(
                 Callable[_P, Messages.Type] | Callable[_P, Awaitable[Messages.Type]], fn
@@ -342,7 +343,7 @@ def stream_factory(  # noqa: ANN201
         if fn_is_async(fn):
 
             @wraps(fn)
-            async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
+            async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> BaseStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
@@ -385,7 +386,7 @@ def stream_factory(  # noqa: ANN201
         else:
 
             @wraps(fn)
-            def inner(*args: _P.args, **kwargs: _P.kwargs) -> TStream:
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> BaseStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
