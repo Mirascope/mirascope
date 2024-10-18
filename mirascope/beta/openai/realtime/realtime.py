@@ -14,12 +14,12 @@ from typing import (
     TypeAlias,
     TypedDict,
     TypeVar,
-    overload,
 )
 
 import websockets
 from black.trans import defaultdict
 from pydub import AudioSegment
+from typing_extensions import overload
 from websockets.asyncio.client import ClientConnection, connect
 
 from mirascope.beta.openai.realtime._utils._audio import (
@@ -425,12 +425,12 @@ class Realtime:
             raise RuntimeError("Already running")
 
         headers = {
-            "Authorization": f"Bearer {os.environ["OPENAI_API_KEY"]}",
+            "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
             "OpenAI-Beta": "realtime=v1",
         }
 
         async for conn in connect(
-            uri=f"wss://api.openai.com/v1/realtime?model={self._session["model"]}",
+            uri=f"wss://api.openai.com/v1/realtime?model={self._session['model']}",
             additional_headers=headers,
         ):
             try:
