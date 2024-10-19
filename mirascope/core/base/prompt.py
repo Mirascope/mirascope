@@ -1,6 +1,5 @@
 """The `BasePrompt` class for better prompt engineering."""
 
-import types
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from functools import reduce, wraps
 from typing import (
@@ -13,7 +12,6 @@ from typing import (
 )
 
 from pydantic import BaseModel
-from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
@@ -329,16 +327,6 @@ class PromptDecorator(Protocol):
     ): ...
 
 
-def _is_base_dynamic_config_function(
-    prompt: type[_BasePromptT]
-    | Callable[_P, BaseDynamicConfig]
-    | Callable[_P, Awaitable[BaseDynamicConfig]],
-) -> TypeIs[
-    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
-]:
-    return isinstance(prompt, types.FunctionType)
-
-
 @overload
 def prompt_template(template: str) -> PromptDecorator: ...
 
@@ -405,7 +393,7 @@ def prompt_template(
         """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
 
-        if not _is_base_dynamic_config_function(prompt):
+        if isinstance(prompt, type):
             return prompt
 
         if fn_is_async(prompt):

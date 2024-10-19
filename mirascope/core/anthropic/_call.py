@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .dynamic_config import AnthropicDynamicConfig
 from .stream import AnthropicStream
 from .tool import AnthropicTool
 
 anthropic_call = call_factory(
     TCallResponse=AnthropicCallResponse,
     TCallResponseChunk=AnthropicCallResponseChunk,
-    TDynamicConfig=AnthropicDynamicConfig,
     TStream=AnthropicStream,
     TToolType=AnthropicTool,
-    TCallParams=AnthropicCallParams,
     default_call_params=AnthropicCallParams(max_tokens=1000),
     setup_call=setup_call,
     get_json_output=get_json_output,

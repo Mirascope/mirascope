@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
-from .dynamic_config import CohereDynamicConfig
 from .stream import CohereStream
 from .tool import CohereTool
 
 cohere_call = call_factory(
     TCallResponse=CohereCallResponse,
     TCallResponseChunk=CohereCallResponseChunk,
-    TDynamicConfig=CohereDynamicConfig,
     TToolType=CohereTool,
     TStream=CohereStream,
-    TCallParams=CohereCallParams,
     default_call_params=CohereCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

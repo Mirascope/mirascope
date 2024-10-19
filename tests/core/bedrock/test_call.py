@@ -7,7 +7,6 @@ from mirascope.core.bedrock import _utils
 from mirascope.core.bedrock.call_params import BedrockCallParams
 from mirascope.core.bedrock.call_response import BedrockCallResponse
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
-from mirascope.core.bedrock.dynamic_config import BedrockDynamicConfig
 from mirascope.core.bedrock.stream import BedrockStream
 from mirascope.core.bedrock.tool import BedrockTool
 
@@ -26,10 +25,8 @@ def test_bedrock_call() -> None:
         mock_call_factory.assert_called_once_with(
             TCallResponse=BedrockCallResponse,
             TCallResponseChunk=BedrockCallResponseChunk,
-            TDynamicConfig=BedrockDynamicConfig,
             TStream=BedrockStream,
             TToolType=BedrockTool,
-            TCallParams=BedrockCallParams,
             default_call_params=BedrockCallParams(),
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,

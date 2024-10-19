@@ -4,10 +4,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from mirascope.core.cohere import _utils
-from mirascope.core.cohere.call_params import CohereCallParams
 from mirascope.core.cohere.call_response import CohereCallResponse
 from mirascope.core.cohere.call_response_chunk import CohereCallResponseChunk
-from mirascope.core.cohere.dynamic_config import CohereDynamicConfig
 from mirascope.core.cohere.stream import CohereStream
 from mirascope.core.cohere.tool import CohereTool
 
@@ -26,10 +24,8 @@ def test_cohere_call() -> None:
         mock_call_factory.assert_called_once_with(
             TCallResponse=CohereCallResponse,
             TCallResponseChunk=CohereCallResponseChunk,
-            TDynamicConfig=CohereDynamicConfig,
             TToolType=CohereTool,
             TStream=CohereStream,
-            TCallParams=CohereCallParams,
             default_call_params={},
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,
