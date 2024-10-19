@@ -38,7 +38,7 @@ _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
-DEFAULT_ROLES = ["system", "user", "assistant"]
+SUPPORTED_MESSAGE_ROLES = ["system", "user", "assistant"]
 
 class BasePrompt(BaseModel):
     """The base class for engineering prompts.
@@ -85,7 +85,7 @@ class BasePrompt(BaseModel):
     def message_params(self) -> list[BaseMessageParam]:
         """Returns the list of parsed message parameters."""
         return parse_prompt_messages(
-            roles=DEFAULT_ROLES,
+            roles=SUPPORTED_MESSAGE_ROLES,
             template=get_prompt_template(self),
             attrs={field: getattr(self, field) for field in self.model_fields},
         )
@@ -415,7 +415,7 @@ def prompt_template(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
                 return parse_prompt_messages(
-                    roles=DEFAULT_ROLES,
+                    roles=SUPPORTED_MESSAGE_ROLES,
                     template=template,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=await prompt(*args, **kwargs),
@@ -431,7 +431,7 @@ def prompt_template(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
                 return parse_prompt_messages(
-                    roles=DEFAULT_ROLES,
+                    roles=SUPPORTED_MESSAGE_ROLES,
                     template=template,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=prompt(*args, **kwargs),
