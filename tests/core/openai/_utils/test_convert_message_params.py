@@ -3,7 +3,13 @@
 import pytest
 from openai.types.chat import ChatCompletionMessageParam
 
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    CacheControlPart,
+    ImagePart,
+    TextPart,
+)
 from mirascope.core.openai._utils._convert_message_params import convert_message_params
 
 
@@ -81,6 +87,21 @@ def test_convert_message_params() -> None:
                     role="user",
                     content=[
                         AudioPart(type="audio", media_type="audio/aac", audio=b"audio")
+                    ],
+                )
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="OpenAI currently only supports text, image and audio parts. Part provided: cache_control",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        CacheControlPart(type="cache_control", cache_type="ephemeral")
                     ],
                 )
             ]

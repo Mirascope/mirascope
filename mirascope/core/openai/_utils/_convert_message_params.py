@@ -62,7 +62,7 @@ def convert_message_params(
                     )
                 else:
                     raise ValueError(
-                        "OpenAI currently only supports text and image parts. "
+                        "OpenAI currently only supports text, image and audio parts. "
                         f"Part provided: {part.type}"
                     )
             converted_message_params.append(
