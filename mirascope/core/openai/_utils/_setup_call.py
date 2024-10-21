@@ -4,7 +4,6 @@ import inspect
 import warnings
 from collections.abc import Awaitable, Callable
 from typing import Any, cast, overload
-from wave import Wave_read
 
 from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import (
@@ -21,7 +20,6 @@ from ..call_params import OpenAICallParams
 from ..dynamic_config import OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
 from ._convert_message_params import convert_message_params
-from ...base.types import AudioSegment
 
 
 @overload

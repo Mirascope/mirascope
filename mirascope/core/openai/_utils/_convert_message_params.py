@@ -1,7 +1,6 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`."""
 
 import base64
-from wave import Wave_read
 
 from openai.types.chat import ChatCompletionMessageParam
 
@@ -9,9 +8,7 @@ from ...base import BaseMessageParam
 
 
 def convert_message_params(
-    message_params: list[
-        BaseMessageParam | ChatCompletionMessageParam
-    ],
+    message_params: list[BaseMessageParam | ChatCompletionMessageParam],
 ) -> list[ChatCompletionMessageParam]:
     converted_message_params = []
     for message_param in message_params:

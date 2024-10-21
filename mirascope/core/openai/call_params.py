@@ -16,7 +16,7 @@ from ..base import BaseCallParams
 if TYPE_CHECKING:
     from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
         ChatCompletionAudioParam,
-        ChatCompletionModality, # pyright: ignore [reportAttributeAccessIssue]
+        ChatCompletionModality,  # pyright: ignore [reportAttributeAccessIssue]
     )
 else:
     try:
@@ -63,7 +63,7 @@ class OpenAICallParams(BaseCallParams):
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]
     max_tokens: NotRequired[int | None]
-    modalities: list[ChatCompletionModality] | None
+    modalities: NotRequired[list[ChatCompletionModality] | None]
     n: NotRequired[int | None]
     parallel_tool_calls: NotRequired[bool]
     presence_penalty: NotRequired[float | None]
