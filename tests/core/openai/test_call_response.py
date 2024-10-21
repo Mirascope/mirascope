@@ -56,6 +56,7 @@ def test_openai_call_response() -> None:
     assert call_response.output_tokens == 1
     assert call_response.cost == 1.25e-05
     assert call_response.message_param == {
+        "audio": None,
         "content": "content",
         "role": "assistant",
         "tool_calls": None,

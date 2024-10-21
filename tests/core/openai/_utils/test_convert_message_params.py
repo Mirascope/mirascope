@@ -20,6 +20,7 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
             ],
         ),
     ]
@@ -37,6 +38,13 @@ def test_convert_message_params() -> None:
                         "url": "data:image/jpeg;base64,aW1hZ2U=",
                         "detail": "auto",
                     },
+                },
+                {
+                    "input_audio": {
+                        "data": "YXVkaW8=",
+                        "format": "wav",
+                    },
+                    "type": "input_audio",
                 },
             ],
         },
@@ -65,15 +73,14 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="OpenAI currently only supports text and image parts. "
-        "Part provided: audio",
+        match="Unsupported audio media type: audio/aac. OpenAI currently only supports WAV and MP3 audio file types.",
     ):
         convert_message_params(
             [
                 BaseMessageParam(
                     role="user",
                     content=[
-                        AudioPart(type="audio", media_type="audio/mp3", audio=b"audio")
+                        AudioPart(type="audio", media_type="audio/aac", audio=b"audio")
                     ],
                 )
             ]
