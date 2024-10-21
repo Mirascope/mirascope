@@ -6,12 +6,11 @@ from wave import Wave_read
 from openai.types.chat import ChatCompletionMessageParam
 
 from ...base import BaseMessageParam
-from ...base.types import AudioSegment
 
 
 def convert_message_params(
     message_params: list[
-        BaseMessageParam | ChatCompletionMessageParam | AudioSegment | Wave_read
+        BaseMessageParam | ChatCompletionMessageParam
     ],
 ) -> list[ChatCompletionMessageParam]:
     converted_message_params = []
