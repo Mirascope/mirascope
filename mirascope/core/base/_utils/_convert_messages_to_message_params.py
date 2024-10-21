@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from pydantic import BaseModel
 from typing_extensions import TypeIs
@@ -17,8 +17,10 @@ from ..message_param import (
 
 if TYPE_CHECKING:
     from PIL import Image
+    from pydub import AudioSegment
 
     has_pil_module: bool
+    has_pydub_module: bool
 else:
     try:
         from PIL import Image  # pyright: ignore [reportAssignmentType]
@@ -30,6 +32,27 @@ else:
         class Image:
             class Image:
                 def tobytes(self) -> bytes: ...
+
+    try:
+        from pydub import AudioSegment  # pyright: ignore [reportAssignmentType]
+
+        has_pydub_module = True
+    except ImportError:  # pragma: no cover
+        has_pydub_module = False
+
+        from io import FileIO
+
+        class AudioSegment:
+            def set_frame_rate(self, rate: int) -> AudioSegment: ...
+            def set_channels(self, channels: int) -> AudioSegment: ...
+            def set_sample_width(self, sample_width: int) -> AudioSegment: ...
+            def export(self, format: str) -> FileIO: ...
+            def read(self) -> bytes: ...
+
+
+SAMPLE_WIDTH = 2
+FRAME_RATE = 24000
+CHANNELS = 1
 
 
 def _convert_message_sequence_part_to_content_part(
@@ -48,6 +71,18 @@ def _convert_message_sequence_part_to_content_part(
             media_type=f"image/{get_image_type(image)}",
             image=image,
             detail=None,
+        )
+    elif has_pydub_module and isinstance(message_sequence_part, AudioSegment):
+        return AudioPart(
+            type="audio",
+            media_type="audio/wav",
+            audio=cast(
+                FileIO,
+                message_sequence_part.set_frame_rate(FRAME_RATE)
+                .set_channels(CHANNELS)
+                .set_sample_width(SAMPLE_WIDTH)
+                .export(format="wav"),
+            ).read(),
         )
     else:
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")

@@ -11,6 +11,14 @@ from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
+try:
+    from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
+        ChatCompletionAudioParam,
+    )
+except ImportError:
+
+    class ChatCompletionAudioParam: ...
+
 
 class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI API.
@@ -36,6 +44,7 @@ class OpenAICallParams(BaseCallParams):
         user: ...
     """
 
+    audio: NotRequired[ChatCompletionAudioParam | None]
     extra_headers: NotRequired[dict[str, str] | None]
     frequency_penalty: NotRequired[float | None]
     logit_bias: NotRequired[dict[str, int] | None]

@@ -14,7 +14,18 @@ from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool, OpenAIToolConfig
 
-OpenAIMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
+try:
+    from pydub import (
+        AudioSegment,  # pyright: ignore [reportMissingImports, reportAssignmentType]
+    )
+except ImportError:
+
+    class AudioSegment: ...
+
+
+OpenAIMessageParam: TypeAlias = (
+    ChatCompletionMessageParam | BaseMessageParam | AudioSegment
+)
 
 __all__ = [
     "call",
