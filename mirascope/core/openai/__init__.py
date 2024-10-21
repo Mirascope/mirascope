@@ -1,10 +1,12 @@
 """The Mirascope OpenAI Module."""
 
 from typing import TypeAlias
+from wave import Wave_read
 
 from openai.types.chat import ChatCompletionMessageParam
 
 from ..base import BaseMessageParam
+from ..base.types import AudioSegment
 from ._call import openai_call
 from ._call import openai_call as call
 from .call_params import OpenAICallParams
@@ -14,17 +16,8 @@ from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool, OpenAIToolConfig
 
-try:
-    from pydub import (
-        AudioSegment,  # pyright: ignore [reportMissingImports, reportAssignmentType]
-    )
-except ImportError:
-
-    class AudioSegment: ...
-
-
 OpenAIMessageParam: TypeAlias = (
-    ChatCompletionMessageParam | BaseMessageParam | AudioSegment
+    ChatCompletionMessageParam | BaseMessageParam | AudioSegment | Wave_read
 )
 
 __all__ = [

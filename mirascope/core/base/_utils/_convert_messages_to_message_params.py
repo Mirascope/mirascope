@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from io import FileIO
 from typing import TYPE_CHECKING, cast
+from wave import Wave_read
 
 from pydantic import BaseModel
 from typing_extensions import TypeIs
@@ -14,13 +16,12 @@ from ..message_param import (
     ImagePart,
     TextPart,
 )
+from ..types import AudioSegment, has_pydub_module
 
 if TYPE_CHECKING:
     from PIL import Image
-    from pydub import AudioSegment
 
     has_pil_module: bool
-    has_pydub_module: bool
 else:
     try:
         from PIL import Image  # pyright: ignore [reportAssignmentType]
@@ -33,22 +34,6 @@ else:
             class Image:
                 def tobytes(self) -> bytes: ...
 
-    try:
-        from pydub import AudioSegment  # pyright: ignore [reportAssignmentType]
-
-        has_pydub_module = True
-    except ImportError:  # pragma: no cover
-        has_pydub_module = False
-
-        from io import FileIO
-
-        class AudioSegment:
-            def set_frame_rate(self, rate: int) -> AudioSegment: ...
-            def set_channels(self, channels: int) -> AudioSegment: ...
-            def set_sample_width(self, sample_width: int) -> AudioSegment: ...
-            def export(self, format: str) -> FileIO: ...
-            def read(self) -> bytes: ...
-
 
 SAMPLE_WIDTH = 2
 FRAME_RATE = 24000
@@ -56,7 +41,13 @@ CHANNELS = 1
 
 
 def _convert_message_sequence_part_to_content_part(
-    message_sequence_part: str | Image.Image | TextPart | ImagePart | AudioPart,
+    message_sequence_part: str
+    | Image.Image
+    | TextPart
+    | ImagePart
+    | AudioPart
+    | AudioSegment
+    | Wave_read,
 ) -> TextPart | ImagePart | AudioPart | CacheControlPart:
     if isinstance(message_sequence_part, str):
         return TextPart(text=message_sequence_part, type="text")
@@ -83,6 +74,12 @@ def _convert_message_sequence_part_to_content_part(
                 .set_sample_width(SAMPLE_WIDTH)
                 .export(format="wav"),
             ).read(),
+        )
+    elif isinstance(message_sequence_part, Wave_read):
+        return AudioPart(
+            type="audio",
+            media_type="audio/wav",
+            audio=message_sequence_part.readframes(-1),
         )
     else:
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")

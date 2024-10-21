@@ -1,14 +1,18 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`."""
 
 import base64
+from wave import Wave_read
 
 from openai.types.chat import ChatCompletionMessageParam
 
 from ...base import BaseMessageParam
+from ...base.types import AudioSegment
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam | ChatCompletionMessageParam],
+    message_params: list[
+        BaseMessageParam | ChatCompletionMessageParam | AudioSegment | Wave_read
+    ],
 ) -> list[ChatCompletionMessageParam]:
     converted_message_params = []
     for message_param in message_params:
@@ -55,7 +59,7 @@ def convert_message_params(
                         {
                             "input_audio": {
                                 "format": part.media_type.split("/")[-1],
-                                "data": base64.b64encode(part.audio).decode(),
+                                "data": base64.b64encode(part.audio).decode("utf-8"),
                             },
                             "type": "input_audio",
                         }

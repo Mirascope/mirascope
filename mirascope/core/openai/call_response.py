@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+import base64
+
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
@@ -173,3 +175,17 @@ class OpenAICallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def audio(self) -> bytes | None:
+        """Returns the audio content of the response."""
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            return base64.b64decode(audio.data)
+        return None
+
+    @property
+    def audio_transcript(self) -> str | None:
+        """Returns the transcript of the audio content."""
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            return audio.transcript
+        return None

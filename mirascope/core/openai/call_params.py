@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from openai.types.chat import (
     ChatCompletionStreamOptionsParam,
     ChatCompletionToolChoiceOptionParam,
@@ -11,13 +13,22 @@ from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
-try:
+if TYPE_CHECKING:
     from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
         ChatCompletionAudioParam,
+        ChatCompletionModality,
     )
-except ImportError:
+else:
+    try:
+        from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
+            ChatCompletionAudioParam,
+            ChatCompletionModality,
+        )
+    except ImportError:
 
-    class ChatCompletionAudioParam: ...
+        class ChatCompletionAudioParam: ...
+
+        class ChatCompletionModality: ...
 
 
 class OpenAICallParams(BaseCallParams):
@@ -50,6 +61,7 @@ class OpenAICallParams(BaseCallParams):
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]
     max_tokens: NotRequired[int | None]
+    modalities: list[ChatCompletionModality] | None
     n: NotRequired[int | None]
     parallel_tool_calls: NotRequired[bool]
     presence_penalty: NotRequired[float | None]
