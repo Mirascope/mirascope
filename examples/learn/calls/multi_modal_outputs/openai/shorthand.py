@@ -22,14 +22,15 @@ response = recommend_book(genre="fantasy")
 
 print(response.audio_transcript)
 
-audio_io = io.BytesIO(response.audio)
+if audio := response.audio:
+    audio_io = io.BytesIO(audio)
 
-with wave.open(audio_io, "rb") as f:
-    audio_segment = AudioSegment.from_raw(
-        audio_io,
-        sample_width=f.getsampwidth(),
-        frame_rate=f.getframerate(),
-        channels=f.getnchannels(),
-    )
+    with wave.open(audio_io, "rb") as f:
+        audio_segment = AudioSegment.from_raw(
+            audio_io,
+            sample_width=f.getsampwidth(),
+            frame_rate=f.getframerate(),
+            channels=f.getnchannels(),
+        )
 
-play(audio_segment)
+    play(audio_segment)
