@@ -137,7 +137,7 @@ While Mirascope provides a consistent interface, support varies among providers:
 |---------------|-----------|--------|--------|------|---------|--------|
 | text          | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
 | image         | ✓         | -      | ✓      | ✓    | ✓       | ✓      |
-| audio         | -         | -      | ✓      | -    | -       | -      |
+| audio         | -         | -      | ✓      | -    | -       | ✓      |
 | video         | -         | -      | ✓      | -    | -       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)

@@ -161,6 +161,72 @@ While Mirascope provides a consistent interface, you can also always access the 
 
     The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
 
+## Multi-Modal Outputs
+
+While most LLM providers focus on text outputs, some providers support additional output modalities like audio. The availability of multi-modal outputs varies among providers:
+
+| Provider    | Text | Audio |
+|------------|------|-------|
+| OpenAI     | ✓    | ✓     |
+| Anthropic  | ✓    | -     |
+| Mistral    | ✓    | -     |
+| Gemini     | ✓    | -     |
+| Groq       | ✓    | -     |
+| Cohere     | ✓    | -     |
+| LiteLLM    | ✓    | -     |
+| Azure AI   | ✓    | -     |
+| Vertex AI  | ✓    | -     |
+
+Legend: ✓ (Supported), - (Not Supported)
+
+### Audio Outputs
+
+To enable audio outputs, you need to specify the audio configuration in `call_params`. This includes setting:
+
+- `audio`: Configuration for the audio output (voice, format, etc.)
+- `modalities`: List of output modalities to receive (e.g. `["text", "audio"]`)
+
+For providers that support audio outputs (currently only OpenAI), you can receive both text and audio responses from your calls:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in ["OpenAI"] %}
+        === "{{ provider }}"
+
+            {% if provider == "Gemini" %}
+            ```python hl_lines="1 7"
+            {% elif provider == "Vertex AI" %}
+            ```python hl_lines="2 7"
+            {% else %}
+            ```python hl_lines="4"
+            {% endif %}
+            --8<-- "examples/learn/calls/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+    {% endfor %}
+
+
+When using models that support audio outputs, you'll have access to:
+
+- `content`: The text content of the response
+- `audio`: The raw audio bytes of the response
+- `audio_transcript`: The transcript of the audio response
+
+!!! warning "Audio Playback Requirements"
+
+    The example above uses `pydub` and `ffmpeg` for audio playback, but you can use any audio processing libraries or media players that can handle WAV format audio data. Choose the tools that best fit your needs and environment.
+
+    If you decide to use pydub:
+    - Install [pydub](https://github.com/jiaaro/pydub): `pip install pydub`
+    - Install ffmpeg: Available from [ffmpeg.org](https://www.ffmpeg.org/) or through system package managers
+
+!!! note "Voice Options"
+
+    OpenAI provides multiple voice options for audio outputs through the `voice` parameter. Available voices include "alloy", "echo", "fable", "onyx", "nova", and "shimmer". You can experiment with different voices to find the one that best suits your needs.
+
 ## Common Parameters Across Providers
 
 While each LLM provider has its own specific parameters, there are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
