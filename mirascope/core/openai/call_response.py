@@ -17,11 +17,23 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from ..base import BaseCallResponse
-from ._types import ChatCompletionAudio
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
+
+try:
+    from openai.types.chat import (
+        ChatCompletionAudio,  # pyright: ignore [reportAssignmentType]
+    )
+except ImportError:  # pragma: no cover
+
+    class ChatCompletionAudio:
+        @property
+        def data(self) -> str: ...
+
+        @property
+        def transcript(self) -> str: ...
 
 
 class OpenAICallResponse(
