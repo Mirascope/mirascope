@@ -1,4 +1,5 @@
 """Tests the `openai.call_response_chunk` module."""
+
 import base64
 
 from openai.types.chat import ChatCompletionChunk
@@ -76,7 +77,7 @@ def test_openai_call_response_chunk_with_audio() -> None:
         Choice(
             delta=ChoiceDelta(
                 content="content",
-                audio={"data": audio_base64, "transcript": transcript}
+                audio={"data": audio_base64, "transcript": transcript},  # pyright: ignore [reportCallIssue]
             ),
             index=0,
             finish_reason="stop",
@@ -100,7 +101,7 @@ def test_openai_call_response_chunk_with_partial_audio() -> None:
         Choice(
             delta=ChoiceDelta(
                 content="content",
-                audio={"transcript": "transcript only"}  # no audio data
+                audio={"transcript": "transcript only"},  # pyright: ignore [reportCallIssue]
             ),
             index=0,
             finish_reason="stop",

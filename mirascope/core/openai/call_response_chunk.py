@@ -6,6 +6,7 @@ usage docs: learn/streams.md#handling-streamed-responses
 from __future__ import annotations
 
 import base64
+from typing import Any
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice
@@ -13,7 +14,6 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponseChunk
-from ._types import ChatCompletionAudio
 
 FinishReason = Choice.__annotations__["finish_reason"]
 
@@ -95,7 +95,7 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
 
     @computed_field
     @property
-    def _audio(self) -> ChatCompletionAudio | None:
+    def _audio(self) -> dict[str, Any] | None:
         """Returns the audio of the response."""
         return getattr(self.chunk.choices[0].delta, "audio", None)
 
