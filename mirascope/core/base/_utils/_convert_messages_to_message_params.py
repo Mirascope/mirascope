@@ -109,7 +109,9 @@ def _is_base_message_params(
 
 def convert_messages_to_message_params(
     messages: str
-    | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
+    | Sequence[
+        str | Image.Image | TextPart | ImagePart | AudioPart | AudioSegment | Wave_read
+    ]
     | list[BaseMessageParam]
     | BaseMessageParam,
     role: str = "user",
