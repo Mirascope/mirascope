@@ -17,6 +17,7 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from ..base import BaseCallResponse
+from ._types import ChatCompletionAudio
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -176,16 +177,22 @@ class OpenAICallResponse(
             for tool, output in tools_and_outputs
         ]
 
+    @computed_field
+    @property
+    def _audio(self) -> ChatCompletionAudio | None:
+        """Returns the audio of the response."""
+        return getattr(self.response.choices[0].message, "audio", None)
+
     @property
     def audio(self) -> bytes | None:
-        """Returns the audio content of the response."""
-        if audio := getattr(self.response.choices[0].message, "audio", None):
+        """Returns the audio data of the response."""
+        if audio := self._audio:
             return base64.b64decode(audio.data)
         return None
 
     @property
     def audio_transcript(self) -> str | None:
         """Returns the transcript of the audio content."""
-        if audio := getattr(self.response.choices[0].message, "audio", None):
+        if audio := self._audio:
             return audio.transcript
         return None
