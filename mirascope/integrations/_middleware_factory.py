@@ -131,13 +131,15 @@ def middleware_factory(
 
             @wraps(fn)
             async def wrapper_async(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+                context_manager = custom_context_manager(fn)
+                context = context_manager.__enter__()
                 result = await fn(*args, **kwargs)
                 if (
                     isinstance(result, BaseCallResponse)
                     and handle_call_response_async is not None
                 ):
-                    with custom_context_manager(fn) as context:
-                        await handle_call_response_async(result, fn, context)
+                    await handle_call_response_async(result, fn, context)
+                    context_manager.__exit__(None, None, None)
                 elif isinstance(result, BaseStream):
                     original_class = type(result)
                     original_aiter = result.__aiter__
@@ -148,11 +150,13 @@ def middleware_factory(
                         async def generator() -> (
                             AsyncGenerator[tuple[Any, Any | None], Any]
                         ):
-                            with custom_context_manager(fn) as context:
+                            try:
                                 async for chunk, tool in original_aiter():
                                     yield chunk, tool
+                            finally:
                                 if handle_stream_async is not None:
                                     await handle_stream_async(result, fn, context)
+                                context_manager.__exit__(None, None, None)
 
                         return generator()
 
@@ -168,8 +172,8 @@ def middleware_factory(
                     isinstance(result, ResponseModel)
                     and handle_response_model_async is not None
                 ):
-                    with custom_context_manager(fn) as context:
-                        await handle_response_model_async(result, fn, context)
+                    await handle_response_model_async(result, fn, context)
+                    context_manager.__exit__(None, None, None)
                 elif isinstance(result, BaseStructuredStream):
                     original_class = type(result)
                     original_aiter = result.__aiter__
@@ -180,13 +184,15 @@ def middleware_factory(
                         async def generator() -> (
                             AsyncGenerator[tuple[Any, Any | None], Any]
                         ):
-                            with custom_context_manager(fn) as context:
+                            try:
                                 async for chunk in original_aiter():
                                     yield chunk
+                            finally:
                                 if handle_structured_stream_async is not None:
                                     await handle_structured_stream_async(
                                         result, fn, context
                                     )
+                                context_manager.__exit__(None, None, None)
 
                         return generator()
 
@@ -209,13 +215,15 @@ def middleware_factory(
 
             @wraps(fn)
             def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+                context_manager = custom_context_manager(fn)
+                context = context_manager.__enter__()
                 result = fn(*args, **kwargs)
                 if (
                     isinstance(result, BaseCallResponse)
                     and handle_call_response is not None
                 ):
-                    with custom_context_manager(fn) as context:
-                        handle_call_response(result, fn, context)
+                    handle_call_response(result, fn, context)
+                    context_manager.__exit__(None, None, None)
                 elif isinstance(result, BaseStream):
                     original_class = type(result)
                     original_iter = result.__iter__
@@ -224,10 +232,12 @@ def middleware_factory(
                         self: Any,  # noqa: ANN401
                     ) -> Generator[tuple[Any, Any | None], None, None]:  # noqa: ANN401
                         # Create the context manager when user iterates over the stream
-                        with custom_context_manager(fn) as context:
+                        try:
                             yield from original_iter()
+                        finally:
                             if handle_stream is not None:
                                 handle_stream(result, fn, context)
+                            context_manager.__exit__(None, None, None)
 
                     class MiddlewareStream(original_class):
                         __iter__ = (
@@ -241,8 +251,8 @@ def middleware_factory(
                     isinstance(result, ResponseModel)
                     and handle_response_model is not None
                 ):
-                    with custom_context_manager(fn) as context:
-                        handle_response_model(result, fn, context)
+                    handle_response_model(result, fn, context)
+                    context_manager.__exit__(None, None, None)
                 elif isinstance(result, BaseStructuredStream):
                     original_class = type(result)
                     original_iter = result.__iter__
@@ -256,10 +266,12 @@ def middleware_factory(
                         None,
                     ]:  # noqa: ANN401
                         # Create the context manager when user iterates over the stream
-                        with custom_context_manager(fn) as context:
+                        try:
                             yield from original_iter()
+                        finally:
                             if handle_structured_stream is not None:
                                 handle_structured_stream(result, fn, context)
+                            context_manager.__exit__(None, None, None)
 
                     class MiddlewareStructuredStream(original_class):
                         __iter__ = (
