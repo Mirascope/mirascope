@@ -93,7 +93,7 @@ def _is_base_message_params(
 def convert_messages_to_message_params(
     messages: str
     | Sequence[
-        str | TextPart | ImagePart | Image.Image | AudioPart| AudioSegment | Wave_read
+        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,
