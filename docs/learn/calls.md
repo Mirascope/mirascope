@@ -217,7 +217,9 @@ When using models that support audio outputs, you'll have access to:
 
 !!! note "Voice Options"
 
-    OpenAI provides multiple voice options for audio outputs through the `voice` parameter. Available voices include "alloy", "echo", "fable", "onyx", "nova", and "shimmer". You can experiment with different voices to find the one that best suits your needs.
+    For providers that support audio outputs, refer to their documentation for available voice options and configurations:
+    
+    - OpenAI: [Text to Speech Guide](https://platform.openai.com/docs/guides/text-to-speech)
 
 ## Common Parameters Across Providers
 
