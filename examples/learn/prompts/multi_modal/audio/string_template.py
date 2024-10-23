@@ -1,4 +1,4 @@
-from mirascope.core import prompt_template, openai
+from mirascope.core import prompt_template
 
 
 @prompt_template("Here's an audio book snippet: {audio_mp3:audio} What book is this?")

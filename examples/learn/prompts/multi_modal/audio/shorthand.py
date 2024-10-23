@@ -1,6 +1,6 @@
 from pydub import AudioSegment
 
-from mirascope.core import prompt_template, Messages, openai
+from mirascope.core import prompt_template, Messages
 
 
 @prompt_template()
