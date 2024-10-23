@@ -1,14 +1,15 @@
-import wave
-from mirascope.core import prompt_template, Messages
+from pydub import AudioSegment
+
+from mirascope.core import prompt_template, Messages, openai
 
 
 @prompt_template()
-def identify_book_prompt(audio_wav: wave.Wave_read) -> Messages.Type:
-    return ["Here's an audio book snippet:", audio_wav, "What book is this?"]
+def identify_book_prompt(audio_mp3: AudioSegment) -> Messages.Type:
+    return ["Here's an audio book snippet:", audio_mp3, "What book is this?"]
 
 
-with open("....", "rb") as f, wave.open(f) as audio:
-    print(identify_book_prompt(audio))
+with open("....", "rb") as audio:
+    print(identify_book_prompt(AudioSegment.from_mp3(audio)))
 # Output: [
 #     BaseMessageParam(
 #         role="user",

@@ -26,11 +26,6 @@ if audio := response.audio:
     audio_io = io.BytesIO(audio)
 
     with wave.open(audio_io, "rb") as f:
-        audio_segment = AudioSegment.from_raw(
-            audio_io,
-            sample_width=f.getsampwidth(),
-            frame_rate=f.getframerate(),
-            channels=f.getnchannels(),
-        )
+        audio_segment = AudioSegment.from_raw(audio_io)
 
     play(audio_segment)

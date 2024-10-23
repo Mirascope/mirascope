@@ -70,7 +70,7 @@ def _convert_message_sequence_part_to_content_part(
 
 def convert_message_content_to_message_param_content(
     message_sequence: Sequence[
-        str | Image.Image | TextPart | ImagePart | AudioPart | AudioSegment | Wave_read
+        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
     ],
 ) -> list[TextPart | ImagePart | AudioPart | CacheControlPart] | str:
     if isinstance(message_sequence, str):
@@ -93,7 +93,7 @@ def _is_base_message_params(
 def convert_messages_to_message_params(
     messages: str
     | Sequence[
-        str | Image.Image | AudioSegment | Wave_read | TextPart | ImagePart | AudioPart
+        str | TextPart | ImagePart | Image.Image | AudioPart| AudioSegment | Wave_read
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,

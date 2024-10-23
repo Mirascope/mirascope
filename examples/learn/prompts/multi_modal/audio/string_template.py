@@ -1,8 +1,8 @@
-from mirascope.core import prompt_template
+from mirascope.core import prompt_template, openai
 
 
-@prompt_template("Here's an audio book snippet: {audio_wav:audio} What book is this?")
-def identify_book_prompt(audio_wav: bytes): ...
+@prompt_template("Here's an audio book snippet: {audio_mp3:audio} What book is this?")
+def identify_book_prompt(audio_mp3: bytes): ...
 
 
 print(identify_book_prompt(b"..."))

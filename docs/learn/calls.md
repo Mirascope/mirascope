@@ -165,43 +165,35 @@ While Mirascope provides a consistent interface, you can also always access the 
 
 While most LLM providers focus on text outputs, some providers support additional output modalities like audio. The availability of multi-modal outputs varies among providers:
 
-| Provider    | Text | Audio |
-|------------|------|-------|
-| OpenAI     | ✓    | ✓     |
-| Anthropic  | ✓    | -     |
-| Mistral    | ✓    | -     |
-| Gemini     | ✓    | -     |
-| Groq       | ✓    | -     |
-| Cohere     | ✓    | -     |
-| LiteLLM    | ✓    | -     |
-| Azure AI   | ✓    | -     |
-| Vertex AI  | ✓    | -     |
+| Provider    | Text | Audio | Image |
+|------------|------|-------|-------|
+| OpenAI     | ✓    | ✓     | -     |
+| Anthropic  | ✓    | -     | -     |
+| Mistral    | ✓    | -     | -     |
+| Gemini     | ✓    | -     | -     |
+| Groq       | ✓    | -     | -     |
+| Cohere     | ✓    | -     | -     |
+| LiteLLM    | ✓    | -     | -     |
+| Azure AI   | ✓    | -     | -     |
+| Vertex AI  | ✓    | -     | -     |
 
 Legend: ✓ (Supported), - (Not Supported)
 
 ### Audio Outputs
 
-To enable audio outputs, you need to specify the audio configuration in `call_params`. This includes setting:
-
 - `audio`: Configuration for the audio output (voice, format, etc.)
 - `modalities`: List of output modalities to receive (e.g. `["text", "audio"]`)
 
-For providers that support audio outputs (currently only OpenAI), you can receive both text and audio responses from your calls:
+For providers that support audio outputs, you can receive both text and audio responses from your calls:
 
 !!! mira ""
 
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
-        {% for provider in ["OpenAI"] %}
+        {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if provider == "Gemini" %}
-            ```python hl_lines="1 7"
-            {% elif provider == "Vertex AI" %}
-            ```python hl_lines="2 7"
-            {% else %}
-            ```python hl_lines="4"
-            {% endif %}
+            ```python hl_lines="13 14 23 25"
             --8<-- "examples/learn/calls/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 

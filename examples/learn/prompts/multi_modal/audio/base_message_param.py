@@ -2,7 +2,7 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.base import AudioPart, TextPart
 
 
-def identify_book_prompt(audio_wav: bytes) -> list[BaseMessageParam]:
+def identify_book_prompt(audio_mp3: bytes) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(
             role="user",
@@ -10,8 +10,8 @@ def identify_book_prompt(audio_wav: bytes) -> list[BaseMessageParam]:
                 TextPart(type="text", text="Here's an audio book snippet:"),
                 AudioPart(
                     type="audio",
-                    media_type="audio/wav",
-                    audio=audio_wav,
+                    media_type="audio/mp3",
+                    audio=audio_mp3,
                 ),
                 TextPart(type="text", text="What book is this?"),
             ],
@@ -25,7 +25,7 @@ print(identify_book_prompt(b"..."))
 #         role="user",
 #         content=[
 #             TextPart(type="text", text="Here's an audio book snippet:"),
-#             AudioPart(type='audio', media_type='audio/wav', audio=b'...'),
+#             AudioPart(type='audio', media_type='audio/mp3', audio=b'...'),
 #             TextPart(type="text", text="What book is this?"),
 #         ],
 #     )
