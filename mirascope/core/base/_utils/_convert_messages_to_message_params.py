@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from io import FileIO
-from typing import TYPE_CHECKING, cast
+from typing import cast
 from wave import Wave_read
 
 from pydantic import BaseModel
@@ -16,24 +16,7 @@ from ..message_param import (
     ImagePart,
     TextPart,
 )
-from ..types import AudioSegment, has_pydub_module
-
-if TYPE_CHECKING:
-    from PIL import Image
-
-    has_pil_module: bool
-else:
-    try:
-        from PIL import Image  # pyright: ignore [reportAssignmentType]
-
-        has_pil_module = True
-    except ImportError:  # pragma: no cover
-        has_pil_module = False
-
-        class Image:
-            class Image:
-                def tobytes(self) -> bytes: ...
-
+from ..types import AudioSegment, Image, has_pil_module, has_pydub_module
 
 SAMPLE_WIDTH = 2
 FRAME_RATE = 24000
@@ -110,7 +93,7 @@ def _is_base_message_params(
 def convert_messages_to_message_params(
     messages: str
     | Sequence[
-        str | Image.Image | TextPart | ImagePart | AudioPart | AudioSegment | Wave_read
+        str | Image.Image | AudioSegment | Wave_read | TextPart | ImagePart | AudioPart
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,

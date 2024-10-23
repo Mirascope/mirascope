@@ -16,9 +16,7 @@ from .dynamic_config import OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool, OpenAIToolConfig
 
-OpenAIMessageParam: TypeAlias = (
-    ChatCompletionMessageParam | BaseMessageParam | AudioSegment | Wave_read
-)
+OpenAIMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
 
 __all__ = [
     "call",

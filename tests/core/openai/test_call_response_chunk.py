@@ -136,6 +136,5 @@ def test_openai_call_response_chunk_without_audio() -> None:
         object="chat.completion.chunk",
     )
     call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
-    assert call_response_chunk._audio is None
     assert call_response_chunk.audio is None
     assert call_response_chunk.audio_transcript is None

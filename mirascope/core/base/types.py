@@ -1,10 +1,25 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from PIL import Image
     from pydub import AudioSegment
 
+    has_pil_module: bool
     has_pydub_module: bool
 else:
+    try:
+        from PIL import Image  # pyright: ignore [reportAssignmentType]
+
+        has_pil_module = True
+    except ImportError:  # pragma: no cover
+        has_pil_module = False
+
+        class Image:
+            class Image:
+                def tobytes(self) -> bytes: ...
+
     try:
         from pydub import AudioSegment  # pyright: ignore [reportAssignmentType]
 

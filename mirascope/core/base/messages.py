@@ -18,11 +18,11 @@ class Messages:
         | Sequence[
             str
             | Image.Image
+            | AudioSegment
+            | Wave_read
             | TextPart
             | ImagePart
             | AudioPart
-            | AudioSegment
-            | Wave_read
         ]
         | list[BaseMessageParam | Any]
         | BaseMessageParam
@@ -35,11 +35,11 @@ class Messages:
         | Sequence[
             str
             | Image.Image
+            | AudioSegment
+            | Wave_read
             | TextPart
             | ImagePart
             | AudioPart
-            | AudioSegment
-            | Wave_read
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -54,11 +54,11 @@ class Messages:
         | Sequence[
             str
             | Image.Image
+            | AudioSegment
+            | Wave_read
             | TextPart
             | ImagePart
             | AudioPart
-            | AudioSegment
-            | Wave_read
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -73,11 +73,11 @@ class Messages:
         | Sequence[
             str
             | Image.Image
+            | AudioSegment
+            | Wave_read
             | TextPart
             | ImagePart
             | AudioPart
-            | AudioSegment
-            | Wave_read
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(

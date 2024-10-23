@@ -189,22 +189,16 @@ class OpenAICallResponse(
             for tool, output in tools_and_outputs
         ]
 
-    @computed_field
-    @property
-    def _audio(self) -> ChatCompletionAudio | None:
-        """Returns the audio of the response."""
-        return getattr(self.response.choices[0].message, "audio", None)
-
     @property
     def audio(self) -> bytes | None:
         """Returns the audio data of the response."""
-        if audio := self._audio:
+        if audio := getattr(self.response.choices[0].message, "audio", None):
             return base64.b64decode(audio.data)
         return None
 
     @property
     def audio_transcript(self) -> str | None:
         """Returns the transcript of the audio content."""
-        if audio := self._audio:
+        if audio := getattr(self.response.choices[0].message, "audio", None):
             return audio.transcript
         return None
