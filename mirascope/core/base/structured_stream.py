@@ -252,6 +252,7 @@ def structured_stream_factory(  # noqa: ANN201
             "call_params": call_params,
         }
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
+        fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)

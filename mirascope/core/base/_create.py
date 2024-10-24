@@ -148,6 +148,7 @@ def create_factory(  # noqa: ANN202
                 fn,
             )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
+        fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)
