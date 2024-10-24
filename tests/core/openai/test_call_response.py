@@ -183,6 +183,13 @@ def test_openai_call_response_with_audio() -> None:
 
     assert call_response.audio == audio_data
     assert call_response.audio_transcript == transcript
+    assert call_response.message_param == {
+        "audio": {"id": "id"},
+        "content": "content",
+        "refusal": None,
+        "role": "assistant",
+        "tool_calls": None,
+    }
 
 
 def test_openai_call_response_without_audio() -> None:
@@ -218,3 +225,9 @@ def test_openai_call_response_without_audio() -> None:
 
     assert call_response.audio is None
     assert call_response.audio_transcript is None
+    assert call_response.message_param == {
+        "content": "content",
+        "refusal": None,
+        "role": "assistant",
+        "tool_calls": None,
+    }
