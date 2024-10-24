@@ -382,6 +382,7 @@ def stream_factory(  # noqa: ANN201
                     call_kwargs=call_kwargs,
                 )
 
+            inner_async.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner_async
         else:
 
@@ -426,6 +427,7 @@ def stream_factory(  # noqa: ANN201
                     call_kwargs=call_kwargs,
                 )
 
+            inner.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner
 
     return decorator

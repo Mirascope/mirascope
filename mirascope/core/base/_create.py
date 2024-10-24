@@ -187,6 +187,7 @@ def create_factory(  # noqa: ANN202
                 output._model = model
                 return output if not output_parser else output_parser(output)
 
+            inner_async.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner_async
         else:
 
@@ -227,6 +228,7 @@ def create_factory(  # noqa: ANN202
                 output._model = model
                 return output if not output_parser else output_parser(output)
 
+            inner.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner
 
     return decorator
