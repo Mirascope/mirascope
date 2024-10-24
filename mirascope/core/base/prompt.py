@@ -38,6 +38,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 
 SUPPORTED_MESSAGE_ROLES = ["system", "user", "assistant"]
 
+
 class BasePrompt(BaseModel):
     """The base class for engineering prompts.
 
