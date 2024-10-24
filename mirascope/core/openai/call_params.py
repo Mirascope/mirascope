@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from openai.types.chat import (
     ChatCompletionStreamOptionsParam,
     ChatCompletionToolChoiceOptionParam,
@@ -11,6 +13,23 @@ from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
+if TYPE_CHECKING:
+    from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
+        ChatCompletionAudioParam,
+        ChatCompletionModality,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+else:
+    try:
+        from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
+            ChatCompletionAudioParam,
+            ChatCompletionModality,
+        )
+    except ImportError:
+
+        class ChatCompletionAudioParam: ...
+
+        class ChatCompletionModality: ...
+
 
 class OpenAICallParams(BaseCallParams):
     """The parameters to use when calling the OpenAI API.
@@ -18,10 +37,12 @@ class OpenAICallParams(BaseCallParams):
     [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
 
     Attributes:
+        audio: ...
         frequency_penalty: ...
         logit_bias: ...
         logprobs: ...
         max_tokens: ...
+        modalities: ...
         n: ...
         parallel_tool_calls: ...
         presence_penalty: ...
@@ -36,11 +57,13 @@ class OpenAICallParams(BaseCallParams):
         user: ...
     """
 
+    audio: NotRequired[ChatCompletionAudioParam | None]
     extra_headers: NotRequired[dict[str, str] | None]
     frequency_penalty: NotRequired[float | None]
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]
     max_tokens: NotRequired[int | None]
+    modalities: NotRequired[list[ChatCompletionModality] | None]
     n: NotRequired[int | None]
     parallel_tool_calls: NotRequired[bool]
     presence_penalty: NotRequired[float | None]

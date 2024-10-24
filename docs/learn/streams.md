@@ -180,6 +180,66 @@ While Mirascope provides a consistent interface, you can always access the full,
 
     The reason that we have provider-specific response objects (e.g. `OpenAICallResponseChunk`) is to provide proper type hints and safety when accessing the original response chunk.
 
+
+## Multi-Modal Outputs
+
+While most LLM providers focus on text streaming, some providers support streaming additional output modalities like audio. The availability of multi-modal streaming varies among providers:
+
+| Provider    | Text | Audio | Image |
+|------------|------|-------|-------|
+| OpenAI     | ✓    | ✓     | -     |
+| Anthropic  | ✓    | -     | -     |
+| Mistral    | ✓    | -     | -     |
+| Gemini     | ✓    | -     | -     |
+| Groq       | ✓    | -     | -     |
+| Cohere     | ✓    | -     | -     |
+| LiteLLM    | ✓    | -     | -     |
+| Azure AI   | ✓    | -     | -     |
+| Vertex AI  | ✓    | -     | -     |
+
+Legend: ✓ (Supported), - (Not Supported)
+
+### Audio Streaming
+
+For providers that support audio outputs, you can stream both text and audio responses simultaneously:
+
+!!! mira "" 
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="17 18 20 31-34"
+            --8<-- "examples/learn/streams/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+    {% endfor %}
+
+
+Each stream chunk provides access to:
+
+- `chunk.audio`: Raw audio data in bytes format
+- `chunk.audio_transcript`: The transcript of the audio
+
+This allows you to process both text and audio streams concurrently. Since audio data is received in chunks, you could technically begin playback before receiving the complete response.
+
+!!! warning "Audio Playback Requirements"
+
+    The example above uses `pydub` and `ffmpeg` for audio playback, but you can use any audio processing libraries or media players that can handle WAV format audio data. Choose the tools that best fit your needs and environment.
+
+    If you decide to use pydub:
+    - Install [pydub](https://github.com/jiaaro/pydub): `pip install pydub`
+    - Install ffmpeg: Available from [ffmpeg.org](https://www.ffmpeg.org/) or through system package managers
+
+!!! note "Voice Options"
+
+    For providers that support audio outputs, refer to their documentation for available voice options and configurations:
+    
+    - OpenAI: [Text to Speech Guide](https://platform.openai.com/docs/guides/text-to-speech)
+
+
 ## Error Handling
 
 Error handling in streams is similar to standard non-streaming calls. However, it's important to note that errors may occur during iteration rather than at the initial function call:

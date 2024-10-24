@@ -1,5 +1,7 @@
 """Tests the `openai.call_response_chunk` module."""
 
+import base64
+
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import (
     Choice,
@@ -63,3 +65,76 @@ def test_openai_call_response_chunk_no_choices_or_usage() -> None:
     assert call_response_chunk.usage is None
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
+
+
+def test_openai_call_response_chunk_with_audio() -> None:
+    """Tests the `OpenAICallResponseChunk` class with audio content."""
+    audio_data = b"test audio data"
+    audio_base64 = base64.b64encode(audio_data).decode()
+    transcript = "This is a test transcript"
+
+    choices = [
+        Choice(
+            delta=ChoiceDelta(
+                content="content",
+                audio={"data": audio_base64, "transcript": transcript},  # pyright: ignore [reportCallIssue]
+            ),
+            index=0,
+            finish_reason="stop",
+        )
+    ]
+    chunk = ChatCompletionChunk(
+        id="id",
+        choices=choices,
+        created=0,
+        model="gpt-4o",
+        object="chat.completion.chunk",
+    )
+    call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
+    assert call_response_chunk.audio == audio_data
+    assert call_response_chunk.audio_transcript == transcript
+
+
+def test_openai_call_response_chunk_with_partial_audio() -> None:
+    """Tests the `OpenAICallResponseChunk` class with partial audio content."""
+    choices = [
+        Choice(
+            delta=ChoiceDelta(
+                content="content",
+                audio={"transcript": "transcript only"},  # pyright: ignore [reportCallIssue]
+            ),
+            index=0,
+            finish_reason="stop",
+        )
+    ]
+    chunk = ChatCompletionChunk(
+        id="id",
+        choices=choices,
+        created=0,
+        model="gpt-4o",
+        object="chat.completion.chunk",
+    )
+    call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
+    assert call_response_chunk.audio is None
+    assert call_response_chunk.audio_transcript == "transcript only"
+
+
+def test_openai_call_response_chunk_without_audio() -> None:
+    """Tests the `OpenAICallResponseChunk` class without audio content."""
+    choices = [
+        Choice(
+            delta=ChoiceDelta(content="content"),  # no audio field
+            index=0,
+            finish_reason="stop",
+        )
+    ]
+    chunk = ChatCompletionChunk(
+        id="id",
+        choices=choices,
+        created=0,
+        model="gpt-4o",
+        object="chat.completion.chunk",
+    )
+    call_response_chunk = OpenAICallResponseChunk(chunk=chunk)
+    assert call_response_chunk.audio is None
+    assert call_response_chunk.audio_transcript is None

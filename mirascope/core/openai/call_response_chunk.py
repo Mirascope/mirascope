@@ -3,10 +3,14 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
+from __future__ import annotations
+
+import base64
+
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice
 from openai.types.completion_usage import CompletionUsage
-from pydantic import SkipValidation
+from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponseChunk
 
@@ -86,4 +90,22 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
         """Returns the number of output tokens."""
         if self.usage:
             return self.usage.completion_tokens
+        return None
+
+    @computed_field
+    @property
+    def audio(self) -> bytes | None:
+        """Returns the audio data of the response."""
+        if (audio := getattr(self.chunk.choices[0].delta, "audio", None)) and (
+            audio_data := audio.get("data")
+        ):
+            return base64.b64decode(audio_data)
+        return None
+
+    @computed_field
+    @property
+    def audio_transcript(self) -> str | None:
+        """Returns the transcript of the audio content."""
+        if audio := getattr(self.chunk.choices[0].delta, "audio", None):
+            return audio.get("transcript")
         return None

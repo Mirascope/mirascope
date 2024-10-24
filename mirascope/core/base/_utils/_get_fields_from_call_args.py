@@ -2,7 +2,7 @@
 
 import inspect
 from collections.abc import Callable
-from typing import Any
+from typing import Any, get_origin
 
 from pydantic import BaseModel
 
@@ -16,6 +16,8 @@ def get_fields_from_call_args(
     args: tuple[object, ...],
     kwargs: dict[str, Any],
 ) -> dict[str, Any]:
+    if origin := get_origin(response_model):
+        response_model = origin
     if not (inspect.isclass(response_model) and issubclass(response_model, BaseModel)):
         return {}
     call_args_fields = {

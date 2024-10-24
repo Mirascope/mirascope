@@ -304,3 +304,59 @@ def test_construct_call_response_no_usage() -> None:
         pass
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.usage is None
+
+
+def test_openai_stream_audio() -> None:
+    """Tests the `OpenAIStream` class with audio output."""
+    chunks = [
+        ChatCompletionChunk(
+            id="id",
+            choices=[
+                ChunkChoice(
+                    delta=ChoiceDelta(
+                        content="content",
+                        audio={"id": "audio-id-123"},  # pyright: ignore [reportCallIssue]
+                    ),
+                    index=0,
+                )
+            ],
+            created=0,
+            model="gpt-4o",
+            object="chat.completion.chunk",
+        ),
+    ]
+
+    def generator():
+        for chunk in chunks:
+            yield OpenAICallResponseChunk(chunk=chunk), None
+
+    stream = OpenAIStream(
+        stream=generator(),
+        metadata={},
+        tool_types=None,
+        call_response_type=OpenAICallResponse,
+        model="gpt-4o",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "content": "content"}],
+        call_params={},
+        call_kwargs={},
+    )
+
+    # Stream should initially have no audio_id
+    assert stream.audio_id is None
+
+    # Consume stream
+    for _ in stream:
+        pass
+
+    # Check audio_id was set
+    assert stream.audio_id == "audio-id-123"
+
+    # Verify audio_id is included in message param
+    assert stream.message_param == {
+        "role": "assistant",
+        "content": "content",
+        "audio": {"id": "audio-id-123"},
+    }

@@ -3,6 +3,8 @@
 usage docs: learn/streams.md
 """
 
+from collections.abc import Generator
+
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
@@ -64,7 +66,19 @@ class OpenAIStream(
     ```
     """
 
+    audio_id: str | None = None
+
     _provider = "openai"
+
+    def __iter__(
+        self,
+    ) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
+        for chunk, tool in super().__iter__():
+            if (audio := getattr(chunk.chunk.choices[0].delta, "audio", None)) and (
+                audio_id := audio.get("id")
+            ):
+                self.audio_id = audio_id
+            yield chunk, tool
 
     @property
     def cost(self) -> float | None:
@@ -92,6 +106,8 @@ class OpenAIStream(
                 )
                 for tool_call in tool_calls
             ]
+        if self.audio_id:
+            message_param["audio"] = {"id": self.audio_id}
         return message_param
 
     def construct_call_response(self) -> OpenAICallResponse:
