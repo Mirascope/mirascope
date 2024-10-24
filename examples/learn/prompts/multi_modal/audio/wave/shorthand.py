@@ -1,8 +1,6 @@
 import wave
 from wave import Wave_read
 
-from pydub import AudioSegment
-
 from mirascope.core import prompt_template, Messages
 
 
