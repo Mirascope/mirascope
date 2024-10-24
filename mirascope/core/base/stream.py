@@ -340,6 +340,7 @@ def stream_factory(  # noqa: ANN201
                 fn,
             )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
+        fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
 
             @wraps(fn)
@@ -382,7 +383,6 @@ def stream_factory(  # noqa: ANN201
                     call_kwargs=call_kwargs,
                 )
 
-            inner_async.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner_async
         else:
 
@@ -427,7 +427,6 @@ def stream_factory(  # noqa: ANN201
                     call_kwargs=call_kwargs,
                 )
 
-            inner.__mirascope_call__ = True  # pyright: ignore [reportAttributeAccessIssue]
             return inner
 
     return decorator
