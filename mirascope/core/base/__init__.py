@@ -24,9 +24,11 @@ from .stream import BaseStream
 from .structured_stream import BaseStructuredStream
 from .tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from .toolkit import BaseToolKit, toolkit_tool
+from .types import AudioSegment
 
 __all__ = [
     "AudioPart",
+    "AudioSegment",
     "BaseCallKwargs",
     "BaseCallParams",
     "BaseCallResponse",

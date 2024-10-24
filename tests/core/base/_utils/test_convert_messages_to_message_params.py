@@ -1,3 +1,5 @@
+import io
+import wave
 from unittest.mock import Mock, patch
 
 import pytest
@@ -10,6 +12,20 @@ from mirascope.core.base._utils._convert_messages_to_message_params import (
     convert_message_content_to_message_param_content,
     convert_messages_to_message_params,
 )
+
+
+class MockAudioSegment:
+    def set_frame_rate(self, frame_rate):
+        return self
+
+    def set_channels(self, channels):
+        return self
+
+    def set_sample_width(self, sample_width):
+        return self
+
+    def export(self, format):
+        return io.BytesIO(b"mock_wav_data")
 
 
 def test_convert_message_sequence_part_to_content_part_with_string():
@@ -179,4 +195,48 @@ def test_convert_messages_to_message_params_with_custom_role():
     messages = "Hello, World!"
     result = convert_messages_to_message_params(messages, role="custom_role")
     expected_output = [BaseMessageParam(role="custom_role", content="Hello, World!")]
+    assert result == expected_output
+
+
+def test_convert_message_sequence_part_to_content_part_with_audio_segment():
+    mock_audio_segment = MockAudioSegment()
+
+    with (
+        patch(
+            "mirascope.core.base._utils._convert_messages_to_message_params.has_pydub_module",
+            True,
+        ),
+        patch(
+            "mirascope.core.base._utils._convert_messages_to_message_params.AudioSegment",
+            MockAudioSegment,
+        ),
+    ):
+        result = _convert_message_sequence_part_to_content_part(mock_audio_segment)  # pyright: ignore [reportArgumentType]
+
+    expected_output = AudioPart(
+        type="audio",
+        media_type="audio/wav",
+        audio=b"mock_wav_data",
+    )
+    assert result == expected_output
+
+
+def test_convert_message_sequence_part_to_content_part_with_wave_read():
+    wav_data = io.BytesIO()
+    with wave.open(wav_data, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(44100)
+        wav_file.writeframes(b"\x00\x00" * 1000)  # 1000 samples of silence
+
+    wav_data.seek(0)
+    wave_read = wave.open(wav_data, "rb")
+
+    result = _convert_message_sequence_part_to_content_part(wave_read)
+
+    expected_output = AudioPart(
+        type="audio",
+        media_type="audio/wav",
+        audio=b"\x00\x00" * 1000,
+    )
     assert result == expected_output

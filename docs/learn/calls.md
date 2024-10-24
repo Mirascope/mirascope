@@ -161,6 +161,66 @@ While Mirascope provides a consistent interface, you can also always access the 
 
     The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
 
+## Multi-Modal Outputs
+
+While most LLM providers focus on text outputs, some providers support additional output modalities like audio. The availability of multi-modal outputs varies among providers:
+
+| Provider    | Text | Audio | Image |
+|------------|------|-------|-------|
+| OpenAI     | ✓    | ✓     | -     |
+| Anthropic  | ✓    | -     | -     |
+| Mistral    | ✓    | -     | -     |
+| Gemini     | ✓    | -     | -     |
+| Groq       | ✓    | -     | -     |
+| Cohere     | ✓    | -     | -     |
+| LiteLLM    | ✓    | -     | -     |
+| Azure AI   | ✓    | -     | -     |
+| Vertex AI  | ✓    | -     | -     |
+
+Legend: ✓ (Supported), - (Not Supported)
+
+### Audio Outputs
+
+- `audio`: Configuration for the audio output (voice, format, etc.)
+- `modalities`: List of output modalities to receive (e.g. `["text", "audio"]`)
+
+For providers that support audio outputs, you can receive both text and audio responses from your calls:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="13 14 23 25"
+            --8<-- "examples/learn/calls/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+    {% endfor %}
+
+
+When using models that support audio outputs, you'll have access to:
+
+- `content`: The text content of the response
+- `audio`: The raw audio bytes of the response
+- `audio_transcript`: The transcript of the audio response
+
+!!! warning "Audio Playback Requirements"
+
+    The example above uses `pydub` and `ffmpeg` for audio playback, but you can use any audio processing libraries or media players that can handle WAV format audio data. Choose the tools that best fit your needs and environment.
+
+    If you decide to use pydub:
+    - Install [pydub](https://github.com/jiaaro/pydub): `pip install pydub`
+    - Install ffmpeg: Available from [ffmpeg.org](https://www.ffmpeg.org/) or through system package managers
+
+!!! note "Voice Options"
+
+    For providers that support audio outputs, refer to their documentation for available voice options and configurations:
+    
+    - OpenAI: [Text to Speech Guide](https://platform.openai.com/docs/guides/text-to-speech)
+
 ## Common Parameters Across Providers
 
 While each LLM provider has its own specific parameters, there are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:

@@ -1,8 +1,11 @@
 """Tests the `openai.call_response` module."""
 
+import base64
+
 import pytest
 from openai.types.chat import ChatCompletion, ChatCompletionToolMessageParam
 from openai.types.chat.chat_completion import Choice
+from openai.types.chat.chat_completion_audio import ChatCompletionAudio
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
 from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
@@ -132,3 +135,99 @@ def test_openai_call_response_with_tools() -> None:
     completion.choices[0].message.refusal = "refusal message"
     with pytest.raises(ValueError, match="refusal message"):
         tool = call_response.tools
+
+
+def test_openai_call_response_with_audio() -> None:
+    """Tests the `OpenAICallResponse` class with audio content."""
+    audio_data = b"fake audio data"
+    audio_base64 = base64.b64encode(audio_data).decode()
+    transcript = "This is a test transcript."
+
+    choices = [
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(
+                content="content",
+                role="assistant",
+                audio=ChatCompletionAudio(
+                    data=audio_base64,
+                    transcript=transcript,
+                    id="id",
+                    expires_at=0,
+                ),
+            ),
+        )
+    ]
+    completion = ChatCompletion(
+        id="id",
+        choices=choices,
+        created=0,
+        model="gpt-4o",
+        object="chat.completion",
+    )
+    call_response = OpenAICallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    assert call_response.audio == audio_data
+    assert call_response.audio_transcript == transcript
+    assert call_response.message_param == {
+        "audio": {"id": "id"},
+        "content": "content",
+        "refusal": None,
+        "role": "assistant",
+        "tool_calls": None,
+    }
+
+
+def test_openai_call_response_without_audio() -> None:
+    """Tests the `OpenAICallResponse` class without audio content."""
+    choices = [
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(content="content", role="assistant"),
+        )
+    ]
+    completion = ChatCompletion(
+        id="id",
+        choices=choices,
+        created=0,
+        model="gpt-4o",
+        object="chat.completion",
+    )
+    call_response = OpenAICallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    assert call_response.audio is None
+    assert call_response.audio_transcript is None
+    assert call_response.message_param == {
+        "content": "content",
+        "refusal": None,
+        "role": "assistant",
+        "tool_calls": None,
+    }
