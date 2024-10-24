@@ -4,8 +4,8 @@ from mirascope.core import prompt_template, Messages
 
 
 @prompt_template()
-def identify_book_prompt(audio_mp3: AudioSegment) -> Messages.Type:
-    return ["Here's an audio book snippet:", audio_mp3, "What book is this?"]
+def identify_book_prompt(audio_wave: AudioSegment) -> Messages.Type:
+    return ["Here's an audio book snippet:", audio_wave, "What book is this?"]
 
 
 with open("....", "rb") as audio:

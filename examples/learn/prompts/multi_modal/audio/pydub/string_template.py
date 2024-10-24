@@ -1,8 +1,8 @@
 from mirascope.core import prompt_template
 
 
-@prompt_template("Here's an audio book snippet: {audio_mp3:audio} What book is this?")
-def identify_book_prompt(audio_mp3: bytes): ...
+@prompt_template("Here's an audio book snippet: {audio_wave:audio} What book is this?")
+def identify_book_prompt(audio_wave: bytes): ...
 
 
 print(identify_book_prompt(b"..."))
