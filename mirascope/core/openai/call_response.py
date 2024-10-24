@@ -120,8 +120,10 @@ class OpenAICallResponse(
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
         message_param = self.response.choices[0].message.model_dump(
-            exclude={"function_call"}
+            exclude={"function_call", "audio"}
         )
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            message_param["audio"] = {"id": audio.id}
         return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
