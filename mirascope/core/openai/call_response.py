@@ -189,6 +189,7 @@ class OpenAICallResponse(
             for tool, output in tools_and_outputs
         ]
 
+    @computed_field
     @property
     def audio(self) -> bytes | None:
         """Returns the audio data of the response."""
@@ -196,6 +197,7 @@ class OpenAICallResponse(
             return base64.b64decode(audio.data)
         return None
 
+    @computed_field
     @property
     def audio_transcript(self) -> str | None:
         """Returns the transcript of the audio content."""

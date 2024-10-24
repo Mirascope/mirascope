@@ -2,9 +2,9 @@ import io
 import wave
 
 from pydub.playback import play
+from pydub import AudioSegment
 
 from mirascope.core import openai, prompt_template
-from mirascope.core.openai import AudioSegment
 
 
 @openai.call(
