@@ -1,11 +1,10 @@
 import wave
-from wave import Wave_read
 
-from mirascope.core import prompt_template, Messages
+from mirascope.core import Messages, prompt_template
 
 
 @prompt_template()
-def identify_book_prompt(audio_wave: Wave_read) -> Messages.Type:
+def identify_book_prompt(audio_wave: wave.Wave_read) -> Messages.Type:
     return Messages.User(
         ["Here's an audio book snippet:", audio_wave, "What book is this?"]
     )
