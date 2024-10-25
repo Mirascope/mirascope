@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from pprint import pprint
 from typing import Generator
 
@@ -23,47 +24,66 @@ def generate_other_topic(topic: str) -> str:
 
 
 @step()
-def generate_other_topic_step(topic: str) -> NextStep[critique_joke_step]:
-    joke = generate_other_topic(topic).content
-    print(f"Generated joke: {joke}")
-    return NextStep(critique_joke_step, joke=joke)
-
-
-@step()
-def generate_joke_step(topic: str) -> NextStep[critique_joke_step]:
-    joke = generate_joke(topic).content
-    print(f"Generated joke: {joke}")
-    return NextStep(critique_joke_step, joke=joke)
-
-
-@step()
 def generate_multiple_joke(
     topic: str, count: int
 ) -> Generator[
-    NextStep[generate_joke_step] | NextStep[generate_other_topic_step], None, None
+    NextStep[generate_joke_step]
+    | NextStep[generate_other_topic_step]
+    | JoinStep[final_step],
+    None,
+    None,
 ]:
     print(f"Generating {count} jokes about {topic}")
+    group_id = str(uuid.uuid4())
+    expected_count = count + 1  # Number of jokes generated
     for i in range(count):
-        yield NextStep(generate_joke_step, topic=topic)
-    yield NextStep(generate_other_topic_step, topic=topic)
-
-
-@step()
-def critique_joke_step(joke: str) -> JoinStep[final_step]:
-    critique = critique_joke(joke).content
-    return JoinStep(final_step, result=critique)
-
-
-@step()
-def final_step(multiple_input: Join[critique_joke_step]) -> str:
-    print(f"Final step received results: {multiple_input.results}")
-    critiques = multiple_input.results
-    return "\n\n".join(
-        f"Critique {i+1}:\n{critique}" for i, critique in enumerate(critiques)
+        yield NextStep(
+            generate_joke_step,
+            topic=topic,
+            group_id=group_id,
+            expected_count=expected_count,
+        )
+    yield NextStep(
+        generate_other_topic_step,
+        topic=topic,
+        group_id=group_id,
+        expected_count=expected_count,
     )
+    # After yielding all joke steps, yield a JoinStep to final_step with the same group_id and expected_count
+
+    yield JoinStep(final_step, group_id=group_id, expected_count=expected_count)
+
+
+@step()
+def generate_joke_step(
+    topic: str, group_id: str, expected_count: int
+) -> JoinStep[final_step]:
+    joke = generate_joke(topic).content
+    print(f"Generated joke: {joke}")
+    # Return a JoinStep with group_id but without specifying expected_count here
+    return JoinStep(
+        final_step, result=joke, group_id=group_id, expected_count=expected_count
+    )
+
+
+@step()
+def generate_other_topic_step(
+    topic: str, group_id: str, expected_count: int
+) -> JoinStep[final_step]:
+    joke = generate_other_topic(topic).content
+    print(f"Generated joke: {joke}")
+    return JoinStep(
+        final_step, result=joke, group_id=group_id, expected_count=expected_count
+    )
+
+
+@step()
+def final_step(multiple_input: Join[str]) -> str:
+    print(f"Final step received results len: {len(multiple_input.results)}")
+    jokes = multiple_input.results
+    return "\n\n".join(f"Joke {i+1}:\n{joke}" for i, joke in enumerate(jokes))
 
 
 workflow = Workflow(start=generate_multiple_joke, stop=final_step)
 result = workflow.run("computer_science", 3)
-pprint(len(result.output))
 pprint(result.output)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from pprint import pprint
 from typing import Generator
 
@@ -22,25 +23,36 @@ def generate_multiple_joke(
     topic: str, count: int
 ) -> Generator[NextStep[generate_joke_step], None, None]:
     print(f"Generating {count} jokes about {topic}")
+    group_id = str(uuid.uuid4())  # Generate a unique group ID
     for i in range(count):
-        yield NextStep(generate_joke_step, topic=topic)
+        yield NextStep(
+            generate_joke_step, topic=topic, group_id=group_id, expected_count=count
+        )
+    # After yielding all joke steps, yield a JoinStep to final_step
 
 
 @step()
-def generate_joke_step(topic: str) -> NextStep[critique_joke_step]:
+def generate_joke_step(
+    topic: str, group_id: str, expected_count: int
+) -> NextStep[critique_joke_step]:
     joke = generate_joke(topic).content
     print(f"Generated joke: {joke}")
-    return NextStep(critique_joke_step, joke=joke)
+    # Pass the group_id to maintain grouping
+    return NextStep(
+        critique_joke_step, joke=joke, group_id=group_id, expected_count=expected_count
+    )
 
 
 @step()
-def critique_joke_step(joke: str) -> JoinStep[final_step]:
+def critique_joke_step(joke: str, group_id: str, expected_count: int) -> JoinStep[final_step]:
     critique = critique_joke(joke).content
-    return JoinStep(final_step, result=critique)
+    print(f"Generated critique: {critique}")
+    # Return the critique directly
+    return JoinStep(final_step, result=critique, group_id=group_id, expected_count=expected_count)
 
 
 @step()
-def final_step(multiple_input: Join[critique_joke_step]) -> str:
+def final_step(multiple_input: Join[str]) -> str:
     print(f"Final step received results: {multiple_input.results}")
     critiques = multiple_input.results
     return "\n\n".join(
@@ -50,4 +62,4 @@ def final_step(multiple_input: Join[critique_joke_step]) -> str:
 
 workflow = Workflow(start=generate_multiple_joke, stop=final_step)
 result = workflow.run("computer_science", 3)
-pprint(len(result.output))
+pprint(result.output)
