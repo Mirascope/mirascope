@@ -18,7 +18,9 @@ def critique_joke(joke: str) -> str:
 
 
 @step()
-def generate_multiple_joke(topic: str, count: int) -> Generator[NextStep[generate_joke_step], None, None]:
+def generate_multiple_joke(
+    topic: str, count: int
+) -> Generator[NextStep[generate_joke_step], None, None]:
     print(f"Generating {count} jokes about {topic}")
     for i in range(count):
         yield NextStep(generate_joke_step, topic=topic)
@@ -34,18 +36,17 @@ def generate_joke_step(topic: str) -> NextStep[critique_joke_step]:
 @step()
 def critique_joke_step(joke: str) -> JoinStep[final_step]:
     critique = critique_joke(joke).content
-    return JoinStep(
-        final_step,
-        result=critique
-    )
+    return JoinStep(final_step, result=critique)
 
 
 @step()
 def final_step(multiple_input: Join[critique_joke_step]) -> str:
     print(f"Final step received results: {multiple_input.results}")
     critiques = multiple_input.results
-    return "\n\n".join(f"Critique {i+1}:\n{critique}"
-                      for i, critique in enumerate(critiques))
+    return "\n\n".join(
+        f"Critique {i+1}:\n{critique}" for i, critique in enumerate(critiques)
+    )
+
 
 workflow = Workflow(start=generate_multiple_joke, stop=final_step)
 result = workflow.run("computer_science", 3)
