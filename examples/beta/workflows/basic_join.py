@@ -44,11 +44,15 @@ def generate_joke_step(
 
 
 @step()
-def critique_joke_step(joke: str, group_id: str, expected_count: int) -> JoinStep[final_step]:
+def critique_joke_step(
+    joke: str, group_id: str, expected_count: int
+) -> JoinStep[final_step]:
     critique = critique_joke(joke).content
     print(f"Generated critique: {critique}")
     # Return the critique directly
-    return JoinStep(final_step, result=critique, group_id=group_id, expected_count=expected_count)
+    return JoinStep(
+        final_step, result=critique, group_id=group_id, expected_count=expected_count
+    )
 
 
 @step()
