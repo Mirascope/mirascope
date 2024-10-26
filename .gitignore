@@ -1,5 +1,6 @@
 # pyenv
 .python-version
+.python-versions
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
