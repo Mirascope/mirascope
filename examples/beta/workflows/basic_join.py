@@ -58,7 +58,7 @@ def critique_joke_step(
 @step()
 def final_step(multiple_input: Join[str]) -> str:
     print(f"Final step received results: {multiple_input.results}")
-    critiques = multiple_input.results
+    critiques = [r.value for r in  multiple_input.results]
     return "\n\n".join(
         f"Critique {i+1}:\n{critique}" for i, critique in enumerate(critiques)
     )

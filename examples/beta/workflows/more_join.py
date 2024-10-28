@@ -49,9 +49,6 @@ def generate_multiple_joke(
         group_id=group_id,
         expected_count=expected_count,
     )
-    # After yielding all joke steps, yield a JoinStep to final_step with the same group_id and expected_count
-
-    yield JoinStep(final_step, group_id=group_id, expected_count=expected_count)
 
 
 @step()
@@ -80,8 +77,7 @@ def generate_other_topic_step(
 @step()
 def final_step(multiple_input: Join[str]) -> str:
     print(f"Final step received results len: {len(multiple_input.results)}")
-    jokes = multiple_input.results
-    return "\n\n".join(f"Joke {i+1}:\n{joke}" for i, joke in enumerate(jokes))
+    return "\n\n".join(f"Joke {i+1}. {r.step_full_qualname}:\n{r.value}" for i, r in enumerate(multiple_input.results))
 
 
 workflow = Workflow(start=generate_multiple_joke, stop=final_step)

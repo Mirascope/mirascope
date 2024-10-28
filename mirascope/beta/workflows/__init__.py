@@ -20,10 +20,10 @@ from typing import (
     TypeVar,
     get_args,
     get_origin,
-    get_type_hints,
+    get_type_hints, TypeAlias,
 )
 
-from pydantic import BaseModel, Field, SkipValidation
+from pydantic import BaseModel, ConfigDict, Field, SkipValidation
 from typing_extensions import TypedDict
 
 # Configure logger
@@ -36,12 +36,18 @@ _P = ParamSpec("_P")
 _T = TypeVar("_T")
 _Context = TypeVar("_Context")
 
+_FuncHash: TypeAlias = str
+_GroupId: TypeAlias = str
 
-def get_function_hash(func: Callable) -> int:
+def get_full_qualname(func: Callable) -> str:
+    return f"{func.__module__}.{func.__qualname__}"
+
+
+def get_function_hash(func: Callable) -> str:
     """Generate a consistent hash for a function based on its fully qualified name."""
-    name = f"{func.__module__}.{func.__qualname__}"
+    name = get_full_qualname(func)
     # Use SHA-256 to generate a consistent hash value
-    return int(hashlib.sha256(name.encode("utf-8")).hexdigest(), 16)
+    return hashlib.sha256(name.encode("utf-8")).hexdigest()
 
 
 class NextStep(Generic[_T]):
@@ -58,7 +64,7 @@ class NextStep(Generic[_T]):
         self.func_kwargs = func_kwargs
 
     @cached_property
-    def func_hash(self) -> int:
+    def func_hash(self) -> str:
         return get_function_hash(self.func)
 
 
@@ -72,9 +78,9 @@ class JoinStep(NextStep[_T]):
     def __init__(
         self,
         func: Callable[_StartParam, Any],
-        result: Any = None,
-        group_id: str = None,  # group_id is consistently str
-        expected_count: int = None,  # expected_count parameter
+        result: Any,
+        group_id: str,  # group_id is consistently str
+        expected_count: int,  # expected_count parameter
         *func_args: _StartParam.args,
         **func_kwargs: _StartParam.kwargs,
     ) -> None:
@@ -102,12 +108,20 @@ class JoinStep(NextStep[_T]):
         return sources
 
 
-class Join(Generic[_T]):
+class StepResult(BaseModel, Generic[_T]):
+    """Result of a workflow step execution"""
+
+    value: _T
+    step_full_qualname: str = Field(..., examples=["module.submodule.function"])
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class Join(BaseModel, Generic[_T]):
     """Represents a join point in the workflow"""
 
-    def __init__(self, results: list[_T], group_id: str) -> None:
-        self.results = results
-        self.group_id = group_id
+    results: list[StepResult[_T]]
+    group_id: _GroupId
 
 
 class StepStatus(str, Enum):
@@ -119,30 +133,17 @@ class StepStatus(str, Enum):
     FAILED = "failed"
 
 
-class StepResult(BaseModel):
-    """Result of a workflow step execution"""
-
-    value: Any
-    next_steps: list[NextStep] = Field(default_factory=list)
-    should_retry: bool = False
-    retry_delay: float = 0.0
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
 class WorkflowNode(BaseModel):
     """Node in the workflow graph maintaining execution state"""
 
-    func_hash: int
+    func_hash: str
     status: StepStatus = StepStatus.PENDING
     results: list[StepResult] = Field(default_factory=list)
     futures: list[Future] = Field(default_factory=list)
     retry_count: int = 0
     max_retries: int = 3
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def update_status(self, new_status: StepStatus) -> None:
         """Update node status with logging"""
@@ -152,17 +153,18 @@ class WorkflowNode(BaseModel):
             "Node %d status changed: %s -> %s", self.func_hash, old_status, new_status
         )
 
-    def add_result(self, result: Any) -> StepResult:
+    def add_result(self, from_hash: str, result: Any) -> StepResult:
         """Add a result to this node
 
         Args:
+            from_hash: The hash of the step that produced the result
             result: The result value to store
 
         Returns:
             Created StepResult instance
         """
         step_result = (
-            StepResult(value=result) if not isinstance(result, StepResult) else result
+            StepResult(value=result, step_full_qualname=get_full_qualname(_steps[from_hash])) if not isinstance(result, StepResult) else result
         )
         self.results.append(step_result)
         self.update_status(StepStatus.COMPLETED)
@@ -180,41 +182,40 @@ class WorkflowNode(BaseModel):
 class WorkflowGraph(BaseModel):
     """Graph structure for managing workflow execution and dependencies."""
 
-    nodes: dict[int, WorkflowNode] = Field(
+    nodes: dict[_FuncHash, WorkflowNode] = Field(
         default_factory=dict,
         description="Map of function hashes to their corresponding workflow nodes.",
     )
-    edges: dict[int, set[int]] = Field(
+    edges: dict[_FuncHash, set[_FuncHash]] = Field(
         default_factory=lambda: defaultdict(set),
         description="Adjacency list representing edges in the graph.",
     )
-    reverse_edges: dict[int, set[int]] = Field(
+    reverse_edges: dict[_FuncHash, set[_FuncHash]] = Field(
         default_factory=lambda: defaultdict(set),
         description="Reverse adjacency list for the graph.",
     )
-    join_points: dict[tuple[int, str], int] = Field(
+    join_points: dict[tuple[_FuncHash, _GroupId], int] = Field(
         default_factory=dict,
         description="Map of join points to their expected counts, keyed by (func_hash, group_id).",
     )
-    pending_results: dict[tuple[int, str], list[Any]] = Field(
+    pending_results: dict[tuple[_FuncHash, _GroupId], list[StepResult]] = Field(
         default_factory=lambda: defaultdict(list),
         description="Collected results for join points.",
     )
-    locks: dict[tuple[int, str], threading.Lock] = Field(
+    locks: dict[tuple[_FuncHash, str], threading.Lock] = Field(
         default_factory=lambda: defaultdict(threading.Lock),
         description="Locks for concurrency control per join point.",
     )
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def add_node(self, func_hash: int) -> None:
+    def add_node(self, func_hash: _FuncHash) -> None:
         """Add a new node to the graph if it doesn't already exist."""
         if func_hash not in self.nodes:
             self.nodes[func_hash] = WorkflowNode(func_hash=func_hash)
             logger.debug("Added node: %d", func_hash)
 
-    def add_edge(self, from_hash: int, to_hash: int) -> None:
+    def add_edge(self, from_hash: _FuncHash, to_hash: _FuncHash) -> None:
         """Add a directed edge to the graph without cycle detection."""
         self.add_node(from_hash)
         self.add_node(to_hash)
@@ -224,15 +225,9 @@ class WorkflowGraph(BaseModel):
         logger.debug("Added edge: %d -> %d", from_hash, to_hash)
 
     def add_join_point(
-        self, target_hash: int, group_id: str, expected_count: int
+            self, target_hash: _FuncHash, group_id: str, expected_count: int
     ) -> None:
-        """Register a join point with its expected result count.
-
-        Args:
-            target_hash: The hash of the join function.
-            group_id: The group ID associated with the join point.
-            expected_count: The expected number of results to collect before proceeding.
-        """
+        """Register a join point with its expected result count."""
         logger.debug(
             "Adding join point %d with expected_count %d and group_id %s",
             target_hash,
@@ -242,7 +237,6 @@ class WorkflowGraph(BaseModel):
         key = (target_hash, group_id)
         if key not in self.join_points:
             self.join_points[key] = expected_count
-            # Initialize pending results list
             self.pending_results[key] = []
         else:
             logger.debug(
@@ -251,51 +245,27 @@ class WorkflowGraph(BaseModel):
                 group_id,
             )
 
-        # Ensure the target node exists and update its status
         self.add_node(target_hash)
         target_node = self.nodes[target_hash]
         target_node.status = StepStatus.PENDING
 
-        logger.debug(
-            "Join point %d status: Expected count: %d, Group ID: %s",
-            target_hash,
-            self.join_points[key],
-            group_id,
-        )
-
     def _extract_value_by_type(self, func_kwargs: dict[str, Any]) -> Any:
-        """Extract the result value from function keyword arguments.
-
-        Args:
-            func_kwargs: The keyword arguments passed to the function.
-
-        Returns:
-            The first valid result value found, or None if no valid value is found.
-        """
+        """Extract the result value from function keyword arguments."""
         for _, value in func_kwargs.items():
             if value is None:
                 continue
-
-            # Skip parameters that are internal types
             if isinstance(value, (Join)):
                 continue
-
             return value
         return None
 
     def add_result(
-        self,
-        from_hash: int,
-        result: Any,
-        group_id: str = None,
+            self,
+            from_hash: _FuncHash,
+            result: Any,
+            group_id: str,
     ) -> None:
-        """Add a result from a completed step and update node status.
-
-        Args:
-            from_hash: The hash of the step that produced the result.
-            result: The result value, can be a JoinStep, NextStep, or any value.
-            group_id: The group ID associated with the result.
-        """
+        """Add a result from a completed step and update node status."""
         key = (from_hash, group_id)
         lock = self.locks[key]
         with lock:
@@ -303,47 +273,55 @@ class WorkflowGraph(BaseModel):
                 "Processing result from step %d with group_id %s", from_hash, group_id
             )
 
-            # Ensure the node exists and update its status
             self.add_node(from_hash)
             node = self.nodes[from_hash]
             node.status = StepStatus.RUNNING
 
             # Extract the actual result value
             if isinstance(result, JoinStep):
-                # For JoinStep, prioritize the result property
                 result_value = result.result
                 if result_value is None:
                     result_value = self._extract_value_by_type(result.func_kwargs)
-                group_id = result.group_id  # Use the group_id from the JoinStep
+                group_id = result.group_id
             elif isinstance(result, NextStep):
-                # For NextStep, extract from kwargs by parameter type
                 result_value = self._extract_value_by_type(result.func_kwargs)
             else:
                 result_value = result
 
-            # Store the result if valid
+            # Store the result with step information
             if result_value is not None:
-                node.add_result(result_value)
+                if not isinstance(result_value, StepResult):
+                    step_result = StepResult(
+                        value=result_value,
+                        step_full_qualname=get_full_qualname(_steps[from_hash])
+                    )
+                else:
+                    step_result = result_value
+
+                node.add_result(from_hash, step_result)
                 node.status = StepStatus.COMPLETED
-                logger.debug("Stored result for step %d: %s", from_hash, result_value)
+                logger.debug("Stored result for step %d: %s", from_hash, step_result)
             else:
                 logger.debug("No valid result value to store for step %d", from_hash)
 
-            # Update join points if this step is a dependency
             self._process_join_dependencies(from_hash, result_value, group_id)
 
     def _process_join_dependencies(
-        self, from_hash: int, result_value: Any, group_id: str
+            self,
+            from_hash: _FuncHash,
+            result_value: Any,
+            group_id: str
     ) -> None:
-        """Process join points that depend on this step.
-
-        Args:
-            from_hash: The hash of the step that produced the result.
-            result_value: The result value to store.
-            group_id: The group ID associated with the result.
-        """
+        """Process join points that depend on this step."""
         if result_value is None or group_id is None:
             return
+
+        # Ensure result is wrapped in StepResult
+        if not isinstance(result_value, StepResult):
+            result_value = StepResult(
+                value=result_value,
+                step_full_qualname=get_full_qualname(_steps[from_hash])
+            )
 
         for key in self.join_points:
             join_hash, join_group_id = key
@@ -356,21 +334,12 @@ class WorkflowGraph(BaseModel):
                         join_hash,
                         group_id,
                     )
-                    # Update join point node status
                     if self.is_join_ready(join_hash, group_id):
                         join_node = self.nodes[join_hash]
                         join_node.status = StepStatus.COMPLETED
 
-    def is_join_ready(self, join_hash: int, group_id: str) -> bool:
-        """Check if all dependencies for a join point have provided results.
-
-        Args:
-            join_hash: The hash of the join point to check.
-            group_id: The group ID associated with the join point.
-
-        Returns:
-            True if the join point is ready for processing, False otherwise.
-        """
+    def is_join_ready(self, join_hash: _FuncHash, group_id: str) -> bool:
+        """Check if all dependencies for a join point have provided results."""
         key = (join_hash, group_id)
         if key not in self.join_points:
             return False
@@ -390,19 +359,8 @@ class WorkflowGraph(BaseModel):
 
         return ready
 
-    def get_join_results(self, join_hash: int, group_id: str) -> list[Any]:
-        """Get all results for a join point.
-
-        Args:
-            join_hash: The hash of the join point.
-            group_id: The group ID associated with the join point.
-
-        Returns:
-            A list of results collected from dependencies.
-
-        Raises:
-            ValueError: If the join point is not ready.
-        """
+    def get_join_results(self, join_hash: _FuncHash, group_id: str) -> list[StepResult]:
+        """Get all results for a join point."""
         if not self.is_join_ready(join_hash, group_id):
             raise ValueError(
                 f"Join point {join_hash} with group_id {group_id} is not ready"
@@ -432,28 +390,26 @@ class WorkflowGraph(BaseModel):
                 "Cleaned up completed join point %d with group_id %s", key[0], key[1]
             )
 
-
 class StepFuncInfo(BaseModel):
     """Metadata about a workflow step function"""
 
     arguments: dict[str, SkipValidation[type | None]] = Field(default_factory=dict)
-    next_steps: set[int] = Field(default_factory=set)
+    next_steps: set[_FuncHash] = Field(default_factory=set)
     stop_types: list[SkipValidation[type | None]] = Field(default_factory=list)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class BaseContext(TypedDict, total=False):
     """Base context for workflow execution"""
 
-    pass
+    results: list[StepResult]  # Results from previous steps
 
 
-_steps: dict[int, Callable] = {}
+_steps: dict[_FuncHash, Callable] = {}
 
 
-def _extract_join_dependencies(hint: type) -> set[int] | None:
+def _extract_join_dependencies(hint: type) -> set[_FuncHash] | None:
     """Extract dependencies from Join type annotation"""
     if (origin := get_origin(hint)) and origin == Join:
         join_deps = set()
@@ -471,7 +427,7 @@ def _extract_join_dependencies(hint: type) -> set[int] | None:
     return None
 
 
-def _extract_next_step(next_type: type[NextStep]) -> set[int]:
+def _extract_next_step(next_type: type[NextStep]) -> set[_FuncHash]:
     """Extract possible next step hashes from type annotation"""
     hashes = set()
     for arg_type in get_args(next_type):
@@ -486,7 +442,7 @@ def _extract_next_step(next_type: type[NextStep]) -> set[int]:
     return hashes
 
 
-def _extract_type_arguments(func: Callable) -> tuple[int, StepFuncInfo]:
+def _extract_type_arguments(func: Callable) -> tuple[str, StepFuncInfo]:
     """Extract type information and metadata from a workflow step function"""
     try:
         func_hash = get_function_hash(func)
@@ -494,7 +450,7 @@ def _extract_type_arguments(func: Callable) -> tuple[int, StepFuncInfo]:
         raise TypeError(f"Cannot hash function {func}")
 
     hints = get_type_hints(func, include_extras=True)
-    next_steps: set[int] = set()
+    next_steps: set[str] = set()
     arguments: dict[str, type | None] = {}
     stop_types: list[type] = []
 
@@ -608,7 +564,7 @@ class Workflow(Generic[_Context, _StartParam, _StopResponse]):
 
         self.start = start
         self.stop = stop
-        self._steps: dict[int, tuple[StepFuncInfo, Callable]] = {}
+        self._steps: dict[_FuncHash, tuple[StepFuncInfo, Callable]] = {}
         self._thread_pool_executor = ThreadPoolExecutor()
         self._graph = WorkflowGraph()  # Use the updated WorkflowGraph
         self._build_graph()
@@ -623,12 +579,12 @@ class Workflow(Generic[_Context, _StartParam, _StopResponse]):
         pass
 
     def _process_step_result(
-        self,
-        result: Any,
-        context: _Context,
-        step_info: StepFuncInfo,
-        func: Callable,
-        group_id: str = None,
+            self,
+            result: Any,
+            context: _Context,
+            step_info: StepFuncInfo,
+            func: Callable,
+            group_id: str,
     ) -> tuple[_R, _Context]:
         """Process the result of a workflow step
 
@@ -670,13 +626,18 @@ class Workflow(Generic[_Context, _StartParam, _StopResponse]):
 
                 # All results are ready, create a Join result
                 join_results = self._graph.get_join_results(result.func_hash, group_id)
-                join_kwargs = {"multiple_input": Join(join_results, group_id)}
+                # Use keyword arguments for Join initialization
+                join_kwargs = {
+                    "multiple_input": Join(
+                        results=join_results,
+                        group_id=group_id
+                    )
+                }
 
                 # Merge kwargs and pass group_id
                 merged_kwargs = {**result.func_kwargs}
                 merged_kwargs.pop("result", None)  # Remove 'result' if present
                 merged_kwargs.update(join_kwargs)
-                # merged_kwargs["group_id"] = group_id  # group_id is in Join
 
                 # Clean up completed join to free memory
                 self._graph.cleanup_completed_joins()
@@ -752,7 +713,7 @@ class Workflow(Generic[_Context, _StartParam, _StopResponse]):
                 else:
                     result = func(*args, **kwargs)
                 return self._process_step_result(
-                    result, __context, step_info, func, group_id=group_id
+                    result, __context, step_info, func, group_id=group_id,
                 )
 
         # Register the wrapped function
