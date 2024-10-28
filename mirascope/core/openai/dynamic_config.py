@@ -1,12 +1,15 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from openai import AsyncAzureOpenAI, AsyncOpenAI, AzureOpenAI, OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import OpenAICallParams
 
 OpenAIDynamicConfig = BaseDynamicConfig[
-    ChatCompletionMessageParam | BaseMessageParam, OpenAICallParams
+    ChatCompletionMessageParam | BaseMessageParam,
+    OpenAICallParams,
+    OpenAI | AsyncOpenAI | AzureOpenAI | AsyncAzureOpenAI,
 ]
 """The function return type for functions wrapped with the `openai_call` decorator.
 

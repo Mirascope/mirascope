@@ -157,6 +157,8 @@ def create_factory(  # noqa: ANN202
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
+                if "client" in dynamic_config:
+                    client = dynamic_config["client"]
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
                     client=client,  # pyright: ignore [reportArgumentType]
@@ -197,6 +199,8 @@ def create_factory(  # noqa: ANN202
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
+                if "client" in dynamic_config:
+                    client = dynamic_config["client"]
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
                     client=client,  # pyright: ignore [reportArgumentType]
