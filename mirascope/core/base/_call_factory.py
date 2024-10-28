@@ -3,7 +3,7 @@
 from collections.abc import AsyncIterable, Callable, Iterable
 from enum import Enum
 from functools import partial
-from typing import Annotated, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel
 
@@ -35,9 +35,7 @@ _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
 )
-_ResponseModelT = TypeVar(
-    "_ResponseModelT", bound=BaseModel | BaseType | Enum | Annotated
-)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
