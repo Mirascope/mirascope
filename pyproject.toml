@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.6.0"
+version = "1.6.1"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -36,6 +36,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: File Formats :: JSON",
     "Topic :: File Formats :: JSON :: JSON Schema",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -99,7 +100,7 @@ dev-dependencies = [
     "mkdocs-macros-plugin>=1.2.0",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
-    "chromadb>=0.5.5",
+    "chromadb>=0.5.15",
     "pinecone-client>=5.0.1",
     "scikit-learn>=1.5.1",
     "duckduckgo-search>=6.2.10",

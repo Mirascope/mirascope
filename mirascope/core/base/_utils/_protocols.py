@@ -11,7 +11,6 @@ from collections.abc import (
 )
 from enum import Enum
 from typing import (
-    Annotated,
     Any,
     Generic,
     Literal,
@@ -38,9 +37,7 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
-_ResponseModelT = TypeVar(
-    "_ResponseModelT", bound=BaseModel | BaseType | Enum | Annotated
-)
+_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
