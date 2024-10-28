@@ -33,25 +33,7 @@ class DuckDuckGoSearch(SearchToolBase[DuckDuckGoSearchConfig, _ToolSchemaT]):
     __prompt_usage_description__: ClassVar[str] = """
     Use this tool to search the web and get relevant URLs.
 
-    Input Format:
-    - queries (list[str]): List of search queries
-
-    Output Format:
-    Returns newline-separated URLs from search results.
-    If any errors occur during search or parsing, error messages are included.
-
-    Example:
-    ```python
-    queries = ["latest AI developments", "AI ethics guidelines"]
-    results = search(queries)
-    # Returns:
-    # https://example.com/ai-news
-    # https://example.com/ai-ethics
-    ```
-
-    Notes:
-    - Results are ranked by relevance
-    - URLs are verified before returning
+    Enter search queries to get URLs from search results.
     """
 
     queries: list[str] = Field(..., description="List of search queries")

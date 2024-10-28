@@ -7,7 +7,7 @@ from mirascope.tools.web.parse_url_content import ParseURLConfig, ParseURLConten
 
 # Config Tests
 def test_parse_config_defaults():
-    config = ParseURLConfig() # pyright: ignore [reportCallIssue]
+    config = ParseURLConfig()  # pyright: ignore [reportCallIssue]
     assert config.parser == "html.parser"
     assert config.timeout == 5
 
@@ -53,9 +53,9 @@ def test_fetch_with_custom_config(mock_get):
     mock_response.text = "<html><body>Test</body></html>"
     mock_get.return_value = mock_response
 
-    custom_config = ParseURLConfig(timeout=10) # pyright: ignore [reportCallIssue]
+    custom_config = ParseURLConfig(timeout=10)  # pyright: ignore [reportCallIssue]
     CustomTool = ParseURLContent.from_config(custom_config)
-    tool = CustomTool(url="https://example.com") # pyright: ignore [reportCallIssue]
+    tool = CustomTool(url="https://example.com")  # pyright: ignore [reportCallIssue]
     tool.call()
 
     mock_get.assert_called_once_with("https://example.com", timeout=10)
@@ -210,4 +210,3 @@ def test_prompt_instructions():
     instructions = ParseURLContent.get_prompt_instructions()
     assert "SYSTEM:" in instructions
     assert "fetches and parses content from a URL" in instructions
-    assert "URL to fetch and parse" in instructions

@@ -47,9 +47,6 @@ class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
     4. If no main content section is found, extracts all text content
     5. Returns cleaned and formatted text content
 
-    Input Format:
-    - url (str): The URL to fetch and parse
-
     Output Format:
     Returns the main content as clean text.
     If any errors occur during fetching or parsing, error messages are included.
