@@ -77,7 +77,10 @@ def generate_other_topic_step(
 @step()
 def final_step(multiple_input: Join[str]) -> str:
     print(f"Final step received results len: {len(multiple_input.results)}")
-    return "\n\n".join(f"Joke {i+1}. {r.step_full_qualname}:\n{r.value}" for i, r in enumerate(multiple_input.results))
+    return "\n\n".join(
+        f"Joke {i+1}. {r.step_full_qualname}:\n{r.value}"
+        for i, r in enumerate(multiple_input.results)
+    )
 
 
 workflow = Workflow(start=generate_multiple_joke, stop=final_step)
