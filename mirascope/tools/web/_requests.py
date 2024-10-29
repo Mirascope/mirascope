@@ -11,10 +11,6 @@ class RequestsConfig(_ToolConfig):
 
     timeout: int = Field(default=5, description="Request timeout in seconds")
 
-    @classmethod
-    def from_env(cls) -> "RequestsConfig":
-        return cls()
-
 
 class Requests(ConfigurableTool):
     """Tool to interact with web APIs. Provide a URL, method and optional data."""

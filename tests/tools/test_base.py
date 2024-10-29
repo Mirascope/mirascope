@@ -12,10 +12,6 @@ class MockSchema(BaseModel):
 class MockConfig(_ToolConfig):
     value: str = Field("default")
 
-    @classmethod
-    def from_env(cls) -> _ToolConfig:
-        return cls()  # pyright: ignore [reportCallIssue]
-
 
 class MockTool(ConfigurableTool[MockConfig, MockSchema]):
     __config__ = MockConfig()  # pyright: ignore [reportCallIssue]
@@ -25,14 +21,6 @@ class MockTool(ConfigurableTool[MockConfig, MockSchema]):
 
     def call(self) -> MockSchema:
         return MockSchema(value=f"Test output: {self.input}")
-
-    @classmethod
-    def _name(cls) -> str:
-        return "test_tool"
-
-    @classmethod
-    def _description(cls) -> str:
-        return "Test tool description"
 
 
 def test_tool_config():

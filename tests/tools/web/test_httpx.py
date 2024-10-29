@@ -118,6 +118,21 @@ def test_httpx_http_error(mock_client):
     assert "HTTP error occurred: 404" in result
 
 
+@patch("mirascope.tools.web._httpxs.httpx.Client")
+def test_httpx_value_error(mock_client):
+    """Test handling of HTTPStatusError in HTTPX"""
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_response.raise_for_status.side_effect = ValueError("Not Found")
+    mock_client_instance = MagicMock()
+    mock_client_instance.request.return_value = mock_response
+    mock_client.return_value.__enter__.return_value = mock_client_instance
+
+    tool = HTTPX(url="https://example.com")  # pyright: ignore [reportCallIssue]
+    tool.call()
+    assert "ValueError: Failed to make request to https://example.com"
+
+
 @pytest.mark.asyncio
 @patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
 async def test_async_httpx_get_success(mock_client):
@@ -199,14 +214,16 @@ async def test_async_httpx_http_error(mock_client):
     """Test handling of HTTPStatusError in AsyncHTTPX"""
     mock_response = MagicMock()
     mock_response.status_code = 404
-    mock_response.raise_for_status.side_effect = ValueError("Not Found")
+    mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "Not Found", request=MagicMock(), response=mock_response
+    )
     mock_client_instance = AsyncMock()
     mock_client_instance.request.return_value = mock_response
     mock_client.return_value.__aenter__.return_value = mock_client_instance
 
     tool = AsyncHTTPX(url="https://example.com")  # pyright: ignore [reportCallIssue]
     result = await tool.call()
-    assert "ValueError: Failed to make request to https://example.com" in result
+    assert "HTTP error occurred: 404 - Not Found" in result
 
 
 @pytest.mark.asyncio

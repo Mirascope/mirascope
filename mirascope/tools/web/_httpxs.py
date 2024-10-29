@@ -88,10 +88,6 @@ class AsyncHTTPXConfig(_ToolConfig):
         description="Request timeout in seconds. When None, no timeout will be applied",
     )
 
-    @classmethod
-    def from_env(cls) -> "AsyncHTTPXConfig":
-        return cls()
-
 
 class AsyncHTTPX(ConfigurableTool):
     """
