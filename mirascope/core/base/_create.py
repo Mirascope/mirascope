@@ -27,6 +27,7 @@ _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=Tru
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
@@ -43,6 +44,7 @@ def create_factory(  # noqa: ANN202
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -54,6 +56,7 @@ def create_factory(  # noqa: ANN202
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -90,7 +93,7 @@ def create_factory(  # noqa: ANN202
     def decorator(
         fn: Callable[
             _P,
-            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
@@ -122,7 +125,7 @@ def create_factory(  # noqa: ANN202
         | Callable[_P, Messages.Type]
         | Callable[
             _P,
-            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ]
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
@@ -144,7 +147,7 @@ def create_factory(  # noqa: ANN202
             fn = prompt_template()(fn)
             fn = cast(
                 Callable[_P, _BaseDynamicConfigT]
-                | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+                | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
                 fn,
             )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]

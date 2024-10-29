@@ -39,6 +39,7 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _BaseStreamT = TypeVar("_BaseStreamT", bound=BaseStream)
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
@@ -60,6 +61,7 @@ def call_factory(  # noqa: ANN202
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -71,6 +73,7 @@ def call_factory(  # noqa: ANN202
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -87,6 +90,7 @@ def call_factory(  # noqa: ANN202
     _BaseCallResponseT,
     _BaseCallResponseChunkT,
     _BaseDynamicConfigT,
+    _AsyncBaseDynamicConfigT,
     _BaseCallParamsT,
     _BaseStreamT,
     _SyncBaseClientT,
@@ -134,7 +138,7 @@ def call_factory(  # noqa: ANN202
         call_params: BaseCallParams | None = None,
     ) -> (
         AsyncLLMFunctionDecorator[
-            _BaseDynamicConfigT,
+            _AsyncBaseDynamicConfigT,
             _BaseCallResponseT
             | _ParsedOutputT
             | BaseStream
@@ -150,7 +154,7 @@ def call_factory(  # noqa: ANN202
             | Iterable[_ResponseModelT],
         ]
         | LLMFunctionDecorator[
-            _BaseDynamicConfigT,
+            _BaseDynamicConfigT, _AsyncBaseDynamicConfigT,
             _BaseCallResponseT
             | _ParsedOutputT
             | BaseStream

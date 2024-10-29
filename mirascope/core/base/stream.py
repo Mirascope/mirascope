@@ -48,6 +48,7 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _FinishReason = TypeVar("_FinishReason")
 _DEFAULT = object()
 
@@ -249,6 +250,7 @@ def stream_factory(  # noqa: ANN201
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -260,6 +262,7 @@ def stream_factory(  # noqa: ANN201
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -296,7 +299,7 @@ def stream_factory(  # noqa: ANN201
     def decorator(
         fn: Callable[
             _P,
-            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
@@ -320,7 +323,7 @@ def stream_factory(  # noqa: ANN201
         | Callable[_P, Messages.Type]
         | Callable[
             _P,
-            Awaitable[_BaseDynamicConfigT] | Coroutine[Any, Any, _BaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ]
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
@@ -336,7 +339,7 @@ def stream_factory(  # noqa: ANN201
             fn = prompt_template()(fn)
             fn = cast(
                 Callable[_P, _BaseDynamicConfigT]
-                | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+                | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
                 fn,
             )
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
