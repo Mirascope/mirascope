@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from mirascope.tools import RequestsConfig, Requests
+from mirascope.tools import Requests, RequestsConfig
 
 
 def test_requests_config():
@@ -17,7 +17,7 @@ def test_requests_get_success(mock_request):
     mock_response.text = "Test content"
     mock_request.return_value = mock_response
 
-    tool = Requests(url="https://example.com") # pyright: ignore [reportCallIssue]
+    tool = Requests(url="https://example.com")  # pyright: ignore [reportCallIssue]
     result = tool.call()
 
     assert result == "Test content"

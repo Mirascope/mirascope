@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import ClassVar, Generic, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict, create_model
@@ -18,11 +18,15 @@ class _ToolConfig(BaseModel, ABC):
         By default, returns an instance with default values."""
         return cls()
 
+
 _ToolConfigT = TypeVar("_ToolConfigT", bound=_ToolConfig)
 
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
-class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchemaT], ABC):
+
+class ConfigurableTool(
+    BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchemaT], ABC
+):
     """
     Abstract base class for configurable tools.
 
@@ -56,4 +60,3 @@ class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchema
     def usage_description(cls) -> str:
         """Returns instructions for using this tool."""
         return inspect.cleandoc(cls.__prompt_usage_description__)
-

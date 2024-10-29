@@ -5,7 +5,7 @@ from typing import ClassVar, TypeVar
 from duckduckgo_search import DDGS
 from pydantic import Field
 
-from ..base import _ToolConfig, ConfigurableTool
+from ..base import ConfigurableTool, _ToolConfig
 
 
 class DuckDuckGoSearchConfig(_ToolConfig):
@@ -46,15 +46,18 @@ class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
                 )
 
                 for result in results:
+                    results.append(
+                        {
+                            "title": result["title"],
+                            "link": result["href"],
+                            "snippet": result["body"],
+                        }
+                    )
 
-                    results.append({
-                        'title': result['title'],
-                        'link': result['href'],
-                        'snippet': result['body']
-                    })
-
-            return "\n\n".join(f"Title: {r['title']}\nURL: {r['link']}\nSnippet: {r['snippet']}" for r in results)
-
+            return "\n\n".join(
+                f"Title: {r['title']}\nURL: {r['link']}\nSnippet: {r['snippet']}"
+                for r in results
+            )
 
         except Exception as e:
             return f"{type(e)}: Failed to search the web for text"
