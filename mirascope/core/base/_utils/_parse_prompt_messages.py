@@ -14,13 +14,14 @@ from ._parse_content_template import parse_content_template
 BaseToolT = TypeVar("BaseToolT", bound=BaseModel)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
+_ClientT = TypeVar("_ClientT")
 
 
 def parse_prompt_messages(
     roles: list[str],
     template: str,
     attrs: dict[str, Any],
-    dynamic_config: BaseDynamicConfig[_MessageParamT, _CallParamsT] = None,
+    dynamic_config: BaseDynamicConfig[_MessageParamT, _CallParamsT, _ClientT] = None,
 ) -> list[BaseMessageParam]:
     """Returns messages parsed from the provided prompt `template`.
 

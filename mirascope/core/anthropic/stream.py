@@ -21,7 +21,7 @@ from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .dynamic_config import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from .tool import AnthropicTool
 
 FinishReason = Message.__annotations__["stop_reason"]
@@ -37,7 +37,7 @@ class AnthropicStream(
         MessageParam,
         AnthropicTool,
         ToolParam,
-        AnthropicDynamicConfig,
+        AsyncAnthropicDynamicConfig | AnthropicDynamicConfig,
         AnthropicCallParams,
         FinishReason,
     ]

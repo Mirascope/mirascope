@@ -1,12 +1,19 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from cohere import (
+    AsyncClient,
+    Client,
+)
 from cohere.types.chat_message import ChatMessage
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import CohereCallParams
 
+AsyncCohereDynamicConfig = BaseDynamicConfig[
+    ChatMessage | BaseMessageParam, CohereCallParams, AsyncClient
+]
 CohereDynamicConfig = BaseDynamicConfig[
-    ChatMessage | BaseMessageParam, CohereCallParams
+    ChatMessage | BaseMessageParam, CohereCallParams, Client
 ]
 """The function return type for functions wrapped with the `cohere_call` decorator.
 

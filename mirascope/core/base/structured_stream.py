@@ -125,6 +125,7 @@ class BaseStructuredStream(Generic[_ResponseModelT]):
 
 
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
@@ -144,6 +145,7 @@ def structured_stream_factory(  # noqa: ANN201
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -155,6 +157,7 @@ def structured_stream_factory(  # noqa: ANN201
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -186,7 +189,7 @@ def structured_stream_factory(  # noqa: ANN201
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,
@@ -199,7 +202,7 @@ def structured_stream_factory(  # noqa: ANN201
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         json_mode: bool,

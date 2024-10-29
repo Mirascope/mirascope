@@ -18,7 +18,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
 from ..call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
-from ..dynamic_config import AnthropicDynamicConfig
+from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from ..tool import AnthropicTool
 from ._convert_message_params import convert_message_params
 
@@ -28,9 +28,9 @@ def setup_call(
     *,
     model: str,
     client: AsyncAnthropic | AsyncAnthropicBedrock | AsyncAnthropicVertex | None,
-    fn: Callable[..., Awaitable[AnthropicDynamicConfig]],
+    fn: Callable[..., Awaitable[AsyncAnthropicDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: AnthropicDynamicConfig,
+    dynamic_config: AsyncAnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,
@@ -75,9 +75,9 @@ def setup_call(
     | AnthropicVertex
     | AsyncAnthropicVertex
     | None,
-    fn: Callable[..., AnthropicDynamicConfig | Awaitable[AnthropicDynamicConfig]],
+    fn: Callable[..., AnthropicDynamicConfig | Awaitable[AsyncAnthropicDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: AnthropicDynamicConfig,
+    dynamic_config: AsyncAnthropicDynamicConfig | AnthropicDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,

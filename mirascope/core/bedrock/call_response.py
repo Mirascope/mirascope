@@ -29,7 +29,7 @@ from ._types import (
 from ._utils import calculate_cost
 from .call_kwargs import BedrockCallKwargs
 from .call_params import BedrockCallParams
-from .dynamic_config import BedrockDynamicConfig
+from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .tool import BedrockTool
 
 
@@ -38,7 +38,7 @@ class BedrockCallResponse(
         SyncConverseResponseTypeDef | AsyncConverseResponseTypeDef,
         BedrockTool,
         ToolTypeDef,
-        BedrockDynamicConfig,
+        AsyncBedrockDynamicConfig | BedrockDynamicConfig,
         InternalBedrockMessageParam,
         BedrockCallParams,
         UserMessageTypeDef,

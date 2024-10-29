@@ -10,7 +10,7 @@ from ._call import anthropic_call as call
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
-from .dynamic_config import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from .stream import AnthropicStream
 from .tool import AnthropicTool, AnthropicToolConfig
 
@@ -18,6 +18,7 @@ AnthropicMessageParam: TypeAlias = MessageParam | BaseMessageParam
 
 __all__ = [
     "call",
+    "AsyncAnthropicDynamicConfig",
     "AnthropicDynamicConfig",
     "AnthropicCallParams",
     "AnthropicCallResponse",
