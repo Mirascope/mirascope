@@ -350,7 +350,7 @@ Mirascope allows you to use custom clients when making calls to LLM providers. T
 
 There are two ways to use a custom client with Mirascope:
 
-### 1. Via Decorator Parameter
+### 1. Decorator Parameter
 
 You can pass a client to the `call` decorator using the `client` parameter:
 
@@ -378,7 +378,7 @@ You can pass a client to the `call` decorator using the `client` parameter:
         {% endfor %}
     {% endfor %}
 
-### 2. Via Dynamic Configuration
+### 2. Dynamic Configuration
 
 You can also configure the client dynamically at runtime through the dynamic configuration:
 
@@ -386,31 +386,43 @@ You can also configure the client dynamically at runtime through the dynamic con
     
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
+        {% if method == "base_message_param" %}
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
-            ```python hl_lines="2 9"
             {% elif provider == "Azure AI" %}
-            ```python hl_lines="1-2 8-10"
+            ```python hl_lines="1-2 12-14"
             {% elif provider == "Bedrock" %}
-            ```python hl_lines="1 6"
+            ```python hl_lines="1 11"
             {% else %}
-            ```python hl_lines="1 5"
+            ```python hl_lines="2 11"
             {% endif %}
             --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
+        {% else %}
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 10-11"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="1 11"
+            {% else %}
+            ```python hl_lines="2 9"
+            {% endif %}
+            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+        {% endif %}
     {% endfor %}
 
-
-This approach allows for greater flexibility in how and when you configure clients, enabling you to:
-- Pass clients as function arguments
-- Configure clients based on runtime conditions
-- Reuse the same function with different client configurations
 
 !!! warning "Make sure to use the correct client!"
 
