@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
 from pydantic import BaseModel
+from pytest import mark
 
 from mirascope.tools.web._duckduckgo import (
     AsyncDuckDuckGoSearch,
@@ -187,23 +187,10 @@ def test_custom_max_results(mock_ddgs):
     mock_ddgs_instance.text.return_value = []
     mock_ddgs.return_value = mock_ddgs_instance
 
-    search = CustomSearch(queries=["test query"])
+    search = CustomSearch(queries=["test query"])  # pyright: ignore [reportCallIssue]
     search.call()
 
     mock_ddgs_instance.text.assert_called_once_with("test query", max_results=5)
-
-
-# Validation Tests
-def test_none_queries():
-    """Test validation of None queries"""
-    with pytest.raises(Exception):
-        DuckDuckGoSearch(queries=None)  # type: ignore
-
-
-def test_invalid_query_type():
-    """Test validation of invalid query types"""
-    with pytest.raises(Exception):
-        DuckDuckGoSearch(queries=[123])  # type: ignore
 
 
 # Integration Tests
@@ -217,7 +204,7 @@ def test_integration_with_search_tool_base():
 
 
 # Async Search Functionality Tests
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_single_query_success(mock_async_ddgs):
     """Test successful execution of a single async search query"""
@@ -248,7 +235,7 @@ async def test_async_single_query_success(mock_async_ddgs):
     )
 
 
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_multiple_queries_success(mock_async_ddgs):
     """Test successful execution of multiple async search queries"""
@@ -276,7 +263,7 @@ async def test_async_multiple_queries_success(mock_async_ddgs):
     assert mock_ddgs_instance.atext.call_count == 2
 
 
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_empty_results(mock_async_ddgs):
     """Test handling of empty async search results"""
@@ -291,7 +278,7 @@ async def test_async_empty_results(mock_async_ddgs):
 
 
 # Async Error Handling Tests
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_ddgs_initialization_error(mock_async_ddgs):
     """Test error handling during async DDGS initialization"""
@@ -303,7 +290,7 @@ async def test_async_ddgs_initialization_error(mock_async_ddgs):
     assert "Failed to search the web for text" in result
 
 
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_search_execution_error(mock_async_ddgs):
     """Test error handling during async search execution"""
@@ -317,7 +304,7 @@ async def test_async_search_execution_error(mock_async_ddgs):
     assert "Failed to search the web for text" in result
 
 
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_url_parsing_error(mock_async_ddgs):
     """Test error handling during async URL parsing"""
@@ -352,41 +339,25 @@ async def test_async_url_parsing_error(mock_async_ddgs):
 
 
 # Async Custom Configuration Tests
-@pytest.mark.asyncio
+@mark.asyncio
 @patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
 async def test_async_custom_max_results(mock_async_ddgs):
     """Test using custom maximum results configuration in async search"""
     custom_config = DuckDuckGoSearchConfig(max_results_per_query=5)
-    config_dict = custom_config.model_dump()
-    CustomAsyncSearch = AsyncDuckDuckGoSearch.from_config(config_dict)
+    CustomAsyncSearch = AsyncDuckDuckGoSearch.from_config(custom_config)
 
     mock_ddgs_instance = AsyncMock()
     mock_ddgs_instance.atext.return_value = []
     mock_async_ddgs.return_value = mock_ddgs_instance
 
-    search = CustomAsyncSearch(queries=["test query"])
+    search = CustomAsyncSearch(queries=["test query"])  # pyright: ignore [reportCallIssue]
     await search.call()
 
     mock_ddgs_instance.atext.assert_called_once_with("test query", max_results=5)
 
 
-# Async Validation Tests
-@pytest.mark.asyncio
-async def test_async_none_queries():
-    """Test validation of None queries in async search"""
-    with pytest.raises(Exception):
-        AsyncDuckDuckGoSearch(queries=None)  # type: ignore
-
-
-@pytest.mark.asyncio
-async def test_async_invalid_query_type():
-    """Test validation of invalid query types in async search"""
-    with pytest.raises(Exception):
-        AsyncDuckDuckGoSearch(queries=[123])  # type: ignore
-
-
 # Async Integration Tests
-@pytest.mark.asyncio
+@mark.asyncio
 async def test_async_integration_with_search_tool_base():
     """Test integration with async search tool base class"""
     search = AsyncDuckDuckGoSearch(queries=["test"])

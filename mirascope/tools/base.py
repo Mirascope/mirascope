@@ -48,7 +48,9 @@ class ConfigurableTool(
         cls, config: _ToolConfigT
     ) -> type[ConfigurableTool[_ToolConfigT, _ToolSchemaT]]:
         """Create tool class with custom configuration"""
-        config = cls.__config__.model_validate(config)
+
+        # ClassVar cannot get TypeVar Type. So, we need the comment to ignore the error.
+        config = cls.__config__.model_validate(config)  # pyright: ignore [reportAssignmentType]
         NewModel = create_model(
             cls.__name__,
             __base__=cls,
