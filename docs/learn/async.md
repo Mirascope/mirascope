@@ -158,9 +158,9 @@ It's important to note that in this example we use `isinstance(tool, FormatBook)
 
 ## Custom Client
 
-You can use custom clients with async calls just like you can with standard [calls](./calls.md#custom-client) by using the `client` parameter in the `call` decorator.
+When using custom clients with async calls, it's crucial to use the asynchronous version of the client. You can provide the async client either through the decorator or dynamic configuration:
 
-It's important to note that you must use the correct client that supports asynchronous calls:
+### 1. Decorator Parameter
 
 !!! mira ""
 
@@ -180,11 +180,62 @@ It's important to note that you must use the correct client that supports asynch
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
-            --8<-- "examples/learn/async/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/async/custom_client/decorator/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
     {% endfor %}
+
+### 2. Dynamic Configuration
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% if method == "base_message_param" %}
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            ```python hl_lines="2 11"
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 12-14"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="5-8 17"
+            {% else %}
+            ```python hl_lines="1 11"
+            {% endif %}
+            --8<-- "examples/learn/async/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+        {% else %}
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            ```python hl_lines="2 9"
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 10-12"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="5-8 15"
+            {% else %}
+            ```python hl_lines="1 9"
+            {% endif %}
+            --8<-- "examples/learn/async/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+
+!!! warning "Synchronous vs Asynchronous Clients"
+    Make sure to use the appropriate asynchronous client class (e.g., `AsyncOpenAI` instead of `OpenAI`) when working with async functions. Using a synchronous client in an async context can lead to blocking operations that defeat the purpose of async programming.
 
 ## Next Steps
 
