@@ -162,13 +162,12 @@ def create_factory(  # noqa: ANN202
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
+                nonlocal client
                 if dynamic_config is not None:
-                    dynamic_client = dynamic_config.get("client")
-                else:
-                    dynamic_client = None
+                    client = dynamic_config.get("client", None) or client
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=dynamic_client or client,  # pyright: ignore [reportArgumentType]
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -205,13 +204,13 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                if dynamic_config := get_dynamic_configuration(fn, args, kwargs):
-                    dynamic_client = dynamic_config.get("client")
-                else:
-                    dynamic_client = None
+                dynamic_config = get_dynamic_configuration(fn, args, kwargs)
+                nonlocal client
+                if dynamic_config is not None:
+                    client = dynamic_config.get("client", None) or client
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=dynamic_client or client,  # pyright: ignore [reportArgumentType]
+                    client=client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

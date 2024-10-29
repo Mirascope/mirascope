@@ -352,6 +352,9 @@ def stream_factory(  # noqa: ANN201
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> BaseStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
+                nonlocal client
+                if dynamic_config is not None:
+                    client = dynamic_config.get("client", None) or client
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
                     client=client,  # pyright: ignore [reportArgumentType]
@@ -395,6 +398,9 @@ def stream_factory(  # noqa: ANN201
             def inner(*args: _P.args, **kwargs: _P.kwargs) -> BaseStream:
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = get_dynamic_configuration(fn, args, kwargs)
+                nonlocal client
+                if dynamic_config is not None:
+                    client = dynamic_config.get("client", None) or client
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
                     client=client,  # pyright: ignore [reportArgumentType]
