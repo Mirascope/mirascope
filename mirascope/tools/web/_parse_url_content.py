@@ -23,11 +23,6 @@ class ParseURLConfig(_ToolConfig):
         description="Timeout in seconds for URL request",
     )
 
-    @classmethod
-    def from_env(cls) -> ParseURLConfig:
-        """No environment variables needed for URL parsing"""
-        return cls()  # pyright: ignore [reportCallIssue]
-
 
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 

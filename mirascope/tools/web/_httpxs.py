@@ -23,7 +23,6 @@ class HTTPX(ConfigurableTool):
     __prompt_usage_description__: ClassVar[str] = """
     Use this tool to make HTTP requests to web URLs using HTTPX.
     Supports standard HTTP methods and automatically handles encoding/decoding.
-    Follows redirects by default and includes timeout protection.
     """
     url: str = Field(..., description="URL to request")
     method: Literal["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"] = Field(
@@ -100,8 +99,6 @@ class AsyncHTTPX(ConfigurableTool):
     __prompt_usage_description__: ClassVar[str] = """
     Use this tool to make asynchronous HTTP requests to web URLs using HTTPX.
     Supports standard HTTP methods and automatically handles encoding/decoding.
-    Follows redirects by default and includes timeout protection.
-    All operations are performed asynchronously for better performance.
     """
     url: str = Field(..., description="URL to request")
     method: Literal["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"] = Field(

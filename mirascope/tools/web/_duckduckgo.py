@@ -24,15 +24,12 @@ _ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
 class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
-    """Tool for performing web searches using DuckDuckGo.
-    Takes search queries and returns relevant URLs from search results.
-    """
+    """Tool for performing web searches using DuckDuckGo. Takes search queries and returns relevant search results(Title, URL, Snippet)."""
 
     __config__ = DuckDuckGoSearchConfig()
     __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to search the web and get relevant URLs.
-
-    Enter search queries to get URLs from search results.
+    Use this tool to search the web and get relevant search results(Title, URL, Snippet).
+    Enter search queries to get the search results.
     """
 
     queries: list[str] = Field(..., description="List of search queries")
@@ -63,15 +60,12 @@ class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
 
 
 class AsyncDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
-    """Tool for performing web searches using DuckDuckGo asynchronously.
-    Takes search queries and returns relevant URLs from search results.
-    """
+    """Tool for performing web searches using DuckDuckGo asynchronously. Takes search queries and returns relevant search results(Title, URL, Snippet)."""
 
     __config__ = DuckDuckGoSearchConfig()
     __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to search the web and get relevant URLs asynchronously.
-
-    Enter search queries to get URLs from search results.
+    Use this tool to search the web and get relevant search results(Title, URL, Snippet).
+    Enter search queries to get the search results.
     """
 
     queries: list[str] = Field(..., description="List of search queries")
