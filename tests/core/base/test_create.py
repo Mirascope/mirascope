@@ -147,7 +147,6 @@ def test_create_factory_sync_dynamic_config_cases(
 
     def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
-        return MagicMock()
 
     mock_prompt_template_decorator.return_value = lambda x: fn
 
