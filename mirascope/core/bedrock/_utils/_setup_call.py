@@ -35,12 +35,12 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
+from .._call_kwargs import BedrockCallKwargs
 from .._types import (
     AsyncStreamOutputChunk,
     InternalBedrockMessageParam,
     StreamOutputChunk,
 )
-from ..call_kwargs import BedrockCallKwargs
 from ..call_params import BedrockCallParams
 from ..dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from ..tool import BedrockTool

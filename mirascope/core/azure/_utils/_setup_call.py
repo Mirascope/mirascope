@@ -19,7 +19,7 @@ from azure.core.credentials import AzureKeyCredential
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ..call_kwargs import AzureCallKwargs
+from .._call_kwargs import AzureCallKwargs
 from ..call_params import AzureCallParams
 from ..dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from ..tool import AzureTool, GenerateAzureStrictToolJsonSchema

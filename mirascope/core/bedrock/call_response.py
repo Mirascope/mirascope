@@ -14,6 +14,7 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 
 from ..base import BaseCallResponse
+from ._call_kwargs import BedrockCallKwargs
 from ._types import (
     AssistantMessageTypeDef,
     AsyncMessageTypeDef,
@@ -27,7 +28,6 @@ from ._types import (
     UserMessageTypeDef,
 )
 from ._utils import calculate_cost
-from .call_kwargs import BedrockCallKwargs
 from .call_params import BedrockCallParams
 from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .tool import BedrockTool

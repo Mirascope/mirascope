@@ -16,7 +16,7 @@ from anthropic.types import Message, MessageParam, MessageStreamEvent
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
-from ..call_kwargs import AnthropicCallKwargs
+from .._call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from ..tool import AnthropicTool

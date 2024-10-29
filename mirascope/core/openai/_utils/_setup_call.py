@@ -15,7 +15,7 @@ from openai.types.chat import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ..call_kwargs import OpenAICallKwargs
+from .._call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import AsyncOpenAIDynamicConfig, OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
