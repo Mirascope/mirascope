@@ -160,7 +160,7 @@ It's important to note that in this example we use `isinstance(tool, FormatBook)
 
 When using custom clients with async calls, it's crucial to use the asynchronous version of the client. You can provide the async client either through the decorator or dynamic configuration:
 
-### 1. Decorator Parameter
+__Decorator Parameter:__
 
 !!! mira ""
 
@@ -186,7 +186,7 @@ When using custom clients with async calls, it's crucial to use the asynchronous
         {% endfor %}
     {% endfor %}
 
-### 2. Dynamic Configuration
+__Dynamic Configuration:__
 
 !!! mira ""
 
@@ -232,7 +232,6 @@ When using custom clients with async calls, it's crucial to use the asynchronous
         {% endfor %}
         {% endif %}
     {% endfor %}
-
 
 !!! warning "Synchronous vs Asynchronous Clients"
     Make sure to use the appropriate asynchronous client class (e.g., `AsyncOpenAI` instead of `OpenAI`) when working with async functions. Using a synchronous client in an async context can lead to blocking operations that defeat the purpose of async programming.

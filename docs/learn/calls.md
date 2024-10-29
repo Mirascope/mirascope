@@ -200,7 +200,6 @@ For providers that support audio outputs, you can receive both text and audio re
         {% endfor %}
     {% endfor %}
 
-
 When using models that support audio outputs, you'll have access to:
 
 - `content`: The text content of the response
@@ -348,9 +347,7 @@ You can also always return the original message types for any provider. To do so
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
 
-There are two ways to use a custom client with Mirascope:
-
-### 1. Decorator Parameter
+__Decorator Parameter:__
 
 You can pass a client to the `call` decorator using the `client` parameter:
 
@@ -378,12 +375,12 @@ You can pass a client to the `call` decorator using the `client` parameter:
         {% endfor %}
     {% endfor %}
 
-### 2. Dynamic Configuration
+__Dynamic Configuration:__
 
 You can also configure the client dynamically at runtime through the dynamic configuration:
 
 !!! mira ""
-    
+
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
         {% if method == "base_message_param" %}
@@ -422,7 +419,6 @@ You can also configure the client dynamically at runtime through the dynamic con
         {% endfor %}
         {% endif %}
     {% endfor %}
-
 
 !!! warning "Make sure to use the correct client!"
 
