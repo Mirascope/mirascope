@@ -8,10 +8,10 @@ from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import AzureCallParams
 
 AsyncAzureDynamicConfig = BaseDynamicConfig[
-    ChatRequestMessage | BaseMessageParam, AzureCallParams, ChatCompletionsClient
+    ChatRequestMessage | BaseMessageParam, AzureCallParams, AsyncChatCompletionsClient
 ]
 AzureDynamicConfig = BaseDynamicConfig[
-    ChatRequestMessage | BaseMessageParam, AzureCallParams, AsyncChatCompletionsClient
+    ChatRequestMessage | BaseMessageParam, AzureCallParams, ChatCompletionsClient
 ]
 """The function return type for functions wrapped with the `azure_call` decorator.
 

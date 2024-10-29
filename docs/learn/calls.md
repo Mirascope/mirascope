@@ -348,7 +348,11 @@ You can also always return the original message types for any provider. To do so
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
 
-To use a custom client, you can pass it to the `call` decorator using the `client` parameter. Here's an example using a custom OpenAI client:
+There are two ways to use a custom client with Mirascope:
+
+### 1. Via Decorator Parameter
+
+You can pass a client to the `call` decorator using the `client` parameter:
 
 !!! mira ""
 
@@ -368,11 +372,45 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
-            --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/custom_client/decorator/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
     {% endfor %}
+
+### 2. Via Dynamic Configuration
+
+You can also configure the client dynamically at runtime through the dynamic configuration:
+
+!!! mira ""
+    
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            ```python hl_lines="2 9"
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 8-10"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="1 6"
+            {% else %}
+            ```python hl_lines="1 5"
+            {% endif %}
+            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+    {% endfor %}
+
+
+This approach allows for greater flexibility in how and when you configure clients, enabling you to:
+- Pass clients as function arguments
+- Configure clients based on runtime conditions
+- Reuse the same function with different client configurations
 
 !!! warning "Make sure to use the correct client!"
 
