@@ -26,7 +26,7 @@ def test_parse_config_from_env():
 
 
 # URL Fetch Tests
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_successful_fetch_and_parse(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -47,7 +47,7 @@ def test_successful_fetch_and_parse(mock_get):
     mock_get.assert_called_once_with("https://example.com", timeout=5)
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_fetch_with_custom_config(mock_get):
     mock_response = MagicMock()
     mock_response.text = "<html><body>Test</body></html>"
@@ -61,7 +61,7 @@ def test_fetch_with_custom_config(mock_get):
     mock_get.assert_called_once_with("https://example.com", timeout=10)
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_request_exception(mock_get):
     mock_get.side_effect = requests.RequestException("Connection error")
 
@@ -72,7 +72,7 @@ def test_request_exception(mock_get):
 
 
 # Content Parsing Tests
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_parse_main_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -98,7 +98,7 @@ def test_parse_main_content(mock_get):
     assert "Footer" not in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_parse_article_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -120,7 +120,7 @@ def test_parse_article_content(mock_get):
     assert "Article content" in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_parse_div_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -142,7 +142,7 @@ def test_parse_div_content(mock_get):
     assert "Content text" in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_no_main_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -162,7 +162,7 @@ def test_no_main_content(mock_get):
     assert "Regular content" in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_empty_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = "<html><body></body></html>"
@@ -174,7 +174,7 @@ def test_empty_content(mock_get):
     assert "No content found on the page" in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_http_error(mock_get):
     mock_get.side_effect = requests.RequestException("404 Client Error")
 
@@ -184,7 +184,7 @@ def test_http_error(mock_get):
     assert "Failed to fetch content from URL" in result
 
 
-@patch("mirascope.tools.web.parse_url_content.requests.get")
+@patch("mirascope.tools.web._parse_url_content.requests.get")
 def test_multiline_content(mock_get):
     mock_response = MagicMock()
     mock_response.text = """
@@ -204,9 +204,3 @@ def test_multiline_content(mock_get):
     assert "First line" in result
     assert "Second line" in result
     assert "Third line" in result
-
-
-def test_prompt_instructions():
-    instructions = ParseURLContent.get_prompt_instructions()
-    assert "SYSTEM:" in instructions
-    assert "fetches and parses content from a URL" in instructions

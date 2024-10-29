@@ -11,7 +11,7 @@ def test_requests_config():
     assert custom_config.timeout == 10
 
 
-@patch("mirascope.tools.requests.requests.request")
+@patch("mirascope.tools.web._requests.requests")
 def test_requests_get_success(mock_request):
     mock_response = MagicMock()
     mock_response.text = "Test content"
@@ -30,7 +30,7 @@ def test_requests_get_success(mock_request):
     )
 
 
-@patch("mirascope.tools.requests.requests.request")
+@patch("mirascope.tools.web._requests.requests")
 def test_requests_post_with_data(mock_request):
     mock_response = MagicMock()
     mock_response.text = "Test response"
@@ -54,7 +54,7 @@ def test_requests_post_with_data(mock_request):
     )
 
 
-@patch("mirascope.tools.requests.requests.request")
+@patch("mirascope.tools.web._requests.requests")
 def test_requests_error(mock_request):
     mock_request.side_effect = Exception("Request failed")
 

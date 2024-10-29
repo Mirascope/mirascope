@@ -46,12 +46,6 @@ def test_tool_config():
     assert isinstance(env_config, MockConfig)
 
 
-def test_tool_config_override():
-    override_config = MockConfig(value="override")
-
-    updated_config = MockConfig.override_defaults(override_config)
-    assert isinstance(updated_config, MockConfig)
-    assert updated_config.value == "override"
 
 
 def test_configurable_tool():
@@ -79,18 +73,3 @@ def test_configurable_tool_from_config():
     result = tool.call()
     assert isinstance(result, MockSchema)
     assert result.value == "Test output: test"
-
-
-def test_prompt_instructions():
-    instructions = MockTool.get_prompt_instructions()
-    assert "SYSTEM:" in instructions
-    assert "expert tool user" in instructions
-    assert "Test description" in instructions
-    assert "`test_tool`" in instructions
-
-
-def test_add_usage_instructions():
-    base_prompt = ["Base prompt"]
-    result = MockTool._add_usage_instructions(base_prompt)
-    assert len(result) > len(base_prompt)
-    assert "Test description" in " ".join(result)

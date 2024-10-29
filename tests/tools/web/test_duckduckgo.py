@@ -1,43 +1,57 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pydantic import BaseModel
 
-from mirascope.tools import DuckDuckGoSearch, DuckDuckGoSearchConfig
+from mirascope.tools.web._duckduckgo import (
+    AsyncDuckDuckGoSearch,
+    DuckDuckGoSearch,
+    DuckDuckGoSearchConfig,
+)
 
 
 class SearchSchema(BaseModel):
+    """Schema for search results"""
+
     urls: list[str]
 
 
 # Config Tests
 def test_search_config_defaults():
+    """Test default configuration values"""
     config = DuckDuckGoSearchConfig()
     assert config.max_results_per_query == 2
 
 
 def test_search_config_custom():
+    """Test setting custom configuration values"""
     config = DuckDuckGoSearchConfig(max_results_per_query=5)
     assert config.max_results_per_query == 5
 
 
 def test_search_config_from_env():
+    """Test loading configuration from environment variables"""
     config = DuckDuckGoSearchConfig.from_env()
     assert isinstance(config, DuckDuckGoSearchConfig)
     assert config.max_results_per_query == 2
 
 
-def test_search_config_override():
-    original = DuckDuckGoSearchConfig()
-    override = DuckDuckGoSearchConfig(max_results_per_query=10)
-    updated = original.override_defaults(override)
-    assert updated.max_results_per_query == 10  # pyright: ignore [reportAttributeAccessIssue]
-
-
 # Search Functionality Tests
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_single_query_success(mock_ddgs):
-    mock_results = [{"href": "https://example1.com"}, {"href": "https://example2.com"}]
+    """Test successful execution of a single search query"""
+    mock_results = [
+        {
+            "title": "Example Site 1",
+            "href": "https://example1.com",
+            "body": "This is the first example snippet",
+        },
+        {
+            "title": "Example Site 2",
+            "href": "https://example2.com",
+            "body": "This is the second example snippet",
+        },
+    ]
     mock_ddgs_instance = MagicMock()
     mock_ddgs_instance.text.return_value = mock_results
     mock_ddgs.return_value = mock_ddgs_instance
@@ -45,16 +59,29 @@ def test_single_query_success(mock_ddgs):
     search = DuckDuckGoSearch(queries=["test query"])
     result = search.call()
 
+    assert "Example Site 1" in result
     assert "https://example1.com" in result
-    assert "https://example2.com" in result
+    assert "This is the first example snippet" in result
     mock_ddgs_instance.text.assert_called_once_with(
         "test query", max_results=search._config().max_results_per_query
     )
 
 
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_multiple_queries_success(mock_ddgs):
-    mock_results = [{"href": "https://example1.com"}, {"href": "https://example2.com"}]
+    """Test successful execution of multiple search queries"""
+    mock_results = [
+        {
+            "title": "Multiple Query Result 1",
+            "href": "https://example1.com",
+            "body": "First query result snippet",
+        },
+        {
+            "title": "Multiple Query Result 2",
+            "href": "https://example2.com",
+            "body": "Second query result snippet",
+        },
+    ]
     mock_ddgs_instance = MagicMock()
     mock_ddgs_instance.text.return_value = mock_results
     mock_ddgs.return_value = mock_ddgs_instance
@@ -62,13 +89,15 @@ def test_multiple_queries_success(mock_ddgs):
     search = DuckDuckGoSearch(queries=["query1", "query2"])
     result = search.call()
 
+    assert "Multiple Query Result 1" in result
     assert "https://example1.com" in result
-    assert "https://example2.com" in result
+    assert "First query result snippet" in result
     assert mock_ddgs_instance.text.call_count == 2
 
 
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_empty_results(mock_ddgs):
+    """Test handling of empty search results"""
     mock_ddgs_instance = MagicMock()
     mock_ddgs_instance.text.return_value = []
     mock_ddgs.return_value = mock_ddgs_instance
@@ -80,34 +109,26 @@ def test_empty_results(mock_ddgs):
 
 
 # Error Handling Tests
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_ddgs_initialization_error(mock_ddgs):
+    """Test error handling during DDGS initialization"""
     mock_ddgs.side_effect = Exception("DDGS initialization failed")
 
     search = DuckDuckGoSearch(queries=["test query"])
     result = search.call()
 
-    assert "Failed to search the web for text" in result
+    assert "<class 'Exception'>: Failed to search the web for text" in result
 
 
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_search_execution_error(mock_ddgs):
-    mock_results = [{}, {"href": "https://example.com"}]
-    mock_ddgs_instance = MagicMock()
-    mock_ddgs_instance.text.return_value = mock_results
-    mock_ddgs.return_value = mock_ddgs_instance
-
-    search = DuckDuckGoSearch(queries=["test query"])
-    result = search.call()
-
-    assert "Failed to search the web for text" in result
-
-
-@patch("mirascope.tools.search.duckduckgo.DDGS")
-def test_url_parsing_error(mock_ddgs):
+    """Test error handling during search execution"""
     mock_results = [
-        {"href": None},  # Invalid URL
-        {"href": "https://example.com"},  # Valid URL
+        {
+            "title": "Error Test",
+            "href": None,
+            "body": "Test snippet",
+        }
     ]
     mock_ddgs_instance = MagicMock()
     mock_ddgs_instance.text.return_value = mock_results
@@ -116,20 +137,57 @@ def test_url_parsing_error(mock_ddgs):
     search = DuckDuckGoSearch(queries=["test query"])
     result = search.call()
 
-    assert "<class 'TypeError'>: Failed to search the web for text" in result
+    assert "Title: Error Test\nURL: None\nSnippet: Test snippet" in result
+
+
+@patch("mirascope.tools.web._duckduckgo.DDGS")
+def test_url_parsing_error(mock_ddgs):
+    """Test error handling during URL parsing"""
+    mock_results = [
+        {
+            "title": "Invalid URL Test",
+            "href": None,
+            "body": "Test snippet with invalid URL",
+        },
+        {
+            "title": "Valid URL Test",
+            "href": "https://example.com",
+            "body": "Test snippet with valid URL",
+        },
+    ]
+    mock_ddgs_instance = MagicMock()
+    mock_ddgs_instance.text.return_value = mock_results
+    mock_ddgs.return_value = mock_ddgs_instance
+
+    search = DuckDuckGoSearch(queries=["test query"])
+    result = search.call()
+
+    assert (
+        "Title: Invalid URL Test\n"
+        "URL: None\n"
+        "Snippet: Test snippet with invalid URL\n"
+        "\n"
+        "Title: Valid URL Test\n"
+        "URL: https://example.com\n"
+        "Snippet: Test snippet with valid URL"
+    ) in result
 
 
 # Custom Configuration Tests
-@patch("mirascope.tools.search.duckduckgo.DDGS")
+@patch("mirascope.tools.web._duckduckgo.DDGS")
 def test_custom_max_results(mock_ddgs):
-    custom_config = DuckDuckGoSearchConfig(max_results_per_query=5)
-    CustomSearch = DuckDuckGoSearch.from_config(custom_config)
+    """Test using custom maximum results configuration"""
+
+    # Create new search class with custom config
+    CustomSearch = DuckDuckGoSearch.from_config(
+        DuckDuckGoSearchConfig(max_results_per_query=5)
+    )
 
     mock_ddgs_instance = MagicMock()
     mock_ddgs_instance.text.return_value = []
     mock_ddgs.return_value = mock_ddgs_instance
 
-    search = CustomSearch(queries=["test query"])  # pyright: ignore [reportCallIssue]
+    search = CustomSearch(queries=["test query"])
     search.call()
 
     mock_ddgs_instance.text.assert_called_once_with("test query", max_results=5)
@@ -137,21 +195,202 @@ def test_custom_max_results(mock_ddgs):
 
 # Validation Tests
 def test_none_queries():
-    with pytest.raises(Exception):  # pydantic will raise validation error  # noqa: B017
-        DuckDuckGoSearch(queries=None)  # pyright: ignore [reportArgumentType]
+    """Test validation of None queries"""
+    with pytest.raises(Exception):
+        DuckDuckGoSearch(queries=None)  # type: ignore
 
 
 def test_invalid_query_type():
-    with pytest.raises(Exception):  # pydantic will raise validation error  # noqa: B017
+    """Test validation of invalid query types"""
+    with pytest.raises(Exception):
         DuckDuckGoSearch(queries=[123])  # type: ignore
 
 
 # Integration Tests
 def test_integration_with_search_tool_base():
+    """Test integration with search tool base class"""
     search = DuckDuckGoSearch(queries=["test"])
-    instructions = search.get_prompt_instructions()
+    description = search.usage_description()
 
-    assert "expert web searcher" in instructions
-    assert "current date" in instructions
-    assert search._name() in instructions
-    assert search._description() in instructions
+    assert isinstance(description, str)
+    assert len(description) > 0
+
+
+# Async Search Functionality Tests
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_single_query_success(mock_async_ddgs):
+    """Test successful execution of a single async search query"""
+    mock_results = [
+        {
+            "title": "Async Example 1",
+            "href": "https://example1.com",
+            "body": "First async test snippet",
+        },
+        {
+            "title": "Async Example 2",
+            "href": "https://example2.com",
+            "body": "Second async test snippet",
+        },
+    ]
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.return_value = mock_results
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = AsyncDuckDuckGoSearch(queries=["test query"])
+    result = await search.call()
+
+    assert "Async Example 1" in result
+    assert "https://example1.com" in result
+    assert "First async test snippet" in result
+    mock_ddgs_instance.atext.assert_called_once_with(
+        "test query", max_results=search._config().max_results_per_query
+    )
+
+
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_multiple_queries_success(mock_async_ddgs):
+    """Test successful execution of multiple async search queries"""
+    mock_results = [
+        {
+            "title": "Async Multiple Result 1",
+            "href": "https://example1.com",
+            "body": "First async query result",
+        },
+        {
+            "title": "Async Multiple Result 2",
+            "href": "https://example2.com",
+            "body": "Second async query result",
+        },
+    ]
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.return_value = mock_results
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = AsyncDuckDuckGoSearch(queries=["query1", "query2"])
+    result = await search.call()
+
+    assert "Async Multiple Result 1" in result
+    assert "https://example1.com" in result
+    assert mock_ddgs_instance.atext.call_count == 2
+
+
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_empty_results(mock_async_ddgs):
+    """Test handling of empty async search results"""
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.return_value = []
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = AsyncDuckDuckGoSearch(queries=["test query"])
+    result = await search.call()
+
+    assert result == ""
+
+
+# Async Error Handling Tests
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_ddgs_initialization_error(mock_async_ddgs):
+    """Test error handling during async DDGS initialization"""
+    mock_async_ddgs.side_effect = Exception("AsyncDDGS initialization failed")
+
+    search = AsyncDuckDuckGoSearch(queries=["test query"])
+    result = await search.call()
+
+    assert "Failed to search the web for text" in result
+
+
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_search_execution_error(mock_async_ddgs):
+    """Test error handling during async search execution"""
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.side_effect = Exception("Search execution failed")
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = AsyncDuckDuckGoSearch(queries=["test query"])
+    result = await search.call()
+
+    assert "Failed to search the web for text" in result
+
+
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_url_parsing_error(mock_async_ddgs):
+    """Test error handling during async URL parsing"""
+    mock_results = [
+        {
+            "title": "Async Invalid URL",
+            "href": None,
+            "body": "Test async snippet with invalid URL",
+        },
+        {
+            "title": "Async Valid URL",
+            "href": "https://example.com",
+            "body": "Test async snippet with valid URL",
+        },
+    ]
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.return_value = mock_results
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = AsyncDuckDuckGoSearch(queries=["test query"])
+    result = await search.call()
+
+    assert (
+        "Title: Async Invalid URL\n"
+        "URL: None\n"
+        "Snippet: Test async snippet with invalid URL\n"
+        "\n"
+        "Title: Async Valid URL\n"
+        "URL: https://example.com\n"
+        "Snippet: Test async snippet with valid URL"
+    ) in result
+
+
+# Async Custom Configuration Tests
+@pytest.mark.asyncio
+@patch("mirascope.tools.web._duckduckgo.AsyncDDGS")
+async def test_async_custom_max_results(mock_async_ddgs):
+    """Test using custom maximum results configuration in async search"""
+    custom_config = DuckDuckGoSearchConfig(max_results_per_query=5)
+    config_dict = custom_config.model_dump()
+    CustomAsyncSearch = AsyncDuckDuckGoSearch.from_config(config_dict)
+
+    mock_ddgs_instance = AsyncMock()
+    mock_ddgs_instance.atext.return_value = []
+    mock_async_ddgs.return_value = mock_ddgs_instance
+
+    search = CustomAsyncSearch(queries=["test query"])
+    await search.call()
+
+    mock_ddgs_instance.atext.assert_called_once_with("test query", max_results=5)
+
+
+# Async Validation Tests
+@pytest.mark.asyncio
+async def test_async_none_queries():
+    """Test validation of None queries in async search"""
+    with pytest.raises(Exception):
+        AsyncDuckDuckGoSearch(queries=None)  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_async_invalid_query_type():
+    """Test validation of invalid query types in async search"""
+    with pytest.raises(Exception):
+        AsyncDuckDuckGoSearch(queries=[123])  # type: ignore
+
+
+# Async Integration Tests
+@pytest.mark.asyncio
+async def test_async_integration_with_search_tool_base():
+    """Test integration with async search tool base class"""
+    search = AsyncDuckDuckGoSearch(queries=["test"])
+    description = search.usage_description()
+
+    assert isinstance(description, str)
+    assert len(description) > 0

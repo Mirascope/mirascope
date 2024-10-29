@@ -44,9 +44,11 @@ class ConfigurableTool(
         return cast(_ToolConfigT, cls.__config__)
 
     @classmethod
-    def from_config(cls, config: _ToolConfig) -> type[ConfigurableTool]:
+    def from_config(
+        cls, config: _ToolConfigT
+    ) -> type[ConfigurableTool[_ToolConfigT, _ToolSchemaT]]:
         """Create tool class with custom configuration"""
-        config = cls.model_validate(config)
+        config = cls.__config__.model_validate(config)
         NewModel = create_model(
             cls.__name__,
             __base__=cls,
