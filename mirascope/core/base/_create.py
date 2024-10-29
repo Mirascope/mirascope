@@ -93,7 +93,8 @@ def create_factory(  # noqa: ANN202
     def decorator(
         fn: Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
@@ -125,7 +126,8 @@ def create_factory(  # noqa: ANN202
         | Callable[_P, Messages.Type]
         | Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ]
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,

@@ -299,7 +299,8 @@ def stream_factory(  # noqa: ANN201
     def decorator(
         fn: Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
@@ -323,7 +324,8 @@ def stream_factory(  # noqa: ANN201
         | Callable[_P, Messages.Type]
         | Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ]
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,

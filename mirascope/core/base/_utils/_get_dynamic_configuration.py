@@ -15,6 +15,7 @@ _AsyncBaseDynamicConfigT = TypeVar(
     "_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig, covariant=True
 )
 
+
 def _is_message_param_list(result: object) -> TypeIs[list[BaseMessageParam]]:
     return isinstance(result, list)
 

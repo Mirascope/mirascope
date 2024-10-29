@@ -154,7 +154,8 @@ def call_factory(  # noqa: ANN202
             | Iterable[_ResponseModelT],
         ]
         | LLMFunctionDecorator[
-            _BaseDynamicConfigT, _AsyncBaseDynamicConfigT,
+            _BaseDynamicConfigT,
+            _AsyncBaseDynamicConfigT,
             _BaseCallResponseT
             | _ParsedOutputT
             | BaseStream

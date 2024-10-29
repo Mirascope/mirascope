@@ -12,7 +12,6 @@ from collections.abc import (
 from enum import Enum
 from typing import (
     Any,
-    Generic,
     Literal,
     NoReturn,
     ParamSpec,
@@ -61,7 +60,8 @@ class AsyncLLMFunctionDecorator(Protocol[_AsyncBaseDynamicConfigT, _AsyncRespons
         self,
         fn: Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ],
     ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
 
@@ -75,7 +75,8 @@ class AsyncLLMFunctionDecorator(Protocol[_AsyncBaseDynamicConfigT, _AsyncRespons
         self,
         fn: Callable[
             _P,
-            Awaitable[_AsyncBaseDynamicConfigT] | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
         ]
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
     ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
@@ -95,7 +96,9 @@ class SyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
     ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
 
 
-class LLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ResponseT, _AsyncResponseT]):
+class LLMFunctionDecorator(
+    Protocol[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ResponseT, _AsyncResponseT]
+):
     @overload
     def __call__(
         self, fn: Callable[_P, _BaseDynamicConfigT]
@@ -387,7 +390,10 @@ class CallDecorator(
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> LLMFunctionDecorator[
-        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallResponseT, _BaseCallResponseT
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        _BaseCallResponseT,
+        _BaseCallResponseT,
     ]: ...
 
     @overload
@@ -430,7 +436,9 @@ class CallDecorator(
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
-    ) -> LLMFunctionDecorator[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT]: ...
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT
+    ]: ...
 
     @overload
     def __call__(
@@ -489,7 +497,9 @@ class CallDecorator(
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
-    ) -> LLMFunctionDecorator[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseStreamT, _BaseStreamT]: ...
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseStreamT, _BaseStreamT
+    ]: ...
 
     @overload
     def __call__(
@@ -609,7 +619,9 @@ class CallDecorator(
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
-    ) -> LLMFunctionDecorator[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT]: ...
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT
+    ]: ...
 
     @overload
     def __call__(
@@ -652,7 +664,10 @@ class CallDecorator(
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> LLMFunctionDecorator[
-        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, Iterable[_ResponseModelT], AsyncIterable[_ResponseModelT]
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        Iterable[_ResponseModelT],
+        AsyncIterable[_ResponseModelT],
     ]: ...
 
     @overload
@@ -740,7 +755,8 @@ class CallDecorator(
             | Iterable[_ResponseModelT],
         ]
         | LLMFunctionDecorator[
-            _BaseDynamicConfigT, _AsyncBaseDynamicConfigT,
+            _BaseDynamicConfigT,
+            _AsyncBaseDynamicConfigT,
             _BaseCallResponseT
             | _ParsedOutputT
             | _BaseStreamT
