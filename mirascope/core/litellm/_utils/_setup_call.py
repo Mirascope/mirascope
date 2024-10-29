@@ -8,7 +8,7 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
-from ...base._utils import fn_is_async
+from ...base._utils import AsyncCreateFn, CreateFn, fn_is_async
 from ...openai import (
     AsyncOpenAIDynamicConfig,
     OpenAICallParams,
@@ -23,7 +23,7 @@ from ...openai.call_kwargs import OpenAICallKwargs
 def setup_call(
     *,
     model: str,
-    client: None,
+    client: ...,
     fn: Callable[..., Awaitable[AsyncOpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: AsyncOpenAIDynamicConfig,
@@ -32,7 +32,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., Awaitable[ChatCompletion]],
+    AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -44,7 +44,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: None,
+    client: ...,
     fn: Callable[..., OpenAIDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
@@ -53,7 +53,7 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion],
+    CreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -73,7 +73,8 @@ def setup_call(
     call_params: OpenAICallParams,
     extract: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
+    CreateFn[ChatCompletion, ChatCompletion]
+    | AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
