@@ -156,12 +156,15 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
-                if "client" in dynamic_config:
-                    client = dynamic_config["client"]
+                if (
+                    dynamic_config := await get_dynamic_configuration(fn, args, kwargs)
+                ) and isinstance(dynamic_config, dict):
+                    dynamic_client = dynamic_config.get("client")
+                else:
+                    dynamic_client = None
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=client,  # pyright: ignore [reportArgumentType]
+                    client=dynamic_client or client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,
@@ -198,12 +201,15 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                dynamic_config = get_dynamic_configuration(fn, args, kwargs)
-                if "client" in dynamic_config:
-                    client = dynamic_config["client"]
+                if (
+                    dynamic_config := get_dynamic_configuration(fn, args, kwargs)
+                ) and "client" in dynamic_config:
+                    dynamic_client = dynamic_config.get("client")
+                else:
+                    dynamic_client = None
                 create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
                     model=model,
-                    client=client,  # pyright: ignore [reportArgumentType]
+                    client=dynamic_client or client,  # pyright: ignore [reportArgumentType]
                     fn=fn,
                     fn_args=fn_args,
                     dynamic_config=dynamic_config,

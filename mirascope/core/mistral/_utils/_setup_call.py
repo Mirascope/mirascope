@@ -22,7 +22,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ..call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
-from ..dynamic_config import MistralDynamicConfig
+from ..dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
 from ..tool import MistralTool
 from ._convert_message_params import convert_message_params
 
@@ -32,9 +32,9 @@ def setup_call(
     *,
     model: str,
     client: MistralAsyncClient | None,
-    fn: Callable[..., Awaitable[MistralDynamicConfig]],
+    fn: Callable[..., Awaitable[AsyncMistralDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: MistralDynamicConfig,
+    dynamic_config: AsyncMistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: MistralCallParams,
@@ -73,9 +73,9 @@ def setup_call(
     *,
     model: str,
     client: MistralClient | MistralAsyncClient | None,
-    fn: Callable[..., MistralDynamicConfig | Awaitable[MistralDynamicConfig]],
+    fn: Callable[..., MistralDynamicConfig | Awaitable[AsyncMistralDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: MistralDynamicConfig,
+    dynamic_config: MistralDynamicConfig | AsyncMistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: MistralCallParams,

@@ -21,7 +21,7 @@ from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk
-from .dynamic_config import GroqDynamicConfig
+from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
 
 FinishReason = Choice.__annotations__["finish_reason"]
@@ -37,7 +37,7 @@ class GroqStream(
         ChatCompletionMessageParam,
         GroqTool,
         ChatCompletionToolParam,
-        GroqDynamicConfig,
+        AsyncGroqDynamicConfig | GroqDynamicConfig,
         GroqCallParams,
         FinishReason,
     ]

@@ -262,6 +262,12 @@ def structured_stream_factory(  # noqa: ANN201
                 fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
+                if (
+                    (dynamic_config := await fn(*args, **kwargs))
+                    and isinstance(dynamic_config, dict)
+                    and (dynamic_client := dynamic_config.get("client"))
+                ):
+                    stream_decorator_kwargs["client"] = dynamic_client
                 return BaseStructuredStream[_ResponseModelT](
                     stream=await stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs
@@ -278,6 +284,12 @@ def structured_stream_factory(  # noqa: ANN201
                 fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
+                if (
+                    (dynamic_config := fn(*args, **kwargs))
+                    and isinstance(dynamic_config, dict)
+                    and (dynamic_client := dynamic_config.get("client"))
+                ):
+                    stream_decorator_kwargs["client"] = dynamic_client
                 return BaseStructuredStream[_ResponseModelT](
                     stream=stream_decorator(fn=fn, **stream_decorator_kwargs)(
                         *args, **kwargs

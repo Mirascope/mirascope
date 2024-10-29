@@ -126,6 +126,12 @@ def extract_factory(  # noqa: ANN202
                 fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
+                if (
+                    (dynamic_config := await fn(*args, **kwargs))
+                    and isinstance(dynamic_config, dict)
+                    and (dynamic_client := dynamic_config.get("client"))
+                ):
+                    create_decorator_kwargs["client"] = dynamic_client
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
@@ -149,6 +155,12 @@ def extract_factory(  # noqa: ANN202
                 fields_from_call_args = get_fields_from_call_args(
                     response_model, fn, args, kwargs
                 )
+                if (
+                    (dynamic_config := fn(*args, **kwargs))
+                    and "client" in dynamic_config
+                    and (dynamic_client := dynamic_config.get("client"))
+                ):
+                    create_decorator_kwargs["client"] = dynamic_client
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
