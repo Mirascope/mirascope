@@ -15,13 +15,13 @@ def test_requests_config():
 def test_requests_get_success(mock_request):
     mock_response = MagicMock()
     mock_response.text = "Test content"
-    mock_request.return_value = mock_response
+    mock_request.request.return_value = mock_response
 
     tool = Requests(url="https://example.com")  # pyright: ignore [reportCallIssue]
     result = tool.call()
 
     assert result == "Test content"
-    mock_request.assert_called_with(
+    mock_request.request.assert_called_with(
         method="GET",
         url="https://example.com",
         json=None,
@@ -34,7 +34,7 @@ def test_requests_get_success(mock_request):
 def test_requests_post_with_data(mock_request):
     mock_response = MagicMock()
     mock_response.text = "Test response"
-    mock_request.return_value = mock_response
+    mock_request.request.return_value = mock_response
 
     tool = Requests(
         url="https://example.com",
@@ -45,7 +45,7 @@ def test_requests_post_with_data(mock_request):
     result = tool.call()
 
     assert result == "Test response"
-    mock_request.assert_called_with(
+    mock_request.request.assert_called_with(
         method="POST",
         url="https://example.com",
         json={"key": "value"},
@@ -56,7 +56,7 @@ def test_requests_post_with_data(mock_request):
 
 @patch("mirascope.tools.web._requests.requests")
 def test_requests_error(mock_request):
-    mock_request.side_effect = Exception("Request failed")
+    mock_request.request.side_effect = Exception("Request failed")
 
     tool = Requests(url="https://example.com")  # pyright: ignore [reportCallIssue]
     result = tool.call()

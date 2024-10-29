@@ -14,11 +14,11 @@ class MockConfig(_ToolConfig):
 
     @classmethod
     def from_env(cls) -> _ToolConfig:
-        return cls() # pyright: ignore [reportCallIssue]
+        return cls()  # pyright: ignore [reportCallIssue]
 
 
 class MockTool(ConfigurableTool[MockConfig, MockSchema]):
-    __config__ = MockConfig() # pyright: ignore [reportCallIssue]
+    __config__ = MockConfig()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = "Test description"
 
     input: str = Field(..., description="Test input")
@@ -36,7 +36,7 @@ class MockTool(ConfigurableTool[MockConfig, MockSchema]):
 
 
 def test_tool_config():
-    config = MockConfig() # pyright: ignore [reportCallIssue]
+    config = MockConfig()  # pyright: ignore [reportCallIssue]
     assert config.value == "default"
 
     custom_config = MockConfig(value="custom")
@@ -44,8 +44,6 @@ def test_tool_config():
 
     env_config = MockConfig.from_env()
     assert isinstance(env_config, MockConfig)
-
-
 
 
 def test_configurable_tool():
@@ -66,7 +64,7 @@ def test_configurable_tool_from_config():
     custom_config = MockConfig(value="custom")
     CustomTool = MockTool.from_config(custom_config)
 
-    tool = CustomTool(input="test") # pyright: ignore [reportCallIssue]
+    tool = CustomTool(input="test")  # pyright: ignore [reportCallIssue]
     assert isinstance(tool._config(), MockConfig)
     assert tool._config().value == "custom"
 
