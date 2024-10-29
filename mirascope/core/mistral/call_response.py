@@ -5,6 +5,7 @@ usage docs: learn/calls.md#handling-responses
 
 from typing import Any, cast
 
+from mistralai import ChatCompletionChoice
 from mistralai.models import (
     AssistantMessage,
     ChatCompletionResponse,
@@ -58,16 +59,20 @@ class MistralCallResponse(
     _provider = "mistral"
 
     @property
+    def _response_choices(self) -> list[ChatCompletionChoice]:
+        return self.response.choices or []
+
+    @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
-        return self.response.choices[0].message.content
+        return self._response_choices[0].message.content or ""
 
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [
             choice.finish_reason if choice.finish_reason else ""
-            for choice in self.response.choices
+            for choice in self._response_choices
         ]
 
     @property
@@ -106,7 +111,7 @@ class MistralCallResponse(
         self,
     ) -> AssistantMessage:
         """Returns the assistants's response as a message parameter."""
-        return cast(AssistantMessage, self.response.choices[0].message)
+        return cast(AssistantMessage, self._response_choices[0].message)
 
     @computed_field
     @property
@@ -116,7 +121,7 @@ class MistralCallResponse(
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        tool_calls = self.response.choices[0].message.tool_calls
+        tool_calls = self._response_choices[0].message.tool_calls
         if not self.tool_types or not tool_calls:
             return None
 

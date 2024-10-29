@@ -3,7 +3,7 @@
 usage docs: learn/streams.md
 """
 
-from typing import Any
+from typing import Any, cast
 
 from mistralai.models import (
     AssistantMessage,
@@ -90,13 +90,12 @@ class MistralStream(
             completion_tokens=int(self.output_tokens or 0),
             total_tokens=int(self.input_tokens or 0) + int(self.output_tokens or 0),
         )
+        finish_reason = cast(FinishReason, (self.finish_reasons or [])[0])
         completion = ChatCompletionResponse(
             id=self.id if self.id else "",
             choices=[
                 ChatCompletionChoice(
-                    finish_reason=self.finish_reasons[0]
-                    if self.finish_reasons
-                    else None,
+                    finish_reason=finish_reason,
                     index=0,
                     message=self.message_param,
                 )
