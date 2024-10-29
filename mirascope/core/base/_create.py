@@ -161,9 +161,8 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                if (
-                    dynamic_config := await get_dynamic_configuration(fn, args, kwargs)
-                ) and isinstance(dynamic_config, dict):
+                dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
+                if dynamic_config is not None:
                     dynamic_client = dynamic_config.get("client")
                 else:
                     dynamic_client = None
@@ -206,9 +205,7 @@ def create_factory(  # noqa: ANN202
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> TCallResponse | _ParsedOutputT:
                 fn_args = get_fn_args(fn, args, kwargs)
-                if (
-                    dynamic_config := get_dynamic_configuration(fn, args, kwargs)
-                ) and "client" in dynamic_config:
+                if dynamic_config := get_dynamic_configuration(fn, args, kwargs):
                     dynamic_client = dynamic_config.get("client")
                 else:
                     dynamic_client = None
