@@ -14,10 +14,6 @@ class HTTPXConfig(_ToolConfig):
         description="Request timeout in seconds. When None, no timeout will be applied",
     )
 
-    @classmethod
-    def from_env(cls) -> "HTTPXConfig":
-        return cls()
-
 
 class HTTPX(ConfigurableTool):
     """Tool to interact with web APIs using HTTPX. Provide a URL, method and optional data."""
