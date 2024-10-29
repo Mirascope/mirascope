@@ -1,6 +1,6 @@
-from .requests import Requests, RequestsConfig
-from .search import DuckDuckGoSearch, DuckDuckGoSearchConfig
-from .web import ParseURLConfig, ParseURLContent
+from .web._duckduckgo import DuckDuckGoSearch, DuckDuckGoSearchConfig
+from .web._parse_url_content import ParseURLConfig, ParseURLContent
+from .web._requests import Requests, RequestsConfig
 
 __all__ = [
     "DuckDuckGoSearch",

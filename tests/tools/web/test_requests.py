@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from mirascope.tools.requests import Requests, RequestsConfig
+from mirascope.tools import RequestsConfig, Requests
 
 
 def test_requests_config():

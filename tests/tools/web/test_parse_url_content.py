@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from mirascope.tools.web.parse_url_content import ParseURLConfig, ParseURLContent
+from mirascope.tools import ParseURLConfig, ParseURLContent
 
 
 # Config Tests

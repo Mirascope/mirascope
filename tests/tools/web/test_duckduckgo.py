@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pydantic import BaseModel
 
-from mirascope.tools.search import DuckDuckGoSearch, DuckDuckGoSearchConfig
+from mirascope.tools import DuckDuckGoSearchConfig, DuckDuckGoSearch
 
 
 class SearchSchema(BaseModel):

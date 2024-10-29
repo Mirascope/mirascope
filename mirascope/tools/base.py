@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from abc import ABC, abstractmethod
 from typing import ClassVar, Generic, TypeVar, cast
 
@@ -12,22 +13,16 @@ class _ToolConfig(BaseModel, ABC):
     """Base configuration for tools"""
 
     @classmethod
-    @abstractmethod
-    def from_env(cls) -> _ToolConfig:
-        """Load configuration from environment variables"""
+    def from_env(cls: type[_ToolConfigT]) -> _ToolConfigT:
+        """Load configuration from environment variables.
+        By default, returns an instance with default values."""
+        return cls()
 
-    @classmethod
-    def override_defaults(cls, config: _ToolConfig) -> _ToolConfig:
-        """Create config with overridden default values"""
-        return cls.model_validate(config)
-
-
-ConfigT = TypeVar("ConfigT", bound=_ToolConfig)
+_ToolConfigT = TypeVar("_ToolConfigT", bound=_ToolConfig)
 
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
-
-class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[ConfigT, _ToolSchemaT], ABC):
+class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchemaT], ABC):
     """
     Abstract base class for configurable tools.
 
@@ -40,14 +35,14 @@ class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[ConfigT, _ToolSchemaT], A
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def _config(cls) -> ConfigT:
+    def _config(cls) -> _ToolConfigT:
         """Get tool configuration"""
-        return cast(ConfigT, cls.__config__)
+        return cast(_ToolConfigT, cls.__config__)
 
     @classmethod
     def from_config(cls, config: _ToolConfig) -> type[ConfigurableTool]:
         """Create tool class with custom configuration"""
-        config = cls.__config__.override_defaults(config)
+        config = cls.model_validate(config)
         NewModel = create_model(
             cls.__name__,
             __base__=cls,
@@ -58,32 +53,7 @@ class ConfigurableTool(BaseTool[_ToolSchemaT], Generic[ConfigT, _ToolSchemaT], A
         return NewModel
 
     @classmethod
-    def _get_base_system_prompt(cls) -> list[str]:
-        """Get base system prompt structure"""
-        return [
-            "SYSTEM:",
-            "You are an expert tool user. Your task is to solve user queries using the provided tools.",
-            "",
-            "You have access to the following tools:",
-            f"- `{cls._name()}`: {cls._description()}",
-        ]
+    def usage_description(cls) -> str:
+        """Returns instructions for using this tool."""
+        return inspect.cleandoc(cls.__prompt_usage_description__)
 
-    @classmethod
-    def _add_usage_instructions(cls, prompt: list[str]) -> list[str]:
-        """Add tool usage instructions to the prompt"""
-        new_prompt = prompt.copy()
-        if cls.__prompt_usage_description__:
-            new_prompt.extend(
-                [
-                    "   ",
-                    "    " + cls.__prompt_usage_description__.replace("\n", "\n    "),
-                ]
-            )
-        return new_prompt
-
-    @classmethod
-    def get_prompt_instructions(cls) -> str:
-        """Generate system prompt for LLM with tool usage instructions"""
-        prompt = cls._get_base_system_prompt()
-        prompt = cls._add_usage_instructions(prompt)
-        return "\n".join(prompt)

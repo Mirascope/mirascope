@@ -5,8 +5,7 @@ from typing import ClassVar, TypeVar
 from duckduckgo_search import DDGS
 from pydantic import Field
 
-from ..base import _ToolConfig
-from .base import SearchToolBase
+from ..base import _ToolConfig, ConfigurableTool
 
 
 class DuckDuckGoSearchConfig(_ToolConfig):
@@ -24,7 +23,7 @@ class DuckDuckGoSearchConfig(_ToolConfig):
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
-class DuckDuckGoSearch(SearchToolBase[DuckDuckGoSearchConfig, _ToolSchemaT]):
+class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
     """Tool for performing web searches using DuckDuckGo.
     Takes search queries and returns relevant URLs from search results.
     """
@@ -40,22 +39,22 @@ class DuckDuckGoSearch(SearchToolBase[DuckDuckGoSearchConfig, _ToolSchemaT]):
 
     def call(self) -> str:
         try:
-            urls = []
+            results = []
             for query in self.queries:
                 results = DDGS(proxies=None).text(
                     query, max_results=self._config().max_results_per_query
                 )
 
                 for result in results:
-                    link = result["href"]
-                    try:
-                        urls.append(link)
-                    except Exception as e:
-                        urls.append(
-                            f"{type(e)}: Failed to parse content from URL {link}"
-                        )
 
-            return "\n\n".join(urls)
+                    results.append({
+                        'title': result['title'],
+                        'link': result['href'],
+                        'snippet': result['body']
+                    })
+
+            return "\n\n".join(f"Title: {r['title']}\nURL: {r['link']}\nSnippet: {r['snippet']}" for r in results)
+
 
         except Exception as e:
             return f"{type(e)}: Failed to search the web for text"

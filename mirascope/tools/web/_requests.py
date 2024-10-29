@@ -17,7 +17,7 @@ class RequestsConfig(_ToolConfig):
 
 
 class Requests(ConfigurableTool):
-    """Tool for making HTTP requests to fetch content from URLs."""
+    """Tool to interact with web APIs. Provide a URL, method and optional data."""
 
     __config__ = RequestsConfig()
 
