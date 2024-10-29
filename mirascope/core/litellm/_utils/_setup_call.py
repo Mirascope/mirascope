@@ -15,8 +15,8 @@ from ...openai import (
     OpenAIDynamicConfig,
     OpenAITool,
 )
+from ...openai._call_kwargs import OpenAICallKwargs
 from ...openai._utils import setup_call as setup_call_openai
-from ...openai.call_kwargs import OpenAICallKwargs
 
 
 @overload

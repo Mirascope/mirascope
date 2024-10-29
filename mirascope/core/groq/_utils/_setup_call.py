@@ -13,7 +13,7 @@ from groq.types.chat import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ..call_kwargs import GroqCallKwargs
+from .._call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from ..tool import GroqTool

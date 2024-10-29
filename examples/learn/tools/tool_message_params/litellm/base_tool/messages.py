@@ -15,7 +15,7 @@ class GetBookAuthor(BaseTool):
 
 @litellm.call("gpt-4o-mini", tools=[GetBookAuthor])
 def identify_author(
-    book: str, history: list[litellm.OpenAIMessageParam]
+    book: str, history: list[litellm.LiteLLMMessageParam]
 ) -> Messages.Type:
     messages = [*history]
     if book:

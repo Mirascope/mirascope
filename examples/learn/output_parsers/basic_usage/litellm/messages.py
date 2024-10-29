@@ -1,7 +1,7 @@
 from mirascope.core import Messages, litellm
 
 
-def parse_recommendation(response: litellm.OpenAICallResponse) -> tuple[str, str]:
+def parse_recommendation(response: litellm.LiteLLMCallResponse) -> tuple[str, str]:
     title, author = response.content.split(" by ")
     return (title, author)
 

@@ -20,7 +20,7 @@ from mistralai.models.chat_completion import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ..call_kwargs import MistralCallKwargs
+from .._call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
 from ..tool import MistralTool
