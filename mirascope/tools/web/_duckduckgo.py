@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import ClassVar, TypeVar
+from typing import ClassVar
 
 from duckduckgo_search import DDGS, AsyncDDGS
 from pydantic import Field
 
-from ..base import ConfigurableTool, _ToolConfig
+from ..base import ConfigurableTool, _ToolConfig, _ToolSchemaT
 
 
 class DuckDuckGoSearchConfig(_ToolConfig):
@@ -15,25 +15,29 @@ class DuckDuckGoSearchConfig(_ToolConfig):
         default=2, description="Maximum number of results per query"
     )
 
-    @classmethod
-    def from_env(cls) -> _ToolConfig:
-        return cls()
 
+class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
+    """Tool for performing web searches using DuckDuckGo.
 
-_ToolSchemaT = TypeVar("_ToolSchemaT")
+    Takes search queries and returns relevant search results(Title, URL, Snippet).
+    """
 
-
-class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
-    """Tool for performing web searches using DuckDuckGo. Takes search queries and returns relevant search results(Title, URL, Snippet)."""
+    __prompt_usage_description__: ClassVar[str] = """
+    - `DuckDuckGoSearch`: Performs web searches and returns formatted results
+        - Returns:
+          - Title: The title of the search result
+          - Link: The URL of the result page
+          - Snippet: A brief excerpt from the page content
+        - Results are automatically filtered and ranked by relevance 
+        - Multiple results returned per query based on configuration
+    """
 
     __config__ = DuckDuckGoSearchConfig()
-    __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to search the web and get relevant search results(Title, URL, Snippet).
-    Enter search queries to get the search results.
-    """
 
     queries: list[str] = Field(..., description="List of search queries")
 
+
+class DuckDuckGoSearch(_BaseDuckDuckGoSearch):
     def call(self) -> str:
         try:
             all_results = []
@@ -59,17 +63,7 @@ class DuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
             return f"{type(e)}: Failed to search the web for text"
 
 
-class AsyncDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
-    """Tool for performing web searches using DuckDuckGo asynchronously. Takes search queries and returns relevant search results(Title, URL, Snippet)."""
-
-    __config__ = DuckDuckGoSearchConfig()
-    __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to search the web and get relevant search results(Title, URL, Snippet).
-    Enter search queries to get the search results.
-    """
-
-    queries: list[str] = Field(..., description="List of search queries")
-
+class AsyncDuckDuckGoSearch(_BaseDuckDuckGoSearch):
     async def call(self) -> str:
         try:
             all_results = []

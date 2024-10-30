@@ -14,8 +14,7 @@ class _ToolConfig(BaseModel, ABC):
 
     @classmethod
     def from_env(cls: type[_ToolConfigT]) -> _ToolConfigT:
-        """Load configuration from environment variables.
-        By default, returns an instance with default values."""
+        """Returns a configuration instance from environment variables."""
         return cls()
 
 
@@ -27,8 +26,7 @@ _ToolSchemaT = TypeVar("_ToolSchemaT")
 class ConfigurableTool(
     BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchemaT], ABC
 ):
-    """
-    Abstract base class for configurable tools.
+    """Abstract base class for configurable tools.
 
     Subclasses must define a `__prompt_usage_description__` class variable
     and __config__ class variable with a subclass of _ToolConfig.

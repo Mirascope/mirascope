@@ -13,12 +13,18 @@ class RequestsConfig(_ToolConfig):
 
 
 class Requests(ConfigurableTool):
-    """Tool to interact with web APIs. Provide a URL, method and optional data."""
+    """Tool for making HTTP requests with built-in requests library."""
 
     __config__ = RequestsConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to make HTTP requests to web URLs.
+    - `Requests`: Makes HTTP requests to web URLs using requests library
+        - Supports common HTTP methods (GET, POST, PUT, DELETE)
+        - Accepts custom headers and request data
+        - Returns response text content
+        - Automatically raises for HTTP errors (4xx, 5xx)
+        - Returns error message if request fails
+        - Configurable timeout for all requests
     """
     url: str = Field(..., description="URL to request")
     method: Literal["GET", "POST", "PUT", "DELETE"] = Field(

@@ -1,26 +1,22 @@
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ToolConfig
-
-
-class MockSchema(BaseModel):
-    value: str
+from mirascope.tools.base import ConfigurableTool, _ToolConfig, _ToolSchemaT
 
 
 class MockConfig(_ToolConfig):
     value: str = Field("default")
 
 
-class MockTool(ConfigurableTool[MockConfig, MockSchema]):
+class MockTool(ConfigurableTool[MockConfig, _ToolSchemaT]):
     __config__ = MockConfig()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = "Test description"
 
     input: str = Field(..., description="Test input")
 
-    def call(self) -> MockSchema:
-        return MockSchema(value=f"Test output: {self.input}")
+    def call(self) -> str:
+        return f"Test output: {self.input}"
 
 
 def test_tool_config():
@@ -37,8 +33,7 @@ def test_tool_config():
 def test_configurable_tool():
     tool = MockTool(input="test")
     result = tool.call()
-    assert isinstance(result, MockSchema)
-    assert result.value == "Test output: test"
+    assert result == "Test output: test"
 
 
 def test_tool_config_access():
@@ -57,5 +52,4 @@ def test_configurable_tool_from_config():
     assert tool._config().value == "custom"
 
     result = tool.call()
-    assert isinstance(result, MockSchema)
-    assert result.value == "Test output: test"
+    assert result == "Test output: test"

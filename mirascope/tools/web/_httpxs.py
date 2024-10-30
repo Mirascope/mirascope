@@ -15,15 +15,21 @@ class HTTPXConfig(_ToolConfig):
     )
 
 
-class HTTPX(ConfigurableTool):
-    """Tool to interact with web APIs using HTTPX. Provide a URL, method and optional data."""
+class _BaseHTTPX(ConfigurableTool):
+    """Tool for making HTTP requests using HTTPX with configurable timeout and error handling."""
 
     __config__ = HTTPXConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to make HTTP requests to web URLs using HTTPX.
-    Supports standard HTTP methods and automatically handles encoding/decoding.
+    - `HTTPX`: Makes HTTP requests to web URLs with HTTPX client
+        - Supports standard HTTP methods (GET, POST, PUT, DELETE, etc.)
+        - Allows configuration of request data, headers, and parameters
+        - Automatically handles encoding/decoding of request/response content
+        - Handles redirects automatically (configurable)
+        - Returns response text or error message on failure
+        - Configurable timeout for requests
     """
+
     url: str = Field(..., description="URL to request")
     method: Literal["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"] = Field(
         "GET", description="HTTP method to use"
@@ -42,6 +48,8 @@ class HTTPX(ConfigurableTool):
         True, description="Whether to follow redirects automatically"
     )
 
+
+class HTTPX(_BaseHTTPX):
     def call(self) -> str:
         """
         Make an HTTP request to the given URL using HTTPX.
@@ -79,45 +87,7 @@ class HTTPX(ConfigurableTool):
             return f"{type(e).__name__}: Failed to make request to {self.url}"
 
 
-class AsyncHTTPXConfig(_ToolConfig):
-    """Configuration for async HTTPX requests"""
-
-    timeout: int = Field(
-        default=5,
-        description="Request timeout in seconds. When None, no timeout will be applied",
-    )
-
-
-class AsyncHTTPX(ConfigurableTool):
-    """
-    Async tool to interact with web APIs using HTTPX.
-    Provides asynchronous HTTP requests with configurable timeout and error handling.
-    """
-
-    __config__ = AsyncHTTPXConfig()
-
-    __prompt_usage_description__: ClassVar[str] = """
-    Use this tool to make asynchronous HTTP requests to web URLs using HTTPX.
-    Supports standard HTTP methods and automatically handles encoding/decoding.
-    """
-    url: str = Field(..., description="URL to request")
-    method: Literal["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"] = Field(
-        "GET", description="HTTP method to use"
-    )
-    data: dict | None = Field(
-        None, description="Form data to send with POST/PUT requests"
-    )
-    json_: dict | None = Field(
-        None, description="JSON data to send with POST/PUT requests", alias="json"
-    )
-    params: dict | None = Field(
-        None, description="URL parameters to include in the request"
-    )
-    headers: dict | None = Field(None, description="Request headers")
-    follow_redirects: bool = Field(
-        True, description="Whether to follow redirects automatically"
-    )
-
+class AsyncHTTPX(_BaseHTTPX):
     async def call(self) -> str:
         """
         Make an asynchronous HTTP request to the given URL using HTTPX.

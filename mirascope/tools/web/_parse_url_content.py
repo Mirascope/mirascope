@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, TypeVar
+from typing import ClassVar
 
 import requests
 from bs4 import BeautifulSoup
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ToolConfig
+from mirascope.tools.base import ConfigurableTool, _ToolConfig, _ToolSchemaT
 
 
 class ParseURLConfig(_ToolConfig):
@@ -24,33 +24,24 @@ class ParseURLConfig(_ToolConfig):
     )
 
 
-_ToolSchemaT = TypeVar("_ToolSchemaT")
-
-
 class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
     """Tool for parsing and extracting main content from URLs.
+
     Fetches content from URL, removes unnecessary elements like scripts, styles, navigation, etc.,
     and returns clean text content from the webpage's main body.
     """
 
     __config__ = ParseURLConfig()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = """
-    This tool fetches and parses content from a URL:
-    1. Fetches HTML content from the provided URL
-    2. Removes all unwanted elements (scripts, styles, navigation, etc.)
-    3. Attempts to find the main content section
-    4. If no main content section is found, extracts all text content
-    5. Returns cleaned and formatted text content
-
-    Output Format:
-    Returns the main content as clean text.
-    If any errors occur during fetching or parsing, error messages are included.
-
-    Common use cases:
-    - Extracting article content from web pages
-    - Getting readable content from blog posts
-    - Parsing documentation pages to extract useful text
+    - `ParseURLContent`: Returns the given URL's main content as clean text
+        - Fetches the raw HTML content for the given URL
+        - Removes all unwanted elements (scripts, styles, navigation, etc.)
+        - Attempts to find the main content section
+        - If no main content section is found, extracts all text content
+        - Returns cleaned and formatted text content
+        - If any errors occur during fetching or parsing, and error message is returned.
     """
+
     url: str = Field(..., description="URL to fetch and parse")
 
     def call(self) -> str:
