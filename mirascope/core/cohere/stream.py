@@ -18,7 +18,7 @@ from ._utils import calculate_cost
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
-from .dynamic_config import CohereDynamicConfig
+from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from .tool import CohereTool
 
 
@@ -32,7 +32,7 @@ class CohereStream(
         ChatMessage,
         CohereTool,
         Tool,
-        CohereDynamicConfig,
+        AsyncCohereDynamicConfig | CohereDynamicConfig,
         CohereCallParams,
         ChatStreamEndEventFinishReason,
     ]

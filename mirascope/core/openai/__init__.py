@@ -10,13 +10,14 @@ from ._call import openai_call as call
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
-from .dynamic_config import OpenAIDynamicConfig
+from .dynamic_config import AsyncOpenAIDynamicConfig, OpenAIDynamicConfig
 from .stream import OpenAIStream
 from .tool import OpenAITool, OpenAIToolConfig
 
 OpenAIMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
 
 __all__ = [
+    "AsyncOpenAIDynamicConfig",
     "call",
     "OpenAIDynamicConfig",
     "OpenAICallParams",

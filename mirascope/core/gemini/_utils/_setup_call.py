@@ -21,7 +21,7 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
-from ..call_kwargs import GeminiCallKwargs
+from .._call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool

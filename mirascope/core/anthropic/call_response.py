@@ -15,7 +15,7 @@ from pydantic import SerializeAsAny, computed_field
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
-from .dynamic_config import AnthropicDynamicConfig
+from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from .tool import AnthropicTool
 
 
@@ -24,7 +24,7 @@ class AnthropicCallResponse(
         Message,
         AnthropicTool,
         ToolParam,
-        AnthropicDynamicConfig,
+        AsyncAnthropicDynamicConfig | AnthropicDynamicConfig,
         MessageParam,
         AnthropicCallParams,
         MessageParam,

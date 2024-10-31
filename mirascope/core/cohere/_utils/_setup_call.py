@@ -25,9 +25,9 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
-from ..call_kwargs import CohereCallKwargs
+from .._call_kwargs import CohereCallKwargs
 from ..call_params import CohereCallParams
-from ..dynamic_config import CohereDynamicConfig
+from ..dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from ..tool import CohereTool
 from ._convert_message_params import convert_message_params
 
@@ -37,9 +37,9 @@ def setup_call(
     *,
     model: str,
     client: AsyncClient | None,
-    fn: Callable[..., Awaitable[CohereDynamicConfig]],
+    fn: Callable[..., Awaitable[AsyncCohereDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: CohereDynamicConfig,
+    dynamic_config: AsyncCohereDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: CohereCallParams,
@@ -78,9 +78,9 @@ def setup_call(
     *,
     model: str,
     client: Client | AsyncClient | None,
-    fn: Callable[..., CohereDynamicConfig | Awaitable[CohereDynamicConfig]],
+    fn: Callable[..., CohereDynamicConfig | Awaitable[AsyncCohereDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: CohereDynamicConfig,
+    dynamic_config: CohereDynamicConfig | AsyncCohereDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: CohereCallParams,

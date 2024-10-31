@@ -5,7 +5,7 @@ client = Anthropic()
 
 def recommend_book(genre: str) -> str:
     message = client.messages.create(
-        model="gpt-4o-mini",
+        model="claude-3-5-sonnet-20240620",
         messages=[{"role": "user", "content": f"Recommend a {genre} book"}],
         max_tokens=1024,
     )

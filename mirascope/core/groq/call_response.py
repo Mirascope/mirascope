@@ -17,7 +17,7 @@ from pydantic import SerializeAsAny, computed_field
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import GroqCallParams
-from .dynamic_config import GroqDynamicConfig
+from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
 
 
@@ -26,7 +26,7 @@ class GroqCallResponse(
         ChatCompletion,
         GroqTool,
         ChatCompletionToolParam,
-        GroqDynamicConfig,
+        AsyncGroqDynamicConfig | GroqDynamicConfig,
         ChatCompletionMessageParam,
         GroqCallParams,
         ChatCompletionUserMessageParam,

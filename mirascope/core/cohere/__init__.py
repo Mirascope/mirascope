@@ -10,13 +10,14 @@ from ._call import cohere_call as call
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
-from .dynamic_config import CohereDynamicConfig
+from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from .stream import CohereStream
 from .tool import CohereTool
 
 CohereMessageParam: TypeAlias = ChatMessage | ToolResult | BaseMessageParam
 
 __all__ = [
+    "AsyncCohereDynamicConfig",
     "call",
     "CohereDynamicConfig",
     "CohereCallParams",

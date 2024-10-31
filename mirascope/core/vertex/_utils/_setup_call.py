@@ -21,7 +21,7 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
-from ..call_kwargs import VertexCallKwargs
+from .._call_kwargs import VertexCallKwargs
 from ..call_params import VertexCallParams
 from ..dynamic_config import VertexDynamicConfig
 from ..tool import VertexTool
