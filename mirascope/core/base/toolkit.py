@@ -87,8 +87,9 @@ class BaseToolKit(BaseModel, ABC):
             converted_method = convert_function_to_base_tool(
                 method, BaseTool, template.format(self=self), self.__namespace__
             )
-            for key, value in self:
-                setattr(converted_method, key, value)
+            for key in dir(self):
+                if not key.startswith("__") and not hasattr(converted_method, key):
+                    setattr(converted_method, key, getattr(self, key))
             tools.append(converted_method)
         return tools
 
@@ -101,7 +102,8 @@ class BaseToolKit(BaseModel, ABC):
             _namespaces.add(cls.__namespace__)
 
         cls._toolkit_tool_methods = []
-        for attr in cls.__dict__.values():
+        for key in dir(cls):
+            attr = getattr(cls, key)
             if not getattr(attr, _TOOLKIT_TOOL_METHOD_MARKER, False):
                 continue
             # Validate the toolkit_tool_method
@@ -117,7 +119,7 @@ class BaseToolKit(BaseModel, ABC):
                     # be later templated e.g. if using a call as a tool.
                     continue
 
-                self_var = var[5:]
+                self_var = var[5:].split(".")[0]
 
                 # Expecting pydantic model fields or class attribute and property
                 if self_var in cls.model_fields or hasattr(cls, self_var):
@@ -130,6 +132,11 @@ class BaseToolKit(BaseModel, ABC):
             cls._toolkit_tool_methods.append(
                 ToolKitToolMethod(attr, template_vars, dedented_template)
             )
+        if ABC in cls.__bases__ or any(
+            ABC in base.__bases__ for base in cls.__bases__ if base != BaseToolKit
+        ):
+            return  # Skip if the class is a generic class
+
         if not cls._toolkit_tool_methods:
             raise ValueError("No toolkit_tool method found")
 
