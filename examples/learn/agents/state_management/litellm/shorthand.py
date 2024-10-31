@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class Librarian(BaseModel):
-    history: list[litellm.OpenAIMessageParam] = []
+    history: list[litellm.LiteLLMMessageParam] = []
 
     @litellm.call("gpt-4o-mini")
     def _call(self, query: str) -> Messages.Type:

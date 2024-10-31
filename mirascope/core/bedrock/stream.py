@@ -34,7 +34,7 @@ from ._utils import (
 from .call_params import BedrockCallParams
 from .call_response import BedrockCallResponse
 from .call_response_chunk import BedrockCallResponseChunk
-from .dynamic_config import BedrockDynamicConfig
+from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .tool import BedrockTool
 
 _DEFAULT_RESPONSE_METADATA = ResponseMetadataTypeDef(
@@ -52,7 +52,7 @@ class BedrockStream(
         InternalBedrockMessageParam,
         BedrockTool,
         ToolTypeDef,
-        BedrockDynamicConfig,
+        AsyncBedrockDynamicConfig | BedrockDynamicConfig,
         BedrockCallParams,
         FinishReason,
     ]

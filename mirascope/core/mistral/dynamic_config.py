@@ -1,12 +1,18 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from mistralai.async_client import MistralAsyncClient
+from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import MistralCallParams
 
+AsyncMistralDynamicConfig = BaseDynamicConfig[
+    ChatMessage | BaseMessageParam, MistralCallParams, MistralAsyncClient
+]
+
 MistralDynamicConfig = BaseDynamicConfig[
-    ChatMessage | BaseMessageParam, MistralCallParams
+    ChatMessage | BaseMessageParam, MistralCallParams, MistralClient
 ]
 """The function return type for functions wrapped with the `mistral_call` decorator.
 

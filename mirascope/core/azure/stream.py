@@ -25,7 +25,7 @@ from ._utils import calculate_cost
 from .call_params import AzureCallParams
 from .call_response import AzureCallResponse
 from .call_response_chunk import AzureCallResponseChunk
-from .dynamic_config import AzureDynamicConfig
+from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from .tool import AzureTool
 
 
@@ -39,7 +39,7 @@ class AzureStream(
         ChatRequestMessage,
         AzureTool,
         ChatCompletionsToolDefinition,
-        AzureDynamicConfig,
+        AsyncAzureDynamicConfig | AzureDynamicConfig,
         AzureCallParams,
         CompletionsFinishReason,
     ]
