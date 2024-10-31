@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from mirascope.tools.web._httpxs import (
+from mirascope.tools.web._httpx import (
     HTTPX,
     AsyncHTTPX,
     HTTPXConfig,
@@ -28,7 +28,7 @@ def test_async_httpx_config():
     assert custom_config.timeout == 10
 
 
-@patch("mirascope.tools.web._httpxs.httpx.Client")
+@patch("mirascope.tools.web._httpx.httpx.Client")
 def test_httpx_get_success(mock_client):
     """Test successful GET request using HTTPX"""
     # Setup mock response
@@ -55,7 +55,7 @@ def test_httpx_get_success(mock_client):
     )
 
 
-@patch("mirascope.tools.web._httpxs.httpx.Client")
+@patch("mirascope.tools.web._httpx.httpx.Client")
 def test_httpx_post_with_json(mock_client):
     """Test POST request with JSON data using HTTPX"""
     # Setup mock response
@@ -88,7 +88,7 @@ def test_httpx_post_with_json(mock_client):
     )
 
 
-@patch("mirascope.tools.web._httpxs.httpx.Client")
+@patch("mirascope.tools.web._httpx.httpx.Client")
 def test_httpx_request_error(mock_client):
     """Test handling of RequestError in HTTPX"""
     mock_client_instance = MagicMock()
@@ -100,7 +100,7 @@ def test_httpx_request_error(mock_client):
     assert "Request error occurred" in result
 
 
-@patch("mirascope.tools.web._httpxs.httpx.Client")
+@patch("mirascope.tools.web._httpx.httpx.Client")
 def test_httpx_http_error(mock_client):
     """Test handling of HTTPStatusError in HTTPX"""
     mock_response = MagicMock()
@@ -117,7 +117,7 @@ def test_httpx_http_error(mock_client):
     assert "HTTP error occurred: 404" in result
 
 
-@patch("mirascope.tools.web._httpxs.httpx.Client")
+@patch("mirascope.tools.web._httpx.httpx.Client")
 def test_httpx_value_error(mock_client):
     """Test handling of HTTPStatusError in HTTPX"""
     mock_response = MagicMock()
@@ -133,7 +133,7 @@ def test_httpx_value_error(mock_client):
 
 
 @pytest.mark.asyncio
-@patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
+@patch("mirascope.tools.web._httpx.httpx.AsyncClient")
 async def test_async_httpx_get_success(mock_client):
     """Test successful GET request using AsyncHTTPX"""
     # Setup mock response
@@ -161,7 +161,7 @@ async def test_async_httpx_get_success(mock_client):
 
 
 @pytest.mark.asyncio
-@patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
+@patch("mirascope.tools.web._httpx.httpx.AsyncClient")
 async def test_async_httpx_post_with_json(mock_client):
     """Test POST request with JSON data using AsyncHTTPX"""
     # Setup mock response
@@ -195,7 +195,7 @@ async def test_async_httpx_post_with_json(mock_client):
 
 
 @pytest.mark.asyncio
-@patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
+@patch("mirascope.tools.web._httpx.httpx.AsyncClient")
 async def test_async_httpx_request_error(mock_client):
     """Test handling of RequestError in AsyncHTTPX"""
     mock_client_instance = AsyncMock()
@@ -208,7 +208,7 @@ async def test_async_httpx_request_error(mock_client):
 
 
 @pytest.mark.asyncio
-@patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
+@patch("mirascope.tools.web._httpx.httpx.AsyncClient")
 async def test_async_httpx_http_error(mock_client):
     """Test handling of HTTPStatusError in AsyncHTTPX"""
     mock_response = MagicMock()
@@ -226,7 +226,7 @@ async def test_async_httpx_http_error(mock_client):
 
 
 @pytest.mark.asyncio
-@patch("mirascope.tools.web._httpxs.httpx.AsyncClient")
+@patch("mirascope.tools.web._httpx.httpx.AsyncClient")
 async def test_async_httpx_value_error(mock_client):
     """Test handling of HTTPStatusError in AsyncHTTPX"""
     mock_response = MagicMock()
