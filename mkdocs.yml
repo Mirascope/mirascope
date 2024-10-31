@@ -337,3 +337,8 @@ nav:
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
+      - Tools:
+          - DuckDuckGo: "api/tools/web/duckduckgo.md"
+          - HTTPX: "api/tools/web/httpx.md"
+          - ParseURLContent: "api/tools/web/parse_url_content.md"
+          - Requests: "api/tools/web/requests.md"

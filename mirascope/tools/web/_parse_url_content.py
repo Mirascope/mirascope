@@ -45,7 +45,11 @@ class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
     url: str = Field(..., description="URL to fetch and parse")
 
     def call(self) -> str:
-        """Fetch and parse content from the URL."""
+        """Fetch and parse content from the URL.
+
+        Returns:
+            str: Cleaned text content from the URL if successful, error message if parsing fails
+        """
         try:
             # Fetch content from URL
             response = requests.get(

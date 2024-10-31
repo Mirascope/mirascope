@@ -415,12 +415,20 @@ This is why the "beginner" recommendation and "advanced" recommendations call th
 
 Mirascope provides several pre-made tools to help you get started quickly:
 
+??? api "API Documentation"
+
+    - Web Tools
+        - [`mirascope.tools.web.DuckDuckGoSearch`](../api/tools/web/duckduckgo.md)
+        - [`mirascope.tools.web.HTTPX`](../api/tools/web/httpx.md)
+        - [`mirascope.tools.web.ParseURLContent`](../api/tools/web/parse_url_content.md)
+        - [`mirascope.tools.web.Requests`](../api/tools/web/requests.md)
+
 | Tool | Primary Use | Key Features | Characteristics |
 |------|-------------|--------------|-----------------|
-| `HTTPX` | Advanced HTTP Requests | • Full HTTP method support (GET/POST/PUT/DELETE)<br>• Custom header support<br>• File upload/download<br>• Form data handling | • Async support (AsyncHTTPX)<br>• Configurable timeouts<br>• Comprehensive error handling<br>• Redirect control |
-| `DuckDuckGoSearch` | Web Searching | • Multiple query support<br>• Title/URL/snippet extraction<br>• Result count control<br>• Automated formatting | • Privacy-focused search<br>• Async support (AsyncDuckDuckGoSearch)<br>• Automatic filtering<br>• Structured results |
-| `ParseURLContent` | Web Content Extraction | • HTML content fetching<br>• Main content extraction<br>• Element filtering<br>• Text normalization | • Automatic cleaning<br>• Configurable parser<br>• Timeout settings<br>• Error handling |
-| `Requests` | Simple HTTP Requests | • Basic HTTP methods<br>• Simple API<br>• Response text retrieval<br>• Basic authentication | • Minimal configuration<br>• Intuitive interface<br>• Basic error handling<br>• Lightweight implementation |
+| [`DuckDuckGoSearch`](../api/tools/web/duckduckgo.md) | Web Searching | • Multiple query support<br>• Title/URL/snippet extraction<br>• Result count control<br>• Automated formatting | • Privacy-focused search<br>• Async support (AsyncDuckDuckGoSearch)<br>• Automatic filtering<br>• Structured results |
+| [`HTTPX`](../api/tools/web/httpx.md) | Advanced HTTP Requests | • Full HTTP method support (GET/POST/PUT/DELETE)<br>• Custom header support<br>• File upload/download<br>• Form data handling | • Async support (AsyncHTTPX)<br>• Configurable timeouts<br>• Comprehensive error handling<br>• Redirect control |
+| [`ParseURLContent`](../api/tools/web/parse_url_content.md) | Web Content Extraction | • HTML content fetching<br>• Main content extraction<br>• Element filtering<br>• Text normalization | • Automatic cleaning<br>• Configurable parser<br>• Timeout settings<br>• Error handling |
+| [`Requests`](../api/tools/web/requests.md) | Simple HTTP Requests | • Basic HTTP methods<br>• Simple API<br>• Response text retrieval<br>• Basic authentication | • Minimal configuration<br>• Intuitive interface<br>• Basic error handling<br>• Lightweight implementation |
 
 
 Example using DuckDuckGoSearch:
