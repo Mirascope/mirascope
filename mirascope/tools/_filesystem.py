@@ -69,7 +69,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     def read_file(self, path: str) -> str:
         """Reads content from a file.
 
-        base_directory: {self.__config__.base_directory}
+        base_directory: {self.base_directory}
 
         Args:
             path: Path to the file
@@ -98,7 +98,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     def write_file(self, path: str, content: str) -> str:
         """Writes content to a file.
 
-        base_directory: {self.__config__.base_directory}
+        base_directory: {self.base_directory}
 
         Args:
             path: Path to the file
@@ -130,10 +130,10 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     def list_directory(self, path: str = "") -> str:
         """Lists directory contents.
 
-         base_directory: {self.__config__.base_directory}
+         base_directory: {self.base_directory}
 
         Args:
-            path: Path to the file (default: {self.__config__.base_directory})
+            path: Path to the file (default: {self.base_directory})
         Returns:
             Directory contents
         """
@@ -167,7 +167,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     def create_directory(self, path: str) -> str:
         """Creates a new directory.
 
-        base_directory: {self.__config__.base_directory}
+        base_directory: {self.base_directory}
 
         Args:
             path: Path to the new directory
@@ -188,7 +188,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     def delete_file(self, path: str) -> str:
         """Deletes a file.
 
-        base_directory: {self.__config__.base_directory}
+        base_directory: {self.base_directory}
 
         Args:
             path: Path to the file
