@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TypeVar
 
 import pytest
-from pydantic_core._pydantic_core import ValidationError
 
 from mirascope.tools import FileSystemToolkit, FileSystemToolkitConfig
 from mirascope.tools.system._filesystem import FileOperation
@@ -255,6 +254,7 @@ def test_delete_directory_as_file(
     delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
     result = delete_file(path="testdir.txt").call()
     assert result.startswith("Error: testdir.txt is not a file")
+
 
 def test_invalid_base_directory():
     """Test toolkit creation with invalid base directory."""
