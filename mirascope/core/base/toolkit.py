@@ -151,6 +151,7 @@ class BaseToolKit(BaseModel, ABC):
 _BaseToolKitT = TypeVar("_BaseToolKitT", bound=BaseToolKit)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
+
 @overload
 def toolkit_tool(
     method: Callable[Concatenate[_BaseToolKitT, P], str],
