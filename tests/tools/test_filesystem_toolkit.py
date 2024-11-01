@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TypeVar
 
 import pytest
+from pydantic_core._pydantic_core import ValidationError
 
 from mirascope.tools import FileSystemToolkit, FileSystemToolkitConfig
 from mirascope.tools.system._filesystem import FileOperation
@@ -133,3 +134,138 @@ def test_delete_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     result = delete_file(path="delete.txt").call()
     assert result.startswith("Successfully")
     assert not test_file.exists()
+
+
+def test_read_file_too_large(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
+    """Test reading a file that exceeds max file size."""
+    test_file = temp_dir / "large.txt"
+    test_file.write_text("x" * 2000)  # Larger than max_file_size
+    read_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.ReadFile)
+    result = read_file(path="large.txt").call()
+    assert result.startswith("Error: File exceeds maximum size")
+
+
+def test_read_file_path_traversal(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test reading a file with path traversal attempt."""
+    read_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.ReadFile)
+    result = read_file(path="../../../etc/passwd").call()
+    assert result.startswith("Error: Invalid path")
+
+
+def test_write_file_path_traversal(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test writing a file with path traversal attempt."""
+    write_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.WriteFile)
+    result = write_file(path="../../../tmp/test.txt", content="test").call()
+    assert result.startswith("Error: Invalid path")
+
+
+def test_list_directory_path_traversal(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test listing directory with path traversal attempt."""
+    list_directory = _get_tool_type(filesystem_toolkit, FileSystemToolkit.ListDirectory)
+    result = list_directory(path="../../../etc").call()
+    assert result.startswith("Error: Invalid path")
+
+
+def test_list_directory_not_found(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test listing non-existent directory."""
+    list_directory = _get_tool_type(filesystem_toolkit, FileSystemToolkit.ListDirectory)
+    result = list_directory(path="nonexistent").call()
+    assert result.startswith("Error: Directory")
+
+
+def test_create_directory_path_traversal(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test creating directory with path traversal attempt."""
+    create_directory = _get_tool_type(
+        filesystem_toolkit, FileSystemToolkit.CreateDirectory
+    )
+    result = create_directory(path="../../../tmp/newdir").call()
+    assert result.startswith("Error: Invalid path")
+
+
+def test_create_existing_directory(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test creating an already existing directory."""
+    create_directory = _get_tool_type(
+        filesystem_toolkit, FileSystemToolkit.CreateDirectory
+    )
+
+    # First creation
+    result1 = create_directory(path="existingdir").call()
+    assert result1.startswith("Successfully")
+
+    # Second creation of same directory
+    result2 = create_directory(path="existingdir").call()
+    assert result2.startswith("Successfully")  # Should succeed due to exist_ok=True
+
+
+def test_create_directory_permission_error(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test creating directory with insufficient permissions."""
+    # Create a directory with restricted permissions
+    restricted_dir = temp_dir / "restricted"
+    restricted_dir.mkdir()
+    restricted_dir.chmod(0o000)  # Remove all permissions
+
+    create_directory = _get_tool_type(
+        filesystem_toolkit, FileSystemToolkit.CreateDirectory
+    )
+    result = create_directory(path="restricted/newdir").call()
+    assert result.startswith("Error creating directory")
+
+    # Cleanup
+    restricted_dir.chmod(0o755)  # Restore permissions for cleanup
+
+
+def test_delete_file_not_found(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
+    """Test deleting a non-existent file."""
+    delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
+    result = delete_file(path="nonexistent.txt").call()
+    assert result.startswith("Error: File")
+
+
+def test_delete_file_path_traversal(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test deleting file with path traversal attempt."""
+    delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
+    result = delete_file(path="../../../etc/passwd").call()
+    assert result.startswith("Error: Invalid path")
+
+
+def test_delete_directory_as_file(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test attempting to delete a directory using delete_file."""
+    # Create a directory
+    test_dir = temp_dir / "testdir.txt"
+    test_dir.mkdir()
+
+    delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
+    result = delete_file(path="testdir.txt").call()
+    assert result.startswith("Error: testdir.txt is not a file")
+
+def test_invalid_base_directory():
+    """Test toolkit creation with invalid base directory."""
+    with pytest.raises(ValueError):
+        FileSystemToolkit(base_directory=Path("/nonexistent/directory"))
+
+
+def test_base_directory_is_file(temp_dir: Path):
+    """Test toolkit creation when base_directory is a file."""
+    test_file = temp_dir / "file.txt"
+    test_file.write_text("test")
+
+    with pytest.raises(ValueError):
+        FileSystemToolkit(base_directory=test_file)

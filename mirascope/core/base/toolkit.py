@@ -100,7 +100,7 @@ class BaseToolKit(BaseModel, ABC):
                     method, BaseTool, template.format(self=self), self.__namespace__
                 )
             for key in dir(self):
-                if not key.startswith("__") and not hasattr(converted_method, key):
+                if not hasattr(converted_method, key):
                     setattr(converted_method, key, getattr(self, key))
             tools.append(converted_method)
         return tools

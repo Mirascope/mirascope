@@ -139,7 +139,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(self.content)
                 return f"Successfully wrote to {self.path}"
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 return f"Error writing file: {str(e)}"
 
     @toolkit_tool
@@ -154,7 +154,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
             Returns:
                 str: Formatted directory listing or error message if operation fails
             """
-            print(self.base_directory)
+
             if error := self._validate_path(self.path):
                 return error
 
