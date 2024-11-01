@@ -8,7 +8,7 @@ from __future__ import annotations
 import inspect
 from abc import ABC
 from collections.abc import Callable
-from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar
+from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar, overload
 
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import ParamSpec
@@ -84,9 +84,12 @@ class BaseToolKit(BaseModel, ABC):
                 # Replace non-self template variables with escaped double brackets so
                 # that templating `self` results in a future templateable string.
                 template = template.replace(f"{{{var}}}", f"{{{{{var}}}}}")
-            converted_method = convert_function_to_base_tool(
-                method, BaseTool, template.format(self=self), self.__namespace__
-            )
+            if inspect.isclass(method) and issubclass(method, BaseTool):
+                converted_method = method
+            else:
+                converted_method = convert_function_to_base_tool(
+                    method, BaseTool, template.format(self=self), self.__namespace__
+                )
             for key in dir(self):
                 if not key.startswith("__") and not hasattr(converted_method, key):
                     setattr(converted_method, key, getattr(self, key))
@@ -144,9 +147,19 @@ class BaseToolKit(BaseModel, ABC):
 _BaseToolKitT = TypeVar("_BaseToolKitT", bound=BaseToolKit)
 
 
+@overload
 def toolkit_tool(
     method: Callable[Concatenate[_BaseToolKitT, P], str],
-) -> Callable[Concatenate[_BaseToolKitT, P], str]:
+) -> Callable[Concatenate[_BaseToolKitT, P], str]: ...
+
+
+@overload
+def toolkit_tool(
+    method: BaseTool,
+) -> BaseTool: ...
+def toolkit_tool(
+    method: Callable[Concatenate[_BaseToolKitT, P], str] | BaseTool,
+) -> Callable[Concatenate[_BaseToolKitT, P], str] | BaseTool:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 
