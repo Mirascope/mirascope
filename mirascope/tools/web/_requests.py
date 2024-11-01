@@ -45,7 +45,7 @@ class Requests(ConfigurableTool):
                 url=self.url,
                 json=self.data,
                 headers=self.headers,
-                timeout=self._config().timeout,
+                timeout=self._get_config().timeout,
             )
             response.raise_for_status()
             return response.text

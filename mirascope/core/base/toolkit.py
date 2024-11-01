@@ -149,7 +149,7 @@ class BaseToolKit(BaseModel, ABC):
 
 
 _BaseToolKitT = TypeVar("_BaseToolKitT", bound=BaseToolKit)
-
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 @overload
 def toolkit_tool(
@@ -159,11 +159,11 @@ def toolkit_tool(
 
 @overload
 def toolkit_tool(
-    method: type[BaseTool],
-) -> type[BaseTool]: ...
+    method: type[_BaseToolT],
+) -> type[_BaseToolT]: ...
 def toolkit_tool(
-    method: Callable[Concatenate[_BaseToolKitT, P], str] | type[BaseTool],
-) -> Callable[Concatenate[_BaseToolKitT, P], str] | type[BaseTool]:
+    method: Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT],
+) -> Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 

@@ -64,8 +64,8 @@ class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC
             str | None: Error message if validation fails, None if successful
         """
         extension = Path(path).suffix.lstrip(".")
-        if extension not in self.__config__.allowed_extensions:
-            return f"Error: Invalid file extension. Allowed: {self.__config__.allowed_extensions}"
+        if extension not in self._get_config().allowed_extensions:
+            return f"Error: Invalid file extension. Allowed: {self._get_config().allowed_extensions}"
         return None
 
 
@@ -97,8 +97,8 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                 return f"Error: File {self.path} not found"
 
             try:
-                if file_path.stat().st_size > self.__config__.max_file_size:
-                    return f"Error: File exceeds maximum size of {self.__config__.max_file_size} bytes"
+                if file_path.stat().st_size > self._get_config().max_file_size:
+                    return f"Error: File exceeds maximum size of {self._get_config().max_file_size} bytes"
 
                 return file_path.read_text()
             except Exception as e:
@@ -126,8 +126,8 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
             file_path = self.base_directory / self.path
             try:
                 content_size = len(self.content.encode("utf-8"))
-                if content_size > self.__config__.max_file_size:
-                    return f"Error: Content exceeds maximum size of {self.__config__.max_file_size} bytes"
+                if content_size > self._get_config().max_file_size:
+                    return f"Error: Content exceeds maximum size of {self._get_config().max_file_size} bytes"
 
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(self.content)

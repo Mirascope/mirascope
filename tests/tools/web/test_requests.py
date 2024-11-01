@@ -26,7 +26,7 @@ def test_requests_get_success(mock_request):
         url="https://example.com",
         json=None,
         headers=None,
-        timeout=tool._config().timeout,
+        timeout=tool._get_config().timeout,
     )
 
 
@@ -50,7 +50,7 @@ def test_requests_post_with_data(mock_request):
         url="https://example.com",
         json={"key": "value"},
         headers={"Content-Type": "application/json"},
-        timeout=tool._config().timeout,
+        timeout=tool._get_config().timeout,
     )
 
 

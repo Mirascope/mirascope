@@ -38,7 +38,7 @@ def test_configurable_tool():
 
 def test_tool_config_access():
     tool = MockTool(input="test")
-    config = tool._config()
+    config = tool._get_config()
     assert isinstance(config, MockConfig)
     assert config.value == "default"
 
@@ -48,8 +48,8 @@ def test_configurable_tool_from_config():
     CustomTool = MockTool.from_config(custom_config)
 
     tool = CustomTool(input="test")  # pyright: ignore [reportCallIssue]
-    assert isinstance(tool._config(), MockConfig)
-    assert tool._config().value == "custom"
+    assert isinstance(tool._get_config(), MockConfig)
+    assert tool._get_config().value == "custom"
 
     result = tool.call()
     assert result == "Test output: test"

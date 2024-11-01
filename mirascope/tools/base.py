@@ -39,7 +39,7 @@ class ConfigurableTool(
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def _config(cls) -> _ToolConfigT:
+    def _get_config(cls) -> _ToolConfigT:
         """Get tool configuration"""
         return cast(_ToolConfigT, cls.__config__)
 

@@ -22,7 +22,7 @@ print('Hello from Python!')
 x = 1 + 1
 print(f'Result: {x}')
 """
-    result = computer_toolkit.execute_python(code, requirements=None)
+    result = computer_toolkit.ExecutePython(code=code, requirements=None).call()
     assert "Hello from Python!" in result
     assert "Result: 2" in result
 
@@ -38,8 +38,10 @@ print(mirascope)
         max_memory="256m",
         allow_network=True,  # To use pip install
     )
-    result = ComputerUseToolkit.from_config(config)().execute_python(
-        code, requirements=["mirascope"]
+    result = (
+        ComputerUseToolkit.from_config(config)()
+        .ExecutePython(code=code, requirements=["mirascope"])
+        .call()
     )
     assert result.startswith("<module 'mirascope' from")
 
@@ -49,7 +51,9 @@ def test_execute_python_with_requirements_network_disabled(
 ):
     """Test executing Python code with requirements."""
     code = ""
-    result = computer_toolkit.execute_python(code, requirements=["mirascope"])
+    result = computer_toolkit.ExecutePython(
+        code=code, requirements=["mirascope"]
+    ).call()
     assert (
         result
         == "Error: Network access is disabled. Cannot install requirements via pip."
@@ -58,7 +62,7 @@ def test_execute_python_with_requirements_network_disabled(
 
 def test_execute_shell(computer_toolkit: ComputerUseToolkit):
     """Test executing shell commands."""
-    result = computer_toolkit.execute_shell("echo 'Hello from shell!'")
+    result = computer_toolkit.ExecuteShell(command="echo 'Hello from shell!'").call()
     assert "Hello from shell!" in result
 
 
@@ -67,7 +71,7 @@ def test_container_cleanup(computer_toolkit: ComputerUseToolkit):
     client = docker.from_env()
     initial_containers = len(client.containers.list())
 
-    computer_toolkit.execute_python("print('test')", requirements=None)
+    computer_toolkit.ExecutePython(code="print('test')", requirements=None).call()
 
     # Check that no containers are left running
     assert len(client.containers.list()) == initial_containers

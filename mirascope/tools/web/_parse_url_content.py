@@ -54,12 +54,12 @@ class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
             # Fetch content from URL
             response = requests.get(
                 self.url,
-                timeout=self._config().timeout,
+                timeout=self._get_config().timeout,
             )
             response.raise_for_status()
 
             # Parse HTML content
-            soup = BeautifulSoup(response.text, self._config().parser)
+            soup = BeautifulSoup(response.text, self._get_config().parser)
 
             # Remove unwanted tags
             unwanted_tags = ["script", "style", "nav", "header", "footer", "aside"]

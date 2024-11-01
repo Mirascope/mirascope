@@ -60,8 +60,8 @@ class HTTPX(_BaseHTTPX):
         try:
             # Configure timeout - None means no timeout
             timeout = (
-                httpx.Timeout(self._config().timeout)
-                if self._config().timeout is not None
+                httpx.Timeout(self._get_config().timeout)
+                if self._get_config().timeout is not None
                 else None
             )
 
@@ -98,8 +98,8 @@ class AsyncHTTPX(_BaseHTTPX):
         try:
             # Configure timeout - None means no timeout
             timeout = (
-                httpx.Timeout(self._config().timeout)
-                if self._config().timeout is not None
+                httpx.Timeout(self._get_config().timeout)
+                if self._get_config().timeout is not None
                 else None
             )
 

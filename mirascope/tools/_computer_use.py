@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import tarfile
+from abc import ABC
 from contextlib import suppress
 from typing import ClassVar
 
@@ -10,7 +11,12 @@ from docker.models.containers import Container
 from pydantic import Field
 
 from mirascope.core import toolkit_tool
-from mirascope.tools.base import ConfigurableToolKit, _ToolConfig
+from mirascope.tools.base import (
+    ConfigurableTool,
+    ConfigurableToolKit,
+    _ToolConfig,
+    _ToolSchemaT,
+)
 
 
 class ComputerUseToolkitConfig(_ToolConfig):
@@ -23,37 +29,29 @@ class ComputerUseToolkitConfig(_ToolConfig):
     allow_network: bool = Field(default=True, description="Allow network access")
 
 
-class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
-    """Toolkit for executing Python code and shell commands in a Docker container."""
+class DockerOperation(ConfigurableTool[ComputerUseToolkitConfig, _ToolSchemaT], ABC):
+    """Base class for Docker operations."""
 
     __config__ = ComputerUseToolkitConfig()
-    __namespace__ = "computer"
-    __prompt_usage_description__: ClassVar[str] = """
-    - Tools for code execution:
-        - execute_python: Executes Python code in a Docker container
-        - execute_shell: Executes shell commands in a Docker container
-        - install_package: Installs a Python package in the container
-    """
 
     def __init__(self, **data: dict[str, object]) -> None:
         super().__init__(**data)
-        self._container: Container | None = None
+        self._container: Container = self._setup_container()
 
     def __del__(self) -> None:
         """Cleanup the container when the toolkit is destroyed."""
-        if self._container:
-            with suppress(Exception):
-                self._container.stop()
+        with suppress(Exception):
+            self._container.stop()
 
     def _setup_container(self) -> Container:
         """Sets up a persistent container for code execution."""
         client = docker.from_env()
         return client.containers.run(
-            self._config().docker_image,
+            self._get_config().docker_image,
             "tail -f /dev/null",  # Keep container running
             detach=True,
-            mem_limit=self._config().max_memory,
-            network_disabled=not self._config().allow_network,
+            mem_limit=self._get_config().max_memory,
+            network_disabled=not self._get_config().allow_network,
             remove=True,
             security_opt=["no-new-privileges"],  # Prevent privilege escalation
             cap_drop=["ALL"],  # Drop all capabilities
@@ -72,63 +70,79 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
         stream.seek(0)
         return stream
 
+
+class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
+    """Toolkit for executing Python code and shell commands in a Docker container."""
+
+    __config__ = ComputerUseToolkitConfig()
+    __namespace__ = "computer"
+    __prompt_usage_description__: ClassVar[str] = """
+    - Tools for code execution:
+        - ExecutePython: Executes Python code with optional requirements in a Docker container
+        - execute_shell: Executes shell commands in a Docker container
+    """
+
     @toolkit_tool
-    def execute_python(self, code: str, requirements: list[str] | None) -> str:
-        """Executes Python code in a Docker container.
+    class ExecutePython(DockerOperation):
+        """Tool for executing Python code in a Docker container."""
 
-        docker_image: {self.__config__.docker_image}
-        allow_network: {self.__config__.allow_network}
+        code: str
+        requirements: list[str] | None
 
-        Args:
-            self: ComputerUseToolkit instance
-            code: Python code to execute
-            requirements: List of Python package requirements to install
+        def call(self) -> str:
+            """Executes Python code in a Docker container.
 
-        Returns:
-            Output of the code execution
-        """
+            docker_image: {self.__config__.docker_image}
+            allow_network: {self.__config__.allow_network}
 
-        try:
-            contents = {
-                "main.py": code,
-            }
-            if requirements:
-                if not self._config().allow_network:
-                    return "Error: Network access is disabled. Cannot install requirements via pip."
-                contents["requirements.txt"] = "\n".join(requirements)
-            stream = self._create_tar_stream(contents)
-            self._container.put_archive("/", stream)
-            if requirements:
+            Returns:
+                str: Output of the code execution
+            """
+            try:
+                contents = {
+                    "main.py": self.code,
+                }
+                if self.requirements:
+                    if not self._get_config().allow_network:
+                        return "Error: Network access is disabled. Cannot install requirements via pip."
+                    contents["requirements.txt"] = "\n".join(self.requirements)
+                stream = self._create_tar_stream(contents)
+                self._container.put_archive("/", stream)
+                if self.requirements:
+                    exit_code, output = self._container.exec_run(
+                        cmd=["pip", "install", "-r", "/requirements.txt"],
+                    )
+                    if exit_code != 0:
+                        return (
+                            f"Error installing requirements: {output.decode('utf-8')}"
+                        )
                 exit_code, output = self._container.exec_run(
-                    cmd=["pip", "install", "-r", "/requirements.txt"],
+                    cmd=["python", "/main.py"],
                 )
-                if exit_code != 0:
-                    return f"Error installing requirements: {output.decode('utf-8')}"
-            exit_code, output = self._container.exec_run(
-                cmd=["python", "/main.py"],
-            )
-            return output.decode("utf-8")
+                return output.decode("utf-8")
 
-        except Exception as e:
-            return f"Error executing code: {str(e)}"
+            except Exception as e:
+                return f"Error executing code: {str(e)}"
 
     @toolkit_tool
-    def execute_shell(self, command: str) -> str:
-        """Executes shell commands in a Docker container.
+    class ExecuteShell(DockerOperation):
+        """Tool for executing shell commands in a Docker container."""
 
-        docker_image: {self.__config__.docker_image}
-        allow_network: {self.__config__.allow_network}
+        command: str
 
-        Args:
-            command: Shell command to execute
+        def call(self) -> str:
+            """Executes shell commands in a Docker container.
 
-        Returns:
-            Output of the command execution
-        """
-        try:
-            exec_result = self._container.exec_run(
-                cmd=["sh", "-c", command],
-            )
-            return exec_result.output.decode("utf-8")
-        except Exception as e:
-            return f"Error executing command: {str(e)}"
+            docker_image: {self.__config__.docker_image}
+            allow_network: {self.__config__.allow_network}
+
+            Returns:
+                str: Output of the command execution
+            """
+            try:
+                exec_result = self._container.exec_run(
+                    cmd=["sh", "-c", self.command],
+                )
+                return exec_result.output.decode("utf-8")
+            except Exception as e:
+                return f"Error executing command: {str(e)}"

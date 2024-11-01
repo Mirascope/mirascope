@@ -54,7 +54,7 @@ class DuckDuckGoSearch(_BaseDuckDuckGoSearch):
             all_results = []
             for query in self.queries:
                 results = DDGS(proxies=None).text(
-                    query, max_results=self._config().max_results_per_query
+                    query, max_results=self._get_config().max_results_per_query
                 )
 
                 all_results.extend(
@@ -91,7 +91,7 @@ class AsyncDuckDuckGoSearch(_BaseDuckDuckGoSearch):
             all_results = []
             for query in self.queries:
                 results = await AsyncDDGS(proxies=None).atext(
-                    query, max_results=self._config().max_results_per_query
+                    query, max_results=self._get_config().max_results_per_query
                 )
 
                 all_results.extend(
