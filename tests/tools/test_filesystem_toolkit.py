@@ -269,3 +269,23 @@ def test_base_directory_is_file(temp_dir: Path):
 
     with pytest.raises(ValueError):
         FileSystemToolkit(base_directory=test_file)
+
+
+def test_write_file_invalid_extension(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test writing a file with invalid extension."""
+    write_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.WriteFile)
+    result = write_file(path="test.invalid", content="test").call()
+    assert result.startswith("Error: Invalid file extension")
+
+
+def test_delete_file_invalid_extension(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
+    """Test deleting a file with invalid extension."""
+    test_file = temp_dir / "test.invalid"
+    test_file.write_text("test")
+    delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
+    result = delete_file(path="test.invalid").call()
+    assert result.startswith("Error: Invalid file extension")

@@ -108,7 +108,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                     return f"Error: File exceeds maximum size of {self._get_config().max_file_size} bytes"
 
                 return file_path.read_text()
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 return f"Error reading file: {str(e)}"
 
     @toolkit_tool
@@ -179,7 +179,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                     output += f"- {item['name']} [{item['type']}]{size_info}\n"
 
                 return output
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 return f"Error listing directory: {str(e)}"
 
     @toolkit_tool
@@ -232,7 +232,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
 
                 file_path.unlink()
                 return f"Successfully deleted {self.path}"
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 return f"Error deleting file: {str(e)}"
 
     __config__ = FileSystemToolkitConfig()

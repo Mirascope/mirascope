@@ -117,7 +117,7 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
                     exit_code, output = self._container.exec_run(
                         cmd=["pip", "install", "-r", "/requirements.txt"],
                     )
-                    if exit_code != 0:
+                    if exit_code != 0:  # pragma: no cover
                         return (
                             f"Error installing requirements: {output.decode('utf-8')}"
                         )
@@ -149,5 +149,5 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
                     cmd=["sh", "-c", self.command],
                 )
                 return exec_result.output.decode("utf-8")
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
                 return f"Error executing command: {str(e)}"
