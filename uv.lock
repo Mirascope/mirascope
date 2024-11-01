@@ -3082,7 +3082,6 @@ source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
     { name = "jiter" },
-    { name = "mkdocs-jupyter" },
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
@@ -3158,6 +3157,7 @@ dev = [
     { name = "llama-index-llms-ollama" },
     { name = "matplotlib" },
     { name = "mkdocs" },
+    { name = "mkdocs-jupyter" },
     { name = "mkdocs-macros-plugin" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings" },
@@ -3199,7 +3199,6 @@ requires-dist = [
     { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.41.4,<2" },
     { name = "logfire", marker = "extra == 'logfire'", specifier = ">=0.41.0,<2" },
     { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=0.4.2,<1" },
-    { name = "mkdocs-jupyter", specifier = ">=0.25.0" },
     { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
     { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
@@ -3226,6 +3225,7 @@ dev = [
     { name = "llama-index-llms-ollama", specifier = ">=0.2.2" },
     { name = "matplotlib", specifier = ">=3.9.2" },
     { name = "mkdocs", specifier = ">=1.6.0" },
+    { name = "mkdocs-jupyter", specifier = ">=0.25.0" },
     { name = "mkdocs-macros-plugin", specifier = ">=1.2.0" },
     { name = "mkdocs-material", specifier = ">=9.5.32" },
     { name = "mkdocstrings", specifier = ">=0.25.2" },

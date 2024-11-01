@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.7.1"
+version = "1.7.2"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -47,7 +47,6 @@ dependencies = [
     "docstring-parser>=0.15,<1.0",
     "jiter>=0.5.0",
     "typing-extensions>=4.10.0",
-    "mkdocs-jupyter>=0.25.0",
 ]
 
 [project.urls]
@@ -98,6 +97,7 @@ dev-dependencies = [
     "mkdocstrings>=0.25.2",
     "mkdocstrings-python>=1.10.8",
     "mkdocs-macros-plugin>=1.2.0",
+    "mkdocs-jupyter>=0.25.0",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
     "chromadb>=0.5.15",
