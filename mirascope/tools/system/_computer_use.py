@@ -33,15 +33,20 @@ class DockerOperation(ConfigurableTool[ComputerUseToolkitConfig, _ToolSchemaT], 
     """Base class for Docker operations."""
 
     __config__ = ComputerUseToolkitConfig()
+    __container__: Container | None = None
 
-    def __init__(self, **data: dict[str, object]) -> None:
-        super().__init__(**data)
-        self._container: Container = self._setup_container()
+    @property
+    def _container(self) -> Container:
+        """Returns the Docker container for code execution."""
+        if self.__container__ is None:
+            self.__container__ = self._setup_container()
+        return self.__container__
 
     def __del__(self) -> None:
         """Cleanup the container when the toolkit is destroyed."""
-        with suppress(Exception):
-            self._container.stop()
+        if container := self.__container__:
+            with suppress(Exception):
+                container.stop()
 
     def _setup_container(self) -> Container:
         """Sets up a persistent container for code execution."""
@@ -87,7 +92,7 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
         """Tool for executing Python code in a Docker container."""
 
         code: str
-        requirements: list[str] | None
+        requirements: list[str] | None = None
 
         def call(self) -> str:
             """Executes Python code in a Docker container.

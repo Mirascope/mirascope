@@ -8,9 +8,9 @@ from __future__ import annotations
 import inspect
 from abc import ABC
 from collections.abc import Callable
-from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar, overload
+from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar, cast, overload
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, create_model
 from typing_extensions import ParamSpec
 
 from . import BaseTool
@@ -89,7 +89,12 @@ class BaseToolKit(BaseModel, ABC):
                 # that templating `self` results in a future templateable string.
                 template = template.replace(f"{{{var}}}", f"{{{{{var}}}}}")
             if inspect.isclass(method) and issubclass(method, BaseTool):
-                converted_method = method
+                converted_method = create_model(
+                    f"{self.__namespace__}_{method.__name__}",
+                    __doc__=inspect.cleandoc(cast(str, method.__doc__)),
+                    __base__=method,
+                    __module__=method.__module__,
+                )
             else:
                 converted_method = convert_function_to_base_tool(
                     method, BaseTool, template.format(self=self), self.__namespace__

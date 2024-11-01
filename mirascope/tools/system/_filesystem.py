@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import Field, field_validator
 
@@ -31,10 +31,13 @@ class FileSystemToolkitConfig(_ToolConfig):
 class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC):
     """Base class for file system operations."""
 
-    base_directory: Path = Field(
-        default=Path.cwd(), description="Base directory for file operations"
-    )
     __config__ = FileSystemToolkitConfig()
+
+    if TYPE_CHECKING:
+        # In create_tools method, the base_directory is set to ToolKit base_directory
+        base_directory: Path = Field(
+            default=Path.cwd(), description="Base directory for file operations"
+        )
 
     def _validate_path(self, path: str) -> str | None:
         """Validates file path for security and correctness.
@@ -73,6 +76,10 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     """Toolkit for filesystem operations.
     Read, write, list, create, and delete files and directories.
     """
+
+    base_directory: Path = Field(
+        default=Path.cwd(), description="Base directory for file operations"
+    )
 
     @toolkit_tool
     class ReadFile(FileOperation):
@@ -147,6 +154,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
             Returns:
                 str: Formatted directory listing or error message if operation fails
             """
+            print(self.base_directory)
             if error := self._validate_path(self.path):
                 return error
 
