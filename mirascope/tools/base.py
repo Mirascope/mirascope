@@ -81,11 +81,6 @@ class ConfigurableToolKit(BaseToolKit, Generic[_ToolConfigT], ABC):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def _config(cls) -> _ToolConfigT:
-        """Get tool configuration"""
-        return cast(_ToolConfigT, cls.__config__)
-
-    @classmethod
     def from_config(
         cls: type[_ConfigurableToolKitT], config: _ToolConfigT
     ) -> type[_ConfigurableToolKitT]:

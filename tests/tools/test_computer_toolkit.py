@@ -211,3 +211,9 @@ def test_docker_operation_del(computer_toolkit: ComputerUseToolkit):
     client = docker.from_env()
     with pytest.raises(docker.errors.NotFound):  # pyright: ignore [reportAttributeAccessIssue]
         client.containers.get(container_id)
+
+def test_usage_description(computer_toolkit: ComputerUseToolkit):
+    """Test usage description."""
+    assert computer_toolkit.usage_description() == """- Tools for code execution:
+    - ExecutePython: Executes Python code with optional requirements in a Docker container
+    - ExecuteShell: Executes shell commands in a Docker container"""

@@ -84,7 +84,7 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for code execution:
         - ExecutePython: Executes Python code with optional requirements in a Docker container
-        - execute_shell: Executes shell commands in a Docker container
+        - ExecuteShell: Executes shell commands in a Docker container
     """
 
     @toolkit_tool

@@ -289,3 +289,13 @@ def test_delete_file_invalid_extension(
     delete_file = _get_tool_type(filesystem_toolkit, FileSystemToolkit.DeleteFile)
     result = delete_file(path="test.invalid").call()
     assert result.startswith("Error: Invalid file extension")
+
+
+def test_usage_description(filesystem_toolkit: FileSystemToolkit):
+    """filesystem_toolkit description."""
+    assert filesystem_toolkit.usage_description() == """- Tools for filesystem operations:
+    - ReadFile: Reads content from a file
+    - WriteFile: Writes content to a file
+    - ListDirectory: Lists directory contents
+    - CreateDirectory: Creates a new directory
+    - DeleteFile: Deletes a file"""
