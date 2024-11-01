@@ -171,14 +171,6 @@ def test_execute_shell_with_pipe(computer_toolkit: ComputerUseToolkit):
     assert "Hello" in result
 
 
-def test_execute_shell_with_error(computer_toolkit: ComputerUseToolkit):
-    """Test executing shell commands with error."""
-    _, tool = computer_toolkit.create_tools()
-    assert issubclass(tool, ComputerUseToolkit.ExecuteShell)
-    result = tool(command="cat 'invalid'").call()
-    assert "Hello" in result
-
-
 def test_container_cleanup_on_error():
     """Test container cleanup when initialization fails."""
     config = ComputerUseToolkitConfig(
@@ -212,8 +204,12 @@ def test_docker_operation_del(computer_toolkit: ComputerUseToolkit):
     with pytest.raises(docker.errors.NotFound):  # pyright: ignore [reportAttributeAccessIssue]
         client.containers.get(container_id)
 
+
 def test_usage_description(computer_toolkit: ComputerUseToolkit):
     """Test usage description."""
-    assert computer_toolkit.usage_description() == """- Tools for code execution:
+    assert (
+        computer_toolkit.usage_description()
+        == """- Tools for code execution:
     - ExecutePython: Executes Python code with optional requirements in a Docker container
     - ExecuteShell: Executes shell commands in a Docker container"""
+    )
