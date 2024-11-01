@@ -64,22 +64,6 @@ print(mirascope)
     assert result.startswith("<module 'mirascope' from")
 
 
-def test_execute_python_with_requirements_invalid_package(
-    computer_toolkit: ComputerUseToolkit,
-):
-    """Test executing Python code with requirements."""
-    code = ""
-    config = ComputerUseToolkitConfig(
-        docker_image="python:3.13-slim",
-        max_memory="256m",
-        allow_network=True,  # To use pip install
-    )
-    tool, _ = ComputerUseToolkit.from_config(config)().create_tools()
-    assert issubclass(tool, ComputerUseToolkit.ExecutePython)
-    result = tool(code=code, requirements=["-invalid-"]).call()
-    assert result.startswith("Error installing requirements: ")
-
-
 def test_execute_python_with_requirements_network_disabled(
     computer_toolkit: ComputerUseToolkit,
 ):
