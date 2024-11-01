@@ -31,14 +31,15 @@ def filesystem_toolkit(temp_dir: Path) -> FileSystemToolkit:
         base_directory=temp_dir,
     )
 
+
 _FileOperationT = TypeVar("_FileOperationT", bound=FileOperation)
 
-def _get_tool_type(toolkit: FileSystemToolkit, target_tool_type: type[_FileOperationT]) -> type[_FileOperationT]:
-    return [
-        t
-        for  t in toolkit.create_tools()
-        if issubclass(t, target_tool_type)
-    ][0]
+
+def _get_tool_type(
+    toolkit: FileSystemToolkit, target_tool_type: type[_FileOperationT]
+) -> type[_FileOperationT]:
+    return [t for t in toolkit.create_tools() if issubclass(t, target_tool_type)][0]
+
 
 def test_read_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     """Test reading a file."""
@@ -58,7 +59,9 @@ def test_read_file_with_default_config(temp_dir: Path):
     test_file = temp_dir / "test.txt"
     test_content = "Hello, World!"
     test_file.write_text(test_content)
-    read_file = _get_tool_type(FileSystemToolkit(base_directory=temp_dir), FileSystemToolkit.ReadFile)
+    read_file = _get_tool_type(
+        FileSystemToolkit(base_directory=temp_dir), FileSystemToolkit.ReadFile
+    )
     # Test reading
     assert issubclass(read_file, FileSystemToolkit.ReadFile)
     result = read_file(path="test.txt").call()
