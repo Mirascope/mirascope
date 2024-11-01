@@ -20,6 +20,6 @@ book = extract_book("The Name of the Wind by Patrick Rothfuss")
 print(book)
 # Output: title='The Name of the Wind' author='Patrick Rothfuss'
 
-response = cast(litellm.OpenAICallResponse, book._response)  # pyright: ignore[reportAttributeAccessIssue]
+response = cast(litellm.LiteLLMCallResponse, book._response)  # pyright: ignore[reportAttributeAccessIssue]
 print(response.model_dump())
 # > {'metadata': {}, 'response': {'id': ...}, ...}

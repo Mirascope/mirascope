@@ -200,7 +200,6 @@ For providers that support audio outputs, you can receive both text and audio re
         {% endfor %}
     {% endfor %}
 
-
 When using models that support audio outputs, you'll have access to:
 
 - `content`: The text content of the response
@@ -348,7 +347,9 @@ You can also always return the original message types for any provider. To do so
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
 
-To use a custom client, you can pass it to the `call` decorator using the `client` parameter. Here's an example using a custom OpenAI client:
+__Decorator Parameter:__
+
+You can pass a client to the `call` decorator using the `client` parameter:
 
 !!! mira ""
 
@@ -368,10 +369,55 @@ To use a custom client, you can pass it to the `call` decorator using the `clien
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
-            --8<-- "examples/learn/calls/custom_client/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/custom_client/decorator/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
+    {% endfor %}
+
+__Dynamic Configuration:__
+
+You can also configure the client dynamically at runtime through the dynamic configuration:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% if method == "base_message_param" %}
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 12-14"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="1 11"
+            {% else %}
+            ```python hl_lines="2 11"
+            {% endif %}
+            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+        {% else %}
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if provider == "LiteLLM" %}
+            ```python
+            {% elif provider == "Azure AI" %}
+            ```python hl_lines="1-2 10-11"
+            {% elif provider == "Bedrock" %}
+            ```python hl_lines="1 11"
+            {% else %}
+            ```python hl_lines="2 9"
+            {% endif %}
+            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+        {% endif %}
     {% endfor %}
 
 !!! warning "Make sure to use the correct client!"

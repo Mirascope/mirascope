@@ -34,7 +34,11 @@ class Requests(ConfigurableTool):
     headers: dict | None = Field(None, description="Request headers")
 
     def call(self) -> str:
-        """Make an HTTP request to the given URL."""
+        """Make an HTTP request to the given URL.
+
+        Returns:
+            str: Response text content if successful, error message if request fails
+        """
         try:
             response = requests.request(
                 method=self.method,

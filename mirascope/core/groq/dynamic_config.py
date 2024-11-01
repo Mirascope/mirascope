@@ -1,12 +1,16 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from groq import AsyncGroq, Groq
 from groq.types.chat import ChatCompletionMessageParam
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import GroqCallParams
 
+AsyncGroqDynamicConfig = BaseDynamicConfig[
+    ChatCompletionMessageParam | BaseMessageParam, GroqCallParams, AsyncGroq
+]
 GroqDynamicConfig = BaseDynamicConfig[
-    ChatCompletionMessageParam | BaseMessageParam, GroqCallParams
+    ChatCompletionMessageParam | BaseMessageParam, GroqCallParams, Groq
 ]
 """The function return type for functions wrapped with the `groq_call` decorator.
 

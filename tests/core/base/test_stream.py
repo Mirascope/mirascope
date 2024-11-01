@@ -54,6 +54,9 @@ def test_stream_factory_sync(
     )
 
     dynamic_config = MagicMock()
+    mock_get = MagicMock()
+    mock_get.return_value = None
+    dynamic_config.get = mock_get
 
     def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""
@@ -126,6 +129,9 @@ async def test_stream_factory_async(
     )
 
     dynamic_config = MagicMock()
+    mock_get = MagicMock()
+    mock_get.return_value = None
+    dynamic_config.get = mock_get
 
     async def fn(genre: str, *, topic: str):
         """Recommend a {genre} book on {topic}."""

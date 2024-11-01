@@ -38,7 +38,18 @@ class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchema
 
 
 class DuckDuckGoSearch(_BaseDuckDuckGoSearch):
+    """Tool for performing web searches using DuckDuckGo.
+
+    Takes search queries and returns relevant search results(Title, URL, Snippet).
+    """
+
     def call(self) -> str:
+        """Perform a web search using DuckDuckGo and return formatted results.
+
+        Returns:
+            str: Formatted search results if successful, error message if search fails
+        """
+
         try:
             all_results = []
             for query in self.queries:
@@ -64,7 +75,18 @@ class DuckDuckGoSearch(_BaseDuckDuckGoSearch):
 
 
 class AsyncDuckDuckGoSearch(_BaseDuckDuckGoSearch):
+    """Tool for performing web searches using DuckDuckGo.
+
+    Takes search queries and returns relevant search results(Title, URL, Snippet).
+    """
+
     async def call(self) -> str:
+        """Perform an asynchronous web search using DuckDuckGo and return formatted results.
+
+        Returns:
+            str: Formatted search results if successful, error message if search fails
+        """
+
         try:
             all_results = []
             for query in self.queries:

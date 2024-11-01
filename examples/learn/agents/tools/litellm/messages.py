@@ -10,7 +10,7 @@ class Book(BaseModel):
 
 
 class Librarian(BaseModel):
-    history: list[litellm.OpenAIMessageParam] = []
+    history: list[litellm.LiteLLMMessageParam] = []
     library: list[Book] = [
         Book(title="The Name of the Wind", author="Patrick Rothfuss"),
         Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),

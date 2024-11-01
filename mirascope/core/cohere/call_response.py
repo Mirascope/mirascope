@@ -15,7 +15,7 @@ from pydantic import SkipValidation, computed_field
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import CohereCallParams
-from .dynamic_config import CohereDynamicConfig
+from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from .tool import CohereTool
 
 
@@ -24,7 +24,7 @@ class CohereCallResponse(
         SkipValidation[NonStreamedChatResponse],
         CohereTool,
         SkipValidation[Tool],
-        CohereDynamicConfig,
+        AsyncCohereDynamicConfig | CohereDynamicConfig,
         SkipValidation[ChatMessage],
         CohereCallParams,
         SkipValidation[ChatMessage],

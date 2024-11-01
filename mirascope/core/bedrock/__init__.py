@@ -11,13 +11,14 @@ from ._types import (
 from .call_params import BedrockCallParams
 from .call_response import BedrockCallResponse
 from .call_response_chunk import BedrockCallResponseChunk
-from .dynamic_config import BedrockDynamicConfig
+from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .stream import BedrockStream
 from .tool import BedrockTool, BedrockToolConfig
 
 BedrockMessageParam: TypeAlias = InternalBedrockMessageParam | BaseMessageParam
 
 __all__ = [
+    "AsyncBedrockDynamicConfig",
     "AssistantMessageTypeDef",
     "bedrock_call",
     "BedrockCallParams",

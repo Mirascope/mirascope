@@ -331,6 +331,11 @@ nav:
               - dynamic_config: "api/core/vertex/dynamic_config.md"
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
+      - Tools:
+          - DuckDuckGo: "api/tools/web/duckduckgo.md"
+          - HTTPX: "api/tools/web/httpx.md"
+          - ParseURLContent: "api/tools/web/parse_url_content.md"
+          - Requests: "api/tools/web/requests.md"
       - Integrations:
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
