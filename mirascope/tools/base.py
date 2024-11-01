@@ -8,6 +8,7 @@ from typing import ClassVar, Generic, TypeVar, cast
 from pydantic import BaseModel, ConfigDict, create_model
 
 from mirascope.core import BaseTool, BaseToolKit
+from mirascope.core.base.toolkit import is_toolkit_tool
 
 
 class _ToolConfig(BaseModel, ABC):
@@ -50,14 +51,14 @@ class ConfigurableTool(
 
         # ClassVar cannot get TypeVar Type. So, we need the comment to ignore the error.
         config = cls.__config__.model_validate(config)  # pyright: ignore [reportAssignmentType]
-        NewModel = create_model(
+        new_model = create_model(
             cls.__name__,
             __base__=cls,
             __module__=cls.__module__,
         )
-        NewModel.__prompt_usage_description__ = cls.__prompt_usage_description__
-        NewModel.__config__ = config
-        return NewModel
+        new_model.__prompt_usage_description__ = cls.__prompt_usage_description__
+        new_model.__config__ = config
+        return new_model
 
     @classmethod
     def usage_description(cls) -> str:
@@ -92,15 +93,22 @@ class ConfigurableToolKit(BaseToolKit, Generic[_ToolConfigT], ABC):
 
         # ClassVar cannot get TypeVar Type. So, we need the comment to ignore the error.
         config = cls.__config__.model_validate(config)  # pyright: ignore [reportAssignmentType]
-        NewModel = create_model(
+        new_model = create_model(
             cls.__name__,
             __base__=cls,
             __module__=cls.__module__,
             __namespace__=f"{cls.__namespace__}_{uuid.uuid4()}",
         )
-        NewModel.__prompt_usage_description__ = cls.__prompt_usage_description__
-        NewModel.__config__ = config
-        return NewModel
+        new_model.__prompt_usage_description__ = cls.__prompt_usage_description__
+        new_model.__config__ = config
+
+        for key in dir(new_model):
+            attr = getattr(new_model, key)
+            if not is_toolkit_tool(attr):
+                continue
+            attr.__config__ = config
+        return new_model
+
 
     @classmethod
     def usage_description(cls) -> str:

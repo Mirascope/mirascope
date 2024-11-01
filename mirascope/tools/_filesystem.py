@@ -7,11 +7,12 @@ from typing import ClassVar
 from pydantic import Field, field_validator
 
 from mirascope.core.base import toolkit_tool
+from mirascope.core.base.toolkit import is_toolkit_tool
 from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
     _ToolConfig,
-    _ToolSchemaT,
+    _ToolSchemaT, _ConfigurableToolKitT, _ToolConfigT,
 )
 
 
@@ -31,7 +32,9 @@ class FileSystemToolkitConfig(_ToolConfig):
 class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC):
     """Base class for file system operations."""
 
-    base_directory: Path
+    base_directory: Path = Field(
+        default=Path.cwd(), description="Base directory for file operations"
+    )
     __config__ = FileSystemToolkitConfig()
 
     def _validate_path(self, path: str) -> str | None:
@@ -95,8 +98,8 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                 return f"Error: File {self.path} not found"
 
             try:
-                if file_path.stat().st_size > self.config.max_file_size:
-                    return f"Error: File exceeds maximum size of {self.config.max_file_size} bytes"
+                if file_path.stat().st_size > self.__config__.max_file_size:
+                    return f"Error: File exceeds maximum size of {self.__config__.max_file_size} bytes"
 
                 return file_path.read_text()
             except Exception as e:
@@ -124,8 +127,8 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
             file_path = self.base_directory / self.path
             try:
                 content_size = len(self.content.encode("utf-8"))
-                if content_size > self.config.max_file_size:
-                    return f"Error: Content exceeds maximum size of {self.config.max_file_size} bytes"
+                if content_size > self.__config__.max_file_size:
+                    return f"Error: Content exceeds maximum size of {self.__config__.max_file_size} bytes"
 
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(self.content)

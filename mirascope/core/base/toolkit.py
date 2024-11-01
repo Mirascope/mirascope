@@ -22,6 +22,8 @@ _namespaces: set[str] = set()
 
 P = ParamSpec("P")
 
+def is_toolkit_tool(method: Callable[..., Any] | BaseTool) -> bool:
+    return getattr(method, _TOOLKIT_TOOL_METHOD_MARKER, False) is True
 
 class ToolKitToolMethod(NamedTuple):
     method: Callable[..., str]
@@ -107,7 +109,7 @@ class BaseToolKit(BaseModel, ABC):
         cls._toolkit_tool_methods = []
         for key in dir(cls):
             attr = getattr(cls, key)
-            if not getattr(attr, _TOOLKIT_TOOL_METHOD_MARKER, False):
+            if not is_toolkit_tool(attr):
                 continue
             # Validate the toolkit_tool_method
             if (template := attr.__doc__) is None:
@@ -155,11 +157,11 @@ def toolkit_tool(
 
 @overload
 def toolkit_tool(
-    method: BaseTool,
-) -> BaseTool: ...
+    method: type[BaseTool],
+) -> type[BaseTool]: ...
 def toolkit_tool(
-    method: Callable[Concatenate[_BaseToolKitT, P], str] | BaseTool,
-) -> Callable[Concatenate[_BaseToolKitT, P], str] | BaseTool:
+    method: Callable[Concatenate[_BaseToolKitT, P], str] | type[BaseTool],
+) -> Callable[Concatenate[_BaseToolKitT, P], str] | type[BaseTool]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 
