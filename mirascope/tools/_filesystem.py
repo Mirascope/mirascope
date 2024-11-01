@@ -157,7 +157,9 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
                 for item in dir_path.iterdir():
                     item_type = "file" if item.is_file() else "directory"
                     size = item.stat().st_size if item.is_file() else None
-                    contents.append({"name": item.name, "type": item_type, "size": size})
+                    contents.append(
+                        {"name": item.name, "type": item_type, "size": size}
+                    )
 
                 output = f"Contents of {self.path or '.'} :\n"
                 for item in contents:

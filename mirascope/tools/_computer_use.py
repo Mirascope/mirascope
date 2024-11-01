@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import io
 import tarfile
-from collections.abc import Generator
-from contextlib import contextmanager
+from contextlib import suppress
 from typing import ClassVar
 
 import docker
@@ -35,6 +34,16 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
         - execute_shell: Executes shell commands in a Docker container
         - install_package: Installs a Python package in the container
     """
+
+    def __init__(self, **data: dict[str, object]) -> None:
+        super().__init__(**data)
+        self._container: Container | None = None
+
+    def __del__(self) -> None:
+        """Cleanup the container when the toolkit is destroyed."""
+        if self._container:
+            with suppress(Exception):
+                self._container.stop()
 
     def _setup_container(self) -> Container:
         """Sets up a persistent container for code execution."""
@@ -74,6 +83,9 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
             self: ComputerUseToolkit instance
             code: Python code to execute
             requirements: List of Python package requirements to install
+
+        Returns:
+            Output of the code execution
         """
 
         try:
@@ -85,19 +97,16 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
                     return "Error: Network access is disabled. Cannot install requirements via pip."
                 contents["requirements.txt"] = "\n".join(requirements)
             stream = self._create_tar_stream(contents)
-            with self._container_context() as container:
-                container.put_archive("/", stream)
-                if requirements:
-                    exit_code, output = container.exec_run(
-                        cmd=["pip", "install", "-r", "/requirements.txt"],
-                    )
-                    if exit_code != 0:
-                        return (
-                            f"Error installing requirements: {output.decode('utf-8')}"
-                        )
-                exit_code, output = container.exec_run(
-                    cmd=["python", "/main.py"],
+            self._container.put_archive("/", stream)
+            if requirements:
+                exit_code, output = self._container.exec_run(
+                    cmd=["pip", "install", "-r", "/requirements.txt"],
                 )
+                if exit_code != 0:
+                    return f"Error installing requirements: {output.decode('utf-8')}"
+            exit_code, output = self._container.exec_run(
+                cmd=["python", "/main.py"],
+            )
             return output.decode("utf-8")
 
         except Exception as e:
@@ -112,21 +121,14 @@ class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
 
         Args:
             command: Shell command to execute
+
+        Returns:
+            Output of the command execution
         """
         try:
-            with self._container_context() as container:
-                exec_result = container.exec_run(
-                    cmd=["sh", "-c", command],
-                )
+            exec_result = self._container.exec_run(
+                cmd=["sh", "-c", command],
+            )
             return exec_result.output.decode("utf-8")
         except Exception as e:
             return f"Error executing command: {str(e)}"
-
-    @contextmanager
-    def _container_context(self) -> Generator[Container, None, None]:
-        """Context manager for Docker container."""
-        container = self._setup_container()
-        try:
-            yield container
-        finally:
-            container.stop()
