@@ -23,7 +23,7 @@ class FileSystemToolkitConfig(_ToolConfig):
         description="Maximum file size in bytes",
     )
     allowed_extensions: list[str] = Field(
-        default=["txt", "md", "csv", "json", "yml", "yaml"],
+        default=["txt", "md", "csv", "json", "yml", "yaml", "html"],
         description="List of allowed file extensions",
     )
 
