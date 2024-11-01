@@ -22,8 +22,10 @@ _namespaces: set[str] = set()
 
 P = ParamSpec("P")
 
+
 def is_toolkit_tool(method: Callable[..., Any] | BaseTool) -> bool:
     return getattr(method, _TOOLKIT_TOOL_METHOD_MARKER, False) is True
+
 
 class ToolKitToolMethod(NamedTuple):
     method: Callable[..., str]

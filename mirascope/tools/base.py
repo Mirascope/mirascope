@@ -109,7 +109,6 @@ class ConfigurableToolKit(BaseToolKit, Generic[_ToolConfigT], ABC):
             attr.__config__ = config
         return new_model
 
-
     @classmethod
     def usage_description(cls) -> str:
         """Returns instructions for using this toolkit."""

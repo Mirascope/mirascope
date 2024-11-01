@@ -43,16 +43,22 @@ def test_read_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     assert result == test_content
 
 
-def test_read_file_invalid_extension(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
+def test_read_file_invalid_extension(
+    filesystem_toolkit: FileSystemToolkit, temp_dir: Path
+):
     """Test reading a file with invalid extension."""
-    read_file = filesystem_toolkit.ReadFile(base_directory=temp_dir, path="test.invalid")
+    read_file = filesystem_toolkit.ReadFile(
+        base_directory=temp_dir, path="test.invalid"
+    )
     result = read_file.call()
     assert result.startswith("Error: Invalid file extension")
 
 
 def test_read_file_not_found(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     """Test reading a non-existent file."""
-    read_file = filesystem_toolkit.ReadFile(base_directory=temp_dir, path="nonexistent.txt")
+    read_file = filesystem_toolkit.ReadFile(
+        base_directory=temp_dir, path="nonexistent.txt"
+    )
     result = read_file.call()
     assert result.startswith("Error: File")
 
@@ -60,7 +66,9 @@ def test_read_file_not_found(filesystem_toolkit: FileSystemToolkit, temp_dir: Pa
 def test_write_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     """Test writing to a file."""
     content = "Test content"
-    result =  filesystem_toolkit.WriteFile(base_directory=temp_dir, path="new.txt",content=content).call()
+    result = filesystem_toolkit.WriteFile(
+        base_directory=temp_dir, path="new.txt", content=content
+    ).call()
     assert result.startswith("Successfully")
     assert (temp_dir / "new.txt").read_text() == content
 
@@ -68,7 +76,9 @@ def test_write_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
 def test_write_file_too_large(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     """Test writing content exceeding max file size."""
     large_content = "x" * 2000  # Larger than max_file_size
-    result = filesystem_toolkit.WriteFile(base_directory=temp_dir, path="large.txt", content=large_content).call()
+    result = filesystem_toolkit.WriteFile(
+        base_directory=temp_dir, path="large.txt", content=large_content
+    ).call()
     assert result.startswith("Error: Content exceeds maximum size")
 
 
@@ -87,7 +97,9 @@ def test_create_directory(filesystem_toolkit: FileSystemToolkit, temp_dir: Path)
     """Test creating a directory."""
     test_dir = temp_dir / "testdir"
     test_dir.mkdir()
-    result = filesystem_toolkit.ListDirectory(base_directory=temp_dir, path="testdir").call()
+    result = filesystem_toolkit.ListDirectory(
+        base_directory=temp_dir, path="testdir"
+    ).call()
     assert result.startswith("Contents of testdir :\n")
 
 
@@ -97,6 +109,8 @@ def test_delete_file(filesystem_toolkit: FileSystemToolkit, temp_dir: Path):
     test_file = temp_dir / "delete.txt"
     test_file.write_text("delete me")
 
-    result =  filesystem_toolkit.DeleteFile(base_directory=temp_dir, path="delete.txt").call()
+    result = filesystem_toolkit.DeleteFile(
+        base_directory=temp_dir, path="delete.txt"
+    ).call()
     assert result.startswith("Successfully")
     assert not test_file.exists()
