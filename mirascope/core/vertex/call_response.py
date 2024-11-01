@@ -3,12 +3,9 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from google.cloud.aiplatform_v1beta1.types import (
-    FunctionResponse,
-    GenerateContentResponse,
-)
+from google.cloud.aiplatform_v1beta1.types import GenerateContentResponse
 from pydantic import computed_field
-from vertexai.generative_models import Content, GenerationResponse, Tool
+from vertexai.generative_models import Content, GenerationResponse, Part, Tool
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
@@ -151,7 +148,7 @@ class VertexCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[VertexTool, object]]
-    ) -> list[FunctionResponse]:
+    ) -> list[Content]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -159,9 +156,16 @@ class VertexCallResponse(
                 message parameters should be constructed.
 
         Returns:
-            The list of constructed `FunctionResponse` parameters.
+            The list of constructed `Content` from the tool responses.
         """
         return [
-            FunctionResponse(name=tool._name(), response={"result": output})
-            for tool, output in tools_and_outputs
+            Content(
+                role="user",
+                parts=[
+                    Part.from_function_response(
+                        name=tool._name(), response={"result": output}
+                    )
+                    for tool, output in tools_and_outputs
+                ],
+            )
         ]

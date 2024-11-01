@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.7.0"
+version = "1.7.1"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -89,7 +89,7 @@ realtime = [
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.386",
+    "pyright>=1.1.387",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",
