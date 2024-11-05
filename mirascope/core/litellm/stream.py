@@ -31,7 +31,7 @@ class LiteLLMStream(OpenAIStream):
     def __aiter__(
         self,
     ) -> AsyncGenerator[tuple[LiteLLMCallResponseChunk, OpenAITool | None], None]:
-        return super().__iter__()  # pyright: ignore [reportReturnType] # pragma: no cover
+        return super().__aiter__()  # pyright: ignore [reportReturnType] # pragma: no cover
 
     @property
     def cost(self) -> float | None:

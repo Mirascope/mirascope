@@ -1,6 +1,10 @@
 """Tests the `vertex.call_response` module."""
 
-from google.cloud.aiplatform_v1beta1.types import FunctionCall, GenerateContentResponse
+from google.cloud.aiplatform_v1beta1.types import (
+    FunctionCall,
+    FunctionResponse,
+    GenerateContentResponse,
+)
 from vertexai.generative_models import (
     Candidate,
     Content,
@@ -124,5 +128,8 @@ def test_vertex_call_response_with_tools() -> None:
     assert output == "The Name of the Wind by Patrick Rothfuss"
     tool_message_params = call_response.tool_message_params([(tool, output)])
     assert len(tool_message_params) == 1
-    assert tool_message_params[0].name == "FormatBook"
-    assert tool_message_params[0].response == {"result": output}
+    assert tool_message_params[0].role == "user"
+    part = tool_message_params[0].parts[0]
+    assert part.function_response == FunctionResponse(
+        name="FormatBook", response={"result": output}
+    )

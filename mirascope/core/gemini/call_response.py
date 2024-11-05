@@ -158,7 +158,7 @@ class GeminiCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[GeminiTool, object]]
-    ) -> list[FunctionResponse]:
+    ) -> list[ContentDict]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -169,6 +169,11 @@ class GeminiCallResponse(
             The list of constructed `FunctionResponse` parameters.
         """
         return [
-            FunctionResponse(name=tool._name(), response={"result": output})
-            for tool, output in tools_and_outputs
+            {
+                "role": "user",
+                "parts": [
+                    FunctionResponse(name=tool._name(), response={"result": output})
+                    for tool, output in tools_and_outputs
+                ],
+            }
         ]
