@@ -1,4 +1,4 @@
-from .system._computer_use import ComputerUseToolkit, ComputerUseToolkitConfig
+from .system._computer_use import DockerOperationToolKit, DockerOperationToolKitConfig
 from .system._filesystem import FileSystemToolkit, FileSystemToolkitConfig
 from .web._duckduckgo import DuckDuckGoSearch, DuckDuckGoSearchConfig
 from .web._httpx import HTTPX, AsyncHTTPX, HTTPXConfigConfigurable
@@ -7,8 +7,8 @@ from .web._requests import Requests, RequestsConfigConfigurable
 
 __all__ = [
     "AsyncHTTPX",
-    "ComputerUseToolkit",
-    "ComputerUseToolkitConfig",
+    "DockerOperationToolKit",
+    "DockerOperationToolKitConfig",
     "DuckDuckGoSearch",
     "DuckDuckGoSearchConfig",
     "FileSystemToolkit",

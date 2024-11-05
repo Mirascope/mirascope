@@ -19,7 +19,7 @@ from mirascope.tools.base import (
 )
 
 
-class ComputerUseToolkitConfig(_ConfigurableToolConfig):
+class DockerOperationToolKitConfig(_ConfigurableToolConfig):
     """Configuration for computer use toolkit"""
 
     docker_image: str = Field(
@@ -29,10 +29,10 @@ class ComputerUseToolkitConfig(_ConfigurableToolConfig):
     allow_network: bool = Field(default=True, description="Allow network access")
 
 
-class DockerOperation(ConfigurableTool[ComputerUseToolkitConfig, _ToolSchemaT], ABC):
+class DockerOperation(ConfigurableTool[DockerOperationToolKitConfig, _ToolSchemaT], ABC):
     """Base class for Docker operations."""
 
-    __config__ = ComputerUseToolkitConfig()
+    __config__ = DockerOperationToolKitConfig()
     __container__: Container | None = None
 
     @property
@@ -76,10 +76,10 @@ class DockerOperation(ConfigurableTool[ComputerUseToolkitConfig, _ToolSchemaT], 
         return stream
 
 
-class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
+class DockerOperationToolKit(ConfigurableToolKit[DockerOperationToolKitConfig]):
     """Toolkit for executing Python code and shell commands in a Docker container."""
 
-    config: ComputerUseToolkitConfig = ComputerUseToolkitConfig()
+    config: DockerOperationToolKitConfig = DockerOperationToolKitConfig()
     __namespace__ = "computer"
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for code execution:

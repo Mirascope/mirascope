@@ -19,7 +19,9 @@ class _ConfigurableToolConfig(BaseModel, ABC):
         return cls()
 
 
-_ConfigurableToolConfigT = TypeVar("_ConfigurableToolConfigT", bound=_ConfigurableToolConfig)
+_ConfigurableToolConfigT = TypeVar(
+    "_ConfigurableToolConfigT", bound=_ConfigurableToolConfig
+)
 
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
