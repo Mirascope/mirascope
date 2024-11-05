@@ -8,7 +8,7 @@ from ._utils._convert_messages_to_message_params import (
     Image,
     convert_message_content_to_message_param_content,
 )
-from .message_param import AudioPart, BaseMessageParam, ImagePart, TextPart
+from .message_param import AudioPart, BaseMessageParam, ImagePart, TextPart, PdfPart
 from .types import AudioSegment
 
 
@@ -23,6 +23,7 @@ class Messages:
             | AudioPart
             | AudioSegment
             | Wave_read
+            | PdfPart
         ]
         | list[BaseMessageParam | Any]
         | BaseMessageParam
@@ -40,6 +41,7 @@ class Messages:
             | AudioPart
             | AudioSegment
             | Wave_read
+            | PdfPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -59,6 +61,7 @@ class Messages:
             | AudioPart
             | AudioSegment
             | Wave_read
+            | PdfPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -78,6 +81,7 @@ class Messages:
             | AudioPart
             | AudioSegment
             | Wave_read
+            | PdfPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(

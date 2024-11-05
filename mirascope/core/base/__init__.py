@@ -14,6 +14,7 @@ from .message_param import (
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
+    PdfPart,
     TextPart,
 )
 from .messages import Messages

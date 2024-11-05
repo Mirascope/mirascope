@@ -12,6 +12,7 @@ from ..message_param import (
     CacheControlPart,
     ImagePart,
     TextPart,
+PdfPart
 )
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
@@ -103,9 +104,17 @@ def _construct_audio_part(source: str | bytes) -> AudioPart:
     )
 
 
+def _construct_pdf_part(
+    source: str | bytes
+) -> PdfPart:
+    pdf = _load_media(source)
+    return PdfPart(
+        type="pdf",
+        pdf=pdf,
+    )
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> list[TextPart] | list[ImagePart] | list[AudioPart] | list[CacheControlPart]:
+) -> list[TextPart] | list[ImagePart] | list[AudioPart] | list[CacheControlPart] | list[PdfPart]:
     if part["type"] == "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
@@ -139,6 +148,16 @@ def _construct_parts(
                 else "ephemeral",
             )
         ]
+    elif part["type"] == "pdf":
+        source = attrs[part["template"]]
+        return [_construct_pdf_part(source)] if source else []
+    elif part["type"] == "pdfs":
+        sources = attrs[part["template"]]
+        if not isinstance(sources, list):
+            raise ValueError(
+                f"When using 'pdfs' template, '{part['template']}' must be a list."
+            )
+        return [_construct_pdf_part(source) for source in sources] if sources else []
     else:  # text type
         formatted_template = format_template(part["template"].strip(), attrs)
         if not formatted_template:
