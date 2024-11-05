@@ -8,7 +8,7 @@ from ._utils._convert_messages_to_message_params import (
     Image,
     convert_message_content_to_message_param_content,
 )
-from .message_param import AudioPart, BaseMessageParam, ImagePart, TextPart, PdfPart
+from .message_param import AudioPart, BaseMessageParam, ImagePart, PdfPart, TextPart
 from .types import AudioSegment
 
 

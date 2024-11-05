@@ -11,8 +11,8 @@ from ..message_param import (
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
+    PdfPart,
     TextPart,
-PdfPart
 )
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
@@ -104,17 +104,23 @@ def _construct_audio_part(source: str | bytes) -> AudioPart:
     )
 
 
-def _construct_pdf_part(
-    source: str | bytes
-) -> PdfPart:
+def _construct_pdf_part(source: str | bytes) -> PdfPart:
     pdf = _load_media(source)
     return PdfPart(
         type="pdf",
         pdf=pdf,
     )
+
+
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> list[TextPart] | list[ImagePart] | list[AudioPart] | list[CacheControlPart] | list[PdfPart]:
+) -> (
+    list[TextPart]
+    | list[ImagePart]
+    | list[AudioPart]
+    | list[CacheControlPart]
+    | list[PdfPart]
+):
     if part["type"] == "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
