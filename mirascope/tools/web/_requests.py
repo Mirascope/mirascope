@@ -6,7 +6,7 @@ from pydantic import Field
 from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
-class RequestsConfigConfigurable(_ConfigurableToolConfig):
+class RequestsConfig(_ConfigurableToolConfig):
     """Configuration for HTTP requests"""
 
     timeout: int = Field(default=5, description="Request timeout in seconds")
@@ -15,7 +15,7 @@ class RequestsConfigConfigurable(_ConfigurableToolConfig):
 class Requests(ConfigurableTool):
     """Tool for making HTTP requests with built-in requests library."""
 
-    __config__ = RequestsConfigConfigurable()
+    _configurable_tool_config = RequestsConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `Requests`: Makes HTTP requests to web URLs using requests library

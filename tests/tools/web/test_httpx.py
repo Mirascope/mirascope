@@ -6,25 +6,25 @@ import pytest
 from mirascope.tools.web._httpx import (
     HTTPX,
     AsyncHTTPX,
-    HTTPXConfigConfigurable,
+    HTTPXConfig,
 )
 
 
 def test_httpx_config():
     """Test HTTPXConfig initialization and default values"""
-    config = HTTPXConfigConfigurable()
+    config = HTTPXConfig()
     assert config.timeout == 5
 
-    custom_config = HTTPXConfigConfigurable(timeout=10)
+    custom_config = HTTPXConfig(timeout=10)
     assert custom_config.timeout == 10
 
 
 def test_async_httpx_config():
     """Test AsyncHTTPXConfig initialization and default values"""
-    config = HTTPXConfigConfigurable()
+    config = HTTPXConfig()
     assert config.timeout == 5
 
-    custom_config = HTTPXConfigConfigurable(timeout=10)
+    custom_config = HTTPXConfig(timeout=10)
     assert custom_config.timeout == 10
 
 

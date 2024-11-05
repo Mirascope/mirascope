@@ -10,7 +10,7 @@ from pydantic import Field
 from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
 
 
-class ParseURLConfigConfigurable(_ConfigurableToolConfig):
+class ParseURLConfig(_ConfigurableToolConfig):
     """Configuration for URL content parsing"""
 
     parser: str = Field(
@@ -24,14 +24,14 @@ class ParseURLConfigConfigurable(_ConfigurableToolConfig):
     )
 
 
-class ParseURLContent(ConfigurableTool[ParseURLConfigConfigurable, _ToolSchemaT]):
+class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
     """Tool for parsing and extracting main content from URLs.
 
     Fetches content from URL, removes unnecessary elements like scripts, styles, navigation, etc.,
     and returns clean text content from the webpage's main body.
     """
 
-    _configurable_tool_config = ParseURLConfigConfigurable()  # pyright: ignore [reportCallIssue]
+    _configurable_tool_config = ParseURLConfig()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = """
     - `ParseURLContent`: Returns the given URL's main content as clean text
         - Fetches the raw HTML content for the given URL

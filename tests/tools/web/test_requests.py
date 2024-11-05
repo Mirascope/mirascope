@@ -1,13 +1,13 @@
 from unittest.mock import MagicMock, patch
 
-from mirascope.tools import Requests, RequestsConfigConfigurable
+from mirascope.tools import Requests, RequestsConfig
 
 
 def test_requests_config():
-    config = RequestsConfigConfigurable()
+    config = RequestsConfig()
     assert config.timeout == 5
 
-    custom_config = RequestsConfigConfigurable(timeout=10)
+    custom_config = RequestsConfig(timeout=10)
     assert custom_config.timeout == 10
 
 

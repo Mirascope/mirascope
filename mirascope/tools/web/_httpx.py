@@ -6,7 +6,7 @@ from pydantic import Field
 from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
-class HTTPXConfigConfigurable(_ConfigurableToolConfig):
+class HTTPXConfig(_ConfigurableToolConfig):
     """Configuration for HTTPX requests"""
 
     timeout: int = Field(
@@ -18,7 +18,7 @@ class HTTPXConfigConfigurable(_ConfigurableToolConfig):
 class _BaseHTTPX(ConfigurableTool):
     """Tool for making HTTP requests using HTTPX with configurable timeout and error handling."""
 
-    __config__ = HTTPXConfigConfigurable()
+    _configurable_tool_config = HTTPXConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `HTTPX`: Makes HTTP requests to web URLs with HTTPX client
