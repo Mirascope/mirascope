@@ -5,10 +5,10 @@ from typing import ClassVar
 from duckduckgo_search import DDGS, AsyncDDGS
 from pydantic import Field
 
-from ..base import ConfigurableTool, _ToolConfig, _ToolSchemaT
+from ..base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
 
 
-class DuckDuckGoSearchConfig(_ToolConfig):
+class DuckDuckGoSearchConfig(_ConfigurableToolConfig):
     """Configuration for DuckDuckGo search"""
 
     max_results_per_query: int = Field(

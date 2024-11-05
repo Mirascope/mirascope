@@ -10,22 +10,22 @@ from mirascope.core import BaseTool, BaseToolKit
 from mirascope.core.base._utils import DEFAULT_TOOL_DOCSTRING
 
 
-class _ToolConfig(BaseModel, ABC):
+class _ConfigurableToolConfig(BaseModel, ABC):
     """Base configuration for tools"""
 
     @classmethod
-    def from_env(cls: type[_ToolConfigT]) -> _ToolConfigT:
+    def from_env(cls: type[_ConfigurableToolConfigT]) -> _ConfigurableToolConfigT:
         """Returns a configuration instance from environment variables."""
         return cls()
 
 
-_ToolConfigT = TypeVar("_ToolConfigT", bound=_ToolConfig)
+_ConfigurableToolConfigT = TypeVar("_ConfigurableToolConfigT", bound=_ConfigurableToolConfig)
 
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
 class ConfigurableTool(
-    BaseTool[_ToolSchemaT], Generic[_ToolConfigT, _ToolSchemaT], ABC
+    BaseTool[_ToolSchemaT], Generic[_ConfigurableToolConfigT, _ToolSchemaT], ABC
 ):
     """Abstract base class for configurable tools.
 
@@ -33,18 +33,18 @@ class ConfigurableTool(
     and __config__ class variable with a subclass of _ToolConfig.
     """
 
-    __config__: ClassVar[_ToolConfig]
+    __config__: ClassVar[_ConfigurableToolConfig]
     __prompt_usage_description__: ClassVar[str]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
-    def _get_config(cls) -> _ToolConfigT:
+    def _get_config(cls) -> _ConfigurableToolConfigT:
         """Get tool configuration"""
-        return cast(_ToolConfigT, cls.__config__)
+        return cast(_ConfigurableToolConfigT, cls.__config__)
 
     @classmethod
     def from_config(
-        cls: type[_ConfigurableToolT], config: _ToolConfigT
+        cls: type[_ConfigurableToolT], config: _ConfigurableToolConfigT
     ) -> type[_ConfigurableToolT]:
         """Create tool class with custom configuration"""
 
@@ -69,14 +69,14 @@ class ConfigurableTool(
 _ConfigurableToolT = TypeVar("_ConfigurableToolT", bound=ConfigurableTool)
 
 
-class ConfigurableToolKit(BaseToolKit, Generic[_ToolConfigT], ABC):
+class ConfigurableToolKit(BaseToolKit, Generic[_ConfigurableToolConfigT], ABC):
     """Abstract base class for configurable toolkit.
 
     Subclasses must define a `__prompt_usage_description__` class variable
     and __config__ class variable with a subclass of _ToolConfig.
     """
 
-    config: _ToolConfigT
+    config: _ConfigurableToolConfigT
     __prompt_usage_description__: ClassVar[str]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

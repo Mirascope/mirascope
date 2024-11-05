@@ -10,12 +10,12 @@ from mirascope.core.base import toolkit_tool
 from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
-    _ToolConfig,
+    _ConfigurableToolConfig,
     _ToolSchemaT,
 )
 
 
-class FileSystemToolkitConfig(_ToolConfig):
+class FileSystemToolkitConfig(_ConfigurableToolConfig):
     """Configuration for filesystem toolkit"""
 
     max_file_size: int = Field(

@@ -2,25 +2,25 @@ from unittest.mock import MagicMock, patch
 
 import requests
 
-from mirascope.tools import ParseURLConfig, ParseURLContent
+from mirascope.tools import ParseURLConfigConfigurable, ParseURLContent
 
 
 # Config Tests
 def test_parse_config_defaults():
-    config = ParseURLConfig()  # pyright: ignore [reportCallIssue]
+    config = ParseURLConfigConfigurable()  # pyright: ignore [reportCallIssue]
     assert config.parser == "html.parser"
     assert config.timeout == 5
 
 
 def test_parse_config_custom():
-    config = ParseURLConfig(parser="lxml", timeout=10)
+    config = ParseURLConfigConfigurable(parser="lxml", timeout=10)
     assert config.parser == "lxml"
     assert config.timeout == 10
 
 
 def test_parse_config_from_env():
-    config = ParseURLConfig.from_env()
-    assert isinstance(config, ParseURLConfig)
+    config = ParseURLConfigConfigurable.from_env()
+    assert isinstance(config, ParseURLConfigConfigurable)
     assert config.parser == "html.parser"
     assert config.timeout == 5
 
@@ -53,7 +53,7 @@ def test_fetch_with_custom_config(mock_get):
     mock_response.text = "<html><body>Test</body></html>"
     mock_get.return_value = mock_response
 
-    custom_config = ParseURLConfig(timeout=10)  # pyright: ignore [reportCallIssue]
+    custom_config = ParseURLConfigConfigurable(timeout=10)  # pyright: ignore [reportCallIssue]
     CustomTool = ParseURLContent.from_config(custom_config)
     tool = CustomTool(url="https://example.com")  # pyright: ignore [reportCallIssue]
     tool.call()

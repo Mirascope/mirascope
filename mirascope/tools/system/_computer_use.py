@@ -14,12 +14,12 @@ from mirascope.core import toolkit_tool
 from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
-    _ToolConfig,
+    _ConfigurableToolConfig,
     _ToolSchemaT,
 )
 
 
-class ComputerUseToolkitConfig(_ToolConfig):
+class ComputerUseToolkitConfig(_ConfigurableToolConfig):
     """Configuration for computer use toolkit"""
 
     docker_image: str = Field(
