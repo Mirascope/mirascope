@@ -15,7 +15,7 @@ def computer_toolkit() -> ComputerUseToolkit:
         max_memory="256m",
         allow_network=False,  # Safer for testing
     )
-    return ComputerUseToolkit.from_config(config)()
+    return ComputerUseToolkit(config=config)
 
 
 def test_execute_python_without_custom_config():
@@ -58,7 +58,7 @@ print(mirascope)
         max_memory="256m",
         allow_network=True,  # To use pip install
     )
-    tool, _ = ComputerUseToolkit.from_config(config)().create_tools()
+    tool, _ = ComputerUseToolkit(config=config).create_tools()
     assert issubclass(tool, ComputerUseToolkit.ExecutePython)
     result = tool(code=code, requirements=["mirascope"]).call()
     assert result.startswith("<module 'mirascope' from")
@@ -162,7 +162,7 @@ def test_container_cleanup_on_error():
         max_memory="256m",
         allow_network=False,
     )
-    toolkit = ComputerUseToolkit.from_config(config)()
+    toolkit = ComputerUseToolkit(config=config)
     tool, _ = toolkit.create_tools()
     assert issubclass(tool, ComputerUseToolkit.ExecutePython)
     result = tool(code="print('test')").call()

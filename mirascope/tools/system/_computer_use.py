@@ -79,7 +79,7 @@ class DockerOperation(ConfigurableTool[ComputerUseToolkitConfig, _ToolSchemaT], 
 class ComputerUseToolkit(ConfigurableToolKit[ComputerUseToolkitConfig]):
     """Toolkit for executing Python code and shell commands in a Docker container."""
 
-    __config__ = ComputerUseToolkitConfig()
+    config: ComputerUseToolkitConfig = ComputerUseToolkitConfig()
     __namespace__ = "computer"
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for code execution:

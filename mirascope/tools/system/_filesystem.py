@@ -77,9 +77,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     Read, write, list, create, and delete files and directories.
     """
 
-    base_directory: Path = Field(
-        default=Path.cwd(), description="Base directory for file operations"
-    )
+    config: FileSystemToolkitConfig = FileSystemToolkitConfig()
 
     @toolkit_tool
     class ReadFile(FileOperation):

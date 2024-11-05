@@ -76,14 +76,14 @@ class ConfigurableToolKit(BaseToolKit, Generic[_ToolConfigT], ABC):
     and __config__ class variable with a subclass of _ToolConfig.
     """
 
-    __config__: ClassVar[_ToolConfig]
+    config: _ToolConfigT
     __prompt_usage_description__: ClassVar[str]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def create_tools(self) -> list[type[ConfigurableTool[_ToolConfigT, _ToolSchemaT]]]:
+    def create_tools(self) -> list[type[BaseTool]]:
         """The method to create the tools."""
         return [
-            tool.from_config(self.__config__)
+            tool.from_config(self.config)
             if issubclass(tool, ConfigurableTool)
             else tool
             for tool in super().create_tools()

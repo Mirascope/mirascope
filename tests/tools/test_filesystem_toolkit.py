@@ -27,7 +27,8 @@ def filesystem_toolkit(temp_dir: Path) -> FileSystemToolkit:
         max_file_size=1024,  # 1KB for testing
         allowed_extensions=["txt", "md"],
     )
-    return FileSystemToolkit.from_config(config)(
+    return FileSystemToolkit(
+        config=config,
         base_directory=temp_dir,
     )
 
