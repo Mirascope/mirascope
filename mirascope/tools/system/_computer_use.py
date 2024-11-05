@@ -32,7 +32,7 @@ class DockerOperationToolKitConfig(_ConfigurableToolConfig):
 class DockerOperation(ConfigurableTool[DockerOperationToolKitConfig, _ToolSchemaT], ABC):
     """Base class for Docker operations."""
 
-    __config__ = DockerOperationToolKitConfig()
+    _configurable_tool_config = DockerOperationToolKitConfig()
     __container__: Container | None = None
 
     @property

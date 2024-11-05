@@ -31,7 +31,7 @@ class FileSystemToolkitConfig(_ConfigurableToolConfig):
 class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC):
     """Base class for file system operations."""
 
-    __config__ = FileSystemToolkitConfig()
+    _configurable_tool_config = FileSystemToolkitConfig()
 
     if TYPE_CHECKING:
         # In create_tools method, the base_directory is set to ToolKit base_directory

@@ -31,7 +31,7 @@ class ParseURLContent(ConfigurableTool[ParseURLConfigConfigurable, _ToolSchemaT]
     and returns clean text content from the webpage's main body.
     """
 
-    __config__ = ParseURLConfigConfigurable()  # pyright: ignore [reportCallIssue]
+    _configurable_tool_config = ParseURLConfigConfigurable()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = """
     - `ParseURLContent`: Returns the given URL's main content as clean text
         - Fetches the raw HTML content for the given URL

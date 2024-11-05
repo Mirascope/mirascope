@@ -10,7 +10,7 @@ class MockConfigConfigurable(_ConfigurableToolConfig):
 
 
 class MockTool(ConfigurableTool[MockConfigConfigurable, _ToolSchemaT]):
-    __config__ = MockConfigConfigurable()  # pyright: ignore [reportCallIssue]
+    _configurable_tool_config = MockConfigConfigurable()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = "Test description"
 
     input: str = Field(..., description="Test input")

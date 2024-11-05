@@ -32,17 +32,17 @@ class ConfigurableTool(
     """Abstract base class for configurable tools.
 
     Subclasses must define a `__prompt_usage_description__` class variable
-    and __config__ class variable with a subclass of _ToolConfig.
+    and _configurable_tool_config class variable with a subclass of _ToolConfig.
     """
 
-    __config__: ClassVar[_ConfigurableToolConfig]
+    _configurable_tool_config: ClassVar[_ConfigurableToolConfig]
     __prompt_usage_description__: ClassVar[str]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def _get_config(cls) -> _ConfigurableToolConfigT:
         """Get tool configuration"""
-        return cast(_ConfigurableToolConfigT, cls.__config__)
+        return cast(_ConfigurableToolConfigT, cls._configurable_tool_config)
 
     @classmethod
     def from_config(
@@ -51,7 +51,7 @@ class ConfigurableTool(
         """Create tool class with custom configuration"""
 
         # ClassVar cannot get TypeVar Type. So, we need the comment to ignore the error.
-        config = cls.__config__.model_validate(config)  # pyright: ignore [reportAssignmentType]
+        config = cls._get_config().model_validate(config)  # pyright: ignore [reportAssignmentType]
         new_model = create_model(
             cls.__name__,
             __base__=cls,
@@ -59,7 +59,7 @@ class ConfigurableTool(
             __doc__=cls.__doc__ if cls.__doc__ else DEFAULT_TOOL_DOCSTRING,
         )
         new_model.__prompt_usage_description__ = cls.__prompt_usage_description__
-        new_model.__config__ = config
+        new_model._configurable_tool_config = config
         return new_model
 
     @classmethod
