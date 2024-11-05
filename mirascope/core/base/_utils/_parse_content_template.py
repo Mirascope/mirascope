@@ -10,12 +10,13 @@ from ..message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
-    PdfPart,
     TextPart,
 )
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
+from ._get_document_type import get_document_type
 from ._get_image_type import get_image_type
 
 _PartType = Literal["text", "image", "images", "audio", "audios", "cache_control"]
@@ -38,7 +39,7 @@ def _parse_parts(template: str) -> list[_Part]:
     # (image|images|...) captures the supported special type after the colon.
     #
     # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
-    pattern = r"\{([^:{}]*):(image|images|audio|audios|cache_control)(?:\(([^)]*)\))?\}"
+    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|cache_control)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
@@ -104,11 +105,12 @@ def _construct_audio_part(source: str | bytes) -> AudioPart:
     )
 
 
-def _construct_pdf_part(source: str | bytes) -> PdfPart:
-    pdf = _load_media(source)
-    return PdfPart(
-        type="pdf",
-        pdf=pdf,
+def _construct_document_part(source: str | bytes) -> DocumentPart:
+    document = _load_media(source)
+    return DocumentPart(
+        type="document",
+        media_type=f"application/{get_document_type(document)}",
+        document=document,
     )
 
 
@@ -119,7 +121,7 @@ def _construct_parts(
     | list[ImagePart]
     | list[AudioPart]
     | list[CacheControlPart]
-    | list[PdfPart]
+    | list[DocumentPart]
 ):
     if part["type"] == "image":
         source = attrs[part["template"]]
@@ -154,16 +156,18 @@ def _construct_parts(
                 else "ephemeral",
             )
         ]
-    elif part["type"] == "pdf":
+    elif part["type"] == "document":
         source = attrs[part["template"]]
-        return [_construct_pdf_part(source)] if source else []
-    elif part["type"] == "pdfs":
+        return [_construct_document_part(source)] if source else []
+    elif part["type"] == "documents":
         sources = attrs[part["template"]]
         if not isinstance(sources, list):
             raise ValueError(
                 f"When using 'pdfs' template, '{part['template']}' must be a list."
             )
-        return [_construct_pdf_part(source) for source in sources] if sources else []
+        return (
+            [_construct_document_part(source) for source in sources] if sources else []
+        )
     else:  # text type
         formatted_template = format_template(part["template"].strip(), attrs)
         if not formatted_template:

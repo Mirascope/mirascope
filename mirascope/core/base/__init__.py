@@ -13,8 +13,8 @@ from .message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
-    PdfPart,
     TextPart,
 )
 from .messages import Messages

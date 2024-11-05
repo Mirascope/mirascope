@@ -13,8 +13,8 @@ from ..message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
-    PdfPart,
     TextPart,
 )
 from ..types import AudioSegment, Image, has_pil_module, has_pydub_module
@@ -32,13 +32,13 @@ def _convert_message_sequence_part_to_content_part(
     | AudioPart
     | AudioSegment
     | Wave_read
-    | PdfPart,
-) -> TextPart | ImagePart | AudioPart | CacheControlPart | PdfPart:
+    | DocumentPart,
+) -> TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart:
     if isinstance(message_sequence_part, str):
         return TextPart(text=message_sequence_part, type="text")
     elif isinstance(
         message_sequence_part,
-        TextPart | ImagePart | AudioPart | CacheControlPart | PdfPart,
+        TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
     ):
         return message_sequence_part
     elif has_pil_module and isinstance(message_sequence_part, Image.Image):
@@ -80,9 +80,9 @@ def convert_message_content_to_message_param_content(
         | AudioPart
         | AudioSegment
         | Wave_read
-        | PdfPart
+        | DocumentPart
     ],
-) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | PdfPart] | str:
+) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart] | str:
     if isinstance(message_sequence, str):
         return message_sequence
     return [
@@ -110,7 +110,7 @@ def convert_messages_to_message_params(
         | AudioPart
         | AudioSegment
         | Wave_read
-        | PdfPart
+        | DocumentPart
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,
