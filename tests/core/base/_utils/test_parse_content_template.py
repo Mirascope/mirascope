@@ -9,6 +9,7 @@ from mirascope.core.base.message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
     TextPart,
 )
@@ -172,3 +173,75 @@ def test_parse_content_template_cache_control() -> None:
 
     expected.role = "system"
     assert parse_content_template("system", "{:cache_control}", {}) == expected
+
+
+@patch(
+    "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
+)
+@patch("urllib.request.urlopen", new_callable=MagicMock)
+def test_parse_content_template_document(
+    mock_urlopen: MagicMock, mock_open: MagicMock
+) -> None:
+    """Test the parse_content_template function with document templates."""
+    document_data = b"%PDFdocument data"  # Magic bytes for PDF files
+    mock_response = MagicMock()
+    mock_response.read = lambda: document_data
+    mock_urlopen.return_value.__enter__.return_value = mock_response
+    mock_open.return_value.__enter__.return_value = mock_response
+
+    # Test single document input
+    template = "Analyze this document: {url:document}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this document:"),
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=document_data,
+            ),
+        ],
+    )
+    assert parse_content_template("user", template, {"url": "https://"}) == expected
+    assert parse_content_template("user", template, {"url": "./doc.pdf"}) == expected
+    assert parse_content_template("user", template, {"url": document_data}) == expected
+
+    # Test multiple document inputs
+    template = "Analyze these documents: {urls:documents}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze these documents:"),
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=document_data,
+            ),
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=document_data,
+            ),
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"urls": ["https://", "https://."]})
+        == expected
+    )
+    assert (
+        parse_content_template("user", template, {"urls": ["./doc.pdf", "./doc.pdf"]})
+        == expected
+    )
+    assert (
+        parse_content_template(
+            "user", template, {"urls": [document_data, document_data]}
+        )
+        == expected
+    )
+
+    # Test error case for invalid input type
+    with pytest.raises(
+        ValueError,
+        match="When using 'pdfs' template, 'urls' must be a list.",
+    ):
+        parse_content_template("user", template, {"urls": None})
