@@ -8,9 +8,9 @@ from typing import ClassVar
 
 import docker
 from docker.models.containers import Container
-from pydantic import Field
+from pydantic import BaseModel, Field
 
-from mirascope.core import toolkit_tool
+from mirascope.core import BaseTool, toolkit_tool
 from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
@@ -29,38 +29,13 @@ class DockerOperationToolKitConfig(_ConfigurableToolConfig):
     allow_network: bool = Field(default=True, description="Allow network access")
 
 
-class DockerOperation(ConfigurableTool[DockerOperationToolKitConfig, _ToolSchemaT], ABC):
+class DockerOperation(
+    ConfigurableTool[DockerOperationToolKitConfig, _ToolSchemaT], ABC
+):
     """Base class for Docker operations."""
 
     _configurable_tool_config = DockerOperationToolKitConfig()
-    __container__: Container | None = None
-
-    @property
-    def _container(self) -> Container:
-        """Returns the Docker container for code execution."""
-        if self.__container__ is None:
-            self.__container__ = self._setup_container()
-        return self.__container__
-
-    def __del__(self) -> None:
-        """Cleanup the container when the toolkit is destroyed."""
-        if container := self.__container__:
-            with suppress(Exception):
-                container.stop()
-
-    def _setup_container(self) -> Container:
-        """Sets up a persistent container for code execution."""
-        client = docker.from_env()
-        return client.containers.run(
-            self._get_config().docker_image,
-            "tail -f /dev/null",  # Keep container running
-            detach=True,
-            mem_limit=self._get_config().max_memory,
-            network_disabled=not self._get_config().allow_network,
-            remove=True,
-            security_opt=["no-new-privileges"],  # Prevent privilege escalation
-            cap_drop=["ALL"],  # Drop all capabilities
-        )
+    _docker_container: DockerContainer
 
     @classmethod
     def _create_tar_stream(cls, files: dict[str, str]) -> io.BytesIO:
@@ -76,16 +51,57 @@ class DockerOperation(ConfigurableTool[DockerOperationToolKitConfig, _ToolSchema
         return stream
 
 
+class DockerContainer(BaseModel):
+    config: DockerOperationToolKitConfig = DockerOperationToolKitConfig()
+    _container: Container | None = None
+
+    @property
+    def container(self) -> Container:
+        if not self._container:
+            self._container = self._setup_container(self.config)
+        return self._container
+
+    def __del__(self) -> None:
+        """Cleanup the container when the toolkit is destroyed."""
+        if container := self._container:
+            with suppress(Exception):
+                container.stop()
+
+    def _setup_container(self, config: DockerOperationToolKitConfig) -> Container:
+        """Sets up a persistent container for code execution."""
+        client = docker.from_env()
+        return client.containers.run(
+            self.config.docker_image,
+            "tail -f /dev/null",  # Keep container running
+            detach=True,
+            mem_limit=self.config.max_memory,
+            network_disabled=not self.config.allow_network,
+            remove=True,
+            security_opt=["no-new-privileges"],  # Prevent privilege escalation
+            cap_drop=["ALL"],  # Drop all capabilities
+        )
+
+
 class DockerOperationToolKit(ConfigurableToolKit[DockerOperationToolKitConfig]):
     """Toolkit for executing Python code and shell commands in a Docker container."""
 
     config: DockerOperationToolKitConfig = DockerOperationToolKitConfig()
+    docker_container: DockerContainer
     __namespace__ = "computer"
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for code execution:
         - ExecutePython: Executes Python code with optional requirements in a Docker container
         - ExecuteShell: Executes shell commands in a Docker container
     """
+
+    def create_tools(self) -> list[type[BaseTool]]:
+        """The method to create the tools."""
+
+        tools = super().create_tools()
+        for tool in tools:
+            if issubclass(tool, DockerOperation):
+                tool._docker_container = self.docker_container
+        return tools
 
     @toolkit_tool
     class ExecutePython(DockerOperation):
@@ -112,16 +128,16 @@ class DockerOperationToolKit(ConfigurableToolKit[DockerOperationToolKitConfig]):
                         return "Error: Network access is disabled. Cannot install requirements via pip."
                     contents["requirements.txt"] = "\n".join(self.requirements)
                 stream = self._create_tar_stream(contents)
-                self._container.put_archive("/", stream)
+                self._docker_container.container.put_archive("/", stream)
                 if self.requirements:
-                    exit_code, output = self._container.exec_run(
+                    exit_code, output = self._docker_container.container.exec_run(
                         cmd=["pip", "install", "-r", "/requirements.txt"],
                     )
                     if exit_code != 0:  # pragma: no cover
                         return (
                             f"Error installing requirements: {output.decode('utf-8')}"
                         )
-                exit_code, output = self._container.exec_run(
+                exit_code, output = self._docker_container.container.exec_run(
                     cmd=["python", "/main.py"],
                 )
                 return output.decode("utf-8")
@@ -145,7 +161,7 @@ class DockerOperationToolKit(ConfigurableToolKit[DockerOperationToolKitConfig]):
                 str: Output of the command execution
             """
             try:
-                exec_result = self._container.exec_run(
+                exec_result = self._docker_container.container.exec_run(
                     cmd=["sh", "-c", self.command],
                 )
                 return exec_result.output.decode("utf-8")

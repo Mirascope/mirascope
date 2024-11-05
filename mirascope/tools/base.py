@@ -86,7 +86,7 @@ class ConfigurableToolKit(BaseToolKit, Generic[_ConfigurableToolConfigT], ABC):
         """The method to create the tools."""
         return [
             tool.from_config(self.config)
-            if issubclass(tool, ConfigurableTool)
+            if issubclass(tool, ConfigurableTool) and "config" in self.model_fields_set
             else tool
             for tool in super().create_tools()
         ]

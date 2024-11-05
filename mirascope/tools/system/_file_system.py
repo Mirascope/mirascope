@@ -73,7 +73,7 @@ class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC
 
 
 class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
-    """Toolkit for file_system operations.
+    """Toolkit for file system operations.
     Read, write, list, create, and delete files and directories.
     """
 
@@ -236,7 +236,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
     _configurable_tool_config = FileSystemToolkitConfig()
     __namespace__ = "file_system"
     __prompt_usage_description__: ClassVar[str] = """
-    - Tools for file_system operations:
+    - Tools for file system operations:
         - ReadFile: Reads content from a file
         - WriteFile: Writes content to a file
         - ListDirectory: Lists directory contents

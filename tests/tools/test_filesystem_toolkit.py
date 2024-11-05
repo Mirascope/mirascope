@@ -296,7 +296,7 @@ def test_usage_description(filesystem_toolkit: FileSystemToolkit):
     """filesystem_toolkit description."""
     assert (
         filesystem_toolkit.usage_description()
-        == """- Tools for filesystem operations:
+        == """- Tools for file system operations:
     - ReadFile: Reads content from a file
     - WriteFile: Writes content to a file
     - ListDirectory: Lists directory contents
