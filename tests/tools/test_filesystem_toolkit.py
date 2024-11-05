@@ -7,7 +7,7 @@ from typing import TypeVar
 import pytest
 
 from mirascope.tools import FileSystemToolkit, FileSystemToolkitConfig
-from mirascope.tools.system._filesystem import FileOperation
+from mirascope.tools.system._file_system import FileOperation
 
 
 @pytest.fixture
