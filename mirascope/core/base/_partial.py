@@ -9,7 +9,7 @@ serves as an acknowledgment of the original author's contribution to this projec
 """
 
 from copy import deepcopy
-from typing import TypeVar
+from typing import TypeVar, get_args, get_origin
 
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
@@ -17,21 +17,47 @@ from pydantic.fields import FieldInfo
 Model = TypeVar("Model", bound=BaseModel)
 
 
+def _process_annotation(annotation: type) -> type:
+    """Recursively process type annotations to make them optional."""
+    # Get the origin type (e.g., list from list[str])
+    origin = get_origin(annotation)
+
+    if origin is None:
+        # If it's a BaseModel, make it partial
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return partial(annotation) | None  # pyright: ignore [reportReturnType]
+        # For simple types, just make them optional
+        return annotation | None  # pyright: ignore [reportReturnType]
+
+    # Get the type arguments (e.g., str from list[str])
+    args = get_args(annotation)
+
+    # Recursively process each type argument
+    processed_args = tuple(
+        _process_annotation(arg) if isinstance(arg, type) else arg for arg in args
+    )
+
+    # Reconstruct the type with processed arguments
+    return (
+        origin[processed_args[0] if len(processed_args) == 1 else processed_args] | None
+    )  # pyright: ignore [reportReturnType]
+
+
 def partial(wrapped_class: type[Model]) -> type[Model]:
     """Generate a new class with all attributes optionals.
 
-    Notes:
-        This will wrap a class inheriting form BaseModel and will recursively
-        convert all its attributes and its children's attributes to optionals.
+    This decorator will wrap a class inheriting from BaseModel and will recursively
+    convert all its attributes and its children's attributes to optionals, including
+    handling generic type hints like list[Model].
 
     Example:
-
     ```python
     @partial
     class User(BaseModel):
         name: str
+        friends: list[Friend]  # Will become list[PartialFriend] | None
 
-    user = User(name="None")
+    user = User()  # All fields optional
     ```
     """
 
@@ -40,15 +66,12 @@ def partial(wrapped_class: type[Model]) -> type[Model]:
     ) -> tuple[object, FieldInfo]:
         tmp_field = deepcopy(field)
 
-        annotation = field.annotation
-        # If the field is a BaseModel, then recursively convert it's
-        # attributes to optionals.
-        if type(annotation) is type(BaseModel):
-            tmp_field.annotation = partial(annotation) | None  # pyright: ignore [reportAttributeAccessIssue,reportArgumentType]
-            tmp_field.default = {}
-        else:
-            tmp_field.annotation = field.annotation | None  # pyright: ignore [reportOptionalOperand,reportAttributeAccessIssue]
-            tmp_field.default = None
+        # Process the field's annotation
+        tmp_field.annotation = _process_annotation(field.annotation)  # pyright: ignore [reportArgumentType]
+
+        # Set default value
+        tmp_field.default = None
+
         return tmp_field.annotation, tmp_field
 
     return create_model(
