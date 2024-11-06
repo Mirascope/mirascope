@@ -2573,7 +2573,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.41.4"
+version = "1.52.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2588,9 +2588,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/57/81/ffe9d8b935356e13014211f3a8488410824d0e667a519e1b53cb1885c3ed/litellm-1.41.4.tar.gz", hash = "sha256:21e89d9ede4da17566c6c03975a5bce33412ae8c9eda570c9ad9731699c0de7c", size = 6125324 }
+sdist = { url = "https://files.pythonhosted.org/packages/d4/c5/558b15459a088b810f202c4f39e2f65766346a7a04774f4365be53bc6ad9/litellm-1.52.0.tar.gz", hash = "sha256:4d6c160ebe41e049c9bed6748beb100798bb9f398557c64ae129c6fd798a0f5f", size = 6110266 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/41/dcf98e7b7356e8dffcaba79646bcac16b7adf256a8cc2fa79f3e67f8e101/litellm-1.41.4-py3-none-any.whl", hash = "sha256:9f799a01b438c4404d5c785f21378085e083bf29fb19ad7270a472548af9918b", size = 6342937 },
+    { url = "https://files.pythonhosted.org/packages/3d/a3/b0d15260ac537278b79397cd88ae9db047784a0b63db9b5ef2defab0733e/litellm-1.52.0-py3-none-any.whl", hash = "sha256:188fb888d4c6b87f098889d5b901dbcde9779a9ac532e3667eadaea6b7b1a398", size = 6337275 },
 ]
 
 [[package]]
@@ -3197,20 +3197,20 @@ requires-dist = [
     { name = "groq", marker = "extra == 'groq'", specifier = "<1,>=0.9.0" },
     { name = "hyperdx-opentelemetry", marker = "extra == 'hyperdx'", specifier = "<1,>=0.1.0" },
     { name = "jiter", specifier = ">=0.5.0" },
-    { name = "langfuse", marker = "extra == 'langfuse'", specifier = "<3,>=2.30.0" },
-    { name = "litellm", marker = "extra == 'litellm'", specifier = "<2,>=1.41.4" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = "<2,>=0.41.0" },
-    { name = "mistralai", marker = "extra == 'mistral'", specifier = "<1,>=0.4.2" },
-    { name = "numpy", marker = "extra == 'realtime'", specifier = "<2,>=1.26.4" },
-    { name = "openai", marker = "extra == 'openai'", specifier = "<2,>=1.6.0" },
-    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
-    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
-    { name = "pillow", marker = "extra == 'gemini'", specifier = "<11,>=10.4.0" },
-    { name = "pydantic", specifier = "<3.0,>=2.7.4" },
-    { name = "pydub", marker = "extra == 'realtime'", specifier = "<1,>=0.25.1" },
-    { name = "sounddevice", marker = "extra == 'realtime'", specifier = "<1,>=0.5.1" },
-    { name = "tenacity", marker = "extra == 'tenacity'", specifier = "<9,>=8.4.2" },
-    { name = "types-aioboto3", extras = ["bedrock-runtime"], marker = "extra == 'bedrock'", specifier = "<14,>=13.1.1" },
+    { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
+    { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.42.12,<2" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=0.41.0,<2" },
+    { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=0.4.2,<1" },
+    { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
+    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
+    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
+    { name = "pillow", marker = "extra == 'gemini'", specifier = ">=10.4.0,<11" },
+    { name = "pydantic", specifier = ">=2.7.4,<3.0" },
+    { name = "pydub", marker = "extra == 'realtime'", specifier = ">=0.25.1,<1" },
+    { name = "sounddevice", marker = "extra == 'realtime'", specifier = ">=0.5.1,<1" },
+    { name = "tenacity", marker = "extra == 'tenacity'", specifier = ">=8.4.2,<9" },
+    { name = "types-aioboto3", extras = ["bedrock-runtime"], marker = "extra == 'bedrock'", specifier = ">=13.1.1,<14" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
     { name = "websockets", marker = "extra == 'realtime'", specifier = "<14,>=13.1" },
 ]
@@ -4023,7 +4023,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.52.0"
+version = "1.54.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -4035,9 +4035,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/12/00/0983e56ca4535394a34f3ce25429ce6710878f2f8d7931973d04364ca922/openai-1.52.0.tar.gz", hash = "sha256:95c65a5f77559641ab8f3e4c3a050804f7b51d278870e2ec1f7444080bfe565a", size = 309426 }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/d8/ea8cb03694087ac59bfa54a98aff15e0ef546c962d9147ce586d072ce84c/openai-1.54.1.tar.gz", hash = "sha256:5b832bf82002ba8c4f6e5e25c1c0f5d468c22f043711544c716eaffdb30dd6f1", size = 312474 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/1e/9dc3ccee95d0e16e54e353d3c355bb7cc506d56a2dbb0a07bc739cc48eac/openai-1.52.0-py3-none-any.whl", hash = "sha256:0c249f20920183b0a2ca4f7dba7b0452df3ecd0fa7985eb1d91ad884bc3ced9c", size = 386947 },
+    { url = "https://files.pythonhosted.org/packages/b5/49/020190de3190ec9532c387e90d70aa8185fb7df4282b5e8b79addeaa4d99/openai-1.54.1-py3-none-any.whl", hash = "sha256:3cb49ccb6bfdc724ad01cc397d323ef8314fc7d45e19e9de2afdd6484a533324", size = 389312 },
 ]
 
 [[package]]
