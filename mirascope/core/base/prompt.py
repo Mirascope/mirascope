@@ -76,8 +76,10 @@ class BasePrompt(BaseModel):
         prompt_template = (
             prompt_template.replace(":images}", "}")
             .replace(":image}", "}")
-            .replace(":audios", "}")
+            .replace(":audios}", "}")
             .replace(":audio}", "}")
+            .replace(":text}", "}")
+            .replace(":texts", "")
         )
         return format_template(prompt_template, self.model_dump())
 
