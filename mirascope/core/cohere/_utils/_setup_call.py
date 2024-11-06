@@ -44,6 +44,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -65,6 +66,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -85,6 +87,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse]
     | AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],

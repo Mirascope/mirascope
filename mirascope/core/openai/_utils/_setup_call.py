@@ -34,6 +34,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -55,6 +56,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -76,6 +78,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
     | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -121,6 +124,8 @@ def setup_call(
                 UserWarning,
             )
         call_kwargs["tool_choice"] = "required"
+    if stream:
+        call_kwargs["stream_options"] = {"include_usage": True}
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:

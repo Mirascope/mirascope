@@ -31,6 +31,7 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     mock_setup_call_openai.assert_called_once_with(
         model="gpt-4o",
@@ -42,6 +43,7 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert inspect.signature(create) == inspect.signature(completion)
     assert prompt_template == mock_setup_call_openai.return_value[1]

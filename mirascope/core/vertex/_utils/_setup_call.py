@@ -40,6 +40,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],
     str | None,
@@ -61,6 +62,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]],
     str | None,
@@ -81,6 +83,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]]
     | AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],

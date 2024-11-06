@@ -175,6 +175,7 @@ def create_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
+                    stream=False,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = await create(stream=False, **call_kwargs)
@@ -218,6 +219,7 @@ def create_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
+                    stream=False,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = create(stream=False, **call_kwargs)
