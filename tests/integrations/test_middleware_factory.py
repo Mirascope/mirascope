@@ -1,11 +1,15 @@
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 from pydantic import BaseModel
 
 from mirascope.core.base import BaseCallResponse
-from mirascope.core.base.stream import BaseStream
+from mirascope.core.base.stream import (
+    BaseStream,
+)
 from mirascope.core.base.structured_stream import BaseStructuredStream
+from mirascope.core.bedrock import AssistantMessageTypeDef
 from mirascope.integrations._middleware_factory import (
     default_context_manager,
     middleware_factory,
@@ -379,6 +383,14 @@ def test_middleware_factory_stream_sync_exception() -> None:
             raise ValueError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...  # pyright ignore [reportReturnType]
+
+            def construct_call_response(
+                self,
+            ) -> BaseCallResponse: ...  # pyright ignore [reportReturnType]
+
             @property
             def cost(self) -> int:
                 return 10
@@ -387,7 +399,7 @@ def test_middleware_factory_stream_sync_exception() -> None:
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -427,15 +439,21 @@ async def test_middleware_factory_stream_async_exception() -> None:
             raise ValueError("Stream error")
 
         class MyStream(BaseStream):
+            def construct_call_response(self) -> BaseCallResponse: ...
+
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __aiter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -474,15 +492,21 @@ def test_middleware_factory_stream_sync_exception_no_handler() -> None:
             raise ValueError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __iter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -512,15 +536,21 @@ async def test_middleware_factory_stream_async_exception_no_handler() -> None:
             raise ValueError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __aiter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -544,7 +574,7 @@ def test_middleware_factory_handle_error_sync_in_handle_call_response() -> None:
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
-            return "content"
+            return "content"  # pragma: no cover
 
     patch.multiple(MyCallResponse, __abstractmethods__=set()).start()
     call_response = MyCallResponse(
@@ -580,7 +610,7 @@ async def test_middleware_factory_handle_error_async_in_handle_call_response_asy
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
-            return "content"
+            return "content"  # pragma: no cover
 
     patch.multiple(MyCallResponse, __abstractmethods__=set()).start()
     call_response = MyCallResponse(
@@ -613,7 +643,7 @@ async def test_middleware_factory_handle_error_async_in_handle_call_response_asy
 
 def test_middleware_factory_handle_error_sync_in_custom_context_manager() -> None:
     def sync_fn():
-        return "result"
+        return "result"  # pragma: no cover
 
     def custom_context_manager(fn):
         class CustomContextManager:
@@ -621,7 +651,7 @@ def test_middleware_factory_handle_error_sync_in_custom_context_manager() -> Non
                 raise RuntimeError("Error in custom_context_manager")
 
             def __exit__(self, exc_type, exc_val, exc_tb):
-                pass
+                pass  # pragma: no cover
 
         return CustomContextManager()
 
@@ -637,7 +667,7 @@ async def test_middleware_factory_handle_error_async_in_custom_context_manager()
     None
 ):
     async def async_fn():
-        return "result"
+        return "result"  # pragma: no cover
 
     def custom_context_manager(fn):
         class CustomContextManager:
@@ -645,7 +675,7 @@ async def test_middleware_factory_handle_error_async_in_custom_context_manager()
                 raise RuntimeError("Error in custom_context_manager")
 
             def __exit__(self, exc_type, exc_val, exc_tb):
-                pass
+                pass  # pragma: no cover
 
         return CustomContextManager()
 
@@ -714,6 +744,12 @@ async def test_middleware_factory_stream_async_with_error() -> None:
             raise StreamError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
                 return 10
@@ -722,7 +758,7 @@ async def test_middleware_factory_stream_async_with_error() -> None:
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -767,15 +803,21 @@ async def test_middleware_factory_stream_async_error_handling_fails() -> None:
             raise StreamError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __aiter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -901,15 +943,21 @@ def test_stream_without_error_handler() -> None:
             raise StreamError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __iter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -989,15 +1037,21 @@ async def test_middleware_factory_stream_error_handler_exception_async() -> None
             raise StreamError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __aiter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,
@@ -1098,15 +1152,21 @@ def test_middleware_factory_stream_error_handler_exception() -> None:
             raise StreamError("Stream error")
 
         class MyStream(BaseStream):
+            def _construct_message_param(
+                self, tool_calls: list[Any] | None = None, content: str | None = None
+            ) -> AssistantMessageTypeDef: ...
+
+            def construct_call_response(self) -> BaseCallResponse: ...
+
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __iter__(self):
                 return iterator()
 
         return MyStream(
-            stream=None,
+            stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
             tool_types=[],
             call_response_type=MagicMock,

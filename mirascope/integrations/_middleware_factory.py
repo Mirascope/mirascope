@@ -336,7 +336,7 @@ def middleware_factory(
                                 handle_stream(result, fn, context)
                             context_manager.__exit__(None, None, None)
 
-                    class MiddlewareStream(original_class):
+                    class MiddlewareStream(original_class):  # pyright: ignore [reportGeneralTypeIssues]
                         __iter__ = (
                             custom_decorator(fn)(new_stream_iter)
                             if custom_decorator
@@ -385,7 +385,7 @@ def middleware_factory(
                                 handle_structured_stream(result, fn, context)
                             context_manager.__exit__(None, None, None)
 
-                    class MiddlewareStructuredStream(original_class):
+                    class MiddlewareStructuredStream(original_class):  # pyright: ignore [reportGeneralTypeIssues]
                         __iter__ = (
                             custom_decorator(fn)(new_iter)
                             if custom_decorator
