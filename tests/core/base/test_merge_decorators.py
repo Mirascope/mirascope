@@ -148,7 +148,7 @@ def test_error_propagation():
     @merged
     def func() -> str:
         """Function that should raise an error."""
-        return "success"
+        return "success"  # pragma: no cover
 
     with pytest.raises(ValueError, match="Test error"):
         func()
@@ -204,3 +204,4 @@ def test_metadata_preservation():
     assert type_hints["return"] is str
     assert func.__doc__ == "Convert int to str."
     assert func.__name__ == "func"
+    assert func(16) == "16"
