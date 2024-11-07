@@ -25,6 +25,8 @@ class CallResponseTable(SQLModel, table=True):
     content: str | None = Field(default=None)
     response_model: dict | None = Field(sa_column=Column(JSON), default=None)
     cost: float | None = Field(default=None)
+    error_type: str | None = Field(default=None)
+    error_message: str | None = Field(default=None)
 
 
 # ONE TIME SETUP
@@ -138,6 +140,35 @@ async def handle_structured_stream_async(
 ):
     # this is lazy and would generally actually utilize async here
     handle_structured_stream(structured_stream, fn, session)
+
+
+def handle_error(e: Exception, fn: Callable, session: Session | None) -> None:
+    """Handle errors that occur during a Mirascope call"""
+    if not session:
+        raise ValueError("Session is not set.")
+
+    error_type = type(e).__name__
+    error_message = str(e)
+
+    call_response_row = CallResponseTable(
+        function_name=fn.__name__,
+        error_type=error_type,
+        error_message=error_message,
+    )
+    session.add(call_response_row)
+    session.commit()
+
+    # You can choose to re-raise the error or return a fallback value
+    raise e  # Re-raise to propagate the error
+    # return "Error occurred"  # Return fallback value
+
+
+async def handle_error_async(
+    e: Exception, fn: Callable, session: Session | None
+) -> None:
+    """Handle errors that occur during an async Mirascope call"""
+    # this is lazy and would generally actually utilize async here
+    handle_error(e, fn, session)
 
 
 def with_saving():
