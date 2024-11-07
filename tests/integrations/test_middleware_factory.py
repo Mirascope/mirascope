@@ -393,7 +393,7 @@ def test_middleware_factory_stream_sync_exception() -> None:
 
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __iter__(self):
                 return iterator()
@@ -752,7 +752,7 @@ async def test_middleware_factory_stream_async_with_error() -> None:
 
             @property
             def cost(self) -> int:
-                return 10
+                return 10  # pragma: no cover
 
             def __aiter__(self):
                 return iterator()
