@@ -63,6 +63,20 @@ class AudioPart(BaseModel):
     audio: bytes
 
 
+class DocumentPart(BaseModel):
+    """A content part for pdf.
+
+    Attributes:
+        type: Always "document"
+        media_type: The media type (e.g. application/pdf)
+        document: document data
+    """
+
+    type: Literal["document"]
+    media_type: str
+    document: bytes
+
+
 class BaseMessageParam(BaseModel):
     """A base class for message parameters.
 
@@ -74,4 +88,7 @@ class BaseMessageParam(BaseModel):
     """
 
     role: str
-    content: str | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart]
+    content: (
+        str
+        | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]
+    )

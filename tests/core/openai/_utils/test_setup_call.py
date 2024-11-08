@@ -43,11 +43,13 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "gpt-4o"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
+    assert "stream_options" not in call_kwargs
     mock_base_setup_call.assert_called_once_with(fn, {}, None, None, OpenAITool, {})
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
@@ -57,11 +59,50 @@ def test_setup_call(
     assert create(**call_kwargs)
     mock_create.assert_called_once_with(**call_kwargs)
     mock_create.reset_mock()
+
+
+@patch("mirascope.core.openai._utils._setup_call.OpenAI", new_callable=MagicMock)
+@patch(
+    "mirascope.core.openai._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.openai._utils._setup_call._utils", new_callable=MagicMock)
+def test_setup_call_stream(
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_openai: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests the `setup_call` function."""
+    mock_utils.setup_call = mock_base_setup_call
+    fn = MagicMock()
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="gpt-4o",
+        client=None,
+        fn=fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        extract=False,
+        stream=True,
+    )
+    assert prompt_template == mock_base_setup_call.return_value[0]
+    assert tool_types == mock_base_setup_call.return_value[2]
+    assert "model" in call_kwargs and call_kwargs["model"] == "gpt-4o"
+    assert "messages" in call_kwargs and call_kwargs["messages"] == messages
+    assert "stream_options" in call_kwargs and call_kwargs["stream_options"] == {
+        "include_usage": True
+    }
+    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, OpenAITool, {})
+    mock_convert_message_params.assert_called_once_with(
+        mock_base_setup_call.return_value[1]
+    )
+    assert messages == mock_convert_message_params.return_value
+    mock_create = mock_openai.return_value.chat.completions.create
     assert create(stream=True, **call_kwargs)
     mock_create.assert_called_once_with(**call_kwargs, stream=True)
-    mock_create.reset_mock()
-    assert create(stream=False, **call_kwargs)
-    mock_create.assert_called_once_with(**call_kwargs)
 
 
 @patch(
@@ -98,6 +139,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1] == {"role": "user", "content": "json output"}
     assert "tools" not in call_kwargs
@@ -115,6 +157,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert isinstance(messages[-1], dict) and "content" in messages[-1]
 
@@ -138,6 +181,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert "response_format" in call_kwargs and call_kwargs["response_format"] == {
         "type": "json_schema",
@@ -191,5 +235,6 @@ def test_setup_call_extract(
             json_mode=False,
             call_params={},
             extract=True,
+            stream=False,
         )
     assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "required"

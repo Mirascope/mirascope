@@ -104,6 +104,7 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
@@ -136,6 +137,7 @@ def test_setup_call_system_message(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[0]["role"] == "user"
     assert messages[0]["content"] == [{"text": "user test"}]
@@ -168,6 +170,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1]["content"] == [{"text": "testjson_content"}]
     assert "tools" not in call_kwargs
@@ -200,6 +203,7 @@ def test_setup_call_json_mode_no_text(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1]["content"] == [
         {"image": "test_image"},
@@ -233,6 +237,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert isinstance(tool_types, list)
     assert "toolConfig" in call_kwargs and call_kwargs["toolConfig"] == {
@@ -263,6 +268,7 @@ def test_setup_call_with_tools(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert "toolConfig" in call_kwargs
     assert call_kwargs["toolConfig"] == {"tools": [{"name": "test_tool"}]}
@@ -292,6 +298,7 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
 
     # Test async client creation
@@ -307,6 +314,7 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     mock_get_async_client.assert_called_once()
 
@@ -322,5 +330,6 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert mock_get_async_client.call_count == 1

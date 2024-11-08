@@ -35,6 +35,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[Message, MessageStreamEvent],
     str | None,
@@ -56,6 +57,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[Message, MessageStreamEvent],
     str | None,
@@ -82,6 +84,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     Callable[..., Message | Awaitable[Message]],
     str | None,

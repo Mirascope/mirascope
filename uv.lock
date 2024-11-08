@@ -202,7 +202,7 @@ wheels = [
 
 [[package]]
 name = "anthropic"
-version = "0.34.1"
+version = "0.39.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -211,12 +211,11 @@ dependencies = [
     { name = "jiter" },
     { name = "pydantic" },
     { name = "sniffio" },
-    { name = "tokenizers" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/87/e2/98ff733ff75c1d371c029fb27eb9308f9c8e694749cea70382338a8e7e88/anthropic-0.34.1.tar.gz", hash = "sha256:69e822bd7a31ec11c2edb85f2147e8f0ee0cfd3288fea70b0ca8808b2f9bf91d", size = 901462 }
+sdist = { url = "https://files.pythonhosted.org/packages/79/02/2ea51930009d7537c4648f51d1bb3202ec76704cbb39a2a863ab38bee3dd/anthropic-0.39.0.tar.gz", hash = "sha256:94671cc80765f9ce693f76d63a97ee9bef4c2d6063c044e983d21a2e262f63ba", size = 189339 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/1c/1ce9edec76885badebacb4e31d42acffbdfd30dbaa839d5c378d57ac9aa9/anthropic-0.34.1-py3-none-any.whl", hash = "sha256:2fa26710809d0960d970f26cd0be3686437250a481edb95c33d837aa5fa24158", size = 891537 },
+    { url = "https://files.pythonhosted.org/packages/94/61/2580eaa171cab20708d59d39cadd15f78a6c617759e8d0a12e18fe3302d1/anthropic-0.39.0-py3-none-any.whl", hash = "sha256:ea17093ae0ce0e1768b0c46501d6086b5bcd74ff39d68cd2d6396374e9de7c09", size = 198392 },
 ]
 
 [[package]]

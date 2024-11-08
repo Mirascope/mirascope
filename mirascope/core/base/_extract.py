@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from ._create import create_factory
 from ._utils import (
@@ -132,12 +132,12 @@ def extract_factory(  # noqa: ANN202
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
-                json_output = get_json_output(call_response, json_mode)
                 try:
+                    json_output = get_json_output(call_response, json_mode)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
-                except ValidationError as e:
+                except Exception as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
                 if isinstance(output, BaseModel):
@@ -155,12 +155,12 @@ def extract_factory(  # noqa: ANN202
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
-                json_output = get_json_output(call_response, json_mode)
                 try:
+                    json_output = get_json_output(call_response, json_mode)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
-                except ValidationError as e:
+                except Exception as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
                 if isinstance(output, BaseModel):

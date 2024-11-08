@@ -39,6 +39,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -60,6 +61,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -81,6 +83,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate]
     | AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
