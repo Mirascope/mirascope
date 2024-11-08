@@ -13,6 +13,7 @@ from .message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
     TextPart,
 )
