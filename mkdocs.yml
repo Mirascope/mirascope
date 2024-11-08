@@ -338,6 +338,8 @@ nav:
           - HTTPX: "api/tools/web/httpx.md"
           - ParseURLContent: "api/tools/web/parse_url_content.md"
           - Requests: "api/tools/web/requests.md"
+          - FileSystem: "api/tools/system/file_system.md"
+          - ComputerUse: "api/tools/system/dokcer_operation.md"
       - Integrations:
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"

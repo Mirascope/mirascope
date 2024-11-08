@@ -8,9 +8,9 @@ from __future__ import annotations
 import inspect
 from abc import ABC
 from collections.abc import Callable
-from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar
+from typing import Any, ClassVar, Concatenate, NamedTuple, TypeVar, cast, overload
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, create_model
 from typing_extensions import ParamSpec
 
 from . import BaseTool
@@ -21,6 +21,10 @@ _TOOLKIT_TOOL_METHOD_MARKER: str = "__toolkit_tool_method__"
 _namespaces: set[str] = set()
 
 P = ParamSpec("P")
+
+
+def is_toolkit_tool(method: Callable[..., Any] | BaseTool) -> bool:
+    return getattr(method, _TOOLKIT_TOOL_METHOD_MARKER, False) is True
 
 
 class ToolKitToolMethod(NamedTuple):
@@ -84,11 +88,20 @@ class BaseToolKit(BaseModel, ABC):
                 # Replace non-self template variables with escaped double brackets so
                 # that templating `self` results in a future templateable string.
                 template = template.replace(f"{{{var}}}", f"{{{{{var}}}}}")
-            converted_method = convert_function_to_base_tool(
-                method, BaseTool, template.format(self=self), self.__namespace__
-            )
-            for key, value in self:
-                setattr(converted_method, key, value)
+            if inspect.isclass(method) and issubclass(method, BaseTool):
+                converted_method = create_model(
+                    f"{self.__namespace__}_{method.__name__}",
+                    __doc__=inspect.cleandoc(cast(str, method.__doc__)),
+                    __base__=method,
+                    __module__=method.__module__,
+                )
+            else:
+                converted_method = convert_function_to_base_tool(
+                    method, BaseTool, template.format(self=self), self.__namespace__
+                )
+            for key in dir(self):
+                if not hasattr(converted_method, key):
+                    setattr(converted_method, key, getattr(self, key))
             tools.append(converted_method)
         return tools
 
@@ -101,8 +114,9 @@ class BaseToolKit(BaseModel, ABC):
             _namespaces.add(cls.__namespace__)
 
         cls._toolkit_tool_methods = []
-        for attr in cls.__dict__.values():
-            if not getattr(attr, _TOOLKIT_TOOL_METHOD_MARKER, False):
+        for key in dir(cls):
+            attr = getattr(cls, key)
+            if not is_toolkit_tool(attr):
                 continue
             # Validate the toolkit_tool_method
             if (template := attr.__doc__) is None:
@@ -117,7 +131,7 @@ class BaseToolKit(BaseModel, ABC):
                     # be later templated e.g. if using a call as a tool.
                     continue
 
-                self_var = var[5:]
+                self_var = var[5:].split(".")[0]
 
                 # Expecting pydantic model fields or class attribute and property
                 if self_var in cls.model_fields or hasattr(cls, self_var):
@@ -130,16 +144,32 @@ class BaseToolKit(BaseModel, ABC):
             cls._toolkit_tool_methods.append(
                 ToolKitToolMethod(attr, template_vars, dedented_template)
             )
+        if ABC in cls.__bases__ or any(
+            ABC in base.__bases__ for base in cls.__bases__ if base != BaseToolKit
+        ):
+            return  # Skip if the class is a generic class
+
         if not cls._toolkit_tool_methods:
             raise ValueError("No toolkit_tool method found")
 
 
 _BaseToolKitT = TypeVar("_BaseToolKitT", bound=BaseToolKit)
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
+@overload
 def toolkit_tool(
     method: Callable[Concatenate[_BaseToolKitT, P], str],
-) -> Callable[Concatenate[_BaseToolKitT, P], str]:
+) -> Callable[Concatenate[_BaseToolKitT, P], str]: ...
+
+
+@overload
+def toolkit_tool(
+    method: type[_BaseToolT],
+) -> type[_BaseToolT]: ...
+def toolkit_tool(
+    method: Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT],
+) -> Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT]:
     # Mark the method as a toolkit tool
     setattr(method, _TOOLKIT_TOOL_METHOD_MARKER, True)
 

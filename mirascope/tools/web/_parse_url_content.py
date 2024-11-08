@@ -7,10 +7,10 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ToolConfig, _ToolSchemaT
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
 
 
-class ParseURLConfig(_ToolConfig):
+class ParseURLConfig(_ConfigurableToolConfig):
     """Configuration for URL content parsing"""
 
     parser: str = Field(
@@ -31,7 +31,7 @@ class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
     and returns clean text content from the webpage's main body.
     """
 
-    __config__ = ParseURLConfig()  # pyright: ignore [reportCallIssue]
+    __configurable_tool_config__ = ParseURLConfig()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = """
     - `ParseURLContent`: Returns the given URL's main content as clean text
         - Fetches the raw HTML content for the given URL
@@ -54,12 +54,12 @@ class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
             # Fetch content from URL
             response = requests.get(
                 self.url,
-                timeout=self._config().timeout,
+                timeout=self._get_config().timeout,
             )
             response.raise_for_status()
 
             # Parse HTML content
-            soup = BeautifulSoup(response.text, self._config().parser)
+            soup = BeautifulSoup(response.text, self._get_config().parser)
 
             # Remove unwanted tags
             unwanted_tags = ["script", "style", "nav", "header", "footer", "aside"]

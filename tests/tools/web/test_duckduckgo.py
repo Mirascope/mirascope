@@ -63,7 +63,7 @@ def test_single_query_success(mock_ddgs):
     assert "https://example1.com" in result
     assert "This is the first example snippet" in result
     mock_ddgs_instance.text.assert_called_once_with(
-        "test query", max_results=search._config().max_results_per_query
+        "test query", max_results=search._get_config().max_results_per_query
     )
 
 
@@ -231,7 +231,7 @@ async def test_async_single_query_success(mock_async_ddgs):
     assert "https://example1.com" in result
     assert "First async test snippet" in result
     mock_ddgs_instance.atext.assert_called_once_with(
-        "test query", max_results=search._config().max_results_per_query
+        "test query", max_results=search._get_config().max_results_per_query
     )
 
 

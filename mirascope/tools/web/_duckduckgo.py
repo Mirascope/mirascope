@@ -5,10 +5,10 @@ from typing import ClassVar
 from duckduckgo_search import DDGS, AsyncDDGS
 from pydantic import Field
 
-from ..base import ConfigurableTool, _ToolConfig, _ToolSchemaT
+from ..base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
 
 
-class DuckDuckGoSearchConfig(_ToolConfig):
+class DuckDuckGoSearchConfig(_ConfigurableToolConfig):
     """Configuration for DuckDuckGo search"""
 
     max_results_per_query: int = Field(
@@ -32,7 +32,7 @@ class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchema
         - Multiple results returned per query based on configuration
     """
 
-    __config__ = DuckDuckGoSearchConfig()
+    __configurable_tool_config__ = DuckDuckGoSearchConfig()
 
     queries: list[str] = Field(..., description="List of search queries")
 
@@ -54,7 +54,7 @@ class DuckDuckGoSearch(_BaseDuckDuckGoSearch):
             all_results = []
             for query in self.queries:
                 results = DDGS(proxies=None).text(
-                    query, max_results=self._config().max_results_per_query
+                    query, max_results=self._get_config().max_results_per_query
                 )
 
                 all_results.extend(
@@ -91,7 +91,7 @@ class AsyncDuckDuckGoSearch(_BaseDuckDuckGoSearch):
             all_results = []
             for query in self.queries:
                 results = await AsyncDDGS(proxies=None).atext(
-                    query, max_results=self._config().max_results_per_query
+                    query, max_results=self._get_config().max_results_per_query
                 )
 
                 all_results.extend(

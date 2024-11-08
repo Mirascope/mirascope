@@ -3,10 +3,10 @@ from typing import ClassVar, Literal
 import requests
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ToolConfig
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
-class RequestsConfig(_ToolConfig):
+class RequestsConfig(_ConfigurableToolConfig):
     """Configuration for HTTP requests"""
 
     timeout: int = Field(default=5, description="Request timeout in seconds")
@@ -15,7 +15,7 @@ class RequestsConfig(_ToolConfig):
 class Requests(ConfigurableTool):
     """Tool for making HTTP requests with built-in requests library."""
 
-    __config__ = RequestsConfig()
+    __configurable_tool_config__ = RequestsConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `Requests`: Makes HTTP requests to web URLs using requests library
@@ -45,7 +45,7 @@ class Requests(ConfigurableTool):
                 url=self.url,
                 json=self.data,
                 headers=self.headers,
-                timeout=self._config().timeout,
+                timeout=self._get_config().timeout,
             )
             response.raise_for_status()
             return response.text
