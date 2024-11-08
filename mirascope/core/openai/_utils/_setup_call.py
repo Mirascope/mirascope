@@ -125,7 +125,11 @@ def setup_call(
             )
         call_kwargs["tool_choice"] = "required"
     if stream:
-        call_kwargs["stream_options"] = {"include_usage": True}
+        call_kwargs["stream_options"] = (
+            {"include_usage": True}
+            if "stream_options" not in call_kwargs
+            else call_kwargs["stream_options"].update({"include_usage": True})  # pyright: ignore [reportOptionalMemberAccess]
+        )
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
