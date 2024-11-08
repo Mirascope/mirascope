@@ -51,12 +51,6 @@ def middleware_factory(
         [SyncFunc | AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
     custom_decorator: Callable | None = None,
-    handle_error: Callable[[Exception, SyncFunc | AsyncFunc, _T | None], Any]
-    | None = None,
-    handle_error_async: Callable[
-        [Exception, SyncFunc | AsyncFunc, _T | None], Awaitable[Any]
-    ]
-    | None = None,
     handle_call_response: Callable[
         [BaseCallResponse, SyncFunc | AsyncFunc, _T | None], None
     ]
@@ -87,6 +81,12 @@ def middleware_factory(
         [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
+    handle_error: Callable[[Exception, SyncFunc | AsyncFunc, _T | None], Any]
+    | None = None,
+    handle_error_async: Callable[
+        [Exception, SyncFunc | AsyncFunc, _T | None], Awaitable[Any]
+    ]
+    | None = None,
 ) -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
     '''A factory method for creating middleware decorators.
 
@@ -102,8 +102,6 @@ def middleware_factory(
         return middleware_factory(
             custom_context_manager=custom_context_manager,
             custom_decorator=custom_decorator,
-            handle_error_async=handle_error_async,
-            handle_error=handle_error,
             handle_call_response=handle_call_response,
             handle_call_response_async=handle_call_response_async,
             handle_stream=handle_stream,
@@ -112,6 +110,8 @@ def middleware_factory(
             handle_response_model_async=handle_response_model_async,
             handle_structured_stream=handle_structured_stream,
             handle_structured_stream_async=handle_structured_stream_async,
+            handle_error_async=handle_error_async,
+            handle_error=handle_error,
         )
 
 

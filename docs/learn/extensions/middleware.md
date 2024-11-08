@@ -22,7 +22,7 @@ This table should be adjusted and tailored to your needs depending on your SQL D
     --8<-- "examples/learn/middleware/with_saving.py:9:9"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:174:188"
+    --8<-- "examples/learn/middleware/with_saving.py:174:190"
     ```
 
 Let's go over each of the different functions used to create the custom middleware:
@@ -39,7 +39,7 @@ We start off with the `custom_context_manager` function, which will be relevant 
     --8<-- "examples/learn/middleware/with_saving.py:7:7"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:37:43"
+    --8<-- "examples/learn/middleware/with_saving.py:36:42"
     ```
 
 All of the following handlers are then wrapped by this context manager.
@@ -134,20 +134,19 @@ The first argument will be a Mirascope `StructuredStream` of the provider you ar
 
     The `handle_structured_stream` and `handle_structured_stream_async` handlers will run only after the `Generator` or `AsyncGenerator`, respectively, have been exhausted.
 
-### `custom_decorator`
-
-There may be existing libraries that already have a decorator implemented. You can pass that decorator in to `custom_decorator`, which will wrap the Mirascope call with your custom decorator. This decorator will be called before your custom middleware decorator (in our case, before `with_saving` is called).
-
-
-### `handle_error` and `handle_error_async` 
+### `handle_error` and `handle_error_async`
 
 `handle_error` and `handle_error_async` are called when an error occurs during the Mirascope call. This is useful for handling and recording common errors like validation errors or API failures:
 
 !!! mira ""
 
     ```python
-    --8<-- "examples/learn/middleware/with_saving.py:147:173"
+    --8<-- "examples/learn/middleware/with_saving.py:145:171"
     ```
+
+### `custom_decorator`
+
+There may be existing libraries that already have a decorator implemented. You can pass that decorator in to `custom_decorator`, which will wrap the Mirascope call with your custom decorator. This decorator will be called before your custom middleware decorator (in our case, before `with_saving` is called).
 
 ## How to use your newly created decorator
 
@@ -159,7 +158,7 @@ Now that you have defined your and created your `with_saving` decorator, you can
     --8<-- "examples/learn/middleware/with_saving.py:5:5"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:193:200"
+    --8<-- "examples/learn/middleware/with_saving.py:193:199"
     ```
 
 In this example, when `run` is finished, `handle_call_response` will be called to collect the response. Now, any Mirascope call that uses the `with_saving` decorator will write to your database.

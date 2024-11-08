@@ -185,6 +185,8 @@ def with_saving():
         handle_response_model_async=handle_response_model_async,
         handle_structured_stream=handle_structured_stream,
         handle_structured_stream_async=handle_structured_stream_async,
+        handle_error=handle_error,
+        handle_error_async=handle_error_async,
     )
 
 
