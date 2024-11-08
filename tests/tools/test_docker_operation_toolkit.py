@@ -8,7 +8,7 @@ from mirascope.tools.system._docker_operation import DockerContainer, DockerOper
 
 @pytest.fixture
 def docker_operation_toolkit() -> DockerOperationToolKit:
-    """Creates a DockerOperationToolkit instance."""
+    """Creates a DockerOperationToolKit instance."""
     config = DockerOperationToolKitConfig(
         docker_image="python:3.13-slim",
         max_memory="256m",

@@ -15,7 +15,7 @@ from mirascope.tools.base import (
 )
 
 
-class FileSystemToolkitConfig(_ConfigurableToolConfig):
+class FileSystemToolKitConfig(_ConfigurableToolConfig):
     """Configuration for file_system toolkit"""
 
     max_file_size: int = Field(
@@ -28,10 +28,10 @@ class FileSystemToolkitConfig(_ConfigurableToolConfig):
     )
 
 
-class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC):
+class FileOperation(ConfigurableTool[FileSystemToolKitConfig, _ToolSchemaT], ABC):
     """Base class for file system operations."""
 
-    _configurable_tool_config = FileSystemToolkitConfig()
+    __configurable_tool_config__ = FileSystemToolKitConfig()
 
     if TYPE_CHECKING:
         # In create_tools method, the base_directory is set to ToolKit base_directory
@@ -72,12 +72,12 @@ class FileOperation(ConfigurableTool[FileSystemToolkitConfig, _ToolSchemaT], ABC
         return None
 
 
-class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
-    """Toolkit for file system operations.
+class FileSystemToolKit(ConfigurableToolKit[FileSystemToolKitConfig]):
+    """ToolKit for file system operations.
     Read, write, list, create, and delete files and directories.
     """
 
-    config: FileSystemToolkitConfig = FileSystemToolkitConfig()
+    config: FileSystemToolKitConfig = FileSystemToolKitConfig()
 
     @toolkit_tool
     class ReadFile(FileOperation):
@@ -233,7 +233,7 @@ class FileSystemToolkit(ConfigurableToolKit[FileSystemToolkitConfig]):
             except Exception as e:  # pragma: no cover
                 return f"Error deleting file: {str(e)}"
 
-    _configurable_tool_config = FileSystemToolkitConfig()
+    __configurable_tool_config__ = FileSystemToolKitConfig()
     __namespace__ = "file_system"
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for file system operations:

@@ -20,7 +20,7 @@ from mirascope.tools.base import (
 
 
 class DockerOperationToolKitConfig(_ConfigurableToolConfig):
-    """Configuration for computer use toolkit"""
+    """Configuration for `DockerOperationToolKit` toolkit"""
 
     docker_image: str = Field(
         default="python:3.13-slim", description="Docker image for code execution"
@@ -34,7 +34,7 @@ class DockerOperation(
 ):
     """Base class for Docker operations."""
 
-    _configurable_tool_config = DockerOperationToolKitConfig()
+    __configurable_tool_config__ = DockerOperationToolKitConfig()
     _docker_container: DockerContainer
 
     @classmethod
@@ -83,11 +83,11 @@ class DockerContainer(BaseModel):
 
 
 class DockerOperationToolKit(ConfigurableToolKit[DockerOperationToolKitConfig]):
-    """Toolkit for executing Python code and shell commands in a Docker container."""
+    """ToolKit for executing Python code and shell commands in a Docker container."""
 
     config: DockerOperationToolKitConfig = DockerOperationToolKitConfig()
     docker_container: DockerContainer
-    __namespace__ = "computer"
+    __namespace__ = "docker"
     __prompt_usage_description__: ClassVar[str] = """
     - Tools for code execution:
         - ExecutePython: Executes Python code with optional requirements in a Docker container

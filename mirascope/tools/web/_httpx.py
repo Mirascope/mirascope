@@ -18,7 +18,7 @@ class HTTPXConfig(_ConfigurableToolConfig):
 class _BaseHTTPX(ConfigurableTool):
     """Tool for making HTTP requests using HTTPX with configurable timeout and error handling."""
 
-    _configurable_tool_config = HTTPXConfig()
+    __configurable_tool_config__ = HTTPXConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `HTTPX`: Makes HTTP requests to web URLs with HTTPX client

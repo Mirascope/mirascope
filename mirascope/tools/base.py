@@ -32,17 +32,17 @@ class ConfigurableTool(
     """Abstract base class for configurable tools.
 
     Subclasses must define a `__prompt_usage_description__` class variable
-    and _configurable_tool_config class variable with a subclass of _ToolConfig.
+    and __configurable_tool_config__ class variable with a subclass of _ToolConfig.
     """
 
-    _configurable_tool_config: ClassVar[_ConfigurableToolConfig]
+    __configurable_tool_config__: ClassVar[_ConfigurableToolConfig]
     __prompt_usage_description__: ClassVar[str]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def _get_config(cls) -> _ConfigurableToolConfigT:
         """Get tool configuration"""
-        return cast(_ConfigurableToolConfigT, cls._configurable_tool_config)
+        return cast(_ConfigurableToolConfigT, cls.__configurable_tool_config__)
 
     @classmethod
     def from_config(
@@ -59,7 +59,7 @@ class ConfigurableTool(
             __doc__=cls.__doc__ if cls.__doc__ else DEFAULT_TOOL_DOCSTRING,
         )
         new_model.__prompt_usage_description__ = cls.__prompt_usage_description__
-        new_model._configurable_tool_config = config
+        new_model.__configurable_tool_config__ = config
         return new_model
 
     @classmethod

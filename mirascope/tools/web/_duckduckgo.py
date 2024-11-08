@@ -32,7 +32,7 @@ class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchema
         - Multiple results returned per query based on configuration
     """
 
-    _configurable_tool_config = DuckDuckGoSearchConfig()
+    __configurable_tool_config__ = DuckDuckGoSearchConfig()
 
     queries: list[str] = Field(..., description="List of search queries")
 

@@ -1,11 +1,12 @@
-from mirascope.core import gemini, BaseDynamicConfig, Messages
-from mirascope.tools import FileSystemToolkit
 from pathlib import Path
+
+from mirascope.core import BaseDynamicConfig, Messages, gemini
+from mirascope.tools import FileSystemToolKit
 
 
 @gemini.call("gemini-1.5-flash")
 def write_blog_post(topic: str, output_file: Path) -> BaseDynamicConfig:
-    toolkit = FileSystemToolkit(base_directory=output_file.parent)
+    toolkit = FileSystemToolKit(base_directory=output_file.parent)
     return {
         "messages": [
             Messages.User(

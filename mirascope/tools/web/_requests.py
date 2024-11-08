@@ -15,7 +15,7 @@ class RequestsConfig(_ConfigurableToolConfig):
 class Requests(ConfigurableTool):
     """Tool for making HTTP requests with built-in requests library."""
 
-    _configurable_tool_config = RequestsConfig()
+    __configurable_tool_config__ = RequestsConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `Requests`: Makes HTTP requests to web URLs using requests library

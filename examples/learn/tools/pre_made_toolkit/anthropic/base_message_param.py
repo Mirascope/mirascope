@@ -1,11 +1,12 @@
-from mirascope.core import anthropic, BaseDynamicConfig, BaseMessageParam
-from mirascope.tools import FileSystemToolkit
 from pathlib import Path
+
+from mirascope.core import BaseDynamicConfig, BaseMessageParam, anthropic
+from mirascope.tools import FileSystemToolKit
 
 
 @anthropic.call("claude-3-5-sonnet-20240620")
 def write_blog_post(topic: str, output_file: Path) -> BaseDynamicConfig:
-    toolkit = FileSystemToolkit(base_directory=output_file.parent)
+    toolkit = FileSystemToolKit(base_directory=output_file.parent)
     return {
         "messages": [
             BaseMessageParam(
