@@ -176,9 +176,9 @@ nav:
           - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
           - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
           - o1 Style Thinking: "tutorials/more_advanced/o1_style_thinking.ipynb"
-          - Web Search Agent With Sources: "tutorials/more_advanced/web_search_agent_with_sources.ipynb"
       - Agents:
           - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
+          - Qwant Search Agent With Sources: "tutorials/agents/qwant_search_agent_with_sources.ipynb"
           - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
           - SQL Agent: "tutorials/agents/sql_agent.ipynb"
           - Localized Agent: "tutorials/agents/localized_agent.ipynb"
