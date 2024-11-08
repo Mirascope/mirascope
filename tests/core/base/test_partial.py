@@ -8,6 +8,7 @@ from mirascope.core.base._partial import partial
 class ShallowModel(BaseModel):
     """A test model."""
 
+    empty: None
     param: str
     default: int = 0
 
@@ -15,6 +16,7 @@ class ShallowModel(BaseModel):
 class PartialShallowModel(BaseModel):
     """A test model."""
 
+    empty: None = None
     param: str | None = None
     default: int | None = None
 
@@ -37,7 +39,7 @@ class DeeperModel(BaseModel):
 class PartialDeeperModel(BaseModel):
     """A deeper model."""
 
-    shallow: PartialShallowModel | None = {}  # pyright: ignore [reportAssignmentType]
+    shallow: PartialShallowModel | None = None
     param: str | None = None
 
 
@@ -60,8 +62,8 @@ class DeepestModel(BaseModel):
 class PartialDeepestModel(BaseModel):
     """A deepest model."""
 
-    shallow: PartialShallowModel | None = {}  # pyright: ignore [reportAssignmentType]
-    deeper: PartialDeeperModel | None = {}  # pyright: ignore [reportAssignmentType]
+    shallow: PartialShallowModel | None = None
+    deeper: PartialDeeperModel | None = None
     param: str | None = None
 
 
@@ -70,4 +72,23 @@ def test_deepest_partial() -> None:
     assert (
         partial(DeepestModel).model_json_schema()
         == PartialDeepestModel.model_json_schema()
+    )
+
+
+class ModelWithList(BaseModel):
+    """A model with a list."""
+
+    param: list[str]
+
+
+class PartialModelWithList(BaseModel):
+    """A model with a list."""
+
+    param: list[str | None] | None = None
+
+
+def test_list_partial() -> None:
+    assert (
+        partial(ModelWithList).model_json_schema()
+        == PartialModelWithList.model_json_schema()
     )
