@@ -42,9 +42,27 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "audio":
+                    if part.media_type not in [
+                        "audio/wav",
+                        "audio/mp3",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported audio media type: {part.media_type}. "
+                            "OpenAI currently only supports WAV and MP3 audio file types."
+                        )
+                    converted_content.append(
+                        {
+                            "input_audio": {
+                                "format": part.media_type.split("/")[-1],
+                                "data": base64.b64encode(part.audio).decode("utf-8"),
+                            },
+                            "type": "input_audio",
+                        }
+                    )
                 else:
                     raise ValueError(
-                        "OpenAI currently only supports text and image parts. "
+                        "OpenAI currently only supports text, image and audio parts. "
                         f"Part provided: {part.type}"
                     )
             converted_message_params.append(

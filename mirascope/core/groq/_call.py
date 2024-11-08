@@ -10,17 +10,14 @@ from ._utils import (
 from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk
-from .dynamic_config import GroqDynamicConfig
 from .stream import GroqStream
 from .tool import GroqTool
 
 groq_call = call_factory(
     TCallResponse=GroqCallResponse,
     TCallResponseChunk=GroqCallResponseChunk,
-    TDynamicConfig=GroqDynamicConfig,
     TToolType=GroqTool,
     TStream=GroqStream,
-    TCallParams=GroqCallParams,
     default_call_params=GroqCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

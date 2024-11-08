@@ -4,10 +4,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from mirascope.core.vertex import _utils
-from mirascope.core.vertex.call_params import VertexCallParams
 from mirascope.core.vertex.call_response import VertexCallResponse
 from mirascope.core.vertex.call_response_chunk import VertexCallResponseChunk
-from mirascope.core.vertex.dynamic_config import VertexDynamicConfig
 from mirascope.core.vertex.stream import VertexStream
 from mirascope.core.vertex.tool import VertexTool
 
@@ -26,10 +24,8 @@ def test_vertex_call() -> None:
         mock_call_factory.assert_called_once_with(
             TCallResponse=VertexCallResponse,
             TCallResponseChunk=VertexCallResponseChunk,
-            TDynamicConfig=VertexDynamicConfig,
             TToolType=VertexTool,
             TStream=VertexStream,
-            TCallParams=VertexCallParams,
             default_call_params={},
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,

@@ -4,9 +4,9 @@ from cohere.types import (
     ApiMeta,
     ApiMetaBilledUnits,
     NonStreamedChatResponse,
-    StreamedChatResponse_StreamEnd,
-    StreamedChatResponse_StreamStart,
-    StreamedChatResponse_TextGeneration,
+    StreamEndStreamedChatResponse,
+    StreamStartStreamedChatResponse,
+    TextGenerationStreamedChatResponse,
 )
 
 from mirascope.core.cohere.call_response_chunk import CohereCallResponseChunk
@@ -15,11 +15,11 @@ from mirascope.core.cohere.call_response_chunk import CohereCallResponseChunk
 def test_cohere_call_response_chunk() -> None:
     """Tests the `CohereCallResponseChunk` class."""
     usage = ApiMetaBilledUnits(input_tokens=1, output_tokens=1)
-    chunk_start = StreamedChatResponse_StreamStart(generation_id="id")
-    chunk = StreamedChatResponse_TextGeneration(
+    chunk_start = StreamStartStreamedChatResponse(generation_id="id")
+    chunk = TextGenerationStreamedChatResponse(
         text="content",
     )
-    chunk_finish = StreamedChatResponse_StreamEnd(
+    chunk_finish = StreamEndStreamedChatResponse(
         finish_reason="COMPLETE",
         response=NonStreamedChatResponse(
             generation_id="id",

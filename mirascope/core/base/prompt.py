@@ -1,6 +1,5 @@
 """The `BasePrompt` class for better prompt engineering."""
 
-import types
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from functools import reduce, wraps
 from typing import (
@@ -13,7 +12,6 @@ from typing import (
 )
 
 from pydantic import BaseModel
-from typing_extensions import TypeIs
 
 from ._utils import (
     BaseType,
@@ -37,6 +35,8 @@ _T = TypeVar("_T", bound=Callable)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseStreamT = TypeVar("_BaseStreamT")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
+
+SUPPORTED_MESSAGE_ROLES = ["system", "user", "assistant"]
 
 
 class BasePrompt(BaseModel):
@@ -84,7 +84,7 @@ class BasePrompt(BaseModel):
     def message_params(self) -> list[BaseMessageParam]:
         """Returns the list of parsed message parameters."""
         return parse_prompt_messages(
-            roles=["system", "user", "assistant"],
+            roles=SUPPORTED_MESSAGE_ROLES,
             template=get_prompt_template(self),
             attrs={field: getattr(self, field) for field in self.model_fields},
         )
@@ -328,16 +328,6 @@ class PromptDecorator(Protocol):
     ): ...
 
 
-def _is_base_dynamic_config_function(
-    prompt: type[_BasePromptT]
-    | Callable[_P, BaseDynamicConfig]
-    | Callable[_P, Awaitable[BaseDynamicConfig]],
-) -> TypeIs[
-    Callable[_P, BaseDynamicConfig] | Callable[_P, Awaitable[BaseDynamicConfig]]
-]:
-    return isinstance(prompt, types.FunctionType)
-
-
 @overload
 def prompt_template(template: str) -> PromptDecorator: ...
 
@@ -404,7 +394,7 @@ def prompt_template(
         """Updates the `prompt_template` class attribute to the given value."""
         prompt._prompt_template = template  # pyright: ignore [reportAttributeAccessIssue,reportFunctionMemberAccess]
 
-        if not _is_base_dynamic_config_function(prompt):
+        if isinstance(prompt, type):
             return prompt
 
         if fn_is_async(prompt):
@@ -414,7 +404,7 @@ def prompt_template(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
                 return parse_prompt_messages(
-                    roles=["system", "user", "assistant"],
+                    roles=SUPPORTED_MESSAGE_ROLES,
                     template=template,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=await prompt(*args, **kwargs),
@@ -430,7 +420,7 @@ def prompt_template(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> list[BaseMessageParam]:
                 return parse_prompt_messages(
-                    roles=["system", "user", "assistant"],
+                    roles=SUPPORTED_MESSAGE_ROLES,
                     template=template,
                     attrs=get_fn_args(prompt, args, kwargs),
                     dynamic_config=prompt(*args, **kwargs),

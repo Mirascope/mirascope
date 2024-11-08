@@ -27,6 +27,7 @@ _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=Tru
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
@@ -45,6 +46,7 @@ def extract_factory(  # noqa: ANN202
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -56,6 +58,7 @@ def extract_factory(  # noqa: ANN202
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -83,7 +86,7 @@ def extract_factory(  # noqa: ANN202
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
@@ -94,7 +97,7 @@ def extract_factory(  # noqa: ANN202
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
@@ -106,6 +109,7 @@ def extract_factory(  # noqa: ANN202
         _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
     ]:
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
+        fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         tool = setup_extract_tool(response_model, TToolType)
         create_decorator_kwargs = {
             "model": model,

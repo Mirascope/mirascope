@@ -175,6 +175,7 @@ nav:
           - Speech Transcription: "tutorials/more_advanced/speech_transcription.ipynb"
           - Query Plan: "tutorials/more_advanced/query_plan.ipynb"
           - Named Entity Recognition: "tutorials/more_advanced/named_entity_recognition.ipynb"
+          - o1 Style Thinking: "tutorials/more_advanced/o1_style_thinking.ipynb"
       - Agents:
           - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
           - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
@@ -230,10 +231,12 @@ nav:
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
       - Retries: "learn/retries.md"
+      - Provider-Specific Features:
+          - OpenAI: "learn/provider_specific_features/openai.md"
+          - Anthropic: "learn/provider_specific_features/anthropic.md"
       - Extensions:
-          - Provider-Specific Features: "learn/provider_specific_features.md"
-          - Middleware: "learn/middleware.md"
-          - Custom LLM Provider: "learn/custom_provider.md"
+          - Middleware: "learn/extensions/middleware.md"
+          - Custom LLM Provider: "learn/extensions/custom_provider.md"
   - Integrations:
       - OpenTelemetry: "integrations/otel.md"
       - HyperDX: "integrations/hyperdx.md"
@@ -328,6 +331,11 @@ nav:
               - dynamic_config: "api/core/vertex/dynamic_config.md"
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
+      - Tools:
+          - DuckDuckGo: "api/tools/web/duckduckgo.md"
+          - HTTPX: "api/tools/web/httpx.md"
+          - ParseURLContent: "api/tools/web/parse_url_content.md"
+          - Requests: "api/tools/web/requests.md"
       - Integrations:
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"

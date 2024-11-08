@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+import base64
+
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
@@ -19,6 +21,19 @@ from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
+
+try:
+    from openai.types.chat import (
+        ChatCompletionAudio,  # pyright: ignore [reportAssignmentType]
+    )
+except ImportError:  # pragma: no cover
+
+    class ChatCompletionAudio:
+        @property
+        def data(self) -> str: ...
+
+        @property
+        def transcript(self) -> str: ...
 
 
 class OpenAICallResponse(
@@ -105,8 +120,10 @@ class OpenAICallResponse(
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
         message_param = self.response.choices[0].message.model_dump(
-            exclude={"function_call"}
+            exclude={"function_call", "audio"}
         )
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            message_param["audio"] = {"id": audio.id}
         return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
@@ -173,3 +190,19 @@ class OpenAICallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @computed_field
+    @property
+    def audio(self) -> bytes | None:
+        """Returns the audio data of the response."""
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            return base64.b64decode(audio.data)
+        return None
+
+    @computed_field
+    @property
+    def audio_transcript(self) -> str | None:
+        """Returns the transcript of the audio content."""
+        if audio := getattr(self.response.choices[0].message, "audio", None):
+            return audio.transcript
+        return None

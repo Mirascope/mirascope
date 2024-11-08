@@ -5,17 +5,14 @@ from ._utils import get_json_output, handle_stream, handle_stream_async, setup_c
 from .call_params import VertexCallParams
 from .call_response import VertexCallResponse
 from .call_response_chunk import VertexCallResponseChunk
-from .dynamic_config import VertexDynamicConfig
 from .stream import VertexStream
 from .tool import VertexTool
 
 vertex_call = call_factory(
     TCallResponse=VertexCallResponse,
     TCallResponseChunk=VertexCallResponseChunk,
-    TDynamicConfig=VertexDynamicConfig,
     TStream=VertexStream,
     TToolType=VertexTool,
-    TCallParams=VertexCallParams,
     default_call_params=VertexCallParams(),
     setup_call=setup_call,
     get_json_output=get_json_output,

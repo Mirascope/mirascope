@@ -4,10 +4,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from mirascope.core.openai import _utils
-from mirascope.core.openai.call_params import OpenAICallParams
 from mirascope.core.openai.call_response import OpenAICallResponse
 from mirascope.core.openai.call_response_chunk import OpenAICallResponseChunk
-from mirascope.core.openai.dynamic_config import OpenAIDynamicConfig
 from mirascope.core.openai.stream import OpenAIStream
 from mirascope.core.openai.tool import OpenAITool
 
@@ -26,10 +24,8 @@ def test_openai_call() -> None:
         mock_call_factory.assert_called_once_with(
             TCallResponse=OpenAICallResponse,
             TCallResponseChunk=OpenAICallResponseChunk,
-            TDynamicConfig=OpenAIDynamicConfig,
             TToolType=OpenAITool,
             TStream=OpenAIStream,
-            TCallParams=OpenAICallParams,
             default_call_params={},
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,

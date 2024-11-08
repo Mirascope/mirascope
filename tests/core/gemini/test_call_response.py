@@ -119,5 +119,8 @@ def test_gemini_call_response_with_tools() -> None:
     output = tool.call()
     assert output == "The Name of the Wind by Patrick Rothfuss"
     assert call_response.tool_message_params([(tool, output)]) == [
-        FunctionResponse(name="FormatBook", response={"result": output})
+        {
+            "role": "user",
+            "parts": [FunctionResponse(name="FormatBook", response={"result": output})],
+        }
     ]

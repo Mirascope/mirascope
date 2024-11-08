@@ -137,7 +137,7 @@ While Mirascope provides a consistent interface, support varies among providers:
 |---------------|-----------|--------|--------|------|---------|--------|
 | text          | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
 | image         | ✓         | -      | ✓      | ✓    | ✓       | ✓      |
-| audio         | -         | -      | ✓      | -    | -       | -      |
+| audio         | -         | -      | ✓      | -    | -       | ✓      |
 | video         | -         | -      | ✓      | -    | -       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)
@@ -174,18 +174,22 @@ Legend: ✓ (Supported), - (Not Supported)
 
 !!! mira ""
 
-    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
-    === "{{ method_title }}"
-
-        {% if method == "string_template" %}
-        ```python hl_lines="4 13-15"
-        {% elif method == "base_message_param" %}
-        ```python hl_lines="10-16 27-29"
-        {% else %}
-        ```python
-        {% endif %}
-        --8<-- "examples/learn/prompts/multi_modal/audio/{{ method }}.py"
-        ```
+    {% for audio_pkg in ["pydub", "wave"] %}
+    === "{{ audio_pkg }}"
+        {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+        === "{{ method_title }}"
+            {% if method == "string_template" %}
+            ```python hl_lines="4 13-15"
+            {% elif method == "base_message_param" %}
+            ```python hl_lines="10-16 27-29"
+            {% elif method == "messages" %}
+            ```python hl_lines="9 19-21"
+            {% else %}
+            ```python hl_lines="8 17-19"
+            {% endif %}
+            --8<-- "examples/learn/prompts/multi_modal/audio/{{ audio_pkg }}/{{ method }}.py"
+            ```
+        {% endfor %}
     {% endfor %}
 
 ??? info "Additional String Template Audio Functionality"

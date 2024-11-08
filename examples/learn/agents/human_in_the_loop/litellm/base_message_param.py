@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class Librarian(BaseModel):
-    history: list[litellm.OpenAIMessageParam] = []
+    history: list[litellm.LiteLLMMessageParam] = []
 
     def _ask_for_help(self, question: str) -> str:
         """Asks for help from an expert."""

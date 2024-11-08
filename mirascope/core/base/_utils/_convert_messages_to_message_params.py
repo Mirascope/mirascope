@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from io import FileIO
+from typing import cast
+from wave import Wave_read
 
 from pydantic import BaseModel
 from typing_extensions import TypeIs
@@ -14,26 +16,21 @@ from ..message_param import (
     ImagePart,
     TextPart,
 )
+from ..types import AudioSegment, Image, has_pil_module, has_pydub_module
 
-if TYPE_CHECKING:
-    from PIL import Image
-
-    has_pil_module: bool
-else:
-    try:
-        from PIL import Image  # pyright: ignore [reportAssignmentType]
-
-        has_pil_module = True
-    except ImportError:  # pragma: no cover
-        has_pil_module = False
-
-        class Image:
-            class Image:
-                def tobytes(self) -> bytes: ...
+SAMPLE_WIDTH = 2
+FRAME_RATE = 24000
+CHANNELS = 1
 
 
 def _convert_message_sequence_part_to_content_part(
-    message_sequence_part: str | Image.Image | TextPart | ImagePart | AudioPart,
+    message_sequence_part: str
+    | Image.Image
+    | TextPart
+    | ImagePart
+    | AudioPart
+    | AudioSegment
+    | Wave_read,
 ) -> TextPart | ImagePart | AudioPart | CacheControlPart:
     if isinstance(message_sequence_part, str):
         return TextPart(text=message_sequence_part, type="text")
@@ -49,12 +46,32 @@ def _convert_message_sequence_part_to_content_part(
             image=image,
             detail=None,
         )
+    elif has_pydub_module and isinstance(message_sequence_part, AudioSegment):
+        return AudioPart(
+            type="audio",
+            media_type="audio/wav",
+            audio=cast(
+                FileIO,
+                message_sequence_part.set_frame_rate(FRAME_RATE)
+                .set_channels(CHANNELS)
+                .set_sample_width(SAMPLE_WIDTH)
+                .export(format="wav"),
+            ).read(),
+        )
+    elif isinstance(message_sequence_part, Wave_read):
+        return AudioPart(
+            type="audio",
+            media_type="audio/wav",
+            audio=message_sequence_part.readframes(-1),
+        )
     else:
         raise ValueError(f"Invalid message sequence type: {message_sequence_part}")
 
 
 def convert_message_content_to_message_param_content(
-    message_sequence: Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+    message_sequence: Sequence[
+        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
+    ],
 ) -> list[TextPart | ImagePart | AudioPart | CacheControlPart] | str:
     if isinstance(message_sequence, str):
         return message_sequence
@@ -75,7 +92,9 @@ def _is_base_message_params(
 
 def convert_messages_to_message_params(
     messages: str
-    | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
+    | Sequence[
+        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
+    ]
     | list[BaseMessageParam]
     | BaseMessageParam,
     role: str = "user",

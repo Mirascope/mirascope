@@ -1,3 +1,5 @@
+from typing import cast
+
 from cohere import Client
 from cohere.types import Tool, ToolParameterDefinitionsValue
 
@@ -31,7 +33,7 @@ def identify_author(book: str) -> str:
     )
     if tool_calls := response.tool_calls:
         if tool_calls[0].name == "get_book_author":
-            return get_book_author(**tool_calls[0].parameters)
+            return get_book_author(**(cast(dict[str, str], tool_calls[0].parameters)))
     return response.text
 
 

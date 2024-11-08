@@ -1,12 +1,17 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from azure.ai.inference import ChatCompletionsClient
+from azure.ai.inference.aio import ChatCompletionsClient as AsyncChatCompletionsClient
 from azure.ai.inference.models import ChatRequestMessage
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import AzureCallParams
 
+AsyncAzureDynamicConfig = BaseDynamicConfig[
+    ChatRequestMessage | BaseMessageParam, AzureCallParams, AsyncChatCompletionsClient
+]
 AzureDynamicConfig = BaseDynamicConfig[
-    ChatRequestMessage | BaseMessageParam, AzureCallParams
+    ChatRequestMessage | BaseMessageParam, AzureCallParams, ChatCompletionsClient
 ]
 """The function return type for functions wrapped with the `azure_call` decorator.
 

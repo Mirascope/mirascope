@@ -17,7 +17,7 @@ from pydantic import SerializeAsAny, SkipValidation, computed_field
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import AzureCallParams
-from .dynamic_config import AzureDynamicConfig
+from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from .tool import AzureTool
 
 
@@ -26,7 +26,7 @@ class AzureCallResponse(
         ChatCompletions,
         AzureTool,
         ChatCompletionsToolDefinition,
-        AzureDynamicConfig,
+        AsyncAzureDynamicConfig | AzureDynamicConfig,
         ChatRequestMessage,
         AzureCallParams,
         UserMessage,

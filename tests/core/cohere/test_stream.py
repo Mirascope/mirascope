@@ -6,9 +6,9 @@ from cohere.types import (
     ApiMetaBilledUnits,
     ChatMessage,
     NonStreamedChatResponse,
-    StreamedChatResponse_StreamEnd,
-    StreamedChatResponse_StreamStart,
-    StreamedChatResponse_TextGeneration,
+    StreamEndStreamedChatResponse,
+    StreamStartStreamedChatResponse,
+    TextGenerationStreamedChatResponse,
 )
 
 from mirascope.core.cohere.call_response import CohereCallResponse
@@ -20,11 +20,11 @@ def test_cohere_stream() -> None:
     """Tests the `CohereStream` class."""
     assert CohereStream._provider == "cohere"
     chunks = [
-        StreamedChatResponse_StreamStart(generation_id="id"),
-        StreamedChatResponse_TextGeneration(
+        StreamStartStreamedChatResponse(generation_id="id"),
+        TextGenerationStreamedChatResponse(
             text="content",
         ),
-        StreamedChatResponse_StreamEnd(
+        StreamEndStreamedChatResponse(
             finish_reason="COMPLETE",
             response=NonStreamedChatResponse(
                 generation_id="id",
@@ -73,11 +73,11 @@ def test_cohere_stream() -> None:
 
 def test_construct_call_response() -> None:
     chunks = [
-        StreamedChatResponse_StreamStart(generation_id="id"),
-        StreamedChatResponse_TextGeneration(
+        StreamStartStreamedChatResponse(generation_id="id"),
+        TextGenerationStreamedChatResponse(
             text="content",
         ),
-        StreamedChatResponse_StreamEnd(
+        StreamEndStreamedChatResponse(
             finish_reason="COMPLETE",
             response=NonStreamedChatResponse(
                 generation_id="id",
@@ -138,11 +138,11 @@ def test_construct_call_response() -> None:
 def test_construct_call_response_no_usage() -> None:
     """Tests the `GroqStream.construct_call_response` method with no usage."""
     chunks = [
-        StreamedChatResponse_StreamStart(generation_id="id"),
-        StreamedChatResponse_TextGeneration(
+        StreamStartStreamedChatResponse(generation_id="id"),
+        TextGenerationStreamedChatResponse(
             text="content",
         ),
-        StreamedChatResponse_StreamEnd(
+        StreamEndStreamedChatResponse(
             finish_reason="COMPLETE",
             response=NonStreamedChatResponse(
                 generation_id="id", text="content", meta=None

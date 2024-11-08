@@ -2,18 +2,28 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Any
+from wave import Wave_read
 
 from ._utils._convert_messages_to_message_params import (
     Image,
     convert_message_content_to_message_param_content,
 )
 from .message_param import AudioPart, BaseMessageParam, ImagePart, TextPart
+from .types import AudioSegment
 
 
 class Messages:
     Type = (
         str
-        | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart]
+        | Sequence[
+            str
+            | TextPart
+            | ImagePart
+            | Image.Image
+            | AudioPart
+            | AudioSegment
+            | Wave_read
+        ]
         | list[BaseMessageParam | Any]
         | BaseMessageParam
     )
@@ -21,7 +31,16 @@ class Messages:
     @classmethod
     def System(
         cls,
-        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+        content: str
+        | Sequence[
+            str
+            | TextPart
+            | ImagePart
+            | Image.Image
+            | AudioPart
+            | AudioSegment
+            | Wave_read
+        ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
             role="system",
@@ -31,7 +50,16 @@ class Messages:
     @classmethod
     def User(
         cls,
-        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+        content: str
+        | Sequence[
+            str
+            | TextPart
+            | ImagePart
+            | Image.Image
+            | AudioPart
+            | AudioSegment
+            | Wave_read
+        ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
             role="user",
@@ -41,7 +69,16 @@ class Messages:
     @classmethod
     def Assistant(
         cls,
-        content: str | Sequence[str | Image.Image | TextPart | ImagePart | AudioPart],
+        content: str
+        | Sequence[
+            str
+            | TextPart
+            | ImagePart
+            | Image.Image
+            | AudioPart
+            | AudioSegment
+            | Wave_read
+        ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
             role="assistant",

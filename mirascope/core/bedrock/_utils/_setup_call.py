@@ -35,14 +35,14 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
+from .._call_kwargs import BedrockCallKwargs
 from .._types import (
     AsyncStreamOutputChunk,
     InternalBedrockMessageParam,
     StreamOutputChunk,
 )
-from ..call_kwargs import BedrockCallKwargs
 from ..call_params import BedrockCallParams
-from ..dynamic_config import BedrockDynamicConfig
+from ..dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from ..tool import BedrockTool
 from ._convert_message_params import convert_message_params
 
@@ -92,9 +92,9 @@ def setup_call(
     *,
     model: str,
     client: AsyncBedrockRuntimeClient | None,
-    fn: Callable[..., Awaitable[BedrockDynamicConfig]],
+    fn: Callable[..., Awaitable[AsyncBedrockDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: BedrockDynamicConfig,
+    dynamic_config: AsyncBedrockDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: BedrockCallParams,
@@ -134,9 +134,9 @@ def setup_call(
     model: str,
     client: BedrockRuntimeClient | AsyncBedrockRuntimeClient | None,
     fn: Callable[..., BedrockDynamicConfig]
-    | Callable[..., Awaitable[BedrockDynamicConfig]],
+    | Callable[..., Awaitable[AsyncBedrockDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: BedrockDynamicConfig,
+    dynamic_config: BedrockDynamicConfig | AsyncBedrockDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: BedrockCallParams,

@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.4.0"
+version = "1.7.4"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -36,6 +36,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: File Formats :: JSON",
     "Topic :: File Formats :: JSON :: JSON Schema",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -46,7 +47,6 @@ dependencies = [
     "docstring-parser>=0.15,<1.0",
     "jiter>=0.5.0",
     "typing-extensions>=4.10.0",
-    "mkdocs-jupyter>=0.25.0",
 ]
 
 [project.urls]
@@ -60,8 +60,10 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 anthropic = ["anthropic>=0.29.0,<1.0"]
 azure = ["azure-ai-inference>=1.0.0b4,<2.0", "aiohttp>=3.10.5,<4.0"]
 bedrock = [
-    "boto3>=1.34.70,<2", "aioboto3>=13.1.1,<14", "boto3-stubs[bedrock-runtime]>=1.35.32,<2",
-    "types-aioboto3[bedrock-runtime]>=13.1.1,<14"
+    "boto3>=1.34.70,<2",
+    "aioboto3>=13.1.1,<14",
+    "boto3-stubs[bedrock-runtime]>=1.35.32,<2",
+    "types-aioboto3[bedrock-runtime]>=13.1.1,<14",
 ]
 cohere = ["cohere>=5.5.8,<6"]
 gemini = ["google-generativeai>=0.4.0,<1", "pillow>=10.4.0,<11"]
@@ -75,13 +77,18 @@ mistral = ["mistralai>=0.4.2,<1"]
 openai = ["openai>=1.6.0,<2"]
 opentelemetry = ["opentelemetry-api>=1.22.0,<2", "opentelemetry-sdk>=1.22.0,<2"]
 vertex = ["google-cloud-aiplatform>=1.38.0,<2"]
-weave = ["weave>=0.50.14"]
+realtime = [
+    "numpy>=1.26.4,<2",
+    "pydub>=0.25.1,<1",
+    "sounddevice>=0.5.1,<1",
+    "websockets>=13.1,<14",
+]
 
 [tool.uv]
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.378",
+    "pyright>=1.1.388",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",
@@ -90,9 +97,10 @@ dev-dependencies = [
     "mkdocstrings>=0.25.2",
     "mkdocstrings-python>=1.10.8",
     "mkdocs-macros-plugin>=1.2.0",
+    "mkdocs-jupyter>=0.25.0",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
-    "chromadb>=0.5.5",
+    "chromadb>=0.5.15",
     "pinecone-client>=5.0.1",
     "scikit-learn>=1.5.1",
     "duckduckgo-search>=6.2.10",
@@ -110,6 +118,9 @@ dev-dependencies = [
     "pillow>=10.4.0",
     "notebook>=7.2.2",
 ]
+
+[tool.uv.sources]
+mirascope = { workspace = true }
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
@@ -193,7 +204,7 @@ exclude = [
     "mirascope/beta",
     "examples/learn/calls/basic_usage/bedrock/official_sdk_call.py",
     "examples/learn/tools/basic_usage/bedrock/official_sdk.py",
-    "examples/learn/response_models/basic_usage/bedrock/official_sdk.py"
+    "examples/learn/response_models/basic_usage/bedrock/official_sdk.py",
 ]
 venvPath = "."
 venv = ".venv"
