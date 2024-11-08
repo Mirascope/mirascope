@@ -423,7 +423,7 @@ Mirascope provides several pre-made tools and toolkits to help you get started q
         - [`mirascope.tools.web.ParseURLContent`](../api/tools/web/parse_url_content.md)
         - [`mirascope.tools.web.Requests`](../api/tools/web/requests.md)
     - System ToolKits
-        - [`mirascope.tools.system.FileSystemToolKit`](../api/tools/system/filesystem.md)
+        - [`mirascope.tools.system.FileSystemToolKit`](../api/tools/system/file_system.md)
         - [`mirascope.tools.system.DockerOperationToolKit`](../api/tools/system/docker_operation.md)
 
 ### Web Tools
@@ -439,7 +439,7 @@ Mirascope provides several pre-made tools and toolkits to help you get started q
 
 | ToolKit                                                     | Primary Use | Tools and Features                                                                                                                                                    | Characteristics |
 |-------------------------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| [`FileSystemToolKit`](../api/tools/system/filesystem.md)    | File System Operations | • ReadFile: File content reading<br>• WriteFile: Content writing<br>• ListDirectory: Directory listing<br>• CreateDirectory: Directory creation<br>• DeleteFile: File deletion | • Path traversal protection<br>• File size limits<br>• Extension validation<br>• Robust error handling<br>• Base directory isolation |
+| [`FileSystemToolKit`](../api/tools/system/file_system.md)    | File System Operations | • ReadFile: File content reading<br>• WriteFile: Content writing<br>• ListDirectory: Directory listing<br>• CreateDirectory: Directory creation<br>• DeleteFile: File deletion | • Path traversal protection<br>• File size limits<br>• Extension validation<br>• Robust error handling<br>• Base directory isolation |
 | [`DockerOperationToolKit`](../api/tools/system/docker_operation.md) | Code & Command Execution | • ExecutePython: Python code execution with optional package installation<br>• ExecuteShell: Shell command execution<br> | • Docker container isolation<br>• Memory limits<br>• Network control<br>• Security restrictions<br>• Resource cleanup |
 
 ### Usage Examples
