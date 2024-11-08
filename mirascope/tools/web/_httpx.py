@@ -3,10 +3,10 @@ from typing import ClassVar, Literal
 import httpx
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ToolConfig
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
-class HTTPXConfig(_ToolConfig):
+class HTTPXConfig(_ConfigurableToolConfig):
     """Configuration for HTTPX requests"""
 
     timeout: int = Field(
@@ -18,7 +18,7 @@ class HTTPXConfig(_ToolConfig):
 class _BaseHTTPX(ConfigurableTool):
     """Tool for making HTTP requests using HTTPX with configurable timeout and error handling."""
 
-    __config__ = HTTPXConfig()
+    __configurable_tool_config__ = HTTPXConfig()
 
     __prompt_usage_description__: ClassVar[str] = """
     - `HTTPX`: Makes HTTP requests to web URLs with HTTPX client
@@ -60,8 +60,8 @@ class HTTPX(_BaseHTTPX):
         try:
             # Configure timeout - None means no timeout
             timeout = (
-                httpx.Timeout(self._config().timeout)
-                if self._config().timeout is not None
+                httpx.Timeout(self._get_config().timeout)
+                if self._get_config().timeout is not None
                 else None
             )
 
@@ -98,8 +98,8 @@ class AsyncHTTPX(_BaseHTTPX):
         try:
             # Configure timeout - None means no timeout
             timeout = (
-                httpx.Timeout(self._config().timeout)
-                if self._config().timeout is not None
+                httpx.Timeout(self._get_config().timeout)
+                if self._get_config().timeout is not None
                 else None
             )
 

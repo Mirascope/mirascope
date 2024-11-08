@@ -99,6 +99,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk],
     str | None,
@@ -120,6 +121,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
     str | None,
@@ -141,6 +143,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk]
     | CreateFn[ConverseResponseTypeDef, StreamOutputChunk],

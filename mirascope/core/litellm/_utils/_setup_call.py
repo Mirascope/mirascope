@@ -31,6 +31,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
@@ -52,6 +53,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion],
     str | None,
@@ -72,6 +74,7 @@ def setup_call(
     json_mode: bool,
     call_params: OpenAICallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion]
     | AsyncCreateFn[ChatCompletion, ChatCompletion],
@@ -90,6 +93,7 @@ def setup_call(
         json_mode=json_mode,
         call_params=call_params,
         extract=extract,
+        stream=stream,
     )
     create = cast(
         Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],

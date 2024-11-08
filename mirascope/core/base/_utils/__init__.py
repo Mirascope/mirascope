@@ -10,6 +10,7 @@ from ._fn_is_async import fn_is_async
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
 from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_fn
+from ._get_document_type import get_document_type
 from ._get_dynamic_configuration import get_dynamic_configuration
 from ._get_fn_args import get_fn_args
 from ._get_image_type import get_image_type
@@ -56,6 +57,7 @@ __all__ = [
     "get_audio_type",
     "get_async_create_fn",
     "get_create_fn",
+    "get_document_type",
     "get_dynamic_configuration",
     "get_fn_args",
     "get_image_type",

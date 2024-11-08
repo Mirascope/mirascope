@@ -267,6 +267,7 @@ nav:
               - call_response: "api/core/base/call_response.md"
               - call_response_chunk: "api/core/base/call_response_chunk.md"
               - dynamic_config: "api/core/base/dynamic_config.md"
+              - merge_decorators: "api/core/base/merge_decorators.md"
               - message_param: "api/core/base/message_param.md"
               - metadata: "api/core/base/metadata.md"
               - prompt: "api/core/base/prompt.md"
@@ -337,6 +338,8 @@ nav:
           - HTTPX: "api/tools/web/httpx.md"
           - ParseURLContent: "api/tools/web/parse_url_content.md"
           - Requests: "api/tools/web/requests.md"
+          - FileSystem: "api/tools/system/file_system.md"
+          - ComputerUse: "api/tools/system/dokcer_operation.md"
       - Integrations:
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
