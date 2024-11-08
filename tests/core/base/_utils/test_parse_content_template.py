@@ -175,6 +175,70 @@ def test_parse_content_template_cache_control() -> None:
     assert parse_content_template("system", "{:cache_control}", {}) == expected
 
 
+def test_parse_content_template_texts() -> None:
+    """Test the parse_content_template function with text templates."""
+    # Test single text template
+    template = "Process this text: {content:text}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process this text:"),
+            TextPart(type="text", text="Hello world"),
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"content": "Hello world"}) == expected
+    )
+
+    # Test texts template with list
+    template = "Process these texts: {content:texts}"
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process these texts:"),
+            TextPart(type="text", text="Hello"),
+            TextPart(type="text", text="world"),
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"content": ["Hello", "world"]})
+        == expected
+    )
+
+    # Test empty list
+    assert parse_content_template(
+        "user", template, {"content": []}
+    ) == BaseMessageParam(role="user", content="Process these texts:")
+
+    # Test texts validation
+    with pytest.raises(
+        ValueError,
+        match="When using 'texts' template, 'content' must be a list.",
+    ):
+        parse_content_template("user", template, {"content": "not a list"})
+
+    # Test attribute access
+    template = "Process this text: {attr:text}"
+    assert parse_content_template(
+        "user", template, {"attr": "value"}
+    ) == BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process this text:"),
+            TextPart(type="text", text="value"),
+        ],
+    )
+
+    # Test empty text part
+    assert parse_content_template("user", template, {"attr": ""}) == BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process this text:"),
+            TextPart(type="text", text=""),
+        ],
+    )
+
+
 @patch(
     "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
 )

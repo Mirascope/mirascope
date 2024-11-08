@@ -19,7 +19,9 @@ from ._get_audio_type import get_audio_type
 from ._get_document_type import get_document_type
 from ._get_image_type import get_image_type
 
-_PartType = Literal["text", "image", "images", "audio", "audios", "cache_control"]
+_PartType = Literal[
+    "text", "texts", "image", "images", "audio", "audios", "cache_control"
+]
 
 
 class _Part(TypedDict):
@@ -39,7 +41,7 @@ def _parse_parts(template: str) -> list[_Part]:
     # (image|images|...) captures the supported special type after the colon.
     #
     # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
-    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|cache_control)(?:\(([^)]*)\))?\}"
+    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|text|texts|cache_control)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
@@ -168,7 +170,22 @@ def _construct_parts(
         return (
             [_construct_document_part(source) for source in sources] if sources else []
         )
+    elif part["type"] == "texts":
+        sources = attrs[part["template"]]
+        if not isinstance(sources, list):
+            raise ValueError(
+                f"When using 'texts' template, '{part['template']}' must be a list."
+            )
+        return (
+            [TextPart(type="text", text=source) for source in sources]
+            if sources
+            else []
+        )
     else:  # text type
+        text = part["template"]
+        if text in attrs:
+            source = attrs[text]
+            return [TextPart(type="text", text=source)]
         formatted_template = format_template(part["template"].strip(), attrs)
         if not formatted_template:
             return []
