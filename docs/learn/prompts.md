@@ -215,6 +215,10 @@ Legend: ✓ (Supported), - (Not Supported)
         ```
     {% endfor %}
 
+!!! warning "Support Document Types"
+
+    Currently, only Anthropic supports the `:document` specifier, and only PDF documents are supported.
+
 ??? info "Additional String Template Document Functionality"
 
     When using string templates, you can also specify `:documents` to inject multiple audio inputs through a single template variable.

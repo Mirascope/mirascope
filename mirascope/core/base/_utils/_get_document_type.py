@@ -4,4 +4,4 @@
 def get_document_type(document_data: bytes) -> str:
     if document_data.startswith(b"%PDF"):
         return "pdf"
-    raise ValueError("Unsupported image type")
+    raise ValueError("Unsupported document type")

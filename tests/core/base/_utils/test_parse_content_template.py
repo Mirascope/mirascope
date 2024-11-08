@@ -242,6 +242,6 @@ def test_parse_content_template_document(
     # Test error case for invalid input type
     with pytest.raises(
         ValueError,
-        match="When using 'pdfs' template, 'urls' must be a list.",
+        match="When using 'documents' template, 'urls' must be a list.",
     ):
         parse_content_template("user", template, {"urls": None})

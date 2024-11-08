@@ -163,7 +163,7 @@ def _construct_parts(
         sources = attrs[part["template"]]
         if not isinstance(sources, list):
             raise ValueError(
-                f"When using 'pdfs' template, '{part['template']}' must be a list."
+                f"When using 'documents' template, '{part['template']}' must be a list."
             )
         return (
             [_construct_document_part(source) for source in sources] if sources else []
