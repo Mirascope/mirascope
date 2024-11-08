@@ -365,6 +365,7 @@ def stream_factory(  # noqa: ANN201
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
+                    stream=True,
                 )
 
                 async def generator() -> (
@@ -411,6 +412,7 @@ def stream_factory(  # noqa: ANN201
                     json_mode=json_mode,
                     call_params=call_params,
                     extract=False,
+                    stream=True,
                 )
 
                 def generator() -> (

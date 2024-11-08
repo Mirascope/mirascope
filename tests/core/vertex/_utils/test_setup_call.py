@@ -52,6 +52,7 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
@@ -117,6 +118,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1].parts[-1].text == "mock content"
     assert "tools" not in call_kwargs
@@ -160,6 +162,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert "tool_config" in call_kwargs and isinstance(
         call_kwargs["tool_config"], ToolConfig
