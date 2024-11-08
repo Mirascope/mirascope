@@ -40,6 +40,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
     str | None,
@@ -61,6 +62,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse],
     str | None,
@@ -81,6 +83,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams,
     extract: bool = False,
+    stream: bool,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse]
     | AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],

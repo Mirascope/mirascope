@@ -39,6 +39,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],
     str | None,
@@ -60,6 +61,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],
     str | None,
@@ -80,6 +82,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, ChatCompletionStreamResponse]
     | AsyncCreateFn[ChatCompletionResponse, ChatCompletionStreamResponse],

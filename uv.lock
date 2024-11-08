@@ -202,7 +202,7 @@ wheels = [
 
 [[package]]
 name = "anthropic"
-version = "0.34.1"
+version = "0.39.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -211,12 +211,11 @@ dependencies = [
     { name = "jiter" },
     { name = "pydantic" },
     { name = "sniffio" },
-    { name = "tokenizers" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/87/e2/98ff733ff75c1d371c029fb27eb9308f9c8e694749cea70382338a8e7e88/anthropic-0.34.1.tar.gz", hash = "sha256:69e822bd7a31ec11c2edb85f2147e8f0ee0cfd3288fea70b0ca8808b2f9bf91d", size = 901462 }
+sdist = { url = "https://files.pythonhosted.org/packages/79/02/2ea51930009d7537c4648f51d1bb3202ec76704cbb39a2a863ab38bee3dd/anthropic-0.39.0.tar.gz", hash = "sha256:94671cc80765f9ce693f76d63a97ee9bef4c2d6063c044e983d21a2e262f63ba", size = 189339 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/1c/1ce9edec76885badebacb4e31d42acffbdfd30dbaa839d5c378d57ac9aa9/anthropic-0.34.1-py3-none-any.whl", hash = "sha256:2fa26710809d0960d970f26cd0be3686437250a481edb95c33d837aa5fa24158", size = 891537 },
+    { url = "https://files.pythonhosted.org/packages/94/61/2580eaa171cab20708d59d39cadd15f78a6c617759e8d0a12e18fe3302d1/anthropic-0.39.0-py3-none-any.whl", hash = "sha256:ea17093ae0ce0e1768b0c46501d6086b5bcd74ff39d68cd2d6396374e9de7c09", size = 198392 },
 ]
 
 [[package]]
@@ -3197,20 +3196,20 @@ requires-dist = [
     { name = "groq", marker = "extra == 'groq'", specifier = "<1,>=0.9.0" },
     { name = "hyperdx-opentelemetry", marker = "extra == 'hyperdx'", specifier = "<1,>=0.1.0" },
     { name = "jiter", specifier = ">=0.5.0" },
-    { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
-    { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.42.12,<2" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=0.41.0,<2" },
-    { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=0.4.2,<1" },
-    { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
-    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
-    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
-    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
-    { name = "pillow", marker = "extra == 'gemini'", specifier = ">=10.4.0,<11" },
-    { name = "pydantic", specifier = ">=2.7.4,<3.0" },
-    { name = "pydub", marker = "extra == 'realtime'", specifier = ">=0.25.1,<1" },
-    { name = "sounddevice", marker = "extra == 'realtime'", specifier = ">=0.5.1,<1" },
-    { name = "tenacity", marker = "extra == 'tenacity'", specifier = ">=8.4.2,<9" },
-    { name = "types-aioboto3", extras = ["bedrock-runtime"], marker = "extra == 'bedrock'", specifier = ">=13.1.1,<14" },
+    { name = "langfuse", marker = "extra == 'langfuse'", specifier = "<3,>=2.30.0" },
+    { name = "litellm", marker = "extra == 'litellm'", specifier = "<2,>=1.42.12" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = "<2,>=0.41.0" },
+    { name = "mistralai", marker = "extra == 'mistral'", specifier = "<1,>=0.4.2" },
+    { name = "numpy", marker = "extra == 'realtime'", specifier = "<2,>=1.26.4" },
+    { name = "openai", marker = "extra == 'openai'", specifier = "<2,>=1.6.0" },
+    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = "<2,>=1.22.0" },
+    { name = "pillow", marker = "extra == 'gemini'", specifier = "<11,>=10.4.0" },
+    { name = "pydantic", specifier = "<3.0,>=2.7.4" },
+    { name = "pydub", marker = "extra == 'realtime'", specifier = "<1,>=0.25.1" },
+    { name = "sounddevice", marker = "extra == 'realtime'", specifier = "<1,>=0.5.1" },
+    { name = "tenacity", marker = "extra == 'tenacity'", specifier = "<9,>=8.4.2" },
+    { name = "types-aioboto3", extras = ["bedrock-runtime"], marker = "extra == 'bedrock'", specifier = "<14,>=13.1.1" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
     { name = "websockets", marker = "extra == 'realtime'", specifier = "<14,>=13.1" },
 ]

@@ -139,6 +139,7 @@ While Mirascope provides a consistent interface, support varies among providers:
 | image         | ✓         | -      | ✓      | ✓    | ✓       | ✓      |
 | audio         | -         | -      | ✓      | -    | -       | ✓      |
 | video         | -         | -      | ✓      | -    | -       | -      |
+| document      | ✓         | -      | -      | -    | -       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)
 
@@ -197,6 +198,32 @@ Legend: ✓ (Supported), - (Not Supported)
     When using string templates, you can also specify `:audios` to inject multiple audio inputs through a single template variable.
 
     The `:audio` and `:audios` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
+
+### Document Inputs
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% if method == "string_template" %}
+        ```python hl_lines="5 15-17"
+        {% else %}
+        ```python hl_lines="10-16 27-29"
+        {% endif %}
+        --8<-- "examples/learn/prompts/multi_modal/document/{{ method }}.py"
+        ```
+    {% endfor %}
+
+!!! warning "Support Document Types"
+
+    Currently, only Anthropic supports the `:document` specifier, and only PDF documents are supported.
+
+??? info "Additional String Template Document Functionality"
+
+    When using string templates, you can also specify `:documents` to inject multiple audio inputs through a single template variable.
+
+    The `:document` and `:documents` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
 
 ## Chat History
 
