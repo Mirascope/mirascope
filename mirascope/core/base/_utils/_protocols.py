@@ -199,6 +199,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
@@ -220,6 +221,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -240,6 +242,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
@@ -276,6 +279,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
@@ -297,6 +301,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -317,6 +322,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
+        stream: bool,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],

@@ -45,6 +45,22 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "document":
+                    if part.media_type != "application/pdf":
+                        raise ValueError(
+                            f"Unsupported document media type: {part.media_type}. "
+                            "Anthropic currently only supports PDF document."
+                        )
+                    converted_content.append(
+                        {
+                            "type": "document",
+                            "source": {
+                                "data": base64.b64encode(part.document).decode("utf-8"),
+                                "media_type": part.media_type,
+                                "type": "base64",
+                            },
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Anthropic currently only supports text, image, and cache "

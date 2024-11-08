@@ -32,6 +32,7 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -53,6 +54,7 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -73,6 +75,7 @@ def setup_call(
     json_mode: bool,
     call_params: GroqCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
     | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],

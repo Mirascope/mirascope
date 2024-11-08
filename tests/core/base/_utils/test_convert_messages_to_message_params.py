@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import AudioPart, ImagePart, TextPart
+from mirascope.core.base import AudioPart, DocumentPart, ImagePart, TextPart
 from mirascope.core.base._utils._convert_messages_to_message_params import (
     _convert_message_sequence_part_to_content_part,
     _is_base_message_params,
@@ -57,6 +57,16 @@ def test_convert_message_sequence_part_to_content_part_with_audio_part():
         type="audio",
         media_type="audio/wav",
         audio=b"audio_bytes",
+    )
+    result = _convert_message_sequence_part_to_content_part(input_value)
+    assert result == input_value
+
+
+def test_convert_message_sequence_part_to_content_part_with_document_part():
+    input_value = DocumentPart(
+        type="document",
+        media_type="application/pdf",
+        document=b"document_bytes",
     )
     result = _convert_message_sequence_part_to_content_part(input_value)
     assert result == input_value

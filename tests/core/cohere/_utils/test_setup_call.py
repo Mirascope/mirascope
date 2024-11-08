@@ -71,6 +71,7 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
@@ -123,6 +124,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1] == ChatMessage(
         role="user",  # type: ignore
@@ -154,6 +156,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert "model" in call_kwargs
     assert "message" in call_kwargs

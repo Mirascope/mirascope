@@ -10,6 +10,7 @@ from mirascope.core.base import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
     TextPart,
 )
@@ -29,6 +30,9 @@ def test_convert_message_params() -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
                 CacheControlPart(type="cache_control", cache_type="ephemeral"),
+                DocumentPart(
+                    type="document", media_type="application/pdf", document=b"pdf"
+                ),
             ],
         ),
     ]
@@ -48,6 +52,14 @@ def test_convert_message_params() -> None:
                         "type": "base64",
                     },
                     "cache_control": {"type": "ephemeral"},
+                },
+                {
+                    "source": {
+                        "data": "cGRm",
+                        "media_type": "application/pdf",
+                        "type": "base64",
+                    },
+                    "type": "document",
                 },
             ],
         },
@@ -85,6 +97,25 @@ def test_convert_message_params() -> None:
                     role="user",
                     content=[
                         AudioPart(type="audio", media_type="audio/mp3", audio=b"audio")
+                    ],
+                )
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported document media type: application/docx. Anthropic currently only supports PDF document.",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        DocumentPart(
+                            type="document",
+                            media_type="application/docx",
+                            document=b"docx",
+                        )
                     ],
                 )
             ]
