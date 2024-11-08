@@ -9,6 +9,7 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .from_call_args import FromCallArgs
+from .merge_decorators import merge_decorators
 from .message_param import (
     AudioPart,
     BaseMessageParam,
@@ -47,6 +48,7 @@ __all__ = [
     "FromCallArgs",
     "GenerateJsonSchemaNoTitles",
     "ImagePart",
+    "merge_decorators",
     "metadata",
     "Messages",
     "Metadata",

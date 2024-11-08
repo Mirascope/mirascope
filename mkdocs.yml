@@ -266,6 +266,7 @@ nav:
               - call_response: "api/core/base/call_response.md"
               - call_response_chunk: "api/core/base/call_response_chunk.md"
               - dynamic_config: "api/core/base/dynamic_config.md"
+              - merge_decorators: "api/core/base/merge_decorators.md"
               - message_param: "api/core/base/message_param.md"
               - metadata: "api/core/base/metadata.md"
               - prompt: "api/core/base/prompt.md"
