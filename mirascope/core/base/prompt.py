@@ -78,6 +78,8 @@ class BasePrompt(BaseModel):
             .replace(":image}", "}")
             .replace(":audios", "}")
             .replace(":audio}", "}")
+            .replace(":documents}", "}")
+            .replace(":document}", "}")
         )
         return format_template(prompt_template, self.model_dump())
 
