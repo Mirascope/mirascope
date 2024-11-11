@@ -19,7 +19,7 @@ class TextPart(BaseModel):
 
 
 class CacheControlPart(BaseModel):
-    """A `TextPart` with cache control.
+    """A part for marking cache control.
 
     This part is currently only available with Anthropic. For more details, see:
     https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
