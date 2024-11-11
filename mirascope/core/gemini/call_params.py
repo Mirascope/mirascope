@@ -9,7 +9,7 @@ from google.generativeai.types import (
 )
 from google.generativeai.types.content_types import ToolConfigType
 from google.generativeai.types.safety_types import SafetySettingOptions
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
@@ -33,7 +33,9 @@ class GeminiCallParams(BaseCallParams):
     tool_config: NotRequired[ToolConfigType]
 
 
-def get_gemini_call_params_from_common(params: CommonCallParams) -> GeminiCallParams:
+def get_gemini_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> GeminiCallParams:
     """Converts common call parameters to Gemini-specific call parameters."""
     mapping = {
         "temperature": "temperature",
@@ -45,5 +47,9 @@ def get_gemini_call_params_from_common(params: CommonCallParams) -> GeminiCallPa
         ("stop", convert_stop_to_list),
     ]
     return convert_params(
-        params, mapping, GeminiCallParams, transforms=transforms, wrap_in_config=True
+        {**params},
+        mapping,
+        GeminiCallParams,
+        transforms=transforms,
+        wrap_in_config=True,
     )

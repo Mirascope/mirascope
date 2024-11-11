@@ -11,7 +11,7 @@ from cohere.types import (
     ChatRequestPromptTruncation,
     ToolResult,
 )
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
@@ -63,7 +63,9 @@ class CohereCallParams(BaseCallParams):
     tool_results: NotRequired[Sequence[ToolResult] | None]
 
 
-def get_cohere_call_params_from_common(params: CommonCallParams) -> CohereCallParams:
+def get_cohere_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> CohereCallParams:
     """Converts common call parameters to Cohere-specific call parameters."""
     mapping = {
         "temperature": "temperature",

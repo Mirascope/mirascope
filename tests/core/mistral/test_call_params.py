@@ -11,7 +11,7 @@ def test_mistral_conversion_full():
         "stop": ["STOP", "END"],
         "seed": 42,
     }
-    result = get_mistral_call_params_from_common(params)
+    result = get_mistral_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -26,7 +26,7 @@ def test_mistral_conversion_full():
 def test_mistral_conversion_empty():
     """Test Mistral parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_mistral_call_params_from_common(empty_params)
+    result = get_mistral_call_params_from_common(**empty_params)
     assert dict(result) == {}
 
 
@@ -36,7 +36,7 @@ def test_mistral_conversion_partial():
         "temperature": 0.7,
         "seed": 42,
     }
-    result = get_mistral_call_params_from_common(partial_params)
+    result = get_mistral_call_params_from_common(**partial_params)
     expected = {
         "temperature": 0.7,
         "random_seed": 42,

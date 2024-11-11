@@ -11,7 +11,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     SystemContentBlockTypeDef,
     ToolConfigurationTypeDef,
 )
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_stop_to_list
@@ -62,7 +62,9 @@ def _create_inference_config(params: CommonCallParams) -> InferenceConfiguration
     return cast(InferenceConfigurationTypeDef, config)
 
 
-def get_bedrock_call_params_from_common(params: CommonCallParams) -> BedrockCallParams:
+def get_bedrock_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> BedrockCallParams:
     """Converts common call parameters to Bedrock-specific call parameters.
 
     Args:

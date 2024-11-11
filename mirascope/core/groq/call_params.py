@@ -6,7 +6,7 @@ from groq.types.chat.chat_completion_tool_choice_option_param import (
     ChatCompletionToolChoiceOptionParam,
 )
 from groq.types.chat.completion_create_params import ResponseFormat
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams
@@ -55,9 +55,11 @@ class GroqCallParams(BaseCallParams):
     user: NotRequired[str]
 
 
-def get_groq_call_params_from_common(params: CommonCallParams) -> OpenAICallParams:
+def get_groq_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> OpenAICallParams:
     """Converts common call parameters to Groq-specific call parameters.
 
     Note: Groq follows the OpenAI API spec, so we use OpenAICallParams.
     """
-    return get_openai_call_params_from_common(params)
+    return get_openai_call_params_from_common(**params)

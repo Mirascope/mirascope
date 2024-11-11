@@ -13,7 +13,7 @@ def test_groq_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    result = get_groq_call_params_from_common(params)
+    result = get_groq_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -30,5 +30,5 @@ def test_groq_conversion_full():
 def test_groq_conversion_empty():
     """Test Groq parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_groq_call_params_from_common(empty_params)
+    result = get_groq_call_params_from_common(**empty_params)
     assert dict(result) == {}

@@ -12,7 +12,7 @@ def test_bedrock_conversion_full():
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = get_bedrock_call_params_from_common(params)
+    result = get_bedrock_call_params_from_common(**params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -29,7 +29,7 @@ def test_bedrock_conversion_single_stop():
         "temperature": 0.7,
         "stop": "STOP",
     }
-    result = get_bedrock_call_params_from_common(params)
+    result = get_bedrock_call_params_from_common(**params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -41,5 +41,5 @@ def test_bedrock_conversion_single_stop():
 def test_bedrock_conversion_empty():
     """Test Bedrock parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_bedrock_call_params_from_common(empty_params)
+    result = get_bedrock_call_params_from_common(**empty_params)
     assert dict(result) == {}

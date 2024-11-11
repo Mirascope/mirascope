@@ -9,7 +9,7 @@ from openai.types.chat import (
     ChatCompletionToolChoiceOptionParam,
 )
 from openai.types.chat.completion_create_params import ResponseFormat
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params
@@ -79,7 +79,9 @@ class OpenAICallParams(BaseCallParams):
     user: NotRequired[str]
 
 
-def get_openai_call_params_from_common(params: CommonCallParams) -> OpenAICallParams:
+def get_openai_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> OpenAICallParams:
     """Converts common call parameters to OpenAI-specific call parameters."""
     mapping = {
         "temperature": "temperature",

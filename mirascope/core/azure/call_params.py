@@ -9,7 +9,7 @@ from azure.ai.inference.models import (
     ChatCompletionsResponseFormat,
     ChatCompletionsToolChoicePreset,
 )
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
@@ -47,7 +47,9 @@ class AzureCallParams(BaseCallParams):
     top_p: NotRequired[float | None]
 
 
-def get_azure_call_params_from_common(params: CommonCallParams) -> AzureCallParams:
+def get_azure_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> AzureCallParams:
     """Converts common call parameters to Azure-specific call parameters."""
     mapping = {
         "temperature": "temperature",

@@ -15,7 +15,7 @@ def test_azure_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    result = get_azure_call_params_from_common(params)
+    result = get_azure_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -32,5 +32,5 @@ def test_azure_conversion_full():
 def test_azure_conversion_empty():
     """Test Azure parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_azure_call_params_from_common(empty_params)
+    result = get_azure_call_params_from_common(**empty_params)
     assert dict(result) == {}

@@ -12,7 +12,7 @@ def test_anthropic_conversion_single_stop():
         "top_p": 0.9,
         "stop": "STOP",
     }
-    result = get_anthropic_call_params_from_common(params)
+    result = get_anthropic_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -31,7 +31,7 @@ def test_anthropic_conversion_multiple_stops():
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = get_anthropic_call_params_from_common(params)
+    result = get_anthropic_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -45,7 +45,7 @@ def test_anthropic_conversion_multiple_stops():
 def test_anthropic_conversion_empty():
     """Test Anthropic parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_anthropic_call_params_from_common(empty_params)
+    result = get_anthropic_call_params_from_common(**empty_params)
     assert dict(result) == {}
 
 
@@ -55,7 +55,7 @@ def test_anthropic_conversion_partial():
         "temperature": 0.7,
         "max_tokens": 100,
     }
-    result = get_anthropic_call_params_from_common(partial_params)
+    result = get_anthropic_call_params_from_common(**partial_params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,

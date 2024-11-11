@@ -13,7 +13,7 @@ def test_litellm_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    result = get_litellm_call_params_from_common(params)
+    result = get_litellm_call_params_from_common(**params)
     expected = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -30,5 +30,5 @@ def test_litellm_conversion_full():
 def test_litellm_conversion_empty():
     """Test LiteLLM parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_litellm_call_params_from_common(empty_params)
+    result = get_litellm_call_params_from_common(**empty_params)
     assert dict(result) == {}

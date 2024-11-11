@@ -12,7 +12,7 @@ def test_vertex_conversion_full():
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = get_vertex_call_params_from_common(params)
+    result = get_vertex_call_params_from_common(**params)
     assert result == {
         "generation_config": {
             "temperature": 0.7,
@@ -26,5 +26,5 @@ def test_vertex_conversion_full():
 def test_vertex_conversion_empty():
     """Test Vertex parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_vertex_call_params_from_common(empty_params)
+    result = get_vertex_call_params_from_common(**empty_params)
     assert dict(result) == {}

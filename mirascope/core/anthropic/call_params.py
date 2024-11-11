@@ -8,7 +8,7 @@ from anthropic.types import TextBlockParam
 from anthropic.types.completion_create_params import Metadata
 from anthropic.types.message_create_params import ToolChoice
 from httpx import Timeout
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
@@ -43,7 +43,7 @@ class AnthropicCallParams(BaseCallParams):
 
 
 def get_anthropic_call_params_from_common(
-    params: CommonCallParams,
+    **params: Unpack[CommonCallParams],
 ) -> AnthropicCallParams:
     """Converts common call parameters to Anthropic-specific call parameters."""
     mapping = {

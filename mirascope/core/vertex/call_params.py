@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 from vertexai.generative_models import GenerationConfig, SafetySetting, ToolConfig
 
 from ..base import BaseCallParams
@@ -25,7 +25,9 @@ class VertexCallParams(BaseCallParams):
     tool_config: NotRequired[ToolConfig]
 
 
-def get_vertex_call_params_from_common(params: CommonCallParams) -> VertexCallParams:
+def get_vertex_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> VertexCallParams:
     """Converts common call parameters to Vertex AI-specific call parameters."""
     mapping = {
         "temperature": "temperature",

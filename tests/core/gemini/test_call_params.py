@@ -12,7 +12,7 @@ def test_gemini_conversion_full():
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = get_gemini_call_params_from_common(params)
+    result = get_gemini_call_params_from_common(**params)
     assert result == {
         "generation_config": {
             "temperature": 0.7,
@@ -29,7 +29,7 @@ def test_gemini_conversion_single_stop():
         "temperature": 0.7,
         "stop": "STOP",
     }
-    result = get_gemini_call_params_from_common(params)
+    result = get_gemini_call_params_from_common(**params)
     assert result == {
         "generation_config": {
             "temperature": 0.7,
@@ -41,5 +41,5 @@ def test_gemini_conversion_single_stop():
 def test_gemini_conversion_empty():
     """Test Gemini parameter conversion with empty parameters."""
     empty_params: CommonCallParams = {}
-    result = get_gemini_call_params_from_common(empty_params)
+    result = get_gemini_call_params_from_common(*empty_params)
     assert dict(result) == {}

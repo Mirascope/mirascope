@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from mistralai.models.chat_completion import ResponseFormat, ToolChoice
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, Unpack
 
 from ..base import BaseCallParams
 from ..base.call_params import CommonCallParams, convert_params
@@ -37,7 +37,9 @@ class MistralCallParams(BaseCallParams):
     top_p: NotRequired[float | None]
 
 
-def get_mistral_call_params_from_common(params: CommonCallParams) -> MistralCallParams:
+def get_mistral_call_params_from_common(
+    **params: Unpack[CommonCallParams],
+) -> MistralCallParams:
     """Converts common call parameters to Mistral-specific call parameters."""
     mapping = {
         "temperature": "temperature",
