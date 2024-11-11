@@ -12,6 +12,7 @@ from openai.types.chat.completion_create_params import ResponseFormat
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ..base.call_params import CommonCallParams, convert_params
 
 if TYPE_CHECKING:
     from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
@@ -76,3 +77,17 @@ class OpenAICallParams(BaseCallParams):
     top_logprobs: NotRequired[int | None]
     top_p: NotRequired[float | None]
     user: NotRequired[str]
+
+
+def get_openai_call_params_from_common(params: CommonCallParams) -> OpenAICallParams:
+    """Converts common call parameters to OpenAI-specific call parameters."""
+    mapping = {
+        "temperature": "temperature",
+        "max_tokens": "max_tokens",
+        "top_p": "top_p",
+        "frequency_penalty": "frequency_penalty",
+        "presence_penalty": "presence_penalty",
+        "seed": "seed",
+        "stop": "stop",
+    }
+    return convert_params(params, mapping, OpenAICallParams)

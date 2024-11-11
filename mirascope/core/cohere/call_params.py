@@ -14,6 +14,7 @@ from cohere.types import (
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
 
 
 class CohereCallParams(BaseCallParams):
@@ -60,3 +61,20 @@ class CohereCallParams(BaseCallParams):
     stop_sequences: NotRequired[Sequence[str] | None]
     temperature: NotRequired[float | None]
     tool_results: NotRequired[Sequence[ToolResult] | None]
+
+
+def get_cohere_call_params_from_common(params: CommonCallParams) -> CohereCallParams:
+    """Converts common call parameters to Cohere-specific call parameters."""
+    mapping = {
+        "temperature": "temperature",
+        "max_tokens": "max_tokens",
+        "top_p": "p",
+        "frequency_penalty": "frequency_penalty",
+        "presence_penalty": "presence_penalty",
+        "seed": "seed",
+        "stop": "stop_sequences",
+    }
+    transforms = [
+        ("stop", convert_stop_to_list),
+    ]
+    return convert_params(params, mapping, CohereCallParams, transforms)

@@ -9,6 +9,9 @@ from groq.types.chat.completion_create_params import ResponseFormat
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ..base.call_params import CommonCallParams
+from ..openai import OpenAICallParams
+from ..openai.call_params import get_openai_call_params_from_common
 
 
 class GroqCallParams(BaseCallParams):
@@ -50,3 +53,11 @@ class GroqCallParams(BaseCallParams):
     top_logprobs: NotRequired[int | None]
     top_p: NotRequired[float | None]
     user: NotRequired[str]
+
+
+def get_groq_call_params_from_common(params: CommonCallParams) -> OpenAICallParams:
+    """Converts common call parameters to Groq-specific call parameters.
+
+    Note: Groq follows the OpenAI API spec, so we use OpenAICallParams.
+    """
+    return get_openai_call_params_from_common(params)

@@ -11,6 +11,7 @@ from httpx import Timeout
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ..base.call_params import CommonCallParams, convert_params, convert_stop_to_list
 
 
 class AnthropicCallParams(BaseCallParams):
@@ -39,3 +40,19 @@ class AnthropicCallParams(BaseCallParams):
     top_k: NotRequired[int | None]
     top_p: NotRequired[float | None]
     timeout: NotRequired[float | Timeout | None]
+
+
+def get_anthropic_call_params_from_common(
+    params: CommonCallParams,
+) -> AnthropicCallParams:
+    """Converts common call parameters to Anthropic-specific call parameters."""
+    mapping = {
+        "temperature": "temperature",
+        "max_tokens": "max_tokens",
+        "top_p": "top_p",
+        "stop": "stop_sequences",
+    }
+    transforms = [
+        ("stop", convert_stop_to_list),
+    ]
+    return convert_params(params, mapping, AnthropicCallParams, transforms)

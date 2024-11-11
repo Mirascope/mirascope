@@ -6,6 +6,7 @@ from mistralai.models.chat_completion import ResponseFormat, ToolChoice
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ..base.call_params import CommonCallParams, convert_params
 
 
 class MistralCallParams(BaseCallParams):
@@ -34,3 +35,15 @@ class MistralCallParams(BaseCallParams):
     temperature: NotRequired[float | None]
     tool_choice: NotRequired[ToolChoice | None]
     top_p: NotRequired[float | None]
+
+
+def get_mistral_call_params_from_common(params: CommonCallParams) -> MistralCallParams:
+    """Converts common call parameters to Mistral-specific call parameters."""
+    mapping = {
+        "temperature": "temperature",
+        "max_tokens": "max_tokens",
+        "top_p": "top_p",
+        "stop": "stop",
+        "seed": "random_seed",
+    }
+    return convert_params(params, mapping, MistralCallParams)
