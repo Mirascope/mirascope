@@ -1,6 +1,6 @@
 """This module contains the type definition for the base call parameters."""
 
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from typing_extensions import NotRequired, TypedDict
 
@@ -34,11 +34,3 @@ class CommonCallParams(TypedDict, total=False):
     presence_penalty: NotRequired[float | None]
     seed: NotRequired[int | None]
     stop: NotRequired[str | list[str] | None]
-
-
-_CALL_PARAMS_KEYS = set(CommonCallParams.__annotations__)
-
-
-def is_common_call_params(value: Any) -> bool:  # noqa: ANN401
-    """Check if a value is a CommonCallParams."""
-    return isinstance(value, dict) and value.keys() <= _CALL_PARAMS_KEYS

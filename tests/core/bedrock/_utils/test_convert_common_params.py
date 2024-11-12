@@ -40,3 +40,23 @@ def test_bedrock_conversion_empty():
     """Test empty parameters conversion for Bedrock."""
     result = convert_common_params({})
     assert result == {}
+
+
+def test_bedrock_conversion_full_with_invalid_key():
+    """Test full parameter conversion for Bedrock."""
+    params: CommonCallParams = {
+        "temperature": 0.7,
+        "max_tokens": 100,
+        "top_p": 0.9,
+        "stop": ["STOP", "END"],
+        "invalid": "invalid",  # pyright: ignore [reportAssignmentType]
+    }
+    result = convert_common_params(params)
+    assert result == {
+        "inferenceConfig": {
+            "temperature": 0.7,
+            "maxTokens": 100,
+            "topP": 0.9,
+            "stopSequences": ["STOP", "END"],
+        }
+    }
