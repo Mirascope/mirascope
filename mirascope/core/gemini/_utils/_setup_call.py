@@ -21,10 +21,12 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
+from ...base.call_params import CommonCallParams
 from .._call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
+from ._convert_common_params import convert_common_params
 from ._convert_message_params import convert_message_params
 
 
@@ -38,7 +40,7 @@ def setup_call(
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GeminiCallParams,
+    call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -60,7 +62,7 @@ def setup_call(
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GeminiCallParams,
+    call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -81,7 +83,7 @@ def setup_call(
     dynamic_config: GeminiDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GeminiCallParams,
+    call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -93,7 +95,13 @@ def setup_call(
     GeminiCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GeminiTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        GeminiTool,
+        call_params,
+        convert_common_params,
     )
     call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)

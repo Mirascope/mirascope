@@ -13,10 +13,12 @@ from groq.types.chat import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base.call_params import CommonCallParams
 from .._call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from ..tool import GroqTool
+from ._convert_common_params import convert_common_params
 from ._convert_message_params import convert_message_params
 
 
@@ -30,7 +32,7 @@ def setup_call(
     dynamic_config: AsyncGroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -52,7 +54,7 @@ def setup_call(
     dynamic_config: GroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -73,7 +75,7 @@ def setup_call(
     dynamic_config: GroqDynamicConfig | AsyncGroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -85,7 +87,7 @@ def setup_call(
     GroqCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GroqTool, call_params
+        fn, fn_args, dynamic_config, tools, GroqTool, call_params, convert_common_params
     )
     call_kwargs = cast(GroqCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)

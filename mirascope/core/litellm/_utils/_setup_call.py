@@ -9,6 +9,7 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
 from ...base._utils import AsyncCreateFn, CreateFn, fn_is_async
+from ...base.call_params import CommonCallParams
 from ...openai import (
     AsyncOpenAIDynamicConfig,
     OpenAICallParams,
@@ -29,7 +30,7 @@ def setup_call(
     dynamic_config: AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -51,7 +52,7 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -72,7 +73,7 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig | AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
