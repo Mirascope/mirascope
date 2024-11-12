@@ -1,7 +1,7 @@
 from typing import cast
 
-from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.mistral import MistralCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import MistralCallParams
 
 MISTRAL_PARAM_MAPPING = {
     "temperature": "temperature",

@@ -1,18 +1,16 @@
 from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.bedrock.call_params import (
-    get_bedrock_call_params_from_common,
-)
+from mirascope.core.bedrock._utils._convert_common_params import convert_common_params
 
 
 def test_bedrock_conversion_full():
-    """Test Bedrock parameter conversion with all parameters."""
+    """Test full parameter conversion for Bedrock."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "max_tokens": 100,
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = get_bedrock_call_params_from_common(**params)
+    result = convert_common_params(params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -24,12 +22,12 @@ def test_bedrock_conversion_full():
 
 
 def test_bedrock_conversion_single_stop():
-    """Test Bedrock parameter conversion with single stop sequence."""
+    """Test single stop sequence conversion for Bedrock."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "stop": "STOP",
     }
-    result = get_bedrock_call_params_from_common(**params)
+    result = convert_common_params(params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -39,7 +37,6 @@ def test_bedrock_conversion_single_stop():
 
 
 def test_bedrock_conversion_empty():
-    """Test Bedrock parameter conversion with empty parameters."""
-    empty_params: CommonCallParams = {}
-    result = get_bedrock_call_params_from_common(**empty_params)
-    assert dict(result) == {}
+    """Test empty parameters conversion for Bedrock."""
+    result = convert_common_params({})
+    assert result == {}

@@ -1,7 +1,7 @@
 from typing import cast
 
-from mirascope.core.anthropic import AnthropicCallParams
-from mirascope.core.base.call_params import CommonCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import AnthropicCallParams
 
 ANTHROPIC_PARAM_MAPPING = {
     "temperature": "temperature",

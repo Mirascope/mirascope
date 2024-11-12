@@ -1,7 +1,7 @@
 from typing import cast
 
-from mirascope.core.azure import AzureCallParams
-from mirascope.core.base.call_params import CommonCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import AzureCallParams
 
 AZURE_PARAM_MAPPING = {
     "temperature": "temperature",

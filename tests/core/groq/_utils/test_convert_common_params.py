@@ -1,9 +1,9 @@
 from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.groq.call_params import get_groq_call_params_from_common
+from mirascope.core.groq._utils._convert_common_params import convert_common_params
 
 
 def test_groq_conversion_full():
-    """Test Groq parameter conversion with all parameters."""
+    """Test full parameter conversion for Groq."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -13,8 +13,8 @@ def test_groq_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    result = get_groq_call_params_from_common(**params)
-    expected = {
+    result = convert_common_params(params)
+    assert result == {
         "temperature": 0.7,
         "max_tokens": 100,
         "top_p": 0.9,
@@ -23,12 +23,19 @@ def test_groq_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    for key, value in expected.items():
-        assert result.get(key) == value
 
 
 def test_groq_conversion_empty():
-    """Test Groq parameter conversion with empty parameters."""
-    empty_params: CommonCallParams = {}
-    result = get_groq_call_params_from_common(**empty_params)
-    assert dict(result) == {}
+    """Test empty parameters conversion for Groq."""
+    result = convert_common_params({})
+    assert result == {}
+
+
+def test_groq_conversion_none_values():
+    """Test None values conversion for Groq."""
+    params: CommonCallParams = {
+        "temperature": None,
+        "max_tokens": None,
+    }
+    result = convert_common_params(params)
+    assert result == {}

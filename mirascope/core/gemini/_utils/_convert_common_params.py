@@ -4,8 +4,8 @@ from google.generativeai.types import (
     GenerationConfigDict,
 )
 
-from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.gemini import GeminiCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import GeminiCallParams
 
 GEMINI_PARAM_MAPPING = {
     "temperature": "temperature",

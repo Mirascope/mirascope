@@ -4,8 +4,8 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     InferenceConfigurationTypeDef,
 )
 
-from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.bedrock import BedrockCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import BedrockCallParams
 
 BEDROCK_PARAM_MAPPING = {
     "temperature": "temperature",

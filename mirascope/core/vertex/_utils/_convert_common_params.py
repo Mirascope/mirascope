@@ -2,8 +2,8 @@ from typing import cast
 
 from vertexai.generative_models import GenerationConfig
 
-from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.vertex import VertexCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import VertexCallParams
 
 VERTEX_PARAM_MAPPING = {
     "temperature": "temperature",

@@ -1,7 +1,7 @@
 from typing import cast
 
-from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.cohere import CohereCallParams
+from ...base.call_params import CommonCallParams
+from ..call_params import CohereCallParams
 
 COHERE_PARAM_MAPPING = {
     "temperature": "temperature",
