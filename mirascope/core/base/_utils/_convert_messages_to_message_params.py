@@ -26,9 +26,10 @@ CHANNELS = 1
 
 def _convert_message_sequence_part_to_content_part(
     message_sequence_part: str
-    | Image.Image
     | TextPart
+    | CacheControlPart
     | ImagePart
+    | Image.Image
     | AudioPart
     | AudioSegment
     | Wave_read
@@ -75,6 +76,7 @@ def convert_message_content_to_message_param_content(
     message_sequence: Sequence[
         str
         | TextPart
+        | CacheControlPart
         | ImagePart
         | Image.Image
         | AudioPart
@@ -105,6 +107,7 @@ def convert_messages_to_message_params(
     | Sequence[
         str
         | TextPart
+        | CacheControlPart
         | ImagePart
         | Image.Image
         | AudioPart
