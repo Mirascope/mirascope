@@ -78,7 +78,9 @@ def test_setup_call_with_dynamic_config() -> None:
     @prompt_template("Recommend a {genre} book.")
     def fn() -> None: ...  # pragma: no cover
 
-    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams: ...
+    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams:
+        """Test conversion function for common parameters."""
+        return cast(BaseCallParams, common_params)
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -121,7 +123,9 @@ def test_setup_call_with_custom_messages() -> None:
     def fn() -> None:
         """Normal docstr."""
 
-    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams: ...
+    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams:
+        """Test conversion function for common parameters."""
+        return cast(BaseCallParams, common_params)
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -276,7 +280,9 @@ def test_setup_call_with_empty_common_params() -> None:
     and maintains other expected behavior.
     """
 
-    def convert_common_params(params: CommonCallParams) -> BaseCallParams: ...
+    def convert_common_params(params: CommonCallParams) -> BaseCallParams:
+        """Test conversion function for common parameters."""
+        return cast(BaseCallParams, params)
 
     @prompt_template("Recommend a {genre} book.")
     def fn(genre: str) -> None: ...  # pragma: no cover
