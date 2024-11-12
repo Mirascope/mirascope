@@ -16,13 +16,23 @@ To cache messages, simply add a `:cache_control` tagged breakpoint to your promp
 
 !!! mira ""
 
-    ```python hl_lines="8 19"
-    --8<-- "examples/learn/provider_specific_features/anthropic/caching/messages.py"
-    ```
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
 
-??? info "Additional options"
+        {% if method == "string_template" %}
+        ```python hl_lines="8 19"
+        {% elif method == "base_message_param" %}
+        ```python hl_lines="11 28"
+        {% else %}
+        ```python hl_lines="11 24"
+        {% endif %}
+        --8<-- "examples/learn/provider_specific_features/anthropic/caching/messages/{{ method }}.py"
+        ```
+    {% endfor %}
 
-    You can also specify the cache control type the same way we support additional options for multimodal parts (although currently `"ephemeral"` is the only supported type):
+??? info "Additional options with string templates"
+
+    When using string templates, you can also specify the cache control type the same way we support additional options for multimodal parts (although currently `"ephemeral"` is the only supported type):
 
     ```python
     @prompt_template("... {:cache_control(type=ephemeral)}")

@@ -11,6 +11,7 @@ from ._utils._convert_messages_to_message_params import (
 from .message_param import (
     AudioPart,
     BaseMessageParam,
+    CacheControlPart,
     DocumentPart,
     ImagePart,
     TextPart,
@@ -24,6 +25,7 @@ class Messages:
         | Sequence[
             str
             | TextPart
+            | CacheControlPart
             | ImagePart
             | Image.Image
             | AudioPart
@@ -42,6 +44,7 @@ class Messages:
         | Sequence[
             str
             | TextPart
+            | CacheControlPart
             | ImagePart
             | Image.Image
             | AudioPart
@@ -62,6 +65,7 @@ class Messages:
         | Sequence[
             str
             | TextPart
+            | CacheControlPart
             | ImagePart
             | Image.Image
             | AudioPart
@@ -82,6 +86,7 @@ class Messages:
         | Sequence[
             str
             | TextPart
+            | CacheControlPart
             | ImagePart
             | Image.Image
             | AudioPart
