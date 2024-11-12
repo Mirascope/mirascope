@@ -23,6 +23,9 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
+      - name: Generate llms.txt
+        run: uv run python docs/generate_llms_txt.py
+
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
 
       - uses: actions/cache@v4
