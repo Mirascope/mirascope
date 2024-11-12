@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from anthropic import Anthropic
 
+from mirascope.core.anthropic._utils import convert_common_params
 from mirascope.core.anthropic._utils._setup_call import setup_call
 from mirascope.core.anthropic.tool import AnthropicTool
 
@@ -51,7 +52,7 @@ def test_setup_call(
     )
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, AnthropicTool, {"max_tokens": 1000}
+        fn, {}, None, None, AnthropicTool, {"max_tokens": 1000}, convert_common_params
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]

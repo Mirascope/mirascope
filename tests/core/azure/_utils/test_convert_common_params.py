@@ -1,4 +1,4 @@
-from mirascope.core.anthropic._utils._convert_common_params import convert_common_params
+from mirascope.core.azure._utils._convert_common_params import convert_common_params
 from mirascope.core.base.call_params import CommonCallParams
 
 

@@ -11,6 +11,7 @@ from vertexai.generative_models import (
     ToolConfig,
 )
 
+from mirascope.core.vertex._utils._convert_common_params import convert_common_params
 from mirascope.core.vertex._utils._setup_call import setup_call
 from mirascope.core.vertex.tool import VertexTool
 
@@ -57,7 +58,9 @@ def test_setup_call(
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "contents" in call_kwargs and call_kwargs["contents"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, VertexTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, VertexTool, {}, convert_common_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
