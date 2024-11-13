@@ -18,7 +18,7 @@ from .._call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
 from ..dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from ..tool import GroqTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -87,7 +87,13 @@ def setup_call(
     GroqCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GroqTool, call_params, convert_common_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        GroqTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(GroqCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)

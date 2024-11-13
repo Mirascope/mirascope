@@ -1,5 +1,7 @@
 from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.bedrock._utils._convert_common_params import convert_common_params
+from mirascope.core.bedrock._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 
 
 def test_bedrock_conversion_full():
@@ -10,7 +12,7 @@ def test_bedrock_conversion_full():
         "top_p": 0.9,
         "stop": ["STOP", "END"],
     }
-    result = convert_common_params(params)
+    result = convert_common_call_params(params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -27,7 +29,7 @@ def test_bedrock_conversion_single_stop():
         "temperature": 0.7,
         "stop": "STOP",
     }
-    result = convert_common_params(params)
+    result = convert_common_call_params(params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,
@@ -38,7 +40,7 @@ def test_bedrock_conversion_single_stop():
 
 def test_bedrock_conversion_empty():
     """Test empty parameters conversion for Bedrock."""
-    result = convert_common_params({})
+    result = convert_common_call_params({})
     assert result == {}
 
 
@@ -51,7 +53,7 @@ def test_bedrock_conversion_full_with_invalid_key():
         "stop": ["STOP", "END"],
         "invalid": "invalid",  # pyright: ignore [reportAssignmentType]
     }
-    result = convert_common_params(params)
+    result = convert_common_call_params(params)
     assert result == {
         "inferenceConfig": {
             "temperature": 0.7,

@@ -14,7 +14,7 @@ AZURE_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> AzureCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> AzureCallParams:
     """Convert CommonCallParams to Azure parameters."""
     return cast(
         AzureCallParams,

@@ -15,7 +15,7 @@ GEMINI_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> GeminiCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> GeminiCallParams:
     """Convert CommonCallParams to Gemini parameters."""
     generation_config = {}
 

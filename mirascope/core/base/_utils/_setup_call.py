@@ -40,7 +40,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     tool_type: type[_BaseToolT],
     call_params: _BaseCallParamsT | CommonCallParams,
-    convert_common_params: ConvertCommonParamsFunc[_BaseCallParamsT],
+    convert_common_call_params: ConvertCommonParamsFunc[_BaseCallParamsT],
 ) -> tuple[
     str | None,
     list[BaseMessageParam | Any],
@@ -48,7 +48,7 @@ def setup_call(
     BaseCallKwargs,
 ]:
     if isinstance(call_params, dict) and call_params.keys() <= _CALL_PARAMS_KEYS:
-        call_params = convert_common_params(cast(CommonCallParams, call_params))
+        call_params = convert_common_call_params(cast(CommonCallParams, call_params))
     call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
     prompt_template, messages = None, None
     if dynamic_config is not None:

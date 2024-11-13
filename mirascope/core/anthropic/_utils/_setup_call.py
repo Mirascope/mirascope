@@ -20,7 +20,7 @@ from .._call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from ..tool import AnthropicTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -100,7 +100,7 @@ def setup_call(
         tools,
         AnthropicTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(AnthropicCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | MessageParam], messages)

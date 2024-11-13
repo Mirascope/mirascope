@@ -14,7 +14,7 @@ COHERE_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> CohereCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> CohereCallParams:
     """Convert CommonCallParams to Cohere parameters."""
     return cast(
         CohereCallParams,

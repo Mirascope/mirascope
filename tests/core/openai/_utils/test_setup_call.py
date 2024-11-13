@@ -6,7 +6,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from mirascope.core.base import ResponseModelConfigDict
-from mirascope.core.openai._utils._convert_common_params import convert_common_params
+from mirascope.core.openai._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.openai._utils._setup_call import setup_call
 from mirascope.core.openai.tool import OpenAITool
 
@@ -52,7 +54,7 @@ def test_setup_call(
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
     assert "stream_options" not in call_kwargs
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, OpenAITool, {}, convert_common_params
+        fn, {}, None, None, OpenAITool, {}, convert_common_call_params
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
@@ -99,7 +101,7 @@ def test_setup_call_stream(
         "include_usage": True
     }
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, OpenAITool, {}, convert_common_params
+        fn, {}, None, None, OpenAITool, {}, convert_common_call_params
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]

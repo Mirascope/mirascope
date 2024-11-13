@@ -13,7 +13,7 @@ VERTEX_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> VertexCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> VertexCallParams:
     """Convert CommonCallParams to Vertex parameters."""
     generation_config = {}
 

@@ -20,7 +20,7 @@ from .._call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import AsyncOpenAIDynamicConfig, OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -96,7 +96,7 @@ def setup_call(
         tools,
         OpenAITool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(OpenAICallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)

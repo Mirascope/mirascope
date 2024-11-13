@@ -17,7 +17,9 @@ def test_setup_call() -> None:
     @prompt_template("Recommend a {genre} book.")
     def fn(genre: str) -> None: ...  # pragma: no cover
 
-    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams: ...
+    def convert_common_call_params(
+        common_params: CommonCallParams,
+    ) -> BaseCallParams: ...
 
     template, messages, tool_types, call_kwargs = setup_call(
         fn,
@@ -26,7 +28,7 @@ def test_setup_call() -> None:
         None,
         BaseTool,
         {"arg": "value"},  # type: ignore
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
     assert template == "Recommend a {genre} book."
@@ -47,7 +49,7 @@ def test_setup_call() -> None:
         None,
         BaseTool,
         {"arg": "value"},  # type: ignore
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     ) == (template, messages, tool_types, call_kwargs)
 
 
@@ -78,7 +80,7 @@ def test_setup_call_with_dynamic_config() -> None:
     @prompt_template("Recommend a {genre} book.")
     def fn() -> None: ...  # pragma: no cover
 
-    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams:
+    def convert_common_call_params(common_params: CommonCallParams) -> BaseCallParams:
         """Test conversion function for common parameters."""
         return cast(BaseCallParams, common_params)
 
@@ -89,7 +91,7 @@ def test_setup_call_with_dynamic_config() -> None:
         None,
         FormatBook,
         {},
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
     assert template == "Recommend a {genre} book."
@@ -123,7 +125,7 @@ def test_setup_call_with_custom_messages() -> None:
     def fn() -> None:
         """Normal docstr."""
 
-    def convert_common_params(common_params: CommonCallParams) -> BaseCallParams:
+    def convert_common_call_params(common_params: CommonCallParams) -> BaseCallParams:
         """Test conversion function for common parameters."""
         return cast(BaseCallParams, common_params)
 
@@ -134,7 +136,7 @@ def test_setup_call_with_custom_messages() -> None:
         None,
         BaseTool,
         {},
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
     assert template is None
     assert custom_messages == messages
@@ -157,7 +159,7 @@ def test_setup_call_with_common_params() -> None:
         "top_p": 0.9,
     }
 
-    def convert_common_params(params: CommonCallParams) -> BaseCallParams:
+    def convert_common_call_params(params: CommonCallParams) -> BaseCallParams:
         """Test conversion function that prefixes parameters with 'converted_'."""
         return cast(
             BaseCallParams,
@@ -178,7 +180,7 @@ def test_setup_call_with_common_params() -> None:
         None,
         BaseTool,
         common_params,
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
     assert template == "Recommend a {genre} book."
@@ -206,7 +208,7 @@ def test_setup_call_with_mixed_common_and_call_params() -> None:
         "custom_param": "value",  # Provider-specific key
     }
 
-    def convert_common_params(params: CommonCallParams) -> BaseCallParams: ...
+    def convert_common_call_params(params: CommonCallParams) -> BaseCallParams: ...
 
     @prompt_template("Recommend a {genre} book.")
     def fn(genre: str) -> None: ...  # pragma: no cover
@@ -218,7 +220,7 @@ def test_setup_call_with_mixed_common_and_call_params() -> None:
         None,
         BaseTool,
         mixed_params,  # type: ignore
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
     # Provider-specific parameters remain unchanged while common parameters are converted
@@ -242,7 +244,7 @@ def test_setup_call_with_dynamic_config_and_common_params() -> None:
         }
     }
 
-    def convert_common_params(params: CommonCallParams) -> BaseCallParams:
+    def convert_common_call_params(params: CommonCallParams) -> BaseCallParams:
         """Test conversion function for common parameters."""
         return cast(
             BaseCallParams,
@@ -262,10 +264,10 @@ def test_setup_call_with_dynamic_config_and_common_params() -> None:
         None,
         BaseTool,
         common_params,
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
-    # Results from convert_common_params are merged with dynamic_config's call_params
+    # Results from convert_common_call_params are merged with dynamic_config's call_params
     assert call_kwargs == {
         "converted_temperature": 0.7,
         "converted_max_tokens": 100,
@@ -280,7 +282,7 @@ def test_setup_call_with_empty_common_params() -> None:
     and maintains other expected behavior.
     """
 
-    def convert_common_params(params: CommonCallParams) -> BaseCallParams:
+    def convert_common_call_params(params: CommonCallParams) -> BaseCallParams:
         """Test conversion function for common parameters."""
         return cast(BaseCallParams, params)
 
@@ -294,7 +296,7 @@ def test_setup_call_with_empty_common_params() -> None:
         None,
         BaseTool,
         {},  # Empty CommonCallParams
-        convert_common_params,  # pyright: ignore [reportArgumentType]
+        convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
 
     assert template == "Recommend a {genre} book."

@@ -26,7 +26,7 @@ from .._call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
 from ..tool import GeminiTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -101,7 +101,7 @@ def setup_call(
         tools,
         GeminiTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)

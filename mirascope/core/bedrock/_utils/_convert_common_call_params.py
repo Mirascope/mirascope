@@ -15,7 +15,7 @@ BEDROCK_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> BedrockCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> BedrockCallParams:
     """Convert CommonCallParams to Bedrock parameters."""
     inference_config = {}
 

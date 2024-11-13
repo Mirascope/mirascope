@@ -30,7 +30,7 @@ from .._call_kwargs import CohereCallKwargs
 from ..call_params import CohereCallParams
 from ..dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from ..tool import CohereTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -105,7 +105,7 @@ def setup_call(
         tools,
         CohereTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(CohereCallKwargs, call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)

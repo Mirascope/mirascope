@@ -25,7 +25,7 @@ from .._call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
 from ..tool import MistralTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -100,7 +100,7 @@ def setup_call(
         tools,
         MistralTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)

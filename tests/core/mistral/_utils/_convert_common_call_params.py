@@ -1,5 +1,7 @@
 from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.mistral._utils._convert_common_params import convert_common_params
+from mirascope.core.mistral._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 
 
 def test_mistral_conversion_full():
@@ -11,7 +13,7 @@ def test_mistral_conversion_full():
         "seed": 42,
         "stop": ["STOP", "END"],
     }
-    result = convert_common_params(params)
+    result = convert_common_call_params(params)
     assert result == {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -23,5 +25,5 @@ def test_mistral_conversion_full():
 
 def test_mistral_conversion_empty():
     """Test empty parameters conversion for Mistral."""
-    result = convert_common_params({})
+    result = convert_common_call_params({})
     assert result == {}

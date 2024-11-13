@@ -26,7 +26,7 @@ from .._call_kwargs import VertexCallKwargs
 from ..call_params import VertexCallParams
 from ..dynamic_config import VertexDynamicConfig
 from ..tool import VertexTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -101,7 +101,7 @@ def setup_call(
         tools,
         VertexTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(VertexCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | Content], messages)

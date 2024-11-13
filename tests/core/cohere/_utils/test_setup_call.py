@@ -8,7 +8,9 @@ import pytest
 from cohere import NonStreamedChatResponse
 from cohere.types import ChatMessage
 
-from mirascope.core.cohere._utils._convert_common_params import convert_common_params
+from mirascope.core.cohere._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.cohere._utils._setup_call import setup_call
 from mirascope.core.cohere.tool import CohereTool
 
@@ -79,7 +81,7 @@ def test_setup_call(
     assert "model" in call_kwargs and call_kwargs["model"] == "command-r-plus"
     assert "message" in call_kwargs and call_kwargs["message"] == messages[-1].message
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, CohereTool, {}, convert_common_params
+        fn, {}, None, None, CohereTool, {}, convert_common_call_params
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]

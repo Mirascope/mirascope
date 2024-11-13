@@ -5,7 +5,9 @@ from types_aiobotocore_bedrock_runtime import (
     BedrockRuntimeClient as AsyncBedrockRuntimeClient,
 )
 
-from mirascope.core.bedrock._utils._convert_common_params import convert_common_params
+from mirascope.core.bedrock._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.bedrock._utils._setup_call import (
     _extract_async_stream_fn,
     _extract_sync_stream_fn,
@@ -112,7 +114,7 @@ def test_setup_call(
     assert "modelId" in call_kwargs and call_kwargs["modelId"] == "anthropic.claude-v2"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
     mock_base_setup_call.assert_called_once_with(
-        fn, {}, None, None, BedrockTool, {}, convert_common_params
+        fn, {}, None, None, BedrockTool, {}, convert_common_call_params
     )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]

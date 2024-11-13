@@ -45,7 +45,7 @@ from .._types import (
 from ..call_params import BedrockCallParams
 from ..dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from ..tool import BedrockTool
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 _P = ParamSpec("_P")
@@ -161,7 +161,7 @@ def setup_call(
         tools,
         BedrockTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(BedrockCallKwargs, base_call_kwargs)
     messages = cast(list[InternalBedrockMessageParam | BaseMessageParam], messages)

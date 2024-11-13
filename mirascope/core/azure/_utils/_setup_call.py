@@ -24,7 +24,7 @@ from .._call_kwargs import AzureCallKwargs
 from ..call_params import AzureCallParams
 from ..dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from ..tool import AzureTool, GenerateAzureStrictToolJsonSchema
-from ._convert_common_params import convert_common_params
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 from ._get_credential import get_credential
 
@@ -101,7 +101,7 @@ def setup_call(
         tools,
         AzureTool,
         call_params,
-        convert_common_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(AzureCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatRequestMessage], messages)

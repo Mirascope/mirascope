@@ -12,7 +12,7 @@ MISTRAL_PARAM_MAPPING = {
 }
 
 
-def convert_common_params(common_params: CommonCallParams) -> MistralCallParams:
+def convert_common_call_params(common_params: CommonCallParams) -> MistralCallParams:
     """Convert CommonCallParams to Mistral parameters."""
     return cast(
         MistralCallParams,
