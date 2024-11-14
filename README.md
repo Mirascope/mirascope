@@ -7,7 +7,7 @@
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
     <a href="https://codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
-    <a href="https://docs.mirascope.io/" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
+    <a href="https://www.mirascope.com/WELCOME" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
     <a href="https://github.com/Mirascope/mirascope/blog/dev/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
@@ -51,11 +51,11 @@ print(book)
 
 ## Tutorials
 
-Check out our [quickstart tutorial](https://www.mirascope.com/docs/tutorials/getting_started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
+Check out our [quickstart tutorial](https://www.mirascope.com/tutorials/getting_started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
 
 ## Usage
 
-For a complete guide on how to use all of the various features Mirascope has to offer, read through our [Learn](https://www.mirascope.com/docs/learn) documentation.
+For a complete guide on how to use all of the various features Mirascope has to offer, read through our [Learn](https://www.mirascope.com/learn) documentation.
 
 ## Versioning
 

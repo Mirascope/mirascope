@@ -214,8 +214,9 @@ skip = [
     ".git",
     "*.lock",
     "./examples/cookbook/agents/web_search_agent/messages.py",
+    "./docs/blog/posts/llm-prompt.md",
 ]
-ignore-words-list = 'EHR'
+ignore-words-list = 'EHR,reworkd'
 ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]
