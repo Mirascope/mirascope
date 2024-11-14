@@ -1,6 +1,6 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
-site_url: https://www.mirascope.com/docs
+site_url: https://www.mirascope.com
 site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
@@ -32,13 +32,13 @@ theme:
         icon: material/brightness-7
         name: Switch to dark mode
       primary: custom
-      accent: indigo
+      accent: custom
     - scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
       primary: custom
-      accent: indigo
+      accent: custom
   font:
     text: Roboto
     code: Roboto Mono
@@ -105,6 +105,16 @@ markdown_extensions:
 
 plugins:
   - search
+  - blog:
+      post_excerpt: required
+      post_readtime_words_per_minute: 265
+      post_url_format: "{slug}"
+      categories_url_format: "{slug}"
+      archive: false
+      categories_allowed:
+        - Tips & Inspiration
+        - Behind the Scenes
+        - Library Updates
   - macros:
       module_name: docs/macros
   - mkdocs-jupyter:
@@ -144,8 +154,9 @@ validation:
   not_found: warn
 
 nav:
+  - Home: "index.md"
   - Get Started:
-      - Welcome to Mirascope: "index.md"
+      - Welcome to Mirascope: "WELCOME.md"
       - Why Use Mirascope: "WHY.md"
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
@@ -346,3 +357,5 @@ nav:
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
+  - Blog:
+      - "blog/index.md"
