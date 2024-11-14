@@ -26,7 +26,7 @@ We even see this in Chain-of-Thought prompting (CoT) sometimes. Though this styl
 
 **This gives you no granular control over the flow:** What if you want to prompt engineer around the attributes of a single variable in the middle of a sequence?
 
-That’s why prompt chaining is suitable for some situations. In this article, we give you a full picture of what prompt chains do. We also show ways of implementing chains using [Mirascope](https://www.mirascope.com), our own Python toolkit for building with language models ([GitHub](https://github.com/mirascope/mirascope)), along with do’s and don’ts for chaining LLM calls.
+That’s why prompt chaining is suitable for some situations. In this article, we give you a full picture of what prompt chains do. We also show ways of implementing chains using [Mirascope](https://mirascope.com), our own Python toolkit for building with language models ([GitHub](https://github.com/mirascope/mirascope)), along with do’s and don’ts for chaining LLM calls.
 
 ## A Brief Use Case
 
@@ -277,7 +277,7 @@ print(rewrite_iteratively(original_text=original_text))
 
 Many frameworks offer dedicated chaining functionality, such as LangChain Expression Language (LCEL), which is a declarative language for composing chains.
 
-As its name suggests, [LangChain](https://www.mirascope.com/blog/langchain-alternatives) was created with chaining in mind and offers specialized classes and abstractions for accomplishing sequences of LLM calls.
+As its name suggests, [LangChain](https://mirascope.com/blog/langchain-alternatives) was created with chaining in mind and offers specialized classes and abstractions for accomplishing sequences of LLM calls.
 
 You typically assemble chains in LCEL using its pipe operator (`|`), along with classes like `Runnable` and `SequentialChain`. LCEL chains generally have this format:
 
@@ -291,7 +291,7 @@ But when building more complex chains, we found it challenging to debug errors a
 
 In particular, we found `RunnablePassthrough`, an object that forwards input data without changes through a chain, to be unnecessary and to actually hinder building complex prompts with parallel sub chains. It’s more of an afterthought to solve a problem that LangChain itself created with LCEL. If you do things in a Pythonic way like Mirascope, you don’t need additional classes or structures to pass information through a chain—you simply always have access to it like you should.
 
-Due to the complexity of [working with such frameworks](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) we designed Mirascope so you can build pipelines using the Python syntax you already know, rather than having to learn new structures.
+Due to the complexity of [working with such frameworks](https://mirascope.com/blog/engineers-should-handle-prompting-llms) we designed Mirascope so you can build pipelines using the Python syntax you already know, rather than having to learn new structures.
 
 Mirascope lets you build prompt chains using either Python properties or functions, as explained below.
 
@@ -692,7 +692,7 @@ You should balance these considerations when deciding whether to leverage prompt
 
 ## Best Practices for Prompt Chaining
 
-Good prompt chaining practices share a lot with best [prompt engineering](https://www.mirascope.com/blog/prompt-engineering-tools) practices. Here are some recommendations for developing effective prompt chains when using AI models:
+Good prompt chaining practices share a lot with best [prompt engineering](https://mirascope.com/blog/prompt-engineering-tools) practices. Here are some recommendations for developing effective prompt chains when using AI models:
 
 ### Keep Your Prompts Focused and Specific
 
@@ -702,7 +702,7 @@ Each prompt should also perform a specific function and have a single responsibi
 
 ### Manage Data Carefully
 
-Ensure that the format of the desired output of one prompt matches the expected input format of the next prompt to avoid errors. Schemas can easily help you achieve this, and the Mirascope library offers its [`response_model`](https://www.mirascope.com/learn/response_models) argument, which is built on top of Pydantic, to help you define schemas, extract structured outputs from large language models, and validate those outputs.
+Ensure that the format of the desired output of one prompt matches the expected input format of the next prompt to avoid errors. Schemas can easily help you achieve this, and the Mirascope library offers its [`response_model`](https://mirascope.com/learn/response_models) argument, which is built on top of Pydantic, to help you define schemas, extract structured outputs from large language models, and validate those outputs.
 
 For example, if a prompt expects a JSON object with specific fields, ensure the preceding prompt generates data in that exact structure. As well, be prepared to transform data to meet the input requirements of subsequent prompts. This might involve parsing JSON, reformatting strings, or converting data types.
 
@@ -718,4 +718,4 @@ Mirascope leverages Python for chaining LLM calls, avoiding the need for complex
 
 By keeping things simple, Mirascope lets you work with your data directly, helping you keep your workflows smoother and more intuitive.
 
-Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

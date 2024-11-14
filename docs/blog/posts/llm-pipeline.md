@@ -21,11 +21,11 @@ To get accurate model outputs, you generally do one of two things: ‍
 * Fine-tune and train the model itself to better align with specific tasks and datasets (as part of LLMOps), _or_
 * Improve the quality of your prompts through an ongoing process of iteration and refinement.
 
-As we’re very focused on improving and revising prompts in the context of our own LLM app development library, [Mirascope](https://www.mirascope.com), we believe crafting good prompts is a cost effective way to get reliable model responses.
+As we’re very focused on improving and revising prompts in the context of our own LLM app development library, [Mirascope](https://mirascope.com), we believe crafting good prompts is a cost effective way to get reliable model responses.
 
 <!-- more -->
 
-[We’ve previously explained](https://www.mirascope.com/blog/prompt-engineering-examples) that one way to get desirable outputs is to supply your inputs with as much detail as feasible. By this we mean extra _context_, which reduces ambiguity for the LLM and allows it to better understand and address the needs of your request.
+[We’ve previously explained](https://mirascope.com/blog/prompt-engineering-examples) that one way to get desirable outputs is to supply your inputs with as much detail as feasible. By this we mean extra _context_, which reduces ambiguity for the LLM and allows it to better understand and address the needs of your request.
 
 A popular way to add this additional context is through retrieval augmented generation (RAG), which enriches prompts with relevant information from external sources, thereby leveraging the trained model’s ability to generate responses that are more aligned with your expectations and the nuances of the query.
 
@@ -61,13 +61,13 @@ A typical use case for this is in customer service, where a customer contacts th
 
 ### Stages of a RAG Pipeline
 
-RAG pipelines are typically orchestrated through a framework like LangChain or [Llama Index](https://www.mirascope.com/blog/llamaindex-vs-langchain) to ensure consistency and reliability in input flows to the language model.
+RAG pipelines are typically orchestrated through a framework like LangChain or [Llama Index](https://mirascope.com/blog/llamaindex-vs-langchain) to ensure consistency and reliability in input flows to the language model.
 
 In theory at least, they allow you to scale an application with increasing volumes of data and more complex queries. You can build in automated data quality checks and validations while lowering operational costs for data management, processing, and maintenance.
 
 The stages of a RAG pipeline are typically:
 
-1. **Document ingestion** for loading documents (like PDFs) and other unstructured data (e.g., images, webpages, text files, etc.) into the pipeline. [Frameworks](https://www.mirascope.com/blog/llm-tools) like LangChain offer specialized loaders or connectors for specific file types.
+1. **Document ingestion** for loading documents (like PDFs) and other unstructured data (e.g., images, webpages, text files, etc.) into the pipeline. [Frameworks](https://mirascope.com/blog/llm-tools) like LangChain offer specialized loaders or connectors for specific file types.
 2. **Preprocessing** that transforms raw data into embeddings (i.e., vectors, or numerical representations of content in vector space) through a sequence of splitting, chunking, and embedding. This “splitting” breaks down large documents into smaller units at the paragraph or sentence level. “Chunking” groups these smaller units into cohesive chunks that maintain context, while embedding converts the chunks into numerical representations (vectors) to facilitate [similarity searches](https://www.pinecone.io/learn/what-is-similarity-search/).
 3. **Storage** for storing and indexing embeddings and their metadata in a vector store or database.
 4. **Querying** , where the user or application sends prompts to the LLM, together with the related context. The prompts are similarly processed and vectorized, and then compared with stored embeddings using techniques like similarity search. The most similar search results are pulled out of the vector store, decoded into normal text, and sent along with the prompt as useful context for the LLM.
@@ -88,9 +88,9 @@ As with any new technology, users report a variety of issues:
 
 To follow on from our descriptions of RAG, we’ll show you a simple Python example below using [LangChain](https://www.langchain.com/) for data ingestion and preprocessing, and Mirascope for fashioning queries.
 
-LangChain is a popular open-source LLM orchestration framework offering over 160 integrations with [other providers](https://www.mirascope.com/blog/langchain-alternatives) and is an ecosystem in its own right. One positive aspect about LangChain is it offers data loading, preprocessing, and embedding capabilities.
+LangChain is a popular open-source LLM orchestration framework offering over 160 integrations with [other providers](https://mirascope.com/blog/langchain-alternatives) and is an ecosystem in its own right. One positive aspect about LangChain is it offers data loading, preprocessing, and embedding capabilities.
 
-Below, we show an example of how to use these preprocessing features in combination with Mirascope’s [prompt engineering](https://www.mirascope.com/blog/prompt-engineering-best-practices).
+Below, we show an example of how to use these preprocessing features in combination with Mirascope’s [prompt engineering](https://mirascope.com/blog/prompt-engineering-best-practices).
 
 To start off, here’s the entire RAG code example we’ll use, and which we’ll describe step by step below. It’s partly taken from LangChain’s own tutorial on [how to build a RAG app](https://python.langchain.com/v0.2/docs/tutorials/rag/) for querying a blog page about LLM powered agents: ‍
 
@@ -209,7 +209,7 @@ vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings
 
 Lastly, we slot in code from Mirascope to create a prompt where you can ask a question about the retrieved documents (in this case, the original blog post about LLM powered agents).
 
-Besides the query in the [prompt template](https://www.mirascope.com/blog/langchain-prompt-template) you see below, note that we also retrieve relevant contextual information from the vector database to go along with our query, before sending everything together in our call to the model: ‍
+Besides the query in the [prompt template](https://mirascope.com/blog/langchain-prompt-template) you see below, note that we also retrieve relevant contextual information from the vector database to go along with our query, before sending everything together in our call to the model: ‍
 
 ```python
 @openai.call("gpt-4o-mini")
@@ -240,6 +240,6 @@ Above, we showcased a practical example of setting up a RAG pipeline using LangC
 
 ## Build Your LLM Pipeline Using Mirascope
 
-Building an efficient LLM pipeline involves several key components, including data ingestion, preprocessing, and query generation. Mirascope’s [prompting capabilities and management](https://www.mirascope.com/blog/prompt-versioning) help deliver accurate and contextually relevant responses from the language model.
+Building an efficient LLM pipeline involves several key components, including data ingestion, preprocessing, and query generation. Mirascope’s [prompting capabilities and management](https://mirascope.com/blog/prompt-versioning) help deliver accurate and contextually relevant responses from the language model.
 
-‍Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).
+‍Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).

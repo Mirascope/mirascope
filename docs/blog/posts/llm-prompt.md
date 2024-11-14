@@ -25,7 +25,7 @@ For simple queries, a straightforward, one-liner prompt will often get you the r
 
 <!-- more -->
 
-In addition, we discuss best practices for prompting, and, in case you’re using language model APIs as part of a software development project, we provide an advanced code sample showing how you can implement these with [Mirascope](https://www.mirascope.com), our lightweight Python toolkit for working with LLMs.
+In addition, we discuss best practices for prompting, and, in case you’re using language model APIs as part of a software development project, we provide an advanced code sample showing how you can implement these with [Mirascope](https://mirascope.com), our lightweight Python toolkit for working with LLMs.
 
 ## Parts of a Well-Structured Prompt
 
@@ -53,7 +53,7 @@ Alternatively, with subword tokenization, the model might split the prompt into 
 
 As for writing the prompts themselves, a well-structured prompt typically includes three key components:
 
-- **Instruction:** This is the core directive or question to be addressed by the model. [Clear instructions are important](https://www.mirascope.com/blog/prompt-engineering-best-practices), as ambiguity can lead to unpredictable or irrelevant outputs.
+- **Instruction:** This is the core directive or question to be addressed by the model. [Clear instructions are important](https://mirascope.com/blog/prompt-engineering-best-practices), as ambiguity can lead to unpredictable or irrelevant outputs.
   ‍**‍**
 - **Context:** Various background details that help the model understand the instruction better. Context means everything when it comes to complex queries or when specific knowledge is required.
   ‍**‍**
@@ -97,11 +97,11 @@ Clearly, the use of examples can produce better outputs.
 
 ## Prompts Examples And Use Cases
 
-Below are five examples of the [most commonly used prompts](https://www.mirascope.com/blog/prompt-engineering-examples):
+Below are five examples of the [most commonly used prompts](https://mirascope.com/blog/prompt-engineering-examples):
 
 ### Question-Answering (QA)
 
-These are just straightforward questions that extract specific information or provide detailed answers to queries based on the context provided. [LLM-based applications](https://www.mirascope.com/blog/llm-applications) like chatbots often employ QA prompts to “interface” with humans.
+These are just straightforward questions that extract specific information or provide detailed answers to queries based on the context provided. [LLM-based applications](https://mirascope.com/blog/llm-applications) like chatbots often employ QA prompts to “interface” with humans.
 
 Example prompt:
 
@@ -246,7 +246,7 @@ A regular prompt might return an incorrect output like, “**The total cost is $
 
 ### Using Multi-Turn Prompts
 
-Multi-turn prompting involves guiding a conversation with a model over several interactions, where each response builds on the previous one — similar to [prompt chaining](https://www.mirascope.com/blog/prompt-chaining).
+Multi-turn prompting involves guiding a conversation with a model over several interactions, where each response builds on the previous one — similar to [prompt chaining](https://mirascope.com/blog/prompt-chaining).
 
 Instead of trying to get the final response in a single prompt, you break down the task into a series of exchanges. This permits more complex tasks to be handled in stages, providing the model with opportunities to clarify, refine, or expand on its responses based on additional context and feedback.
 
@@ -507,9 +507,9 @@ Cons: ['Limited space restricts the variety of features (play areas, gardens, se
 
 All things being equal, the same prompt can generate different responses each time. This variability is a challenge that prompt engineering tries to solve by refining and iterating on prompts to achieve more consistent and accurate outputs.
 
-[Popular orchestration frameworks](https://www.mirascope.com/blog/llm-orchestration) like LangChain and Llama Index have introduced their own methods to streamline this process, but these methods sometimes obscure what’s going on under the hood.
+[Popular orchestration frameworks](https://mirascope.com/blog/llm-orchestration) like LangChain and Llama Index have introduced their own methods to streamline this process, but these methods sometimes obscure what’s going on under the hood.
 
-For instance, LangChain allows you to elegantly string together components using pipe moderators when defining chains, but complex implementations of these (e.g., using [runnables](https://www.mirascope.com/blog/langchain-runnables)) can be challenging to debug.
+For instance, LangChain allows you to elegantly string together components using pipe moderators when defining chains, but complex implementations of these (e.g., using [runnables](https://mirascope.com/blog/langchain-runnables)) can be challenging to debug.
 
 That’s why we built Mirascope to rely on existing structures already defined in Python, rather than reinventing the wheel with new, proprietary constructs.
 
@@ -551,11 +551,11 @@ From there, gradually iterate and refine the prompt (as we saw earlier with mult
 
 The choice of model — whether it’s GPT-3.5, GPT-4, Claude, or others — can impact the quality of your responses. That’s why testing your prompt across multiple AI models is generally a good idea.
 
-Mirascope’s `propt_template` decorator (combined with the [call decorator](https://www.mirascope.com/learn/calls)) serves as a kind of [template](https://www.mirascope.com/blog/langchain-prompt-template) to formulate model-agnostic prompts without needing to make major changes to the prompt structure or content.
+Mirascope’s `propt_template` decorator (combined with the [call decorator](https://mirascope.com/learn/calls)) serves as a kind of [template](https://mirascope.com/blog/langchain-prompt-template) to formulate model-agnostic prompts without needing to make major changes to the prompt structure or content.
 
 ### Colocate Parameters and Code with LLM Calls
 
-Call parameters [should be colocated with the call](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms). But that’s not a best practice we often see in the wild. This leads to the unfortunate consequence of your call parameters residing in different places than the calls they pertain to.
+Call parameters [should be colocated with the call](https://mirascope.com/blog/engineers-should-handle-prompting-llms). But that’s not a best practice we often see in the wild. This leads to the unfortunate consequence of your call parameters residing in different places than the calls they pertain to.
 
 We’ve designed Mirascope so that prompts, model parameters, and other configuration details are tested and versioned together as a single unit. This results in clean code that’s easy to organize and maintain.
 
@@ -587,7 +587,7 @@ For instance, `response` below is assigned the output of an OpenAI call that ret
 
 ### Version Your Prompts
 
-Just like code, prompts are iterated and refined over time, so they too should be placed under [version control](https://www.mirascope.com/blog/prompt-versioning).
+Just like code, prompts are iterated and refined over time, so they too should be placed under [version control](https://mirascope.com/blog/prompt-versioning).
 
 It's helpful to use a local working directory for this. Mirascope offers a dedicated [prompt management frmework](https://www.lilypad.so/docs) called Lilypad that versions and traces every prompt and LLM call automatically.
 
@@ -597,4 +597,4 @@ Mirascope is a lightweight Python toolkit that’s premised on software engineer
 
 To use Mirascope, you only need to know Python and the Pydantic library — there are no other unique abstractions or fancy concepts to learn. Mirascope’s modules slot readily into existing developer workflows, making it easy to get started.
 
-Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).

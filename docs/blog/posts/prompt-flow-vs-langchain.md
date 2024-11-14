@@ -25,7 +25,7 @@ But teams using LangChain also report that it:
 
 Don’t get us wrong; LangChain is still incredibly valuable—it’s a pioneering framework in a rapidly changing domain. Plus, no library in a field this new can make everyone happy; each one has its pluses and minuses depending on your situation and use case, and LangChain is no exception.
 
-Meanwhile, [new tools and frameworks](https://www.mirascope.com/blog/langchain-alternatives) continue to appear in the space. So in this article, we’ll compare LangChain with two other tools that address some of its potential shortcomings:
+Meanwhile, [new tools and frameworks](https://mirascope.com/blog/langchain-alternatives) continue to appear in the space. So in this article, we’ll compare LangChain with two other tools that address some of its potential shortcomings:
 
 - **Prompt Flow:** Azure AI Studio’s visual IDE for prompt engineering. It’s an open source LLM workflow builder that represents tools and data as nodes in a GUI that you connect together to develop full-scale applications.
 - **Mirascope:** our own modular toolkit for building LLM applications. Mirascope offers building blocks—from which you pick and choose—rather than an overarching framework. We incorporate developer best practices throughout our library. For instance, we ensure type safety of prompt inputs via the Pydantic library, and eschew abstractions for vanilla Python as much as possible.
@@ -215,7 +215,7 @@ The upshot of all this is that DAGs become more complex with added or changed no
 
 ### Mirascope: Colocates Prompts with LLM Calls
 
-We’ve found that making the LLM call the central organizing unit around which everything gets versioned, including the prompt, [provides benefits](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) in terms of code cleanliness, maintainability, and scalability.
+We’ve found that making the LLM call the central organizing unit around which everything gets versioned, including the prompt, [provides benefits](https://mirascope.com/blog/engineers-should-handle-prompting-llms) in terms of code cleanliness, maintainability, and scalability.
 
 By treating each LLM call as a distinct component, developers can manage changes more effectively and ensure that each module remains well organized and understandable, promoting an environment of code quality.
 
@@ -263,7 +263,7 @@ LangChain offers its [LangChain Hub](https://blog.langchain.dev/langchain-prompt
 
 The hub provides ways for you to search, filter, and find prompts, along with push and pull commands to manage prompt versions across teams. LangChain Hub uses a Git-like versioning system that works with SHA numbers.
 
-The hub is convenient for prompt collaboration, allowing users to easily share and manage [prompt templates](https://www.mirascope.com/blog/langchain-prompt-template) across various projects. However, it’s worth noting that downloading small, lightweight prompts from across the internet may not always be the most resource-efficient method.
+The hub is convenient for prompt collaboration, allowing users to easily share and manage [prompt templates](https://mirascope.com/blog/langchain-prompt-template) across various projects. However, it’s worth noting that downloading small, lightweight prompts from across the internet may not always be the most resource-efficient method.
 
 In addition, for UX purposes, some of the more complex prompts could offer better documentation so users would not first have to entirely read and understand the prompt to know details about what inputs are required, for instance. You get no editor support for downloaded prompts, nor can you edit prompts on the fly as the canonical versions are stored in the hub.
 
@@ -438,4 +438,4 @@ Mirascope is a lightweight LLM toolkit in Python that provides building blocks r
 
 Our preference for Pythonic simplicity reduces both dependencies and the complexities of working with LLMs. Mirascope makes it easy to get started and slots right into your existing developer workflows.
 
-Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

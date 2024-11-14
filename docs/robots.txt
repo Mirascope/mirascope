@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.mirascope.com/sitemap.xml
+Sitemap: https://mirascope.com/sitemap.xml

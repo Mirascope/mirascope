@@ -39,7 +39,7 @@ This led us to design [Mirascope](https://github.com/mirascope/mirascope), a mod
 
 ## Advanced Prompt Engineering Strategies
 
-The [strategies](https://www.mirascope.com/blog/prompt-engineering-best-practices) below guide LLMs to generate more accurate and context-aware outputs by embedding structures, examples, and external data modules into prompts.
+The [strategies](https://mirascope.com/blog/prompt-engineering-best-practices) below guide LLMs to generate more accurate and context-aware outputs by embedding structures, examples, and external data modules into prompts.
 
 ### Use In-Context Learning to Write Better Prompts
 
@@ -126,7 +126,7 @@ ASSISTANT:
 For improving endurance while minimizing knee strain, I suggest a low-impact routine focused on brisk walking or swimming. Both provide excellent cardiovascular benefits with minimal joint impact. I can also include some gentle strength exercises to build supporting muscles around your knees.
 ```
 
-Such roles define the structure and expectations of the conversation to a higher degree and are usually [used in conjunction with code](https://www.mirascope.com/learn/prompts) that dynamically manages the flow of interactions, ensuring consistent responses tailored to user inputs and context.
+Such roles define the structure and expectations of the conversation to a higher degree and are usually [used in conjunction with code](https://mirascope.com/learn/prompts) that dynamically manages the flow of interactions, ensuring consistent responses tailored to user inputs and context.
 
 #### Leverage Prompt Templates for Consistency
 
@@ -149,9 +149,9 @@ You are a nutritionist specializing in creating personalized meal plans. Based o
 
 Prompt templates help maintain a consistent format across your interactions, reducing the risk of variability or ambiguity in the prompt structure and making the model’s outputs more predictable.
 
-For good reason, the usage of prompt templates is widespread among many advanced prompt engineering libraries and frameworks such as [LangChain](https://www.mirascope.com/blog/langchain-prompt-template).
+For good reason, the usage of prompt templates is widespread among many advanced prompt engineering libraries and frameworks such as [LangChain](https://mirascope.com/blog/langchain-prompt-template).
 
-For those applying prompt engineering in code, Mirascope offers an easy way to [bind prompt templates](https://www.mirascope.com/learn/prompts) to functions and classes.
+For those applying prompt engineering in code, Mirascope offers an easy way to [bind prompt templates](https://mirascope.com/learn/prompts) to functions and classes.
 
 #### Chain Calls Together to Do Complex Tasks
 
@@ -189,13 +189,13 @@ Output:
 The termination clause in the summary seems to be a standard provision, but recent case law in California has indicated that service contracts must allow for a minimum 30-day notice period. You should verify if the contract specifies this time frame.
 ```
 
-The above prompts show the basics of how prompt chaining works, but for those interested in intuitive ways of chaining LLM calls, Mirascope allows you to use [computed fields and functions](https://www.mirascope.com/blog/prompt-chaining).
+The above prompts show the basics of how prompt chaining works, but for those interested in intuitive ways of chaining LLM calls, Mirascope allows you to use [computed fields and functions](https://mirascope.com/blog/prompt-chaining).
 
 ### Version Prompts to Track and Iterate
 
 It’s helpful to use version control to keep a clear record of changes and revert to earlier prompts if necessary.
 
-We recommend using a [prompt management system](https://www.mirascope.com/blog/prompt-versioning) to track and document changes, compare different versions, and easily revert to previous iterations.
+We recommend using a [prompt management system](https://mirascope.com/blog/prompt-versioning) to track and document changes, compare different versions, and easily revert to previous iterations.
 
 Using version control also allows you to maintain separate prompt versions across different models so you can customize prompts for each model’s unique capabilities or context.
 
@@ -207,7 +207,7 @@ Adding data from external systems and applications allows LLMs to move beyond si
 
 Models then become capable of retrieving real-time data, executing intricate workflows, and making informed decisions based on specific use cases and situational data.
 
-When building LLM-driven applications, it might be necessary to use [data orchestration](https://www.mirascope.com/blog/llm-orchestration) to coordinate flows between the model’s inputs and external systems, and to ensure the desired output is appropriately routed or processed.
+When building LLM-driven applications, it might be necessary to use [data orchestration](https://mirascope.com/blog/llm-orchestration) to coordinate flows between the model’s inputs and external systems, and to ensure the desired output is appropriately routed or processed.
 
 This can mean connecting to databases, leveraging APIs, or pulling in real-time information from external applications — all while maintaining the integrity and relevance of the data to the user’s needs.
 
@@ -219,7 +219,7 @@ Large language models can tap into external tools and data sources like news dat
 
 Being able to access the most recent information improves the accuracy of the model’s response and allows it to respond with precise details that may not be available within its pre-trained, existing knowledge.
 
-Our tutorial on [building a web search agent](https://www.mirascope.com/tutorials/agents/web_search_agent/) that uses DuckDuckGo to find information relating to your queries provides more details about how automated search works.
+Our tutorial on [building a web search agent](https://mirascope.com/tutorials/agents/web_search_agent/) that uses DuckDuckGo to find information relating to your queries provides more details about how automated search works.
 
 #### Retrieval Augmented Generation
 
@@ -239,11 +239,11 @@ The broad steps in this pipeline are:
 4. When a user submits a query, the system similarly encodes it as a vector, which it then matches with the archived content in the vector store using a search algorithm (e.g.,  cosine similarity or dot product).
 5. The system retrieves the content and combines it with the user’s query as a prompt to send to the language model. This is what we refer to as a contextually enriched prompt; it gives the model more complete information to consider than a single question.
 
-For detailed information on how RAG works, our blog post on [building LLM pipelines](https://www.mirascope.com/blog/llm-pipeline) shows how to set this up using Mirascope’s advanced prompt engineering features.
+For detailed information on how RAG works, our blog post on [building LLM pipelines](https://mirascope.com/blog/llm-pipeline) shows how to set this up using Mirascope’s advanced prompt engineering features.
 
 ## 6 Advanced Prompting Techniques
 
-Below we explore six [sophisticated techniques](https://www.mirascope.com/blog/prompt-engineering-examples) for improving model reasoning, consistency, and ability to modify its approach based on the prompt or task at hand:
+Below we explore six [sophisticated techniques](https://mirascope.com/blog/prompt-engineering-examples) for improving model reasoning, consistency, and ability to modify its approach based on the prompt or task at hand:
 
 * Rephrase and Respond (RaR)  
 * Chain of Thought (CoT)  
@@ -340,7 +340,7 @@ Our [self-ask prompt coding recipe](https://mirascope.com/tutorials/prompt_engin
 
 ### 4. Tree of Thought (ToT)
 
-A [Tree-of-Thought Prompt](https://www.mirascope.com/blog/llm-prompt) allows a language model to explore multiple potential solutions or reasoning paths for a given task, rather than follow a single line of reasoning.
+A [Tree-of-Thought Prompt](https://mirascope.com/blog/llm-prompt) allows a language model to explore multiple potential solutions or reasoning paths for a given task, rather than follow a single line of reasoning.
 
 ToT prompts the model to evaluate different approaches and weigh the pros and cons of each in order to choose the optimal optimal solution. This enlists the model’s problem-solving capabilities by letting it consider a variety of options before arriving at the final answer.
 
@@ -425,7 +425,7 @@ Verified List of Scientists and Their Fields:
 - Niels Bohr - Physics (Quantum Mechanics, Atomic Structure)
 ```
 
-See our [coding tutorial](https://www.mirascope.com/tutorials/prompt_engineering/chaining_based/chain_of_verification/) for a complete example of building a CoV prompt using Python.
+See our [coding tutorial](https://mirascope.com/tutorials/prompt_engineering/chaining_based/chain_of_verification/) for a complete example of building a CoV prompt using Python.
 
 ### 6. Self-Consistency
 
@@ -483,10 +483,10 @@ The most frequent and correct answer is $8. All approaches, whether direct subtr
 
 ```
 
-Our coding tutorial shows you how to construct both a basic version of the [self-consistency prompt](https://www.mirascope.com/tutorials/prompt_engineering/chaining_based/self_consistency/), as well as using automated answer extraction.
+Our coding tutorial shows you how to construct both a basic version of the [self-consistency prompt](https://mirascope.com/tutorials/prompt_engineering/chaining_based/self_consistency/), as well as using automated answer extraction.
 
 ## Achieve Precision in Prompt Design with Mirascope
 
 Ready to build smarter, more effective prompts? Mirascope allows you to construct advanced prompts for artificial intelligence applications using the Python you already know, and without needing to learn new, complex abstractions. Get started quickly building LLM-powered agents with our lightweight, modular toolkit.
 
-You can find Mirascope code samples and tutorials both on our [documentation site](https://www.mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).
+You can find Mirascope code samples and tutorials both on our [documentation site](https://mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).

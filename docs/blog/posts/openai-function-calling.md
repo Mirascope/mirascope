@@ -66,7 +66,7 @@ The `tools` parameter of OpenAI’s [Chat Completion API](https://platform.opena
 ]
 ```
 
-The `tools` array takes multiple functions that you define. The more detailed your `description` above is in terms of the situations in which it can and should call the function, the better. Note, however, that function descriptions are part of the [prompt](https://www.mirascope.com/blog/langchain-prompt-template) and so consume tokens all the same.
+The `tools` array takes multiple functions that you define. The more detailed your `description` above is in terms of the situations in which it can and should call the function, the better. Note, however, that function descriptions are part of the [prompt](https://mirascope.com/blog/langchain-prompt-template) and so consume tokens all the same.
 
 The `parameters` field above describe the parameters your function takes and must conform to the [JSON specification](https://json-schema.org/understanding-json-schema).
 
@@ -280,7 +280,7 @@ print("After Tools Response:", response.content)
 
 ### Use Other Model Providers—Not Just OpenAI
 
-As long as your functions are documented with docstrings, you can work with [other providers](https://www.mirascope.com/learn/calls) without needing to make many code changes, as Mirascope reformats the code in the background.
+As long as your functions are documented with docstrings, you can work with [other providers](https://mirascope.com/learn/calls) without needing to make many code changes, as Mirascope reformats the code in the background.
 
 As well, you can define tools in Mirascope using `BaseTool`, which works across all providers by default so you don’t have to change anything when switching providers.
 
@@ -392,10 +392,10 @@ class GetStockPriceInCurrency(BaseTool):
 
 Mirascope lets you write the schema in a pythonic way that’s easier to write and read compared with coding the JSON yourself. Under the hood, the underlying JSON is reliably generated using [Pydantic](https://docs.pydantic.dev/). Our prompt classes also extend Pydantic’s `BaseModel` class, saving you from having to write your own error-checking boilerplate.
 
-Generating tool definitions as part of function calling (or even parallel function calling) is thus rolled up into your [prompt engineering workflow](https://www.mirascope.com/blog/prompt-engineering-best-practices), allowing you to focus on building your application rather than painstakingly formatting tool definitions so they conform to the JSON specification.
+Generating tool definitions as part of function calling (or even parallel function calling) is thus rolled up into your [prompt engineering workflow](https://mirascope.com/blog/prompt-engineering-best-practices), allowing you to focus on building your application rather than painstakingly formatting tool definitions so they conform to the JSON specification.
 
 ## Simplify Function Calling with Mirascope’s Advanced Tools
 
-Mirascope offers other advantages as well: it’s a lightweight, extensible toolkit that takes a building block over a framework approach to [LLM prompting](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms), letting you write clean code thanks to best practices like colocation, built-in Pydantic type safety, and full editor support. Our toolkit was designed with software developer best practices in mind so you can focus on getting the most out of OpenAI models like GPT-4 or external APIs rather than on chasing errors due to overly complex abstractions.
+Mirascope offers other advantages as well: it’s a lightweight, extensible toolkit that takes a building block over a framework approach to [LLM prompting](https://mirascope.com/blog/engineers-should-handle-prompting-llms), letting you write clean code thanks to best practices like colocation, built-in Pydantic type safety, and full editor support. Our toolkit was designed with software developer best practices in mind so you can focus on getting the most out of OpenAI models like GPT-4 or external APIs rather than on chasing errors due to overly complex abstractions.
 
-Want to learn more? You can find more Mirascope code samples, docs, and a tutorial on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples, docs, and a tutorial on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

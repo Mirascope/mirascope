@@ -32,7 +32,7 @@ You can leverage an LLM’s deep understanding of language to [accurately catego
 
 This can be done in a wide variety of contexts like customer support, content moderation, sentiment analysis, and even more specialized domains like legal document classification or medical record categorization.
 
-Depending on the specificity of a domain's language, you might need a specialized model fine-tuned for that particular field. Or you can leverage [prompt engineering](https://www.mirascope.com/blog/prompt-engineering-examples) to guide a pretrained model in reaching the necessary accuracy and relevance for classification tasks.
+Depending on the specificity of a domain's language, you might need a specialized model fine-tuned for that particular field. Or you can leverage [prompt engineering](https://mirascope.com/blog/prompt-engineering-examples) to guide a pretrained model in reaching the necessary accuracy and relevance for classification tasks.
 
 #### Types of Text Classification
 
@@ -310,15 +310,15 @@ Larger models may deliver better performance but come with higher costs and reso
 
 #### 4. Customize and Fine-Tune the Model
 
-Tailoring the model to handle domain-specific language ensures it can accurately interpret and respond to industry-specific queries. One way to do this is by [fine-tuning the model](https://www.mirascope.com/blog/prompt-engineering-vs-fine-tuning), which involves training it on a specialized dataset that reflects the specific terminology, nuances, and context of the domain.
+Tailoring the model to handle domain-specific language ensures it can accurately interpret and respond to industry-specific queries. One way to do this is by [fine-tuning the model](https://mirascope.com/blog/prompt-engineering-vs-fine-tuning), which involves training it on a specialized dataset that reflects the specific terminology, nuances, and context of the domain.
 
-[Prompt engineering](https://www.mirascope.com/blog/prompt-engineering-tools) offers a cost-effective alternative to fine-tuning since it lets you carefully iterate on prompts to better guide the model. In fact, we recommend you start with prompt engineering to first get a strong baseline for model performance.
+[Prompt engineering](https://mirascope.com/blog/prompt-engineering-tools) offers a cost-effective alternative to fine-tuning since it lets you carefully iterate on prompts to better guide the model. In fact, we recommend you start with prompt engineering to first get a strong baseline for model performance.
 
 Then, if you’ve hit a plateau in improvements, fine-tuning on a custom dataset might be a viable option to get further accuracy or relevance out of the model for your use case.
 
 #### 5. Ensure Integration with Backend Systems
 
-Your LLM application will likely need a [data pipeline](https://www.mirascope.com/blog/llm-pipeline) with access to, for instance, backend systems, databases, and APIs, in order to retrieve and process information as smoothly as possible to give users timely and accurate responses
+Your LLM application will likely need a [data pipeline](https://mirascope.com/blog/llm-pipeline) with access to, for instance, backend systems, databases, and APIs, in order to retrieve and process information as smoothly as possible to give users timely and accurate responses
 
 A well-designed pipeline that’s modular and adaptable allows the application to handle more traffic and complex queries without compromising performance, making it easier to grow and adapt to changing user needs.
 
@@ -356,7 +356,7 @@ This combination allows for more informed and precise answers, especially where 
 
 #### RAG Pipeline Example
 
-In the code below, we combine [Llama Index’s data ingestion and processing features](https://www.mirascope.com/blog/llamaindex-vs-langchain) with the prompt engineering capabilities of Mirascope, our own LLM development toolkit.
+In the code below, we combine [Llama Index’s data ingestion and processing features](https://mirascope.com/blog/llamaindex-vs-langchain) with the prompt engineering capabilities of Mirascope, our own LLM development toolkit.
 
 This application sets up a chatbot that mimics Steve Jobs by referencing his speeches. It passes user queries to a `retriever` object that finds (via vector similarity search) excerpts that are most relevant to the user’s query:
 
@@ -404,6 +404,6 @@ Note that:
 
 ## Start Building Your Next App with Mirascope
 
-Ready to turn your ideas into reality? Design your next LLM application with Mirascope’s Python toolkit for building LLM agents your way. Join our community of forward-thinking developers who are leveraging advanced [AI tools](https://www.mirascope.com/blog/llm-tools) and workflows to create innovative and scalable applications.
+Ready to turn your ideas into reality? Design your next LLM application with Mirascope’s Python toolkit for building LLM agents your way. Join our community of forward-thinking developers who are leveraging advanced [AI tools](https://mirascope.com/blog/llm-tools) and workflows to create innovative and scalable applications.
 
-Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).

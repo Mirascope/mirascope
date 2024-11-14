@@ -22,7 +22,7 @@ A runnable consists of several parts. At a minimum, these include:
 
 - **Methods:** these are the functions that a runnable can perform. The standard interface of a runnable includes methods like`invoke` , `batch` , `stream` , and their corresponding async methods (`ainvoke` , `abatch` , `astream`). These methods allow you to define custom chains and invoke them in a standard way.
 - **Input and output schemas:** all runnables expose input and output schemas, allowing you to inspect and understand the input type a runnable expects and the output type it produces.
-- **Components:** various components in LangChain implement the runnable interface, including (but not limited to) chat models, large language models (LLMs), output parsers, retrievers, [prompt templates](https://www.mirascope.com/blog/langchain-prompt-template), and more.
+- **Components:** various components in LangChain implement the runnable interface, including (but not limited to) chat models, large language models (LLMs), output parsers, retrievers, [prompt templates](https://mirascope.com/blog/langchain-prompt-template), and more.
 
 With runnables, you can easily combine components using the pipe (`|`) operator to build workflows for complex chains, which lets you link together prompts and function calls to architect complex flows — though at the cost of potential challenges in error handling, performance, and transparency.
 
@@ -133,7 +133,7 @@ The result of a chain is a `RunnableSequence` which is still a runnable that can
 
 ### Creating A Runnable with the Chain Decorator
 
-The `@chain` decorator allows you to turn any function into a chain. Below, the decorator creates a custom chain that combines multiple components, such as [prompts](https://www.mirascope.com/blog/prompt-engineering-tools), models, and output parsers, and defines a function (`custom_chain`) that encapsulates the sequence of operations:
+The `@chain` decorator allows you to turn any function into a chain. Below, the decorator creates a custom chain that combines multiple components, such as [prompts](https://mirascope.com/blog/prompt-engineering-tools), models, and output parsers, and defines a function (`custom_chain`) that encapsulates the sequence of operations:
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
@@ -300,7 +300,7 @@ As shown above, the code handles individual values and batches of data, using th
 
 ## Chaining with Mirascope
 
-[Mirascope](https://www.mirascope.com) dispenses with abstractions like runnables and offers two ways of chaining: computed fields and function arguments.
+[Mirascope](https://mirascope.com) dispenses with abstractions like runnables and offers two ways of chaining: computed fields and function arguments.
 
 ### Chaining with Computed Fields
 
@@ -589,7 +589,7 @@ print(explanation.model_dump())
 # }
 ```
 
-We generally recommend [chaining with computed fields](https://www.mirascope.com/blog/prompt-chaining) for a variety of use cases because it takes advantage of dynamic configuration and you’re able to cache and reuse outputs as needed. Even when using shorthand or messages syntax for writing prompts, we recommend returning both `messages` and `computed_fields` in a dynamic config so the computed fields still propagate.
+We generally recommend [chaining with computed fields](https://mirascope.com/blog/prompt-chaining) for a variety of use cases because it takes advantage of dynamic configuration and you’re able to cache and reuse outputs as needed. Even when using shorthand or messages syntax for writing prompts, we recommend returning both `messages` and `computed_fields` in a dynamic config so the computed fields still propagate.
 
 ### Chaining with Functions Arguments
 
@@ -644,16 +644,16 @@ Also, functions use standard Python logic so they’re easy to understand and re
 
 ## Key Differentiators: Langchain’s Runnable vs Mirascope’s Pythonic Chaining
 
-[LangChain's approach](https://www.mirascope.com/blog/llamaindex-vs-langchain) relies on specialized abstractions like LCEL and the Runnable class. These aim to provide a declarative and expressive way to compose chains, but they also introduce an additional layer of complexity that developers must learn and navigate.
+[LangChain's approach](https://mirascope.com/blog/llamaindex-vs-langchain) relies on specialized abstractions like LCEL and the Runnable class. These aim to provide a declarative and expressive way to compose chains, but they also introduce an additional layer of complexity that developers must learn and navigate.
 
 Simple chains in LangChain are indeed clean and somewhat easy to use, but for chains that are more complex because you need to pass arguments through them at runtime, constructs like `RunnablePassthrough` might be necessary.
 
-Such abstractions often require additional learning and debugging, and can be [harder to understand](https://www.mirascope.com/blog/langchain-alternatives), especially for developers more accustomed to working with plain Python.
+Such abstractions often require additional learning and debugging, and can be [harder to understand](https://mirascope.com/blog/langchain-alternatives), especially for developers more accustomed to working with plain Python.
 
 In contrast, Mirascope allows you to build and chain components using familiar pythonic syntax and inheritance, which can minimize the learning curve and maintain code readability.
 
 ## Build LLM Applications Using the Python You Already Know
 
-Mirascope doesn’t impose unnecessary abstractions or steep learning curves, and allows you to implement chaining with clean, pythonic logic. It also promotes true prompt engineering best practices like colocation and [version control](https://www.mirascope.com/blog/prompt-versioning), so you can focus on your core task of building LLM applications for many different use cases like chatbots and RAG (retrieval augmentation generation).
+Mirascope doesn’t impose unnecessary abstractions or steep learning curves, and allows you to implement chaining with clean, pythonic logic. It also promotes true prompt engineering best practices like colocation and [version control](https://mirascope.com/blog/prompt-versioning), so you can focus on your core task of building LLM applications for many different use cases like chatbots and RAG (retrieval augmentation generation).
 
-‍Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+‍Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

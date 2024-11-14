@@ -24,7 +24,7 @@ This complexity leads some to believe **the framework is only good for building 
 
 Despite its shortcomings, LangChain has some positive points. It’s one of the pioneering frameworks for LLM application development, and offers hundreds of integrations with third-party tools and frameworks. Also, its retrieval augmented generation (RAG) functionality does a decent job of data ingestion and embedding.
 
-In fact, you can maximize LangChain’s potential by combining certain of its modules, like its RAG functionality, with tools that offer better functionality in other areas, like the prompt engineering capabilities of [Mirascope](https://www.mirascope.com), our own Python toolkit.
+In fact, you can maximize LangChain’s potential by combining certain of its modules, like its RAG functionality, with tools that offer better functionality in other areas, like the prompt engineering capabilities of [Mirascope](https://mirascope.com), our own Python toolkit.
 
 Below, we point out some of the downsides of LangChain, and compare these to how Mirascope approaches it. Further down, we show you how to combine LangChain's RAG features with those of Mirascope.
 
@@ -38,7 +38,7 @@ It doesn’t scale well, however, for commercial applications since its design l
 
 In contrast, we designed Mirascope to let you use native Python as much as possible (the other library we use is Pydantic), which promotes readability and consistency.
 
-Here's an example contrasting the two approaches using [text summarization](https://www.mirascope.com/blog/prompt-engineering-examples). First, Mirascope: ‍
+Here's an example contrasting the two approaches using [text summarization](https://mirascope.com/blog/prompt-engineering-examples). First, Mirascope: ‍
 
 ```python
 from mirascope.core import openai
@@ -95,9 +95,9 @@ This approach might seem convenient at first, but it’s not scalable when devel
 
 Say you add a new key-value pair to an input for an LLM call; if an error crops up then without colocation of the call in the vicinity of the code affecting the call, you may have to manually hunt down any further effects of that change throughout the rest of your code. And even then, it may still be hard to catch any errors flowing silently into the model.
 
-Another area of concern is that [**LangChain was designed by data scientists and not software engineers**](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms), and so doesn’t reflect software development best practices like built-in type safety, inline documentation, error checking, and autocomplete for code editors.
+Another area of concern is that [**LangChain was designed by data scientists and not software engineers**](https://mirascope.com/blog/engineers-should-handle-prompting-llms), and so doesn’t reflect software development best practices like built-in type safety, inline documentation, error checking, and autocomplete for code editors.
 
-Mirascope on the other hand is designed with the philosophy that call parameters should be colocated with the call. This ensures all relevant information—prompts, model parameters, and other configuration details—get tested and [versioned together as a single unit](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms).
+Mirascope on the other hand is designed with the philosophy that call parameters should be colocated with the call. This ensures all relevant information—prompts, model parameters, and other configuration details—get tested and [versioned together as a single unit](https://mirascope.com/blog/engineers-should-handle-prompting-llms).
 
 So we use a decorator such as `@openai.call()` whose argument list contains all the required parameters, as shown below:
 
@@ -147,7 +147,7 @@ This is in contrast to LangChain’s implementation of calls, where (for example
 
 ## Chaining LLM Calls Together in LangChain
 
-LangChain provides specialized abstractions for chaining—notably [`runnables`](https://www.mirascope.com/blog/langchain-runnables)—that **require explicit definitions of chains and flows via its LangChain expression language (LCEL)**. While runnables and LCEL offer a clean structure for simple prompt chains, they get harder to manage as chains grow in complexity, since it’s difficult to discern what’s happening under the hood.
+LangChain provides specialized abstractions for chaining—notably [`runnables`](https://mirascope.com/blog/langchain-runnables)—that **require explicit definitions of chains and flows via its LangChain expression language (LCEL)**. While runnables and LCEL offer a clean structure for simple prompt chains, they get harder to manage as chains grow in complexity, since it’s difficult to discern what’s happening under the hood.
 
 LangChain is complemented by a range of off-the-shelf chain constructors for different use cases, like `load_qa_chain` for creating a question-answering chain for a set of documents. The idea is to provide a list of ready-made constructors that developers can easily choose from and repurpose with minimal hassle.
 
@@ -155,7 +155,7 @@ While these might offer convenience and a quick start for certain projects, they
 
 Mirascope takes a more explicit, and obvious approach to chaining, relying on existing structures already defined in Python.
 
-Here, you can [chain LLM calls](https://www.mirascope.com/learn/chaining) using either **computed fields** (that cache results) or **functions** (that pass outputs directly as inputs to subsequent calls). We generally recommend using computed fields for most use cases since it gives you the ability to cache and reuse outputs, so you can make less calls and economize on computing resources.
+Here, you can [chain LLM calls](https://mirascope.com/learn/chaining) using either **computed fields** (that cache results) or **functions** (that pass outputs directly as inputs to subsequent calls). We generally recommend using computed fields for most use cases since it gives you the ability to cache and reuse outputs, so you can make less calls and economize on computing resources.
 
 Here’s an example of computed fields where `explain_attraction` first calls `recommend_attraction` once and injects the result into the prompt template as a computed field:
 
@@ -222,17 +222,17 @@ print(explanation.model_dump())
 #         "usage": {"completion_tokens": 550, "prompt_tokens": 50, "total_tokens": 600},...
 ```
 
-As already mentioned, you can also use [functions for chaining](https://www.mirascope.com/blog/prompt-chaining), which, though not offering caching benefits, will nonetheless provide more explicit control over the flow of execution, as well as reuse across classes and methods.
+As already mentioned, you can also use [functions for chaining](https://mirascope.com/blog/prompt-chaining), which, though not offering caching benefits, will nonetheless provide more explicit control over the flow of execution, as well as reuse across classes and methods.
 
 ## LangChain’s Approach to Prompt Templates and Management
 
-While offering [pre-defined templates](https://www.mirascope.com/blog/langchain-prompt-template) might seem to standardize prompt engineering and make it more accessible at first sight, in practice it can be limiting for a few reasons.
+While offering [pre-defined templates](https://mirascope.com/blog/langchain-prompt-template) might seem to standardize prompt engineering and make it more accessible at first sight, in practice it can be limiting for a few reasons.
 
-For one, large language models are inherently non-deterministic, and [effective prompt engineering](https://www.mirascope.com/blog/prompt-engineering-tools) requires tailored, hand-written prompts rather than generic templates—which may not fully address the specific needs of each application.
+For one, large language models are inherently non-deterministic, and [effective prompt engineering](https://mirascope.com/blog/prompt-engineering-tools) requires tailored, hand-written prompts rather than generic templates—which may not fully address the specific needs of each application.
 
-Also, offering a template for different [prompting techniques](https://www.mirascope.com/blog/prompt-engineering-examples) might suggest they’re encouraging users to rely on their predefined abstractions. While this may not be exactly locking someone into their framework, it encourages continued reliance on their ecosystem for as many use cases as possible.
+Also, offering a template for different [prompting techniques](https://mirascope.com/blog/prompt-engineering-examples) might suggest they’re encouraging users to rely on their predefined abstractions. While this may not be exactly locking someone into their framework, it encourages continued reliance on their ecosystem for as many use cases as possible.
 
-In this vein, the framework seems to offer a tool and a template for everything, which eventually makes it harder to seek improvements by selectively importing [external modules](https://www.mirascope.com/blog/langchain-alternatives) here and there.
+In this vein, the framework seems to offer a tool and a template for everything, which eventually makes it harder to seek improvements by selectively importing [external modules](https://mirascope.com/blog/langchain-alternatives) here and there.
 
 What ends up happening is some people opt to start over and either rewrite their application from scratch or find another open source framework offering greater flexibility.
 
@@ -345,4 +345,4 @@ The pipeline in this example (`rag_chain`) is rather untransparent and limits yo
 
 Mirascope’s building block approach gives you the freedom to slot the functionality you need into your workflows. Choose from external modules from LangChain, LlamaIndex, and others, and leverage Mirascope's features to build exactly what you want.
 
-Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope).

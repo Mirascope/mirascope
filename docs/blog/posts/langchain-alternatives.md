@@ -42,7 +42,7 @@ Prompt engineering tools play the most decisive role in developing LLM applicati
 
 ![Mirascope homepage: LLM abstractions that aren't obstructions](../../assets/blog/langchain-alternatives/mirascope_homepage_screenshot.png)
 
-[Mirascope](https://www.mirascope.com) is a toolkit for working with LLMs for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
+[Mirascope](https://mirascope.com) is a toolkit for working with LLMs for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
 We designed Mirascope with simplicity and reliability in mind:
 
@@ -56,10 +56,10 @@ Our three core beliefs around prompt engineering have influenced our approach
 in building Mirascope:
 
 1. **Prompt engineering is engineering because prompting is a complex endeavor that defies standardization**. LLM outputs aren’t entirely predictable and require, for instance, different prompt tuning techniques. Also, LLM tasks are diverse and require varying steps and approaches. Prompting demands a more manual, hands-on approach than other tools and frameworks might acknowledge or recognize. For all this, you need developer tools that help you build complex prompts as easily as possible.
-2. [**Prompts should live in your codebase,**](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms)**not outside of it**. Separating prompting from engineering workflows limits what you can build with LLMs. The code inside of prompts should be co-located with the codebase, since changing variables or classes within a prompt might generate errors if these changes aren’t also tracked in the codebase. The same goes for functionality that can impact the quality of a prompt (e.g. temperature, model, tools, etc.) so that you don't have to worry about a code change external to the prompt changing its quality or behavior. Tools like GitHub's Codespaces allow non-technical roles to create and edit prompts that remain in engineering workflows.
+2. [**Prompts should live in your codebase,**](https://mirascope.com/blog/engineers-should-handle-prompting-llms)**not outside of it**. Separating prompting from engineering workflows limits what you can build with LLMs. The code inside of prompts should be co-located with the codebase, since changing variables or classes within a prompt might generate errors if these changes aren’t also tracked in the codebase. The same goes for functionality that can impact the quality of a prompt (e.g. temperature, model, tools, etc.) so that you don't have to worry about a code change external to the prompt changing its quality or behavior. Tools like GitHub's Codespaces allow non-technical roles to create and edit prompts that remain in engineering workflows.
 3. **Generalized wrappers and complex abstractions aren’t always necessary**. You can accomplish a lot with vanilla Python and OpenAI’s API. Why create complexity when you can leverage Python’s inherent strengths?
 
-For us, [prompt engineering](https://www.mirascope.com/blog/prompt-engineering-tools) deserves the same level of tooling and consideration as any other aspect of software engineering. This means providing features to free you of cumbersome and repetitive tasks so you can focus on creativity and effectiveness.
+For us, [prompt engineering](https://mirascope.com/blog/prompt-engineering-tools) deserves the same level of tooling and consideration as any other aspect of software engineering. This means providing features to free you of cumbersome and repetitive tasks so you can focus on creativity and effectiveness.
 
 Mirascope allows you to:
 
@@ -71,7 +71,7 @@ We describe and show examples of each of these points below.
 
 #### Simplify and Collaborate on Prompt Management
 
-One way Mirascope makes your life easier is that it organizes prompts as [self-contained functions](https://www.mirascope.com/learn/prompts) that can live in their own directories. This centralizes internal prompt logic and improves clarity and maintainability:
+One way Mirascope makes your life easier is that it organizes prompts as [self-contained functions](https://mirascope.com/learn/prompts) that can live in their own directories. This centralizes internal prompt logic and improves clarity and maintainability:
 
 ```python
 from mirascope.core import BaseDynamicConfig, prompt_template
@@ -88,7 +88,7 @@ def book_recommendation_prompt(book_titles: list[str]) -> BaseDynamicConfig:
     return {"computed_fields": {"titles_in_quotes": titles_in_quotes}}
 ```
 
-The computed field `titles_in_quotes` illustrates co-location in that each [version of the prompt](https://www.mirascope.com/blog/prompt-versioning) has everything that needs to be versioned. This means each iteration of the prompt is self-contained, carrying with it all the operational settings necessary for its execution and ensuring quality control across versions.
+The computed field `titles_in_quotes` illustrates co-location in that each [version of the prompt](https://mirascope.com/blog/prompt-versioning) has everything that needs to be versioned. This means each iteration of the prompt is self-contained, carrying with it all the operational settings necessary for its execution and ensuring quality control across versions.
 
 Mirascope also abstracts away the complexities of prompt formatting, allowing you to focus on the content of prompts rather than getting into the weeds of how they’re constructed and displayed.
 
@@ -270,7 +270,7 @@ print(greetings_prompt("William Bakst"))
 
 **Streamline API Interactions with LLM Call Decorators:**
 
-In addition to writing prompt templates as Python functions, Mirascope provides [call decorators](https://www.mirascope.com/learn/calls) to simplify making LLM API calls and reduce unnecessary boilerplate. We want to make it as easy as possible to incorporate LLM functionalities into your applications.
+In addition to writing prompt templates as Python functions, Mirascope provides [call decorators](https://mirascope.com/learn/calls) to simplify making LLM API calls and reduce unnecessary boilerplate. We want to make it as easy as possible to incorporate LLM functionalities into your applications.
 
 For example, simply wrapping a Mirascope prompt template with the `openai.call` decorator turns the function into an actual call to the OpenAI API, which returns the **`OpenAICallResponse`** convenience wrapper:
 
@@ -308,7 +308,7 @@ response.content     # original.choices[0].message.content
 - Serialize data from unstructured text (e.g., natural language outputs) into a format like JSON, using a customized Pydantic **BaseModel** schema of your design. We describe [automatic data extraction](#langchain-alternatives-for-data-extraction) in more detail below.‍
 
 Mirascope also makes **async** readily available to make task execution more efficient simply by marking the function as `async`. This allows tasks to proceed without waiting for previous ones to finish. Additionally, Mirascope lets you pass provider-specific keyword arguments through its function decorators to both provide developers with direct access to the underlying API’s arguments, and to allow use of data dictionaries to dynamically specify arguments in their calls to the OpenAI
-client. Mirascope also works with any model provider that supports the OpenAI API as well as other model providers such as Anthropic, Gemini, Mistral, and more. [Mirascope](https://www.mirascope.com) is the framework for prompt engineers and data scientists to design, manage, and optimize prompts and calls for more efficient and higher-quality interactions with LLMs.
+client. Mirascope also works with any model provider that supports the OpenAI API as well as other model providers such as Anthropic, Gemini, Mistral, and more. [Mirascope](https://mirascope.com) is the framework for prompt engineers and data scientists to design, manage, and optimize prompts and calls for more efficient and higher-quality interactions with LLMs.
 
 ### **Priompt**
 
@@ -373,7 +373,7 @@ Auto-GPT’s documentation is available on its website, and its source code (lar
 
 [AgentGPT](https://agentgpt.reworkd.ai/) allows users to create and deploy autonomous AI agents directly in the browser. Agents typically take a single line of input (a goal), and execute multiple steps to reach the goal.
 
-The agent chains calls to LLMs and is designed to understand objectives, implement strategies, and deliver results without human intervention. You can interact with AgentGTP via its homepage using a browser, or you can install it locally via CLI. The project also makes available [prompting templates](https://www.mirascope.com/blog/langchain-prompt-template), which it imports from LangChain.
+The agent chains calls to LLMs and is designed to understand objectives, implement strategies, and deliver results without human intervention. You can interact with AgentGTP via its homepage using a browser, or you can install it locally via CLI. The project also makes available [prompting templates](https://mirascope.com/blog/langchain-prompt-template), which it imports from LangChain.
 
 AgentGPT offers a homepage where you can test the service, as well as a GitHub repo from where you can download the code (mostly in Typescript).
 
@@ -444,7 +444,7 @@ Data extraction is the process of systematically retrieving structured data from
 
 ![Mirascope homepage: LLM abstractions that aren't obstructions](../../assets/blog/langchain-alternatives/mirascope_homepage_screenshot.png)
 
-Although we described [Mirascope](https://www.mirascope.com) above in the context of prompt engineering, we also want to highlight its capabilities for automatically extracting structured data from natural language inputs.
+Although we described [Mirascope](https://mirascope.com) above in the context of prompt engineering, we also want to highlight its capabilities for automatically extracting structured data from natural language inputs.
 
 This comes in handy when you need to convert user inputs or conversational language into a format like JSON for exchange with other applications. It can be time consuming to write all this parsing and serialization functionality yourself, so we provide this right out of the box as a convenience wrapper.
 
@@ -532,4 +532,4 @@ Resources for Instructor include a documentation site and a GitHub repository.
 
 Mirascope aims to remove the complexities around the engineering workflow so you can focus on the content of your prompts. We uphold the expressive simplicity of Python, which allows you to engineer how you normally engineer, without getting bogged down in dense and confusing abstractions.
 
-Want to learn more? You can find Mirascope’s code samples mentioned in this article on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find Mirascope’s code samples mentioned in this article on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

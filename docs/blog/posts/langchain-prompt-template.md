@@ -212,11 +212,11 @@ As suggested previously, it gets harder to manage prompts and LLM calls at scale
 
 We believe this provides an efficient approach to managing your codebase, and brings benefits such as simplicity, clarity, and maintainability.
 
-With our library, all you need to know to accomplish [effective prompt engineering](https://www.mirascope.com/blog/prompt-engineering-tools) is Python and Pydantic. We don’t introduce new, complex structures and you can just code as you need to. For example, if you need to create an output parser then you just code it in Python without concern that it won’t later pass correctly in some other special class.
+With our library, all you need to know to accomplish [effective prompt engineering](https://mirascope.com/blog/prompt-engineering-tools) is Python and Pydantic. We don’t introduce new, complex structures and you can just code as you need to. For example, if you need to create an output parser then you just code it in Python without concern that it won’t later pass correctly in some other special class.
 
 ### Mirascope’s `prompt_template` Decorator
 
-As a library premised on best developer practices, Mirascope offers its [`prompt_template`](https://www.mirascope.com/learn/prompts/#prompt-templates-messages)` decorator that enables writing prompt templates as python functions to centralize internal prompt logic such as computed fields:
+As a library premised on best developer practices, Mirascope offers its [`prompt_template`](https://mirascope.com/learn/prompts/#prompt-templates-messages)` decorator that enables writing prompt templates as python functions to centralize internal prompt logic such as computed fields:
 
 ```python
 from mirascope.core import BaseDynamicConfig, prompt_template
@@ -331,7 +331,7 @@ The error would only be shown at runtime:
 
 ![KeyError: Input to ChatPromptTemplate is missing variables](../../assets/blog/langchain-prompt-template/langchain_invoke_dict_runtime_error.png)
 
-In contrast, the following [`prompt_template`](https://www.mirascope.com/learn/prompts) example from Mirascope shows how `storyline` is defined as a fixed word and string attribute, and so passing in, say, a plural form of the word would automatically generate an error, thanks to Python:
+In contrast, the following [`prompt_template`](https://mirascope.com/learn/prompts) example from Mirascope shows how `storyline` is defined as a fixed word and string attribute, and so passing in, say, a plural form of the word would automatically generate an error, thanks to Python:
 
 ```python
 from mirascope.core import prompt_template
@@ -372,7 +372,7 @@ Another important difference is that Mirascope colocates everything contributing
 
 As we’ve seen previously, certain information regarding the API call, such as parameters defining model type and temperature, are passed in as keyword arguments to the provider’s function decorator, which then show up in the response’s dump.
 
-Mirascope’s wrappers for [tools (function calling)](https://www.mirascope.com/learn/tools) are included in call responses, increasing cohesion of the code even further and reducing or eliminating any boilerplate or convoluted callback mechanisms needed to extend LLM capabilities.
+Mirascope’s wrappers for [tools (function calling)](https://mirascope.com/learn/tools) are included in call responses, increasing cohesion of the code even further and reducing or eliminating any boilerplate or convoluted callback mechanisms needed to extend LLM capabilities.
 
 For instance, the tool `format_book` below is tied to the LLM call:
 
@@ -544,8 +544,8 @@ For simple prompt chains, LangChain works fine because its chaining generally of
 
 Mirascope’s philosophy is that a development library should let you build a complex LLM application or system, if that’s what you want. But it shouldn’t build that complex app or system for you, because that would mean dictating how you should build it.
 
-Moreover, Mirascope eliminates the need for extensive boilerplate code and complex abstractions. [As a viable LangChain alternative](https://www.mirascope.com/blog/langchain-alternatives), Mirascope simplifies the development process to its core components: identifying your prompts, defining your variables, and specifying your calls.
+Moreover, Mirascope eliminates the need for extensive boilerplate code and complex abstractions. [As a viable LangChain alternative](https://mirascope.com/blog/langchain-alternatives), Mirascope simplifies the development process to its core components: identifying your prompts, defining your variables, and specifying your calls.
 
 This approach lets developers focus on their main task of prompting and building LLM applications, and less on tracking errors and dealing with unnecessary complexity.
 
-Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

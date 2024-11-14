@@ -40,7 +40,7 @@ Three of the most popular frameworks today are open source and handle a variety 
 
 When implemented correctly, frameworks have the adaptability to handle the intricacies around operations and workflows to ensure a good user experience. And at best they should be intuitive to set up and allow developers to iterate quickly.
 
-We find, however, that [modern frameworks are quite complex](https://www.mirascope.com/blog/llamaindex-vs-langchain) (and are often an ecosystem in themselves), at least partly because:
+We find, however, that [modern frameworks are quite complex](https://mirascope.com/blog/llamaindex-vs-langchain) (and are often an ecosystem in themselves), at least partly because:
 
 - Some of their abstractions seem to reinvent the wheel for things you’d normally use vanilla Python for.
 - Their inner workings can be opaque and hard to figure out, especially for debugging purposes.
@@ -63,9 +63,9 @@ Tasks are organized and managed as part of workflow execution within LLM applica
 
 #### Prompt Engineering
 
-An example of such a task is the [development of prompts](https://www.mirascope.com/blog/llamaindex-vs-langchain), which serve as the primary interface for interacting with the model.
+An example of such a task is the [development of prompts](https://mirascope.com/blog/llamaindex-vs-langchain), which serve as the primary interface for interacting with the model.
 
-To get the best responses, prompts should [contain clear instructions](https://www.mirascope.com/blog/prompt-engineering-best-practices) as shown in the example code below, which generates a prompt for recommending movies based on recently watched titles:
+To get the best responses, prompts should [contain clear instructions](https://mirascope.com/blog/prompt-engineering-best-practices) as shown in the example code below, which generates a prompt for recommending movies based on recently watched titles:
 
 ```python
 from mirascope.core import openai, prompt_template
@@ -86,15 +86,15 @@ def recommend_movie_prompt(movie_titles: list[str]) -> openai.OpenAIDynamicConfi
 response = recommend_movie_propmt(["The Dark Knight", "Forrest Gump"])
 ```
 
-This uses Mirascope's [`prompt_template`](https://www.mirascope.com/learn/prompts) decorator in tandem with the [`openai.call`](https://www.mirascope.com/learn/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call, respectively.
+This uses Mirascope's [`prompt_template`](https://mirascope.com/learn/prompts) decorator in tandem with the [`openai.call`](https://mirascope.com/learn/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call, respectively.
 
 The above code also illustrates our principle of colocation, where everything impacting the quality of a call is colocated and versioned together. This can be seen in the computed field `titles_in_quotes` computed within the prompt function.
 
-This approach to colocation emerged from our frustrations around working with both [LangChain](https://www.mirascope.com/blog/langchain-runnables) and the OpenAI SDK, where LLM calls and their parameters are separately managed. Making changes to one part of the code, like updating the model specification, often required efforts to track those changes in other parts.
+This approach to colocation emerged from our frustrations around working with both [LangChain](https://mirascope.com/blog/langchain-runnables) and the OpenAI SDK, where LLM calls and their parameters are separately managed. Making changes to one part of the code, like updating the model specification, often required efforts to track those changes in other parts.
 
 #### Tools (Function Calling)
 
-Frameworks also support [tools (or function calling)](https://www.mirascope.com/blog/openai-function-calling) to autonomously execute tasks like checking stock prices and classifying spam. This makes them agents working on your behalf, with the ability to choose which functions or external services to use.
+Frameworks also support [tools (or function calling)](https://mirascope.com/blog/openai-function-calling) to autonomously execute tasks like checking stock prices and classifying spam. This makes them agents working on your behalf, with the ability to choose which functions or external services to use.
 
 For example, prompting an LLM with flight information will return a call to a function that checks the status of flights.
 
@@ -160,7 +160,7 @@ if tool := response.tool:
 # > The flight AA123 on 2024-08-05 is on time.
 ```
 
-In the above code, we set up the function `get_flight_information` to generate a function call with its docstring, and then we register this function as a tool with OpenAI (Mirascope also provides ways of turning functions into tools [without needing a docstring](https://www.mirascope.com/learn/tools)).
+In the above code, we set up the function `get_flight_information` to generate a function call with its docstring, and then we register this function as a tool with OpenAI (Mirascope also provides ways of turning functions into tools [without needing a docstring](https://mirascope.com/learn/tools)).
 
 ### 2. Data Preparation
 
@@ -201,11 +201,11 @@ Extracting details in this way allows you to parse large documents, articles, or
 
 Workflow integration embeds tools, technologies, or processes into existing operational systems and workflows to improve efficiency, consistency, and productivity.
 
-This includes maintaining [version control of prompts](https://www.mirascope.com/blog/prompt-versioning) and AI models and ensuring smooth transitions between different model providers.
+This includes maintaining [version control of prompts](https://mirascope.com/blog/prompt-versioning) and AI models and ensuring smooth transitions between different model providers.
 
 #### Changing Model Providers
 
-Mirascope allows you to [change model providers](https://www.mirascope.com/learn/calls) in just three lines (corresponding to the highlighted code below):
+Mirascope allows you to [change model providers](https://mirascope.com/learn/calls) in just three lines (corresponding to the highlighted code below):
 
 1. Change the `from mirascope.core import {provider}` import to the new provider.
 2. Update any specific call params such as `model`.
@@ -253,9 +253,9 @@ This is because the Mirascope allows us to use the `run` or `run_async` method t
 
 #### Prompt Management
 
-A prompt management system maintains [consistency in prompting](https://www.mirascope.com/blog/langchain-prompt-template) while helping you iterate and experiment more productively. It also integrates with CI/CD pipelines while promoting collaboration and automates change tracking.
+A prompt management system maintains [consistency in prompting](https://mirascope.com/blog/langchain-prompt-template) while helping you iterate and experiment more productively. It also integrates with CI/CD pipelines while promoting collaboration and automates change tracking.
 
-An example of prompt management is [Lilypad](https://www.mirascope.com/blog/prompt-versioning), which versions and traces all prompts automatically so you don't have to worry about it and can instead focus on iterating and improving your prompts.
+An example of prompt management is [Lilypad](https://mirascope.com/blog/prompt-versioning), which versions and traces all prompts automatically so you don't have to worry about it and can instead focus on iterating and improving your prompts.
 
 ```plaintext
 |
@@ -282,7 +282,7 @@ To support scalability, frameworks leverage technologies that enable high throug
 
 #### Streaming Model Responses
 
-A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](https://www.mirascope.com/learn/streams), which you can enable by setting `stream=True` in the [`call`](https://www.mirascope.com/learn/calls) decorator, provide `BaseCallResponseChunk` convenience wrappers around the original response chunks, as well as tools (if provided) that are constructed on your behalf:
+A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](https://mirascope.com/learn/streams), which you can enable by setting `stream=True` in the [`call`](https://mirascope.com/learn/calls) decorator, provide `BaseCallResponseChunk` convenience wrappers around the original response chunks, as well as tools (if provided) that are constructed on your behalf:
 
 ```python
 from mirascope.core import openai, prompt_template
@@ -411,11 +411,11 @@ Since Tenacity's `retry` is a decorator, you can use it with any Mirascope `call
 
 Performance optimization is about making sure applications run efficiently, with a focus on reducing latency, managing computational resources, and ensuring quick and accurate LLM responses.
 
-[Frameworks like LangChain](https://www.mirascope.com/blog/langchain-alternatives) generally offer strategies for this, such as parallel processing, caching frequently accessed data, efficient memory management, and asynchronous operations to improve responsiveness and throughput.
+[Frameworks like LangChain](https://mirascope.com/blog/langchain-alternatives) generally offer strategies for this, such as parallel processing, caching frequently accessed data, efficient memory management, and asynchronous operations to improve responsiveness and throughput.
 
 Async streaming is an example of performance optimization that we’ve previously discussed above, and other examples include LLM call chaining and high-level wrappers for model APIs, described below.
 
-[Chaining LLM calls using computed fields](https://www.mirascope.com/blog/prompt-chaining) can be an optimization strategy as this enables using the `@functools.lru_cache` decorator to cache the output of each call in the chain so it only has to be made once:
+[Chaining LLM calls using computed fields](https://mirascope.com/blog/prompt-chaining) can be an optimization strategy as this enables using the `@functools.lru_cache` decorator to cache the output of each call in the chain so it only has to be made once:
 
 ```python
 from functools import lru_cache
@@ -466,10 +466,10 @@ Above, the `@functools.lru_cache` decorator caches the result of the call for ea
 
 Another way to optimize performance is by using high-level wrappers around APIs of both model providers and external tools and libraries. These abstract away the low-level details involved in making API calls.
 
-Besides offering a range of utilities and [integrations](https://www.mirascope.com/integrations/otel/) for external providers, Mirascope also provides a simple interface for LLM calls with a class decorator, e.g., `@openai.call` for calling OpenAI. You can make calls to other providers (e.g., Groq and Mistral) using this same decorator syntax, allowing for switching without needing to change the core logic.
+Besides offering a range of utilities and [integrations](https://mirascope.com/integrations/otel/) for external providers, Mirascope also provides a simple interface for LLM calls with a class decorator, e.g., `@openai.call` for calling OpenAI. You can make calls to other providers (e.g., Groq and Mistral) using this same decorator syntax, allowing for switching without needing to change the core logic.
 
 ## Achieve Orchestration with Mirascope
 
-Designed according to [software development best practices](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms), Mirascope offers tools that handle the complexity of LLM orchestration for building production-grade LLM apps. Our library supports data integration and lets you code in the Python you normally code in, ensuring a smooth integration with your existing projects.
+Designed according to [software development best practices](https://mirascope.com/blog/engineers-should-handle-prompting-llms), Mirascope offers tools that handle the complexity of LLM orchestration for building production-grade LLM apps. Our library supports data integration and lets you code in the Python you normally code in, ensuring a smooth integration with your existing projects.
 
-Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).
+Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and on our [GitHub page](https://github.com/mirascope/mirascope).

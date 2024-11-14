@@ -32,13 +32,13 @@ In this article, we describe useful ways of working with LangChain to get struct
 
 ## How to Get Structured Outputs in LangChain
 
-Although [LangChain](https://www.mirascope.com/blog/langchain-alternatives) offers many different kinds of off-the-shelf parsers, most developers find the following three tools to be particularly useful:
+Although [LangChain](https://mirascope.com/blog/langchain-alternatives) offers many different kinds of off-the-shelf parsers, most developers find the following three tools to be particularly useful:
 
 ### 1. `.with_structured_output`
 
 This [class method](https://python.langchain.com/v0.1/docs/modules/model_io/chat/structured_output/) takes an input schema to guide the LLM to generate specific responses.
 
-You can only use this with LLMs that provide APIs for structuring outputs, such as [tool calling](https://www.mirascope.com/blog/openai-function-calling) or JSON mode (this means it only works for providers like OpenAI, Anthropic, Cohere, etc.).
+You can only use this with LLMs that provide APIs for structuring outputs, such as [tool calling](https://mirascope.com/blog/openai-function-calling) or JSON mode (this means it only works for providers like OpenAI, Anthropic, Cohere, etc.).
 
 If the model doesn’t natively support such features, you’ll need to use an output parser to extract the structured response from the model output.
 
@@ -78,13 +78,13 @@ Here, we define `Trivia` as a Pydantic model whose definition and fields we want
 
 Thanks to Pydantic’s built-in validation, if the LLM’s output doesn’t match Trivia’s structure (e.g., missing fields or incorrect types), the Pydantic model will raise an error at runtime.
 
-`with_structured_output` also wraps the LLM call in a [runnable](https://www.mirascope.com/blog/langchain-runnables) that binds the LLM to the output schema defined by the `Trivia` model.
+`with_structured_output` also wraps the LLM call in a [runnable](https://mirascope.com/blog/langchain-runnables) that binds the LLM to the output schema defined by the `Trivia` model.
 
 This runnable allows us to later combine `prompt` and `structured_llm` into a chain using LangChain’s pipe moderator (`|`).
 
 When it comes to runnables, such workflows offer certain conveniences, like handling concurrency with methods such as `async`, `await`, and `astream`. But runnables become harder to manage and debug in more sophisticated scenarios, like when you need to add more components to chained calls.
 
-That’s because runnables are LangChain-specific abstractions that come with their own learning curve. They’re part of LangChain expression language (LCEL), which uses them to define and execute workflows. But all this adds overhead to understanding what’s going on under the hood, and stands in contrast to [Mirascope’s pythonic approach to constructing chains](https://www.mirascope.com/blog/prompt-chaining).
+That’s because runnables are LangChain-specific abstractions that come with their own learning curve. They’re part of LangChain expression language (LCEL), which uses them to define and execute workflows. But all this adds overhead to understanding what’s going on under the hood, and stands in contrast to [Mirascope’s pythonic approach to constructing chains](https://mirascope.com/blog/prompt-chaining).
 
 Finally, the schema you provide to `with_structured_output` can be a `TypeDict` class, JSON schema, or a Pydantic class (note that LLM outputs in all three cases below are ultimately returned to the user by the runnable):
 
@@ -266,7 +266,7 @@ We then create the `StructuredOutputParser` using the defined `response_schemas`
 
 We also specify `format_instructions` based on the `StructuredOutputParser` created previously to tell the language model how to format its response so this matches the structure defined by the `ResponseSchema` objects.
 
-Our [prompt template](https://www.mirascope.com/blog/langchain-prompt-template) then asks the language model to provide a recipe and the list of ingredients for a specified dish, and includes the format instructions we previously specified.
+Our [prompt template](https://mirascope.com/blog/langchain-prompt-template) then asks the language model to provide a recipe and the list of ingredients for a specified dish, and includes the format instructions we previously specified.
 
 Lastly, we create a chain (which returns a runnable) using the pipe moderator and invoke it to run, receive, and parse the response according to our defined schemas:
 
@@ -285,7 +285,7 @@ Our structured output tools are also tightly integrated with Pydantic, unlike in
 
 ### Output Parsing in Mirascope
 
-In Mirascope you write [output parsers](https://www.mirascope.com/learn/output_parsers) as Python functions that work together with **call decorators**, which you can add to any function to turn it into an LLM API call. Call decorators let you easily switch between models or compare different outputs, since our decorators work with a [growing list of providers](https://www.mirascope.com/learn/calls).
+In Mirascope you write [output parsers](https://mirascope.com/learn/output_parsers) as Python functions that work together with **call decorators**, which you can add to any function to turn it into an LLM API call. Call decorators let you easily switch between models or compare different outputs, since our decorators work with a [growing list of providers](https://mirascope.com/learn/calls).
 
 Like LangChain, we support OpenAI’s JSON mode and [structured outputs](https://openai.com/index/introducing-structured-outputs-in-the-api/) (for both JSON schema and tools).
 
@@ -339,7 +339,7 @@ We also offer auto suggestions:
 
 ![Mirascope Prompt Autocomplete](../../assets/blog/langchain-structured-output/mirascope_prompt_autocomplete.png)
 
-This is handy for catching errors without even needing to run your code, and is an aspect of Mirascope’s promotion of [best coding practices](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms).
+This is handy for catching errors without even needing to run your code, and is an aspect of Mirascope’s promotion of [best coding practices](https://mirascope.com/blog/engineers-should-handle-prompting-llms).
 
 #### Pydantic V2
 
@@ -386,7 +386,7 @@ Below, we describe a few of the most convenient settings available for response 
 
 #### Returning Outputs in Valid JSON
 
-Setting `json_mode=True` in the call decorator will apply [JSON mode](https://www.mirascope.com/learn/json_mode/) — if it’s supported by your LLM — rendering the outputs as valid JSON: ‍
+Setting `json_mode=True` in the call decorator will apply [JSON mode](https://mirascope.com/learn/json_mode/) — if it’s supported by your LLM — rendering the outputs as valid JSON: ‍
 
 ```python
 import json
@@ -475,6 +475,6 @@ for partial_city in city_stream:
 
 ## Generate Structured Outputs with Ease and Consistency
 
-Mirascope’s close integration with Pydantic, along with its use of Pythonic conventions, allow you to code using the Python you already know, rather than trying to make sense of new abstractions and [complex frameworks](https://www.mirascope.com/blog/llamaindex-vs-langchain). This makes generating structured outputs simpler and more intuitive.
+Mirascope’s close integration with Pydantic, along with its use of Pythonic conventions, allow you to code using the Python you already know, rather than trying to make sense of new abstractions and [complex frameworks](https://mirascope.com/blog/llamaindex-vs-langchain). This makes generating structured outputs simpler and more intuitive.
 
-Want to learn more about Mirascope’s structured output tools? You can find Mirascope code samples both on our [documentation site](https://www.mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).
+Want to learn more about Mirascope’s structured output tools? You can find Mirascope code samples both on our [documentation site](https://mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).

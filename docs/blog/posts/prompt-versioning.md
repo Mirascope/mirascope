@@ -35,7 +35,7 @@ In fact, our experience suggests that any prompt management system should, at a 
 - Provide an audit trail of who made changes, when these changes were made, and why.
 - Be well integrated with your prompt development tool, which in turn either integrates with, or supports LLM pipeline functionalities.
 
-**Below, we list five different [prompting tools](https://www.mirascope.com/blog/prompt-engineering-tools) that implement prompt management**, starting with an in depth discussion on how we designed Mirascope and Lilypad, our own toolkit and framework, respectively, for developing robust LLM applications, with respect to the discussion above.
+**Below, we list five different [prompting tools](https://mirascope.com/blog/prompt-engineering-tools) that implement prompt management**, starting with an in depth discussion on how we designed Mirascope and Lilypad, our own toolkit and framework, respectively, for developing robust LLM applications, with respect to the discussion above.
 
 1. [**Mirascope and Lilypad**](#1-mirascope-and-lilypadprompt-engineering-and-management-for-software-engineers)—software engineering-inspired prompt engineering, versioning, and management.
 2. [**LangSmith**](#2-langsmithprompt-versioning-from-a-central-hub)—prompt versioning from a central hub.
@@ -68,7 +68,7 @@ In previous experiences working with prompts, we found that it’s easy to lose 
 
 We find this to be a common issue with other frameworks and libraries that don’t enforce colocation, since it becomes harder to trace the effects of changes made to one part of your code, and introduces unnecessary complexity.
 
-**Mirascope therefore makes the LLM call the [central primitive](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms)** around which everything, including the prompt, is versioned. It’s hard to overstate the advantages to the developer experience in doing this, especially when your library is making over 100 LLM calls within an enterprise-level LLM application.
+**Mirascope therefore makes the LLM call the [central primitive](https://mirascope.com/blog/engineers-should-handle-prompting-llms)** around which everything, including the prompt, is versioned. It’s hard to overstate the advantages to the developer experience in doing this, especially when your library is making over 100 LLM calls within an enterprise-level LLM application.
 
 An example of colocation is shown below; `call_params` encapsulates parameters needed for making an OpenAI API call within the context of the `get_song_review()` call.
 
@@ -439,7 +439,7 @@ print(response.model_dump())
 
 ![LangSmith homepage: Get your LLM app from prototype to production](../../assets/blog/prompt-versioning/langsmith_homepage.png)
 
-[LangSmith](https://www.langchain.com/langsmith) is a tool for managing and optimizing the performance of chains and intelligent agents in LLM applications. Its parent framework is [LangChain](https://www.mirascope.com/blog/langchain-alternatives), with which it integrates, although you can use LangSmith on its own.
+[LangSmith](https://www.langchain.com/langsmith) is a tool for managing and optimizing the performance of chains and intelligent agents in LLM applications. Its parent framework is [LangChain](https://mirascope.com/blog/langchain-alternatives), with which it integrates, although you can use LangSmith on its own.
 
 LangSmith offers a hub (LangChain Hub) that’s a centralized prompt repository, with functionality for archiving and versioning prompts. To use prompts that are saved to LangSmith Hub, you typically use the `pull` command specifying the prompt to download, along with its commit hash (version).
 
@@ -488,4 +488,4 @@ You can find more information on PromptHub in its documentation and on its websi
 
 Lilypad's prompt versioning and management functionality was built from the ground up with software engineering best practices in mind. It offers an accessible interface for you to easily track changes across different versions of prompts to improve collaboration, and to support ongoing prompt experimentation and iteration.
 
-Want to learn more? You can find more Lilypad code samples on both our [documentation site](https://www.lilypad.so/docs) and [GitHub](https://github.com/Mirascope/lilypad). You can also learn more about [Mirascope](https://www.mirsacope.com/docs), for which Lilypad has first-class support.
+Want to learn more? You can find more Lilypad code samples on both our [documentation site](https://www.lilypad.so/docs) and [GitHub](https://github.com/Mirascope/lilypad). You can also learn more about [Mirascope](https://www.mirsacope.com), for which Lilypad has first-class support.

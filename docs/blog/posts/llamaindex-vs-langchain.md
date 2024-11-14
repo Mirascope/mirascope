@@ -75,7 +75,7 @@ messages = qa_template.format_messages(context_str=..., query_str=...)
 
 ### LangChain: Offers Prompt Templates for Different Use Cases
 
-Similar to LlamaIndex, LangChain offers a number of [prompt templates](https://www.mirascope.com/blog/langchain-prompt-template) corresponding to different use cases:
+Similar to LlamaIndex, LangChain offers a number of [prompt templates](https://mirascope.com/blog/langchain-prompt-template) corresponding to different use cases:
 
 - `PromptTemplate` is the standard prompt for many use cases.
 - `FewShotPromptTemplate` for few-shot learning.
@@ -121,7 +121,7 @@ When it comes to prompt versioning, LangChain offers this capability in its Lang
 
 ### Mirascope: One Prompt That Type Checks Inputs Automatically
 
-Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`prompt_template`](https://www.mirascope.com/learn/prompts) decorator so you can write prompt templates as standard Python functions.
+Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`prompt_template`](https://mirascope.com/learn/prompts) decorator so you can write prompt templates as standard Python functions.
 
 Our `prompt_template` decorator allows you to automatically generate prompt messages simply by calling the function, which returns the list of `BaseMessageParam` instances.
 
@@ -326,7 +326,7 @@ class MyStore(ChromaVectorStore):
     index_name = "my_index"
 ```
 
-‍Mirascope provides additional methods for adding and retrieving documents to and from the vector store, as well as accessing the client store and index. You can find out more about these, as well as our integrations with LlamaIndex and [other frameworks](https://www.mirascope.com/blog/langchain-alternatives), in our documentation.
+‍Mirascope provides additional methods for adding and retrieving documents to and from the vector store, as well as accessing the client store and index. You can find out more about these, as well as our integrations with LlamaIndex and [other frameworks](https://mirascope.com/blog/langchain-alternatives), in our documentation.
 
 ## Scaling Solutions for Production-Grade LLM Applications
 
@@ -352,7 +352,7 @@ For instance, we minimize the number of special abstractions you must learn when
 
 Therefore all you need to know is vanilla Python and the Pydantic library. We also try to push design and implementation decisions onto developers to offer them maximum adaptability and control.
 
-And unlike other frameworks, we believe that everything that can impact the quality of an LLM call (from model parameters to prompts) should live together with the call. The LLM call is therefore the [central organizing unit of our code](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) around which everything gets versioned and tested.
+And unlike other frameworks, we believe that everything that can impact the quality of an LLM call (from model parameters to prompts) should live together with the call. The LLM call is therefore the [central organizing unit of our code](https://mirascope.com/blog/engineers-should-handle-prompting-llms) around which everything gets versioned and tested.
 
 A prime example of this is Mirascope’s use of [`call_params`](https://mirascope.com/learn/calls/#provider-specific-parameters), which contains all the parameters of the LLM call and typically lives inside the call:
 
@@ -457,4 +457,4 @@ Just import the functionality you want—and nothing more—from libraries like 
 
 Our approach allows you to use and combine the best available open-source tools for any specific task in your LLM app development workflows.
 
-Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

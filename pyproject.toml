@@ -6,10 +6,10 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 authors = [
-    { name = "William Bakst", email = "william@mirascope.io" },
-    { name = "Brendan Kao", email = "brendan@mirascope.io" },
+    { name = "William Bakst", email = "william@mirascope.com" },
+    { name = "Brendan Kao", email = "brendan@mirascope.com" },
 ]
-maintainers = [{ name = "William Bakst", email = "william@mirascope.io" }]
+maintainers = [{ name = "William Bakst", email = "william@mirascope.com" }]
 keywords = [
     "agents",
     "anthropic",
@@ -50,8 +50,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://mirascope.io"
-Documentation = "https://mirascope.io/docs"
+Homepage = "https://mirascope.com"
+Documentation = "https://mirascope.com/WELCOME"
 Repository = "https://github.com/Mirascope/mirascope"
 Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"

@@ -237,8 +237,8 @@ We invite you to try out Mirascope V1, share your experiences, and join us in sh
 
 Ready to get started? Here's how:
 
-1. Check out our [Quick Start Guide](https://www.mirascope.com/tutorials/getting_started/quickstart) to set up Mirascope in minutes.
-2. Explore our [Usage Documentation](https://www.mirascope.com/learn) for in-depth guides and examples.
+1. Check out our [Quick Start Guide](https://mirascope.com/tutorials/getting_started/quickstart) to set up Mirascope in minutes.
+2. Explore our [Usage Documentation](https://mirascope.com/learn) for in-depth guides and examples.
 3. Join our [Slack Community](https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA) to discuss questions, stay up to date on announcements, or even show off what you've built.
 
 Let's build the future of AI together!

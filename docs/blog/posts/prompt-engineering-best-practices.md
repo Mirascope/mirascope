@@ -24,7 +24,7 @@ In our experience, there are two key aspects to prompting an LLM effectively:
 
 Of course, a “pre-step” to consider is the prompt development life cycle as a whole. Prompt engineers should define the stages of this life cycle in terms of key metrics and specify success criteria for evaluating LLM outputs. However, at present we won’t be considering such aspects of the life cycle,**but rather what it takes for writing (and coding) prompts to coax better results from the model.**
 
-Besides accuracy, “better” also means results that are reliable, especially taking into account how inconsistent language model outputs can be—even when using the same model with the same inputs. This is where best practices can help you achieve some baseline of consistency in LLM responses. **In this article, we share our insights for helping you generate predictable LLM responses.** These insights are grounded in our own experiences writing prompts since the earliest days of the OpenAI SDK, when we developed our guiding principles in response to our frustrations working with [complex frameworks](https://www.mirascope.com/blog/langchain-alternatives) for developing LLM applications.
+Besides accuracy, “better” also means results that are reliable, especially taking into account how inconsistent language model outputs can be—even when using the same model with the same inputs. This is where best practices can help you achieve some baseline of consistency in LLM responses. **In this article, we share our insights for helping you generate predictable LLM responses.** These insights are grounded in our own experiences writing prompts since the earliest days of the OpenAI SDK, when we developed our guiding principles in response to our frustrations working with [complex frameworks](https://mirascope.com/blog/langchain-alternatives) for developing LLM applications.
 
 These principles eventually coalesced into our own Python toolkit for building with LLMs, Mirascope. We illustrate our list of prompt engineering best practices below with some examples of how you would implement these in our toolkit.
 
@@ -94,12 +94,12 @@ print(response.content)
 
 ### 2. Use Tailored Prompts, Not Predefined Templates
 
-By their very nature, reusable [prompt templates](https://www.mirascope.com/blog/langchain-prompt-template) that are designed for one context don’t port easily to others. There are a few reasons for this:
+By their very nature, reusable [prompt templates](https://mirascope.com/blog/langchain-prompt-template) that are designed for one context don’t port easily to others. There are a few reasons for this:
 
 - LLMs are highly sensitive to the actual inputs used in a prompt—that is, everything from the words, phrases, style, and tone, to implicit assumptions, data points, structure, and formatting. Reusing the same prompt template in another context can generate unexpected LLM outputs.
 - LLMs don’t maintain state across interactions outside of the current context window, so each prompt-response pair is treated independently without memory of previous exchanges unless they are within the same context window. This means that every prompt within a new interaction or outside of the current context window needs to be self-contained and provide all necessary context to ensure accurate and reliable responses.
 
-The fact there’s little to no reusability with the current generation of LLMs means that modern [prompt engineering ](https://www.mirascope.com/blog/prompt-engineering-tools)(still) has little use for automation—even with templates. Case in point: [some libraries](https://www.mirascope.com/blog/prompt-flow-vs-langchain) make much of their use of directed acyclic graphs yet the vast majority of prompting work still lies in iteratively optimizing effective prompts by hand until you get the desired result.
+The fact there’s little to no reusability with the current generation of LLMs means that modern [prompt engineering ](https://mirascope.com/blog/prompt-engineering-tools)(still) has little use for automation—even with templates. Case in point: [some libraries](https://mirascope.com/blog/prompt-flow-vs-langchain) make much of their use of directed acyclic graphs yet the vast majority of prompting work still lies in iteratively optimizing effective prompts by hand until you get the desired result.
 
 ### 3. Use Chain of Thought (CoT) Prompting Instead of “Flat,” Broad Prompts
 
@@ -185,7 +185,7 @@ If you don’t specify these parameters in your call, then the model assumes cer
 
 ### 6. Colocate Parameters and Code with the LLM Call
 
-We find that making the LLM call the [central organizing unit](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) around which everything, including the prompt, gets versioned and tested promotes code cleanliness and maintainability.
+We find that making the LLM call the [central organizing unit](https://mirascope.com/blog/engineers-should-handle-prompting-llms) around which everything, including the prompt, gets versioned and tested promotes code cleanliness and maintainability.
 
 It also properly defines the boundaries of modules, ensuring that each is self-contained and encapsulates all the elements necessary for its functionality.
 
@@ -245,7 +245,7 @@ If you try to pass an incorrect name like `storylines` using an IDE, it’ll fla
 
 Versioning your prompts may seem like an intuitive step to anyone who’s done serious prompt engineering, but we’d like to repeat this anyway. And if this isn’t standard practice yet, you’ll thank us later for it.
 
-In our experience, prompts become unmanageable past several iterations if we don’t [version track them](https://www.mirascope.com/blog/prompt-versioning) as we would any other code. And if you’re rapidly experimenting with, and optimizing prompts, even manual change tracking is better than none at all.
+In our experience, prompts become unmanageable past several iterations if we don’t [version track them](https://mirascope.com/blog/prompt-versioning) as we would any other code. And if you’re rapidly experimenting with, and optimizing prompts, even manual change tracking is better than none at all.
 
 Our own library Lilypad is purpose build for [prompt management](https://www.lilypad.so/docs), automatically versioning and tracing every LLM call made, including any and all code that could impact the quality of the prompt.
 
@@ -255,4 +255,4 @@ Mirascope's LLM application development toolkit, grounded in software developmen
 
 Mirascope offers building blocks rather than a framework so design decisions can remain in the hands of developers. Lilypad, on the other hand, offers a more framework driven approach for additional supporting tooling for prompt engineering, and it offers first-class support for Mirascope.
 
-Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find more Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

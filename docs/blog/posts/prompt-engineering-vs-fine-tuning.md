@@ -46,11 +46,11 @@ If that sounds iterative and repetitive, it is. Prompt engineering means pouring
 
 It’s a continual process of steering the model’s responses to where you want them to end up, by adding context, specifying tone, or emphasizing key information as needed.
 
-When developing LLM-based AI applications, it usually involves a level of [data orchestration](https://www.mirascope.com/blog/llm-orchestration) to give the model consistent access to the right context and information flow.
+When developing LLM-based AI applications, it usually involves a level of [data orchestration](https://mirascope.com/blog/llm-orchestration) to give the model consistent access to the right context and information flow.
 
 One thing to keep in mind is that the path forward may not be immediately obvious, so refining your prompts along the way is as much a journey of discovery and learning as it is a process of continuous experimentation and adaptation.
 
-Here are a [few types of prompts](https://www.mirascope.com/blog/prompt-engineering-examples) (there are many more) for getting the answers you need:
+Here are a [few types of prompts](https://mirascope.com/blog/prompt-engineering-examples) (there are many more) for getting the answers you need:
 
 * __Instruction-based prompts__ for telling the model what to do, e.g., “Explain the word ‘optimization’ in simple terms,” or “Recommend top books about generative AI.” Clear instructions keep the model’s output relevant and align them with your expectations.  
 * __Zero-shot and few-shot prompts__ provide either no examples (zero shot) or some examples (few shot) to teach the model a new task or show it what you need exactly.  
@@ -70,19 +70,6 @@ Fine-tuning involves these general steps:
 3. __Test the fine-tuned model__ against a validation set to ensure it meets your standards. You may need to tweak the training parameters or refine the dataset to address any performance issues along the way.
 
 ## Pros and Cons of Prompt Engineering vs Fine-Tuning
-
-<!-- | Feature | Prompt Engineering | Fine-Tuning |
-| :---- | ----- | ----- |
-| Barrier to Entry | <div align="center">Low</div><br/> Requires minimal technical knowledge and no specialized datasets. | <div align="center">High</div><br/> Requires domain-specific knowledge, a large dataset, and computational resources for training, not to mention a long period of training. |
-| Adaptability | <div align="center">High</div><br/> No retraining is needed, just modify the prompts. | <div align="center">Low</div><br/> Requires retraining for every new task or domain.  |
-| Cost | <div align="center">Low</div><br/> Uses pre-trained models without extra computational resources. | <div align="center">High</div><br/> Requires significant computational resources and specialized datasets to adapt pre-trained models. |
-| Scalability  | <div align="center">High</div><br/> Can be applied across different tasks without modifying the model. | <div align="center">Low</div><br/> Needs retraining for different tasks, which increases resource consumption. |
-| Output Control | <div align="center">Limited Control</div><br/> You can guide outputs but can’t change the model’s internal biases. | <div align="center">High Control</div><br/> You can adjust internal parameters to reduce biases and improve performance on  specific tasks. |
-| Consistency  | <div align="center">Moderate</div><br/> May generate inconsistent results, especially with complex tasks — often requiring multiple iterations.  | <div align="center">High</div><br/> Tends to produce more reliable and consistent results, especially for repetitive tasks. |
-| Customization | <div align="center">Limited</div><br/> Restricted to adjusting prompts. | <div align="center">High</div><br/> Can be fine-tuned for very specific tasks using specialized data.  |
-| Computational Resources | <div align="center">Low</div><br/> Requires minimal computational resources. | <div align="center">High</div><br/> Demands significant resources, especially for large-scale models and datasets. |
-| Dataset Requirement  | <div align="center">Low</div><br/> Works with pre-trained models out-of-the-box. | <div align="center">High</div><br/> Requires a large domain-specific dataset for training. |
-| Generalization  | <div align="center">Good</div><br/> Generalizes well to different tasks since the pre-trained base model remains unchanged.  | <div align="center">Maybe Limited</div><br/> Risk of overfitting — the model may become too specialized and lose generalization ability if trained on a narrow dataset. | -->
 
 <style type="text/css">@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;}}</style>
 <div class="tg-wrap"><table style="border-collapse:collapse;border-spacing:0" class="tg"><tbody><tr><td style="background-color:#6366f1;border-color:inherit;border-style:solid;border-width:1px;color:#ffffff;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">Feature</td><td style="background-color:#6366f1;border-color:inherit;border-style:solid;border-width:1px;color:#ffffff;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">Prompt Engineering</td><td style="background-color:#6366f1;border-color:inherit;border-style:solid;border-width:1px;color:#ffffff;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">Fine-Tuning</td></tr>
@@ -118,11 +105,11 @@ Writing prompts in plain text is sometimes enough to get the answers you want, b
 
 Following best practices promises to keep the whole process running smoothly, and we recommend you approach prompt engineering with the same deliberate and thoughtful mindset as you would any other complex endeavor, such as software development.
 
-Below are listed _some_ of our own core [best practices](https://www.mirascope.com/blog/prompt-engineering-best-practices) for advanced prompt engineering:
+Below are listed _some_ of our own core [best practices](https://mirascope.com/blog/prompt-engineering-best-practices) for advanced prompt engineering:
 
 1. __Write prompts in as clear and contextually rich a way as possible__. Vague prompts are ambiguous and often lack the context necessary to show the direction you want the model to take in its responses.  
-2. [__Colocate everything__](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) __that affects the quality of an LLM call with the call itself__. This means grouping model type, temperature, and other parameters altogether (along with placing the prompt in the near vicinity), as opposed to scattering these around the codebase. This was actually a big sticking point for us when first using the OpenAI SDK and [LangChain](https://www.mirascope.com/blog/langchain-sucks), which didn’t seem to care about keeping everything together, and was one of the reasons we designed [Mirascope](https://www.mirascope.com/).  
-3. Following on from the previous point, [__version and manage__](https://www.mirascope.com/blog/prompt-versioning) __everything that you’ve colocated together, as a single unit__. We can’t stress this enough — this makes it easy to track changes and roll back to previous versions. We even have a [dedicated tool for automatically versioning and tracing](https://www.lilypad.so/docs) for easier prompt management.  
+2. [__Colocate everything__](https://mirascope.com/blog/engineers-should-handle-prompting-llms) __that affects the quality of an LLM call with the call itself__. This means grouping model type, temperature, and other parameters altogether (along with placing the prompt in the near vicinity), as opposed to scattering these around the codebase. This was actually a big sticking point for us when first using the OpenAI SDK and [LangChain](https://mirascope.com/blog/langchain-sucks), which didn’t seem to care about keeping everything together, and was one of the reasons we designed [Mirascope](https://mirascope.com/).  
+3. Following on from the previous point, [__version and manage__](https://mirascope.com/blog/prompt-versioning) __everything that you’ve colocated together, as a single unit__. We can’t stress this enough — this makes it easy to track changes and roll back to previous versions. We even have a [dedicated tool for automatically versioning and tracing](https://www.lilypad.so/docs) for easier prompt management.  
 4. Prioritize validating LLM outputs and __use advanced retry mechanisms to handle errors effectively__. Apply tools like [Tenacity](https://tenacity.readthedocs.io/en/latest/) to automate retries, reinserting errors into subsequent prompts, allowing the model to refine its output with each attempt. [Mirascope provides utilities](https://mirascope.com/learn/retries/#error-reinsertion) to ease this process by collecting validation errors and reusing them contextually in calls that follow, improving model performance without you needing to make manual adjustments.
 
 ### Guidelines for Fine-Tuning
@@ -136,7 +123,7 @@ Below are some best practices for fine-tuning language models:
 * __Choose a pre-trained model that aligns well with your target task.__ This should be obvious, but it’s important to focus on the foundational capabilities of the base model rather than on immediate performance gains. For example, choosing a model that was trained on a dataset similar to your use case means a less costly and time-consuming adaptation phase.  
 * __Ensure your dataset is clean, well-formatted, and relevant__ to the target domain, since high-quality data reduces the likelihood of overfitting or biasing the model. Also, use a dataset that’s large enough to capture the nuances of the domain but not so large that it introduces noise. A balanced dataset helps the model to generalize better.  
 * __Fine-tune your model’s settings__ — like learning rate, batch size, and epoch — to optimize the training process for the specific task. Start with small values for the learning rate to prevent drastic updates that could lead to model instability, and adjust based on validation performance. Alternatively, if you have sufficient computational resources, you can run a hyperparameter optimization job that tries out different combinations of these values and selects the best configuration based on validation performance. Choose a batch size that balances computational efficiency with model accuracy, and experiment with different numbers of training epochs to avoid both underfitting and overfitting.  
-* Instead of training the model all at once, __fine-tune it in small, iterative steps__ to assess the impact of each update and to avoid drops in performance. Continuously evaluate the model’s accuracy using validation sets. This helps you to spot overfitting, ensure consistency in [structured outputs](https://www.mirascope.com/blog/langchain-structured-output), and decide if more data or further fine-tuning is worthwhile.
+* Instead of training the model all at once, __fine-tune it in small, iterative steps__ to assess the impact of each update and to avoid drops in performance. Continuously evaluate the model’s accuracy using validation sets. This helps you to spot overfitting, ensure consistency in [structured outputs](https://mirascope.com/blog/langchain-structured-output), and decide if more data or further fine-tuning is worthwhile.
 
 ## Choosing Prompt Engineering vs Fine-Tuning vs RAG
 
@@ -148,19 +135,19 @@ If you can get good results with a few-shot prompt, for example, there may be no
 
 ### Using Retrieval Augmented Generation
 
-With RAG, you’re beefing up prompts with added context that’s extracted from a knowledge base that’s easily updated. This knowledge base is often indexed using [embeddings](https://www.mirascope.com/blog/llm-pipeline), which capture the semantic meaning of the information, making it easier to retrieve relevant context for the query.
+With RAG, you’re beefing up prompts with added context that’s extracted from a knowledge base that’s easily updated. This knowledge base is often indexed using [embeddings](https://mirascope.com/blog/llm-pipeline), which capture the semantic meaning of the information, making it easier to retrieve relevant context for the query.
 
 And so RAG might be a better choice for tasks needing external, up-to-date information that go beyond the natural language model’s generic training.
 
 Examples of scenarios where RAG is useful include:
 
 * __Answering questions that require the latest information__, such as trends in financial markets, current events, or recent scientific discoveries. For instance, a medical assistant could pull patient information to provide responses more tailored to individual patients.  
-* __Providing insights from a specialized repository__, like legal databases or academic research papers. For instance, a legal assistant [tool](https://www.mirascope.com/blog/llm-tools) could use RAG to pull relevant case law and legal precedents from a database of thousands of court rulings.
+* __Providing insights from a specialized repository__, like legal databases or academic research papers. For instance, a legal assistant [tool](https://mirascope.com/blog/llm-tools) could use RAG to pull relevant case law and legal precedents from a database of thousands of court rulings.
 
 ## Use Mirascope to Unlock the Full Potential of Prompt Engineering
 
-Mirascope empowers developers to create, manage, and scale sophisticated prompts by providing modular building blocks rather than locking them into a [framework](https://www.mirascope.com/blog/prompt-flow-vs-langchain).
+Mirascope empowers developers to create, manage, and scale sophisticated prompts by providing modular building blocks rather than locking them into a [framework](https://mirascope.com/blog/prompt-flow-vs-langchain).
 
-Our lightweight toolkit lets users experiment, iterate, and deploy [effective prompts](https://www.mirascope.com/blog/llm-prompt) using the Python they already know, and slots readily into existing developer workflows, making it easy to get started.
+Our lightweight toolkit lets users experiment, iterate, and deploy [effective prompts](https://mirascope.com/blog/llm-prompt) using the Python they already know, and slots readily into existing developer workflows, making it easy to get started.
 
-Want to learn more? You can find in-depth Mirascope code samples on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find in-depth Mirascope code samples on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

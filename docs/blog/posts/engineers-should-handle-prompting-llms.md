@@ -37,7 +37,7 @@ Our view on prompting started as we were using an early version of the OpenAI SD
 Back then we didn’t have the benefit of any useful helper libraries, so we wrote all the API code ourselves. This amounted to writing lots of boilerplate to accomplish what seemed like simple tasks. For example, automatically extracting the model configuration (such as constraints) from just the name of the features in a given dataset. This required many prompt iterations and it was a pain to evaluate them.
 
 It was around that time that we began asking ourselves: why aren’t there better [developer tools in the prompt engineering
-space](https://www.mirascope.com/blog/prompt-engineering-tools)? Is it because people are bringing experimental stuff into production too quickly? Or simply because the space is so new?
+space](https://mirascope.com/blog/prompt-engineering-tools)? Is it because people are bringing experimental stuff into production too quickly? Or simply because the space is so new?
 
 The more we worked to develop our LLM applications, the more it was clear that from a software engineer's perspective, the **separation of prompt management from the calls was fundamentally flawed.** It made the actual engineering slow, cumbersome and arguably more error prone. It was almost as if current tools weren't built around developer best practices but rather around Jupyter notebook best practices (if there even is such a thing).
 
@@ -46,7 +46,7 @@ Beyond that, we noticed some other issues:
 - Our prompts became unmanageable past two versions. We weren’t using a prompt management workflow back then, so implementing changes was a manual process. We started telling colleagues not to touch the code because it might break a function somewhere else.
 - A lot of libraries tried to offer functionality for as many use cases as possible, sometimes making you feel dependent on them. They required you to do things their way, or you’d have to wait for them to catch up with new features from the LLMs.
 
-All this led us to rethink how prompts should be managed to make developers’ lives easier. In the end, these frustrations boiled over into us wanting to build our own library that approached LLM development in a developer-first way to make LLM app development faster and more enjoyable. This ultimately became [Mirascope](https://www.mirascope.com).
+All this led us to rethink how prompts should be managed to make developers’ lives easier. In the end, these frustrations boiled over into us wanting to build our own library that approached LLM development in a developer-first way to make LLM app development faster and more enjoyable. This ultimately became [Mirascope](https://mirascope.com).
 
 ## **How Mirascope Makes Prompt Engineering Intuitive and Scalable**
 
@@ -391,9 +391,9 @@ response = recommend_book("fantasy")
 print(response.content)
 ```
 
-We also made sure that Mirascope works well with or integrates directly with tools such as Logfire, OpenTelemetry, HyperDX, Langfuse, and more for easily tracking machine learning experiments and visualizing data as well as improving prompt effectiveness through automated refinement and testing. All together these tools work together with Mirascope as [an alternative to LangChain](https://www.mirascope.com/blog/langchain-alternatives).
+We also made sure that Mirascope works well with or integrates directly with tools such as Logfire, OpenTelemetry, HyperDX, Langfuse, and more for easily tracking machine learning experiments and visualizing data as well as improving prompt effectiveness through automated refinement and testing. All together these tools work together with Mirascope as [an alternative to LangChain](https://mirascope.com/blog/langchain-alternatives).
 
-Beyond OpenAI, Mirascope supports currently these [other LLM providers](https://www.mirascope.com/learn/calls):
+Beyond OpenAI, Mirascope supports currently these [other LLM providers](https://mirascope.com/learn/calls):
 
 - Anthropic
 - Mistral
@@ -426,7 +426,7 @@ print(response.content)
 
 ### Expand LLM Capabilities with Tools
 
-Although LLMs are known mostly for text generation, you can provide them with specific tools (also known as [function calling](https://www.mirascope.com/learn/tools)) to extend their capabilities.
+Although LLMs are known mostly for text generation, you can provide them with specific tools (also known as [function calling](https://mirascope.com/learn/tools)) to extend their capabilities.
 
 Examples of what you can do with tools include:
 
@@ -488,7 +488,7 @@ class GetWeather(BaseTool):
 
 Tools allow you to dynamically generate prompts based on current or user-specified data such as extracting current weather data in a given city before generating a prompt like, "Given the current weather conditions in Tokyo, what are fun outdoor activities?"
 
-See our [documentation](https://www.mirascope.com/learn/tools) for details on generating prompts in this way (for instance, by calling the `call` method).
+See our [documentation](https://mirascope.com/learn/tools) for details on generating prompts in this way (for instance, by calling the `call` method).
 
 ### Extract Structured Data from LLM-Generated Text
 
@@ -499,7 +499,7 @@ LLMs are great at producing conversations in text, which is unstructured informa
 - Pulling out specific medical data such as symptoms, diagnoses, medication names, dosages, and patient history from clinical notes.
 - Extracting financial metrics, stock data, company performance indicators, and market trends from financial reports and news articles.
 
-To handle such scenarios, we support extraction with the [`response_model`](https://www.mirascope.com/learn/response_models) argument in the decorator, which leverages tools (or optionally `json_mode=True`) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
+To handle such scenarios, we support extraction with the [`response_model`](https://mirascope.com/learn/response_models) argument in the decorator, which leverages tools (or optionally `json_mode=True`) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
 
 ```python
 from typing import Literal
@@ -583,4 +583,4 @@ This creates a prompt management environment that supports collaboration and all
 
 By versioning the entire lexical closure and tracing every call automatically, you can continue iterating on your prompts and any other code in your codebase without having to worry about manually tracking the potential impacts of such changes on the outputs of your functions.
 
-If you want to give Mirascope a try, we recommend taking a look at our [documentation](https://www.mirascope.com). You can also find our source code on [GitHub](https://github.com/mirascope/mirascope). Don't forget to give us a star!
+If you want to give Mirascope a try, we recommend taking a look at our [documentation](https://mirascope.com). You can also find our source code on [GitHub](https://github.com/mirascope/mirascope). Don't forget to give us a star!

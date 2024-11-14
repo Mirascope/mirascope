@@ -19,7 +19,7 @@ We’ve tried several libraries and have built our own, and in our experience yo
 <!-- more -->
 
 1. **The tool offers dynamic prompting with automatic data validation** to reduce the likelihood of errors and ensure that inputs to the model are well formed and adhere to specified constraints. Not all tools do this: many leave this as an afterthought and expect you to take care of the error handling logic.
-2. [**It colocates prompts with calls to the LLM**](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms) to solve a major problem with prompt engineering where scattered calls and prompts become hard to manage at scale. We know of no other libraries (besides ours) embracing this principle—which as a leaner approach could be considered as good software practice.
+2. [**It colocates prompts with calls to the LLM**](https://mirascope.com/blog/engineers-should-handle-prompting-llms) to solve a major problem with prompt engineering where scattered calls and prompts become hard to manage at scale. We know of no other libraries (besides ours) embracing this principle—which as a leaner approach could be considered as good software practice.
 3. **It simplifies model interactions with convenience wrappers and integrations** , reducing the complexities of interacting with, while offering more choice in LLMs, allowing developers to select the most suitable models and libraries to fit their use cases. Here we emphasize “simplifies,” as many libraries do indeed offer abstractions yet these (paradoxically) increase complexity rather than decrease it.
 4. **The library allows you to extract structured data from the unstructured outputs of LLMs** to better integrate with other systems like databases, CRMs, etc., minimizing or eliminating the need for manual data entry or parsing. The unstructured text outputs are what LLMs are designed to provide, but getting structured data from their outputs is like a superpower and is something you should look to see that your tool provides (not all of them do).
 5. **The library offers prompt management features like version control** so you can better track changes, revert to previous versions, and more. Version control makes all the difference in being able to track changes in complex prompts involving code, and for collaborative work. Many tools indeed provide prompt versioning, but as they don’t colocate the rest of the information affecting the quality of the LLM call (such as temperature, LLM model version, etc.) together with the prompt, only a part of the relevant information gets tracked consistently.
@@ -27,14 +27,14 @@ We’ve tried several libraries and have built our own, and in our experience yo
 
 Below, we present eight different prompt engineering tools, beginning with our own prompt engineering library, Mirascope. In our list, we highlight the approach and strengths of each tool:
 
-- [**Mirascope**](https://www.mirascope.com/blog/prompt-engineering-tools#mirascope)—best for building production-grade LLM applications.
-- [**Guidance**](https://www.mirascope.com/blog/prompt-engineering-tools#guidance)—best for tailoring prompts via advanced constraints.
-- [**Haystack**](https://www.mirascope.com/blog/prompt-engineering-tools#haystack)—best for structuring prompt pipelines.
-- [**Priompt**](https://www.mirascope.com/blog/prompt-engineering-tools#priompt)—best for priority-controlled context management.
-- [**Agenta**](https://www.mirascope.com/blog/prompt-engineering-tools#agenta)—best for rapid prototyping and collaborative LLM application development.
-- [**LangChain**](https://www.mirascope.com/blog/prompt-engineering-tools#langchain)—best for customizable and scalable LLM applications.
-- [**PromptHub**](https://www.mirascope.com/blog/prompt-engineering-tools#prompthub)—best for facilitating collaboration with non-tech roles.
-- [**Promptmetheus**](https://www.mirascope.com/blog/prompt-engineering-tools#promptmetheus)—best for developers seeking an IDE for optimizing and testing prompts.
+- [**Mirascope**](https://mirascope.com/blog/prompt-engineering-tools#mirascope)—best for building production-grade LLM applications.
+- [**Guidance**](https://mirascope.com/blog/prompt-engineering-tools#guidance)—best for tailoring prompts via advanced constraints.
+- [**Haystack**](https://mirascope.com/blog/prompt-engineering-tools#haystack)—best for structuring prompt pipelines.
+- [**Priompt**](https://mirascope.com/blog/prompt-engineering-tools#priompt)—best for priority-controlled context management.
+- [**Agenta**](https://mirascope.com/blog/prompt-engineering-tools#agenta)—best for rapid prototyping and collaborative LLM application development.
+- [**LangChain**](https://mirascope.com/blog/prompt-engineering-tools#langchain)—best for customizable and scalable LLM applications.
+- [**PromptHub**](https://mirascope.com/blog/prompt-engineering-tools#prompthub)—best for facilitating collaboration with non-tech roles.
+- [**Promptmetheus**](https://mirascope.com/blog/prompt-engineering-tools#promptmetheus)—best for developers seeking an IDE for optimizing and testing prompts.
 
 ## 1. Mirascope—Best for Building Production Grade LLM Applications
 
@@ -46,7 +46,7 @@ Back when we started working with the OpenAI SDK, we found that complex prompts 
 
 It became important for us to catch basic errors before they reached the LLM, just as you’d expect in any standard software development workflow.
 
-In [Mirascope](https://www.mirascope.com), the [`prompt_template`](https://www.mirascope.com/learn/prompts) decorator enables writing prompts and Python functions, which enables using Pydantic's [`validate_call`](https://docs.pydantic.dev/latest/concepts/validation_decorator/) decorator for automatic data validation to ensure the prompt's inputs are well formed and correspond to those defined by the prompt. This contributes to the overall quality of the prompt and lessens the chance of errors silently going into the LLM.
+In [Mirascope](https://mirascope.com), the [`prompt_template`](https://mirascope.com/learn/prompts) decorator enables writing prompts and Python functions, which enables using Pydantic's [`validate_call`](https://docs.pydantic.dev/latest/concepts/validation_decorator/) decorator for automatic data validation to ensure the prompt's inputs are well formed and correspond to those defined by the prompt. This contributes to the overall quality of the prompt and lessens the chance of errors silently going into the LLM.
 
 Mirascope offers inline documentation and linting for your editor to ensure the quality of your code. Two examples are shown below.
 
@@ -193,7 +193,7 @@ Being able to use convenience wrappers and integrations for working with other l
 
 When working with the OpenAI API, the Mirascope `call` method returns an `OpenAICallResponse` class instance, which is a convenience wrapper encapsulating the response (i.e., the `ChatCompletion` class in `openai` that extends `BaseCallResponse`) from the OpenAI API, making it easier to work with by providing a simpler interface.
 
-Each commented line of the code below shows the equivalent path to access the same information directly from a [`ChatCompletion` object](https://www.mirascope.com/learn/calls/#provider-specific-response-details) if you were not using the wrapper:
+Each commented line of the code below shows the equivalent path to access the same information directly from a [`ChatCompletion` object](https://mirascope.com/learn/calls/#provider-specific-response-details) if you were not using the wrapper:
 
 ```python
 from mirascope.core.openai import OpenAICallResponse
@@ -204,7 +204,7 @@ response.response    # ChatCompletion(...)
 response.content     # original.choices[0].message.content
 ```
 
-Mirascope also supports interactions with other LLMs besides OpenAI to refine the execution of your calls. Currently, [the following models](https://www.mirascope.com/learn/calls) (and any providers using their APIs) are supported:
+Mirascope also supports interactions with other LLMs besides OpenAI to refine the execution of your calls. Currently, [the following models](https://mirascope.com/learn/calls) (and any providers using their APIs) are supported:
 
 - OpenAI
 - Anthropic
@@ -236,7 +236,7 @@ The conversational outputs of LLMs are valuable but can be difficult to action o
 
 Extracting structured data from these unstructured outputs allows you to feed these as inputs to other processes and workflows in turn, making that information more useful and actionable..
 
-Mirascope supports [extraction](https://www.mirascope.com/learn/response_models) by setting the `response_model` flag in the decorator, which takes a Pydantic `BaseModel` as a schema and takes advantage of function calling and JSON mode with LLMs to generate structured output.
+Mirascope supports [extraction](https://mirascope.com/learn/response_models) by setting the `response_model` flag in the decorator, which takes a Pydantic `BaseModel` as a schema and takes advantage of function calling and JSON mode with LLMs to generate structured output.
 
 In the example below, a call with `response_model` set to `TaskDetails` gets task details like due date, priority, and description from a user's natural language input:
 
@@ -285,7 +285,7 @@ Mirascope supports extraction of numerous base types, including `str`, `int`, `f
 
 ### Manage Prompt Iterations with Version Control
 
-As mentioned previously, a major pain point of ours has been successfully managing prompts after several iterations of changes. Prompts as code under development should be subject to [version tracking](https://www.mirascope.com/blog/prompt-versioning) like any code developed under collaboration.
+As mentioned previously, a major pain point of ours has been successfully managing prompts after several iterations of changes. Prompts as code under development should be subject to [version tracking](https://mirascope.com/blog/prompt-versioning) like any code developed under collaboration.
 
 For this reason we are working on [`Lilypad`](https://www.lilypad.so/docs), which is our prompt engineering framework. You can version and trace every prompt and LLM call automatically so you can spend your time focusing on improving your prompts rather than tracking them.
 
@@ -313,7 +313,7 @@ LLMs can deliver impressive results with their conversational outputs, but relyi
 - Without access to real-time data or external databases through tools, LLMs may generate outdated or inaccurate information. This increases the risk of incorrect answers, potentially eroding trust.
 - Tasks that involve data retrieval, processing, or manipulation would become cumbersome. Developers would have to implement separate AI systems to handle these tasks outside the LLM, leading to complexity and fragmented system architectures.
 
-To overcome these challenges, Mirascope provides a number of ways [to use tools](https://www.mirascope.com/learn/tools) in your LLM workflows.
+To overcome these challenges, Mirascope provides a number of ways [to use tools](https://mirascope.com/learn/tools) in your LLM workflows.
 
 For example, the `tool` property is used to attach a tool to a `BaseTool` extension like `OpenAITool`. It comes with the method `call()`, which lets you call the original function with the arguments returned by the model. The example below uses functions as-is with no additional work, automatically generating the tool, attaching the function, and passing along its docstring under-the-hood for you:
 
@@ -345,7 +345,7 @@ print(tool.call())  # runs `format_book` with `title` and `author` args
 
 Mirascope supports a number of docstrings, such as Google-, ReST-, Numpydoc-, and Epydoc-style docstrings.
 
-Otherwise, Mirascope lets you define your own `BaseTool`, when the function you want has an insufficient or nonexistent docstring. You can find further use cases for using tools, and code samples, in our [overview documentation](https://www.mirascope.com/learn/tools).
+Otherwise, Mirascope lets you define your own `BaseTool`, when the function you want has an insufficient or nonexistent docstring. You can find further use cases for using tools, and code samples, in our [overview documentation](https://mirascope.com/learn/tools).
 
 ```python
 from pydantic import Field
@@ -370,7 +370,7 @@ class FormatBook(BaseTool):
 def recommend_book(genre: str): ...
 ```
 
-*If you want to give Mirascope a try, you can get started with our source code on [GitHub](https://github.com/mirascope/mirascope/). You can find our documentation (and more code samples) on our [documentation site](https://www.mirascope.com) as well.*‍
+*If you want to give Mirascope a try, you can get started with our source code on [GitHub](https://github.com/mirascope/mirascope/). You can find our documentation (and more code samples) on our [documentation site](https://mirascope.com) as well.*‍
 
 ## 2. Guidance—Best for Tailoring Prompts via Advanced Constraints
 
@@ -454,7 +454,7 @@ More information about Agenta is available on its website, its documentation sit
 
 ![LangChain homepage: Applications that can reason. Powered by LangChain.](../../assets/blog/prompt-engineering-tools/langchain_homepage.png)
 
-[LangChain](https://www.langchain.com/) offers structured, reusable [prompt templates](https://www.mirascope.com/blog/langchain-prompt-template) as classes incorporating dynamic content for basic use cases such as few-shot prompting and LLM chat interactions.
+[LangChain](https://www.langchain.com/) offers structured, reusable [prompt templates](https://mirascope.com/blog/langchain-prompt-template) as classes incorporating dynamic content for basic use cases such as few-shot prompting and LLM chat interactions.
 
 LangChain also provides its LangChain Hub, to which you can upload and manage prompts.
 
@@ -472,7 +472,7 @@ The library also offers libraries with integrations for components like large la
 
 LangChain's extensible design allows developers to automate and integrate custom AI tools and components into their chains.
 
-More information about LangChain is available on its website, GitHub page, and documentation site. We’ve also written an article about [LangChain alternatives for AI development](https://www.mirascope.com/blog/langchain-alternatives).
+More information about LangChain is available on its website, GitHub page, and documentation site. We’ve also written an article about [LangChain alternatives for AI development](https://mirascope.com/blog/langchain-alternatives).
 
 ## 7. PromptHub—Best for Facilitating Collaboration with Non-Tech Roles
 
@@ -510,4 +510,4 @@ Promptmetheus supports real-time collaboration for teams and device synchronizat
 
 You can find more information about Promptmetheus’ features on its website.
 
-Want to learn more? You can find Mirascope’s code samples mentioned in this article on both our [documentation site](https://www.mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).
+Want to learn more? You can find Mirascope’s code samples mentioned in this article on both our [documentation site](https://mirascope.com) and on [GitHub](https://github.com/mirascope/mirascope/).

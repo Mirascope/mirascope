@@ -20,7 +20,7 @@ So, whether you’re creating conversational chatbots, question-answering system
 
 <!-- more -->
 
-To help you decide what’s worth evaluating for your stack, we present a curated list of tools, starting with our own LLM development library, [Mirascope](https://www.mirascope.com). For each tool in this list, we'll spotlight its purpose and advantages: ‍
+To help you decide what’s worth evaluating for your stack, we present a curated list of tools, starting with our own LLM development library, [Mirascope](https://mirascope.com). For each tool in this list, we'll spotlight its purpose and advantages: ‍
 
 - **LLM application development tools** to build and deploy language model applications using pre-trained models, prompt engineering techniques, and API integrations.
 - **Model serving tools and frameworks** for scalable hosting, management, and serving of LLMs in production environments.
@@ -36,7 +36,7 @@ Tools for building language model applications allow developers to leverage the 
 
 ![Mirascope homepage: LLM abstractions that aren't obstructions](../../assets/blog/langchain-alternatives/mirascope_homepage_screenshot.png)
 
-‍[Mirascope](https://www.mirascope.com) is a lightweight Python toolkit for developing LLM applications that gives you building blocks rather than a framework for setting up [prompt engineering workflows](https://www.mirascope.com/blog/prompt-engineering-best-practices). We purposefully designed Mirascope with simplicity and reliability in mind, and developing with Mirascope feels like you're simply writing the Python code you already know.
+‍[Mirascope](https://mirascope.com) is a lightweight Python toolkit for developing LLM applications that gives you building blocks rather than a framework for setting up [prompt engineering workflows](https://mirascope.com/blog/prompt-engineering-best-practices). We purposefully designed Mirascope with simplicity and reliability in mind, and developing with Mirascope feels like you're simply writing the Python code you already know.
 
 While we understand the potential of working with LLMs, **we also know firsthand the struggles of building LLM applications that are production grade.** Some modern development frameworks don’t make this any easier and make you code, for instance, in verbose and repetitive ways.
 
@@ -48,7 +48,7 @@ All this means you don't need to learn unnecessarily complex concepts or fancy s
 
 Mirascope follows Pythonic conventions. Take function call sequencing, for example. We don't make you implement directed acyclic graphs (DAGs) outright — which introduces unnecessary complexities. Instead, we code call sequences using regular Python that’s readable, lightweight, and easy to maintain.
 
-An example of this is our [`prompt_template`](https://www.mirascope.com/learn/prompts) decorator, which enables writing prompt templates as simply Python functions.
+An example of this is our [`prompt_template`](https://mirascope.com/learn/prompts) decorator, which enables writing prompt templates as simply Python functions.
 
 An example of our `prompt_template` decorator is below, where the prompt template provides a string for generating a prompt that requests music recommendations based on pairs of durations and genres. The computed field `durations_x_genres` constructs these pairs and integrates them into the prompt template for the final prompt output.
 
@@ -92,9 +92,9 @@ One of the major challenges we’ve had with prompting was the lack of centraliz
 
 This didn't just apply to the API call, but also to relevant parameters like model configuration, making it difficult to manage changes and ensure consistency across large codebases.
 
-We believe that all components that can affect the quality of a model call to an LLM — like prompt formatting, arguments, original responses from your model provider, and more, [should all live together in one place](https://www.mirascope.com/blog/engineers-should-handle-prompting-llms). This gives you a clear view of your call structure and allows for easier customization, leading to more efficient debugging and refinement.
+We believe that all components that can affect the quality of a model call to an LLM — like prompt formatting, arguments, original responses from your model provider, and more, [should all live together in one place](https://mirascope.com/blog/engineers-should-handle-prompting-llms). This gives you a clear view of your call structure and allows for easier customization, leading to more efficient debugging and refinement.
 
-Mirascope colocates calls and makes these the central organizing unit of the prompt, including [versioning](https://www.mirascope.com/blog/prompt-versioning) and testing. This ensures your code is clean and easily maintainable.
+Mirascope colocates calls and makes these the central organizing unit of the prompt, including [versioning](https://mirascope.com/blog/prompt-versioning) and testing. This ensures your code is clean and easily maintainable.
 
 Below is an example of how we centralize and manage information for all calls:
 
@@ -178,7 +178,7 @@ Chat().run()
 
 #### Streamlined Function Calling (Tools)
 
-Mirascope lets you extend model capabilities [by adding tools](https://www.mirascope.com/learn/tools) (i.e., function calling) to your workflows. Tools allow LLMs to access external information, perform calculations, run code, and more, and are straightforward to set up with Mirascope’s pythonic conventions.
+Mirascope lets you extend model capabilities [by adding tools](https://mirascope.com/learn/tools) (i.e., function calling) to your workflows. Tools allow LLMs to access external information, perform calculations, run code, and more, and are straightforward to set up with Mirascope’s pythonic conventions.
 
 One of the simplest examples of using Mirascope's tools convenience is automatically generating a tool schema and object from a function with a docstring, allowing you to pass the function directly into your calls. For example:
 
@@ -213,7 +213,7 @@ if tool := response.tool:
 
 A call response using Mirascope gives you a wrapper around the original response from the model, giving you access to the `call()` method. This way, you can easily invoke the function and manage its arguments.
 
-Our code uses Google-style Python docstrings, but we support other styles too, including ReST, Numpydoc, and Epydoc-style docstrings. For more code samples and use cases, please refer to our documentation on [tools (function calling)](https://www.mirascope.com/learn/tools).
+Our code uses Google-style Python docstrings, but we support other styles too, including ReST, Numpydoc, and Epydoc-style docstrings. For more code samples and use cases, please refer to our documentation on [tools (function calling)](https://mirascope.com/learn/tools).
 
 #### Extraction of Structured Information from Unstructured LLM Outputs
 
@@ -257,9 +257,9 @@ Mirascope currently supports [extracting built-in types](https://mirascope.com/l
 
 [LangChain](https://www.langchain.com/) is an open-source framework for developing LLM-powered applications. Available in both Python and JavaScript-based libraries, LangChain provides support for a wide range of pre-trained models, which allows you to leverage existing AI models like GPT-4 or Llama while easily integrating your proprietary data.
 
-With LangChain, you can easily connect and query LLMs from your code through its APIs. The framework provides [predefined templates](https://www.mirascope.com/blog/langchain-prompt-template) and utilities for processing different data formats (e.g., PDF, HTML, and CSV) to prepare these for LLM consumption. Its chaining and agent features allow you to combine transformer language models with other components like retrieval systems and planners to build more intelligent and sophisticated applications.
+With LangChain, you can easily connect and query LLMs from your code through its APIs. The framework provides [predefined templates](https://mirascope.com/blog/langchain-prompt-template) and utilities for processing different data formats (e.g., PDF, HTML, and CSV) to prepare these for LLM consumption. Its chaining and agent features allow you to combine transformer language models with other components like retrieval systems and planners to build more intelligent and sophisticated applications.
 
-‍[LangChain](https://www.mirascope.com/blog/llamaindex-vs-langchain) also integrates with platforms like Microsoft Azure, GCP, and more, achieving impressive benchmarks in performance and efficiency.
+‍[LangChain](https://mirascope.com/blog/llamaindex-vs-langchain) also integrates with platforms like Microsoft Azure, GCP, and more, achieving impressive benchmarks in performance and efficiency.
 
 For more information, you can read about LangChain on its website, documentation site, and GitHub page.
 
@@ -400,7 +400,7 @@ CrewAI has a website with documentation to learn more, as well as a repository o
 
 The customizable and conversable agents support diverse conversation patterns, giving you flexibility regarding autonomy levels, the number of agents involved, and the topology of how agents interact.
 
-Besides multi-agent collaboration, AutoGen also provides enhanced capabilities when working with LLM inference. This includes handy utilities like API unification, caching, error handling, context programming, and more. For a broader range of LLM agent tools, check out our detailed article on [LangChain alternatives](https://www.mirascope.com/blog/langchain-alternatives).
+Besides multi-agent collaboration, AutoGen also provides enhanced capabilities when working with LLM inference. This includes handy utilities like API unification, caching, error handling, context programming, and more. For a broader range of LLM agent tools, check out our detailed article on [LangChain alternatives](https://mirascope.com/blog/langchain-alternatives).
 
 Additionally, more information on AutoGen is available on AutoGen's GitHub page.
 
@@ -410,4 +410,4 @@ Mirascope aims to remove the complexities around your LLM engineering workflow s
 
 Users only need to know Python and the Pydantic library — there are no other unique abstractions or fancy concepts to learn. Mirascope also slots readily into existing developer workflows, making it easy to get started.
 
-‍Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://www.mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).
+‍Want to learn more? You can find more Mirascope code samples both on our [documentation site](https://mirascope.com) and the [GitHub repository](https://github.com/mirascope/mirascope).

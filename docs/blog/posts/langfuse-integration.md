@@ -22,7 +22,7 @@ Mirascope integrates with Langfuse with a decorator `@with_langfuse`. This gives
 
 ### Call
 
-This is a basic call example that will work across all [Mirascope call function settings](https://www.mirascope.com/learn/calls), including [streams](https://www.mirascope.com/learn/streams), [async](https://www.mirascope.com/learn/async), and more.
+This is a basic call example that will work across all [Mirascope call function settings](https://mirascope.com/learn/calls), including [streams](https://mirascope.com/learn/streams), [async](https://mirascope.com/learn/async), and more.
 
 ```python
 import os
@@ -50,7 +50,7 @@ And that’s it! Now your Mirascope class methods will be sent to Langfuse trace
 
 ### Response Models
 
-Mirascope's [`response_model`](https://www.mirascope.com/learn/response_models) argument enables extracting or generating structured outputs with LLMs. You can easily observe these structured outputs in Langfuse as well so you can assess the quality of your data and ensure your results are accurate.
+Mirascope's [`response_model`](https://mirascope.com/learn/response_models) argument enables extracting or generating structured outputs with LLMs. You can easily observe these structured outputs in Langfuse as well so you can assess the quality of your data and ensure your results are accurate.
 
 ```python
 import os
