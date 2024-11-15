@@ -29,6 +29,7 @@ def test_anthropic_conversion_single_stop():
     }
     result = convert_common_call_params(params)
     assert result == {
+        "max_tokens": 1024,
         "temperature": 0.7,
         "stop_sequences": ["STOP"],
     }
@@ -37,4 +38,4 @@ def test_anthropic_conversion_single_stop():
 def test_anthropic_conversion_empty():
     """Test empty parameters conversion for Anthropic."""
     result = convert_common_call_params({})
-    assert result == {}
+    assert result == {"max_tokens": 1024}
