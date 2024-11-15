@@ -18,7 +18,7 @@ Developers are integrating models into tools for content generation, customer se
 
 As the range of applications continues to grow, we decided to explore six of the most popular and impactful use cases that are driving adoption of LLM applications today.
 
-We also explain our top considerations for designing such apps, and show you how to implement an example question-answering chatbot using both Llama Index, a framework commonly used for ingesting and managing data, and Mirascope, our lightweight tool for building LLM applications.
+We also explain our top considerations for designing such apps, and show you how to implement an example question-answering chatbot using both Llama Index, a framework commonly used for ingesting and managing data, and [Mirascope](https://github.com/mirascope/mirascope), our lightweight tool for building LLM applications.
 
 <!-- more -->
 
