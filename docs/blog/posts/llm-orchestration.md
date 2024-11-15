@@ -47,7 +47,7 @@ We find, however, that [modern frameworks are quite complex](https://mirascope.c
 - They have a tendency to produce new modules that are less efficient than existing, purpose-built tools.
 - Their dependency on numerous wrappers and abstractions, often leading to an excess of import statements, makes maintenance challenging.
 
-**In response to these challenges, we developed Mirascope, a lightweight and modular Python toolkit designed for the rapid development of LLM applications.**
+**In response to these challenges, we developed [Mirascope](https://github.com/mirascope/mirascope), a lightweight and modular Python toolkit designed for the rapid development of LLM applications.**
 
 Our modules slot into your existing workflows where you’d prefer the simplicity and flexibility of plain Python over using a framework’s abstractions.
 
