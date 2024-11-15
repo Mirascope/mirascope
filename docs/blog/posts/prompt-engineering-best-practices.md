@@ -24,9 +24,11 @@ In our experience, there are two key aspects to prompting an LLM effectively:
 
 Of course, a “pre-step” to consider is the prompt development life cycle as a whole. Prompt engineers should define the stages of this life cycle in terms of key metrics and specify success criteria for evaluating LLM outputs. However, at present we won’t be considering such aspects of the life cycle,**but rather what it takes for writing (and coding) prompts to coax better results from the model.**
 
-Besides accuracy, “better” also means results that are reliable, especially taking into account how inconsistent language model outputs can be—even when using the same model with the same inputs. This is where best practices can help you achieve some baseline of consistency in LLM responses. **In this article, we share our insights for helping you generate predictable LLM responses.** These insights are grounded in our own experiences writing prompts since the earliest days of the OpenAI SDK, when we developed our guiding principles in response to our frustrations working with [complex frameworks](https://mirascope.com/blog/langchain-alternatives) for developing LLM applications.
+Besides accuracy, “better” also means results that are reliable, especially taking into account how inconsistent language model outputs can be—even when using the same model with the same inputs. This is where best practices can help you achieve some baseline of consistency in LLM responses. **In this article, we share our insights for helping you generate predictable LLM responses.** 
 
-These principles eventually coalesced into our own Python toolkit for building with LLMs, Mirascope. We illustrate our list of prompt engineering best practices below with some examples of how you would implement these in our toolkit.
+These insights are grounded in our own experiences writing prompts since the earliest days of the OpenAI SDK, when we developed our guiding principles in response to our frustrations working with [complex frameworks](https://mirascope.com/blog/langchain-alternatives) for developing LLM applications.
+
+These principles eventually coalesced into our own Python toolkit for building with LLMs, [Mirascope](https://github.com/mirascope/mirascope). We illustrate our list of prompt engineering best practices below with some examples of how you would implement these in our toolkit.
 
 1. Provide a clear context
 2. Use tailored prompts, not predefined templates
