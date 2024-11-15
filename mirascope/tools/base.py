@@ -26,9 +26,7 @@ _ConfigurableToolConfigT = TypeVar(
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 
 
-class ConfigurableTool(
-    BaseTool[_ToolSchemaT], Generic[_ConfigurableToolConfigT, _ToolSchemaT], ABC
-):
+class ConfigurableTool(BaseTool, Generic[_ConfigurableToolConfigT], ABC):
     """Abstract base class for configurable tools.
 
     Subclasses must define a `__prompt_usage_description__` class variable

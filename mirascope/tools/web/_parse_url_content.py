@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
 class ParseURLConfig(_ConfigurableToolConfig):
@@ -24,7 +24,7 @@ class ParseURLConfig(_ConfigurableToolConfig):
     )
 
 
-class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
+class ParseURLContent(ConfigurableTool[ParseURLConfig]):
     """Tool for parsing and extracting main content from URLs.
 
     Fetches content from URL, removes unnecessary elements like scripts, styles, navigation, etc.,

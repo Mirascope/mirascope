@@ -36,7 +36,7 @@ class FunctionCallArguments(TypedDict, total=False):
     """The arguments that the model called."""
 
 
-class OpenAIRealtimeTool(BaseTool[RealtimeToolParam]):
+class OpenAIRealtimeTool(BaseTool):
     """A class for defining tools for OpenAI Realtime LLM calls.
 
     Example:
