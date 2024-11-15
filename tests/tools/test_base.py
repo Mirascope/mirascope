@@ -2,14 +2,14 @@ from typing import ClassVar
 
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
 class MockConfigConfigurable(_ConfigurableToolConfig):
     value: str = Field("default")
 
 
-class MockTool(ConfigurableTool[MockConfigConfigurable, _ToolSchemaT]):
+class MockTool(ConfigurableTool[MockConfigConfigurable]):
     __configurable_tool_config__ = MockConfigConfigurable()  # pyright: ignore [reportCallIssue]
     __prompt_usage_description__: ClassVar[str] = "Test description"
 

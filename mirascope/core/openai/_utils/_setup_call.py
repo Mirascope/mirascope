@@ -15,10 +15,12 @@ from openai.types.chat import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base.call_params import CommonCallParams
 from .._call_kwargs import OpenAICallKwargs
 from ..call_params import OpenAICallParams
 from ..dynamic_config import AsyncOpenAIDynamicConfig, OpenAIDynamicConfig
 from ..tool import GenerateOpenAIStrictToolJsonSchema, OpenAITool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -32,7 +34,7 @@ def setup_call(
     dynamic_config: AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -54,7 +56,7 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -76,7 +78,7 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig | AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -88,7 +90,13 @@ def setup_call(
     OpenAICallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, OpenAITool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        OpenAITool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(OpenAICallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
