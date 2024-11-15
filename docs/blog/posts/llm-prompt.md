@@ -25,7 +25,7 @@ For simple queries, a straightforward, one-liner prompt will often get you the r
 
 <!-- more -->
 
-In addition, we discuss best practices for prompting, and, in case you’re using language model APIs as part of a software development project, we provide an advanced code sample showing how you can implement these with [Mirascope](https://mirascope.com), our lightweight Python toolkit for working with LLMs.
+In addition, we discuss best practices for prompting, and, in case you’re using language model APIs as part of a software development project, we provide an advanced code sample showing how you can implement these with [Mirascope](https://github.com/mirascope/mirascope), our lightweight Python toolkit for working with LLMs.
 
 ## Parts of a Well-Structured Prompt
 
