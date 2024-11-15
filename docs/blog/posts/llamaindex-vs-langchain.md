@@ -38,7 +38,7 @@ But even here, decisions about which framework to use can still be based mostly 
 - How easy is it to scale your solution when building production-grade LLM applications?
 - How is chaining implemented?
 
-In addition, we’ll compare and contrast these libraries with Mirascope, our own Python toolkit for building with LLMs.
+In addition, we’ll compare and contrast these libraries with [Mirascope](https://github.com/mirascope/mirascope), our own Python toolkit for building with LLMs.
 
 ## Prompting the LLM
 
