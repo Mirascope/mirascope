@@ -17,7 +17,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ..base import BaseTool
 
 
-class GeminiTool(BaseTool[Tool]):
+class GeminiTool(BaseTool):
     """A class for defining tools for Gemini LLM calls.
 
     Example:

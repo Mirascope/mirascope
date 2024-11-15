@@ -12,7 +12,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ..base import BaseTool
 
 
-class CohereTool(BaseTool[Tool]):
+class CohereTool(BaseTool):
     """A class for defining tools for Cohere LLM calls.
 
     Example:

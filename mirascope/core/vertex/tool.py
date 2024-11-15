@@ -14,7 +14,7 @@ from vertexai.generative_models import FunctionDeclaration, Tool
 from ..base import BaseTool
 
 
-class VertexTool(BaseTool[Tool]):
+class VertexTool(BaseTool):
     """A class for defining tools for Vertex LLM calls.
 
     Example:
