@@ -34,6 +34,34 @@
     backdrop-filter: blur(8px);
   }
 
+  .md-header::before {
+    content: "";
+    position: fixed;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: -1;
+  }
+
+  /* iOS specific fix */
+  @supports (-webkit-backdrop-filter: none) {
+    .md-header::before {
+      background-color: rgba(255, 255, 255, 0.7);
+      -webkit-backdrop-filter: blur(8px);
+    }
+  }
+
+  @supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+    .md-header::before {
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+  }
+
+  .md-header > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .md-header[data-md-state="shadow"] {
     background-color: transparent !important;
   }
@@ -272,7 +300,7 @@
                     </svg>
                 </button>
             </div>
-            <pre class="m-0 max-h-fit overflow-x-auto px-0 py-2 text-xs leading-6 md:text-sm xl:text-base" style="color: rgb(64, 63, 83); background-color: rgb(251, 251, 251);">
+            <pre class="m-0 max-h-fit overflow-x-auto px-0 py-2 text-[0.5rem] sm:text-xs leading-6 md:text-sm xl:text-base" style="color: rgb(64, 63, 83); background-color: rgb(251, 251, 251);">
                 <code class="grid py-1 leading-6 overflow-x-auto"><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">1</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">from</span><span class="token plain"> mirascope</span><span class="token punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token plain">core </span><span class="token keyword" style="color: rgb(12, 150, 155);">import</span><span class="token plain"> openai</span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">2</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">3</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">4</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">@openai</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">call</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token string" style="color: rgb(72, 118, 214);">"gpt-4o-mini"</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">5</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token keyword" style="color: rgb(12, 150, 155);">def</span><span class="token plain"> </span><span class="token function" style="color: rgb(153, 76, 195); font-style: italic;">recommend_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">genre</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"> </span><span class="token operator" style="color: rgb(12, 150, 155);">-</span><span class="token operator" style="color: rgb(12, 150, 155);">&gt;</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"></span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">6</span><span class="table-cell pl-4 pr-4"><span class="token plain">    </span><span class="token keyword" style="color: rgb(12, 150, 155);">return</span><span class="token plain"> </span><span class="token string-interpolation string" style="color: rgb(72, 118, 214);">f"Recommend a </span><span class="token string-interpolation interpolation punctuation" style="color: rgb(153, 76, 195);">{</span><span class="token string-interpolation interpolation">genre</span><span class="token string-interpolation interpolation punctuation" style="color: rgb(153, 76, 195);">}</span><span class="token string-interpolation string" style="color: rgb(72, 118, 214);"> book"</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">7</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">8</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">9</span><span class="table-cell pl-4 pr-4"><span class="token plain">response </span><span class="token operator" style="color: rgb(12, 150, 155);">=</span><span class="token plain"> recommend_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token string" style="color: rgb(72, 118, 214);">"fantasy"</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">10</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token keyword" style="color: rgb(12, 150, 155);">print</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">response</span><span class="token punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token plain">content</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div>
                 </code>
             </pre>
