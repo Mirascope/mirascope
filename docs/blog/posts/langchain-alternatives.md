@@ -42,7 +42,7 @@ Prompt engineering tools play the most decisive role in developing LLM applicati
 
 ![Mirascope homepage: LLM abstractions that aren't obstructions](../../assets/blog/langchain-alternatives/mirascope_homepage_screenshot.png)
 
-[Mirascope](https://mirascope.com) is a toolkit for working with LLMs for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
+[Mirascope](https://github.com/mirascope/mirascope) is a toolkit for working with LLMs for lightning-fast, high-quality development. Building with Mirascope feels like writing the Python code you’re already used to writing.
 
 We designed Mirascope with simplicity and reliability in mind:
 
