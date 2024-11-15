@@ -57,7 +57,7 @@ def call_factory(  # noqa: ANN202
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TToolType: type[_BaseToolT],
     TStream: type[_BaseStreamT],
-    default_call_params: _BaseCallParamsT,
+    default_call_params: BaseCallParams,
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
