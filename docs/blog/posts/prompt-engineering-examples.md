@@ -20,7 +20,9 @@ This is why adherence to best practices is key when it comes to prompting. But i
 
 <!-- more -->
 
-In this article, we’ll provide three levels of examples: we’ll start with prompts for basic everyday tasks in prompt engineering (perhaps using ChatGPT) in the context of question answering. Afterwards, we’ll describe a type of prompt that’s hardly discussed: multi-turn prompts. And we’ll conclude with Python examples of prompts using our own LLM toolkit for building applications, Mirascope, which facilitates best practices in prompting like [version control](https://mirascope.com/blog/prompt-versioning) and colocation of prompts with calls to the language model.
+In this article, we’ll provide three levels of examples: we’ll start with prompts for basic everyday tasks in prompt engineering (perhaps using ChatGPT) in the context of question answering. Afterwards, we’ll describe a type of prompt that’s hardly discussed: multi-turn prompts. 
+
+And we’ll conclude with Python examples of prompts using our own LLM toolkit for building applications, [Mirascope](https://github.com/mirascope/mirascope), which facilitates best practices in prompting like version control and colocation of prompts with calls to the language model.
 
 ## Examples of Basic Prompts
 
@@ -335,7 +337,7 @@ It’s also why we built Mirascope. We wanted to simplify our workflows so we co
 A few examples of how Mirascope ensures your development efforts are efficient and scalable:
 
 * We believe that everything that impacts the quality of a call should live together. To that end, you’ll often find the LLM call and all its parameters neatly encapsulated within our prompt classes.
-* The LLM call should be the central organizing unit around which everything, including the prompt, gets versioned and tested.
+* The LLM call should be the central organizing unit around which everything, including the prompt, [gets versioned and tested](https://mirascope.com/blog/prompt-versioning).
 * The quality of your inputs makes all the difference to the quality and reliability of your outputs, and so should be constrained, e.g., for type safety, adherence to a schema, etc. We handle all the tedious Python typing details, ensuring you have a clean interface with proper type hints and linting to avoid annoying bugs.
 
 To illustrate these principles, we’ll show how the multi-turn prompt, described in the previous section, would be implemented in both OpenAI or Mirascope:
