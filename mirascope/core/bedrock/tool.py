@@ -25,7 +25,7 @@ class BedrockToolConfig(ToolConfig, total=False):
     pass
 
 
-class BedrockTool(BaseTool[ToolTypeDef]):
+class BedrockTool(BaseTool):
     """A class for defining tools for Bedrock LLM calls.
 
     Example:

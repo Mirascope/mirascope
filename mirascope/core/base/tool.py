@@ -58,7 +58,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-class BaseTool(BaseModel, Generic[_ToolSchemaT]):
+class BaseTool(BaseModel):
     '''A class for defining tools for LLM calls.
 
     Example:
@@ -146,7 +146,7 @@ class BaseTool(BaseModel, Generic[_ToolSchemaT]):
         return _utils.convert_base_type_to_base_tool(base_type, cls)
 
     @classmethod
-    def tool_schema(cls) -> _ToolSchemaT:
+    def tool_schema(cls) -> Any:
         raise RuntimeError(
             f"{cls.__name__}.tool_schema() is not implemented. "
             "This method should be implemented in provider-specific tool classes."

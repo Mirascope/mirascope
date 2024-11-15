@@ -16,7 +16,7 @@ class DuckDuckGoSearchConfig(_ConfigurableToolConfig):
     )
 
 
-class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig, _ToolSchemaT]):
+class _BaseDuckDuckGoSearch(ConfigurableTool[DuckDuckGoSearchConfig]):
     """Tool for performing web searches using DuckDuckGo.
 
     Takes search queries and returns relevant search results(Title, URL, Snippet).

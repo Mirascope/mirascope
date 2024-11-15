@@ -28,7 +28,7 @@ class FileSystemToolKitConfig(_ConfigurableToolConfig):
     )
 
 
-class FileOperation(ConfigurableTool[FileSystemToolKitConfig, _ToolSchemaT], ABC):
+class FileOperation(ConfigurableTool[FileSystemToolKitConfig], ABC):
     """Base class for file system operations."""
 
     __configurable_tool_config__ = FileSystemToolKitConfig()

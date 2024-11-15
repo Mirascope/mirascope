@@ -24,7 +24,7 @@ class ParseURLConfig(_ConfigurableToolConfig):
     )
 
 
-class ParseURLContent(ConfigurableTool[ParseURLConfig, _ToolSchemaT]):
+class ParseURLContent(ConfigurableTool[ParseURLConfig]):
     """Tool for parsing and extracting main content from URLs.
 
     Fetches content from URL, removes unnecessary elements like scripts, styles, navigation, etc.,
