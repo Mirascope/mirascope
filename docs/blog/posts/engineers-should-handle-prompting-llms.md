@@ -46,7 +46,7 @@ Beyond that, we noticed some other issues:
 - Our prompts became unmanageable past two versions. We weren’t using a prompt management workflow back then, so implementing changes was a manual process. We started telling colleagues not to touch the code because it might break a function somewhere else.
 - A lot of libraries tried to offer functionality for as many use cases as possible, sometimes making you feel dependent on them. They required you to do things their way, or you’d have to wait for them to catch up with new features from the LLMs.
 
-All this led us to rethink how prompts should be managed to make developers’ lives easier. In the end, these frustrations boiled over into us wanting to build our own library that approached LLM development in a developer-first way to make LLM app development faster and more enjoyable. This ultimately became [Mirascope](https://mirascope.com).
+All this led us to rethink how prompts should be managed to make developers’ lives easier. In the end, these frustrations boiled over into us wanting to build our own library that approached LLM development in a developer-first way to make LLM app development faster and more enjoyable. This ultimately became [Mirascope](https://github.com/mirascope/mirascope).
 
 ## **How Mirascope Makes Prompt Engineering Intuitive and Scalable**
 
