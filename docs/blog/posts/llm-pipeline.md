@@ -21,7 +21,7 @@ To get accurate model outputs, you generally do one of two things: ‍
 * Fine-tune and train the model itself to better align with specific tasks and datasets (as part of LLMOps), _or_
 * Improve the quality of your prompts through an ongoing process of iteration and refinement.
 
-As we’re very focused on improving and revising prompts in the context of our own LLM app development library, [Mirascope](https://mirascope.com), we believe crafting good prompts is a cost effective way to get reliable model responses.
+As we’re very focused on improving and revising prompts in the context of our own LLM app development library, [Mirascope](https://github.com/mirascope/mirascope), we believe crafting good prompts is a cost effective way to get reliable model responses.
 
 <!-- more -->
 
