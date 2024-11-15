@@ -21,10 +21,12 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
+from ...base.call_params import CommonCallParams
 from .._call_kwargs import VertexCallKwargs
 from ..call_params import VertexCallParams
 from ..dynamic_config import VertexDynamicConfig
 from ..tool import VertexTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -38,7 +40,7 @@ def setup_call(
     dynamic_config: VertexDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: VertexCallParams,
+    call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -60,7 +62,7 @@ def setup_call(
     dynamic_config: VertexDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: VertexCallParams,
+    call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -81,7 +83,7 @@ def setup_call(
     dynamic_config: VertexDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: VertexCallParams,
+    call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
     stream: bool,
 ) -> tuple[
@@ -93,7 +95,13 @@ def setup_call(
     VertexCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, VertexTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        VertexTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(VertexCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | Content], messages)
