@@ -16,7 +16,7 @@ from pydantic.json_schema import SkipJsonSchema
 from ..base import BaseTool
 
 
-class GroqTool(BaseTool[ChatCompletionToolParam]):
+class GroqTool(BaseTool):
     """A class for defining tools for Groq LLM calls.
 
     Example:

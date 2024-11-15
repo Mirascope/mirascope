@@ -20,10 +20,12 @@ from mistralai.models.chat_completion import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base.call_params import CommonCallParams
 from .._call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
 from ..tool import MistralTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -37,7 +39,7 @@ def setup_call(
     dynamic_config: AsyncMistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -59,7 +61,7 @@ def setup_call(
     dynamic_config: MistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -80,7 +82,7 @@ def setup_call(
     dynamic_config: MistralDynamicConfig | AsyncMistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
     stream: bool,
 ) -> tuple[
@@ -92,7 +94,13 @@ def setup_call(
     MistralCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, MistralTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        MistralTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatMessage], messages)
