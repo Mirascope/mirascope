@@ -20,7 +20,7 @@ So, whether you’re creating conversational chatbots, question-answering system
 
 <!-- more -->
 
-To help you decide what’s worth evaluating for your stack, we present a curated list of tools, starting with our own LLM development library, [Mirascope](https://mirascope.com). For each tool in this list, we'll spotlight its purpose and advantages: ‍
+To help you decide what’s worth evaluating for your stack, we present a curated list of tools, starting with our own LLM development library, [Mirascope](https://github.com/mirascope/mirascope). For each tool in this list, we'll spotlight its purpose and advantages: ‍
 
 - **LLM application development tools** to build and deploy language model applications using pre-trained models, prompt engineering techniques, and API integrations.
 - **Model serving tools and frameworks** for scalable hosting, management, and serving of LLMs in production environments.
