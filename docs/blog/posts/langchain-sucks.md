@@ -24,7 +24,7 @@ This complexity leads some to believe **the framework is only good for building 
 
 Despite its shortcomings, LangChain has some positive points. It’s one of the pioneering frameworks for LLM application development, and offers hundreds of integrations with third-party tools and frameworks. Also, its retrieval augmented generation (RAG) functionality does a decent job of data ingestion and embedding.
 
-In fact, you can maximize LangChain’s potential by combining certain of its modules, like its RAG functionality, with tools that offer better functionality in other areas, like the prompt engineering capabilities of [Mirascope](https://mirascope.com), our own Python toolkit.
+In fact, you can maximize LangChain’s potential by combining certain of its modules, like its RAG functionality, with tools that offer better functionality in other areas, like the prompt engineering capabilities of [Mirascope](https://github.com/mirascope/mirascope), our own Python toolkit.
 
 Below, we point out some of the downsides of LangChain, and compare these to how Mirascope approaches it. Further down, we show you how to combine LangChain's RAG features with those of Mirascope.
 
