@@ -2,13 +2,12 @@
 
 from typing import cast
 
-from mirascope.core.base import CommonCallParams
+from mirascope.core.base import BaseCallParams, CommonCallParams
 from mirascope.core.base._utils._setup_call import setup_call
 from mirascope.core.base.dynamic_config import BaseDynamicConfig
 from mirascope.core.base.message_param import BaseMessageParam
 from mirascope.core.base.prompt import prompt_template
 from mirascope.core.base.tool import BaseTool
-from mirascope.v0.base import BaseCallParams
 
 
 def test_setup_call() -> None:

@@ -15,7 +15,8 @@ def convert_common_call_params(common_params: CommonCallParams) -> AnthropicCall
     """Convert CommonCallParams to Anthropic parameters."""
     return cast(
         AnthropicCallParams,
-        {
+        {"max_tokens": 1024}
+        | {
             ANTHROPIC_PARAM_MAPPING[key]: [value] if isinstance(value, str) else value
             for key, value in common_params.items()
             if key in ANTHROPIC_PARAM_MAPPING
