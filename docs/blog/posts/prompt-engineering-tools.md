@@ -25,7 +25,7 @@ We’ve tried several libraries and have built our own, and in our experience yo
 5. **The library offers prompt management features like version control** so you can better track changes, revert to previous versions, and more. Version control makes all the difference in being able to track changes in complex prompts involving code, and for collaborative work. Many tools indeed provide prompt versioning, but as they don’t colocate the rest of the information affecting the quality of the LLM call (such as temperature, LLM model version, etc.) together with the prompt, only a part of the relevant information gets tracked consistently.
 6. **It extends model capabilities by letting you add your own tools (i.e., function calling)** , like adding a calculator to increase the accuracy of math calculations, or granting it access to the Bing Web Search API to find answers. While some libraries provide methods to use such tools, many don’t, implying a reliance on developers to implement these functionalities independently.
 
-Below, we present eight different prompt engineering tools, beginning with our own prompt engineering library, Mirascope. In our list, we highlight the approach and strengths of each tool:
+Below, we present eight different prompt engineering tools, beginning with our own prompt engineering library, [Mirascope](https://github.com/mirascope/mirascope). In our list, we highlight the approach and strengths of each tool:
 
 - [**Mirascope**](https://mirascope.com/blog/prompt-engineering-tools#mirascope)—best for building production-grade LLM applications.
 - [**Guidance**](https://mirascope.com/blog/prompt-engineering-tools#guidance)—best for tailoring prompts via advanced constraints.
