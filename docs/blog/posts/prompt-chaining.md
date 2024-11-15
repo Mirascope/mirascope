@@ -26,7 +26,7 @@ We even see this in Chain-of-Thought prompting (CoT) sometimes. Though this styl
 
 **This gives you no granular control over the flow:** What if you want to prompt engineer around the attributes of a single variable in the middle of a sequence?
 
-That’s why prompt chaining is suitable for some situations. In this article, we give you a full picture of what prompt chains do. We also show ways of implementing chains using [Mirascope](https://mirascope.com), our own Python toolkit for building with language models ([GitHub](https://github.com/mirascope/mirascope)), along with do’s and don’ts for chaining LLM calls.
+That’s why prompt chaining is suitable for some situations. In this article, we give you a full picture of what prompt chains do. We also show ways of implementing chains using [Mirascope](https://github.com/mirascope/mirascope), our own Python toolkit for building with language models, along with do’s and don’ts for chaining LLM calls.
 
 ## A Brief Use Case
 
