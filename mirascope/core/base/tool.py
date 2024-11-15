@@ -146,7 +146,7 @@ class BaseTool(BaseModel):
         return _utils.convert_base_type_to_base_tool(base_type, cls)
 
     @classmethod
-    def tool_schema(cls) -> Any:
+    def tool_schema(cls) -> Any:  # noqa: ANN401
         raise RuntimeError(
             f"{cls.__name__}.tool_schema() is not implemented. "
             "This method should be implemented in provider-specific tool classes."
