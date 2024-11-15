@@ -32,7 +32,7 @@ But function calling as a term is often misunderstood: many believe the model is
 
 As for OpenAI’s tool capabilities, some have found these to be overly verbose and complex for what they deliver (i.e., formatting of outputs). Plus hand coding function descriptions in JSON isn’t fun.
 
-That’s why we’ve designed Mirascope, our own toolkit for building LLM applications, to make function calling as pain free as possible. For instance, we generate these function definitions for you based on your application’s functions in Python.
+That’s why we’ve designed [Mirascope](https://github.com/mirascope/mirascope), our own toolkit for building LLM applications, to make function calling as pain free as possible. For instance, we generate these function definitions for you based on your application’s functions in Python.
 
 In this article, we explain how OpenAI tools work, and provide examples of this. We also describe how Mirascope implements these. Finally, we highlight the major differences between the two libraries when it comes to function calling.
 
