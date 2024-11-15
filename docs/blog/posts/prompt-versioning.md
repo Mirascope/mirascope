@@ -35,7 +35,7 @@ In fact, our experience suggests that any prompt management system should, at a 
 - Provide an audit trail of who made changes, when these changes were made, and why.
 - Be well integrated with your prompt development tool, which in turn either integrates with, or supports LLM pipeline functionalities.
 
-**Below, we list five different [prompting tools](https://mirascope.com/blog/prompt-engineering-tools) that implement prompt management**, starting with an in depth discussion on how we designed Mirascope and Lilypad, our own toolkit and framework, respectively, for developing robust LLM applications, with respect to the discussion above.
+**Below, we list five different [prompting tools](https://mirascope.com/blog/prompt-engineering-tools) that implement prompt management**, starting with an in depth discussion on how we designed [Mirascope](https://github.com/mirascope/mirascope) and Lilypad, our own toolkit and framework, respectively, for developing robust LLM applications, with respect to the discussion above.
 
 1. [**Mirascope and Lilypad**](#1-mirascope-and-lilypadprompt-engineering-and-management-for-software-engineers)—software engineering-inspired prompt engineering, versioning, and management.
 2. [**LangSmith**](#2-langsmithprompt-versioning-from-a-central-hub)—prompt versioning from a central hub.
