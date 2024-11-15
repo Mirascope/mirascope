@@ -28,7 +28,7 @@ Don’t get us wrong; LangChain is still incredibly valuable—it’s a pioneeri
 Meanwhile, [new tools and frameworks](https://mirascope.com/blog/langchain-alternatives) continue to appear in the space. So in this article, we’ll compare LangChain with two other tools that address some of its potential shortcomings:
 
 - **Prompt Flow:** Azure AI Studio’s visual IDE for prompt engineering. It’s an open source LLM workflow builder that represents tools and data as nodes in a GUI that you connect together to develop full-scale applications.
-- **Mirascope:** our own modular toolkit for building LLM applications. Mirascope offers building blocks—from which you pick and choose—rather than an overarching framework. We incorporate developer best practices throughout our library. For instance, we ensure type safety of prompt inputs via the Pydantic library, and eschew abstractions for vanilla Python as much as possible.
+- **[Mirascope](https://github.com/mirascope/mirascope):** our own modular toolkit for building LLM applications. Mirascope offers building blocks—from which you pick and choose—rather than an overarching framework. We incorporate developer best practices throughout our library. For instance, we ensure type safety of prompt inputs via the Pydantic library, and eschew abstractions for vanilla Python as much as possible.
 
 Both the tools above, along with LangChain, do similar things in helping you build LLM applications, so it makes sense to discuss their differences through the lens of four key differentiators:
 
