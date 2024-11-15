@@ -26,7 +26,7 @@ For example, if you needed to extract a JSON object containing fields for “nam
 
 LangChain’s extensive set of off-the-shelf parsers gives you a tool for many different use cases. That said, some of the outputs of these tools — like runnables — **introduce a fair amount of complexity as they require you to learn new, LangChain-specific abstractions**.
 
-For this reason we built our own lightweight toolkit for working with LLMs, Mirascope, for specifying structured outputs using the Python you already know rather than having to use new, complex abstractions required by the big frameworks.
+For this reason we built our own lightweight toolkit for working with LLMs, [Mirascope](https://github.com/mirascope/mirascope), for specifying structured outputs using the Python you already know rather than having to use new, complex abstractions required by the big frameworks.
 
 In this article, we describe useful ways of working with LangChain to get structured outputs, and compare these with how you’d do them in Mirascope.
 
