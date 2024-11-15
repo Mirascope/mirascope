@@ -28,7 +28,7 @@ LangChain encourages developers to use their prompt templates to ensure a given 
 
 LangChain's prompt templates are a great solution for creating intricate prompts, and we appreciate their functionality. However, when dealing with codebases involving production-grade LLM applications, ones making around 100 LLM calls (or so), in our experience prompting can become harder to manage and organize using LangChain’s native prompt templates and management system. Mirascope’s focus on developer best practices promotes a norm of writing clean code that’s easy to read, easy to find, and easy to use.
 
-In this article, we give an overview on how LangChain prompt templates work and provide examples of these. Then we explain how prompting works in Mirascope, and highlight its differences with LangChain.
+In this article, we give an overview on how LangChain prompt templates work and provide examples of these. Then we explain how prompting works in [Mirascope](https://github.com/mirascope/mirascope), and highlight its differences with LangChain.
 
 ## **3 Types of LangChain Prompt Templates**
 
