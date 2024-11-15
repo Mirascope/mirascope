@@ -26,7 +26,7 @@ class AzureToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class AzureTool(BaseTool[ChatCompletionsToolDefinition]):
+class AzureTool(BaseTool):
     """A class for defining tools for Azure LLM calls.
 
     Example:

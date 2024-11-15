@@ -210,7 +210,6 @@ def test_extract_factory_sync_validation_error(
     assert e.value._response == mock_create_inner.return_value  # pyright: ignore [reportAttributeAccessIssue]
 
 
-
 @patch("mirascope.core.base._extract.setup_extract_tool", new_callable=MagicMock)
 @patch("mirascope.core.base._extract.extract_tool_return", new_callable=MagicMock)
 @patch("mirascope.core.base._extract.create_factory", new_callable=MagicMock)
@@ -245,7 +244,7 @@ def test_extract_factory_sync_general_error(
     with pytest.raises(CustomError) as e:
         _ = decorator(fn)(genre="fantasy")  # pyright: ignore [reportCallIssue]
 
-    assert e.value._response == mock_create_inner.return_value     # pyright: ignore [reportAttributeAccessIssue]
+    assert e.value._response == mock_create_inner.return_value  # pyright: ignore [reportAttributeAccessIssue]
 
 
 @patch("mirascope.core.base._extract.setup_extract_tool", new_callable=MagicMock)
@@ -280,7 +279,7 @@ def test_extract_factory_sync_json_output_error(
         """Test function."""
 
     with pytest.raises(ValueError) as e:
-        _ = decorator(fn)(genre="fantasy")   # pyright: ignore [reportCallIssue]
+        _ = decorator(fn)(genre="fantasy")  # pyright: ignore [reportCallIssue]
 
     assert e.value._response == mock_create_inner.return_value  # pyright: ignore [reportAttributeAccessIssue]
 
@@ -318,6 +317,6 @@ async def test_extract_factory_async_general_error(
         """Async test function."""
 
     with pytest.raises(CustomError) as e:
-        await decorator(fn)(genre="fantasy")   # pyright: ignore [reportCallIssue]
+        await decorator(fn)(genre="fantasy")  # pyright: ignore [reportCallIssue]
 
-    assert e.value._response == mock_create_inner.return_value    # pyright: ignore [reportAttributeAccessIssue]
+    assert e.value._response == mock_create_inner.return_value  # pyright: ignore [reportAttributeAccessIssue]
