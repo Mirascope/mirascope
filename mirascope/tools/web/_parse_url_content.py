@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
 class ParseURLConfig(_ConfigurableToolConfig):

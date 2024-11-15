@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from pydantic import Field
 
-from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
+from mirascope.tools.base import ConfigurableTool, _ConfigurableToolConfig
 
 
 class MockConfigConfigurable(_ConfigurableToolConfig):

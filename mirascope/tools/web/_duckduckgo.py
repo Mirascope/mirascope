@@ -5,7 +5,7 @@ from typing import ClassVar
 from duckduckgo_search import DDGS, AsyncDDGS
 from pydantic import Field
 
-from ..base import ConfigurableTool, _ConfigurableToolConfig, _ToolSchemaT
+from ..base import ConfigurableTool, _ConfigurableToolConfig
 
 
 class DuckDuckGoSearchConfig(_ConfigurableToolConfig):

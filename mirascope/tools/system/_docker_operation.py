@@ -15,7 +15,6 @@ from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
     _ConfigurableToolConfig,
-    _ToolSchemaT,
 )
 
 
@@ -29,9 +28,7 @@ class DockerOperationToolKitConfig(_ConfigurableToolConfig):
     allow_network: bool = Field(default=True, description="Allow network access")
 
 
-class DockerOperation(
-    ConfigurableTool[DockerOperationToolKitConfig], ABC
-):
+class DockerOperation(ConfigurableTool[DockerOperationToolKitConfig], ABC):
     """Base class for Docker operations."""
 
     __configurable_tool_config__ = DockerOperationToolKitConfig()

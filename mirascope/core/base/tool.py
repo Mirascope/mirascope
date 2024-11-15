@@ -9,7 +9,7 @@ import inspect
 import warnings
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import (

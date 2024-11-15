@@ -11,7 +11,6 @@ from mirascope.tools.base import (
     ConfigurableTool,
     ConfigurableToolKit,
     _ConfigurableToolConfig,
-    _ToolSchemaT,
 )
 
 
