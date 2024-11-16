@@ -336,8 +336,6 @@ As a data framework, LlamaIndex is designed to handle large datasets efficiently
 
 However, it seems to us that, when it comes to building RAG applications, LlamaIndex can be rigid in certain ways. For instance, its `VectorStoreIndex` class doesn’t permit setting the embedding model post-initialization, limiting how developers can adapt LlamaIndex to different use cases or existing systems. This can hinder scalability as it complicates the integration of custom models and workflows.
 
-As well, LlamaIndex has certain [usage costs](https://docs.llamaindex.ai/en/stable/understanding/evaluating/cost_analysis/), which increase as your application scales up with larger volumes of data.
-
 ### LangChain: A General Framework Covering Many Use Cases
 
 LangChain offers functionalities covering a wide range of use cases, such that if you can think of a use case, it’s likely you can set it up in LangChain. For example, just like LlamaIndex, it similarly provides document and [BigQuery loaders](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/language/orchestration/langchain/langchain_bigquery_data_loader.ipynb) for data ingestion.
