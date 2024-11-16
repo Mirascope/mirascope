@@ -23,6 +23,8 @@ The whole process of doing evals can be boiled down to two tasks:
 1. Coming up with good criteria against which to evaluate LLM outputs.  
 2. Developing systems that reliably and consistently measure those outputs against your criteria.
 
+<!-- more -->
+
 **Ultimately, you’ll want to automate as much as possible** (note we didn’t say completely since you’ll probably want human oversight in critical places) so that your evals scale successfully with your application.
 
 They should also be set up in such a way that they give you confidence that the whole system is functioning as intended.
