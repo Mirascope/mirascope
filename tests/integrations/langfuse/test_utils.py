@@ -12,7 +12,7 @@ from mirascope.integrations.langfuse._utils import ModelUsage
 
 
 def test_get_call_response_observation() -> None:
-    """Tests the `get_call_response_observation` function."""
+    """Tests the `_get_call_response_observation` function."""
     mock_result = MagicMock(spec=BaseCallResponse)
     mock_result.model = "test_model"
     mock_result.messages = "test_messages"
@@ -20,7 +20,7 @@ def test_get_call_response_observation() -> None:
     mock_result.message_param = {"role": "assistant", "content": "test_content"}
     mock_fn = MagicMock(__name__="mock_fn")
     mock_fn._metadata = Metadata(tags={"tag1"})
-    call_response_observation = _utils.get_call_response_observation(
+    call_response_observation = _utils._get_call_response_observation(
         mock_result, mock_fn
     )
     assert call_response_observation["name"] == "mock_fn with test_model"
@@ -36,7 +36,7 @@ def test_get_call_response_observation() -> None:
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_call_response(
@@ -64,7 +64,7 @@ def test_handle_call_response(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 @pytest.mark.asyncio
@@ -93,7 +93,7 @@ async def test_handle_call_response_async(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_stream(
@@ -145,7 +145,7 @@ async def test_handle_stream_async(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_response_model(
@@ -193,7 +193,7 @@ def test_handle_response_model_base_type(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 def test_handle_structured_stream(
@@ -232,7 +232,7 @@ def test_handle_structured_stream(
     new_callable=MagicMock,
 )
 @patch(
-    "mirascope.integrations.langfuse._utils.get_call_response_observation",
+    "mirascope.integrations.langfuse._utils._get_call_response_observation",
     new_callable=MagicMock,
 )
 @pytest.mark.asyncio

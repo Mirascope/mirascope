@@ -52,7 +52,7 @@ def test_logfire_custom_context_manager(mock_logfire: MagicMock) -> None:
 
 def test_get_call_response_span_data() -> None:
     call_response = MagicMock()
-    result = _utils.get_call_response_span_data(call_response)
+    result = _utils._get_call_response_span_data(call_response)
     assert result["async"] is False
     assert result["call_params"] == call_response.call_params
     assert result["call_kwargs"] == call_response.call_kwargs
@@ -85,7 +85,7 @@ def test_get_tool_calls() -> None:
         start_time=100,
         end_time=200,
     )  # type: ignore
-    result = _utils.get_tool_calls(call_response)
+    result = _utils._get_tool_calls(call_response)
     assert result == [
         {
             "function": {
@@ -100,15 +100,15 @@ def test_get_tool_calls() -> None:
 
     result = MagicMock()
     result.tools = None
-    assert _utils.get_tool_calls(result) is None
+    assert _utils._get_tool_calls(result) is None
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
-@patch("mirascope.integrations.logfire._utils.get_tool_calls", new_callable=MagicMock)
+@patch("mirascope.integrations.logfire._utils._get_tool_calls", new_callable=MagicMock)
 def test_handle_call_response(
     mock_get_tool_calls: MagicMock,
     mock_get_call_response_span_data: MagicMock,
@@ -135,11 +135,11 @@ def test_handle_call_response(
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
-@patch("mirascope.integrations.logfire._utils.get_tool_calls", new_callable=MagicMock)
+@patch("mirascope.integrations.logfire._utils._get_tool_calls", new_callable=MagicMock)
 @pytest.mark.asyncio
 async def test_handle_call_response_async(
     mock_get_tool_calls: MagicMock,
@@ -199,7 +199,7 @@ async def test_handle_stream_async(mock_handle_call_response_async: MagicMock) -
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -233,7 +233,7 @@ def test_handle_response_model(
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_structured_stream_span_data",
+    "mirascope.integrations.logfire._utils._get_structured_stream_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -260,7 +260,7 @@ def test_handle_structured_stream(
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -295,7 +295,7 @@ async def test_handle_response_model_async(
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_structured_stream_span_data",
+    "mirascope.integrations.logfire._utils._get_structured_stream_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -341,7 +341,7 @@ def test_set_response_model_output() -> None:
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -354,7 +354,7 @@ def test_get_structured_stream_span_data_base_model(
     mock_result = MagicMock(spec=BaseStructuredStream)
     mock_result.stream = MagicMock()
     mock_result.constructed_response_model = MyBaseModel(foo="bar")
-    span_data = _utils.get_structured_stream_span_data(mock_result)
+    span_data = _utils._get_structured_stream_span_data(mock_result)
     assert span_data == {
         "output": {
             "response_model": {"name": "MyBaseModel", "arguments": {"foo": "bar"}}
@@ -363,7 +363,7 @@ def test_get_structured_stream_span_data_base_model(
 
 
 @patch(
-    "mirascope.integrations.logfire._utils.get_call_response_span_data",
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
@@ -376,5 +376,5 @@ def test_get_structured_stream_span_data_base_type(
     mock_result = MagicMock(spec=BaseStructuredStream)
     mock_result.stream = MagicMock()
     mock_result.constructed_response_model = "foo"
-    span_data = _utils.get_structured_stream_span_data(mock_result)
+    span_data = _utils._get_structured_stream_span_data(mock_result)
     assert span_data == {"output": {"content": "foo"}}

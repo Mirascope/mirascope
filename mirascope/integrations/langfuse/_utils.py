@@ -18,7 +18,7 @@ class ModelUsage(BaseModel):
     unit: str
 
 
-def get_call_response_observation(
+def _get_call_response_observation(
     result: BaseCallResponse, fn: Callable
 ) -> dict[str, Any]:
     metadata = get_metadata(fn, {})
@@ -35,7 +35,7 @@ def get_call_response_observation(
 
 def handle_call_response(result: BaseCallResponse, fn: Callable, context: None) -> None:
     langfuse_context.update_current_observation(
-        **get_call_response_observation(result, fn),
+        **_get_call_response_observation(result, fn),
         usage=ModelUsage(
             input=result.input_tokens, output=result.output_tokens, unit="TOKENS"
         ),
@@ -49,7 +49,7 @@ def handle_stream(stream: BaseStream, fn: Callable, context: None) -> None:
         unit="TOKENS",
     )
     langfuse_context.update_current_observation(
-        **get_call_response_observation(stream.construct_call_response(), fn),
+        **_get_call_response_observation(stream.construct_call_response(), fn),
         usage=usage,
     )
 
@@ -59,7 +59,7 @@ def handle_response_model(
 ) -> None:
     if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
-        call_response_observation = get_call_response_observation(response, fn)
+        call_response_observation = _get_call_response_observation(response, fn)
         call_response_observation.pop("output")
         langfuse_context.update_current_observation(
             **call_response_observation,
@@ -86,7 +86,7 @@ def handle_structured_stream(
         unit="TOKENS",
     )
     langfuse_context.update_current_observation(
-        **get_call_response_observation(stream.construct_call_response(), fn),
+        **_get_call_response_observation(stream.construct_call_response(), fn),
         usage=usage,
         output=result.constructed_response_model,
     )
