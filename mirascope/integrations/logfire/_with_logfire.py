@@ -8,6 +8,8 @@ from ._utils import (
     custom_context_manager,
     handle_call_response,
     handle_call_response_async,
+    handle_error,
+    handle_error_async,
     handle_response_model,
     handle_response_model_async,
     handle_stream,
@@ -56,4 +58,6 @@ def with_logfire() -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
         handle_response_model_async=handle_response_model_async,
         handle_structured_stream=handle_structured_stream,
         handle_structured_stream_async=handle_structured_stream_async,
+        handle_error=handle_error,
+        handle_error_async=handle_error_async,
     )
