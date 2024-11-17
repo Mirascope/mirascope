@@ -1,3 +1,4 @@
+from contextlib import suppress
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -204,7 +205,7 @@ async def test_handle_stream_async(mock_handle_call_response_async: MagicMock) -
     return_value={},
 )
 @patch(
-    "mirascope.integrations.logfire._utils.set_response_model_output",
+    "mirascope.integrations.logfire._utils._set_response_model_output",
     new_callable=MagicMock,
     return_value={},
 )
@@ -260,12 +261,28 @@ def test_handle_structured_stream(
 
 
 @patch(
+    "mirascope.integrations.logfire._utils._get_error_span_data",
+    new_callable=MagicMock,
+    return_value={},
+)
+def test_handle_error(mock_get_error_span_data: MagicMock) -> None:
+    mock_get_error_span_data.return_value = {"error": "error"}
+    _utils.handle_error(Exception("error"), MagicMock(), None)
+    assert mock_get_error_span_data.call_count == 0
+    span = MagicMock()
+    with suppress(Exception):
+        _utils.handle_error(Exception("error"), MagicMock(), span)
+    assert span.set_attributes.call_count == 1
+    assert span.set_attributes.call_args[0][0] == {"error": "error", "async": False}
+
+
+@patch(
     "mirascope.integrations.logfire._utils._get_call_response_span_data",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.logfire._utils.set_response_model_output",
+    "mirascope.integrations.logfire._utils._set_response_model_output",
     new_callable=MagicMock,
     return_value={},
 )
@@ -309,7 +326,6 @@ async def test_handle_structured_stream_async(
     )
 
     span = MagicMock()
-
     base_structured_stream_result = MagicMock(spec=BaseStructuredStream)
     base_structured_stream_result.constructed_response_model = MagicMock(spec=BaseModel)
     base_structured_stream_result.stream = MagicMock(spec=BaseStream)
@@ -326,17 +342,34 @@ async def test_handle_structured_stream_async(
     assert mock_get_structured_stream_span_data.return_value["async"] is True
 
 
+@patch(
+    "mirascope.integrations.logfire._utils._get_error_span_data",
+    new_callable=MagicMock,
+    return_value={},
+)
+@pytest.mark.asyncio
+async def test_handle_error_async(mock_get_error_span_data: MagicMock) -> None:
+    mock_get_error_span_data.return_value = {"error": "error"}
+    await _utils.handle_error_async(Exception("error"), MagicMock(), None)
+    assert mock_get_error_span_data.call_count == 0
+    span = MagicMock()
+    with suppress(Exception):
+        await _utils.handle_error_async(Exception("error"), MagicMock(), span)
+    assert span.set_attributes.call_count == 1
+    assert span.set_attributes.call_args[0][0] == {"error": "error", "async": True}
+
+
 def test_set_response_model_output() -> None:
     class MyBaseModel(BaseModel):
         foo: str
 
     my_base_model_output = {}
-    _utils.set_response_model_output(MyBaseModel(foo="bar"), my_base_model_output)
+    _utils._set_response_model_output(MyBaseModel(foo="bar"), my_base_model_output)
     assert my_base_model_output == {
         "response_model": {"name": "MyBaseModel", "arguments": {"foo": "bar"}}
     }
     my_base_type_output = {}
-    _utils.set_response_model_output("foo", my_base_type_output)
+    _utils._set_response_model_output("foo", my_base_type_output)
     assert my_base_type_output == {"content": "foo"}
 
 
@@ -378,3 +411,28 @@ def test_get_structured_stream_span_data_base_type(
     mock_result.constructed_response_model = "foo"
     span_data = _utils._get_structured_stream_span_data(mock_result)
     assert span_data == {"output": {"content": "foo"}}
+
+
+@patch(
+    "mirascope.integrations.logfire._utils._get_tool_calls",
+    new_callable=MagicMock,
+    return_value={},
+)
+@patch(
+    "mirascope.integrations.logfire._utils._get_call_response_span_data",
+    new_callable=MagicMock,
+    return_value={},
+)
+def test_get_error_span_data(
+    mock_get_call_response_span_data: MagicMock, mock_get_tool_calls: MagicMock
+) -> None:
+    mock_get_call_response_span_data.return_value = {"output": {"mock": "mock"}}
+    mock_get_tool_calls.return_value = [{"function": "mock"}]
+    error = Exception("error")
+    error._response = MagicMock()  # pyright: ignore [reportAttributeAccessIssue]
+    span_data = _utils._get_error_span_data(error, MagicMock())
+    assert span_data == {
+        "output": {"mock": "mock", "tool_calls": [{"function": "mock"}]},
+        "error": "Exception",
+        "error_message": "error",
+    }

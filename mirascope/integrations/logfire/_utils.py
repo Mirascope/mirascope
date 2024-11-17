@@ -29,7 +29,7 @@ def custom_context_manager(
         yield logfire_span
 
 
-def _get_call_response_span_data(result: BaseCallResponse) -> dict:
+def _get_call_response_span_data(result: BaseCallResponse) -> dict[str, Any]:
     output: dict[str, Any] = {}
     if cost := result.cost:
         output["cost"] = cost
@@ -53,7 +53,7 @@ def _get_call_response_span_data(result: BaseCallResponse) -> dict:
     }
 
 
-def _get_tool_calls(result: BaseCallResponse) -> list[dict] | None:
+def _get_tool_calls(result: BaseCallResponse) -> list[dict[str, Any]] | None:
     if tools := result.tools:
         tool_calls = [
             {
@@ -89,7 +89,7 @@ def handle_stream(
     handle_call_response(stream.construct_call_response(), fn, logfire_span)
 
 
-def set_response_model_output(
+def _set_response_model_output(
     result: BaseModel | BaseType, output: dict[str, Any]
 ) -> None:
     if isinstance(result, BaseModel):
@@ -110,11 +110,11 @@ def handle_response_model(
     if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
         span_data |= _get_call_response_span_data(response)
-    set_response_model_output(result, span_data["output"])
+    _set_response_model_output(result, span_data["output"])
     logfire_span.set_attributes(span_data)
 
 
-def _get_structured_stream_span_data(result: BaseStructuredStream) -> dict:
+def _get_structured_stream_span_data(result: BaseStructuredStream) -> dict[str, Any]:
     span_data = _get_call_response_span_data(result.stream.construct_call_response())
     output = span_data.get("output", {})
     response_model = result.constructed_response_model
@@ -138,6 +138,31 @@ def handle_structured_stream(
     span_data = _get_structured_stream_span_data(result)
     span_data["async"] = False
     logfire_span.set_attributes(span_data)
+
+
+def _get_error_span_data(e: Exception, fn: Callable) -> dict[str, Any]:
+    span_data: dict[str, Any] = {}
+    if hasattr(e, "_response"):
+        response: BaseCallResponse = e._response  # pyright: ignore [reportAttributeAccessIssue]
+        span_data = _get_call_response_span_data(response)
+        tool_calls = _get_tool_calls(response)
+        if tool_calls:
+            span_data["output"]["tool_calls"] = tool_calls
+    span_data["error"] = type(e).__name__
+    span_data["error_message"] = str(e)
+    return span_data
+
+
+def handle_error(
+    e: Exception, fn: Callable, logfire_span: logfire.LogfireSpan | None
+) -> None:
+    if logfire_span is None:
+        return
+    span_data = _get_error_span_data(e, fn)
+    span_data["async"] = False
+    logfire_span.set_attributes(span_data)
+    # propagate error
+    raise e
 
 
 async def handle_call_response_async(
@@ -172,7 +197,7 @@ async def handle_response_model_async(
     if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
         span_data |= _get_call_response_span_data(response)
-    set_response_model_output(result, span_data["output"])
+    _set_response_model_output(result, span_data["output"])
     logfire_span.set_attributes(span_data)
 
 
@@ -188,53 +213,13 @@ async def handle_structured_stream_async(
     logfire_span.set_attributes(span_data)
 
 
-async def handle_error(
-    e: Exception, fn: Callable, logfire_span: logfire.LogfireSpan | None
-) -> None:
-    if logfire_span is None:
-        return
-
-    error_type = type(e).__name__
-    error_message = str(e)
-
-    span_data: dict[str, Any] = {"output": {}, "async": True}
-    if hasattr(e, "_response"):
-        response: BaseCallResponse = (
-            e._response  # pyright: ignore [reportAttributeAccessIssue]
-        )
-        span_data = _get_call_response_span_data(response)
-        span_data["async"] = False
-        tool_calls = _get_tool_calls(response)
-        if tool_calls:
-            span_data["output"]["tool_calls"] = tool_calls
-    span_data["error"] = error_type
-    span_data["error_message"] = error_message
-    logfire_span.set_attributes(span_data)
-    # propagate error
-    raise e
-
-
 async def handle_error_async(
     e: Exception, fn: Callable, logfire_span: logfire.LogfireSpan | None
 ) -> None:
     if logfire_span is None:
         return
-
-    error_type = type(e).__name__
-    error_message = str(e)
-
-    span_data: dict[str, Any] = {"output": {}, "async": True}
-    if hasattr(e, "_response"):
-        response: BaseCallResponse = (
-            e._response  # pyright: ignore [reportAttributeAccessIssue]
-        )
-        span_data = _get_call_response_span_data(response)
-        span_data["async"] = True
-        tool_calls = _get_tool_calls(response)
-        if tool_calls:
-            span_data["output"]["tool_calls"] = tool_calls
-    span_data["error"] = error_type
-    span_data["error_message"] = error_message
+    span_data = _get_error_span_data(e, fn)
+    span_data["async"] = True
     logfire_span.set_attributes(span_data)
     # propagate error
     raise e
