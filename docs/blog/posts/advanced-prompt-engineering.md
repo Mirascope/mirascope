@@ -199,7 +199,7 @@ We recommend using a [prompt management system](https://mirascope.com/blog/promp
 
 Using version control also allows you to maintain separate prompt versions across different models so you can customize prompts for each model’s unique capabilities or context.
 
-An example of a prompt versioning system is [Lilypad](https://www.lilypad.so/docs), which you can download and install in your local workspace. In Lilypad, every LLM call is automatically versioned and traced for you so you don't have to worry about manually managing your prompts.
+An example of a prompt versioning system is [Lilypad](https://lilypad.so/docs), which you can download and install in your local workspace. In Lilypad, every LLM call is automatically versioned and traced for you so you don't have to worry about manually managing your prompts.
 
 ### Integrate Data from External Sources
 

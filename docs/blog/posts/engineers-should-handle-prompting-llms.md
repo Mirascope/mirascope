@@ -558,7 +558,7 @@ As mentioned earlier, our experience with prompts is that they generally become 
 
 We believe it’s important to colocate as much information with the prompt as feasible, and that it should all be versioned together as a single unit. It's also extremely important that this versioning happens automatically and captures the entire lexical closure (so that changes to dependent functions can be easily identified through the automatic versioning).
 
-Our prompt engineering framework [Lilypad](https://www.lilypad.so/docs) lets you:
+Our prompt engineering framework [Lilypad](https://lilypad.so/docs) lets you:
 
 - Write prompts and LLM functions like you normally would
 - Automatically versions any change to the function

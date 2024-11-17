@@ -287,7 +287,7 @@ Mirascope supports extraction of numerous base types, including `str`, `int`, `f
 
 As mentioned previously, a major pain point of ours has been successfully managing prompts after several iterations of changes. Prompts as code under development should be subject to [version tracking](https://mirascope.com/blog/prompt-versioning) like any code developed under collaboration.
 
-For this reason we are working on [`Lilypad`](https://www.lilypad.so/docs), which is our prompt engineering framework. You can version and trace every prompt and LLM call automatically so you can spend your time focusing on improving your prompts rather than tracking them.
+For this reason we are working on [`Lilypad`](https://lilypad.so/docs), which is our prompt engineering framework. You can version and trace every prompt and LLM call automatically so you can spend your time focusing on improving your prompts rather than tracking them.
 
 When installed, Lilypad creates a predefined directory structure as shown below:
 

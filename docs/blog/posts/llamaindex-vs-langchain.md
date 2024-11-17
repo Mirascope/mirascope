@@ -220,7 +220,7 @@ except ValidationError as e:
     # For further information visit https://errors.pydantic.dev/2.6/v/assertion_error
 ```
 
-Mirascope also offers a prompt engineering framework called [Lilypad](https://www.lilypad.so/docs), which versions and traces every LLM function call and prompt automatically. By removing the worry of manually tracking changes systematically, Lilypad provides you the headspace to rapidly iterate on and optimize prompts, ensuring that all your fine-tuning efforts are recorded and retrievable.
+Mirascope also offers a prompt engineering framework called [Lilypad](https://lilypad.so/docs), which versions and traces every LLM function call and prompt automatically. By removing the worry of manually tracking changes systematically, Lilypad provides you the headspace to rapidly iterate on and optimize prompts, ensuring that all your fine-tuning efforts are recorded and retrievable.
 
 Furthermore, Lilypad is also fully open-source and can be run locally.
 

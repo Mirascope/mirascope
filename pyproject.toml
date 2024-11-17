@@ -216,7 +216,7 @@ skip = [
     "./examples/cookbook/agents/web_search_agent/messages.py",
     "./docs/blog/posts/llm-prompt.md",
 ]
-ignore-words-list = 'EHR,reworkd'
+ignore-words-list = 'EHR,reworkd,ROUGE'
 ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]

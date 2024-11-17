@@ -240,7 +240,7 @@ When it comes to prompt management, LangChain offers its [hub](https://smith.lan
 
 Placing prompts in a central repo for everyone to access might be convenient as far as collaboration is concerned, but we don’t find tremendous utility in expending resources to download small text files across the internet. Also, the design of the hub has a few UX issues, such as unclear docs for complex prompts and no editor support for the prompts you download.
 
-By contrast, Mirascope's prompt engineering framework [Lilypad](https://www.lilypad.so/docs) makes prompt management easy by versioning and tracing every prompt (LLM function) automatically. It provides a local or hosted environment where you can track every function trace against the exact prompt versioned used for that trace.
+By contrast, Mirascope's prompt engineering framework [Lilypad](https://lilypad.so/docs) makes prompt management easy by versioning and tracing every prompt (LLM function) automatically. It provides a local or hosted environment where you can track every function trace against the exact prompt versioned used for that trace.
 
 We believe that the ability to use this tool locally enables rapid testing and refinement of prompts, giving developers greater control and flexibility over their workflows -- even before they're ready to use a cloud-hosted tool.
 
