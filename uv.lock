@@ -2869,7 +2869,7 @@ wheels = [
 
 [[package]]
 name = "logfire"
-version = "0.50.1"
+version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "executing" },
@@ -2881,9 +2881,9 @@ dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/93/23f7bc04c9da72d2ab842a7b74f100fe539058333526e4af12cba10c45f8/logfire-0.50.1.tar.gz", hash = "sha256:008a39a25e790c47f918d1ca2f34e12c5ceb62c5db45f15860772d07cd60d8b6", size = 221495 }
+sdist = { url = "https://files.pythonhosted.org/packages/58/d6/0df3e4e4d5d98674cd058b9b48c2860157f50bce46f4d9648192bf2f31c6/logfire-2.3.0.tar.gz", hash = "sha256:2a29a7a31079201cbad494b865b27bf93b75df70dd752df0f121467a23709bbb", size = 250234 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/32/7e81ab7c0b8a5ef8abe96cd695ad04cae1a83b35c69ddf35989d7b745819/logfire-0.50.1-py2.py3-none-any.whl", hash = "sha256:6dc8989f0ca5a89ebf95748d04c2d5cfc8b50e1efb734fe31bb35fe35256f89c", size = 154878 },
+    { url = "https://files.pythonhosted.org/packages/e6/c7/7de2f15842845aaf5d4d6e0b00469f574bbb332c42322dbc2ff2dc5c3466/logfire-2.3.0-py3-none-any.whl", hash = "sha256:812febd7cc29fdd7551d40161b7aa877a1bc8b4f74ef5bcfb0f0ca790f5184f4", size = 170621 },
 ]
 
 [[package]]
@@ -3196,7 +3196,7 @@ requires-dist = [
     { name = "jiter", specifier = ">=0.5.0" },
     { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
     { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.42.12,<2" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=0.41.0,<3" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=1.0.0,<3" },
     { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=0.4.2,<1" },
     { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
