@@ -406,7 +406,7 @@ print(tool.call())  # runs `format_book` with `title` and `author` args
 
 Encapsulating call parameters and critical functionality like tools within one call in this way makes your code more organized, modular, and easier to maintain. It also promotes reusability, as the same set of parameters (such as the tool in the above example) can be reused across multiple API calls with minimal modification.
 
-Additionally, colocating all the relevant information together means it can all get versioned together as a single unit [via Lilypad](https://www.lilypad.so/docs), allowing you to easily track all changes, so you're effectively pushing as much information as feasible into the version.
+Additionally, colocating all the relevant information together means it can all get versioned together as a single unit [via Lilypad](https://lilypad.so/docs), allowing you to easily track all changes, so you're effectively pushing as much information as feasible into the version.
 
 On the contrary, LangChain doesn’t encourage you to colocate everything with the LLM call, so this increases the risk that relevant code gets scattered around the codebase, thus requiring you to manually track everything.
 

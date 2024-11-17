@@ -249,7 +249,7 @@ Versioning your prompts may seem like an intuitive step to anyone who’s done s
 
 In our experience, prompts become unmanageable past several iterations if we don’t [version track them](https://mirascope.com/blog/prompt-versioning) as we would any other code. And if you’re rapidly experimenting with, and optimizing prompts, even manual change tracking is better than none at all.
 
-Our own library Lilypad is purpose build for [prompt management](https://www.lilypad.so/docs), automatically versioning and tracing every LLM call made, including any and all code that could impact the quality of the prompt.
+Our own library Lilypad is purpose build for [prompt management](https://lilypad.so/docs), automatically versioning and tracing every LLM call made, including any and all code that could impact the quality of the prompt.
 
 ## Use Advanced Prompt Engineering Techniques
 

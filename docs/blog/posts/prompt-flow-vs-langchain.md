@@ -279,7 +279,7 @@ While versioning in this way allows you to effectively experiment with prompts, 
 
 ### Lilypad: Prompt Versioning and Management for Fine-Tuning LLM Inputs
 
-Mirascope offers a sibling library, [`Lilypad`](https://www.lilypad.so/docs), that versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
+Mirascope offers a sibling library, [`Lilypad`](https://lilypad.so/docs), that versions and traces every LLM call automatically. This is the necessary first step for prompt engineering. Without versioning and tracing, you lack the data to engineer prompts effectively.
 
 We've purpose built Lilypad for prompt engineering to be simple and easy so you can take your mind off annoying and manual tedium and focus on what really matters: engineering quality prompts. In line with our commitment to open-source, Lilypad is fully open-source and can even be run locally.
 

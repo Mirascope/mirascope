@@ -49,7 +49,7 @@ In fact, our experience suggests that any prompt management system should, at a 
 
 [Mirascope](https://github.com/mirascope/mirascope) is a lightweight Python toolkit for building production-grade LLM applications. We built Mirascope as a modular library with scalability in mind. For example, we provide a prompt template decorator so you can write prompts as Python functions, rather than a host of prompt templates for every conceivable use case. Our library recommends native Python for many tasks rather than offering complex abstractions that require a learning curve.
 
-Our prompt management and versioning framework, [Lilypad](https://www.lilypad.so/docs), system works along similar lines. Among other things, we:
+Our prompt management and versioning framework, [Lilypad](https://lilypad.so/docs), system works along similar lines. Among other things, we:
 
 - Enable using the tool locally with your LLM prompts
 - Provide version control and prompt management best practices, automatically
@@ -184,7 +184,7 @@ This is extremely important for versioning everything together as a single unit.
 
 #### Managing Prompts with Lilypad
 
-Lilypad offers a [prompt management and versioning](https://www.lilypad.so/docs) framework that versions and traces every LLM function call automatically. This helps you iterate faster on prompts and their calls rather than worrying about the tedium of versioning and tracing things manually. Ultimately, this provides a more structured way to refine and tests prompts easily while maintaining a clean and organized environment.
+Lilypad offers a [prompt management and versioning](https://lilypad.so/docs) framework that versions and traces every LLM function call automatically. This helps you iterate faster on prompts and their calls rather than worrying about the tedium of versioning and tracing things manually. Ultimately, this provides a more structured way to refine and tests prompts easily while maintaining a clean and organized environment.
 
 ```plaintext
 |
@@ -488,4 +488,4 @@ You can find more information on PromptHub in its documentation and on its websi
 
 Lilypad's prompt versioning and management functionality was built from the ground up with software engineering best practices in mind. It offers an accessible interface for you to easily track changes across different versions of prompts to improve collaboration, and to support ongoing prompt experimentation and iteration.
 
-Want to learn more? You can find more Lilypad code samples on both our [documentation site](https://www.lilypad.so/docs) and [GitHub](https://github.com/Mirascope/lilypad). You can also learn more about [Mirascope](https://www.mirsacope.com), for which Lilypad has first-class support.
+Want to learn more? You can find more Lilypad code samples on both our [documentation site](https://lilypad.so/docs) and [GitHub](https://github.com/Mirascope/lilypad). You can also learn more about [Mirascope](https://www.mirsacope.com), for which Lilypad has first-class support.

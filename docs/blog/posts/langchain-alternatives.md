@@ -117,7 +117,7 @@ def recommend_book(genre: str) -> openai.OpenAIDynamicConfig:
 
 Creating prompts efficiently is one thing, but managing and tracking changes to prompts over time is another. Prompts are exploratory, often involving trial and error. Without a process for storing, versioning, and tracing prompts, it’s easy to lose iterations and it’s more difficult to collaborate with others on prompt design.
 
-Mirascope offers a prompt management tool called [Lilypad](https://www.lilypad.so/docs) for automatically versioning any and all changes made to a prompt as well as automatically tracing every call made against that version.
+Mirascope offers a prompt management tool called [Lilypad](https://lilypad.so/docs) for automatically versioning any and all changes made to a prompt as well as automatically tracing every call made against that version.
 
 **The working directory contains subdirectories and files for:**
 
