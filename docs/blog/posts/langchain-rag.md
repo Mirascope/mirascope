@@ -28,6 +28,8 @@ That’s why we designed [Mirascope](https://github.com/mirascope/mirascope/), a
 
 In this article, we show you how to build a simple RAG application using LangChain’s functionality for data ingestion, preprocessing, and storage. We then integrate this with Mirascope to simplify query and response flows.
 
+<!-- more -->
+
 ## How RAG with LangChain Works
 
 **The whole idea behind RAG is to get better answers out of the LLM** — answers that are more accurate and relevant to user queries — by including additional *context* alongside the user's query in the prompt.
