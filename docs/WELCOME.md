@@ -62,7 +62,7 @@ Install Mirascope, specifying the provider(s) you intend to use, and set your AP
     {% endfor %}
 {% endfor %}
 
-Make your first call to an LLM to recommend a book for a given genre:
+Make your first call to an LLM to extract the title and author of a book from the given text:
 
 !!! mira "Mirascope"
 
@@ -72,8 +72,9 @@ Make your first call to an LLM to recommend a book for a given genre:
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            ```python
-            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```python hl_lines="10 12 17"
+            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:7"
+            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:10:21"
             ```
         {% endfor %}
 
@@ -84,8 +85,24 @@ Make your first call to an LLM to recommend a book for a given genre:
     {% for provider in supported_llm_providers %}
     === "{{ provider }}"
 
-        ```python
-        --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/official_sdk_call.py"
+        {% if provider == "Anthropic" %}
+        ```python hl_lines="19-38 43"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="19-40 45"
+        {% elif provider == "Gemini" %}
+        ```python hl_lines="19-57 62"
+        {% elif provider == "Cohere" %}
+        ```python hl_lines="19-36 41"
+        {% elif provider == "LiteLLM" %}
+        ```python hl_lines="16-37 42"
+        {% elif provider == "Azure AI" %}
+        ```python hl_lines="26-46 51"
+        {% elif provider == "Vertex AI" %}
+        ```python hl_lines="23-62 67"
+        {% else %}
+        ```python hl_lines="18-39 44"
+        {% endif %}
+        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
         ```
 
     {% endfor %}

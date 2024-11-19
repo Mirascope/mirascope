@@ -27,18 +27,24 @@ theme:
     - toc.follow
   language: en
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-6
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: custom
       accent: custom
-    - scheme: slate
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
-      primary: custom
-      accent: custom
+        name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
