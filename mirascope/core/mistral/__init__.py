@@ -16,7 +16,7 @@ from ._utils._load_api_key import load_api_key
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
-from .dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
+from .dynamic_config import MistralDynamicConfig
 from .stream import MistralStream
 from .tool import MistralTool
 
@@ -25,7 +25,6 @@ MistralMessageParam: TypeAlias = (
 )
 
 __all__ = [
-    "AsyncMistralDynamicConfig",
     "call",
     "load_api_key",
     "MistralDynamicConfig",
