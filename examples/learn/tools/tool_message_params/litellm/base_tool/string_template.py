@@ -21,7 +21,7 @@ class GetBookAuthor(BaseTool):
     """
 )
 def identify_author(
-    book: str, history: list[litellm.OpenAIMessageParam]
+    book: str, history: list[litellm.LiteLLMMessageParam]
 ) -> BaseDynamicConfig:
     return {"computed_fields": {"query": f"Who wrote {book}" if book else ""}}
 

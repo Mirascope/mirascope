@@ -13,6 +13,7 @@ from ..message_param import (
     AudioPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
     ImagePart,
     TextPart,
 )
@@ -25,17 +26,20 @@ CHANNELS = 1
 
 def _convert_message_sequence_part_to_content_part(
     message_sequence_part: str
-    | Image.Image
     | TextPart
+    | CacheControlPart
     | ImagePart
+    | Image.Image
     | AudioPart
     | AudioSegment
-    | Wave_read,
-) -> TextPart | ImagePart | AudioPart | CacheControlPart:
+    | Wave_read
+    | DocumentPart,
+) -> TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart:
     if isinstance(message_sequence_part, str):
         return TextPart(text=message_sequence_part, type="text")
     elif isinstance(
-        message_sequence_part, TextPart | ImagePart | AudioPart | CacheControlPart
+        message_sequence_part,
+        TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
     ):
         return message_sequence_part
     elif has_pil_module and isinstance(message_sequence_part, Image.Image):
@@ -70,9 +74,17 @@ def _convert_message_sequence_part_to_content_part(
 
 def convert_message_content_to_message_param_content(
     message_sequence: Sequence[
-        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
+        str
+        | TextPart
+        | CacheControlPart
+        | ImagePart
+        | Image.Image
+        | AudioPart
+        | AudioSegment
+        | Wave_read
+        | DocumentPart
     ],
-) -> list[TextPart | ImagePart | AudioPart | CacheControlPart] | str:
+) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart] | str:
     if isinstance(message_sequence, str):
         return message_sequence
     return [
@@ -93,7 +105,15 @@ def _is_base_message_params(
 def convert_messages_to_message_params(
     messages: str
     | Sequence[
-        str | TextPart | ImagePart | Image.Image | AudioPart | AudioSegment | Wave_read
+        str
+        | TextPart
+        | CacheControlPart
+        | ImagePart
+        | Image.Image
+        | AudioPart
+        | AudioSegment
+        | Wave_read
+        | DocumentPart
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,

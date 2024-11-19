@@ -7,6 +7,9 @@ from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import GenerationConfig
 from google.generativeai.types.content_types import ToolConfigDict
 
+from mirascope.core.gemini._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.gemini._utils._setup_call import setup_call
 from mirascope.core.gemini.tool import GeminiTool
 
@@ -53,11 +56,14 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "contents" in call_kwargs and call_kwargs["contents"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, GeminiTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, GeminiTool, {}, convert_common_call_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -113,6 +119,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
     assert "tools" not in call_kwargs
@@ -154,6 +161,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert "tool_config" in call_kwargs and isinstance(
         call_kwargs["tool_config"], ToolConfigDict

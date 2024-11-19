@@ -5,6 +5,9 @@ from types_aiobotocore_bedrock_runtime import (
     BedrockRuntimeClient as AsyncBedrockRuntimeClient,
 )
 
+from mirascope.core.bedrock._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.bedrock._utils._setup_call import (
     _extract_async_stream_fn,
     _extract_sync_stream_fn,
@@ -104,12 +107,15 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "modelId" in call_kwargs and call_kwargs["modelId"] == "anthropic.claude-v2"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, BedrockTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, BedrockTool, {}, convert_common_call_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -136,6 +142,7 @@ def test_setup_call_system_message(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[0]["role"] == "user"
     assert messages[0]["content"] == [{"text": "user test"}]
@@ -168,6 +175,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1]["content"] == [{"text": "testjson_content"}]
     assert "tools" not in call_kwargs
@@ -200,6 +208,7 @@ def test_setup_call_json_mode_no_text(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1]["content"] == [
         {"image": "test_image"},
@@ -233,6 +242,7 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert isinstance(tool_types, list)
     assert "toolConfig" in call_kwargs and call_kwargs["toolConfig"] == {
@@ -263,6 +273,7 @@ def test_setup_call_with_tools(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert "toolConfig" in call_kwargs
     assert call_kwargs["toolConfig"] == {"tools": [{"name": "test_tool"}]}
@@ -292,6 +303,7 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
 
     # Test async client creation
@@ -307,6 +319,7 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     mock_get_async_client.assert_called_once()
 
@@ -322,5 +335,6 @@ def test_setup_call_client_creation(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert mock_get_async_client.call_count == 1

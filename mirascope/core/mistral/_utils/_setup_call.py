@@ -20,12 +20,19 @@ from mistralai.models import (
 
 from ... import mistral
 from ...base import BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ...base._utils._protocols import fn_is_async
-from ..call_kwargs import MistralCallKwargs
+from ...base._utils import (
+    AsyncCreateFn,
+    CreateFn,
+    fn_is_async,
+    get_async_create_fn,
+    get_create_fn,
+)
+from ...base.call_params import CommonCallParams
+from .._call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
 from ..tool import MistralTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -39,8 +46,9 @@ def setup_call(
     dynamic_config: MistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletionResponse, CompletionEvent],
     str | None,
@@ -60,8 +68,9 @@ def setup_call(
     dynamic_config: MistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent],
     str | None,
@@ -80,8 +89,9 @@ def setup_call(
     dynamic_config: MistralDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: MistralCallParams,
+    call_params: MistralCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent]
     | AsyncCreateFn[ChatCompletionResponse, CompletionEvent],
@@ -91,7 +101,13 @@ def setup_call(
     MistralCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, MistralTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        MistralTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(

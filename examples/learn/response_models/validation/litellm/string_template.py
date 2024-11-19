@@ -34,6 +34,6 @@ except ValidationError as e:
     # author
     #   Assertion failed, Field must be uppercase [type=assertion_error, input_value='Patrick Rothfuss', input_type=str]
     #     For further information visit https://errors.pydantic.dev/2.7/v/assertion_error
-    response = cast(litellm.OpenAICallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
+    response = cast(litellm.LiteLLMCallResponse, e._response)  # pyright: ignore[reportAttributeAccessIssue]
     print(response.model_dump())
     # > {'metadata': {}, 'response': {'id': ...}, ...}

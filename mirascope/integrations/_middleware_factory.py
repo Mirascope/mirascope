@@ -81,6 +81,12 @@ def middleware_factory(
         [BaseStructuredStream, SyncFunc | AsyncFunc, _T | None], Awaitable[None]
     ]
     | None = None,
+    handle_error: Callable[[Exception, SyncFunc | AsyncFunc, _T | None], Any]
+    | None = None,
+    handle_error_async: Callable[
+        [Exception, SyncFunc | AsyncFunc, _T | None], Awaitable[Any]
+    ]
+    | None = None,
 ) -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
     '''A factory method for creating middleware decorators.
 
@@ -104,6 +110,8 @@ def middleware_factory(
             handle_response_model_async=handle_response_model_async,
             handle_structured_stream=handle_structured_stream,
             handle_structured_stream_async=handle_structured_stream_async,
+            handle_error_async=handle_error_async,
+            handle_error=handle_error,
         )
 
 
@@ -133,7 +141,26 @@ def middleware_factory(
             async def wrapper_async(*args: _P.args, **kwargs: _P.kwargs) -> _R:
                 context_manager = custom_context_manager(fn)
                 context = context_manager.__enter__()
-                result = await fn(*args, **kwargs)
+                try:
+                    result = await fn(*args, **kwargs)
+                except Exception as e:
+                    if handle_error_async:
+                        try:
+                            result = await handle_error_async(e, fn, context)
+                        except Exception as new_e:
+                            # If handle_error_async raises an exception, exit context manager and re-raise
+                            context_manager.__exit__(
+                                type(new_e), new_e, new_e.__traceback__
+                            )
+                            raise
+                        else:
+                            # Exception was handled, exit context manager and continue
+                            context_manager.__exit__(None, None, None)
+                    else:
+                        # No handle_error_async provided, exit context manager with exception and re-raise
+                        context_manager.__exit__(type(e), e, e.__traceback__)
+                        raise
+
                 if (
                     isinstance(result, BaseCallResponse)
                     and handle_call_response_async is not None
@@ -153,6 +180,23 @@ def middleware_factory(
                             try:
                                 async for chunk, tool in original_aiter():
                                     yield chunk, tool
+                            except Exception as e:
+                                if handle_error_async:
+                                    try:
+                                        await handle_error_async(e, fn, context)
+                                    except Exception as new_e:
+                                        context_manager.__exit__(
+                                            type(new_e), new_e, new_e.__traceback__
+                                        )
+                                        raise
+                                    else:
+                                        context_manager.__exit__(None, None, None)
+                                        return
+                                else:
+                                    context_manager.__exit__(
+                                        type(e), e, e.__traceback__
+                                    )
+                                    raise
                             finally:
                                 if handle_stream_async is not None:
                                     await handle_stream_async(result, fn, context)
@@ -187,6 +231,23 @@ def middleware_factory(
                             try:
                                 async for chunk in original_aiter():
                                     yield chunk
+                            except Exception as e:
+                                if handle_error_async:
+                                    try:
+                                        await handle_error_async(e, fn, context)
+                                    except Exception as new_e:
+                                        context_manager.__exit__(
+                                            type(new_e), new_e, new_e.__traceback__
+                                        )
+                                        raise
+                                    else:
+                                        context_manager.__exit__(None, None, None)
+                                        return
+                                else:
+                                    context_manager.__exit__(
+                                        type(e), e, e.__traceback__
+                                    )
+                                    raise
                             finally:
                                 if handle_structured_stream_async is not None:
                                     await handle_structured_stream_async(
@@ -204,6 +265,8 @@ def middleware_factory(
                         )
 
                     result.__class__ = MiddlewareAsyncStructuredStream
+                else:
+                    context_manager.__exit__(None, None, None)
                 return cast(_R, result)
 
             return (
@@ -217,7 +280,26 @@ def middleware_factory(
             def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
                 context_manager = custom_context_manager(fn)
                 context = context_manager.__enter__()
-                result = fn(*args, **kwargs)
+                try:
+                    result = fn(*args, **kwargs)
+                except Exception as e:
+                    if handle_error:
+                        try:
+                            result = handle_error(e, fn, context)
+                        except Exception as new_e:
+                            # If handle_error raises an exception, exit context manager and re-raise
+                            context_manager.__exit__(
+                                type(new_e), new_e, new_e.__traceback__
+                            )
+                            raise
+                        else:
+                            # Exception was handled, exit context manager and continue
+                            context_manager.__exit__(None, None, None)
+                    else:
+                        # No handle_error provided, exit context manager with exception and re-raise
+                        context_manager.__exit__(type(e), e, e.__traceback__)
+                        raise
+
                 if (
                     isinstance(result, BaseCallResponse)
                     and handle_call_response is not None
@@ -234,12 +316,27 @@ def middleware_factory(
                         # Create the context manager when user iterates over the stream
                         try:
                             yield from original_iter()
+                        except Exception as e:
+                            if handle_error:
+                                try:
+                                    handle_error(e, fn, context)
+                                except Exception as new_e:
+                                    context_manager.__exit__(
+                                        type(new_e), new_e, new_e.__traceback__
+                                    )
+                                    raise
+                                else:
+                                    context_manager.__exit__(None, None, None)
+                                    return
+                            else:
+                                context_manager.__exit__(type(e), e, e.__traceback__)
+                                raise
                         finally:
                             if handle_stream is not None:
                                 handle_stream(result, fn, context)
                             context_manager.__exit__(None, None, None)
 
-                    class MiddlewareStream(original_class):
+                    class MiddlewareStream(original_class):  # pyright: ignore [reportGeneralTypeIssues]
                         __iter__ = (
                             custom_decorator(fn)(new_stream_iter)
                             if custom_decorator
@@ -268,12 +365,27 @@ def middleware_factory(
                         # Create the context manager when user iterates over the stream
                         try:
                             yield from original_iter()
+                        except Exception as e:
+                            if handle_error:
+                                try:
+                                    handle_error(e, fn, context)
+                                except Exception as new_e:
+                                    context_manager.__exit__(
+                                        type(new_e), new_e, new_e.__traceback__
+                                    )
+                                    raise
+                                else:
+                                    context_manager.__exit__(None, None, None)
+                                    return
+                            else:
+                                context_manager.__exit__(type(e), e, e.__traceback__)
+                                raise
                         finally:
                             if handle_structured_stream is not None:
                                 handle_structured_stream(result, fn, context)
                             context_manager.__exit__(None, None, None)
 
-                    class MiddlewareStructuredStream(original_class):
+                    class MiddlewareStructuredStream(original_class):  # pyright: ignore [reportGeneralTypeIssues]
                         __iter__ = (
                             custom_decorator(fn)(new_iter)
                             if custom_decorator
@@ -281,6 +393,8 @@ def middleware_factory(
                         )
 
                     result.__class__ = MiddlewareStructuredStream
+                else:
+                    context_manager.__exit__(None, None, None)
                 return cast(_R, result)
 
             return custom_decorator(fn)(wrapper) if custom_decorator else wrapper

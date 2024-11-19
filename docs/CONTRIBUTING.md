@@ -143,6 +143,18 @@ This will ensure that your code is automatically checked and formatted before ea
 
 Please conform to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for all PR titles and commits.
 
+## Documentation
+
+We care deeply about maintaining high-quality, up-to-date documentation. This means that all PRs must include corresponding changes to the documentation (if any changes were necessary).
+
+The documentation lives in the [docs/](https://github.com/Mirascope/mirascope/tree/main/docs) directory, which can be built by running `uv run mkdocs serve`.
+
+A few key things to note:
+
+1. We have code examples in the `examples` folder for all code snippets in the documentation, and we maintain snippets for every option (e.g. prompt writing methods, providers, etc.). While this seems unnecessarily cumbersome, these examples operate as tests for type hints because we run `pyright` on all of the examples. When writing documentation that changes existing examples or requires new examples, make sure to properly update the actual code in the `examples/` directory to match the existing structure.
+2. The API reference is generated automatically, but things like new modules still need to be included in the `docs/api` structure for generation to work.
+3. The `docs/tutorials` are written as Jupyter notebooks that get converted into markdown. This conversion will happen on every save when running the server locally, which can make writing docs slow. We recommend setting `strict: false` and commenting out the `mkdocs-jupyter` plugin in `mkdocs.yml` to skip the conversion.
+
 ## Testing
 
 All changes to the codebase must be properly unit tested. If a change requires updating an existing unit test, make sure to think through if the change is breaking.

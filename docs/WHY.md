@@ -1,5 +1,71 @@
 # Why Use Mirascope?
 
+Trusted by founders and engineers building the next generation of AI-native applications:
+
+<div class="grid cards" markdown>
+
+-   __Jake Duth__
+
+    ---
+
+    Co-Founder & CTO / Reddy
+
+    ---
+
+    "Mirascope's simplicity made it the natural next step from OpenAI's API — all without fighting the unnecessary complexity of tools like LangChain. We have all the bells and whistles we need for production while maintaining exceptional ease of use."
+
+-   __Vince Trost__
+
+    ---
+
+    Co-Founder / Plastic Labs
+
+    ---
+
+    "The Pydantic inspired LLM toolkit the space has been missing. Simple, modular, extensible...helps where you need it, stays out of your way when you don't."
+
+-   __Skylar Payne__
+
+    ---
+
+    VP of Engineering & DS / Health Rhythms
+
+    ---
+
+    "Mirascope's 'abstractions that aren't obstructions' tagline rings true – I was up and running in minutes, with seamless switching between AI providers. The type system catches any schema issues while I iterate, letting me focus entirely on crafting the perfect prompts."
+
+-   __Off Sornsoontorn__
+
+    ---
+
+    Senior AI & ML Engineer / Six Atomic
+
+    ---
+
+    "LangChain required learning many concepts and its rigid abstractions made LLM behavior hard to customize. Mirascope lets us easily adapt LLM behaviors to any UI/UX design, so we can focus on innovation rather than working around limitations."
+
+-   __William Profit__
+
+    ---
+
+    Co-Founder / Callisto
+
+    ---
+
+    "After trying many alternatives, we chose Mirascope for our large project and haven't looked back. It's simple, lean, and gets the job done without getting in the way. The team & community are super responsive, making building even easier."
+
+-   __Rami Awar__
+
+    ---
+
+    Founder / DataLine
+
+    ---
+
+    "Migrating DataLine to Mirascope feels like I was rid of a pebble in my shoe that I never knew existed. This is what good design should feel like. Well done."
+
+</div>
+
 ## Abstractions That Aren't Obstructions
 
 Mirascope provides powerful abstractions that simplify LLM interactions without hiding the underlying mechanics. This approach gives you the convenience of high-level APIs while maintaining full control and transparency.

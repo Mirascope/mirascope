@@ -1,5 +1,6 @@
 """This module defines the function return type for functions as LLM calls."""
 
+from mistralai import Mistral
 from mistralai.models import (
     AssistantMessage,
     SystemMessage,
@@ -13,6 +14,7 @@ from .call_params import MistralCallParams
 MistralDynamicConfig = BaseDynamicConfig[
     AssistantMessage | SystemMessage | ToolMessage | UserMessage | BaseMessageParam,
     MistralCallParams,
+    Mistral,
 ]
 """The function return type for functions wrapped with the `mistral_call` decorator.
 

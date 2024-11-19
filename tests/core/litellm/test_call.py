@@ -4,11 +4,11 @@ import sys
 from unittest.mock import MagicMock, patch
 
 from mirascope.core.litellm._utils import setup_call
+from mirascope.core.litellm.call_response import LiteLLMCallResponse
+from mirascope.core.litellm.call_response_chunk import LiteLLMCallResponseChunk
+from mirascope.core.litellm.stream import LiteLLMStream
+from mirascope.core.litellm.tool import LiteLLMTool
 from mirascope.core.openai import _utils
-from mirascope.core.openai.call_response import OpenAICallResponse
-from mirascope.core.openai.call_response_chunk import OpenAICallResponseChunk
-from mirascope.core.openai.stream import OpenAIStream
-from mirascope.core.openai.tool import OpenAITool
 
 
 def test_litellm_call() -> None:
@@ -23,10 +23,10 @@ def test_litellm_call() -> None:
         import mirascope.core.litellm._call  # noqa: F401
 
         mock_call_factory.assert_called_once_with(
-            TCallResponse=OpenAICallResponse,
-            TCallResponseChunk=OpenAICallResponseChunk,
-            TToolType=OpenAITool,
-            TStream=OpenAIStream,
+            TCallResponse=LiteLLMCallResponse,
+            TCallResponseChunk=LiteLLMCallResponseChunk,
+            TToolType=LiteLLMTool,
+            TStream=LiteLLMStream,
             default_call_params={},
             setup_call=setup_call,
             get_json_output=_utils.get_json_output,

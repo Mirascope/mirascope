@@ -1,26 +1,24 @@
 """The `litellm_call` decorator for functions as LLM calls."""
 
 from ..base import call_factory
-from ..openai import (
-    OpenAICallParams,
-    OpenAICallResponse,
-    OpenAICallResponseChunk,
-    OpenAIStream,
-    OpenAITool,
-)
 from ..openai._utils import (
     get_json_output,
     handle_stream,
     handle_stream_async,
 )
 from ._utils import setup_call
+from .call_params import LiteLLMCallParams
+from .call_response import LiteLLMCallResponse
+from .call_response_chunk import LiteLLMCallResponseChunk
+from .stream import LiteLLMStream
+from .tool import LiteLLMTool
 
 litellm_call = call_factory(
-    TCallResponse=OpenAICallResponse,
-    TCallResponseChunk=OpenAICallResponseChunk,
-    TToolType=OpenAITool,
-    TStream=OpenAIStream,
-    default_call_params=OpenAICallParams(),
+    TCallResponse=LiteLLMCallResponse,
+    TCallResponseChunk=LiteLLMCallResponseChunk,
+    TToolType=LiteLLMTool,
+    TStream=LiteLLMStream,
+    default_call_params=LiteLLMCallParams(),
     setup_call=setup_call,  # pyright: ignore [reportArgumentType]
     get_json_output=get_json_output,
     handle_stream=handle_stream,  # pyright: ignore [reportArgumentType]

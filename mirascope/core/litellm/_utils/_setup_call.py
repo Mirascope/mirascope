@@ -8,26 +8,33 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
-from ...base._utils import fn_is_async
-from ...openai import OpenAICallParams, OpenAIDynamicConfig, OpenAITool
+from ...base._utils import AsyncCreateFn, CreateFn, fn_is_async
+from ...base.call_params import CommonCallParams
+from ...openai import (
+    AsyncOpenAIDynamicConfig,
+    OpenAICallParams,
+    OpenAIDynamicConfig,
+    OpenAITool,
+)
+from ...openai._call_kwargs import OpenAICallKwargs
 from ...openai._utils import setup_call as setup_call_openai
-from ...openai.call_kwargs import OpenAICallKwargs
 
 
 @overload
 def setup_call(
     *,
     model: str,
-    client: None,
-    fn: Callable[..., Awaitable[OpenAIDynamicConfig]],
+    client: ...,
+    fn: Callable[..., Awaitable[AsyncOpenAIDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: OpenAIDynamicConfig,
+    dynamic_config: AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
-    Callable[..., Awaitable[ChatCompletion]],
+    AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -39,16 +46,17 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: None,
+    client: ...,
     fn: Callable[..., OpenAIDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion],
+    CreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -60,15 +68,17 @@ def setup_call(
     *,
     model: str,
     client: None,
-    fn: Callable[..., OpenAIDynamicConfig | Awaitable[OpenAIDynamicConfig]],
+    fn: Callable[..., OpenAIDynamicConfig | Awaitable[AsyncOpenAIDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: OpenAIDynamicConfig,
+    dynamic_config: OpenAIDynamicConfig | AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
-    Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],
+    CreateFn[ChatCompletion, ChatCompletion]
+    | AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
     list[ChatCompletionMessageParam],
     list[type[OpenAITool]] | None,
@@ -84,6 +94,7 @@ def setup_call(
         json_mode=json_mode,
         call_params=call_params,
         extract=extract,
+        stream=stream,
     )
     create = cast(
         Callable[..., ChatCompletion] | Callable[..., Awaitable[ChatCompletion]],

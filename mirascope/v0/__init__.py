@@ -34,9 +34,9 @@ warnings.warn("""MIRASCOPE LOOK-ALIKE V0 INTERFACE USAGE
               
     Next steps:
         - We encourage you to try out the new v1 interface and mirgrate over. We think it's a big improvement, and we hope you will come to feel this way too.
-              - We've written a migration guide to help with this process: https://mirascope.io/docs/latest/MIGRATE
+              - We've written a migration guide to help with this process: https://mirascope.com/MIGRATE
         - We greatly appreciate any and all questions/comments/feedback, so if you have anything, send it our way!
-        - We understand that some people may prefer the class approach from v0 interface design. You can achieve a very similar interface using v1, see https://mirascope.io/docs/latest/MIGRATE/#baseprompt
+        - We understand that some people may prefer the class approach from v0 interface design. You can achieve a very similar interface using v1, see https://mirascope.com/MIGRATE/#baseprompt
         - If there turns out to be sufficient desire for the class-based interfaces to be included in v1 as fully supported interfaces, we will potentially consider this.
 """)
 

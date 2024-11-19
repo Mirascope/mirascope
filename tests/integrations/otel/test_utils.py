@@ -103,7 +103,7 @@ def test_configure_with_processors(
 
 
 def test_get_call_response_attributes() -> None:
-    """Tests the `get_call_response_attributes` function."""
+    """Tests the `_get_call_response_attributes` function."""
     call_response = MyCallResponse(
         metadata={"tags": {"version:0001"}},
         response="hello world",
@@ -131,7 +131,7 @@ def test_get_call_response_attributes() -> None:
         start_time=100,
         end_time=200,
     )  # type: ignore
-    result = _utils.get_call_response_attributes(call_response)
+    result = _utils._get_call_response_attributes(call_response)
     assert result["gen_ai.system"] == call_response.prompt_template
     assert result["gen_ai.request.model"] == call_response.call_kwargs.get("model")
     assert result["gen_ai.request.max_tokens"] == 0
@@ -155,7 +155,7 @@ def test_get_call_response_attributes() -> None:
 
 
 def test_set_call_response_event_attributes() -> None:
-    """Tests the `set_call_response_event_attributes` function."""
+    """Tests the `_set_call_response_event_attributes` function."""
     result = MagicMock()
     result.user_message_param = {"role": "user", "content": "user_content"}
     result.message_param = {"role": "assistant", "content": "assistant_content"}
@@ -163,7 +163,7 @@ def test_set_call_response_event_attributes() -> None:
     add_event = MagicMock()
     span.add_event = add_event
 
-    _utils.set_call_response_event_attributes(result, span)
+    _utils._set_call_response_event_attributes(result, span)
     assert add_event.call_count == 2
     assert add_event.call_args_list[0][0][0] == "gen_ai.content.prompt"
     assert add_event.call_args_list[0][1]["attributes"]["gen_ai.prompt"] == json.dumps(
@@ -176,12 +176,12 @@ def test_set_call_response_event_attributes() -> None:
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
+    "mirascope.integrations.otel._utils._set_call_response_event_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -208,12 +208,12 @@ def test_handle_call_response(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
+    "mirascope.integrations.otel._utils._set_call_response_event_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -241,12 +241,12 @@ async def test_handle_call_response_async(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
+    "mirascope.integrations.otel._utils._set_call_response_event_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -276,12 +276,12 @@ def test_handle_stream(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
 @patch(
-    "mirascope.integrations.otel._utils.set_call_response_event_attributes",
+    "mirascope.integrations.otel._utils._set_call_response_event_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -312,7 +312,7 @@ async def test_handle_stream_async(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -369,7 +369,7 @@ def test_handle_response_model_base_type() -> None:
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -418,7 +418,7 @@ def test_handle_structured_stream(
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )
@@ -477,7 +477,7 @@ async def test_handle_response_model_async_base_type() -> None:
 
 
 @patch(
-    "mirascope.integrations.otel._utils.get_call_response_attributes",
+    "mirascope.integrations.otel._utils._get_call_response_attributes",
     new_callable=MagicMock,
     return_value={},
 )

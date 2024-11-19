@@ -5,7 +5,7 @@ client = Mistral(api_key=mistral.load_api_key())
 
 
 def recommend_book(genre: str) -> str:
-    completion = client.chat(
+    completion = client.chat.complete(
         model="mistral-large-latest",
         messages=[{"role": "user", "content": f"Recommend a {genre} book"}],
     )

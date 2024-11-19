@@ -32,7 +32,9 @@ def convert_message_params(
                 },
             ]
         elif isinstance((content := message_param.content), str):
-            converted_message_params.append({"role": "user", "parts": [content]})
+            converted_message_params.append(
+                {"role": role if role == "user" else "model", "parts": [content]}
+            )
         else:
             converted_content = []
             for part in content:
@@ -75,5 +77,10 @@ def convert_message_params(
                         "Gemini currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append({"role": role, "parts": converted_content})
+            converted_message_params.append(
+                {
+                    "role": role if role == "user" else "model",
+                    "parts": converted_content,
+                }
+            )
     return converted_message_params

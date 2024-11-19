@@ -362,7 +362,7 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
 
     Currently we only support field level examples for `BaseTool` definitions of tools. We are working on identifying the best interface for adding examples at the field level for function tool definitions.
 
-## Toolkit
+## ToolKit
 
 ??? api "API Documentation"
 
@@ -409,6 +409,90 @@ In this example we:
 The core concept to understand here is that the `suggest_author` tool's description is dynamically generated on each call to `recommend_author` through the toolkit.
 
 This is why the "beginner" recommendation and "advanced" recommendations call the `suggest_author` tool with authors befitting the reading level of each call.
+
+## Pre-Made Tools and ToolKits
+
+Mirascope provides several pre-made tools and toolkits to help you get started quickly:
+
+### Pre-Made Tools
+
+??? api "API Documentation"
+
+    - [`mirascope.tools.web.DuckDuckGoSearch`](../api/tools/web/duckduckgo.md)
+    - [`mirascope.tools.web.HTTPX`](../api/tools/web/httpx.md)
+    - [`mirascope.tools.web.ParseURLContent`](../api/tools/web/parse_url_content.md)
+    - [`mirascope.tools.web.Requests`](../api/tools/web/requests.md)
+
+| Tool | Primary Use | Key Features | Characteristics |
+|------|-------------|--------------|-----------------|
+| [`DuckDuckGoSearch`](../api/tools/web/duckduckgo.md) | Web Searching | • Multiple query support<br>• Title/URL/snippet extraction<br>• Result count control<br>• Automated formatting | • Privacy-focused search<br>• Async support (AsyncDuckDuckGoSearch)<br>• Automatic filtering<br>• Structured results |
+| [`HTTPX`](../api/tools/web/httpx.md) | Advanced HTTP Requests | • Full HTTP method support (GET/POST/PUT/DELETE)<br>• Custom header support<br>• File upload/download<br>• Form data handling | • Async support (AsyncHTTPX)<br>• Configurable timeouts<br>• Comprehensive error handling<br>• Redirect control |
+| [`ParseURLContent`](../api/tools/web/parse_url_content.md) | Web Content Extraction | • HTML content fetching<br>• Main content extraction<br>• Element filtering<br>• Text normalization | • Automatic cleaning<br>• Configurable parser<br>• Timeout settings<br>• Error handling |
+| [`Requests`](../api/tools/web/requests.md) | Simple HTTP Requests | • Basic HTTP methods<br>• Simple API<br>• Response text retrieval<br>• Basic authentication | • Minimal configuration<br>• Intuitive interface<br>• Basic error handling<br>• Lightweight implementation |
+
+Example using DuckDuckGoSearch:
+
+!!! mira ""
+
+    {% for tool_method, tool_method_title in [["basic_usage", "Basic Usage"], ["custom_config", "Custom Config"]] %}
+    === "{{ tool_method_title }}"
+
+        {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+        === "{{ method_title }}"
+
+            {% for provider in supported_llm_providers %}
+            === "{{ provider }}"
+
+                {% if tool_method == "basic_usage" %}
+                ```python hl_lines="2 5"
+                {% elif method == "base_message_param" %}
+                ```python hl_lines="2 4 5 8"
+                {% else %}
+                ```python hl_lines="2 3 5 6 9"
+                {% endif %}
+                --8<-- "examples/learn/tools/pre_made_tools/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                ```
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+### Pre-Made ToolKits
+
+??? api "API Documentation"
+
+    - [`mirascope.tools.system.FileSystemToolKit`](../api/tools/system/file_system.md)
+    - [`mirascope.tools.system.DockerOperationToolKit`](../api/tools/system/docker_operation.md)
+
+| ToolKit                                                     | Primary Use | Tools and Features                                                                                                                                                    | Characteristics |
+|-------------------------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| [`FileSystemToolKit`](../api/tools/system/file_system.md)    | File System Operations | • ReadFile: File content reading<br>• WriteFile: Content writing<br>• ListDirectory: Directory listing<br>• CreateDirectory: Directory creation<br>• DeleteFile: File deletion | • Path traversal protection<br>• File size limits<br>• Extension validation<br>• Robust error handling<br>• Base directory isolation |
+| [`DockerOperationToolKit`](../api/tools/system/docker_operation.md) | Code & Command Execution | • ExecutePython: Python code execution with optional package installation<br>• ExecuteShell: Shell command execution<br> | • Docker container isolation<br>• Memory limits<br>• Network control<br>• Security restrictions<br>• Resource cleanup |
+
+Example using FileSystemToolKit:
+
+!!! mira ""
+
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "string_template" %}
+            ```python hl_lines="4 10 12"
+            {% elif method == "base_message_param" %}
+            ```python hl_lines="4 9 17"
+            {% else %}
+            ```python hl_lines="4 9 16"
+            {% endif %}
+            --8<-- "examples/learn/tools/pre_made_toolkit/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+        {% endfor %}
+
+    {% endfor %}
 
 ## Next Steps
 

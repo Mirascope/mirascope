@@ -9,7 +9,7 @@ We will be creating an example decorator `with_saving` that saves some metadata 
     --8<-- "examples/learn/middleware/with_saving.py:6:7"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:17:27"
+    --8<-- "examples/learn/middleware/with_saving.py:17:29"
     ```
 
 This table should be adjusted and tailored to your needs depending on your SQL Dialect or requirements.
@@ -22,7 +22,7 @@ This table should be adjusted and tailored to your needs depending on your SQL D
     --8<-- "examples/learn/middleware/with_saving.py:9:9"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:143:154"
+    --8<-- "examples/learn/middleware/with_saving.py:174:190"
     ```
 
 Let's go over each of the different functions used to create the custom middleware:
@@ -39,7 +39,7 @@ We start off with the `custom_context_manager` function, which will be relevant 
     --8<-- "examples/learn/middleware/with_saving.py:7:7"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:35:41"
+    --8<-- "examples/learn/middleware/with_saving.py:36:42"
     ```
 
 All of the following handlers are then wrapped by this context manager.
@@ -57,7 +57,7 @@ These functions must have the following signature (where async should be async) 
     --8<-- "examples/learn/middleware/with_saving.py:12:12"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:43:63"
+    --8<-- "examples/learn/middleware/with_saving.py:45:65"
     ```
 
 The function arguments are (with no strict naming for the arguments):
@@ -81,7 +81,7 @@ These functions must have the following signature (where async should be async) 
     --8<-- "examples/learn/middleware/with_saving.py:12:12"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:66:85"
+    --8<-- "examples/learn/middleware/with_saving.py:68:87"
     ```
 
 The first argument will be a provider-specific `BaseStream` instance. All other arguments will be the same as `handle_call_response`.
@@ -104,7 +104,7 @@ These functions must have the following signature (where async should be async) 
     --8<-- "examples/learn/middleware/with_saving.py:12:12"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:88:116"
+    --8<-- "examples/learn/middleware/with_saving.py:90:118"
     ```
 
 The first argument will be a Pydantic `BaseModel` or Python primitive depending on the type of `response_model`. All other arguments will be the same as `handle_call_response`.
@@ -125,7 +125,7 @@ These functions must have the following signature (where async should be async) 
     --8<-- "examples/learn/middleware/with_saving.py:12:12"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:119:140"
+    --8<-- "examples/learn/middleware/with_saving.py:121:142"
     ```
 
 The first argument will be a Mirascope `StructuredStream` of the provider you are using.  All other arguments will be the same as `handle_call_response`.
@@ -133,6 +133,16 @@ The first argument will be a Mirascope `StructuredStream` of the provider you ar
 !!! note "Only run on exhaustion"
 
     The `handle_structured_stream` and `handle_structured_stream_async` handlers will run only after the `Generator` or `AsyncGenerator`, respectively, have been exhausted.
+
+### `handle_error` and `handle_error_async`
+
+`handle_error` and `handle_error_async` are called when an error occurs during the Mirascope call. This is useful for handling and recording common errors like validation errors or API failures:
+
+!!! mira ""
+
+    ```python
+    --8<-- "examples/learn/middleware/with_saving.py:145:171"
+    ```
 
 ### `custom_decorator`
 
@@ -148,7 +158,7 @@ Now that you have defined your and created your `with_saving` decorator, you can
     --8<-- "examples/learn/middleware/with_saving.py:5:5"
 
 
-    --8<-- "examples/learn/middleware/with_saving.py:160:166"
+    --8<-- "examples/learn/middleware/with_saving.py:193:199"
     ```
 
 In this example, when `run` is finished, `handle_call_response` will be called to collect the response. Now, any Mirascope call that uses the `with_saving` decorator will write to your database.

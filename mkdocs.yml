@@ -1,6 +1,6 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
-site_url: https://www.mirascope.com/docs
+site_url: https://mirascope.com
 site_description: LLM abstractions that aren't obstructions
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
@@ -32,13 +32,13 @@ theme:
         icon: material/brightness-7
         name: Switch to dark mode
       primary: custom
-      accent: indigo
+      accent: custom
     - scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
       primary: custom
-      accent: indigo
+      accent: custom
   font:
     text: Roboto
     code: Roboto Mono
@@ -104,7 +104,18 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - social
   - search
+  - blog:
+      post_excerpt: required
+      post_readtime_words_per_minute: 265
+      post_url_format: "{slug}"
+      categories_url_format: "{slug}"
+      archive: false
+      categories_allowed:
+        - Tips & Inspiration
+        - Behind the Scenes
+        - Library Updates
   - macros:
       module_name: docs/macros
   - mkdocs-jupyter:
@@ -144,8 +155,9 @@ validation:
   not_found: warn
 
 nav:
+  - Home: "index.md"
   - Get Started:
-      - Welcome to Mirascope: "index.md"
+      - Welcome to Mirascope: "WELCOME.md"
       - Why Use Mirascope: "WHY.md"
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
@@ -178,6 +190,7 @@ nav:
           - o1 Style Thinking: "tutorials/more_advanced/o1_style_thinking.ipynb"
       - Agents:
           - Web Search Agent: "tutorials/agents/web_search_agent.ipynb"
+          - Qwant Search Agent With Sources: "tutorials/agents/qwant_search_agent_with_sources.ipynb"
           - Blog Writing Agent: "tutorials/agents/blog_writing_agent.ipynb"
           - SQL Agent: "tutorials/agents/sql_agent.ipynb"
           - Localized Agent: "tutorials/agents/localized_agent.ipynb"
@@ -266,6 +279,7 @@ nav:
               - call_response: "api/core/base/call_response.md"
               - call_response_chunk: "api/core/base/call_response_chunk.md"
               - dynamic_config: "api/core/base/dynamic_config.md"
+              - merge_decorators: "api/core/base/merge_decorators.md"
               - message_param: "api/core/base/message_param.md"
               - metadata: "api/core/base/metadata.md"
               - prompt: "api/core/base/prompt.md"
@@ -331,9 +345,18 @@ nav:
               - dynamic_config: "api/core/vertex/dynamic_config.md"
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
+      - Tools:
+          - DuckDuckGo: "api/tools/web/duckduckgo.md"
+          - HTTPX: "api/tools/web/httpx.md"
+          - ParseURLContent: "api/tools/web/parse_url_content.md"
+          - Requests: "api/tools/web/requests.md"
+          - FileSystem: "api/tools/system/file_system.md"
+          - DockerOperation: "api/tools/system/docker_operation.md"
       - Integrations:
           - Langfuse: "api/integrations/langfuse.md"
           - Logfire: "api/integrations/logfire.md"
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
+  - Blog:
+      - "blog/index.md"

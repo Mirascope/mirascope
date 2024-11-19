@@ -13,10 +13,12 @@ from groq.types.chat import (
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
-from ..call_kwargs import GroqCallKwargs
+from ...base.call_params import CommonCallParams
+from .._call_kwargs import GroqCallKwargs
 from ..call_params import GroqCallParams
-from ..dynamic_config import GroqDynamicConfig
+from ..dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from ..tool import GroqTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -25,13 +27,14 @@ def setup_call(
     *,
     model: str,
     client: AsyncGroq | None,
-    fn: Callable[..., Awaitable[GroqDynamicConfig]],
+    fn: Callable[..., Awaitable[AsyncGroqDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: GroqDynamicConfig,
+    dynamic_config: AsyncGroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -51,8 +54,9 @@ def setup_call(
     dynamic_config: GroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
     str | None,
@@ -66,13 +70,14 @@ def setup_call(
     *,
     model: str,
     client: Groq | AsyncGroq | None,
-    fn: Callable[..., GroqDynamicConfig | Awaitable[GroqDynamicConfig]],
+    fn: Callable[..., GroqDynamicConfig | Awaitable[AsyncGroqDynamicConfig]],
     fn_args: dict[str, Any],
-    dynamic_config: GroqDynamicConfig,
+    dynamic_config: GroqDynamicConfig | AsyncGroqDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: GroqCallParams,
+    call_params: GroqCallParams | CommonCallParams,
     extract: bool,
+    stream: bool,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
     | AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -82,7 +87,13 @@ def setup_call(
     GroqCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, GroqTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        GroqTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(GroqCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)

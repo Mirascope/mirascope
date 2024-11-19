@@ -21,7 +21,7 @@ from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
-from .dynamic_config import MistralDynamicConfig
+from .dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
 from .tool import MistralTool
 
 
@@ -35,7 +35,7 @@ class MistralStream(
         AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralTool,
         dict[str, Any],
-        MistralDynamicConfig,
+        AsyncMistralDynamicConfig | MistralDynamicConfig,
         MistralCallParams,
         FinishReason,
     ]

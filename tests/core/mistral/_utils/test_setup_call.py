@@ -11,6 +11,9 @@ from mistralai.models import (
     UserMessage,
 )
 
+from mirascope.core.mistral._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.mistral._utils._setup_call import setup_call
 from mirascope.core.mistral.tool import MistralTool
 
@@ -55,12 +58,15 @@ def test_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "mistral-large-latest"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, MistralTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, MistralTool, {}, convert_common_call_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -125,12 +131,15 @@ async def test_async_setup_call(
         json_mode=False,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "mistral-large-latest"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, MistralTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, MistralTool, {}, convert_common_call_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )
@@ -173,6 +182,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1].content == "test\n\njson_mode_content"
     assert "tools" not in call_kwargs
@@ -190,6 +200,7 @@ def test_setup_call_json_mode(
         json_mode=True,
         call_params={},
         extract=False,
+        stream=False,
     )
     assert messages[-1] == UserMessage(content="json_mode_content")
 
@@ -216,5 +227,6 @@ def test_setup_call_extract(
         json_mode=False,
         call_params={},
         extract=True,
+        stream=False,
     )
     assert "tool_choice" in call_kwargs and call_kwargs["tool_choice"] == "any"

@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import ParamSpec, TypeVar, overload
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from ._create import create_factory
 from ._utils import (
@@ -27,6 +27,7 @@ _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=Tru
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", bound=BaseDynamicConfig)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams)
 _ResponseT = TypeVar("_ResponseT")
@@ -45,6 +46,7 @@ def extract_factory(  # noqa: ANN202
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -56,6 +58,7 @@ def extract_factory(  # noqa: ANN202
         _SyncBaseClientT,
         _AsyncBaseClientT,
         _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
         _BaseCallParamsT,
         _ResponseT,
         _ResponseChunkT,
@@ -83,7 +86,7 @@ def extract_factory(  # noqa: ANN202
 
     @overload
     def decorator(
-        fn: Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
@@ -94,7 +97,7 @@ def extract_factory(  # noqa: ANN202
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_BaseDynamicConfigT]],
+        | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
@@ -129,12 +132,12 @@ def extract_factory(  # noqa: ANN202
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
-                json_output = get_json_output(call_response, json_mode)
                 try:
+                    json_output = get_json_output(call_response, json_mode)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
-                except ValidationError as e:
+                except Exception as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
                 if isinstance(output, BaseModel):
@@ -152,12 +155,12 @@ def extract_factory(  # noqa: ANN202
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
-                json_output = get_json_output(call_response, json_mode)
                 try:
+                    json_output = get_json_output(call_response, json_mode)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
-                except ValidationError as e:
+                except Exception as e:
                     e._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
                     raise e
                 if isinstance(output, BaseModel):

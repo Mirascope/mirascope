@@ -242,3 +242,37 @@ def test_prompt_template_with_none() -> None:
         def fn() -> None: ...
 
         assert fn == mock_decorated_function
+
+
+def test_base_prompt_str_with_special_tags() -> None:
+    """Tests the BasePrompt.__str__ method with special tags."""
+
+    @prompt_template(
+        """
+        Process this: {content:text} and {image:image} and {audio:audio} and 
+        these: {contents:texts} and {images:images} and {audios:audios}
+        """
+    )
+    class MultiModalPrompt(BasePrompt):
+        content: str
+        image: bytes
+        audio: bytes
+        contents: list[str]
+        images: list[bytes]
+        audios: list[bytes]
+
+    prompt = MultiModalPrompt(
+        content="text",
+        image=b"image",
+        audio=b"audio",
+        contents=["text1", "text2"],
+        images=[b"image1", b"image2"],
+        audios=[b"audio1", b"audio2"],
+    )
+
+    # Verify all special tags are removed in string representation
+    expected = (
+        "Process this: text and b'image' and b'audio' and \n"
+        "these: ['text1', 'text2'] and [b'image1', b'image2'] and [b'audio1', b'audio2']"
+    )
+    assert str(prompt).strip() == expected.strip()

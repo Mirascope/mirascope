@@ -14,7 +14,7 @@ class Book(BaseModel):
 
 
 def extract_book(text: str) -> Book:
-    completion = client.chat(
+    completion = client.chat.complete(
         model="mistral-large-latest",
         messages=[{"role": "user", "content": f"Extract {text}"}],
         tools=[

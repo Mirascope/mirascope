@@ -97,7 +97,7 @@ def update_links(obj: GriffeObject) -> None:
         # Parse the usage docs link
         parsed_link = urlparse(usage_docs_link)
 
-        if parsed_link.netloc == "docs.mirascope.io":
+        if parsed_link.netloc == "mirascope.com":
             local_link = parsed_link.path.lstrip("/")
         else:
             local_link = usage_docs_link

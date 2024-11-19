@@ -1,8 +1,8 @@
 import json
 
-from mistralai.client import MistralClient
+from mistralai import Mistral
 
-client = MistralClient()
+client = Mistral()
 
 
 def get_book_author(title: str) -> str:
@@ -15,7 +15,7 @@ def get_book_author(title: str) -> str:
 
 
 def identify_author(book: str) -> str:
-    completion = client.chat(
+    completion = client.chat.complete(
         model="mistral-large-latest",
         messages=[{"role": "user", "content": f"Who wrote {book}?"}],
         tools=[
