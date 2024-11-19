@@ -41,7 +41,7 @@ In fact, our experience suggests that any prompt management system should, at a 
 2. [**LangSmith**](#2-langsmithprompt-versioning-from-a-central-hub)—prompt versioning from a central hub.
 3. [**Agenta**](#3-agentawide-compatibility-with-llm-app-frameworks)—wide compatibility with LLM app frameworks.
 4. [**Pezzo**](#4-pezzovisual-prompt-management-and-testing)—visual prompt management and testing.
-5. [**PromptHub**](#5-prompthubfor-collaboration-between-tech--non-tech-roles)—for collaboration between tech and non-tech roles.
+5. [**PromptHub**](#5-prompthubfor-collaboration-between-tech-and-non-tech-roles)—for collaboration between tech and non-tech roles.
 
 ## 1. Mirascope and Lilypad—Prompt Engineering and Management For Software Engineers
 
@@ -472,7 +472,7 @@ For more information on how Agenta’s prompt management works, you can consult 
 
 Pezzo describes its prompt management capabilities in its documentation on its website.
 
-## 5. PromptHub—For Collaboration Between Tech & Non-Tech Roles
+## 5. PromptHub—For Collaboration Between Tech and Non-Tech Roles
 
 ![PromptHub homepage: Level up your prompt management](../../assets/blog/prompt-versioning/prompt_hub_homepage.png)
 

@@ -17,15 +17,15 @@ LLM frameworks provide tools and libraries for building and scaling language mod
 Frameworks: 
 
 * Offer prompt engineering and quality assurance tools for accurate and relevant responses.  
-* Provide pre-built modules for common tasks like data preprocessing, model [fine-tuning](https://mirascope.com/blog/prompt-engineering-vs-fine-tuning/), and response generation.   
+* Provide pre-built modules for common tasks like data preprocessing, model [fine-tuning](https://mirascope.com/blog/prompt-engineering-vs-fine-tuning/), and response generation.
 * Make it easy to integrate with other tools and platforms like Hugging Face Transformers, TensorFlow, or PyTorch without having to deal with complex APIs.   
 * Orchestrate workflows to manage complex, multi-step processes like input validation, output formatting, and more. 
 
 **In general, these frameworks *should* simplify tasks that would otherwise require lots of manual coding and multiple iterations**. 
 
-But [modern frameworks](https://mirascope.com/blog/llamaindex-vs-langchain/) (like LangChain) impose their own unique abstractions, requiring you to do things their way. This not only feels limiting but also makes development and maintenance harder than it needs to be. 
+But [modern frameworks](https://mirascope.com/blog/llamaindex-vs-langchain/) (like LangChain) impose their own unique abstractions, requiring you to do things their way. This not only feels limiting but also makes development and maintenance harder than it needs to be.
 
-**For this reason, we developed [Mirascope](https://github.com/mirascope/mirascope) — a lightweight Python toolkit that provides building blocks for developing LLM-powered applications without unnecessary constraints.** 
+**For this reason, we developed [Mirascope](https://github.com/mirascope/mirascope) - a lightweight Python toolkit that provides building blocks for developing LLM-powered applications without unnecessary constraints.**
 
 Below, we’ve curated a list of the top LLM frameworks and highlighted the strengths and purpose of each framework in the following categories: 
 
@@ -37,7 +37,7 @@ Below, we’ve curated a list of the top LLM frameworks and highlighted the stre
 
 <!-- more -->
 
-## LLM Application Development Frameworks  {#llm-application-development-frameworks}
+## LLM Application Development Frameworks
 
 These frameworks offer [tools](https://mirascope.com/blog/llm-tools/) and libraries that simplify and scale the process of building, testing, and deploying LLM-based applications.
 
@@ -47,7 +47,7 @@ Below are some of the most effective frameworks that facilitate this process.
 
 ![Mirascope Homepage](../../assets/blog/llm-frameworks/mirascope-homepage.png)
 
-[Mirascope](https://github.com/mirascope/mirascope/) is an LLM toolkit that follows a “use-when-you-need” design philosophy, meaning it offers modules that can be selectively and easily slotted into your existing task flows.
+[Mirascope](https://github.com/mirascope/mirascope/) is an LLM toolkit that follows a "use-when-you-need" design philosophy, meaning it offers modules that can be selectively and easily slotted into your existing task flows.
 
 This approach lets you productively focus on solving your problems at hand rather than worrying about how to use complex abstractions or other unnecessary but typical constraints of modern frameworks.
 
@@ -331,8 +331,70 @@ This approach allows the LLM to improve its accuracy based on past outputs by le
 
 Below is an example of how Mirascope reinserts validation errors into follow-up prompts for more accurate outcomes: 
 
-```py
-from typing import Annotatedfrom mirascope.core import anthropic, prompt_templatefrom mirascope.integrations.tenacity import collect_errorsfrom pydantic import AfterValidator, BaseModel, Field, ValidationErrorfrom tenacity import retry, stop_after_attemptclass FactCheck(BaseModel):    has_errors: bool = Field(        description="Whether the text contains factual errors"    )@anthropic.call(    model="claude-3-5-sonnet-20240620",    response_model=FactCheck,    json_mode=True,)@prompt_template(    """    Does the following text contain any factual errors? {text}    """)def check_for_factual_errors(text: str): ...class FactCorrection(BaseModel):    text: Annotated[        str,        AfterValidator(            lambda t: t            if not (check_for_factual_errors(t)).has_errors            else (_ for _ in ()).throw(ValueError("Text still contains factual errors"))        ),    ] = Field(description="The corrected text with factual accuracy")    explanation: str = Field(description="Explanation of factual corrections made")@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))@anthropic.call(    "claude-3-5-sonnet-20240620", response_model=FactCorrection, json_mode=True)@prompt_template(    """    {previous_errors}    Verify and correct factual information in the following text.    If no corrections are needed, return the original text.    Provide an explanation of any corrections made.    Text: {text}    """)def correct_factual_errors(    text: str, *, errors: list[ValidationError] | None = None) -> anthropic.AnthropicDynamicConfig:    previous_errors = f"Previous Errors: {errors}" if errors else ""    return {"computed_fields": {"previous_errors": previous_errors}}try:    text = "Mount Everest is the tallest mountain in the United States."    result = correct_factual_errors(text)    print(f"Corrected text: {result.text}")    print(f"Explanation: {result.explanation}")except ValidationError:    print("Failed to correct factual errors after 3 attempts")
+```python
+from typing import Annotated
+
+from mirascope.core import anthropic, prompt_template
+from mirascope.integrations.tenacity import collect_errors
+from pydantic import AfterValidator, BaseModel, Field, ValidationError
+from tenacity import retry, stop_after_attempt
+
+class FactCheck(BaseModel):
+    has_errors: bool = Field(
+        description="Whether the text contains factual errors"
+    )
+
+@anthropic.call(
+    model="claude-3-5-sonnet-20240620",
+    response_model=FactCheck,
+    json_mode=True,
+)
+@prompt_template(
+    """
+    Does the following text contain any factual errors? {text}
+    """
+)
+def check_for_factual_errors(text: str): ...
+
+class FactCorrection(BaseModel):
+    text: Annotated[
+        str,
+        AfterValidator(
+            lambda t: t
+            if not (check_for_factual_errors(t)).has_errors
+            else (_ for _ in ()).throw(ValueError("Text still contains factual errors"))
+        ),
+    ] = Field(description="The corrected text with factual accuracy")
+    explanation: str = Field(description="Explanation of factual corrections made")
+
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
+@anthropic.call(
+    "claude-3-5-sonnet-20240620", response_model=FactCorrection, json_mode=True
+)
+@prompt_template(
+    """
+    {previous_errors}
+
+    Verify and correct factual information in the following text.
+    If no corrections are needed, return the original text.
+    Provide an explanation of any corrections made.
+
+    Text: {text}
+    """
+)
+def correct_factual_errors(
+    text: str, *, errors: list[ValidationError] | None = None
+) -> anthropic.AnthropicDynamicConfig:
+    previous_errors = f"Previous Errors: {errors}" if errors else ""
+    return {"computed_fields": {"previous_errors": previous_errors}}
+
+try:
+    text = "Mount Everest is the tallest mountain in the United States."
+    result = correct_factual_errors(text)
+    print(f"Corrected text: {result.text}")
+    print(f"Explanation: {result.explanation}")
+except ValidationError:
+    print("Failed to correct factual errors after 3 attempts")
 ```
 
 A `FactCheck` class is first defined to validate whether text contains factual errors, using Mirascope’s `@anthropic.call` decorator to ensure responses fit the expected structure. 
@@ -371,7 +433,7 @@ To ease the transition from prototype to production, Dify offers backend-as-a-se
 
 You can learn more about Dify on its GitHub page (where you can also find its documentation) and get additional information such as links to its Discord community and Twitter. 
 
-## Data Integration and Retrieval Frameworks {#data-integration-and-retrieval-frameworks}
+## Data Integration and Retrieval Frameworks
 
 The following frameworks help you aggregate, manage, and access various data sources for LLM applications. 
 
@@ -397,7 +459,7 @@ Haystack’s integration with various data storage options and vector search met
 
 For more information, you can read about Haystack on its website, documentation site, and GitHub page. 
 
-## Model Development and Fine-Tuning Framework  {#model-development-and-fine-tuning-framework}
+## Model Development and Fine-Tuning Framework
 
 This LLM framework allows developers to create customized language models that meet specific application requirements and improve performance.
 
@@ -413,7 +475,7 @@ A key strength of Marvin is its ability to handle not just text, but also image 
 
 Created by the team behind Prefect, Mavin has a website with documentation and a GitHub repository. 
 
-## Workflow Orchestration Frameworks  {#workflow-orchestration-frameworks}
+## Workflow Orchestration Frameworks
 
 Workflow [orchestration frameworks](https://mirascope.com/blog/llm-orchestration/) manage and coordinate interactions to improve the performance and effectiveness of LLM-powered applications. 
 
@@ -441,7 +503,7 @@ ControlFlow AI integrates easily with existing tech stacks and is compatible wit
 
 For more details, the ControlFlow AI website provides extensive documentation, along with a GitHub repository where you can explore its source code and features.
 
-## AI Agent Frameworks  {#ai-agent-frameworks}
+## AI Agent Frameworks
 
 Agent frameworks offer the structure needed to develop intelligent agents that can interact, learn, and adapt within various environments. 
 
