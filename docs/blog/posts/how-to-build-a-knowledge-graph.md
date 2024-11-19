@@ -32,6 +32,8 @@ Today, **you no longer need to be an expert in graph theory or taxonomies to bui
 
 We dive into key concepts and steps for getting started with knowledge graphs, and show you how to leverage an LLM to build a graph using [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for developing AI-driven applications.
 
+<!-- more -->
+
 ## Our Challenges with Using LLMs to Build Knowledge Graphs
 
 Language models change the game when it comes to automating the extraction of entities and relationships from unstructured data, because they understand context and identify complex patterns.
