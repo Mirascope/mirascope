@@ -69,29 +69,6 @@
     backdrop-filter: blur(8px);
   }
 
-  .md-header::before {
-    content: "";
-    position: fixed;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    background-color: rgba(255, 255, 255, 0.7);
-    z-index: -1;
-  }
-
-  /* iOS specific fix */
-  @supports (-webkit-backdrop-filter: none) {
-    .md-header::before {
-      background-color: rgba(255, 255, 255, 0.7);
-      -webkit-backdrop-filter: blur(8px);
-    }
-  }
-
-  @supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
-    .md-header::before {
-      background-color: rgba(255, 255, 255, 0.95);
-    }
-  }
-
   .md-header > * {
     position: relative;
     z-index: 1;
@@ -103,6 +80,7 @@
 
   .md-tabs {
     background-color: transparent !important;
+    z-index: -1;
   }
 
   .md-tabs__link {
@@ -122,51 +100,61 @@
     background-color: transparent !important;
     color: #6366f1 !important;
     padding: 0 !important;
+    z-index: 50;
   }
 
   .md-search__form {
     background-color: rgba(99, 102, 241, 0.08) !important;
     color: #6366f1 !important;
     transition: background-color 0.2s ease;
+    z-index: 50;
   }
 
   .md-search__form:hover {
     background-color: rgba(99, 102, 241, 0.12) !important;
+    z-index: 50;
   }
 
   .md-search__input {
     background-color: transparent !important;
     color: #6366f1 !important;
+    z-index: 50;
   }
 
   .md-search__input::placeholder {
     color: #6366f1 !important;
     opacity: 0.7;
+    z-index: 50;
   }
 
   /* Search icon styling */
   .md-search__icon {
     color: #6366f1 !important;
     opacity: 0.8;
+    z-index: 50;
   }
 
   .md-search__icon svg {
     fill: #6366f1 !important;
+    z-index: 50;
   }
 
   /* Search options styling */
   .md-search__options {
     color: #6366f1 !important;
+    z-index: 50;
   }
 
   /* Fix overlay styling */
   .md-search__overlay {
     background-color: rgba(0, 0, 0, 0.1) !important;
     backdrop-filter: blur(8px);
+    z-index: 50;
   }
 
   .md-search__inner {
     background-color: white !important;
+    z-index: 50;
   }
 
   .md-source {
