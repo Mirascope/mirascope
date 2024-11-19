@@ -210,12 +210,7 @@ venvPath = "."
 venv = ".venv"
 
 [tool.codespell]
-skip = [
-    ".git",
-    "*.lock",
-    "./examples/cookbook/agents/web_search_agent/messages.py",
-    "./docs/blog/posts/llm-prompt.md",
-]
+skip = [".git", "*.lock", "./docs/blog/posts/llm-prompt.md"]
 ignore-words-list = 'EHR,reworkd,ROUGE'
 ignore-regex = 'and buyed some milk'
 

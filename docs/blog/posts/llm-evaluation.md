@@ -316,7 +316,7 @@ for evaluation in evaluations:
 
 ```
 
-### Mirascope Evaluation Cookbook
+### Mirascope Evaluation Guide
 
 See our [documentation](https://mirascope.com/learn/evals/) for rich examples and techniques to help you write evaluations for a range of LLM-driven applications.
 
