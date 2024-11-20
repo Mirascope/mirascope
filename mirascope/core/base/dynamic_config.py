@@ -1,6 +1,6 @@
 """The base type in a function as an LLM call to return for dynamic configuration."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, Generic, TypeVar
 
 from typing_extensions import NotRequired, TypedDict
@@ -17,11 +17,11 @@ _ClientT = TypeVar("_ClientT", bound=object)
 class DynamicConfigBase(TypedDict):
     metadata: NotRequired[Metadata]
     computed_fields: NotRequired[dict[str, Any | list[Any] | list[list[Any]]]]
-    tools: NotRequired[list[type[BaseTool] | Callable]]
+    tools: NotRequired[Sequence[type[BaseTool] | Callable]]
 
 
 class DynamicConfigMessages(DynamicConfigBase, Generic[_MessageParamT]):
-    messages: NotRequired[list[_MessageParamT]]
+    messages: NotRequired[Sequence[_MessageParamT]]
 
 
 class DynamicConfigCallParams(DynamicConfigBase, Generic[_CallParamsT]):
@@ -35,12 +35,12 @@ class DynamicConfigClient(DynamicConfigBase, Generic[_ClientT]):
 class DynamicConfigMessagesCallParams(
     DynamicConfigBase, Generic[_MessageParamT, _CallParamsT]
 ):
-    messages: NotRequired[list[_MessageParamT]]
+    messages: NotRequired[Sequence[_MessageParamT]]
     call_params: NotRequired[_CallParamsT]
 
 
 class DynamicConfigMessagesClient(DynamicConfigBase, Generic[_MessageParamT, _ClientT]):
-    messages: NotRequired[list[_MessageParamT]]
+    messages: NotRequired[Sequence[_MessageParamT]]
     client: NotRequired[_ClientT | None]
 
 
@@ -52,7 +52,7 @@ class DynamicConfigCallParamsClient(DynamicConfigBase, Generic[_CallParamsT, _Cl
 class DynamicConfigFull(
     DynamicConfigBase, Generic[_MessageParamT, _CallParamsT, _ClientT]
 ):
-    messages: NotRequired[list[_MessageParamT]]
+    messages: NotRequired[Sequence[_MessageParamT]]
     call_params: NotRequired[_CallParamsT]
     client: NotRequired[_ClientT | None]
 
