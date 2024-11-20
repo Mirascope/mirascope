@@ -47,6 +47,7 @@ def default_context_manager(
 
 
 def middleware_factory(
+    *,
     custom_context_manager: Callable[
         [SyncFunc | AsyncFunc], AbstractContextManager[_T]
     ] = default_context_manager,
