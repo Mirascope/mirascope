@@ -7,6 +7,7 @@ from mistralai.models import (
     ToolMessage,
     UserMessage,
 )
+from mistralai.types.basemodel import Unset
 
 from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
 from mirascope.core.mistral._utils._convert_message_params import convert_message_params
@@ -21,12 +22,28 @@ def test_convert_message_params() -> None:
         UserMessage(content="Hello"),
         BaseMessageParam(role="user", content="Hello"),
         BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
+        BaseMessageParam(role="assistant", content="Hello"),
+        BaseMessageParam(role="system", content="Hello"),
+        BaseMessageParam(role="tool", content="Hello"),
+        AssistantMessage(
+            content="Hello", tool_calls=Unset(), prefix=False, role="assistant"
+        ),
+        SystemMessage(content="Hello", role="system"),
+        ToolMessage(content="Hello", tool_call_id=Unset(), name=Unset(), role="tool"),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
         UserMessage(content="Hello"),
         UserMessage(role="user", content="Hello"),
         UserMessage(role="user", content="Hello"),
+        AssistantMessage(content="Hello"),
+        SystemMessage(content="Hello"),
+        ToolMessage(content="Hello", tool_call_id=Unset(), name=Unset(), role="tool"),
+        AssistantMessage(
+            content="Hello", tool_calls=Unset(), prefix=False, role="assistant"
+        ),
+        SystemMessage(content="Hello", role="system"),
+        ToolMessage(content="Hello"),
     ]
 
     with pytest.raises(
