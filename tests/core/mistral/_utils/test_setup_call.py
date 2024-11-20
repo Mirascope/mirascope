@@ -8,6 +8,7 @@ from mistralai.models import (
     AssistantMessage,
     ChatCompletionResponse,
     CompletionChunk,
+    TextChunk,
     UserMessage,
 )
 
@@ -154,6 +155,26 @@ async def test_async_setup_call(
     assert isinstance(stream, AsyncMockIterator)
 
 
+@pytest.mark.parametrize(
+    "base_messages,expected_last_message",
+    [
+        (
+            [UserMessage(content="test")],
+            UserMessage(content="test\n\njson_mode_content"),
+        ),
+        (
+            [UserMessage(content=[TextChunk(text="test")])],
+            UserMessage(
+                content=[
+                    TextChunk(text="test", TYPE="text"),
+                    TextChunk(text="\n\njson_mode_content", TYPE="text"),
+                ]
+            ),
+        ),
+        ([AssistantMessage(content="test")], UserMessage(content="json_mode_content")),
+    ],
+    ids=["string_content", "list_content", "assistant_message"],
+)
 @patch(
     "mirascope.core.mistral._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
@@ -163,33 +184,28 @@ def test_setup_call_json_mode(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
+    base_messages,
+    expected_last_message,
 ) -> None:
-    """Tests the `setup_call` function with JSON mode."""
+    """Tests the setup_call function with JSON mode for different message types and content formats.
+
+    Args:
+        mock_utils: Mock for utilities module
+        mock_convert_message_params: Mock for message parameter conversion
+        mock_base_setup_call: Mock for base setup call
+        base_messages: Initial messages to test
+        expected_last_message: Expected format of the last message after processing
+    """
+    # Setup mocks
     mock_utils.setup_call = mock_base_setup_call
     mock_json_mode_content = MagicMock()
     mock_json_mode_content.return_value = "\n\njson_mode_content"
     mock_utils.json_mode_content = mock_json_mode_content
-    mock_base_setup_call.return_value[1] = [UserMessage(content="test")]
+    mock_base_setup_call.return_value[1] = base_messages
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_convert_message_params.side_effect = lambda x: x
-    _, _, messages, _, call_kwargs = setup_call(
-        model="mistral-large-latest",
-        client=None,
-        fn=MagicMock(),
-        fn_args={},
-        dynamic_config=None,
-        tools=None,
-        json_mode=True,
-        call_params={},
-        extract=False,
-        stream=False,
-    )
-    assert messages[-1].content == "test\n\njson_mode_content"
-    assert "tools" not in call_kwargs
 
-    mock_base_setup_call.return_value[1] = [
-        AssistantMessage(content="test"),
-    ]
+    # Execute setup_call
     _, _, messages, _, call_kwargs = setup_call(
         model="mistral-large-latest",
         client=None,
@@ -202,7 +218,10 @@ def test_setup_call_json_mode(
         extract=False,
         stream=False,
     )
-    assert messages[-1] == UserMessage(content="json_mode_content")
+
+    # Verify results
+    assert messages[-1] == expected_last_message
+    assert "tools" not in call_kwargs
 
 
 @patch(
