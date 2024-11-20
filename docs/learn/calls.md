@@ -58,6 +58,8 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="5-9"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="11-18"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="10-15"
         {% else %}
         ```python hl_lines="7-11"
         {% endif %}
