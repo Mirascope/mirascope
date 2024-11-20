@@ -64,8 +64,8 @@ def test_get_json_output_call_response() -> None:
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
     )
 
-    completion.choices[0].message.content = ""
-    completion.choices[0].message.tool_calls = None
+    completion.choices[0].message.content = ""  # pyright: ignore [reportOptionalSubscript]
+    completion.choices[0].message.tool_calls = None  # pyright: ignore [reportOptionalSubscript]
     with pytest.raises(
         ValueError, match="No tool call or JSON object found in response."
     ):

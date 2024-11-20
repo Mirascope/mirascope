@@ -13,12 +13,13 @@ from mistralai.models import (
     CompletionEvent,
     ResponseFormat,
     SystemMessage,
+    TextChunk,
     ToolChoiceEnum,
     ToolMessage,
     UserMessage,
 )
 
-from ... import mistral
+from ... import BaseMessageParam, mistral
 from ...base import BaseTool, _utils
 from ...base._utils import (
     AsyncCreateFn,
@@ -111,7 +112,14 @@ def setup_call(
     )
     call_kwargs = cast(MistralCallKwargs, base_call_kwargs)
     messages = cast(
-        list[AssistantMessage | SystemMessage | ToolMessage | UserMessage], messages
+        list[
+            BaseMessageParam
+            | AssistantMessage
+            | SystemMessage
+            | ToolMessage
+            | UserMessage
+        ],
+        messages,
     )
     messages = convert_message_params(messages)
     if json_mode:
@@ -120,7 +128,10 @@ def setup_call(
             tool_types[0] if tool_types else None
         )
         if messages[-1].role == "user":
-            messages[-1].content += json_mode_content
+            if isinstance(messages[-1].content, list):
+                messages[-1].content.append(TextChunk(text=json_mode_content))
+            elif isinstance(messages[-1].content, str):
+                messages[-1].content += json_mode_content
         else:
             messages.append(UserMessage(content=json_mode_content.strip()))
         call_kwargs.pop("tools", None)

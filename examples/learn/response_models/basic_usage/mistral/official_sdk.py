@@ -1,6 +1,7 @@
+from typing import cast
+
 from mirascope.core import mistral
 from mistralai import Mistral
-from mistralai.models import ToolChoice
 from pydantic import BaseModel
 
 client = Mistral(api_key=mistral.load_api_key())
@@ -34,10 +35,14 @@ def extract_book(text: str) -> Book:
                 "type": "function",
             }
         ],
-        tool_choice=ToolChoice.any,
+        tool_choice="any",
     )
-    if tool_calls := completion.choices[0].message.tool_calls:
-        return Book.model_validate_json(tool_calls[0].function.arguments)
+    if (
+        completion
+        and (choices := completion.choices)
+        and (tool_calls := choices[0].message.tool_calls)
+    ):
+        return Book.model_validate_json(cast(str, tool_calls[0].function.arguments))
     raise ValueError("No tool call found")
 
 

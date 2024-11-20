@@ -3,8 +3,6 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from typing import cast
-
 from mistralai.models import CompletionChunk, FinishReason, UsageInfo
 
 from ..base import BaseCallResponseChunk
@@ -42,8 +40,8 @@ class MistralCallResponseChunk(BaseCallResponseChunk[CompletionChunk, FinishReas
         if self.chunk.choices:
             delta = self.chunk.choices[0].delta
 
-        if delta is not None and delta.content is not None:
-            return cast(str, delta.content)
+        if delta is not None and isinstance(delta.content, str):
+            return delta.content
         return ""
 
     @property

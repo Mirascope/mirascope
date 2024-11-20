@@ -3,6 +3,7 @@
 import pytest
 from mistralai.models import (
     CompletionChunk,
+    CompletionEvent,
     CompletionResponseStreamChoice,
     DeltaMessage,
     FunctionCall,
@@ -143,7 +144,11 @@ def mock_chunks() -> list[CompletionChunk]:
 def test_handle_stream(mock_chunks: list[CompletionChunk]) -> None:
     """Tests the `handle_stream` function."""
 
-    result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
+    result = list(
+        handle_stream(
+            (CompletionEvent(data=c) for c in mock_chunks), tool_types=[FormatBook]
+        )
+    )
     # Check we get three tuples back.
     # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
     assert len(result) == 3
@@ -170,7 +175,7 @@ async def test_handle_stream_async(
 
     async def generator():
         for chunk in mock_chunks:
-            yield chunk
+            yield CompletionEvent(data=chunk)
 
     result = []
     async for t in handle_stream_async(generator(), tool_types=[FormatBook]):

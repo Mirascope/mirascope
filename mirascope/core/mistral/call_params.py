@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mistralai.models import ResponseFormat, ToolChoice
+from mistralai.models import ResponseFormat, ToolChoice, ToolChoiceEnum
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
@@ -32,5 +32,5 @@ class MistralCallParams(BaseCallParams):
     safe_mode: NotRequired[bool | None]
     safe_prompt: NotRequired[bool | None]
     temperature: NotRequired[float | None]
-    tool_choice: NotRequired[ToolChoice | None]
+    tool_choice: NotRequired[ToolChoice | ToolChoiceEnum | None]
     top_p: NotRequired[float | None]

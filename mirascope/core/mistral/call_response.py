@@ -65,7 +65,7 @@ class MistralCallResponse(
     @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
-        return self._response_choices[0].message.content or ""
+        return cast(str, self._response_choices[0].message.content) or ""
 
     @property
     def finish_reasons(self) -> list[str]:
