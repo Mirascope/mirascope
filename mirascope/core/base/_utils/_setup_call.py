@@ -4,13 +4,9 @@ import inspect
 from collections.abc import (
     Awaitable,
     Callable,
+    Sequence,
 )
-from typing import (
-    Any,
-    Protocol,
-    TypeVar,
-    cast,
-)
+from typing import Any, Protocol, TypeVar, cast
 
 from ..call_kwargs import BaseCallKwargs
 from ..call_params import BaseCallParams, CommonCallParams
@@ -33,17 +29,17 @@ class ConvertCommonParamsFunc(Protocol[_BaseCallParamsT]):
 
 def setup_call(
     fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
-    | Callable[..., list[BaseMessageParam]]
-    | Callable[..., Awaitable[list[BaseMessageParam]]],
+    | Callable[..., Sequence[BaseMessageParam]]
+    | Callable[..., Awaitable[Sequence[BaseMessageParam]]],
     fn_args: dict[str, Any],
     dynamic_config: _BaseDynamicConfigT,
-    tools: list[type[BaseTool] | Callable] | None,
+    tools: Sequence[type[BaseTool] | Callable] | None,
     tool_type: type[_BaseToolT],
     call_params: _BaseCallParamsT | CommonCallParams,
     convert_common_call_params: ConvertCommonParamsFunc[_BaseCallParamsT],
 ) -> tuple[
     str | None,
-    list[BaseMessageParam | Any],
+    Sequence[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
     BaseCallKwargs,
 ]:
