@@ -1,7 +1,5 @@
 """Utility for converting `BaseMessageParam` to `ChatMessage`."""
 
-from typing import Any
-
 from mistralai.models import (
     AssistantMessage,
     SystemMessage,
