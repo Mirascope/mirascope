@@ -84,3 +84,13 @@ def test_convert_message_params() -> None:
                 ),
             ]
         )
+
+    with pytest.raises(
+        ValueError,
+        match="Invalid role: invalid_role",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(role="invalid_role", content="Hello"),
+            ]
+        )
