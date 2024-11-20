@@ -128,6 +128,8 @@ async def handle_stream_async(
         )
         if tool is not None:
             yield MistralCallResponseChunk(chunk=chunk.data), tool
+        else:
+            last_chuk_data = chunk.data
     if current_tool_type and last_chuk_data:
         yield (
             MistralCallResponseChunk(chunk=last_chuk_data),
