@@ -97,3 +97,24 @@ def test_convert_message_params() -> None:
                 BaseMessageParam(role="invalid_role", content="Hello"),
             ]
         )
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported image media type: image/svg."
+        " Mistral currently only supports JPEG, PNG, GIF, and WebP images.",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        ImagePart(
+                            type="image",
+                            media_type="image/svg",
+                            image=b"image",
+                            detail="auto",
+                        )
+                    ],
+                )
+            ]
+        )
