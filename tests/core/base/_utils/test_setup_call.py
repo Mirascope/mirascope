@@ -2,6 +2,8 @@
 
 from typing import cast
 
+import pytest
+
 from mirascope.core.base import BaseCallParams, CommonCallParams
 from mirascope.core.base._utils._setup_call import setup_call
 from mirascope.core.base.dynamic_config import BaseDynamicConfig
@@ -110,15 +112,16 @@ def test_setup_call_with_dynamic_config() -> None:
     }
 
 
-def test_setup_call_with_custom_messages() -> None:
+@pytest.mark.parametrize("messages_type", [list, tuple])
+def test_setup_call_with_custom_messages(messages_type) -> None:
     """Tests the `setup_call` function with custom messages."""
 
-    custom_messages = [
+    custom_messages = messages_type(
         {
             "role": "user",
             "content": [{"type": "text", "text": "Recommend a fantasy book."}],
         }
-    ]
+    )
     dynamic_config: BaseDynamicConfig = {"messages": custom_messages}
 
     def fn() -> None:
@@ -138,7 +141,7 @@ def test_setup_call_with_custom_messages() -> None:
         convert_common_call_params,  # pyright: ignore [reportArgumentType]
     )
     assert template is None
-    assert custom_messages == messages
+    assert list(custom_messages) == messages
     assert tool_types is None
     assert call_kwargs == {}
 
