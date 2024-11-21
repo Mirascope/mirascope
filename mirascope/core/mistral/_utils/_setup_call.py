@@ -1,5 +1,6 @@
 """This module contains the setup_call function for Mistral tools."""
 
+import os
 from collections.abc import (
     Awaitable,
     Callable,
@@ -19,7 +20,7 @@ from mistralai.models import (
     UserMessage,
 )
 
-from ... import BaseMessageParam, mistral
+from ... import BaseMessageParam
 from ...base import BaseTool, _utils
 from ...base._utils import (
     AsyncCreateFn,
@@ -141,7 +142,7 @@ def setup_call(
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
-        client = Mistral(api_key=mistral.load_api_key())
+        client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
     if fn_is_async(fn):
         create_or_stream = get_async_create_fn(
             client.chat.complete_async, client.chat.stream_async
