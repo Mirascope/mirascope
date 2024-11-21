@@ -42,7 +42,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         {% if provider == "Anthropic" %}
         ```python hl_lines="19-38 43"
         {% elif provider == "Mistral" %}
-        ```python hl_lines="18-39 45"
+        ```python hl_lines="21-46 51"
         {% elif provider == "Gemini" %}
         ```python hl_lines="19-57 62"
         {% elif provider == "Cohere" %}
