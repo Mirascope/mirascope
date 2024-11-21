@@ -1,7 +1,7 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
 site_url: https://mirascope.com
-site_description: LLM abstractions that aren't obstructions
+site_description: Mirascope streamlines LLM development with a unified interface supporting major providers like OpenAI, Anthropic, Gemini, Mistral, and more. Build powerful AI applications faster with flexible, developer-friendly abstractions that aren't obstructions.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 strict: true
