@@ -3,7 +3,10 @@
 import pytest
 from mistralai.models import (
     AssistantMessage,
+    ImageURL,
+    ImageURLChunk,
     SystemMessage,
+    TextChunk,
     ToolMessage,
     UserMessage,
 )
@@ -30,12 +33,21 @@ def test_convert_message_params() -> None:
         ),
         SystemMessage(content="Hello", role="system"),
         ToolMessage(content="Hello", tool_call_id=Unset(), name=Unset(), role="tool"),
+        BaseMessageParam(
+            role="user",
+            content=[
+                TextPart(type="text", text="Hello"),
+                ImagePart(
+                    type="image", media_type="image/jpeg", image=b"image", detail="auto"
+                ),
+            ],
+        ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
         UserMessage(content="Hello"),
         UserMessage(role="user", content="Hello"),
-        UserMessage(role="user", content="Hello"),
+        UserMessage(content=[TextChunk(text="Hello", TYPE="text")], role="user"),
         AssistantMessage(content="Hello"),
         SystemMessage(content="Hello"),
         ToolMessage(content="Hello", tool_call_id=Unset(), name=Unset(), role="tool"),
@@ -44,31 +56,22 @@ def test_convert_message_params() -> None:
         ),
         SystemMessage(content="Hello", role="system"),
         ToolMessage(content="Hello"),
+        UserMessage(
+            role="user",
+            content=[
+                TextChunk(text="Hello"),
+                ImageURLChunk(
+                    image_url=ImageURL(
+                        url="data:image/jpeg;base64,aW1hZ2U=", detail="auto"
+                    )
+                ),
+            ],
+        ),
     ]
 
     with pytest.raises(
         ValueError,
-        match="Mistral currently only supports text parts.",
-    ):
-        convert_message_params(
-            [
-                BaseMessageParam(
-                    role="user",
-                    content=[
-                        ImagePart(
-                            type="image",
-                            media_type="image/jpeg",
-                            image=b"image",
-                            detail="auto",
-                        )
-                    ],
-                )
-            ]
-        )
-
-    with pytest.raises(
-        ValueError,
-        match="Mistral currently only supports text parts.",
+        match="Mistral currently only supports text and image parts. Part provided: audio",
     ):
         convert_message_params(
             [
@@ -92,5 +95,26 @@ def test_convert_message_params() -> None:
         convert_message_params(
             [
                 BaseMessageParam(role="invalid_role", content="Hello"),
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported image media type: image/svg."
+        " Mistral currently only supports JPEG, PNG, GIF, and WebP images.",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        ImagePart(
+                            type="image",
+                            media_type="image/svg",
+                            image=b"image",
+                            detail="auto",
+                        )
+                    ],
+                )
             ]
         )
