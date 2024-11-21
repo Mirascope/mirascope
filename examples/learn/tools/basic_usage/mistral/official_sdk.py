@@ -1,9 +1,10 @@
 import json
+import os
 from typing import cast
 
 from mistralai import Mistral
 
-client = Mistral()
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
 
 
 def get_book_author(title: str) -> str:
