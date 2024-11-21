@@ -5,6 +5,8 @@ from collections.abc import AsyncGenerator, Generator
 from openai.types.chat import ChatCompletionChunk, ChatCompletionMessageToolCall
 from openai.types.chat.chat_completion_message_tool_call import Function
 
+from mirascope.core.base.tool_call_response_chunk import SimpleToolCallResponseChunk
+
 from ..call_response_chunk import OpenAICallResponseChunk
 from ..tool import OpenAITool
 
@@ -58,13 +60,23 @@ def _handle_chunk(
                 previous_tool_type.from_tool_call(previous_tool_call),
                 current_tool_call,
                 current_tool_type,
+                SimpleToolCallResponseChunk(
+                    type="name", delta=tool_call.function.name
+                ),
             )
 
     # Update arguments with each chunk
     if tool_call.function and tool_call.function.arguments:
         current_tool_call.function.arguments += tool_call.function.arguments
 
-    return None, current_tool_call, current_tool_type
+    return (
+        None,
+        current_tool_call,
+        current_tool_type,
+        SimpleToolCallResponseChunk(
+            type="arguments", delta=tool_call.function.arguments
+        ),
+    )
 
 
 def handle_stream(
@@ -94,6 +106,8 @@ def handle_stream(
         )
         if tool is not None:
             yield OpenAICallResponseChunk(chunk=chunk), tool
+        else:
+            yield OpenAICallResponseChunk(chunk=chunk), None
 
 
 async def handle_stream_async(

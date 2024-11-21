@@ -10,6 +10,11 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
+from mirascope.core.base.tool_call_response_chunk import (
+    ToolCallArgumentsResponseChunk,
+    ToolCallNameResponseChunk,
+)
+
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 _FinishReasonT = TypeVar("_FinishReasonT", bound=Any)
 
@@ -40,6 +45,13 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
         If there is no string content (e.g. when using tools), this method must return
         the empty string.
         """
+        ...
+
+    @property
+    def tool_call_chunk(
+        self,
+    ) -> ToolCallNameResponseChunk | ToolCallArgumentsResponseChunk | None:
+        """Should return the tool call chunk of the response."""
         ...
 
     @property

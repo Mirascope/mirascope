@@ -12,6 +12,11 @@ from openai.types.chat.chat_completion_chunk import Choice
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SkipValidation, computed_field
 
+from mirascope.core.base.tool_call_response_chunk import (
+    ToolCallArgumentsResponseChunk,
+    ToolCallNameResponseChunk,
+)
+
 from ..base import BaseCallResponseChunk
 
 FinishReason = Choice.__annotations__["finish_reason"]
@@ -51,6 +56,23 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
         if self.chunk.choices:
             delta = self.chunk.choices[0].delta
         return delta.content if delta is not None and delta.content else ""
+
+    @property
+    def tool_call_chunk(self) -> SimpleToolCallResponseChunk | None:
+        """Returns the tool call chunk of the response."""
+        if self.chunk.choices:
+            tool_call = self.chunk.choices[0].tool_calls
+            if tool_call:
+                if tool_call[0].function.name:
+                    return ToolCallNameResponseChunk(
+                        name=tool_call[0].function.name,
+                        id=tool_call[0].id,
+                    )
+                if tool_call[0].function.arguments:
+                    return ToolCallArgumentsResponseChunk(
+                        delta=tool_call[0].function.arguments,
+                    )
+        return None
 
     @property
     def finish_reasons(self) -> list[FinishReason]:
