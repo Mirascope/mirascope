@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2 
+---
+
 # Tools
 
 {% set tool_methods = [["base_tool", "BaseTool"], ["function", "Function"]] %}

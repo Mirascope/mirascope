@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2
+---
+
 # Retries
 
 Making an API call to a provider can fail due to various reasons, such as rate limits, internal server errors, validation errors, and more. This makes retrying calls extremely important when building robust systems.

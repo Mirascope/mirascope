@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2
+---
+
 # Evals: Evaluating LLM Outputs
 
 !!! mira ""

@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2
+---
+
 # Agents
 
 > __Definition__: a person who acts on behalf of another person or group

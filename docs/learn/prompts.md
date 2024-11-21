@@ -1,3 +1,8 @@
+---
+search:
+  boost: 3
+---
+
 # Prompts
 
 When working with Large Language Model (LLM) APIs, the "prompt" is generally a list of messages where each message has a particular role. These prompts are the foundation of effectively working with LLMs, so Mirascope provides powerful tools to help you create, manage, and optimize your prompts for various LLM interactions.
