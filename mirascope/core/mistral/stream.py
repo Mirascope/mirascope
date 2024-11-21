@@ -3,22 +3,25 @@
 usage docs: learn/streams.md
 """
 
-from typing import Any
+from typing import Any, cast
 
-from mistralai.models.chat_completion import (
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionChoice,
     ChatCompletionResponse,
-    ChatCompletionResponseChoice,
-    ChatMessage,
     FinishReason,
+    SystemMessage,
+    ToolMessage,
+    UsageInfo,
+    UserMessage,
 )
-from mistralai.models.common import UsageInfo
 
 from ..base.stream import BaseStream
 from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
-from .dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
+from .dynamic_config import MistralDynamicConfig
 from .tool import MistralTool
 
 
@@ -26,13 +29,13 @@ class MistralStream(
     BaseStream[
         MistralCallResponse,
         MistralCallResponseChunk,
-        ChatMessage,
-        ChatMessage,
-        ChatMessage,
-        ChatMessage,
+        UserMessage,
+        AssistantMessage,
+        ToolMessage,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralTool,
         dict[str, Any],
-        AsyncMistralDynamicConfig | MistralDynamicConfig,
+        MistralDynamicConfig,
         MistralCallParams,
         FinishReason,
     ]
@@ -66,9 +69,9 @@ class MistralStream(
 
     def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None
-    ) -> ChatMessage:
-        message_param = ChatMessage(
-            role="assistant", content=content if content else "", tool_calls=tool_calls
+    ) -> AssistantMessage:
+        message_param = AssistantMessage(
+            content=content if content else "", tool_calls=tool_calls
         )
         return message_param
 
@@ -87,13 +90,12 @@ class MistralStream(
             completion_tokens=int(self.output_tokens or 0),
             total_tokens=int(self.input_tokens or 0) + int(self.output_tokens or 0),
         )
+        finish_reason = cast(FinishReason, (self.finish_reasons or [])[0])
         completion = ChatCompletionResponse(
             id=self.id if self.id else "",
             choices=[
-                ChatCompletionResponseChoice(
-                    finish_reason=self.finish_reasons[0]
-                    if self.finish_reasons
-                    else None,
+                ChatCompletionChoice(
+                    finish_reason=finish_reason,
                     index=0,
                     message=self.message_param,
                 )

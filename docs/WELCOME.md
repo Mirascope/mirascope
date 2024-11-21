@@ -88,7 +88,7 @@ Make your first call to an LLM to extract the title and author of a book from th
         {% if provider == "Anthropic" %}
         ```python hl_lines="19-38 43"
         {% elif provider == "Mistral" %}
-        ```python hl_lines="19-40 45"
+        ```python hl_lines="21-46 51"
         {% elif provider == "Gemini" %}
         ```python hl_lines="19-57 62"
         {% elif provider == "Cohere" %}

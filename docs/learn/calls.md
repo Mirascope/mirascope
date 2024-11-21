@@ -58,6 +58,8 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="5-9"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="11-18"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="10-15"
         {% else %}
         ```python hl_lines="7-11"
         {% endif %}
@@ -360,12 +362,14 @@ You can pass a client to the `call` decorator using the `client` parameter:
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            {% elif provider in ["OpenAI", "Vertex AI"] %}
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-10"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 6"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 8"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
@@ -393,6 +397,8 @@ You can also configure the client dynamically at runtime through the dynamic con
             ```python hl_lines="1-2 12-14"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 11"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 13"
             {% else %}
             ```python hl_lines="2 11"
             {% endif %}
@@ -410,6 +416,8 @@ You can also configure the client dynamically at runtime through the dynamic con
             ```python hl_lines="1-2 10-11"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 11"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 11"            
             {% else %}
             ```python hl_lines="2 9"
             {% endif %}

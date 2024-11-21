@@ -1,8 +1,10 @@
 import json
+import os
+from typing import cast
 
-from mistralai.client import MistralClient
+from mistralai import Mistral
 
-client = MistralClient()
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
 
 
 def get_book_author(title: str) -> str:
@@ -14,8 +16,8 @@ def get_book_author(title: str) -> str:
         return "Unknown"
 
 
-def identify_author(book: str) -> str:
-    completion = client.chat(
+def identify_author(book: str) -> str | None:
+    completion = client.chat.complete(
         model="mistral-large-latest",
         messages=[{"role": "user", "content": f"Who wrote {book}?"}],
         tools=[
@@ -33,10 +35,14 @@ def identify_author(book: str) -> str:
             }
         ],
     )
+    if not completion or not completion.choices:
+        return None
     if tool_calls := completion.choices[0].message.tool_calls:
         if tool_calls[0].function.name == "get_book_author":
-            return get_book_author(**json.loads(tool_calls[0].function.arguments))
-    return completion.choices[0].message.content
+            return get_book_author(
+                **json.loads(cast(str, tool_calls[0].function.arguments))
+            )
+    return cast(str, completion.choices[0].message.content)
 
 
 author = identify_author("The Name of the Wind")

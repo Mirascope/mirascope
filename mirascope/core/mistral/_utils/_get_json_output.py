@@ -1,5 +1,7 @@
 """Get the JSON output from a completion response."""
 
+from typing import cast
+
 from ..call_response import MistralCallResponse
 from ..call_response_chunk import MistralCallResponseChunk
 
@@ -11,8 +13,12 @@ def get_json_output(
     if isinstance(response, MistralCallResponse):
         if json_mode and response.content:
             return response.content
-        elif tool_calls := response.response.choices[0].message.tool_calls:
-            return tool_calls[0].function.arguments
+        elif (
+            (choices := response.response.choices)
+            and choices
+            and (tool_calls := choices[0].message.tool_calls)
+        ):
+            return cast(str, tool_calls[0].function.arguments)
         raise ValueError("No tool call or JSON object found in response.")
     else:
         # raise ValueError("Mistral does not support structured streaming... :(")
@@ -24,5 +30,5 @@ def get_json_output(
             and (function := tool_calls[0].function)
             and (arguments := function.arguments) is not None
         ):
-            return arguments
+            return cast(str, arguments)
         return ""
