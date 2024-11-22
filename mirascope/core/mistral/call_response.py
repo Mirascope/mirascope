@@ -3,16 +3,23 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from typing import Any
+from typing import Any, cast
 
-from mistralai.models.chat_completion import ChatCompletionResponse, ChatMessage
-from mistralai.models.common import UsageInfo
+from mistralai import ChatCompletionChoice
+from mistralai.models import (
+    AssistantMessage,
+    ChatCompletionResponse,
+    SystemMessage,
+    ToolMessage,
+    UsageInfo,
+    UserMessage,
+)
 from pydantic import computed_field
 
 from ..base import BaseCallResponse
 from ._utils import calculate_cost
 from .call_params import MistralCallParams
-from .dynamic_config import AsyncMistralDynamicConfig, MistralDynamicConfig
+from .dynamic_config import MistralDynamicConfig
 from .tool import MistralTool
 
 
@@ -21,10 +28,10 @@ class MistralCallResponse(
         ChatCompletionResponse,
         MistralTool,
         dict[str, Any],
-        AsyncMistralDynamicConfig | MistralDynamicConfig,
-        ChatMessage,
+        MistralDynamicConfig,
+        AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralCallParams,
-        ChatMessage,
+        UserMessage,
     ]
 ):
     """A convenience wrapper around the Mistral `ChatCompletion` response.
@@ -52,16 +59,20 @@ class MistralCallResponse(
     _provider = "mistral"
 
     @property
+    def _response_choices(self) -> list[ChatCompletionChoice]:
+        return self.response.choices or []
+
+    @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
-        return self.response.choices[0].message.content
+        return cast(str, self._response_choices[0].message.content) or ""
 
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [
             choice.finish_reason if choice.finish_reason else ""
-            for choice in self.response.choices
+            for choice in self._response_choices
         ]
 
     @property
@@ -96,9 +107,11 @@ class MistralCallResponse(
 
     @computed_field
     @property
-    def message_param(self) -> ChatMessage:
+    def message_param(
+        self,
+    ) -> AssistantMessage:
         """Returns the assistants's response as a message parameter."""
-        return self.response.choices[0].message
+        return cast(AssistantMessage, self._response_choices[0].message)
 
     @computed_field
     @property
@@ -108,7 +121,7 @@ class MistralCallResponse(
         Raises:
             ValidationError: if the tool call doesn't match the tool's schema.
         """
-        tool_calls = self.response.choices[0].message.tool_calls
+        tool_calls = self._response_choices[0].message.tool_calls
         if not self.tool_types or not tool_calls:
             return None
 
@@ -136,7 +149,7 @@ class MistralCallResponse(
     @classmethod
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[MistralTool, str]]
-    ) -> list[ChatMessage]:
+    ) -> list[ToolMessage]:
         """Returns the tool message parameters for tool call results.
 
         Args:
@@ -147,8 +160,7 @@ class MistralCallResponse(
             The list of constructed `ChatMessage` parameters.
         """
         return [
-            ChatMessage(
-                role="tool",
+            ToolMessage(
                 content=output,
                 tool_call_id=tool.tool_call.id,
                 name=tool._name(),

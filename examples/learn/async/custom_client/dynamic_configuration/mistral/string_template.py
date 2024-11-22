@@ -1,10 +1,12 @@
+import os
+
 from mirascope.core import mistral, prompt_template
-from mistralai.async_client import MistralAsyncClient
+from mistralai import Mistral
 
 
 @mistral.call("mistral-large-latest")
 @prompt_template("Recommend a {genre} book")
-async def recommend_book(genre: str) -> mistral.AsyncMistralDynamicConfig:
+async def recommend_book(genre: str) -> mistral.MistralDynamicConfig:
     return {
-        "client": MistralAsyncClient(),
+        "client": Mistral(api_key=os.environ["MISTRAL_API_KEY"]),
     }

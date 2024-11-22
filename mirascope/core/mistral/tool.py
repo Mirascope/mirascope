@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 import jiter
-from mistralai.models.chat_completion import ToolCall
+from mistralai.models import ToolCall
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
@@ -72,6 +72,8 @@ class MistralTool(BaseTool):
         Args:
             tool_call: The Mistral tool call from which to construct this tool instance.
         """
-        model_json = jiter.from_json(tool_call.function.arguments.encode())
+        model_json = tool_call.function.arguments
+        if isinstance(model_json, str):
+            model_json = jiter.from_json(model_json.encode())
         model_json["tool_call"] = tool_call.model_dump()
         return cls.model_validate(model_json)

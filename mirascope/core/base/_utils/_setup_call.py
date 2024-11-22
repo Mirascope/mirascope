@@ -39,7 +39,7 @@ def setup_call(
     convert_common_call_params: ConvertCommonParamsFunc[_BaseCallParamsT],
 ) -> tuple[
     str | None,
-    Sequence[BaseMessageParam | Any],
+    list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
     BaseCallKwargs,
 ]:
@@ -50,6 +50,8 @@ def setup_call(
     if dynamic_config is not None:
         tools = dynamic_config.get("tools", tools)
         messages = dynamic_config.get("messages", None)
+        if messages is not None and not isinstance(messages, list):
+            messages = list(messages)
         dynamic_call_params = dynamic_config.get("call_params", None)
         if dynamic_call_params:
             call_kwargs |= dynamic_call_params
