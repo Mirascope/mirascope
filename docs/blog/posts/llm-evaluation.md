@@ -243,7 +243,7 @@ print(response)
 
 ```
 
-#### Note that we use NLP scores (e.g. "good") instead of numerical scores. In our experience, we've found that LLMs are better at scoring using natural language that numbers.
+Note that we use NLP scores (e.g. "good") instead of numerical scores. In our experience, we've found that LLMs are better at scoring using natural language that numbers.
 
 #### 2. Evaluate an Output Using a Panel of Judges
 
