@@ -11,6 +11,7 @@ from abc import abstractmethod
 from collections.abc import Callable
 from typing import Any, ClassVar, TypeVar
 
+import jiter
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import (
     DEFAULT_REF_TEMPLATE,
@@ -84,6 +85,17 @@ class BaseTool(BaseModel):
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
+    _delta: str | None = None
+
+    @property
+    def delta(self) -> str | None:
+        return self._delta
+
+    @classmethod
+    def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:
+        return jiter.from_json(
+            json.encode(), partial_mode="trailing-strings" if allow_partial else "off"
+        )
 
     @classmethod
     def _name(cls) -> str:

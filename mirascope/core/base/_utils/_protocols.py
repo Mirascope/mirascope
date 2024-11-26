@@ -26,6 +26,7 @@ from ..call_kwargs import BaseCallKwargs
 from ..call_response import BaseCallResponse
 from ..call_response_chunk import BaseCallResponseChunk
 from ..messages import Messages
+from ..stream_config import StreamConfig
 from ..tool import BaseTool
 from ._base_type import BaseType
 
@@ -139,12 +140,12 @@ class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     def __call__(
         self,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> Awaitable[AsyncGenerator[_ResponseChunkT, None]]: ...
 
     def __call__(
-        self, *, stream: bool = False, **kwargs: Any
+        self, *, stream: bool | StreamConfig = False, **kwargs: Any
     ) -> Awaitable[
         _ResponseT | AsyncGenerator[_ResponseChunkT, None]
     ]: ...  # pragma: no cover
@@ -163,12 +164,15 @@ class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     def __call__(
         self,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> Generator[_ResponseChunkT, None, None]: ...
 
     def __call__(
-        self, *, stream: bool = False, **kwargs: Any
+        self,
+        *,
+        stream: bool | StreamConfig = False,
+        **kwargs: Any,  # noqa: F821
     ) -> _ResponseT | Generator[_ResponseChunkT, None, None]: ...
 
 
@@ -199,7 +203,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
@@ -221,7 +225,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -242,7 +246,7 @@ class SetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
@@ -279,7 +283,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
         str | None,
@@ -301,7 +305,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
         str | None,
@@ -322,7 +326,7 @@ class SameSyncAndAsyncClientSetupCall(
         json_mode: bool,
         call_params: _BaseCallParamsT,
         extract: bool,
-        stream: bool,
+        stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
         | AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
@@ -340,6 +344,7 @@ class HandleStream(
         self,
         stream: Generator[_InvariantResponseChunkT, None, None],
         tool_types: list[type[_BaseToolT]] | None,
+        allow_partial_tool: bool = False,
     ) -> Generator[
         tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
     ]: ...  # pragma: no cover
@@ -352,6 +357,7 @@ class HandleStreamAsync(
         self,
         stream: AsyncGenerator[_InvariantResponseChunkT, None],
         tool_types: list[type[_BaseToolT]] | None,
+        allow_partial_tool: bool = False,
     ) -> AsyncGenerator[
         tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
     ]: ...  # pragma: no cover
@@ -496,7 +502,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
@@ -512,7 +518,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
@@ -526,7 +532,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: None = None,
@@ -540,7 +546,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseChunkT], _ParsedOutputT],
@@ -557,7 +563,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
@@ -662,7 +668,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True],
+        stream: Literal[True] | StreamConfig,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
@@ -681,7 +687,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True],
+        stream: Literal[True] | StreamConfig,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
@@ -697,7 +703,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True],
+        stream: Literal[True] | StreamConfig,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
@@ -711,7 +717,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: Literal[True],
+        stream: Literal[True] | StreamConfig,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
@@ -730,7 +736,7 @@ class CallDecorator(
         self,
         model: str,
         *,
-        stream: bool = False,
+        stream: bool | StreamConfig = False,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT] | None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]

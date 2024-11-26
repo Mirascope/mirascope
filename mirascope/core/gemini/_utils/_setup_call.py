@@ -22,6 +22,7 @@ from ...base._utils import (
     get_create_fn,
 )
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import GeminiCallKwargs
 from ..call_params import GeminiCallParams
 from ..dynamic_config import GeminiDynamicConfig
@@ -42,7 +43,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
     str | None,
@@ -64,7 +65,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse],
     str | None,
@@ -85,7 +86,7 @@ def setup_call(
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse]
     | AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],

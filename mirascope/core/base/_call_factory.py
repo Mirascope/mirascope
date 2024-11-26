@@ -28,6 +28,7 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .stream import BaseStream, stream_factory
+from .stream_config import StreamConfig
 from .structured_stream import structured_stream_factory
 from .tool import BaseTool
 
@@ -123,7 +124,7 @@ def call_factory(  # noqa: ANN202
     def base_call(
         model: str,
         *,
-        stream: bool = False,
+        stream: bool | StreamConfig = False,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT] | None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]

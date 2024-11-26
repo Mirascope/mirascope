@@ -5,7 +5,6 @@ usage docs: learn/tools.md
 
 from __future__ import annotations
 
-import jiter
 from groq.types.chat import (
     ChatCompletionMessageToolCall,
     ChatCompletionToolParam,
@@ -14,6 +13,7 @@ from groq.types.shared_params import FunctionDefinition
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
+from ..base._partial import partial
 
 
 class GroqTool(BaseTool):
@@ -68,13 +68,18 @@ class GroqTool(BaseTool):
         return ChatCompletionToolParam(function=fn, type="function")
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> GroqTool:
+    def from_tool_call(
+        cls, tool_call: ChatCompletionMessageToolCall, allow_partial: bool = False
+    ) -> GroqTool:
         """Constructs an `GroqTool` instance from a `tool_call`.
 
         Args:
             tool_call: The Groq tool call from which to construct this tool instance.
+            allow_partial: Whether to allow partial tool calls.
         """
         model_json = {"tool_call": tool_call}
         if args := tool_call.function.arguments:
-            model_json |= jiter.from_json(args.encode())
+            model_json |= cls._dict_from_json(args, allow_partial)
+        if allow_partial:
+            return partial(cls).model_validate(model_json)
         return cls.model_validate(model_json)

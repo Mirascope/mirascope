@@ -26,6 +26,7 @@ from ...base._utils import (
     get_create_fn,
 )
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import CohereCallKwargs
 from ..call_params import CohereCallParams
 from ..dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
@@ -46,7 +47,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -68,7 +69,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse],
     str,
@@ -89,7 +90,7 @@ def setup_call(
     json_mode: bool,
     call_params: CohereCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[NonStreamedChatResponse, StreamedChatResponse]
     | AsyncCreateFn[NonStreamedChatResponse, StreamedChatResponse],

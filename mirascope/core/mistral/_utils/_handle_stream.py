@@ -18,6 +18,7 @@ def _handle_chunk(
     current_tool_call: ToolCall,
     current_tool_type: type[MistralTool] | None,
     tool_types: list[type[MistralTool]] | None,
+    allow_partial_tool: bool,
 ) -> tuple[
     MistralTool | None,
     ToolCall,
@@ -32,10 +33,13 @@ def _handle_chunk(
     if tool_call.id != "null" and tool_call.function is not None:
         previous_tool_call = current_tool_call.model_copy()
         previous_tool_type = current_tool_type
+
         current_tool_call = ToolCall(
             id=tool_call.id,
             function=FunctionCall(
-                arguments="",
+                arguments=current_tool_call.function.arguments
+                if current_tool_call.function
+                else "",
                 name=tool_call.function.name if tool_call.function.name else "",
             ),
             type="function",
@@ -49,9 +53,13 @@ def _handle_chunk(
             raise RuntimeError(
                 f"Unknown tool type in stream: {tool_call.function.name}"
             )  # pragma: no cover
-        if previous_tool_call.id and previous_tool_type is not None:
+        if (
+            previous_tool_call.id
+            and previous_tool_type is not None
+            and previous_tool_call.function.arguments
+        ):
             return (
-                previous_tool_type.from_tool_call(previous_tool_call),
+                previous_tool_type.from_tool_call(previous_tool_call, True),
                 current_tool_call,
                 current_tool_type,
             )
@@ -60,12 +68,19 @@ def _handle_chunk(
     if tool_call.function and tool_call.function.arguments:
         current_tool_call.function.arguments += cast(str, tool_call.function.arguments)  # pyright: ignore [reportOperatorIssue]
 
+        # Add partial tool support
+        if allow_partial_tool and current_tool_type:
+            partial_tool = current_tool_type.from_tool_call(current_tool_call, True)
+            partial_tool._delta = tool_call.function.arguments  # Add delta
+            return partial_tool, current_tool_call, current_tool_type
+
     return None, current_tool_call, current_tool_type
 
 
 def handle_stream(
     stream: Generator[CompletionEvent, None, None],
     tool_types: list[type[MistralTool]] | None,
+    allow_partial_tool: bool = False,
 ) -> Generator[tuple[MistralCallResponseChunk, MistralTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(
@@ -78,16 +93,15 @@ def handle_stream(
             if current_tool_type:
                 yield (
                     MistralCallResponseChunk(chunk=chunk.data),
-                    current_tool_type.from_tool_call(current_tool_call),
+                    current_tool_type.from_tool_call(
+                        current_tool_call, allow_partial_tool
+                    ),
                 )
                 current_tool_type = None
             else:
                 yield MistralCallResponseChunk(chunk=chunk.data), None
         tool, current_tool_call, current_tool_type = _handle_chunk(
-            chunk,
-            current_tool_call,
-            current_tool_type,
-            tool_types,
+            chunk, current_tool_call, current_tool_type, tool_types, allow_partial_tool
         )
         if tool is not None:
             yield MistralCallResponseChunk(chunk=chunk.data), tool
@@ -96,13 +110,14 @@ def handle_stream(
     if current_tool_type and last_chuk_data:
         yield (
             MistralCallResponseChunk(chunk=last_chuk_data),
-            current_tool_type.from_tool_call(current_tool_call),
+            current_tool_type.from_tool_call(current_tool_call, allow_partial_tool),
         )
 
 
 async def handle_stream_async(
     stream: AsyncGenerator[CompletionEvent, None],
     tool_types: list[type[MistralTool]] | None,
+    allow_partial_tool: bool = False,
 ) -> AsyncGenerator[tuple[MistralCallResponseChunk, MistralTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(
@@ -115,16 +130,15 @@ async def handle_stream_async(
             if current_tool_type:
                 yield (
                     MistralCallResponseChunk(chunk=chunk.data),
-                    current_tool_type.from_tool_call(current_tool_call),
+                    current_tool_type.from_tool_call(
+                        current_tool_call, allow_partial_tool
+                    ),
                 )
                 current_tool_type = None
             else:
                 yield MistralCallResponseChunk(chunk=chunk.data), None
         tool, current_tool_call, current_tool_type = _handle_chunk(
-            chunk,
-            current_tool_call,
-            current_tool_type,
-            tool_types,
+            chunk, current_tool_call, current_tool_type, tool_types, allow_partial_tool
         )
         if tool is not None:
             yield MistralCallResponseChunk(chunk=chunk.data), tool
@@ -133,5 +147,5 @@ async def handle_stream_async(
     if current_tool_type and last_chuk_data:
         yield (
             MistralCallResponseChunk(chunk=last_chuk_data),
-            current_tool_type.from_tool_call(current_tool_call),
+            current_tool_type.from_tool_call(current_tool_call, allow_partial_tool),
         )

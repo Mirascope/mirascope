@@ -20,6 +20,7 @@ from azure.core.credentials import AzureKeyCredential
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import AzureCallKwargs
 from ..call_params import AzureCallParams
 from ..dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
@@ -41,7 +42,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -63,7 +64,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -85,7 +86,7 @@ def setup_call(
     json_mode: bool,
     call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate]
     | AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
