@@ -107,6 +107,7 @@ class OpenAIRealtimeTool(BaseTool):
         Args:
             tool_call: The OpenAI tool call from which to construct this tool instance.
         """
-        model_json = jiter.from_json(tool_call["arguments"].encode())
-        model_json["tool_call"] = tool_call.copy()
+        model_json = {"tool_call": tool_call.copy()}
+        if args := tool_call.get("arguments", None):
+            model_json |= jiter.from_json(args.encode())
         return cls.model_validate(model_json)

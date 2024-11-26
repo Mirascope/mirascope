@@ -72,8 +72,9 @@ class MistralTool(BaseTool):
         Args:
             tool_call: The Mistral tool call from which to construct this tool instance.
         """
-        model_json = tool_call.function.arguments
-        if isinstance(model_json, str):
-            model_json = jiter.from_json(model_json.encode())
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json = {"tool_call": tool_call}
+        if args := tool_call.function.arguments:
+            model_json |= (
+                jiter.from_json(args.encode()) if isinstance(args, str) else args
+            )
         return cls.model_validate(model_json)

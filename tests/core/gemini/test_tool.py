@@ -85,9 +85,3 @@ def test_gemini_tool_no_nesting() -> None:
         "with \\$defs.",
     ):
         Nested.tool_schema()
-
-
-def test_gemini_tool_no_args() -> None:
-    """Tests the `GeminiTool` class with no arguments."""
-    with pytest.raises(ValueError, match="Tool call doesn't have any arguments."):
-        FormatBook.from_tool_call(FunctionCall(name="FormatBook", args={}))

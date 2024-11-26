@@ -95,8 +95,7 @@ class VertexTool(BaseTool):
         Args:
             tool_call: The Vertex tool call from which to construct this tool instance.
         """
-        if not tool_call.args:
-            raise ValueError("Tool call doesn't have any arguments.")
-        model_json: dict[str, Any] = dict(tool_call.args.items())
-        model_json["tool_call"] = tool_call
+        model_json = {"tool_call": tool_call}
+        if tool_call.args:
+            model_json |= dict(tool_call.args.items())
         return cls.model_validate(model_json)
