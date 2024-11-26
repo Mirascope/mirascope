@@ -38,7 +38,7 @@ def _handle_chunk(
             id=tool_call.id,
             function=FunctionCall(
                 arguments=current_tool_call.function.arguments
-                if current_tool_call.function
+                if current_tool_call.function and allow_partial_tool
                 else "",
                 name=tool_call.function.name if tool_call.function.name else "",
             ),

@@ -11,6 +11,7 @@ from mistralai.models import ToolCall
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
+from ..base._partial import partial
 
 
 class MistralTool(BaseTool):
@@ -81,4 +82,6 @@ class MistralTool(BaseTool):
                 if isinstance(args, str)
                 else args
             )
+        if allow_partial:
+            return partial(cls, {"tool_call"}).model_validate(model_json)
         return cls.model_validate(model_json)
