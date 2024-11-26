@@ -90,7 +90,7 @@ class OpenAITool(BaseTool):
         Args:
             tool_call: The OpenAI tool call from which to construct this tool instance.
         """
-        model_json = {"tool_call": tool_call.model_dump()}
+        model_json = {"tool_call": tool_call}
         if args := tool_call.function.arguments:
             model_json |= jiter.from_json(args.encode())
         return cls.model_validate(model_json)
