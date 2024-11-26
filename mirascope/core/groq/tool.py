@@ -74,6 +74,9 @@ class GroqTool(BaseTool):
         Args:
             tool_call: The Groq tool call from which to construct this tool instance.
         """
-        model_json = jiter.from_json(tool_call.function.arguments.encode())
+        if tool_call.function.arguments:
+            model_json = jiter.from_json(tool_call.function.arguments.encode())
+        else:
+            model_json = {}
         model_json["tool_call"] = tool_call.model_dump()
         return cls.model_validate(model_json)
