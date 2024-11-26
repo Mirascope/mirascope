@@ -43,7 +43,9 @@ def _process_annotation(annotation: type) -> type:
     )  # pyright: ignore [reportReturnType]
 
 
-def partial(wrapped_class: type[Model], preserve_fields: set[str] | None = None) -> type[Model]:
+def partial(
+    wrapped_class: type[Model], preserve_fields: set[str] | None = None
+) -> type[Model]:
     """Generate a new class with all attributes optionals.
 
     This decorator will wrap a class inheriting from BaseModel and will recursively
@@ -62,6 +64,7 @@ def partial(wrapped_class: type[Model], preserve_fields: set[str] | None = None)
     """
     if preserve_fields is None:
         preserve_fields = set()
+
     def _make_field_optional(
         field: FieldInfo,
     ) -> tuple[object, FieldInfo]:
@@ -84,7 +87,9 @@ def partial(wrapped_class: type[Model], preserve_fields: set[str] | None = None)
         __validators__=None,
         __cls_kwargs__=None,
         **{
-            field_name: (field_info.annotation, field_info) if field_name in preserve_fields else _make_field_optional(field_info)
+            field_name: (field_info.annotation, field_info)
+            if field_name in preserve_fields
+            else _make_field_optional(field_info)
             for field_name, field_info in wrapped_class.model_fields.items()
         },
     )

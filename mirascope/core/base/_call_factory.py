@@ -206,6 +206,8 @@ def call_factory(  # noqa: ANN202
                     json_mode=json_mode,
                     client=client,
                     call_params=call_params,
+                    partial_tools=isinstance(stream, dict)
+                    and stream.get("partial_tools"),
                 )  # pyright: ignore [reportCallIssue]
 
         if stream:
@@ -222,6 +224,7 @@ def call_factory(  # noqa: ANN202
                 json_mode=json_mode,
                 client=client,
                 call_params=call_params,
+                partial_tools=isinstance(stream, dict) and stream.get("partial_tools"),
             )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
             create_factory(TCallResponse=TCallResponse, setup_call=setup_call),
