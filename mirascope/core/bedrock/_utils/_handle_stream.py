@@ -77,6 +77,7 @@ def _handle_chunk(
 def handle_stream(
     stream: Generator[StreamOutputChunk, None, None],
     tool_types: list[type[BedrockTool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[BedrockCallResponseChunk, BedrockTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_use_chunk = None
@@ -91,6 +92,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[AsyncStreamOutputChunk, None],
     tool_types: list[type[BedrockTool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[BedrockCallResponseChunk, BedrockTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_use_chunk = None

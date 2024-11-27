@@ -209,14 +209,14 @@ def test_handle_stream(mock_chunks: list[ChatCompletionChunk]) -> None:
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )
@@ -240,14 +240,14 @@ async def test_handle_stream_async(mock_chunks: list[ChatCompletionChunk]) -> No
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )
@@ -271,7 +271,7 @@ def test_handle_stream_with_partial_tools(
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == '{"title": "The Name'
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": None, "title": "The Name"}
     )
 
@@ -280,7 +280,7 @@ def test_handle_stream_with_partial_tools(
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == ' of the Wind", "author": '
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": None, "title": "The Name of the Wind"}
     )
 
@@ -289,7 +289,7 @@ def test_handle_stream_with_partial_tools(
         (tool := result[3][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == '"Patrick Rothfuss"}'
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": "Patrick Rothfuss", "title": "The Name of the Wind"}
     )
 
@@ -297,7 +297,7 @@ def test_handle_stream_with_partial_tools(
     assert (
         (tool := result[4][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )
@@ -327,7 +327,7 @@ async def test_handle_stream_async_with_partial_tools(
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == '{"title": "The Name'
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": None, "title": "The Name"}
     )
 
@@ -336,7 +336,7 @@ async def test_handle_stream_async_with_partial_tools(
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == ' of the Wind", "author": '
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": None, "title": "The Name of the Wind"}
     )
 
@@ -345,7 +345,7 @@ async def test_handle_stream_async_with_partial_tools(
         (tool := result[3][1]) is not None
         and isinstance(tool, FormatBook)
         and tool.delta == '"Patrick Rothfuss"}'
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"author": "Patrick Rothfuss", "title": "The Name of the Wind"}
     )
 
@@ -353,7 +353,7 @@ async def test_handle_stream_async_with_partial_tools(
     assert (
         (tool := result[4][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
         and tool.delta is None
     )

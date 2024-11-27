@@ -117,7 +117,7 @@ class BaseTool(BaseModel):
         return {
             field: getattr(self, field)
             for field in self.model_fields
-            if field != "tool_call"
+            if field not in {"tool_call", "delta"}
         }
 
     @abstractmethod
