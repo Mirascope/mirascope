@@ -43,7 +43,8 @@ class NavItem:
     path: str
     title: str  # From mkdocs.yml
     section: str
-    canonical_url: str
+    canonical_url: str  # Points to HTML version
+    markdown_url: str  # Points to Markdown version
     description: str | None = None
 
 
@@ -53,7 +54,7 @@ class LLMsGenerator:
     def __init__(
         self,
         mkdocs_yml_path: Path,
-        base_url: str = "https://www.mirascope.com/docs",
+        base_url: str = "https://mirascope.com/docs",
         description_map: dict[str, str] | None = None,
     ) -> None:
         """
@@ -84,29 +85,34 @@ class LLMsGenerator:
         except yaml.YAMLError as e:
             raise ValueError(f"Invalid YAML in config file: {e}")
 
-    def _get_canonical_url(self, path: str) -> str:
+    def _get_urls(self, path: str) -> tuple[str, str]:
         """
-        Generate canonical URL for a given path.
-        Special cases:
-        - index.md -> /docs/
-        - other files -> /docs/path/
+        Generate both canonical (HTML) and markdown URLs for a given path.
+
+        Returns:
+            tuple[str, str]: (canonical_url, markdown_url)
         """
-        # First check if it's already a URL
+        # Handle external URLs
         if path.startswith(("http://", "https://")):
-            return path
+            return path, path
+
+        # Strip file extension and ensure path starts without leading slash
+        clean_path = path.replace(".md", "").replace(".ipynb", "").lstrip("/")
 
         # Special handling for index.md
         if path == "index.md":
-            return f"{self.base_url}/"
+            return f"{self.base_url}/", f"{self.base_url}/index.html.md"
 
-        # Strip file extension and ensure path starts without leading slash
-        path = path.replace(".md", "").replace(".ipynb", "").lstrip("/")
+        # For all other paths
+        canonical_url = f"{self.base_url}/{clean_path}/"
 
-        # Add trailing slash if not present
-        if not path.endswith("/"):
-            path += "/"
+        # Convert paths like "prompts/" to "prompts/index.html.md"
+        if clean_path.endswith("/"):
+            markdown_url = f"{self.base_url}/{clean_path}index.html.md"
+        else:
+            markdown_url = f"{self.base_url}/{clean_path}/index.html.md"
 
-        return f"{self.base_url}/{path}"
+        return canonical_url, markdown_url
 
     def _get_description(self, path: str, title: str) -> str:
         """Get description for a path, falling back to generated description"""
@@ -148,7 +154,7 @@ class LLMsGenerator:
     ) -> None:
         """
         Recursively process navigation items into NavItem objects.
-        Extracts title from mkdocs.yml navigation structure.
+        Now includes both HTML and Markdown URLs.
         """
         if isinstance(item, dict):
             for title, content in item.items():
@@ -162,19 +168,20 @@ class LLMsGenerator:
         elif isinstance(item, str) and (
             item.endswith(".md") or item.endswith(".ipynb")
         ):
-            # Get the title from the navigation structure if available
-            # Fall back to parent_title or clean path if not
             title = (
                 parent_title
                 or item.rsplit("/", 1)[-1].rsplit(".", 1)[0].replace("_", " ").title()
             )
+
+            canonical_url, markdown_url = self._get_urls(item)
 
             result.append(
                 NavItem(
                     path=item,
                     title=title,
                     section=section,
-                    canonical_url=self._get_canonical_url(item),
+                    canonical_url=canonical_url,
+                    markdown_url=markdown_url,
                     description=self._get_description(item, title),
                 )
             )
@@ -194,14 +201,14 @@ class LLMsGenerator:
     def _format_link(self, item: NavItem) -> str:
         """
         Format a navigation item as a markdown link.
-        Both the link and canonical URL point to the generated HTML version.
+        Links to markdown version but includes canonical HTML URL in description.
         """
-        return f"- [{item.title}]({item.canonical_url}): {item.description}"
+        return f"- [{item.title}]({item.markdown_url}): {item.description}"
 
     def _organize_sections(self, nav_items: list[NavItem]) -> dict[str, list[NavItem]]:
         """Organize nav items into core and optional sections"""
         sections = {section: [] for section in LLMsConfig.CORE_SECTIONS}
-        sections["Optional"] = []  # Initialize Optional section
+        sections["Optional"] = []
 
         for item in nav_items:
             section = self._get_section(item)
@@ -214,7 +221,6 @@ class LLMsGenerator:
         nav_items = self._get_nav_structure()
         sections = self._organize_sections(nav_items)
 
-        # Build content
         content = [
             "# Mirascope",
             "",
@@ -222,7 +228,6 @@ class LLMsGenerator:
             "",
         ]
 
-        # Add core sections
         for section_name in LLMsConfig.CORE_SECTIONS:
             if section_name in sections and sections[section_name]:
                 content.extend([f"## {section_name}", ""])
@@ -231,7 +236,6 @@ class LLMsGenerator:
                 )
                 content.append("")
 
-        # Add Optional section last
         if sections["Optional"]:
             content.extend(["## Optional", ""])
             content.extend(self._format_link(item) for item in sections["Optional"])
