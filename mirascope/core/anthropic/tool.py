@@ -12,6 +12,7 @@ from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import TypedDict
 
 from ..base import BaseTool, ToolConfig
+from ..base._partial import partial
 
 
 class _CacheControl(TypedDict):
@@ -87,6 +88,13 @@ class AnthropicTool(BaseTool):
             tool_call: The Anthropic tool call from which to construct this tool
                 instance.
         """
-        model_json = copy.deepcopy(tool_call.input)
+        if isinstance(tool_call.input, str):
+            model_json = cls._dict_from_json(tool_call.input, True)
+            allow_partial = True
+        else:
+            model_json = copy.deepcopy(tool_call.input)
+            allow_partial = False
         model_json["tool_call"] = tool_call.model_dump()  # pyright: ignore [reportIndexIssue]
+        if allow_partial:
+            return partial(cls, {"tool_call"}).model_validate(model_json)
         return cls.model_validate(model_json)

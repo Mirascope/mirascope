@@ -15,6 +15,7 @@ def _handle_chunk(
     current_tool_call: ToolUseBlock,
     current_tool_type: type[AnthropicTool] | None,
     tool_types: list[type[AnthropicTool]] | None,
+    partial_tools: bool = False,
 ) -> tuple[
     str,
     AnthropicTool | None,
@@ -59,19 +60,37 @@ def _handle_chunk(
     if chunk.type == "content_block_delta" and chunk.delta.type == "input_json_delta":
         buffer += chunk.delta.partial_json
 
+        # Return partial tool if enabled
+        if partial_tools and current_tool_type:
+            try:
+                partial_tool_call = ToolUseBlock(
+                    id=current_tool_call.id,
+                    input=buffer,
+                    name=current_tool_call.name,
+                    type="tool_use"
+                )
+                partial_tool = current_tool_type.from_tool_call(partial_tool_call, True)
+                if hasattr(chunk.delta, "partial_json"):
+                    partial_tool._delta = chunk.delta.partial_json
+                return buffer, partial_tool, current_tool_call, current_tool_type
+            except:
+                # If JSON is incomplete, continue buffering
+                pass
+
     return buffer, None, current_tool_call, current_tool_type
 
 
 def handle_stream(
     stream: Generator[MessageStreamEvent, None, None],
     tool_types: list[type[AnthropicTool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
     current_tool_type, buffer = None, ""
     for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-            buffer, chunk, current_tool_call, current_tool_type, tool_types
+            buffer, chunk, current_tool_call, current_tool_type, tool_types, partial_tools
         )
         yield AnthropicCallResponseChunk(chunk=chunk), tool
 
@@ -79,11 +98,12 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[MessageStreamEvent, None],
     tool_types: list[type[AnthropicTool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None]:
     current_tool_call = ToolUseBlock(id="", input={}, name="", type="tool_use")
     current_tool_type, buffer = None, ""
     async for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-            buffer, chunk, current_tool_call, current_tool_type, tool_types
+            buffer, chunk, current_tool_call, current_tool_type, tool_types, partial_tools
         )
         yield AnthropicCallResponseChunk(chunk=chunk), tool

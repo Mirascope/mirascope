@@ -64,7 +64,7 @@ def _handle_chunk(
         # Add partial tool support
         if partial_tools and current_tool_type:
             partial_tool = current_tool_type.from_tool_call(current_tool_call)
-            partial_tool.delta = tool_call.function.arguments  # Add delta
+            partial_tool._delta = tool_call.function.arguments  # Add delta
             return partial_tool, current_tool_call, current_tool_type
 
     return None, current_tool_call, current_tool_type
