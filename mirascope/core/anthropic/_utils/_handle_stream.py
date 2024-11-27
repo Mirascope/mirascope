@@ -69,8 +69,7 @@ def _handle_chunk(
                 type="tool_use",
             )
             partial_tool = current_tool_type.from_tool_call(partial_tool_call)
-            if hasattr(chunk.delta, "partial_json"):
-                partial_tool.delta = chunk.delta.partial_json
+            partial_tool.delta = chunk.delta.partial_json
             return buffer, partial_tool, current_tool_call, current_tool_type
     return buffer, None, current_tool_call, current_tool_type
 
