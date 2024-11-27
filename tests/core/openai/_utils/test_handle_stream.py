@@ -259,7 +259,7 @@ def test_handle_stream_with_partial_tools(
     """Tests the `handle_stream` function with partial tools enabled."""
     result = list(
         handle_stream(
-            (c for c in mock_chunks), tool_types=[FormatBook], allow_partial_tool=True
+            (c for c in mock_chunks), tool_types=[FormatBook], partial_tools=True
         )
     )
 
@@ -315,7 +315,7 @@ async def test_handle_stream_async_with_partial_tools(
 
     result = []
     async for t in handle_stream_async(
-        generator(), tool_types=[FormatBook], allow_partial_tool=True
+        generator(), tool_types=[FormatBook], partial_tools=True
     ):
         result.append(t)
 

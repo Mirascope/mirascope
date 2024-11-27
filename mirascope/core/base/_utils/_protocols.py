@@ -344,7 +344,7 @@ class HandleStream(
         self,
         stream: Generator[_InvariantResponseChunkT, None, None],
         tool_types: list[type[_BaseToolT]] | None,
-        allow_partial_tool: bool = False,
+        partial_tools: bool = False,
     ) -> Generator[
         tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None
     ]: ...  # pragma: no cover
@@ -357,7 +357,7 @@ class HandleStreamAsync(
         self,
         stream: AsyncGenerator[_InvariantResponseChunkT, None],
         tool_types: list[type[_BaseToolT]] | None,
-        allow_partial_tool: bool = False,
+        partial_tools: bool = False,
     ) -> AsyncGenerator[
         tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
     ]: ...  # pragma: no cover

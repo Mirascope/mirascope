@@ -93,6 +93,9 @@ class BaseTool(BaseModel):
 
     @classmethod
     def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:
+        """Returns a dictionary from a JSON string."""
+        if not json:
+            return {}
         return jiter.from_json(
             json.encode(), partial_mode="trailing-strings" if allow_partial else "off"
         )

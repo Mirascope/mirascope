@@ -381,7 +381,7 @@ def stream_factory(  # noqa: ANN201
                     async for chunk, tool in handle_stream_async(
                         await create(stream=True, **call_kwargs),
                         tool_types,
-                        allow_partial_tool=partial_tools,
+                        partial_tools=partial_tools,
                     ):
                         yield chunk, tool
 
@@ -432,7 +432,7 @@ def stream_factory(  # noqa: ANN201
                     yield from handle_stream(
                         create(stream=True, **call_kwargs),
                         tool_types,
-                        allow_partial_tool=partial_tools,
+                        partial_tools=partial_tools,
                     )
 
                 return TStream(

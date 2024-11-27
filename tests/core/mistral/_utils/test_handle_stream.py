@@ -39,10 +39,17 @@ def mock_chunks() -> list[CompletionChunk]:
         ),
         type="function",
     )
-
+    tool_call = ToolCall(
+        id="null",
+        function=FunctionCall(
+            arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+            name="FormatBook",
+        ),
+        type="function",
+    )
     # Split the arguments into multiple chunks
     part1_tool_call = ToolCall(
-        id="null",
+        id="call_chunk_id",
         function=FunctionCall(
             arguments='{"title": "The Name',
             name="FormatBook",
@@ -51,7 +58,7 @@ def mock_chunks() -> list[CompletionChunk]:
     )
 
     part2_tool_call = ToolCall(
-        id="null",
+        id="call_chunk_id",
         function=FunctionCall(
             arguments=' of the Wind", "',
             name="FormatBook",
@@ -60,7 +67,7 @@ def mock_chunks() -> list[CompletionChunk]:
     )
 
     part3_tool_call = ToolCall(
-        id="null",
+        id="call_chunk_id",
         function=FunctionCall(
             arguments='author": "Patrick',
             name="FormatBook",
@@ -78,6 +85,19 @@ def mock_chunks() -> list[CompletionChunk]:
     )
 
     return [
+        CompletionChunk(
+            id="chunk_id",
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(content="content", tool_calls=None),
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
         CompletionChunk(
             id="chunk_id",
             choices=[
@@ -159,6 +179,22 @@ def mock_chunks() -> list[CompletionChunk]:
             object="chat.completion.chunk",
         ),
         CompletionChunk(
+            id="id",
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(
+                        content=None,
+                        tool_calls=[tool_call],
+                    ),
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
+        CompletionChunk(
             id="chunk_id",
             choices=[
                 CompletionResponseStreamChoice(
@@ -185,7 +221,14 @@ def mock_chunks_onetime_tools() -> list[CompletionChunk]:
         ),
         type="function",
     )
-
+    tool_call = ToolCall(
+        id="null",
+        function=FunctionCall(
+            arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+            name="FormatBook",
+        ),
+        type="function",
+    )
     # Split the arguments into multiple chunks
     part1_tool_call = ToolCall(
         id="null",
@@ -322,6 +365,22 @@ def mock_chunks_onetime_tools() -> list[CompletionChunk]:
             choices=[
                 CompletionResponseStreamChoice(
                     index=0,
+                    delta=DeltaMessage(
+                        content=None,
+                        tool_calls=[tool_call],
+                    ),
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
+        CompletionChunk(
+            id="id",
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
                     delta=DeltaMessage(content=None, tool_calls=None),
                     finish_reason="tool_calls",
                 )
@@ -397,7 +456,7 @@ def test_handle_stream_onetime_tools(mock_chunks_onetime_tools) -> None:
         handle_stream(
             (CompletionEvent(data=c) for c in mock_chunks_onetime_tools),
             tool_types=[FormatBook],
-            allow_partial_tool=True,
+            partial_tools=True,
         )
     )
     # Check we get three tuples back.
@@ -443,7 +502,7 @@ def test_handle_stream_with_partial_tools(mock_chunks: list[CompletionChunk]) ->
         handle_stream(
             (CompletionEvent(data=c) for c in mock_chunks),
             tool_types=[FormatBook],
-            allow_partial_tool=True,
+            partial_tools=True,
         )
     )
 
@@ -499,7 +558,7 @@ async def test_handle_stream_async_with_partial_tools(
 
     result = []
     async for t in handle_stream_async(
-        generator(), tool_types=[FormatBook], allow_partial_tool=True
+        generator(), tool_types=[FormatBook], partial_tools=True
     ):
         result.append(t)
 
@@ -551,7 +610,7 @@ def test_handle_stream_with_partial_tools_onetime(
         handle_stream(
             (CompletionEvent(data=c) for c in mock_chunks_onetime_tools),
             tool_types=[FormatBook],
-            allow_partial_tool=True,
+            partial_tools=True,
         )
     )
 
@@ -607,7 +666,7 @@ async def test_handle_stream_async_with_partial_tools_onetime(
 
     result = []
     async for t in handle_stream_async(
-        generator(), tool_types=[FormatBook], allow_partial_tool=True
+        generator(), tool_types=[FormatBook], partial_tools=True
     ):
         result.append(t)
 
