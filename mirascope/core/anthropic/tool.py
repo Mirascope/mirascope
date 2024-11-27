@@ -5,7 +5,7 @@ usage docs: learn/tools.md
 
 from __future__ import annotations
 
-import copy
+from typing import Any, cast
 
 from anthropic.types import ToolParam, ToolUseBlock
 from pydantic.json_schema import SkipJsonSchema
@@ -81,20 +81,21 @@ class AnthropicTool(BaseTool):
         return ToolParam(**kwargs)
 
     @classmethod
-    def from_tool_call(cls, tool_call: ToolUseBlock) -> AnthropicTool:
+    def from_tool_call(
+        cls, tool_call: ToolUseBlock, allow_partial: bool = False
+    ) -> AnthropicTool:
         """Constructs an `AnthropicTool` instance from a `tool_call`.
 
         Args:
             tool_call: The Anthropic tool call from which to construct this tool
                 instance.
         """
-        if isinstance(tool_call.input, str):
-            model_json = cls._dict_from_json(tool_call.input, True)
-            allow_partial = True
-        else:
-            model_json = copy.deepcopy(tool_call.input)
-            allow_partial = False
-        model_json["tool_call"] = tool_call.model_dump()  # pyright: ignore [reportIndexIssue]
+        model_json = {"tool_call": tool_call}
+        model_json |= (
+            cls._dict_from_json(tool_call.input, True)
+            if isinstance(tool_call.input, str)
+            else cast(dict[str, Any], tool_call.input)
+        )
         if allow_partial:
             return partial(cls, {"tool_call", "delta"}).model_validate(model_json)
         return cls.model_validate(model_json)

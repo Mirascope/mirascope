@@ -7,11 +7,11 @@ from __future__ import annotations
 
 from typing import Any
 
+import jiter
 from mistralai.models import ToolCall
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
-from ..base._partial import partial
 
 
 class MistralTool(BaseTool):
@@ -66,22 +66,15 @@ class MistralTool(BaseTool):
         return {"function": fn, "type": "function"}
 
     @classmethod
-    def from_tool_call(
-        cls, tool_call: ToolCall, allow_partial: bool = False
-    ) -> MistralTool:
+    def from_tool_call(cls, tool_call: ToolCall) -> MistralTool:
         """Constructs an `MistralTool` instance from a `tool_call`.
 
         Args:
             tool_call: The Mistral tool call from which to construct this tool instance.
-            allow_partial: Whether to allow partial tool calls.
         """
         model_json = {"tool_call": tool_call}
         if args := tool_call.function.arguments:
             model_json |= (
-                cls._dict_from_json(args, allow_partial)
-                if isinstance(args, str)
-                else args
+                jiter.from_json(args.encode()) if isinstance(args, str) else args
             )
-        if allow_partial:
-            return partial(cls, {"tool_call"}).model_validate(model_json)
         return cls.model_validate(model_json)
