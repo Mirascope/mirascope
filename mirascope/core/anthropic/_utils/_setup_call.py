@@ -16,10 +16,12 @@ from anthropic.types import Message, MessageParam, MessageStreamEvent
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from ..tool import AnthropicTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 
@@ -35,7 +37,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[Message, MessageStreamEvent],
     str | None,
@@ -57,7 +59,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[Message, MessageStreamEvent],
     str | None,
@@ -84,7 +86,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     Callable[..., Message | Awaitable[Message]],
     str | None,
@@ -93,7 +95,13 @@ def setup_call(
     AnthropicCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, AnthropicTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        AnthropicTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(AnthropicCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | MessageParam], messages)

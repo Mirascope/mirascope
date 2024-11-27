@@ -5,7 +5,6 @@ usage docs: learn/tools.md
 
 from __future__ import annotations
 
-import jiter
 from openai.types.chat import (
     ChatCompletionMessageToolCall,
     ChatCompletionToolParam,
@@ -14,6 +13,7 @@ from openai.types.shared_params import FunctionDefinition
 from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+from ..base._partial import partial
 
 
 class GenerateOpenAIStrictToolJsonSchema(GenerateJsonSchemaNoTitles):
@@ -26,7 +26,7 @@ class OpenAIToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class OpenAITool(BaseTool[ChatCompletionToolParam]):
+class OpenAITool(BaseTool):
     """A class for defining tools for OpenAI LLM calls.
 
     Example:
@@ -84,12 +84,18 @@ class OpenAITool(BaseTool[ChatCompletionToolParam]):
         return ChatCompletionToolParam(function=fn, type="function")
 
     @classmethod
-    def from_tool_call(cls, tool_call: ChatCompletionMessageToolCall) -> OpenAITool:
+    def from_tool_call(
+        cls, tool_call: ChatCompletionMessageToolCall, allow_partial: bool = False
+    ) -> OpenAITool:
         """Constructs an `OpenAITool` instance from a `tool_call`.
 
         Args:
             tool_call: The OpenAI tool call from which to construct this tool instance.
+            allow_partial: Whether to allow partial JSON data.
         """
-        model_json = jiter.from_json(tool_call.function.arguments.encode())
-        model_json["tool_call"] = tool_call.model_dump()
+        model_json = {"tool_call": tool_call}
+        if args := tool_call.function.arguments:
+            model_json |= cls._dict_from_json(args, allow_partial)
+        if allow_partial:
+            return partial(cls, {"tool_call", "delta"}).model_validate(model_json)
         return cls.model_validate(model_json)

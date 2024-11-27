@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2 
+---
+
 # Tools
 
 {% set tool_methods = [["base_tool", "BaseTool"], ["function", "Function"]] %}
@@ -95,6 +100,8 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
         ```python hl_lines="16-22 31-43 45-47"
         {% elif provider == "Vertex AI" %}
         ```python hl_lines="6-12 18-34 36-43"
+        {% elif provider == "Mistral" %}
+        ```python hl_lines="10-16 23-36 38-44"
         {% else %}
         ```python hl_lines="8-14 21-34 36-38"
         {% endif %}

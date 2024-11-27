@@ -1,14 +1,13 @@
 """Tests the `mistral._utils.handle_stream` module."""
 
 import pytest
-from mistralai.models.chat_completion import (
-    ChatCompletionResponseStreamChoice,
-    ChatCompletionStreamResponse,
+from mistralai.models import (
+    CompletionChunk,
+    CompletionEvent,
+    CompletionResponseStreamChoice,
     DeltaMessage,
-    FinishReason,
     FunctionCall,
     ToolCall,
-    ToolType,
 )
 
 from mirascope.core.mistral._utils._handle_stream import (
@@ -29,7 +28,7 @@ class FormatBook(MistralTool):
 
 
 @pytest.fixture()
-def mock_chunks() -> list[ChatCompletionStreamResponse]:
+def mock_chunks() -> list[CompletionChunk]:
     """Returns a list of mock `ChatCompletionStreamResponse` instances."""
 
     new_tool_call = ToolCall(
@@ -38,7 +37,7 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             arguments="",
             name="FormatBook",
         ),
-        type=ToolType.function,
+        type="function",
     )
     tool_call = ToolCall(
         id="null",
@@ -46,13 +45,13 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
             name="FormatBook",
         ),
-        type=ToolType.function,
+        type="function",
     )
     return [
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(content="content", tool_calls=None),
                     finish_reason=None,
@@ -62,10 +61,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -78,10 +77,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -94,10 +93,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -110,10 +109,10 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(
                         content=None,
@@ -126,13 +125,13 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
             model="mistral-large-latest",
             object="chat.completion.chunk",
         ),
-        ChatCompletionStreamResponse(
+        CompletionChunk(
             id="id",
             choices=[
-                ChatCompletionResponseStreamChoice(
+                CompletionResponseStreamChoice(
                     index=0,
                     delta=DeltaMessage(content=None, tool_calls=None),
-                    finish_reason=FinishReason.tool_calls,
+                    finish_reason="tool_calls",
                 )
             ],
             created=0,
@@ -142,10 +141,59 @@ def mock_chunks() -> list[ChatCompletionStreamResponse]:
     ]
 
 
-def test_handle_stream(mock_chunks: list[ChatCompletionStreamResponse]) -> None:
+@pytest.fixture()
+def mock_chunks_onetime_tools() -> list[CompletionChunk]:
+    """Returns a list of mock `ChatCompletionStreamResponse` instances."""
+
+    tool_call = ToolCall(
+        id="id",
+        function=FunctionCall(
+            arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+            name="FormatBook",
+        ),
+        type="function",
+    )
+    return [
+        CompletionChunk(
+            id="id",
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(content="content", tool_calls=None),
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
+        CompletionChunk(
+            id="id",
+            choices=[
+                CompletionResponseStreamChoice(
+                    index=0,
+                    delta=DeltaMessage(
+                        content=None,
+                        tool_calls=[tool_call],
+                    ),
+                    finish_reason=None,
+                )
+            ],
+            created=0,
+            model="mistral-large-latest",
+            object="chat.completion.chunk",
+        ),
+    ]
+
+
+def test_handle_stream(mock_chunks: list[CompletionChunk]) -> None:
     """Tests the `handle_stream` function."""
 
-    result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
+    result = list(
+        handle_stream(
+            (CompletionEvent(data=c) for c in mock_chunks), tool_types=[FormatBook]
+        )
+    )
     # Check we get three tuples back.
     # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
     assert len(result) == 3
@@ -153,26 +201,26 @@ def test_handle_stream(mock_chunks: list[ChatCompletionStreamResponse]) -> None:
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
 
 
 @pytest.mark.asyncio
 async def test_handle_stream_async(
-    mock_chunks: list[ChatCompletionStreamResponse],
+    mock_chunks: list[CompletionChunk],
 ) -> None:
     """Tests the `handle_stream_async` function."""
 
     async def generator():
         for chunk in mock_chunks:
-            yield chunk
+            yield CompletionEvent(data=chunk)
 
     result = []
     async for t in handle_stream_async(generator(), tool_types=[FormatBook]):
@@ -184,12 +232,58 @@ async def test_handle_stream_async(
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+    )
+
+
+def test_handle_stream_onetime_tools(mock_chunks_onetime_tools) -> None:
+    """Tests the `handle_stream` function."""
+
+    result = list(
+        handle_stream(
+            (CompletionEvent(data=c) for c in mock_chunks_onetime_tools),
+            tool_types=[FormatBook],
+        )
+    )
+    # Check we get three tuples back.
+    # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
+    assert len(result) == 2
+    assert result[0][1] is None
+    assert (
+        (tool := result[1][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+    )
+
+
+@pytest.mark.asyncio
+async def test_handle_stream_async_onetime_tools(
+    mock_chunks_onetime_tools,
+) -> None:
+    """Tests the `handle_stream_async` function."""
+
+    async def generator():
+        for chunk in mock_chunks_onetime_tools:
+            yield CompletionEvent(data=chunk)
+
+    result = []
+    async for t in handle_stream_async(generator(), tool_types=[FormatBook]):
+        result.append(t)
+    # Check we get three tuples back.
+    # (chunk, None), (chunk, FormatBook), (chunk, FormatBook)
+    assert len(result) == 2
+    assert result[0][1] is None
+    assert (
+        (tool := result[1][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )

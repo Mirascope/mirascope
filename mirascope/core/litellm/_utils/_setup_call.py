@@ -9,6 +9,8 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from ...base import BaseTool
 from ...base._utils import AsyncCreateFn, CreateFn, fn_is_async
+from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from ...openai import (
     AsyncOpenAIDynamicConfig,
     OpenAICallParams,
@@ -29,9 +31,9 @@ def setup_call(
     dynamic_config: AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletion],
     str | None,
@@ -51,9 +53,9 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion],
     str | None,
@@ -72,9 +74,9 @@ def setup_call(
     dynamic_config: OpenAIDynamicConfig | AsyncOpenAIDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: OpenAICallParams,
+    call_params: OpenAICallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion]
     | AsyncCreateFn[ChatCompletion, ChatCompletion],

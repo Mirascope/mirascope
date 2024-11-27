@@ -26,7 +26,7 @@ class AzureToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class AzureTool(BaseTool[ChatCompletionsToolDefinition]):
+class AzureTool(BaseTool):
     """A class for defining tools for Azure LLM calls.
 
     Example:
@@ -87,6 +87,7 @@ class AzureTool(BaseTool[ChatCompletionsToolDefinition]):
         Args:
             tool_call: The Azure tool call from which to construct this tool instance.
         """
-        model_json = jiter.from_json(tool_call.function.arguments.encode())
-        model_json["tool_call"] = tool_call
+        model_json = {"tool_call": tool_call}
+        if args := tool_call.function.arguments:
+            model_json |= jiter.from_json(args.encode())
         return cls.model_validate(model_json)

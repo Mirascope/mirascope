@@ -19,10 +19,13 @@ from azure.core.credentials import AzureKeyCredential
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import AzureCallKwargs
 from ..call_params import AzureCallParams
 from ..dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from ..tool import AzureTool, GenerateAzureStrictToolJsonSchema
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 from ._get_credential import get_credential
 
@@ -37,9 +40,9 @@ def setup_call(
     dynamic_config: AsyncAzureDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: AzureCallParams,
+    call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -59,9 +62,9 @@ def setup_call(
     dynamic_config: AzureDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: AzureCallParams,
+    call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
     str | None,
@@ -81,9 +84,9 @@ def setup_call(
     dynamic_config: AzureDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: AzureCallParams,
+    call_params: AzureCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletions, StreamingChatCompletionsUpdate]
     | AsyncCreateFn[ChatCompletions, StreamingChatCompletionsUpdate],
@@ -93,7 +96,13 @@ def setup_call(
     AzureCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, AzureTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        AzureTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(AzureCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ChatRequestMessage], messages)

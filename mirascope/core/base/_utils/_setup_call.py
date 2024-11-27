@@ -4,15 +4,12 @@ import inspect
 from collections.abc import (
     Awaitable,
     Callable,
+    Sequence,
 )
-from typing import (
-    Any,
-    TypeVar,
-    cast,
-)
+from typing import Any, Protocol, TypeVar, cast
 
 from ..call_kwargs import BaseCallKwargs
-from ..call_params import BaseCallParams
+from ..call_params import BaseCallParams, CommonCallParams
 from ..dynamic_config import BaseDynamicConfig
 from ..message_param import BaseMessageParam
 from ..tool import BaseTool
@@ -22,28 +19,39 @@ from ._convert_function_to_base_tool import convert_function_to_base_tool
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
+_BaseCallParamsT = TypeVar("_BaseCallParamsT", bound=BaseCallParams, covariant=True)
+_CALL_PARAMS_KEYS = set(CommonCallParams.__annotations__)
+
+
+class ConvertCommonParamsFunc(Protocol[_BaseCallParamsT]):
+    def __call__(self, common_params: CommonCallParams) -> _BaseCallParamsT: ...
 
 
 def setup_call(
     fn: Callable[..., _BaseDynamicConfigT | Awaitable[_BaseDynamicConfigT]]
-    | Callable[..., list[BaseMessageParam]]
-    | Callable[..., Awaitable[list[BaseMessageParam]]],
+    | Callable[..., Sequence[BaseMessageParam]]
+    | Callable[..., Awaitable[Sequence[BaseMessageParam]]],
     fn_args: dict[str, Any],
     dynamic_config: _BaseDynamicConfigT,
-    tools: list[type[BaseTool] | Callable] | None,
+    tools: Sequence[type[BaseTool] | Callable] | None,
     tool_type: type[_BaseToolT],
-    call_params: BaseCallParams,
+    call_params: _BaseCallParamsT | CommonCallParams,
+    convert_common_call_params: ConvertCommonParamsFunc[_BaseCallParamsT],
 ) -> tuple[
     str | None,
     list[BaseMessageParam | Any],
     list[type[_BaseToolT]] | None,
     BaseCallKwargs,
 ]:
+    if isinstance(call_params, dict) and call_params.keys() <= _CALL_PARAMS_KEYS:
+        call_params = convert_common_call_params(cast(CommonCallParams, call_params))
     call_kwargs = cast(BaseCallKwargs[_BaseToolT], dict(call_params))
     prompt_template, messages = None, None
     if dynamic_config is not None:
         tools = dynamic_config.get("tools", tools)
         messages = dynamic_config.get("messages", None)
+        if messages is not None and not isinstance(messages, list):
+            messages = list(messages)
         dynamic_call_params = dynamic_config.get("call_params", None)
         if dynamic_call_params:
             call_kwargs |= dynamic_call_params

@@ -28,6 +28,7 @@ from .call_response import BaseCallResponse
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .stream import BaseStream, stream_factory
+from .stream_config import StreamConfig
 from .structured_stream import structured_stream_factory
 from .tool import BaseTool
 
@@ -57,7 +58,7 @@ def call_factory(  # noqa: ANN202
     TCallResponseChunk: type[_BaseCallResponseChunkT],
     TToolType: type[_BaseToolT],
     TStream: type[_BaseStreamT],
-    default_call_params: _BaseCallParamsT,
+    default_call_params: BaseCallParams,
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
@@ -123,7 +124,7 @@ def call_factory(  # noqa: ANN202
     def base_call(
         model: str,
         *,
-        stream: bool = False,
+        stream: bool | StreamConfig = False,
         tools: list[type[BaseTool] | Callable] | None = None,
         response_model: type[_ResponseModelT] | None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
@@ -221,6 +222,7 @@ def call_factory(  # noqa: ANN202
                 json_mode=json_mode,
                 client=client,
                 call_params=call_params,
+                partial_tools=isinstance(stream, dict) and stream.get("partial_tools"),
             )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
             create_factory(TCallResponse=TCallResponse, setup_call=setup_call),

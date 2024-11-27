@@ -1,6 +1,6 @@
 """Tests the `mistral.tool` module."""
 
-from mistralai.models.chat_completion import FunctionCall, ToolCall, ToolType
+from mistralai.models import FunctionCall, ToolCall
 
 from mirascope.core.base.tool import BaseTool
 from mirascope.core.mistral.tool import MistralTool
@@ -24,7 +24,7 @@ def test_mistral_tool() -> None:
             name="FormatBook",
             arguments='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
         ),
-        type=ToolType.function,
+        type="function",
     )
 
     tool = FormatBook.from_tool_call(tool_call)

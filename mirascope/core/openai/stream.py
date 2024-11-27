@@ -3,7 +3,7 @@
 usage docs: learn/streams.md
 """
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
 
 from openai.types.chat import (
     ChatCompletion,
@@ -74,11 +74,32 @@ class OpenAIStream(
         self,
     ) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
         for chunk, tool in super().__iter__():
-            if (audio := getattr(chunk.chunk.choices[0].delta, "audio", None)) and (
-                audio_id := audio.get("id")
+            if (
+                (choices := chunk.chunk.choices)
+                and (audio := getattr(choices[0].delta, "audio", None))
+                and (audio_id := audio.get("id"))
             ):
                 self.audio_id = audio_id
             yield chunk, tool
+
+    def __aiter__(
+        self,
+    ) -> AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]:
+        aiter = super().__aiter__()
+
+        async def generator() -> (
+            AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]
+        ):
+            async for chunk, tool in aiter:
+                if (
+                    (choices := chunk.chunk.choices)
+                    and (audio := getattr(choices[0].delta, "audio", None))
+                    and (audio_id := audio.get("id"))
+                ):
+                    self.audio_id = audio_id
+                yield chunk, tool
+
+        return generator()
 
     @property
     def cost(self) -> float | None:

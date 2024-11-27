@@ -22,7 +22,7 @@ The [Mirascope GitHub Issues](https://github.com/Mirascope/mirascope/issues) are
 
 ### :material-email: Email
 
-You can also email us at [support@mirascope.io](mailto:support@mirascope.io) or [feedback@mirascope.io](mailto:feedback@mirascope.io).
+You can also email us at [support@mirascope.com](mailto:support@mirascope.com) or [feedback@mirascope.com](mailto:feedback@mirascope.com).
 
 
 ## How *you* can help Mirascope

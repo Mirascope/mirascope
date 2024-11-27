@@ -5,6 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from mirascope.core.groq._utils._convert_common_call_params import (
+    convert_common_call_params,
+)
 from mirascope.core.groq._utils._setup_call import setup_call
 from mirascope.core.groq.tool import GroqTool
 
@@ -48,7 +51,9 @@ def test_setup_call(
     assert tool_types == mock_base_setup_call.return_value[2]
     assert "model" in call_kwargs and call_kwargs["model"] == "llama-3.1-8b-instant"
     assert "messages" in call_kwargs and call_kwargs["messages"] == messages
-    mock_base_setup_call.assert_called_once_with(fn, {}, None, None, GroqTool, {})
+    mock_base_setup_call.assert_called_once_with(
+        fn, {}, None, None, GroqTool, {}, convert_common_call_params
+    )
     mock_convert_message_params.assert_called_once_with(
         mock_base_setup_call.return_value[1]
     )

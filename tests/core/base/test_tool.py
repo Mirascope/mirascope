@@ -161,3 +161,25 @@ def test_base_tool_unsupported_configurations_warning() -> None:
         "as this feature is only supported by OpenAI.",
     ):
         Book.warn_for_unsupported_configurations()
+
+
+def test_base_tool_dict_from_json() -> None:
+    """Tests the `BaseTool._dict_from_json` classmethod."""
+    from mirascope.core.base import BaseTool
+
+    # Test empty string
+    assert BaseTool._dict_from_json("") == {}
+
+    # Test valid JSON
+    json_str = '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+    expected = {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+    assert BaseTool._dict_from_json(json_str) == expected
+
+    # Test partial JSON with allow_partial=True
+    partial_json = '{"title": "The Name of the Wind", "author": '
+    result = BaseTool._dict_from_json(partial_json, allow_partial=True)
+    assert result == {"title": "The Name of the Wind"}
+
+    # Test partial JSON with allow_partial=False (should use jiter's default behavior)
+    with pytest.raises(ValueError):  # jiter would raise an exception for invalid JSON
+        BaseTool._dict_from_json(partial_json, allow_partial=False)

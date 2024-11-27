@@ -66,6 +66,7 @@ def _handle_chunk(
 def handle_stream(
     stream: Generator[ChatCompletionChunk, None, None],
     tool_types: list[type[GroqTool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[GroqCallResponseChunk, GroqTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionMessageToolCall(
@@ -95,6 +96,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[ChatCompletionChunk, None],
     tool_types: list[type[GroqTool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[GroqCallResponseChunk, GroqTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionMessageToolCall(

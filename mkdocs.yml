@@ -1,7 +1,7 @@
 copyright: Copyright &copy; 2023 Mirascope, Inc.
 site_name: Mirascope
-site_url: https://www.mirascope.com/docs
-site_description: LLM abstractions that aren't obstructions
+site_url: https://mirascope.com
+site_description: Mirascope streamlines LLM development with a unified interface supporting major providers like OpenAI, Anthropic, Gemini, Mistral, and more. Build powerful AI applications faster with flexible, developer-friendly abstractions that aren't obstructions.
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 strict: true
@@ -27,18 +27,24 @@ theme:
     - toc.follow
   language: en
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-6
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: custom
-      accent: indigo
-    - scheme: slate
+      accent: custom
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
-      primary: custom
-      accent: indigo
+        name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
@@ -104,7 +110,18 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  - social
   - search
+  - blog:
+      post_excerpt: required
+      post_readtime_words_per_minute: 265
+      post_url_format: "{slug}"
+      categories_url_format: "{slug}"
+      archive: false
+      categories_allowed:
+        - Tips & Inspiration
+        - Behind the Scenes
+        - Library Updates
   - macros:
       module_name: docs/macros
   - mkdocs-jupyter:
@@ -144,8 +161,9 @@ validation:
   not_found: warn
 
 nav:
+  - Home: "index.md"
   - Get Started:
-      - Welcome to Mirascope: "index.md"
+      - Welcome to Mirascope: "WELCOME.md"
       - Why Use Mirascope: "WHY.md"
       - Help: "HELP.md"
       - Migration Guide: "MIGRATE.md"
@@ -346,6 +364,8 @@ nav:
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
+  - Blog:
+      - "blog/index.md"
 
 exclude_docs: |
   /generate_llms_txt.py

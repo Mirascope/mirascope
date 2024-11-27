@@ -35,6 +35,8 @@ from ...base._utils import (
     get_async_create_fn,
     get_create_fn,
 )
+from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import BedrockCallKwargs
 from .._types import (
     AsyncStreamOutputChunk,
@@ -44,6 +46,7 @@ from .._types import (
 from ..call_params import BedrockCallParams
 from ..dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from ..tool import BedrockTool
+from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
 _P = ParamSpec("_P")
@@ -97,9 +100,9 @@ def setup_call(
     dynamic_config: AsyncBedrockDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: BedrockCallParams,
+    call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk],
     str | None,
@@ -119,9 +122,9 @@ def setup_call(
     dynamic_config: BedrockDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: BedrockCallParams,
+    call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
     str | None,
@@ -141,9 +144,9 @@ def setup_call(
     dynamic_config: BedrockDynamicConfig | AsyncBedrockDynamicConfig,
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
-    call_params: BedrockCallParams,
+    call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk]
     | CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
@@ -153,7 +156,13 @@ def setup_call(
     BedrockCallKwargs,
 ]:
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
-        fn, fn_args, dynamic_config, tools, BedrockTool, call_params
+        fn,
+        fn_args,
+        dynamic_config,
+        tools,
+        BedrockTool,
+        call_params,
+        convert_common_call_params,
     )
     call_kwargs = cast(BedrockCallKwargs, base_call_kwargs)
     messages = cast(list[InternalBedrockMessageParam | BaseMessageParam], messages)

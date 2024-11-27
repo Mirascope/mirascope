@@ -227,6 +227,7 @@ def structured_stream_factory(  # noqa: ANN201
         def handle_stream(
             stream: Generator[_ResponseChunkT, None, None],
             tool_types: list[type[_BaseToolT]] | None,
+            partial_tools: bool = False,
         ) -> Generator[tuple[_BaseCallResponseChunkT, None], None, None]:
             for chunk in stream:
                 yield handle_chunk(chunk)
@@ -234,6 +235,7 @@ def structured_stream_factory(  # noqa: ANN201
         async def handle_stream_async(
             stream: AsyncGenerator[_AsyncResponseChunkT, None],
             tool_types: list[type[_BaseToolT]] | None,
+            partial_tools: bool = False,
         ) -> AsyncGenerator[tuple[_BaseCallResponseChunkT, None], None]:
             async for chunk in stream:
                 yield handle_chunk(chunk)

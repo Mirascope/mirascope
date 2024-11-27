@@ -36,7 +36,7 @@ class FunctionCallArguments(TypedDict, total=False):
     """The arguments that the model called."""
 
 
-class OpenAIRealtimeTool(BaseTool[RealtimeToolParam]):
+class OpenAIRealtimeTool(BaseTool):
     """A class for defining tools for OpenAI Realtime LLM calls.
 
     Example:
@@ -107,6 +107,7 @@ class OpenAIRealtimeTool(BaseTool[RealtimeToolParam]):
         Args:
             tool_call: The OpenAI tool call from which to construct this tool instance.
         """
-        model_json = jiter.from_json(tool_call["arguments"].encode())
-        model_json["tool_call"] = tool_call.copy()
+        model_json = {"tool_call": tool_call.copy()}
+        if args := tool_call.get("arguments", None):
+            model_json |= jiter.from_json(args.encode())
         return cls.model_validate(model_json)

@@ -1,10 +1,12 @@
+import os
+
 from mirascope.core import Messages, mistral
-from mistralai.client import MistralClient
+from mistralai import Mistral
 
 
 @mistral.call("mistral-large-latest")
 def recommend_book(genre: str) -> mistral.MistralDynamicConfig:
     return {
         "messages": [Messages.User(f"Recommend a {genre} book")],
-        "client": MistralClient(),
+        "client": Mistral(api_key=os.environ["MISTRAL_API_KEY"]),
     }

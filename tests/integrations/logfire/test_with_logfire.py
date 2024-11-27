@@ -23,3 +23,5 @@ def test_with_logfire(mock_middleware_factory: MagicMock) -> None:
     assert call_args["handle_call_response_async"] == _utils.handle_call_response_async
     assert call_args["handle_stream"] == _utils.handle_stream
     assert call_args["handle_stream_async"] == _utils.handle_stream_async
+    assert call_args["handle_error"] == _utils.handle_error
+    assert call_args["handle_error_async"] == _utils.handle_error_async

@@ -1,8 +1,10 @@
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ToolChoice
+import os
+from typing import cast
+
+from mistralai import Mistral
 from pydantic import BaseModel
 
-client = MistralClient()
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
 
 
 class Book(BaseModel):
@@ -13,7 +15,7 @@ class Book(BaseModel):
 
 
 def extract_book(text: str) -> Book:
-    completion = client.chat(
+    completion = client.chat.complete(
         model="mistral-large-latest",
         messages=[{"role": "user", "content": f"Extract {text}"}],
         tools=[
@@ -33,10 +35,14 @@ def extract_book(text: str) -> Book:
                 "type": "function",
             }
         ],
-        tool_choice=ToolChoice.any,
+        tool_choice="any",
     )
-    if tool_calls := completion.choices[0].message.tool_calls:
-        return Book.model_validate_json(tool_calls[0].function.arguments)
+    if (
+        completion
+        and (choices := completion.choices)
+        and (tool_calls := choices[0].message.tool_calls)
+    ):
+        return Book.model_validate_json(cast(str, tool_calls[0].function.arguments))
     raise ValueError("No tool call found")
 
 

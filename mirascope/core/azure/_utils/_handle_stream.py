@@ -73,6 +73,7 @@ def _handle_chunk(
 def handle_stream(
     stream: Generator[StreamingChatCompletionsUpdate, None, None],
     tool_types: list[type[AzureTool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[AzureCallResponseChunk, AzureTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionsToolCall(
@@ -102,6 +103,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[StreamingChatCompletionsUpdate, None],
     tool_types: list[type[AzureTool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[AzureCallResponseChunk, AzureTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionsToolCall(

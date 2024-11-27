@@ -58,7 +58,9 @@ def custom_context_manager(
         yield span
 
 
-def get_call_response_attributes(result: BaseCallResponse) -> dict[str, AttributeValue]:
+def _get_call_response_attributes(
+    result: BaseCallResponse,
+) -> dict[str, AttributeValue]:
     max_tokens = getattr(result.call_params, "max_tokens", 0)
     temperature = getattr(result.call_params, "temperature", 0)
     top_p = getattr(result.call_params, "top_p", 0)
@@ -83,7 +85,7 @@ def get_call_response_attributes(result: BaseCallResponse) -> dict[str, Attribut
     }
 
 
-def set_call_response_event_attributes(result: BaseCallResponse, span: Span) -> None:
+def _set_call_response_event_attributes(result: BaseCallResponse, span: Span) -> None:
     prompt_attributes = {
         "gen_ai.prompt": json.dumps(result.user_message_param),
     }
@@ -106,20 +108,20 @@ def handle_call_response(
     if span is None:
         return
 
-    attributes = get_call_response_attributes(result)
+    attributes = _get_call_response_attributes(result)
     attributes["async"] = False
     span.set_attributes(attributes)
-    set_call_response_event_attributes(result, span)
+    _set_call_response_event_attributes(result, span)
 
 
 def handle_stream(stream: BaseStream, fn: Callable, span: Span | None) -> None:
     if span is None:
         return
     constructed_call_response = stream.construct_call_response()
-    attributes = get_call_response_attributes(constructed_call_response)
+    attributes = _get_call_response_attributes(constructed_call_response)
     attributes["async"] = False
     span.set_attributes(attributes)
-    set_call_response_event_attributes(constructed_call_response, span)
+    _set_call_response_event_attributes(constructed_call_response, span)
 
 
 def handle_response_model(
@@ -129,7 +131,7 @@ def handle_response_model(
         return
     if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
-        attributes = get_call_response_attributes(response)
+        attributes = _get_call_response_attributes(response)
         attributes["async"] = False
         span.set_attributes(attributes)
         prompt_attributes = {
@@ -160,7 +162,7 @@ def handle_structured_stream(
 ) -> None:
     if span is None:
         return
-    attributes = get_call_response_attributes(result.stream.construct_call_response())
+    attributes = _get_call_response_attributes(result.stream.construct_call_response())
     attributes["async"] = False
     span.set_attributes(attributes)
     prompt_attributes = {
@@ -189,10 +191,10 @@ async def handle_call_response_async(
     if span is None:
         return
 
-    attributes = get_call_response_attributes(result)
+    attributes = _get_call_response_attributes(result)
     attributes["async"] = True
     span.set_attributes(attributes)
-    set_call_response_event_attributes(result, span)
+    _set_call_response_event_attributes(result, span)
 
 
 async def handle_stream_async(
@@ -201,10 +203,10 @@ async def handle_stream_async(
     if span is None:
         return
     constructed_call_response = stream.construct_call_response()
-    attributes = get_call_response_attributes(constructed_call_response)
+    attributes = _get_call_response_attributes(constructed_call_response)
     attributes["async"] = True
     span.set_attributes(attributes)
-    set_call_response_event_attributes(constructed_call_response, span)
+    _set_call_response_event_attributes(constructed_call_response, span)
 
 
 async def handle_response_model_async(
@@ -214,7 +216,7 @@ async def handle_response_model_async(
         return
     if isinstance(result, BaseModel):
         response: BaseCallResponse = result._response  # pyright: ignore [reportAttributeAccessIssue]
-        attributes = get_call_response_attributes(response)
+        attributes = _get_call_response_attributes(response)
         attributes["async"] = True
         span.set_attributes(attributes)
         prompt_attributes = {
@@ -245,7 +247,7 @@ async def handle_structured_stream_async(
 ) -> None:
     if span is None:
         return
-    attributes = get_call_response_attributes(result.stream.construct_call_response())
+    attributes = _get_call_response_attributes(result.stream.construct_call_response())
     attributes["async"] = True
     span.set_attributes(attributes)
     prompt_attributes = {

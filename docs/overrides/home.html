@@ -1,0 +1,367 @@
+{% extends "main.html" %} {% block tabs %} {{ super() }}
+
+<!-- Tailwind and Alpine.js -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.js"
+  defer
+></script>
+
+<!-- SVG Logo Replacement For Correct Coloring -->
+<script>
+  document.querySelector(
+    "body > header > nav.md-header__inner.md-grid > a > img"
+  ).src = "assets/brandmark.svg";
+</script>
+
+<link
+  href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/light.css"
+  rel="stylesheet"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/@lucide/web"></script>
+
+<!-- Always Light Mode -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Force light mode on initial load
+    const body = document.querySelector('body');
+    body.setAttribute('data-md-color-scheme', 'default');
+    
+    // Change the color media preference to light
+    body.setAttribute('data-md-color-media', '(prefers-color-scheme: light)');
+    
+    // Prevent theme switching and maintain light mode preference
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === 'data-md-color-scheme') {
+          const currentScheme = body.getAttribute('data-md-color-scheme');
+          if (currentScheme === 'slate') {
+            body.setAttribute('data-md-color-scheme', 'default');
+          }
+        }
+        if (mutation.attributeName === 'data-md-color-media') {
+          const currentMedia = body.getAttribute('data-md-color-media');
+          if (currentMedia === '(prefers-color-scheme: dark)') {
+            body.setAttribute('data-md-color-media', '(prefers-color-scheme: light)');
+          }
+        }
+      });
+    });
+
+    observer.observe(body, {
+      attributes: true,
+      attributeFilter: ['data-md-color-scheme', 'data-md-color-media']
+    });
+  });
+</script>
+
+<!-- Header Styling -->
+<style>
+  .md-header {
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.50) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
+  }
+
+  .md-header > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .md-header[data-md-state="shadow"] {
+    background-color: transparent !important;
+  }
+
+  .md-tabs {
+    background-color: transparent !important;
+    z-index: -1;
+  }
+
+  .md-tabs__link {
+    color: #6366f1 !important;
+  }
+
+  /* Header elements color */
+  .md-header__button {
+    color: #6366f1 !important;
+  }
+
+  .md-header__title {
+    color: #6366f1 !important;
+  }
+
+  .md-search__inner {
+    background-color: transparent !important;
+    color: #6366f1 !important;
+    padding: 0 !important;
+    z-index: 50;
+  }
+
+  .md-search__form {
+    background-color: rgba(99, 102, 241, 0.08) !important;
+    color: #6366f1 !important;
+    transition: background-color 0.2s ease;
+    z-index: 50;
+  }
+
+  .md-search__form:hover {
+    background-color: rgba(99, 102, 241, 0.12) !important;
+    z-index: 50;
+  }
+
+  .md-search__input {
+    background-color: transparent !important;
+    color: #6366f1 !important;
+    z-index: 50;
+  }
+
+  .md-search__input::placeholder {
+    color: #6366f1 !important;
+    opacity: 0.7;
+    z-index: 50;
+  }
+
+  /* Search icon styling */
+  .md-search__icon {
+    color: #6366f1 !important;
+    opacity: 0.8;
+    z-index: 50;
+  }
+
+  .md-search__icon svg {
+    fill: #6366f1 !important;
+    z-index: 50;
+  }
+
+  /* Search options styling */
+  .md-search__options {
+    color: #6366f1 !important;
+    z-index: 50;
+  }
+
+  /* Fix overlay styling */
+  .md-search__overlay {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(8px);
+    z-index: 50;
+  }
+
+  .md-search__inner {
+    background-color: white !important;
+    z-index: 50;
+  }
+
+  .md-source {
+    color: #6366f1 !important;
+  }
+
+  .md-main__inner {
+    margin: 0;
+    padding: 0;
+  }
+
+  .md-content {
+    display: none;
+  }
+
+  @media screen and (min-width: 60em) {
+    .md-sidebar--secondary {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 76.25em) {
+    .md-sidebar--primary {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  tailwind.config = {
+    important: true,
+    theme: {
+      extend: {
+        colors: {
+          primary: "#6366F1",
+        },
+        fontSize: {
+          xs: "0.6rem", // 12px / 20px = 0.6rem (was 0.75rem)
+          sm: "0.7rem", // 14px / 20px = 0.7rem (was 0.875rem)
+          base: "0.8rem", // 16px / 20px = 0.8rem (was 1rem)
+          lg: "0.9rem", // 18px / 20px = 0.9rem (was 1.125rem)
+          xl: "1rem", // 20px / 20px = 1rem (was 1.25rem)
+          "2xl": "1.2rem", // 24px / 20px = 1.2rem (was 1.5rem)
+          "3xl": "1.5rem", // 30px / 20px = 1.5rem (was 1.875rem)
+          "4xl": "1.8rem", // 36px / 20px = 1.8rem (was 2.25rem)
+          "5xl": "2.4rem", // 48px / 20px = 2.4rem (was 3rem)
+          "6xl": "3rem", // 60px / 20px = 3rem (was 3.75rem)
+          "7xl": "3.6rem", // 72px / 20px = 3.6rem (was 4.5rem)
+          "8xl": "4.8rem", // 96px / 20px = 4.8rem (was 6rem)
+          "9xl": "6rem", // 128px / 20px = 6rem (was 8rem)
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  .tailwind-content * {
+    font-size: 16px;
+    line-height: 1;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
+  }
+
+  .tailwind-content pre {
+    display: grid;
+    margin: 0 !important;
+    /* max-height: 400px !important; */
+    overflow-y: auto !important;
+  }
+
+  .tailwind-content pre * {
+    font-size: inherit;
+    line-height: 1.5;
+    font-family: Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;
+  }
+</style>
+
+<div class="tailwind-content">
+  <!-- Background Image -->
+  <div
+    class="fixed inset-0 opacity-20 bg-cover bg-center bg-no-repeat -z-10"
+    style="background-image: url('assets/cloth-background.png')"
+  ></div>
+
+  <!-- Main Content -->
+  <div
+    class="mx-auto -mb-12 flex min-h-screen max-w-[1440px] flex-col px-4 pt-24 sm:pt-0 sm:px-6 lg:px-8"
+  >
+    <main class="flex flex-1 flex-col justify-center gap-16">
+      <section class="relative flex flex-col items-center justify-center gap-12 lg:flex-row">
+        <div class="flex flex-col gap-4">
+          <h1
+            class="whitespace-nowrap text-center text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-left lg:text-5xl xl:text-6xl"
+          >
+            LLM abstractions that<br />aren't obstructions
+          </h1>
+          <p class="text-center text-sm sm:text-lg lg:text-left">
+            Modular. Extensible. Reliable. Open Source.
+          </p>
+          <div
+            class="flex flex-col items-center self-center gap-2 sm:flex-row lg:self-start"
+          >
+            <a href="https://mirascope.com/WELCOME">
+              <button
+                class="focus-visible:ring-ring inline-flex h-8 items-center justify-center whitespace-nowrap rounded-md bg-[#6366F1] px-6 text-lg font-medium text-white shadow transition-colors hover:bg-[#6366F1E6] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+              >
+                Read the Docs
+              </button>
+            </a>
+            <a
+              href="https://join.slack.com/t/mirascope-community/shared_invite/zt-2ilqhvmki-FB6LWluInUCkkjYD3oSjNA"
+            >
+              <button
+                class="focus-visible:ring-ring inline-flex gap-2 h-8 items-center justify-center whitespace-nowrap rounded-md border bg-white px-6 text-lg font-medium text-[#171717] shadow transition-colors hover:bg-[#6366F11A] focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+              >
+                <svg
+                    width="18"
+                    height="18"
+                    enableBackground="new 0 0 2447.6 2452.5"
+                    viewBox="0 0 2447.6 2452.5"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <g clipRule="evenodd" fillRule="evenodd">
+                        <path
+                        d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z"
+                        fill="#36c5f0"
+                        />
+                        <path
+                        d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z"
+                        fill="#2eb67d"
+                        />
+                        <path
+                        d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z"
+                        fill="#ecb22e"
+                        />
+                        <path
+                        d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0"
+                        fill="#e01e5a"
+                        />
+                    </g>
+                </svg>
+                Community
+              </button>
+            </a>
+          </div>
+        </div>
+        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-md">
+          <div class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-4 py-1">
+              <div class="flex items-center space-x-2">
+                  <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="h-4 w-4 text-[#3776AB]" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6zM286.2 404c11.1 0 20.1 9.1 20.1 20.3 0 11.3-9 20.4-20.1 20.4-11 0-20.1-9.2-20.1-20.4.1-11.3 9.1-20.3 20.1-20.3zM167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4zm-6.7-142.6c-11.1 0-20.1-9.1-20.1-20.3.1-11.3 9-20.4 20.1-20.4 11 0 20.1 9.2 20.1 20.4s-9 20.3-20.1 20.3z"></path></svg><span class="text-sm font-medium text-zinc-600">extract_book.py</span>
+              </div>
+              <button 
+                  x-data='{ copied: false, content: `from mirascope.core import openai\nfrom pydantic import BaseModel\n\nclass Book(BaseModel):\n    title: str\n    author: str\n\n@openai.call("gpt-4o-mini", response_model=Book)\ndef extract_book(text: str) -> str:\n    return f"Extract the book: {text}"\n\ntext = "The Name of the Wind by Patrick Rothfuss"\nbook = extract_book(text)\nassert isinstance(book, Book)\nprint(book)\n` }'
+                  @click="navigator.clipboard.writeText(content); copied = true; setTimeout(() => copied = false, 2000)"
+                  class="focus-visible:ring-ring hover:bg-accent inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700 focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+              >
+                  <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy h-4 w-4">
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                  </svg>
+                  <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+              </button>
+          </div>
+          <pre class="m-0 max-h-fit overflow-x-auto px-0 py-2 text-[0.5rem] sm:text-xs leading-6 md:text-sm" style="color: rgb(64, 63, 83); background-color: rgb(251, 251, 251);">
+              <code class="grid py-1 leading-6 overflow-x-auto"><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">1</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">from</span><span class="token plain"> mirascope</span><span class="token punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token plain">core </span><span class="token keyword" style="color: rgb(12, 150, 155);">import</span><span class="token plain"> openai</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">2</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">from</span><span class="token plain"> pydantic </span><span class="token keyword" style="color: rgb(12, 150, 155);">import</span><span class="token plain"> BaseModel</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">3</span><span class="table-cell pl-4 pr-4"></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">4</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">class</span><span class="token plain"> </span><span class="token class-name" style="color: rgb(153, 76, 195);">Book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">BaseModel</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">5</span><span class="table-cell pl-4 pr-4"><span class="token plain">    title</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">6</span><span class="table-cell pl-4 pr-4"><span class="token plain">    author</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">7</span><span class="table-cell pl-4 pr-4"></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">8</span><span class="table-cell pl-4 pr-4"><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">@openai</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">call</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token string" style="color: rgb(72, 118, 214);">"gpt-4o-mini"</span><span class="token punctuation" style="color: rgb(153, 76, 195);">,</span><span class="token plain"> response_model</span><span class="token operator" style="color: rgb(12, 150, 155);">=</span><span class="token plain">Book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">9</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">def</span><span class="token plain"> </span><span class="token function" style="color: rgb(153, 76, 195);">extract_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">text</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"> </span><span class="token operator" style="color: rgb(12, 150, 155);">-</span><span class="token operator" style="color: rgb(12, 150, 155);">&gt;</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">10</span><span class="table-cell pl-4 pr-4"><span class="token plain">    </span><span class="token keyword" style="color: rgb(12, 150, 155);">return</span><span class="token plain"> </span><span class="token string-interpolation"><span class="token string" style="color: rgb(72, 118, 214);">f"Extract the book: </span><span class="token interpolation"><span class="token punctuation" style="color: rgb(153, 76, 195);">{</span><span class="token plain">text</span><span class="token punctuation" style="color: rgb(153, 76, 195);">}</span></span><span class="token string" style="color: rgb(72, 118, 214);">"</span></span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">11</span><span class="table-cell pl-4 pr-4"></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">12</span><span class="table-cell pl-4 pr-4"><span class="token plain">text </span><span class="token operator" style="color: rgb(12, 150, 155);">=</span><span class="token plain"> </span><span class="token string" style="color: rgb(72, 118, 214);">"The Name of the Wind by Patrick Rothfuss"</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">13</span><span class="table-cell pl-4 pr-4"><span class="token plain">book </span><span class="token operator" style="color: rgb(12, 150,155);">=</span><span class="token plain"> extract_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">text</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">14</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">assert</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">isinstance</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">,</span><span class="token plain"> Book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div><div class="table-row" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">15</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">print</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">16</span><span class="table-cell pl-4 pr-4"><span class="token comment" style="color: rgb(153, 153, 153);"># title='The Name of the Wind' author='Patrick Rothfuss'</span></span></div>
+        </code>
+    </pre>
+</div>
+        <!-- <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-md">
+            <div class="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-4 py-1">
+                <div class="flex items-center space-x-2">
+                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="h-4 w-4 text-[#3776AB]" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6zM286.2 404c11.1 0 20.1 9.1 20.1 20.3 0 11.3-9 20.4-20.1 20.4-11 0-20.1-9.2-20.1-20.4.1-11.3 9.1-20.3 20.1-20.3zM167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4zm-6.7-142.6c-11.1 0-20.1-9.1-20.1-20.3.1-11.3 9-20.4 20.1-20.4 11 0 20.1 9.2 20.1 20.4s-9 20.3-20.1 20.3z"></path></svg><span class="text-sm font-medium text-zinc-600">recommend_book.py</span>
+                </div>
+                <button 
+                    x-data='{ copied: false, content: `from mirascope.core import openai\n\n@openai.call("gpt-4o-mini")\ndef recommend_book(genre: str) -> str:\n    return f"Recommend a {genre} book"\n\nresponse = recommend_book("fantasy")\nprint(response.content)` }'
+                    @click="navigator.clipboard.writeText(content); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="focus-visible:ring-ring hover:bg-accent inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700 focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+                >
+                    <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy h-4 w-4">
+                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                    </svg>
+                    <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check h-4 w-4">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <pre class="m-0 max-h-fit overflow-x-auto px-0 py-2 text-[0.5rem] sm:text-xs leading-6 md:text-sm xl:text-base" style="color: rgb(64, 63, 83); background-color: rgb(251, 251, 251);">
+                <code class="grid py-1 leading-6 overflow-x-auto"><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">1</span><span class="table-cell pl-4 pr-4"><span class="token keyword" style="color: rgb(12, 150, 155);">from</span><span class="token plain"> mirascope</span><span class="token punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token plain">core </span><span class="token keyword" style="color: rgb(12, 150, 155);">import</span><span class="token plain"> openai</span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">2</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">3</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">4</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">@openai</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token decorator annotation punctuation" style="color: rgb(153, 76, 195);">call</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token string" style="color: rgb(72, 118, 214);">"gpt-4o-mini"</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">5</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token keyword" style="color: rgb(12, 150, 155);">def</span><span class="token plain"> </span><span class="token function" style="color: rgb(153, 76, 195); font-style: italic;">recommend_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">genre</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"> </span><span class="token operator" style="color: rgb(12, 150, 155);">-</span><span class="token operator" style="color: rgb(12, 150, 155);">&gt;</span><span class="token plain"> </span><span class="token builtin" style="color: rgb(72, 118, 214);">str</span><span class="token punctuation" style="color: rgb(153, 76, 195);">:</span><span class="token plain"></span></span></div><div class="table-row bg-purple-100" style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">6</span><span class="table-cell pl-4 pr-4"><span class="token plain">    </span><span class="token keyword" style="color: rgb(12, 150, 155);">return</span><span class="token plain"> </span><span class="token string-interpolation string" style="color: rgb(72, 118, 214);">f"Recommend a </span><span class="token string-interpolation interpolation punctuation" style="color: rgb(153, 76, 195);">{</span><span class="token string-interpolation interpolation">genre</span><span class="token string-interpolation interpolation punctuation" style="color: rgb(153, 76, 195);">}</span><span class="token string-interpolation string" style="color: rgb(72, 118, 214);"> book"</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">7</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">8</span><span class="table-cell pl-4 pr-4"><span class="token plain" style="display: inline-block;"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">9</span><span class="table-cell pl-4 pr-4"><span class="token plain">response </span><span class="token operator" style="color: rgb(12, 150, 155);">=</span><span class="token plain"> recommend_book</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token string" style="color: rgb(72, 118, 214);">"fantasy"</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span><span class="token plain"></span></span></div><div class="table-row " style="color: rgb(64, 63, 83);"><span class="table-cell text-right pr-4 pl-4 select-none text-zinc-400 w-12 min-w-12 text-sm border-r border-zinc-100">10</span><span class="table-cell pl-4 pr-4"><span class="token plain"></span><span class="token keyword" style="color: rgb(12, 150, 155);">print</span><span class="token punctuation" style="color: rgb(153, 76, 195);">(</span><span class="token plain">response</span><span class="token punctuation" style="color: rgb(153, 76, 195);">.</span><span class="token plain">content</span><span class="token punctuation" style="color: rgb(153, 76, 195);">)</span></span></div>
+                </code>
+            </pre>
+        </div> -->
+      </section>
+    </main>
+    <footer class="h-footer flex flex-col items-center gap-2 py-10">
+      <img src="assets/brandmark.svg" alt="Mirascope Logo" class="h-6" />
+      <p class="text-xs text-neutral-400">
+        © 2024 Mirascope. All rights reserved.
+      </p>
+    </footer>
+  </div>
+</div>
+
+{% endblock %} {% block content %}{% endblock %} {% block footer %}{% endblock
+%}

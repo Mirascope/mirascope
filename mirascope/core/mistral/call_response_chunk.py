@@ -3,15 +3,12 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from mistralai.models.chat_completion import ChatCompletionStreamResponse, FinishReason
-from mistralai.models.common import UsageInfo
+from mistralai.models import CompletionChunk, FinishReason, UsageInfo
 
 from ..base import BaseCallResponseChunk
 
 
-class MistralCallResponseChunk(
-    BaseCallResponseChunk[ChatCompletionStreamResponse, FinishReason]
-):
+class MistralCallResponseChunk(BaseCallResponseChunk[CompletionChunk, FinishReason]):
     """A convenience wrapper around the Mistral `ChatCompletionChunk` streamed chunks.
 
     When calling the Mistral API using a function decorated with `mistral_call` and
@@ -42,7 +39,10 @@ class MistralCallResponseChunk(
         delta = None
         if self.chunk.choices:
             delta = self.chunk.choices[0].delta
-        return delta.content if delta is not None and delta.content is not None else ""
+
+        if delta is not None and isinstance(delta.content, str):
+            return delta.content
+        return ""
 
     @property
     def finish_reasons(self) -> list[FinishReason]:

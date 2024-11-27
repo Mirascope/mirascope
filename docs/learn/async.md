@@ -1,3 +1,8 @@
+---
+search:
+  boost: 2
+---
+
 # Async
 
 Asynchronous programming is a crucial concept when building applications with LLMs (Large Language Models) using Mirascope. This feature allows for efficient handling of I/O-bound operations (e.g., API calls), improving application responsiveness and scalability. Mirascope utilizes the [asyncio](https://docs.python.org/3/library/asyncio.html) library to implement asynchronous processing.
@@ -171,12 +176,14 @@ __Decorator Parameter:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            {% elif provider in ["OpenAI", "Vertex AI"] %}
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-10"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="7-10 14"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 8"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
@@ -198,12 +205,14 @@ __Dynamic Configuration:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            {% elif provider in ["OpenAI", "Vertex AI"] %}
             ```python hl_lines="2 11"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 12-14"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="5-8 17"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 15"
             {% else %}
             ```python hl_lines="1 11"
             {% endif %}
@@ -217,12 +226,14 @@ __Dynamic Configuration:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Mistral", "Vertex AI"] %}
+            {% elif provider in ["OpenAI", "Vertex AI"] %}
             ```python hl_lines="2 9"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 10-12"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="5-8 15"
+            {% elif provider == "Mistral" %}
+            ```python hl_lines="4 11"  
             {% else %}
             ```python hl_lines="1 9"
             {% endif %}

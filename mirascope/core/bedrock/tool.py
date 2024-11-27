@@ -1,6 +1,6 @@
 """The `BedrockTool` class for easy tool usage with Bedrock LLM calls.
 
-usage docs: learn/tools.md#using-tools-with-standard-calls
+usage docs: learn/tools.md
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ class BedrockToolConfig(ToolConfig, total=False):
     pass
 
 
-class BedrockTool(BaseTool[ToolTypeDef]):
+class BedrockTool(BaseTool):
     """A class for defining tools for Bedrock LLM calls.
 
     Example:
