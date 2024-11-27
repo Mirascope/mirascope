@@ -18,6 +18,7 @@ from pydantic.json_schema import (
     GenerateJsonSchema,
     JsonSchemaMode,
     JsonSchemaValue,
+    SkipJsonSchema,
 )
 from pydantic_core.core_schema import CoreSchema
 from typing_extensions import TypedDict
@@ -85,11 +86,7 @@ class BaseTool(BaseModel):
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    _delta: str | None = None
-
-    @property
-    def delta(self) -> str | None:
-        return self._delta
+    delta: SkipJsonSchema[str | None] = None
 
     @classmethod
     def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:

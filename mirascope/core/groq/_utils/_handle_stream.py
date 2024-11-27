@@ -14,7 +14,6 @@ def _handle_chunk(
     current_tool_call: ChatCompletionMessageToolCall,
     current_tool_type: type[GroqTool] | None,
     tool_types: list[type[GroqTool]] | None,
-    partial_tools: bool = False,
 ) -> tuple[
     GroqTool | None,
     ChatCompletionMessageToolCall,
@@ -61,12 +60,6 @@ def _handle_chunk(
     if tool_call.function and tool_call.function.arguments:
         current_tool_call.function.arguments += tool_call.function.arguments
 
-        # Add partial tool support
-        if partial_tools and current_tool_type:
-            partial_tool = current_tool_type.from_tool_call(current_tool_call)
-            partial_tool._delta = tool_call.function.arguments  # Add delta
-            return partial_tool, current_tool_call, current_tool_type
-
     return None, current_tool_call, current_tool_type
 
 
@@ -95,7 +88,6 @@ def handle_stream(
             current_tool_call,
             current_tool_type,
             tool_types,
-            partial_tools,
         )
         if tool is not None:
             yield GroqCallResponseChunk(chunk=chunk), tool
@@ -126,7 +118,6 @@ async def handle_stream_async(
             current_tool_call,
             current_tool_type,
             tool_types,
-            partial_tools,
         )
         if tool is not None:
             yield GroqCallResponseChunk(chunk=chunk), tool

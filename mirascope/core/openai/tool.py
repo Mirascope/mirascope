@@ -97,5 +97,5 @@ class OpenAITool(BaseTool):
         if args := tool_call.function.arguments:
             model_json |= cls._dict_from_json(args, allow_partial)
         if allow_partial:
-            return partial(cls, {"tool_call"}).model_validate(model_json)
+            return partial(cls, {"tool_call", "delta"}).model_validate(model_json)
         return cls.model_validate(model_json)

@@ -93,9 +93,7 @@ def handle_stream(
             if current_tool_type:
                 yield (
                     MistralCallResponseChunk(chunk=chunk.data),
-                    current_tool_type.from_tool_call(
-                        current_tool_call, partial_tools
-                    ),
+                    current_tool_type.from_tool_call(current_tool_call, partial_tools),
                 )
                 current_tool_type = None
             else:
@@ -130,9 +128,7 @@ async def handle_stream_async(
             if current_tool_type:
                 yield (
                     MistralCallResponseChunk(chunk=chunk.data),
-                    current_tool_type.from_tool_call(
-                        current_tool_call, partial_tools
-                    ),
+                    current_tool_type.from_tool_call(current_tool_call, partial_tools),
                 )
                 current_tool_type = None
             else:

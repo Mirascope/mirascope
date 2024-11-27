@@ -96,5 +96,5 @@ class AnthropicTool(BaseTool):
             allow_partial = False
         model_json["tool_call"] = tool_call.model_dump()  # pyright: ignore [reportIndexIssue]
         if allow_partial:
-            return partial(cls, {"tool_call"}).model_validate(model_json)
+            return partial(cls, {"tool_call", "delta"}).model_validate(model_json)
         return cls.model_validate(model_json)

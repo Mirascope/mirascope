@@ -62,21 +62,16 @@ def _handle_chunk(
 
         # Return partial tool if enabled
         if partial_tools and current_tool_type:
-            try:
-                partial_tool_call = ToolUseBlock(
-                    id=current_tool_call.id,
-                    input=buffer,
-                    name=current_tool_call.name,
-                    type="tool_use"
-                )
-                partial_tool = current_tool_type.from_tool_call(partial_tool_call, True)
-                if hasattr(chunk.delta, "partial_json"):
-                    partial_tool._delta = chunk.delta.partial_json
-                return buffer, partial_tool, current_tool_call, current_tool_type
-            except:
-                # If JSON is incomplete, continue buffering
-                pass
-
+            partial_tool_call = ToolUseBlock(
+                id=current_tool_call.id,
+                input=buffer,
+                name=current_tool_call.name,
+                type="tool_use",
+            )
+            partial_tool = current_tool_type.from_tool_call(partial_tool_call)
+            if hasattr(chunk.delta, "partial_json"):
+                partial_tool.delta = chunk.delta.partial_json
+            return buffer, partial_tool, current_tool_call, current_tool_type
     return buffer, None, current_tool_call, current_tool_type
 
 
@@ -90,7 +85,12 @@ def handle_stream(
     current_tool_type, buffer = None, ""
     for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-            buffer, chunk, current_tool_call, current_tool_type, tool_types, partial_tools
+            buffer,
+            chunk,
+            current_tool_call,
+            current_tool_type,
+            tool_types,
+            partial_tools,
         )
         yield AnthropicCallResponseChunk(chunk=chunk), tool
 
@@ -104,6 +104,11 @@ async def handle_stream_async(
     current_tool_type, buffer = None, ""
     async for chunk in stream:
         buffer, tool, current_tool_call, current_tool_type = _handle_chunk(
-            buffer, chunk, current_tool_call, current_tool_type, tool_types, partial_tools
+            buffer,
+            chunk,
+            current_tool_call,
+            current_tool_type,
+            tool_types,
+            partial_tools,
         )
         yield AnthropicCallResponseChunk(chunk=chunk), tool
