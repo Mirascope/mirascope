@@ -171,3 +171,5 @@ database.db
 
 # ignore all .html.md files
 docs/*.html.md
+
+docs/llms.txt
