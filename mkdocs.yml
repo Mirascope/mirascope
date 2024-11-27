@@ -95,15 +95,15 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: '!!python/name:pymdownx.superfences.fence_code_format ""'
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.mark
   - attr_list
   - md_in_html
   - pymdownx.emoji:
-      emoji_index: "!!python/name:material.extensions.emoji.twemoji"
-      emoji_generator: "!!python/name:material.extensions.emoji.to_svg"
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:
@@ -150,10 +150,13 @@ plugins:
               - docs/plugins/griffe_doclinks.py
           import:
             - https://docs.python.org/3/objects.inv
-
+  - exclude:
+      glob:
+        - '*.html.md'
 extra_css:
   - "extra/tweaks.css"
-
+hooks:
+  - docs/hooks.py
 validation:
   omitted_files: warn
   absolute_links: relative_to_docs
