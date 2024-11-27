@@ -30,6 +30,7 @@ from ...base._utils import (
     get_create_fn,
 )
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import MistralCallKwargs
 from ..call_params import MistralCallParams
 from ..dynamic_config import MistralDynamicConfig
@@ -50,7 +51,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletionResponse, CompletionEvent],
     str | None,
@@ -72,7 +73,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent],
     str | None,
@@ -93,7 +94,7 @@ def setup_call(
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent]
     | AsyncCreateFn[ChatCompletionResponse, CompletionEvent],

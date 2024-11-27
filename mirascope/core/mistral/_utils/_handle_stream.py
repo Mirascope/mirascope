@@ -66,6 +66,7 @@ def _handle_chunk(
 def handle_stream(
     stream: Generator[CompletionEvent, None, None],
     tool_types: list[type[MistralTool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[MistralCallResponseChunk, MistralTool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(
@@ -103,6 +104,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[CompletionEvent, None],
     tool_types: list[type[MistralTool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[MistralCallResponseChunk, MistralTool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ToolCall(

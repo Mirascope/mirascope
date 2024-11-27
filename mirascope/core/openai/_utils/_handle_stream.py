@@ -1,6 +1,7 @@
 """Handles the stream of completion chunks."""
 
 from collections.abc import AsyncGenerator, Generator
+from typing import cast
 
 from openai.types.chat import ChatCompletionChunk, ChatCompletionMessageToolCall
 from openai.types.chat.chat_completion_message_tool_call import Function
@@ -14,6 +15,7 @@ def _handle_chunk(
     current_tool_call: ChatCompletionMessageToolCall,
     current_tool_type: type[OpenAITool] | None,
     tool_types: list[type[OpenAITool]] | None,
+    partial_tools: bool = False,
 ) -> tuple[
     OpenAITool | None,
     ChatCompletionMessageToolCall,
@@ -64,12 +66,20 @@ def _handle_chunk(
     if tool_call.function and tool_call.function.arguments:
         current_tool_call.function.arguments += tool_call.function.arguments
 
+        # Return partial tool state if enabled
+        if partial_tools and current_tool_type:
+            partial_tool = current_tool_type.from_tool_call(current_tool_call, True)
+            # Set delta to current chunk arguments
+            partial_tool.delta = cast(str, tool_call.function.arguments)
+            return partial_tool, current_tool_call, current_tool_type
+
     return None, current_tool_call, current_tool_type
 
 
 def handle_stream(
     stream: Generator[ChatCompletionChunk, None, None],
     tool_types: list[type[OpenAITool]] | None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[OpenAICallResponseChunk, OpenAITool | None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionMessageToolCall(
@@ -91,6 +101,7 @@ def handle_stream(
             current_tool_call,
             current_tool_type,
             tool_types,
+            partial_tools,
         )
         if tool is not None:
             yield OpenAICallResponseChunk(chunk=chunk), tool
@@ -99,6 +110,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[ChatCompletionChunk, None],
     tool_types: list[type[OpenAITool]] | None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]:
     """Async iterator over the stream and constructs tools as they are streamed."""
     current_tool_call = ChatCompletionMessageToolCall(
@@ -120,6 +132,7 @@ async def handle_stream_async(
             current_tool_call,
             current_tool_type,
             tool_types,
+            partial_tools,
         )
         if tool is not None:
             yield OpenAICallResponseChunk(chunk=chunk), tool

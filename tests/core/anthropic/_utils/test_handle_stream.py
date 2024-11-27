@@ -88,7 +88,23 @@ def mock_chunks() -> list[MessageStreamEvent]:
         ),
         RawContentBlockDeltaEvent(
             delta=InputJSONDelta(
-                partial_json='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}',
+                partial_json='{"title": "The Name',
+                type="input_json_delta",
+            ),
+            index=1,
+            type="content_block_delta",
+        ),
+        RawContentBlockDeltaEvent(
+            delta=InputJSONDelta(
+                partial_json=' of the Wind", "author": ',
+                type="input_json_delta",
+            ),
+            index=1,
+            type="content_block_delta",
+        ),
+        RawContentBlockDeltaEvent(
+            delta=InputJSONDelta(
+                partial_json='"Patrick Rothfuss"}',
                 type="input_json_delta",
             ),
             index=1,
@@ -108,13 +124,14 @@ def test_handle_stream(mock_chunks: list[MessageStreamEvent]) -> None:
     """Tests the `handle_stream` function."""
 
     result = list(handle_stream((c for c in mock_chunks), tool_types=[FormatBook]))
-    assert len(result) == 9
+    assert len(result) == 11
     assert result[0][1] is None
     assert (
-        (tool := result[6][1]) is not None
+        (tool := result[8][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+        and tool.delta is None
     )
 
 
@@ -129,13 +146,120 @@ async def test_handle_stream_async(mock_chunks: list[MessageStreamEvent]) -> Non
     result = []
     async for t in handle_stream_async(generator(), tool_types=[FormatBook]):
         result.append(t)
-    assert len(result) == 9
+    assert len(result) == 11
     assert result[0][1] is None
+    assert (
+        (tool := result[8][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+        and tool.delta is None
+    )
+
+
+def test_handle_stream_with_partial_tools(
+    mock_chunks: list[MessageStreamEvent],
+) -> None:
+    """Tests the `handle_stream` function with partial tools enabled."""
+    result = list(
+        handle_stream(
+            (c for c in mock_chunks), tool_types=[FormatBook], partial_tools=True
+        )
+    )
+
+    assert len(result) == 11
+    assert result[0][1] is None
+
+    # First partial response
+    assert (
+        (tool := result[5][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.delta == '{"title": "The Name'
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": None, "title": "The Name"}
+    )
+
+    # Second partial response
     assert (
         (tool := result[6][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.delta == ' of the Wind", "author": '
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": None, "title": "The Name of the Wind"}
+    )
+
+    # Third partial response
+    assert (
+        (tool := result[7][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.delta == '"Patrick Rothfuss"}'
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": "Patrick Rothfuss", "title": "The Name of the Wind"}
+    )
+
+    # Final complete tool
+    assert (
+        (tool := result[8][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+        and tool.delta is None
+    )
+
+
+@pytest.mark.asyncio
+async def test_handle_stream_async_with_partial_tools(
+    mock_chunks: list[MessageStreamEvent],
+) -> None:
+    """Tests the `handle_stream_async` function with partial tools enabled."""
+
+    async def generator():
+        for chunk in mock_chunks:
+            yield chunk
+
+    result = []
+    async for t in handle_stream_async(
+        generator(), tool_types=[FormatBook], partial_tools=True
+    ):
+        result.append(t)
+
+    assert len(result) == 11
+    assert result[0][1] is None
+
+    # First partial response
+    assert (
+        (tool := result[5][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.delta == '{"title": "The Name'
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": None, "title": "The Name"}
+    )
+
+    # Second partial response
+    assert (
+        (tool := result[6][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.delta == ' of the Wind", "author": '
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": None, "title": "The Name of the Wind"}
+    )
+
+    # Third partial response
+    assert (
+        (tool := result[7][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.delta == '"Patrick Rothfuss"}'
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"author": "Patrick Rothfuss", "title": "The Name of the Wind"}
+    )
+
+    # Final complete tool
+    assert (
+        (tool := result[8][1]) is not None
+        and isinstance(tool, FormatBook)
+        and tool.model_dump(exclude={"tool_call", "delta"})
+        == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+        and tool.delta is None
     )
 
 

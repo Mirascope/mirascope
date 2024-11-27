@@ -11,6 +11,7 @@ from ..tool import CohereTool
 def handle_stream(
     stream: Generator[StreamedChatResponse, None, None],
     tool_types: list[type[CohereTool]] | None = None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[CohereCallResponseChunk, None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed.
 
@@ -23,6 +24,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[StreamedChatResponse, None],
     tool_types: list[type[CohereTool]] | None = None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[CohereCallResponseChunk, None], None]:
     """
     Async iterator over the stream and constructs tools as they are streamed.

@@ -76,7 +76,7 @@ def test_call_factory_stream(
         handle_stream_async=mock_call_factory_kwargs["handle_stream_async"],
     )
     mock_partial.assert_called_once_with(
-        mock_stream_factory.return_value, **stream_kwargs
+        mock_stream_factory.return_value, **stream_kwargs, partial_tools=False
     )
 
 
