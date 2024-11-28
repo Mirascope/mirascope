@@ -260,6 +260,34 @@ Mirascope supports streaming responses with tools, which is useful for long-runn
     
     If you think we're missing any, let us know!
 
+### Streaming Partial Tools
+
+You can also stream intermediate partial tools and their deltas (rather than just the fully constructed tool) by setting `stream={"partial_tools": True}`:
+
+!!! mira ""
+
+    {% for tool_method, tool_method_title in tool_methods %}
+    === "{{ tool_method_title }}"
+
+        {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+        === "{{ method_title }}"
+
+            {% for provider in supported_llm_providers %}
+            === "{{ provider }}"
+
+                {% if tool_method == "function" %}
+                ```python hl_lines="21 30"
+                {% else %}
+                ```python hl_lines="22 31"
+                {% endif %}
+                --8<-- "examples/learn/tools/partial_tool_streams/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                ```
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endfor %}
+
 ## Tool Message Parameters
 
 !!! mira ""
