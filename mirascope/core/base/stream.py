@@ -283,6 +283,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
+        partial_tools: bool,
     ) -> Callable[_P, BaseStream]: ...
 
     @overload
@@ -293,6 +294,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
+        partial_tools: bool,
     ) -> Callable[_P, BaseStream]: ...
 
     @overload
@@ -307,6 +309,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
+        partial_tools: bool,
     ) -> Callable[_P, Awaitable[BaseStream]]: ...
 
     @overload
@@ -317,6 +320,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
+        partial_tools: bool,
     ) -> Callable[_P, Awaitable[BaseStream]]: ...
 
     def decorator(
@@ -333,6 +337,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
+        partial_tools: bool,
     ) -> Callable[_P, BaseStream] | Callable[_P, Awaitable[BaseStream]]:
         if not is_prompt_template(fn):
             fn = cast(
@@ -374,7 +379,9 @@ def stream_factory(  # noqa: ANN201
                     ]
                 ):
                     async for chunk, tool in handle_stream_async(
-                        await create(stream=True, **call_kwargs), tool_types
+                        await create(stream=True, **call_kwargs),
+                        tool_types,
+                        partial_tools=partial_tools,
                     ):
                         yield chunk, tool
 
@@ -423,7 +430,9 @@ def stream_factory(  # noqa: ANN201
                     ]
                 ):
                     yield from handle_stream(
-                        create(stream=True, **call_kwargs), tool_types
+                        create(stream=True, **call_kwargs),
+                        tool_types,
+                        partial_tools=partial_tools,
                     )
 
                 return TStream(

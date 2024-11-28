@@ -168,13 +168,13 @@ def test_handle_stream(mock_chunks: list[StreamingChatCompletionsUpdate]) -> Non
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
 
@@ -199,12 +199,12 @@ async def test_handle_stream_async(
     assert (
         (tool := result[1][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )
     assert (
         (tool := result[2][1]) is not None
         and isinstance(tool, FormatBook)
-        and tool.model_dump(exclude={"tool_call"})
+        and tool.model_dump(exclude={"tool_call", "delta"})
         == {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
     )

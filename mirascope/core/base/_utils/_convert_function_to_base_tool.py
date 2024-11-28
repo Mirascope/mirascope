@@ -111,7 +111,7 @@ def convert_function_to_base_tool(
                         if self.model_fields[field_name].alias
                         else field_name
                     ): getattr(self, field_name)
-                    for field_name in self.model_dump(exclude={"tool_call"})
+                    for field_name in self.model_dump(exclude={"tool_call", "delta"})
                 }
             )
         )

@@ -16,6 +16,7 @@ from anthropic.types import Message, MessageParam, MessageStreamEvent
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import AnthropicCallKwargs
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
@@ -36,7 +37,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[Message, MessageStreamEvent],
     str | None,
@@ -58,7 +59,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[Message, MessageStreamEvent],
     str | None,
@@ -85,7 +86,7 @@ def setup_call(
     json_mode: bool,
     call_params: AnthropicCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     Callable[..., Message | Awaitable[Message]],
     str | None,

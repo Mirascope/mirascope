@@ -21,6 +21,7 @@ from typing import (
 
 from typing_extensions import TypeIs
 
+from ..stream_config import StreamConfig
 from ._protocols import AsyncCreateFn, CreateFn
 
 _StreamedResponse = TypeVar("_StreamedResponse")
@@ -54,7 +55,7 @@ def get_async_create_fn(
     @overload
     def create_or_stream(
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> Awaitable[AsyncGenerator[_StreamedResponse, None]]: ...
 
@@ -67,7 +68,7 @@ def get_async_create_fn(
 
     def create_or_stream(
         *,
-        stream: bool = False,
+        stream: bool | StreamConfig = False,
         **kwargs: Any,  # noqa: ANN401
     ) -> (
         Awaitable[AsyncGenerator[_StreamedResponse, None]]
@@ -101,7 +102,7 @@ def get_create_fn(
     @overload
     def create_or_stream(
         *,
-        stream: Literal[True] = True,
+        stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> Generator[_StreamedResponse, None, None]: ...
 
@@ -114,7 +115,7 @@ def get_create_fn(
 
     def create_or_stream(
         *,
-        stream: bool = False,
+        stream: bool | StreamConfig = False,
         **kwargs: Any,  # noqa: ANN401
     ) -> Generator[_StreamedResponse, None, None] | _NonStreamedResponse:
         if stream:

@@ -22,6 +22,7 @@ from ...base._utils import (
     get_create_fn,
 )
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import VertexCallKwargs
 from ..call_params import VertexCallParams
 from ..dynamic_config import VertexDynamicConfig
@@ -42,7 +43,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],
     str | None,
@@ -64,7 +65,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]],
     str | None,
@@ -85,7 +86,7 @@ def setup_call(
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
     extract: bool = False,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]]
     | AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],

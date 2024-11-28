@@ -11,12 +11,14 @@ from abc import abstractmethod
 from collections.abc import Callable
 from typing import Any, ClassVar, TypeVar
 
+import jiter
 from pydantic import BaseModel, ConfigDict
 from pydantic.json_schema import (
     DEFAULT_REF_TEMPLATE,
     GenerateJsonSchema,
     JsonSchemaMode,
     JsonSchemaValue,
+    SkipJsonSchema,
 )
 from pydantic_core.core_schema import CoreSchema
 from typing_extensions import TypedDict
@@ -84,6 +86,16 @@ class BaseTool(BaseModel):
     __custom_name__: ClassVar[str] = ""
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
+    delta: SkipJsonSchema[str | None] = None
+
+    @classmethod
+    def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:
+        """Returns a dictionary from a JSON string."""
+        if not json:
+            return {}
+        return jiter.from_json(
+            json.encode(), partial_mode="trailing-strings" if allow_partial else "off"
+        )
 
     @classmethod
     def _name(cls) -> str:
@@ -105,7 +117,7 @@ class BaseTool(BaseModel):
         return {
             field: getattr(self, field)
             for field in self.model_fields
-            if field != "tool_call"
+            if field not in {"tool_call", "delta"}
         }
 
     @abstractmethod

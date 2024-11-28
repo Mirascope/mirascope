@@ -36,6 +36,7 @@ from ...base._utils import (
     get_create_fn,
 )
 from ...base.call_params import CommonCallParams
+from ...base.stream_config import StreamConfig
 from .._call_kwargs import BedrockCallKwargs
 from .._types import (
     AsyncStreamOutputChunk,
@@ -101,7 +102,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk],
     str | None,
@@ -123,7 +124,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
     str | None,
@@ -145,7 +146,7 @@ def setup_call(
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
     extract: bool,
-    stream: bool,
+    stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk]
     | CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
