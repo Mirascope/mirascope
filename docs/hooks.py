@@ -14,10 +14,12 @@ def get_output_path(input_path: Path) -> Path:
     """
     rel_path = input_path.relative_to(input_path.parent.parent)
     stem = rel_path.stem
+    if stem == "index":
+        return input_path.parent.parent / "index.html.md"
     return input_path.parent / f"{stem}.html.md"
 
 
-def copy_generated_md_files(markdown_dir: Path, site_dir: Path) -> None:
+def copy_generated_html_md_files(markdown_dir: Path, site_dir: Path) -> None:
     """
     Copy generated .html.md files to their corresponding location in the site directory.
     Only copies files that have been processed by the markdown generator.
@@ -26,25 +28,29 @@ def copy_generated_md_files(markdown_dir: Path, site_dir: Path) -> None:
         markdown_dir: Source directory containing markdown files (docs)
         site_dir: Output directory for the built site (site)
     """
-    for md_file in markdown_dir.rglob("*.md"):
+    # for md_file in markdown_dir.rglob("*.md"):
+    for html_md_file in markdown_dir.rglob("*.html.md"):
         # Skip already generated .html.md files
-        if md_file.name.endswith('.html.md'):
-            continue
+        # if md_file.name.endswith(".html.md"):
+        #     continue
 
         # Get the path where the generated .html.md should be
-        html_md_file = get_output_path(md_file)
+        # html_md_file = get_output_path(md_file)
 
         # Only proceed if the .html.md file was actually generated
-        if not html_md_file.exists():
-            continue
+        # if not html_md_file.exists():
+        # continue
 
         # Calculate relative path for site directory
-        rel_path = md_file.relative_to(markdown_dir)
+        # rel_path = md_file.relative_to(markdown_dir)
+        rel_path = html_md_file.relative_to(markdown_dir)
         parent_path = rel_path.parent
-        base_name = rel_path.stem
+        base_name = rel_path.stem[: -len(".html")]
 
         # Construct destination path in site directory
-        dest_dir = site_dir / parent_path / base_name
+        dest_dir = site_dir / parent_path
+        if base_name != "index":
+            dest_dir = dest_dir / base_name
         dest_path = dest_dir / "index.html.md"
 
         # Create destination directory if it doesn't exist
@@ -64,7 +70,7 @@ def on_post_build(config, **kwargs):
     site_dir = Path(config["site_dir"])
 
     try:
-        copy_generated_md_files(docs_dir, site_dir)
+        copy_generated_html_md_files(docs_dir, site_dir)
         print("Successfully copied generated .html.md files to site directory")
     except Exception as e:
         print(f"Error copying .html.md files: {e}")

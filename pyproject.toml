@@ -118,6 +118,7 @@ dev-dependencies = [
     "azure-identity>=1.17.1",
     "pillow>=10.4.0",
     "notebook>=7.2.2",
+    "nbconvert>=7.16.4",
 ]
 
 [tool.uv.sources]

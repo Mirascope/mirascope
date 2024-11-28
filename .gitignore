@@ -144,6 +144,8 @@ venv.bak/
 
 # mkdocs documentation
 /site
+docs/**/*.html.md
+docs/llms.txt
 
 # mypy
 .mypy_cache/
@@ -168,8 +170,3 @@ cython_debug/
 
 #sqlite
 database.db
-
-# ignore all .html.md files
-docs/*.html.md
-
-docs/llms.txt

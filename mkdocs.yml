@@ -152,7 +152,7 @@ plugins:
             - https://docs.python.org/3/objects.inv
   - exclude:
       glob:
-        - '*.html.md'
+        - "*.html.md"
 extra_css:
   - "extra/tweaks.css"
 hooks:
