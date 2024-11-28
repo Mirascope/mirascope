@@ -409,7 +409,7 @@ class LLMsGenerator:
     def __init__(
         self,
         mkdocs_yml_path: Path,
-        base_url: str = "https://www.mirascope.com/docs",
+        base_url: str = "https://mirascope.com/docs",
         description_map: dict[str, str] | None = None,
     ) -> None:
         """
