@@ -98,6 +98,7 @@ dev-dependencies = [
     "mkdocstrings-python>=1.10.8",
     "mkdocs-macros-plugin>=1.2.0",
     "mkdocs-jupyter>=0.25.0",
+    "mkdocs-exclude>=1.0.2",
     "black>=24.8.0",
     "weaviate-client>=4.7.1",
     "chromadb>=0.5.15",
@@ -117,6 +118,7 @@ dev-dependencies = [
     "azure-identity>=1.17.1",
     "pillow>=10.4.0",
     "notebook>=7.2.2",
+    "nbconvert>=7.16.4",
 ]
 
 [tool.uv.sources]

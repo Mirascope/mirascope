@@ -150,10 +150,13 @@ plugins:
               - docs/plugins/griffe_doclinks.py
           import:
             - https://docs.python.org/3/objects.inv
-
+  - exclude:
+      glob:
+        - "*.html.md"
 extra_css:
   - "extra/tweaks.css"
-
+hooks:
+  - docs/hooks.py
 validation:
   omitted_files: warn
   absolute_links: relative_to_docs
@@ -366,3 +369,6 @@ nav:
           - Tenacity: "api/integrations/tenacity.md"
   - Blog:
       - "blog/index.md"
+
+exclude_docs: |
+  /generate_llms_txt.py
