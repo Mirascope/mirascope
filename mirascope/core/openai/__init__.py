@@ -7,6 +7,7 @@ from openai.types.chat import ChatCompletionMessageParam
 from ..base import BaseMessageParam
 from ._call import openai_call
 from ._call import openai_call as call
+from .batch import OpenAIBatch
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
@@ -28,4 +29,5 @@ __all__ = [
     "OpenAITool",
     "OpenAIToolConfig",
     "openai_call",
+    "OpenAIBatch",
 ]
