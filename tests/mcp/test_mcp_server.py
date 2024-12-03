@@ -369,7 +369,7 @@ async def test_list_prompts():
     """Test listing prompts."""
     server = MCPServer("book-recommend")
 
-    @server.prompt()
+    @server.prompt()  # pyright: ignore [reportArgumentType]
     def basic_prompt(genre: str) -> list[BaseMessageParam]:
         """Get book recommendations."""
         return [BaseMessageParam(role="user", content=f"Recommend {genre} books")]
@@ -379,7 +379,7 @@ async def test_list_prompts():
         return [prompt for prompt, _ in server._prompts.values()]
 
     with patch.object(Server, "list_prompts", mock_list_prompts):
-        prompts = await server.server.list_prompts()
+        prompts = await server.server.list_prompts()  # pyright: ignore [reportGeneralTypeIssues]
         assert len(prompts) == 1
         assert prompts[0].name == "basic_prompt"
 
@@ -389,7 +389,7 @@ async def test_get_prompt_with_args():
     """Test getting prompts with different argument configurations."""
     server = MCPServer("book-recommend")
 
-    @server.prompt()
+    @server.prompt()  # pyright: ignore [reportArgumentType]
     def multi_genre_prompt(
         genre1: str, genre2: str = "fantasy"
     ) -> list[BaseMessageParam]:
@@ -415,7 +415,7 @@ async def test_get_prompt_with_args():
             description=f"{prompt.name} template for {arguments}",
             messages=[
                 msg
-                for message in messages
+                for message in messages  # pyright: ignore [reportGeneralTypeIssues]
                 for msg in _convert_base_message_param_to_prompt_messages(message)
             ],
         )
@@ -423,7 +423,8 @@ async def test_get_prompt_with_args():
     with patch.object(Server, "get_prompt", mock_get_prompt):
         # Test with all arguments
         result = await server.server.get_prompt(
-            "multi_genre_prompt", {"genre1": "sci-fi", "genre2": "mystery"}
+            "multi_genre_prompt",
+            {"genre1": "sci-fi", "genre2": "mystery"},  # pyright: ignore [reportCallIssue]
         )
         assert "sci-fi and mystery" in result.messages[0].content.text
 
@@ -440,5 +441,5 @@ def test_prompt_message_conversion():
     )
     result = _convert_base_message_param_to_prompt_messages(message)
     assert len(result) == 2
-    assert result[0].content.text == "Part 1"
-    assert result[1].content.text == "Part 2"
+    assert result[0].content.text == "Part 1"  # pyright: ignore [reportAttributeAccessIssue]
+    assert result[1].content.text == "Part 2"  # pyright: ignore [reportAttributeAccessIssue]
