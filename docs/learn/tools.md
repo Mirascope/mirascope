@@ -449,6 +449,15 @@ This is why the "beginner" recommendation and "advanced" recommendations call th
 
 Mirascope provides several pre-made tools and toolkits to help you get started quickly:
 
+!!! warning "Dependencies Required"
+    Pre-made tools and toolkits require installing the dependencies listed in the "Dependencies" column for each tool/toolkit. 
+    
+    For example:
+    ```bash
+    pip install httpx  # For HTTPX tool
+    pip install requests  # For Requests tool
+    ```
+
 ### Pre-Made Tools
 
 ??? api "API Documentation"
@@ -458,12 +467,12 @@ Mirascope provides several pre-made tools and toolkits to help you get started q
     - [`mirascope.tools.web.ParseURLContent`](../api/tools/web/parse_url_content.md)
     - [`mirascope.tools.web.Requests`](../api/tools/web/requests.md)
 
-| Tool | Primary Use | Key Features | Characteristics |
-|------|-------------|--------------|-----------------|
-| [`DuckDuckGoSearch`](../api/tools/web/duckduckgo.md) | Web Searching | • Multiple query support<br>• Title/URL/snippet extraction<br>• Result count control<br>• Automated formatting | • Privacy-focused search<br>• Async support (AsyncDuckDuckGoSearch)<br>• Automatic filtering<br>• Structured results |
-| [`HTTPX`](../api/tools/web/httpx.md) | Advanced HTTP Requests | • Full HTTP method support (GET/POST/PUT/DELETE)<br>• Custom header support<br>• File upload/download<br>• Form data handling | • Async support (AsyncHTTPX)<br>• Configurable timeouts<br>• Comprehensive error handling<br>• Redirect control |
-| [`ParseURLContent`](../api/tools/web/parse_url_content.md) | Web Content Extraction | • HTML content fetching<br>• Main content extraction<br>• Element filtering<br>• Text normalization | • Automatic cleaning<br>• Configurable parser<br>• Timeout settings<br>• Error handling |
-| [`Requests`](../api/tools/web/requests.md) | Simple HTTP Requests | • Basic HTTP methods<br>• Simple API<br>• Response text retrieval<br>• Basic authentication | • Minimal configuration<br>• Intuitive interface<br>• Basic error handling<br>• Lightweight implementation |
+| Tool | Primary Use | Dependencies | Key Features | Characteristics |
+|------|-------------|--------------|--------------|-----------------|
+| [`DuckDuckGoSearch`](../api/tools/web/duckduckgo.md) | Web Searching | [`duckduckgo-search`](https://pypi.org/project/duckduckgo-search/) | • Multiple query support<br>• Title/URL/snippet extraction<br>• Result count control<br>• Automated formatting | • Privacy-focused search<br>• Async support (AsyncDuckDuckGoSearch)<br>• Automatic filtering<br>• Structured results |
+| [`HTTPX`](../api/tools/web/httpx.md) | Advanced HTTP Requests | [`httpx`](https://pypi.org/project/httpx/) | • Full HTTP method support (GET/POST/PUT/DELETE)<br>• Custom header support<br>• File upload/download<br>• Form data handling | • Async support (AsyncHTTPX)<br>• Configurable timeouts<br>• Comprehensive error handling<br>• Redirect control |
+| [`ParseURLContent`](../api/tools/web/parse_url_content.md) | Web Content Extraction | [`beautifulsoup4`](https://pypi.org/project/beautifulsoup4/), [`httpx`](https://pypi.org/project/httpx/) | • HTML content fetching<br>• Main content extraction<br>• Element filtering<br>• Text normalization | • Automatic cleaning<br>• Configurable parser<br>• Timeout settings<br>• Error handling |
+| [`Requests`](../api/tools/web/requests.md) | Simple HTTP Requests | [`requests`](https://pypi.org/project/requests/) | • Basic HTTP methods<br>• Simple API<br>• Response text retrieval<br>• Basic authentication | • Minimal configuration<br>• Intuitive interface<br>• Basic error handling<br>• Lightweight implementation |
 
 Example using DuckDuckGoSearch:
 
@@ -500,10 +509,10 @@ Example using DuckDuckGoSearch:
     - [`mirascope.tools.system.FileSystemToolKit`](../api/tools/system/file_system.md)
     - [`mirascope.tools.system.DockerOperationToolKit`](../api/tools/system/docker_operation.md)
 
-| ToolKit                                                     | Primary Use | Tools and Features                                                                                                                                                    | Characteristics |
-|-------------------------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| [`FileSystemToolKit`](../api/tools/system/file_system.md)    | File System Operations | • ReadFile: File content reading<br>• WriteFile: Content writing<br>• ListDirectory: Directory listing<br>• CreateDirectory: Directory creation<br>• DeleteFile: File deletion | • Path traversal protection<br>• File size limits<br>• Extension validation<br>• Robust error handling<br>• Base directory isolation |
-| [`DockerOperationToolKit`](../api/tools/system/docker_operation.md) | Code & Command Execution | • ExecutePython: Python code execution with optional package installation<br>• ExecuteShell: Shell command execution<br> | • Docker container isolation<br>• Memory limits<br>• Network control<br>• Security restrictions<br>• Resource cleanup |
+| ToolKit | Primary Use | Dependencies                                                      | Tools and Features | Characteristics |
+|---------|-------------|-------------------------------------------------------------------|-------------------|-----------------|
+| [`FileSystemToolKit`](../api/tools/system/file_system.md) | File System Operations | None                                                              | • ReadFile: File content reading<br>• WriteFile: Content writing<br>• ListDirectory: Directory listing<br>• CreateDirectory: Directory creation<br>• DeleteFile: File deletion | • Path traversal protection<br>• File size limits<br>• Extension validation<br>• Robust error handling<br>• Base directory isolation |
+| [`DockerOperationToolKit`](../api/tools/system/docker_operation.md) | Code & Command Execution | [`docker`](https://pypi.org/project/docker/), [`docker engine`](https://docs.docker.com/engine/install/) | • ExecutePython: Python code execution with optional package installation<br>• ExecuteShell: Shell command execution | • Docker container isolation<br>• Memory limits<br>• Network control<br>• Security restrictions<br>• Resource cleanup |
 
 Example using FileSystemToolKit:
 
