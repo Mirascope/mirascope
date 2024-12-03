@@ -83,6 +83,9 @@ realtime = [
     "sounddevice>=0.5.1,<1",
     "websockets>=13.1,<14",
 ]
+mcp = [
+    "mcp>=1.0.0",
+]
 
 [tool.uv]
 dev-dependencies = [

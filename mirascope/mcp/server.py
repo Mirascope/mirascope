@@ -1,0 +1,326 @@
+"""MCP server implementation."""
+
+import inspect
+from collections.abc import Awaitable, Callable, Iterable
+from typing import Any, Literal, ParamSpec, cast
+
+import mcp.server.stdio
+from docstring_parser import parse
+from mcp.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
+from mcp.types import (
+    GetPromptResult,
+    ImageContent,
+    Prompt,
+    PromptArgument,
+    PromptMessage,
+    Resource,
+    TextContent,
+    Tool,
+)
+from pydantic import AnyUrl, BaseModel
+
+from mirascope.core import BaseDynamicConfig, BaseMessageParam
+from mirascope.core.anthropic import AnthropicTool
+from mirascope.core.base import ImagePart, TextPart
+from mirascope.core.base._utils import (
+    MessagesDecorator,
+    convert_base_model_to_base_tool,
+    convert_function_to_base_tool,
+    fn_is_async,
+)
+from mirascope.core.base._utils._messages_decorator import (
+    MessagesAsyncFunction,
+    MessagesSyncFunction,
+)
+from mirascope.core.base.prompt import PromptDecorator, prompt_template
+
+_P = ParamSpec("_P")
+
+
+def _convert_base_message_param_to_prompt_messages(
+    base_message_param: BaseMessageParam,
+) -> list[PromptMessage]:
+    """
+    Convert BaseMessageParam to types.PromptMessage.
+
+    Args:
+        base_message_param: BaseMessageParam instance.
+
+    Returns:
+        A list of types.PromptMessage instances.
+    """
+
+    # Validate role
+    role = base_message_param.role
+    if role not in ["user", "assistant"]:
+        raise ValueError(f"invalid role: {role}")
+
+    contents = []
+    # Convert content to types.PromptMessage content
+    if isinstance(base_message_param.content, str):
+        contents.append(TextContent(type="text", text=base_message_param.content))
+    elif isinstance(base_message_param.content, Iterable):
+        for part in base_message_param.content:
+            if isinstance(part, TextPart):
+                contents.append(TextContent(type="text", text=part.text))
+            elif isinstance(part, ImagePart):
+                contents.append(
+                    ImageContent(
+                        type="image",
+                        data=part.image.decode("utf-8"),
+                        mimeType=part.media_type,
+                    )
+                )
+            else:
+                raise ValueError(f"Unsupported content type: {type(part)}")
+
+    else:
+        raise ValueError(
+            f"Unsupported content type: {type(base_message_param.content)}"
+        )
+
+    return [
+        PromptMessage(role=cast(Literal["user", "assistant"], role), content=content)
+        for content in contents
+    ]
+
+
+def _generate_prompt_from_function(fn: Callable) -> Prompt:
+    """
+    Generate a Prompt object from a function, extracting metadata like argument descriptions
+    from the function's docstring and type hints.
+
+    Args:
+        fn (Callable): The function to process.
+
+    Returns:
+        Prompt: A structured Prompt object with metadata.
+    """
+    # Parse the docstring for structured information
+    docstring = parse(fn.__doc__ or "")
+
+    # Extract general description from the docstring
+    description = docstring.short_description or ""
+
+    # Prepare to extract argument details
+    arguments = []
+    signature = inspect.signature(fn)
+    parameter_docs = {param.arg_name: param.description for param in docstring.params}
+
+    for parameter in signature.parameters.values():
+        # Check if the parameter has a description in the docstring
+        description = parameter_docs.get(parameter.name, "")
+
+        # Determine if the parameter is required (no default value)
+        required = parameter.default is inspect.Parameter.empty
+
+        # Add to arguments
+        arguments.append(
+            PromptArgument(
+                name=parameter.name, description=description, required=required
+            )
+        )
+
+    return Prompt(
+        name=fn.__name__,
+        description=description,
+        arguments=arguments,
+    )
+
+
+class MCPServer:
+    """MCP server implementation."""
+
+    def __init__(
+        self,
+        name: str,
+        version: str = "1.0.0",
+        tools: list[Callable | type[BaseModel] | type[AnthropicTool]] | None = None,
+        resources: list[tuple[Resource, Callable]] | None = None,
+        prompts: list[MessagesSyncFunction | MessagesAsyncFunction] | None = None,
+    ) -> None:
+        self.name = name
+        self.version = version
+        self._tools: dict[str, tuple[Tool, type[AnthropicTool]]] = {}
+        self._resources: dict[str, tuple[Resource, Callable]] = {}
+        self._prompts: dict[
+            str,
+            tuple[
+                Prompt,
+                Callable[..., Awaitable[list[BaseMessageParam]]]
+                | Callable[..., list[BaseMessageParam]],
+            ],
+        ] = {}
+        if tools:
+            for tool in tools:
+                self.tool()(tool)
+        if resources:
+            for resource, resource_func in resources:
+                self.resource(
+                    uri=str(resource.uri),
+                    name=resource.name,
+                    description=resource.description,
+                    mime_type=resource.mimeType,
+                )(resource_func)
+        if prompts:
+            for prompt in prompts:
+                self.prompt()(prompt)
+        self.server = Server(name)
+
+    def tool(
+        self,
+    ) -> Callable[
+        [Callable | type[BaseModel] | type[AnthropicTool]], type[AnthropicTool]
+    ]:
+        """Decorator to register tools."""
+
+        def decorator(
+            tool: Callable | type[BaseModel] | type[AnthropicTool],
+        ) -> type[AnthropicTool]:
+            if inspect.isclass(tool):
+                if issubclass(tool, AnthropicTool):
+                    converted_tool = tool
+                else:
+                    converted_tool = convert_base_model_to_base_tool(
+                        cast(type[BaseModel], tool), AnthropicTool
+                    )
+            else:
+                converted_tool = convert_function_to_base_tool(tool, AnthropicTool)
+            tool_schema = converted_tool.tool_schema()
+            name = tool_schema["name"]
+            self._tools[name] = (
+                Tool(
+                    name=name,
+                    description=tool_schema.get("description"),
+                    inputSchema=cast(dict[str, Any], tool_schema["input_schema"]),
+                ),
+                converted_tool,
+            )
+            return converted_tool
+
+        return decorator
+
+    def resource(
+        self,
+        uri: str,
+        name: str | None = None,
+        description: str | None = None,
+        mime_type: str | None = None,
+    ) -> Callable[[Callable], Callable]:
+        """Decorator to register resources."""
+
+        def decorator(func: Callable) -> Callable:
+            resource = Resource(
+                uri=cast(AnyUrl, uri),
+                name=name or func.__name__,
+                mimeType=mime_type,
+                description=description
+                or parse(func.__doc__ or "").short_description
+                or "",
+            )
+            self._resources[str(resource.uri)] = resource, func
+            return func
+
+        return decorator
+
+    def prompt(
+        self,
+        template: str | None = None,
+    ) -> PromptDecorator | MessagesDecorator:
+        """Decorator to register prompts."""
+
+        def decorator(
+            func: MessagesSyncFunction | MessagesAsyncFunction,
+        ) -> (
+            Callable[..., Awaitable[list[BaseMessageParam] | BaseDynamicConfig]]
+            | Callable[..., list[BaseMessageParam] | BaseDynamicConfig]
+        ):
+            decorated_prompt = prompt_template(template)(func)
+            prompt = _generate_prompt_from_function(func)
+            self._prompts[prompt.name] = prompt, decorated_prompt
+            return decorated_prompt
+
+        return decorator  # pyright: ignore [reportReturnType]
+
+    async def run(self) -> None:
+        """Run the MCP server."""
+
+        @self.server.read_resource()
+        async def handle_read_resource(uri: AnyUrl) -> str:
+            resource_and_func = self._resources.get(str(uri))
+            if resource_and_func is None:
+                raise ValueError(f"Unknown resource: {uri}")
+
+            resource, func = resource_and_func
+            if fn_is_async(func):
+                ret = await func()
+            else:
+                ret = func()
+            return ret
+
+        @self.server.list_resources()
+        async def handle_list_resource() -> list[Resource]:
+            resources = [resource for resource, _ in self._resources.values()]
+            return resources
+
+        @self.server.list_tools()
+        async def list_tools() -> list[Tool]:
+            return [tool for tool, _ in self._tools.values()]
+
+        @self.server.call_tool()
+        async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+            _, tool_type = self._tools[name]
+            from anthropic.types.tool_use_block import ToolUseBlock
+
+            tool = tool_type.from_tool_call(
+                tool_call=ToolUseBlock(
+                    id=name, name=name, type="tool_use", input=arguments
+                )
+            )
+            result = tool.call()
+            return [TextContent(type="text", text=result)]
+
+        @self.server.list_prompts()
+        async def handle_list_prompts() -> list[Prompt]:
+            return [prompt for prompt, _ in self._prompts.values()]
+
+        @self.server.get_prompt()
+        async def handle_get_prompt(
+            name: str, arguments: dict[str, str] | None
+        ) -> GetPromptResult:
+            prompt_and_decorated_func = self._prompts.get(name)
+            if prompt_and_decorated_func is None:
+                raise ValueError(f"Unknown prompt: {name}")
+            if arguments is None:
+                arguments = {}
+            prompt, decorated_func = prompt_and_decorated_func
+            if fn_is_async(decorated_func):
+                messages: list[BaseMessageParam] = await decorated_func(**arguments)
+            else:
+                messages = decorated_func(**arguments)
+
+            return GetPromptResult(
+                description=f"{prompt.name} template for {arguments}",
+                messages=[
+                    prompt_message
+                    for message in messages
+                    for prompt_message in _convert_base_message_param_to_prompt_messages(
+                        message
+                    )
+                ],
+            )
+
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            await self.server.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name=self.name,
+                    server_version=self.version,
+                    capabilities=self.server.get_capabilities(
+                        notification_options=NotificationOptions(),
+                        experimental_capabilities={},
+                    ),
+                ),
+            )
