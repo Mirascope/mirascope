@@ -5,6 +5,7 @@ from collections.abc import Awaitable, Callable, Iterable
 from typing import Any, Literal, ParamSpec, cast, overload
 
 import mcp.server.stdio
+from anthropic.types.tool_use_block import ToolUseBlock
 from docstring_parser import parse
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
@@ -56,11 +57,8 @@ def _convert_base_message_param_to_prompt_messages(
     if role not in ["user", "assistant"]:
         raise ValueError(f"invalid role: {role}")
 
-    # Convert content to prompt messages
-    # If content is string
     if isinstance(base_message_param.content, str):
         contents = [TextContent(type="text", text=base_message_param.content)]
-    # If content is iterable of parts
     elif isinstance(base_message_param.content, Iterable):
         contents = []
         for part in base_message_param.content:
@@ -75,7 +73,6 @@ def _convert_base_message_param_to_prompt_messages(
                     )
                 )
             else:
-                # Unknown part type
                 raise ValueError(f"Unsupported content type: {type(part)}")
     else:
         raise ValueError(
@@ -138,8 +135,9 @@ class MCPServer:
         ]
         | None = None,
     ) -> None:
-        self.name = name
-        self.version = version
+        self.name: str = name
+        self.version: str = version
+        self.server: Server = Server(name)
         self._tools: dict[str, tuple[Tool, type[AnthropicTool]]] = {}
         self._resources: dict[str, tuple[Resource, Callable]] = {}
         self._prompts: dict[
@@ -164,18 +162,15 @@ class MCPServer:
         if prompts:
             for prompt in prompts:
                 self._register_prompt(prompt)
-        self.server = Server(name)
 
     def tool(
         self,
-    ) -> Callable[
-        [Callable | type[BaseModel] | type[AnthropicTool]], type[AnthropicTool]
-    ]:
+    ) -> Callable[[Callable | type[BaseModel] | type[BaseTool]], type[BaseTool]]:
         """Decorator to register tools."""
 
         def decorator(
             tool: Callable | type[BaseTool],
-        ) -> type[AnthropicTool]:
+        ) -> type[BaseTool]:
             if inspect.isclass(tool):
                 if issubclass(tool, AnthropicTool):
                     converted_tool = tool
@@ -295,7 +290,6 @@ class MCPServer:
             if name not in self._tools:
                 raise KeyError(f"Tool {name} not found.")
             _, tool_type = self._tools[name]
-            from anthropic.types.tool_use_block import ToolUseBlock
 
             tool = tool_type.from_tool_call(
                 tool_call=ToolUseBlock(

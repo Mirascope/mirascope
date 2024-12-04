@@ -1,7 +1,6 @@
 """Tests for MCP server implementation."""
 
 import asyncio
-from pathlib import Path
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -22,35 +21,23 @@ from mirascope.mcp.server import (
 # Add fixtures for common test data
 @pytest.fixture
 def sample_tool():
-    def recommend_book(title: str, author: str) -> str:
+    def recommend_book(title: str, author: str):
         """Recommend a book with title and author.
 
         Args:
             title: Book title
             author: Book author
         """
-        return f"{title} by {author}"
 
     return recommend_book
-
-
-@pytest.fixture
-def sample_resource():
-    return Resource(
-        uri=cast(AnyUrl, "file://books.txt/"),
-        name="Book Database",
-        mimeType="text/plain",
-        description="Database of books",
-    )
 
 
 def test_server_initialization():
     """Test server initialization with different configurations."""
 
     # Test with tools
-    def recommend_fantasy_book() -> str:
+    def recommend_fantasy_book():
         """Recommends a fantasy book."""
-        return "The Name of the Wind"
 
     class FantasyBook(BaseModel):
         """Fantasy book model."""
@@ -64,8 +51,7 @@ def test_server_initialization():
         title: str
         author: str
 
-        def call(self) -> str:
-            return f"{self.title} by {self.author}"
+        def call(self) -> str: ...
 
     # Test initializing with different tool types
     server = MCPServer(
@@ -84,8 +70,7 @@ def test_server_initialization():
         description="Database of fantasy books",
     )
 
-    async def read_data():
-        return "Fantasy book data"
+    async def read_data(): ...
 
     server = MCPServer("book-recommend", resources=[(resource, read_data)])
     assert len(server._resources) == 1
@@ -100,8 +85,7 @@ async def test_list_resources():
     @server.resource(
         uri="file://fantasy-books.txt/", name="Fantasy Books", mime_type="text/plain"
     )
-    async def read_fantasy_books():
-        return "Fantasy book list"
+    async def read_fantasy_books(): ...
 
     # Mock list_resources method
     mock_list_resources = AsyncMock(
@@ -126,9 +110,8 @@ async def test_list_tools():
     server = MCPServer("book-recommend")
 
     @server.tool()
-    def fantasy_book_search(title: str) -> str:
+    def fantasy_book_search(title: str) -> str:  # pyright: ignore [reportReturnType]
         """Search for fantasy books."""
-        return f"Found: {title}"
 
     # Mock list_tools method
     mock_list_tools = AsyncMock(
@@ -153,13 +136,8 @@ async def test_async_prompt():
     server = MCPServer("book-recommend")
 
     @server.prompt()
-    async def recommend_fantasy_book(subgenre: str) -> list[BaseMessageParam]:
+    async def recommend_fantasy_book(subgenre: str):
         """Get fantasy book recommendations."""
-        return [
-            BaseMessageParam(
-                role="user", content=f"Recommend a {subgenre} fantasy book"
-            )
-        ]
 
     # Mock get_prompt
     mock_get_prompt = AsyncMock()
@@ -179,8 +157,7 @@ async def test_async_resource():
         name="Fantasy Books",
         description="Fantasy book database",
     )
-    async def read_fantasy_books():
-        return "Fantasy books data"
+    async def read_fantasy_books(): ...
 
     # Mock read_resource
     mock_read_resource = AsyncMock()
@@ -215,45 +192,6 @@ def test_convert_base_message_param():
         )
 
 
-@pytest.mark.asyncio
-async def test_main_example():
-    """Test the main example code."""
-    app = MCPServer("book-recommend")
-
-    @app.tool()
-    def get_book(genre: str) -> str:
-        """Get a book recommendation."""
-        return "The Hobbit by J.R.R. Tolkien"
-
-    @app.resource(
-        uri="file://fantasy-books.txt/", name="Fantasy Books", mime_type="text/plain"
-    )
-    async def read_data():
-        """Read books database."""
-        data = Path(__file__).parent / "fantasy-books.txt"
-        with data.open() as f:
-            return f.read()
-
-    @app.prompt()
-    def recommend_book(genre: str) -> str:
-        """Get book recommendations."""
-        return f"Recommend a {genre} book"
-
-    assert "get_book" in app._tools
-    assert "file://fantasy-books.txt/" in app._resources
-    assert "recommend_book" in app._prompts
-
-    mock_read_stream = AsyncMock()
-    mock_write_stream = AsyncMock()
-
-    with patch("mcp.server.stdio.stdio_server") as mock_stdio:
-        mock_stdio.return_value.__aenter__.return_value = (
-            mock_read_stream,
-            mock_write_stream,
-        )
-        await app.run()
-
-
 def test_tool_decorator_with_different_types(sample_tool):
     """Test tool decorator with different input types."""
     server = MCPServer("book-recommend")
@@ -276,8 +214,7 @@ def test_tool_decorator_with_different_types(sample_tool):
         title: str
         author: str
 
-        def call(self) -> str:
-            return f"{self.title} by {self.author}"
+        def call(self) -> str: ...
 
     tool_anthropic = server.tool()(BookTool)
     assert issubclass(tool_anthropic, AnthropicTool)
@@ -316,8 +253,7 @@ def test_convert_base_message_param_to_prompt_messages_image_part():
 
 def test_generate_prompt_from_function_no_docstring():
     # function with no docstring
-    def no_doc_func(x: str):
-        return x
+    def no_doc_func(x: str): ...
 
     prompt = _generate_prompt_from_function(no_doc_func)
     assert prompt.name == "no_doc_func"
@@ -338,7 +274,6 @@ def test_generate_prompt_from_function_with_docstring():
             x: The X parameter.
             y: The Y parameter.
         """
-        return str(x) + str(y)
 
     prompt = _generate_prompt_from_function(func_with_docs)
     assert prompt.name == "func_with_docs"
@@ -354,42 +289,36 @@ def test_tool_decorator_name_conflict():
     server = MCPServer("test")
 
     @server.tool()
-    def mytool(a: str) -> str:
-        return a
+    def mytool(a: str) -> str: ...
 
     with pytest.raises(KeyError):
         # same tool name again to force a conflict
         @server.tool()
-        def mytool(a: str) -> str:
-            return a
+        def mytool(a: str) -> str: ...
 
 
 def test_resource_decorator_name_conflict():
     server = MCPServer("test")
 
     @server.resource(uri="file://test.txt")
-    def read_res():
-        return "data"
+    def read_res(): ...
 
     with pytest.raises(KeyError):
         # same resource URI again
         @server.resource(uri="file://test.txt")
-        def read_res2():
-            return "data2"
+        def read_res2(): ...
 
 
 def test_prompt_decorator_conflict():
     server = MCPServer("test")
 
     @server.prompt()
-    def prompt_func(x: str):  # pyright: ignore [reportRedeclaration]
-        return [BaseMessageParam(role="user", content="test")]
+    def prompt_func(x: str): ...  # pyright: ignore [reportRedeclaration]
 
     with pytest.raises(KeyError):
         # same prompt name (prompt_func)
         @server.prompt()
-        def prompt_func(y: int):
-            return [BaseMessageParam(role="user", content="test2")]
+        def prompt_func(y: int): ...
 
 
 def test_resource_docstring():
@@ -398,7 +327,6 @@ def test_resource_docstring():
     @server.resource(uri="file://docstring.txt")
     def read_with_doc():
         """Short description."""
-        return "hello"
 
     # The server normalizes the URI by adding a slash
     assert "file://docstring.txt/" in server._resources
@@ -421,8 +349,7 @@ def test_tool_decorator_with_base_model():
 
 def test_tool_decorator_with_base_tool():
     class MyBaseTool(BaseTool):
-        def call(self) -> str:
-            return "called"
+        def call(self) -> str: ...
 
     server = MCPServer("test")
     tool_cls = server.tool()(MyBaseTool)
@@ -468,20 +395,17 @@ async def test_list_resources_decorator():
         app = MCPServer("book-recommend")
 
         @app.tool()
-        def get_book(genre: str) -> str:
-            return "The Hobbit by J.R.R. Tolkien"
+        def get_book(genre: str) -> str: ...
 
         @app.resource(
             uri="file://fantasy-books.txt/",
             name="Fantasy Books",
             mime_type="text/plain",
         )
-        async def read_data():
-            return "Fake Data Content"
+        async def read_data(): ...
 
         @app.prompt()
-        def recommend_book(genre: str) -> str:
-            return f"Recommend a {genre} book"
+        def recommend_book(genre: str) -> str: ...
 
         mock_read_stream = AsyncMock()
         mock_write_stream = AsyncMock()
@@ -567,8 +491,7 @@ async def test_list_tools_decorator():
         app = MCPServer("book-recommend")
 
         @app.tool()
-        def sample_tool(x: str) -> str:
-            return "sample tool result"
+        def sample_tool(x: str) -> str: ...
 
         mock_read_stream = AsyncMock()
         mock_write_stream = AsyncMock()
@@ -649,8 +572,7 @@ async def test_list_prompts_decorator():
         app = MCPServer("book-recommend")
 
         @app.prompt()
-        def sample_prompt(x: str) -> str:
-            return f"Prompt for {x}"
+        def sample_prompt(x: str) -> str: ...
 
         mock_read_stream = AsyncMock()
         mock_write_stream = AsyncMock()
