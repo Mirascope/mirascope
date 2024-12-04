@@ -1,7 +1,6 @@
 """Tests for MCP server implementation."""
 
 import asyncio
-import contextlib
 from pathlib import Path
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -10,7 +9,7 @@ import pytest
 from mcp.types import Resource, Tool
 from pydantic import AnyUrl, BaseModel
 
-from mirascope.core import BaseMessageParam
+from mirascope.core import BaseMessageParam, prompt_template
 from mirascope.core.anthropic import AnthropicTool
 from mirascope.core.base import BaseTool, ImagePart, TextPart
 from mirascope.mcp.server import (
@@ -18,6 +17,31 @@ from mirascope.mcp.server import (
     _convert_base_message_param_to_prompt_messages,
     _generate_prompt_from_function,
 )
+
+
+# Add fixtures for common test data
+@pytest.fixture
+def sample_tool():
+    def recommend_book(title: str, author: str) -> str:
+        """Recommend a book with title and author.
+
+        Args:
+            title: Book title
+            author: Book author
+        """
+        return f"{title} by {author}"
+
+    return recommend_book
+
+
+@pytest.fixture
+def sample_resource():
+    return Resource(
+        uri=cast(AnyUrl, "file://books.txt/"),
+        name="Book Database",
+        mimeType="text/plain",
+        description="Database of books",
+    )
 
 
 def test_server_initialization():
@@ -191,7 +215,8 @@ def test_convert_base_message_param():
         )
 
 
-def test_main_example():
+@pytest.mark.asyncio
+async def test_main_example():
     """Test the main example code."""
     app = MCPServer("book-recommend")
 
@@ -218,45 +243,15 @@ def test_main_example():
     assert "file://fantasy-books.txt/" in app._resources
     assert "recommend_book" in app._prompts
 
-    # Test run method
-    async def test_run():
-        mock_read_stream = AsyncMock()
-        mock_write_stream = AsyncMock()
+    mock_read_stream = AsyncMock()
+    mock_write_stream = AsyncMock()
 
-        with patch("mcp.server.stdio.stdio_server") as mock_stdio:
-            mock_stdio.return_value.__aenter__.return_value = (
-                mock_read_stream,
-                mock_write_stream,
-            )
-            with contextlib.suppress(asyncio.TimeoutError):
-                await asyncio.wait_for(app.run(), timeout=0.1)
-
-    asyncio.run(test_run())
-
-
-# Add fixtures for common test data
-@pytest.fixture
-def sample_tool():
-    def recommend_book(title: str, author: str) -> str:
-        """Recommend a book with title and author.
-
-        Args:
-            title: Book title
-            author: Book author
-        """
-        return f"{title} by {author}"
-
-    return recommend_book
-
-
-@pytest.fixture
-def sample_resource():
-    return Resource(
-        uri=cast(AnyUrl, "file://books.txt/"),
-        name="Book Database",
-        mimeType="text/plain",
-        description="Database of books",
-    )
+    with patch("mcp.server.stdio.stdio_server") as mock_stdio:
+        mock_stdio.return_value.__aenter__.return_value = (
+            mock_read_stream,
+            mock_write_stream,
+        )
+        await app.run()
 
 
 def test_tool_decorator_with_different_types(sample_tool):
@@ -302,14 +297,6 @@ def test_prompt_message_conversion():
     assert len(result) == 2
     assert result[0].content.text == "Part 1"  # pyright: ignore [reportAttributeAccessIssue]
     assert result[1].content.text == "Part 2"  # pyright: ignore [reportAttributeAccessIssue]
-
-
-def test_convert_base_message_param_to_prompt_messages_invalid_role():
-    # invalid role should raise ValueError
-    with pytest.raises(ValueError, match="invalid role"):
-        _convert_base_message_param_to_prompt_messages(
-            BaseMessageParam(role="invalid", content="Test")
-        )
 
 
 def test_convert_base_message_param_to_prompt_messages_image_part():
@@ -504,11 +491,7 @@ async def test_list_resources_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         # Check if list_resources handler was captured
         assert handler_list_resources is not None, "list_resources handler not captured"
@@ -554,11 +537,7 @@ async def test_read_resource_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         assert handler_read_resource is not None, "read_resource handler not captured"
         content = await handler_read_resource("file://test-resource/")  # pyright: ignore [reportGeneralTypeIssues]
@@ -599,11 +578,7 @@ async def test_list_tools_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         assert handler_list_tools is not None, "list_tools handler not captured"
         tools_list = await handler_list_tools()  # pyright: ignore [reportGeneralTypeIssues]
@@ -644,11 +619,7 @@ async def test_call_tool_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         assert handler_call_tool is not None, "call_tool handler not captured"
         tool_result = await handler_call_tool("sample_tool", {"x": "test"})  # pyright: ignore [reportGeneralTypeIssues]
@@ -689,11 +660,7 @@ async def test_list_prompts_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         assert handler_list_prompts is not None, "list_prompts handler not captured"
         prompts_list = await handler_list_prompts()  # pyright: ignore [reportGeneralTypeIssues]
@@ -734,11 +701,7 @@ async def test_get_prompt_decorator():
             mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
             mock_stdio_server.return_value = mock_cm
 
-            async def run_app():
-                with contextlib.suppress(asyncio.TimeoutError):
-                    await asyncio.wait_for(app.run(), timeout=0.1)
-
-            await run_app()
+            await app.run()
 
         assert handler_get_prompt is not None, "get_prompt handler not captured"
         # Call the handler_get_prompt with some arguments
@@ -746,3 +709,435 @@ async def test_get_prompt_decorator():
         # prompt_result should be a GetPromptResult or similar
         prompt_dict = prompt_result.dict()
         assert "messages" in prompt_dict, "get_prompt result should have messages"
+
+
+def test_convert_base_message_param_to_prompt_messages_valid_str_user():
+    # role: user, content: str
+    param = BaseMessageParam(role="user", content="Hello")
+    msgs = _convert_base_message_param_to_prompt_messages(param)
+    assert len(msgs) == 1
+    assert msgs[0].role == "user"  # pyright: ignore [reportAttributeAccessIssue]
+    assert msgs[0].content.text == "Hello"  # pyright: ignore [reportAttributeAccessIssue]
+
+
+def test_convert_base_message_param_to_prompt_messages_valid_str_assistant():
+    # role: assistant, content: str
+    param = BaseMessageParam(role="assistant", content="Hi there")
+    msgs = _convert_base_message_param_to_prompt_messages(param)
+    assert len(msgs) == 1
+    assert msgs[0].role == "assistant"  # pyright: ignore [reportAttributeAccessIssue]
+    assert msgs[0].content.text == "Hi there"  # pyright: ignore [reportAttributeAccessIssue]
+
+
+def test_convert_base_message_param_to_prompt_messages_valid_iterable_text():
+    # role: user, content: iterable of TextPart(type="text")
+    param = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Part1"),
+            TextPart(type="text", text="Part2"),
+        ],
+    )
+    msgs = _convert_base_message_param_to_prompt_messages(param)
+    assert len(msgs) == 2
+    assert msgs[0].content.text == "Part1"  # pyright: ignore [reportAttributeAccessIssue]
+    assert msgs[1].content.text == "Part2"  # pyright: ignore [reportAttributeAccessIssue]
+
+
+def test_convert_base_message_param_to_prompt_messages_valid_iterable_image():
+    # role: assistant, content: iterable of ImagePart(type="image")
+    param = BaseMessageParam(
+        role="assistant",
+        content=[
+            ImagePart(
+                type="image",
+                detail="An image",
+                image=b"fakeimage",
+                media_type="image/png",
+            ),
+        ],
+    )
+    msgs = _convert_base_message_param_to_prompt_messages(param)
+    assert len(msgs) == 1
+    assert msgs[0].role == "assistant"
+    assert msgs[0].content.type == "image"
+    assert msgs[0].content.mimeType == "image/png"
+    assert msgs[0].content.data == "fakeimage"
+
+
+def test_convert_base_message_param_to_prompt_messages_invalid_role():
+    # invalid role
+    param = BaseMessageParam(role="invalid", content="Hello")
+    with pytest.raises(ValueError, match="invalid role"):
+        _convert_base_message_param_to_prompt_messages(param)
+
+
+def test_convert_base_message_param_to_prompt_messages_iterable_unknown_part():
+    class UnknownPart:
+        pass
+
+    param = BaseMessageParam(role="user", content=[TextPart(type="text", text="Valid")])
+    param.content = [UnknownPart()]  # pyright: ignore [reportAttributeAccessIssue]
+
+    with pytest.raises(
+        ValueError, match="Unsupported content type: <class '.*UnknownPart'>"
+    ):
+        _convert_base_message_param_to_prompt_messages(param)
+
+
+def test_convert_base_message_param_to_prompt_messages_non_str_non_iterable():
+    # content neither str nor iterable
+    param = BaseMessageParam(role="user", content="Valid String")
+    param.content = 12345  # pyright: ignore [reportAttributeAccessIssue]
+
+    with pytest.raises(ValueError, match="Unsupported content type: <class 'int'>"):
+        _convert_base_message_param_to_prompt_messages(param)
+
+
+@pytest.mark.asyncio
+async def test_constructor_with_prompts():
+    @prompt_template()
+    def recommend_book_prompt(genre: str) -> str:
+        """Return a string recommending a book for the given genre."""
+        return f"Recommend a {genre} book"
+
+    app = MCPServer("book-recommend", prompts=[recommend_book_prompt])
+
+    assert "recommend_book_prompt" in app._prompts
+
+    mock_read_stream = AsyncMock()
+    mock_write_stream = AsyncMock()
+
+    with patch("mcp.server.stdio.stdio_server") as mock_stdio:
+        mock_cm = AsyncMock()
+        mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+        mock_stdio.return_value = mock_cm
+
+        await app.run()
+
+    (prompt, prompt_func) = app._prompts["recommend_book_prompt"]
+    assert prompt.name == "recommend_book_prompt"
+    assert (
+        prompt.description == "Return a string recommending a book for the given genre."
+    )
+    assert isinstance(prompt.arguments, list)
+    assert len(prompt.arguments) == 1
+    assert prompt.arguments[0].name == "genre"
+
+    result = prompt_func("fantasy")
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], BaseMessageParam)
+    assert result[0].content == "Recommend a fantasy book"
+
+
+@pytest.mark.asyncio
+async def test_read_resource_decorator_non_existent():
+    """Test reading a non-existent resource and expecting a ValueError."""
+    handler_read_resource = None
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal handler_read_resource
+            handler_read_resource = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.read_resource.side_effect = capture_read_resource
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        # Create an MCPServer with no resources
+        app = MCPServer("test")
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_read_resource is not None, "read_resource handler not captured"
+
+        # Since no resources were defined, reading any URI should raise ValueError.
+        with pytest.raises(ValueError, match="Unknown resource"):
+            await handler_read_resource("file://nonexistent-resource/")  # pyright: ignore
+
+
+@pytest.mark.asyncio
+async def test_read_resource_decorator_async_function():
+    """Test reading a resource from an async function using the captured handler."""
+    handler_read_resource = None
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal handler_read_resource
+            handler_read_resource = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.read_resource.side_effect = capture_read_resource
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("test")
+
+        @app.resource(uri="file://async-resource/")
+        async def async_resource():
+            # Simulate async work
+            await asyncio.sleep(0.01)
+            return "Async Resource Data"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_read_resource is not None, "read_resource handler not captured"
+
+        # Call the captured handler to read the async resource
+        content = await handler_read_resource("file://async-resource/")  # pyright: ignore
+        assert content == "Async Resource Data"
+
+
+@pytest.mark.asyncio
+async def test_call_tool_non_existent_tool():
+    """Test calling a non-existent tool should raise KeyError."""
+    handler_call_tool = None
+
+    def capture_call_tool():
+        def decorator(func):
+            nonlocal handler_call_tool
+            handler_call_tool = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.call_tool.side_effect = capture_call_tool
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        # Create MCPServer with no tools
+        app = MCPServer("test-call-tool")
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_call_tool is not None, "call_tool handler not captured"
+
+        with pytest.raises(KeyError, match="Tool nonexistent_tool not found."):
+            await handler_call_tool("nonexistent_tool", {})  # pyright: ignore
+
+
+@pytest.mark.asyncio
+async def test_call_tool_async_function():
+    """Test calling a tool implemented as an async function."""
+    handler_call_tool = None
+
+    def capture_call_tool():
+        def decorator(func):
+            nonlocal handler_call_tool
+            handler_call_tool = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.call_tool.side_effect = capture_call_tool
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("test-async-tool")
+
+        @app.tool()
+        async def async_tool(x: str) -> str:
+            await asyncio.sleep(0.01)
+            return f"Async result for {x}"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_call_tool is not None, "call_tool handler not captured"
+
+        result = await handler_call_tool("async_tool", {"x": "test"})  # pyright: ignore
+        # Should return a list of TextContent
+        assert len(result) == 1
+        assert result[0].text == "Async result for test"
+
+
+@pytest.mark.asyncio
+async def test_get_prompt_non_existent_prompt():
+    """Test requesting a non-existent prompt should raise ValueError."""
+    handler_get_prompt = None
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal handler_get_prompt
+            handler_get_prompt = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.get_prompt.side_effect = capture_get_prompt
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        # Create MCPServer with no prompts
+        app = MCPServer("test-get-prompt")
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_get_prompt is not None, "get_prompt handler not captured"
+
+        with pytest.raises(ValueError, match="Unknown prompt: nonexistent_prompt"):
+            await handler_get_prompt("nonexistent_prompt", {})  # pyright: ignore
+
+
+@pytest.mark.asyncio
+async def test_get_prompt_async_function():
+    """Test requesting a prompt implemented as an async function."""
+    handler_get_prompt = None
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal handler_get_prompt
+            handler_get_prompt = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.get_prompt.side_effect = capture_get_prompt
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("test-async-prompt")
+
+        @app.prompt()
+        async def async_prompt(genre: str) -> list[BaseMessageParam]:
+            await asyncio.sleep(0.01)
+            return [BaseMessageParam(role="user", content=f"Async prompt for {genre}")]
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_get_prompt is not None, "get_prompt handler not captured"
+
+        prompt_result = await handler_get_prompt("async_prompt", {"genre": "fantasy"})  # pyright: ignore
+        # Should return a GetPromptResult with messages
+        prompt_dict = prompt_result.dict()
+        assert "messages" in prompt_dict
+        assert len(prompt_dict["messages"]) == 1
+        assert (
+            prompt_dict["messages"][0]["content"]["text"] == "Async prompt for fantasy"
+        )
+
+
+@pytest.mark.asyncio
+async def test_get_prompt_no_arguments():
+    """Test get_prompt handler when arguments is None."""
+    handler_get_prompt = None
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal handler_get_prompt
+            handler_get_prompt = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.get_prompt.side_effect = capture_get_prompt
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("test-get-prompt-none-arguments")
+
+        @app.prompt()
+        def sample_prompt() -> str:
+            """A prompt that recommends a book based on genre."""
+            return "Recommend a fantasy book"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            await app.run()
+
+        assert handler_get_prompt is not None, "get_prompt handler not captured"
+        prompt_result = await handler_get_prompt("sample_prompt", None)  # pyright: ignore
+
+        prompt_dict = prompt_result.dict()
+        assert "messages" in prompt_dict, "get_prompt result should have messages"
+        assert len(prompt_dict["messages"]) == 1
+        assert (
+            prompt_dict["messages"][0]["content"]["text"] == "Recommend a fantasy book"
+        )

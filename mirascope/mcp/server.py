@@ -65,14 +65,8 @@ def _convert_base_message_param_to_prompt_messages(
         contents = []
         for part in base_message_param.content:
             if isinstance(part, TextPart):
-                # Ensure part.type is set to "text" if required by your schema
-                if part.type != "text":
-                    raise ValueError(f"Unsupported content type: {part.type}")
                 contents.append(TextContent(type="text", text=part.text))
             elif isinstance(part, ImagePart):
-                # Ensure part.type is set to "image"
-                if part.type != "image":
-                    raise ValueError(f"Unsupported content type: {part.type}")
                 contents.append(
                     ImageContent(
                         type="image",
@@ -308,7 +302,10 @@ class MCPServer:
                     id=name, name=name, type="tool_use", input=arguments
                 )
             )
-            result = tool.call()
+            if fn_is_async(tool.call):
+                result = await tool.call()
+            else:
+                result = tool.call()
             return [TextContent(type="text", text=result)]
 
         @self.server.list_prompts()
