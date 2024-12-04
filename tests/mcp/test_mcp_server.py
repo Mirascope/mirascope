@@ -4,7 +4,7 @@ import asyncio
 import contextlib
 from pathlib import Path
 from typing import cast
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from mcp.types import Resource, Tool
@@ -456,3 +456,293 @@ def test_prompt_decorator_with_template():
     assert prompt_data.name == "prompt_func"
     assert isinstance(prompt_data.arguments, list)
     assert any(arg.name == "genre" for arg in prompt_data.arguments)
+
+
+@pytest.mark.asyncio
+async def test_list_resources_decorator():
+    handler_list_resources = None
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal handler_list_resources
+            handler_list_resources = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.list_resources.side_effect = capture_list_resources
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.tool()
+        def get_book(genre: str) -> str:
+            return "The Hobbit by J.R.R. Tolkien"
+
+        @app.resource(
+            uri="file://fantasy-books.txt/",
+            name="Fantasy Books",
+            mime_type="text/plain",
+        )
+        async def read_data():
+            return "Fake Data Content"
+
+        @app.prompt()
+        def recommend_book(genre: str) -> str:
+            return f"Recommend a {genre} book"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        # Check if list_resources handler was captured
+        assert handler_list_resources is not None, "list_resources handler not captured"
+        resources_list = await handler_list_resources()  # pyright: ignore [reportGeneralTypeIssues]
+        assert isinstance(
+            resources_list, list
+        ), "Expected list from list_resources handler"
+
+
+@pytest.mark.asyncio
+async def test_read_resource_decorator():
+    handler_read_resource = None
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal handler_read_resource
+            handler_read_resource = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.read_resource.side_effect = capture_read_resource
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.resource(
+            uri="file://test-resource/", name="Test Resource", mime_type="text/plain"
+        )
+        def read_test():
+            return "Test Resource Content"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        assert handler_read_resource is not None, "read_resource handler not captured"
+        content = await handler_read_resource("file://test-resource/")  # pyright: ignore [reportGeneralTypeIssues]
+        assert content == "Test Resource Content"
+
+
+@pytest.mark.asyncio
+async def test_list_tools_decorator():
+    handler_list_tools = None
+
+    def capture_list_tools():
+        def decorator(func):
+            nonlocal handler_list_tools
+            handler_list_tools = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.list_tools.side_effect = capture_list_tools
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.tool()
+        def sample_tool(x: str) -> str:
+            return "sample tool result"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        assert handler_list_tools is not None, "list_tools handler not captured"
+        tools_list = await handler_list_tools()  # pyright: ignore [reportGeneralTypeIssues]
+        assert isinstance(tools_list, list), "Expected list from list_tools handler"
+
+
+@pytest.mark.asyncio
+async def test_call_tool_decorator():
+    handler_call_tool = None
+
+    def capture_call_tool():
+        def decorator(func):
+            nonlocal handler_call_tool
+            handler_call_tool = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.call_tool.side_effect = capture_call_tool
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.tool()
+        def sample_tool(x: str) -> str:
+            return f"Result for {x}"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        assert handler_call_tool is not None, "call_tool handler not captured"
+        tool_result = await handler_call_tool("sample_tool", {"x": "test"})  # pyright: ignore [reportGeneralTypeIssues]
+        assert isinstance(tool_result, list), "Expected list from call_tool handler"
+
+
+@pytest.mark.asyncio
+async def test_list_prompts_decorator():
+    handler_list_prompts = None
+
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal handler_list_prompts
+            handler_list_prompts = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.list_prompts.side_effect = capture_list_prompts
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.prompt()
+        def sample_prompt(x: str) -> str:
+            return f"Prompt for {x}"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        assert handler_list_prompts is not None, "list_prompts handler not captured"
+        prompts_list = await handler_list_prompts()  # pyright: ignore [reportGeneralTypeIssues]
+        assert isinstance(prompts_list, list), "Expected list from list_prompts handler"
+
+
+@pytest.mark.asyncio
+async def test_get_prompt_decorator():
+    handler_get_prompt = None
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal handler_get_prompt
+            handler_get_prompt = func
+            return func
+
+        return decorator
+
+    with patch("mirascope.mcp.server.Server") as MockServer:
+        server_instance = MagicMock()
+        server_instance.get_prompt.side_effect = capture_get_prompt
+        server_instance.get_capabilities.return_value = {}
+        server_instance.run = AsyncMock(return_value=None)
+
+        MockServer.return_value = server_instance
+
+        app = MCPServer("book-recommend")
+
+        @app.prompt()
+        def sample_prompt(genre: str) -> str:
+            return f"Prompt for {genre}"
+
+        mock_read_stream = AsyncMock()
+        mock_write_stream = AsyncMock()
+
+        with patch("mcp.server.stdio.stdio_server") as mock_stdio_server:
+            mock_cm = AsyncMock()
+            mock_cm.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+            mock_stdio_server.return_value = mock_cm
+
+            async def run_app():
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(app.run(), timeout=0.1)
+
+            await run_app()
+
+        assert handler_get_prompt is not None, "get_prompt handler not captured"
+        # Call the handler_get_prompt with some arguments
+        prompt_result = await handler_get_prompt("sample_prompt", {"genre": "fantasy"})  # pyright: ignore [reportGeneralTypeIssues]
+        # prompt_result should be a GetPromptResult or similar
+        prompt_dict = prompt_result.dict()
+        assert "messages" in prompt_dict, "get_prompt result should have messages"
