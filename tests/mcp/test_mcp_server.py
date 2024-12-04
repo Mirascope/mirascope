@@ -7,34 +7,17 @@ from typing import cast
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from mcp.server import Server
-from mcp.types import GetPromptResult, Prompt, Resource, TextContent, Tool
+from mcp.types import Resource, Tool
 from pydantic import AnyUrl, BaseModel
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic import AnthropicTool
-from mirascope.core.base import BaseMessageParam, TextPart
+from mirascope.core.base import BaseTool, ImagePart, TextPart
 from mirascope.mcp.server import (
     MCPServer,
     _convert_base_message_param_to_prompt_messages,
+    _generate_prompt_from_function,
 )
-
-
-@pytest.fixture
-def server() -> MCPServer:
-    """Create a test server instance."""
-    return MCPServer("book-recommend")
-
-
-@pytest.fixture
-def mock_stdio_transport():
-    """Mock stdio transport for testing."""
-    read_stream = AsyncMock()
-    write_stream = AsyncMock()
-
-    mock_context = AsyncMock()
-    mock_context.__aenter__.return_value = (read_stream, write_stream)
-
-    return mock_context
 
 
 def test_server_initialization():
@@ -189,8 +172,8 @@ def test_convert_base_message_param():
     text_message = BaseMessageParam(role="user", content="Recommend a fantasy book")
     prompt_messages = _convert_base_message_param_to_prompt_messages(text_message)
     assert len(prompt_messages) == 1
-    assert prompt_messages[0].role == "user"
-    assert prompt_messages[0].content.text == "Recommend a fantasy book"
+    assert prompt_messages[0].role == "user"  # pyright: ignore [reportAttributeAccessIssue]
+    assert prompt_messages[0].content.text == "Recommend a fantasy book"  # pyright: ignore [reportAttributeAccessIssue]
 
     # Test multiple content parts
     multi_content = [
@@ -305,130 +288,6 @@ def test_tool_decorator_with_different_types(sample_tool):
     assert issubclass(tool_anthropic, AnthropicTool)
 
 
-@pytest.mark.asyncio
-async def test_call_tool():
-    """Test calling a tool through the server."""
-    server = MCPServer("book-recommend")
-
-    @server.tool()
-    def format_book(title: str, author: str) -> str:
-        """Format book details.
-
-        Args:
-            title: Book title
-            author: Book author
-        """
-        return f"{title} by {author}"
-
-    # Mock call_tool method to return formatted result directly
-    async def mock_call_tool(self, name: str, arguments: dict) -> list[TextContent]:
-        # Return formatted text without calling server.call_tool again
-        return [
-            TextContent(
-                type="text", text=f"{arguments['title']} by {arguments['author']}"
-            )
-        ]
-
-    with patch.object(Server, "call_tool", mock_call_tool):
-        result = await server.server.call_tool(
-            "format_book", {"title": "Dune", "author": "Frank Herbert"}
-        )
-        assert len(result) == 1
-        assert result[0].text == "Dune by Frank Herbert"
-
-
-@pytest.mark.asyncio
-async def test_read_resource():
-    """Test reading resources through the server."""
-    server = MCPServer("book-recommend")
-
-    @server.resource(
-        uri="file://test.txt/", name="Test Resource", mime_type="text/plain"
-    )
-    async def read_test():
-        return "test content"
-
-    # Mock read_resource method
-    async def mock_read_resource(self, uri: AnyUrl) -> str:
-        if str(uri) == "file://test.txt/":
-            return "test content"
-        raise ValueError("Unknown resource")
-
-    with patch.object(Server, "read_resource", mock_read_resource):
-        # Test reading existing resource
-        content = await server.server.read_resource(cast(AnyUrl, "file://test.txt/"))
-        assert content == "test content"
-
-        # Test reading non-existent resource
-        with pytest.raises(ValueError, match="Unknown resource"):
-            await server.server.read_resource(cast(AnyUrl, "file://nonexistent.txt/"))
-
-
-@pytest.mark.asyncio
-async def test_list_prompts():
-    """Test listing prompts."""
-    server = MCPServer("book-recommend")
-
-    @server.prompt()  # pyright: ignore [reportArgumentType]
-    def basic_prompt(genre: str) -> list[BaseMessageParam]:
-        """Get book recommendations."""
-        return [BaseMessageParam(role="user", content=f"Recommend {genre} books")]
-
-    # Mock list_prompts method
-    async def mock_list_prompts(self) -> list[Prompt]:
-        return [prompt for prompt, _ in server._prompts.values()]
-
-    with patch.object(Server, "list_prompts", mock_list_prompts):
-        prompts = await server.server.list_prompts()  # pyright: ignore [reportGeneralTypeIssues]
-        assert len(prompts) == 1
-        assert prompts[0].name == "basic_prompt"
-
-
-@pytest.mark.asyncio
-async def test_get_prompt_with_args():
-    """Test getting prompts with different argument configurations."""
-    server = MCPServer("book-recommend")
-
-    @server.prompt()  # pyright: ignore [reportArgumentType]
-    def multi_genre_prompt(
-        genre1: str, genre2: str = "fantasy"
-    ) -> list[BaseMessageParam]:
-        """Get recommendations for multiple genres."""
-        return [
-            BaseMessageParam(
-                role="user",
-                content=f"Recommend books that combine {genre1} and {genre2}",
-            )
-        ]
-
-    # Mock get_prompt method
-    async def mock_get_prompt(
-        self, name: str, arguments: dict[str, str] | None
-    ) -> GetPromptResult:
-        prompt_and_func = server._prompts.get(name)
-        if not prompt_and_func:
-            raise ValueError("Unknown prompt")
-
-        prompt, func = prompt_and_func
-        messages = func(**(arguments or {}))
-        return GetPromptResult(
-            description=f"{prompt.name} template for {arguments}",
-            messages=[
-                msg
-                for message in messages  # pyright: ignore [reportGeneralTypeIssues]
-                for msg in _convert_base_message_param_to_prompt_messages(message)
-            ],
-        )
-
-    with patch.object(Server, "get_prompt", mock_get_prompt):
-        # Test with all arguments
-        result = await server.server.get_prompt(
-            "multi_genre_prompt",
-            {"genre1": "sci-fi", "genre2": "mystery"},  # pyright: ignore [reportCallIssue]
-        )
-        assert "sci-fi and mystery" in result.messages[0].content.text
-
-
 def test_prompt_message_conversion():
     """Test conversion of various message content types."""
     # Test text content with multiple parts
@@ -443,3 +302,157 @@ def test_prompt_message_conversion():
     assert len(result) == 2
     assert result[0].content.text == "Part 1"  # pyright: ignore [reportAttributeAccessIssue]
     assert result[1].content.text == "Part 2"  # pyright: ignore [reportAttributeAccessIssue]
+
+
+def test_convert_base_message_param_to_prompt_messages_invalid_role():
+    # invalid role should raise ValueError
+    with pytest.raises(ValueError, match="invalid role"):
+        _convert_base_message_param_to_prompt_messages(
+            BaseMessageParam(role="invalid", content="Test")
+        )
+
+
+def test_convert_base_message_param_to_prompt_messages_image_part():
+    image_data = b"fakeimagebytes"
+    # Provide all required fields for ImagePart
+    part = ImagePart(
+        type="image", detail="image detail", image=image_data, media_type="image/png"
+    )
+    message = BaseMessageParam(role="assistant", content=[part])
+    result = _convert_base_message_param_to_prompt_messages(message)
+    assert len(result) == 1
+    assert result[0].role == "assistant"
+    assert result[0].content.type == "image"
+    assert result[0].content.mimeType == "image/png"
+    assert result[0].content.data == image_data.decode("utf-8")
+
+
+def test_generate_prompt_from_function_no_docstring():
+    # function with no docstring
+    def no_doc_func(x: str):
+        return x
+
+    prompt = _generate_prompt_from_function(no_doc_func)
+    assert prompt.name == "no_doc_func"
+    # no description
+    assert prompt.description == ""
+    assert isinstance(prompt.arguments, list)
+    assert len(prompt.arguments) == 1
+    assert prompt.arguments[0].name == "x"
+    assert prompt.arguments[0].description == ""
+
+
+def test_generate_prompt_from_function_with_docstring():
+    # function with docstring and param desc
+    def func_with_docs(x: str, y: int):
+        """This is a test function.
+
+        Args:
+            x: The X parameter.
+            y: The Y parameter.
+        """
+        return str(x) + str(y)
+
+    prompt = _generate_prompt_from_function(func_with_docs)
+    assert prompt.name == "func_with_docs"
+    assert prompt.description == "This is a test function."
+    assert isinstance(prompt.arguments, list)
+    assert len(prompt.arguments) == 2
+    arg_map = {arg.name: arg for arg in prompt.arguments}
+    assert arg_map["x"].description == "The X parameter."
+    assert arg_map["y"].description == "The Y parameter."
+
+
+def test_tool_decorator_name_conflict():
+    server = MCPServer("test")
+
+    @server.tool()
+    def mytool(a: str) -> str:
+        return a
+
+    with pytest.raises(KeyError):
+        # same tool name again to force a conflict
+        @server.tool()
+        def mytool(a: str) -> str:
+            return a
+
+
+def test_resource_decorator_name_conflict():
+    server = MCPServer("test")
+
+    @server.resource(uri="file://test.txt")
+    def read_res():
+        return "data"
+
+    with pytest.raises(KeyError):
+        # same resource URI again
+        @server.resource(uri="file://test.txt")
+        def read_res2():
+            return "data2"
+
+
+def test_prompt_decorator_conflict():
+    server = MCPServer("test")
+
+    @server.prompt()
+    def prompt_func(x: str):  # pyright: ignore [reportRedeclaration]
+        return [BaseMessageParam(role="user", content="test")]
+
+    with pytest.raises(KeyError):
+        # same prompt name (prompt_func)
+        @server.prompt()
+        def prompt_func(y: int):
+            return [BaseMessageParam(role="user", content="test2")]
+
+
+def test_resource_docstring():
+    server = MCPServer("test")
+
+    @server.resource(uri="file://docstring.txt")
+    def read_with_doc():
+        """Short description."""
+        return "hello"
+
+    # The server normalizes the URI by adding a slash
+    assert "file://docstring.txt/" in server._resources
+    resource, _ = server._resources["file://docstring.txt/"]
+    assert resource.description == "Short description."
+
+
+def test_tool_decorator_with_base_model():
+    class MyToolModel(BaseModel):
+        name: str
+        age: int
+
+    server = MCPServer("test")
+
+    tool_cls = server.tool()(MyToolModel)
+    assert issubclass(tool_cls, AnthropicTool)
+    # Check that tool was registered
+    assert "MyToolModel" in server._tools
+
+
+def test_tool_decorator_with_base_tool():
+    class MyBaseTool(BaseTool):
+        def call(self) -> str:
+            return "called"
+
+    server = MCPServer("test")
+    tool_cls = server.tool()(MyBaseTool)
+    assert issubclass(tool_cls, AnthropicTool)
+    # Check registration
+    assert "MyBaseTool" in server._tools
+
+
+def test_prompt_decorator_with_template():
+    server = MCPServer("test")
+
+    @server.prompt("Recommend a {genre} book")
+    def prompt_func(genre: str): ...
+
+    assert "prompt_func" in server._prompts
+
+    prompt_data, _ = server._prompts["prompt_func"]
+    assert prompt_data.name == "prompt_func"
+    assert isinstance(prompt_data.arguments, list)
+    assert any(arg.name == "genre" for arg in prompt_data.arguments)
