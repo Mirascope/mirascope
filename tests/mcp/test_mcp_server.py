@@ -342,7 +342,7 @@ def test_tool_decorator_with_base_model():
     server = MCPServer("test")
 
     tool_cls = server.tool()(MyToolModel)
-    assert issubclass(tool_cls, AnthropicTool)
+    assert issubclass(tool_cls, BaseTool)
     # Check that tool was registered
     assert "MyToolModel" in server._tools
 
@@ -353,7 +353,7 @@ def test_tool_decorator_with_base_tool():
 
     server = MCPServer("test")
     tool_cls = server.tool()(MyBaseTool)
-    assert issubclass(tool_cls, AnthropicTool)
+    assert issubclass(tool_cls, BaseTool)
     # Check registration
     assert "MyBaseTool" in server._tools
 

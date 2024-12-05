@@ -2,10 +2,9 @@
 
 import inspect
 from collections.abc import Awaitable, Callable, Iterable
-from typing import Any, Literal, ParamSpec, cast, overload
+from typing import Literal, ParamSpec, cast, overload
 
 import mcp.server.stdio
-from anthropic.types.tool_use_block import ToolUseBlock
 from docstring_parser import parse
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
@@ -22,7 +21,6 @@ from mcp.types import (
 from pydantic import AnyUrl, BaseModel
 
 from mirascope.core import BaseDynamicConfig, BaseMessageParam, BaseTool
-from mirascope.core.anthropic import AnthropicTool
 from mirascope.core.base import ImagePart, TextPart
 from mirascope.core.base._utils import (
     MessagesDecorator,
@@ -35,6 +33,7 @@ from mirascope.core.base._utils._messages_decorator import (
     MessagesSyncFunction,
 )
 from mirascope.core.base.prompt import PromptDecorator, prompt_template
+from mirascope.mcp.tools import MCPTool, ToolUseBlock
 
 _P = ParamSpec("_P")
 
@@ -138,7 +137,7 @@ class MCPServer:
         self.name: str = name
         self.version: str = version
         self.server: Server = Server(name)
-        self._tools: dict[str, tuple[Tool, type[AnthropicTool]]] = {}
+        self._tools: dict[str, tuple[Tool, type[MCPTool]]] = {}
         self._resources: dict[str, tuple[Resource, Callable]] = {}
         self._prompts: dict[
             str,
@@ -165,21 +164,21 @@ class MCPServer:
 
     def tool(
         self,
-    ) -> Callable[[Callable | type[BaseModel] | type[BaseTool]], type[BaseTool]]:
+    ) -> Callable[[Callable | type[BaseTool]], type[BaseTool]]:
         """Decorator to register tools."""
 
         def decorator(
             tool: Callable | type[BaseTool],
         ) -> type[BaseTool]:
             if inspect.isclass(tool):
-                if issubclass(tool, AnthropicTool):
+                if issubclass(tool, MCPTool):
                     converted_tool = tool
                 else:
                     converted_tool = convert_base_model_to_base_tool(
-                        cast(type[BaseModel], tool), AnthropicTool
+                        cast(type[BaseModel], tool), MCPTool
                     )
             else:
-                converted_tool = convert_function_to_base_tool(tool, AnthropicTool)
+                converted_tool = convert_function_to_base_tool(tool, MCPTool)
             tool_schema = converted_tool.tool_schema()
             name = tool_schema["name"]
             if name in self._tools:
@@ -190,7 +189,7 @@ class MCPServer:
                 Tool(
                     name=name,
                     description=tool_schema.get("description"),
-                    inputSchema=cast(dict[str, Any], tool_schema["input_schema"]),
+                    inputSchema=tool_schema["input_schema"],
                 ),
                 converted_tool,
             )
@@ -292,9 +291,7 @@ class MCPServer:
             _, tool_type = self._tools[name]
 
             tool = tool_type.from_tool_call(
-                tool_call=ToolUseBlock(
-                    id=name, name=name, type="tool_use", input=arguments
-                )
+                tool_call=ToolUseBlock(id=name, name=name, input=arguments)
             )
             if fn_is_async(tool.call):
                 result = await tool.call()
