@@ -11,21 +11,21 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up uv
-        run: curl -LsSf https://astral.sh/uv/0.3.0/install.sh | sh
+        run: curl -LsSf https://astral.sh/uv/0.5.6/install.sh | sh
 
       - name: Set up Python
         run: uv python install 3.10
 
       - name: Build Package
-        run: uvx --from build pyproject-build --installer uv
+        run: uv build
 
       - name: Publish Python Package
-        run: uvx twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish
