@@ -11,6 +11,7 @@ from pydantic import AnyUrl, BaseModel
 from mirascope.core import BaseMessageParam, prompt_template
 from mirascope.core.anthropic import AnthropicTool
 from mirascope.core.base import BaseTool, ImagePart, TextPart
+from mirascope.mcp import MCPTool
 from mirascope.mcp.server import (
     MCPServer,
     _convert_base_message_param_to_prompt_messages,
@@ -356,6 +357,19 @@ def test_tool_decorator_with_base_tool():
     assert issubclass(tool_cls, BaseTool)
     # Check registration
     assert "MyBaseTool" in server._tools
+
+
+def test_tool_decorator_with_mcp_tool():
+    class MyToolModel(BaseModel):
+        name: str
+        age: int
+
+    MyMCPTool = MCPTool.type_from_base_model_type(MyToolModel)
+    server = MCPServer("test")
+    tool_cls = server.tool()(MyMCPTool)
+    assert issubclass(tool_cls, MCPTool)
+    # Check registration
+    assert "MyToolModel" in server._tools
 
 
 def test_prompt_decorator_with_template():
