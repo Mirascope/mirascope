@@ -282,19 +282,24 @@ async def read_stream_exception_filer(
     read_stream_writer, filtered_read = create_memory_object_stream(0)
 
     async def task() -> None:
-        async with original_read, read_stream_writer:
-            async for msg in original_read:
-                if isinstance(msg, Exception):
-                    # Ignore invalid JSON lines and log them
-                    if exception_handler:
-                        exception_handler(msg)
-                    continue
-                await read_stream_writer.send(msg)
+        try:
+            async with original_read:
+                async for msg in original_read:
+                    if isinstance(msg, Exception):
+                        if exception_handler:
+                            exception_handler(msg)
+                        continue
+                    await read_stream_writer.send(msg)
+        finally:
+            await read_stream_writer.aclose()
 
     async with create_task_group() as tg:
         tg.start_soon(task)
-        yield filtered_read
-        # Upper layer context exit will close the stream
+        try:
+            yield filtered_read
+        finally:
+            await filtered_read.aclose()
+            tg.cancel_scope.cancel()
 
 
 @asynccontextmanager
