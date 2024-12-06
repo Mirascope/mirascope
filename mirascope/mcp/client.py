@@ -1,14 +1,19 @@
 import base64
 import string
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from typing import Any, ClassVar, TypeVar
 
+from anyio import create_memory_object_stream, create_task_group
+from anyio.streams.memory import MemoryObjectReceiveStream
 from mcp import ClientSession
+from mcp.client.stdio import StdioServerParameters, stdio_client
 from mcp.types import (
     BlobResourceContents,
     CallToolResult,
     EmbeddedResource,
     ImageContent,
+    JSONRPCMessage,
     Prompt,
     PromptMessage,
     Resource,
@@ -32,7 +37,7 @@ class MCPClientTool(BaseTool):
 
     async def call(self) -> list[str | ImageContent | EmbeddedResource]:
         kwargs = self.model_dump()
-        result = await self.__call_tool__(self._name(), kwargs)
+        result = await self.__call_tool__(self._name(), kwargs)  # pyright: ignore [reportOptionalCall]
         if result.isError:
             raise RuntimeError(f"MCP Server returned error: {self._name()}")
         parsed_results = []
@@ -76,7 +81,7 @@ def _convert_prompt_message_to_base_message_params(
 
     # Handle ImageContent
     elif isinstance(content, ImageContent):
-        decoded_image = base64.b64decode(content.dat)
+        decoded_image = base64.b64decode(content.data)
 
         image_part = ImagePart(
             type="image",
@@ -91,7 +96,7 @@ def _convert_prompt_message_to_base_message_params(
         if isinstance(resource, TextResourceContents):
             return BaseMessageParam(role=prompt_message.role, content=resource.text)
         else:
-            mime_type = resource.mime_type
+            mime_type = resource.mimeType
             if not mime_type:
                 raise ValueError(
                     "BlobResourceContents has no mimeType, cannot determine content type."
@@ -151,7 +156,7 @@ def build_object_type(
     return create_model(name, __config__=ConfigDict(extra="allow"), **fields)
 
 
-def json_schema_to_python_type(schema: dict[str, Any], name: str = "Model") -> Any:
+def json_schema_to_python_type(schema: dict[str, Any], name: str = "Model") -> Any:  # noqa: ANN401
     """
     Recursively convert a JSON Schema snippet into a Python type annotation or a dynamically generated pydantic model.
     """
@@ -206,24 +211,6 @@ def create_model_from_tool(tool: Tool) -> type[BaseModel]:
     )
 
 
-def _create_model_from_prompt(prompt: Prompt) -> type[BaseModel]:
-    if not prompt.arguments:
-        return create_model(prompt.name, __base__=MCPClientTool)
-
-    fields = {}
-    for arg in prompt.arguments:
-        if arg.required:
-            default = Field(..., description=arg.description)
-            annotation = str
-        else:
-            default = Field(None, description=arg.description)
-            annotation = str | None
-
-        fields[arg.name] = annotation, default
-
-    return create_model(prompt.name, __base__=MCPClientTool, **fields)
-
-
 class MCPClient:
     def __init__(self, session: ClientSession) -> None:
         self.session: ClientSession = session
@@ -236,14 +223,14 @@ class MCPClient:
         self, uri: str | AnyUrl
     ) -> list[str | BlobResourceContents]:
         result = await self.session.read_resource(
-            uri if isinstance(uri, AnyUrl) else uri
+            uri if isinstance(uri, AnyUrl) else AnyUrl(uri)
         )
         parsed_results = []
         for content in result.contents:
-            if isinstance(result, BlobResourceContents):
-                parsed_results.append(result)
-            else:
+            if isinstance(content, TextResourceContents):
                 parsed_results.append(content.text)
+            else:
+                parsed_results.append(content)
         return parsed_results
 
     async def list_prompts(self) -> list[Prompt]:
@@ -278,3 +265,59 @@ class MCPClient:
                 convert_base_model_to_base_tool(model, CustomMCPTool)
             )
         return converted_tools
+
+
+@asynccontextmanager
+async def read_stream_exception_filer(
+    original_read: MemoryObjectReceiveStream[JSONRPCMessage | Exception],
+    exception_handler: Callable[[Exception], None] | None = None,
+) -> AsyncGenerator[MemoryObjectReceiveStream[JSONRPCMessage], None]:
+    """
+    Handle exceptions in the original stream.
+    default handler is to ignore read stream exception for invalid JSON lines and log them.
+    Args:
+        original_read: The original stream to read from.
+        exception_handler: An optional handler for exception.
+    """
+    read_stream_writer, filtered_read = create_memory_object_stream(0)
+
+    async def task() -> None:
+        async with original_read, read_stream_writer:
+            async for msg in original_read:
+                if isinstance(msg, Exception):
+                    # Ignore invalid JSON lines and log them
+                    if exception_handler:
+                        exception_handler(msg)
+                    continue
+                await read_stream_writer.send(msg)
+
+    async with create_task_group() as tg:
+        tg.start_soon(task)
+        yield filtered_read
+        # Upper layer context exit will close the stream
+
+
+@asynccontextmanager
+async def create_mcp_client(
+    server_parameters: StdioServerParameters,
+    read_stream_exception_handler: Callable[[Exception], None] | None = None,
+) -> AsyncGenerator[MCPClient, None]:
+    """
+    Create a MCPClient instance with the given server parameters and exception handler.
+
+    Args:
+        server_parameters:
+        read_stream_exception_handler:
+
+    Returns:
+
+    """
+    async with (
+        stdio_client(server_parameters) as (read, write),
+        read_stream_exception_filer(
+            read, read_stream_exception_handler
+        ) as filtered_read,
+        ClientSession(filtered_read, write) as session,
+    ):
+        await session.initialize()
+        yield MCPClient(session)
