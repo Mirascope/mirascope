@@ -2,7 +2,7 @@ import base64
 import string
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
-from typing import Any, ClassVar, TypeVar
+from typing import Any, TypeVar
 
 from anyio import create_memory_object_stream, create_task_group
 from anyio.streams.memory import MemoryObjectReceiveStream
@@ -25,19 +25,16 @@ from pydantic import AnyUrl, BaseModel, ConfigDict, Field, create_model
 
 from mirascope.core import BaseMessageParam, BaseTool
 from mirascope.core.base import AudioPart, DocumentPart, ImagePart
-from mirascope.core.base._utils import convert_base_model_to_base_tool
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
-class MCPClientTool(BaseTool):
-    __call_tool__: ClassVar[Callable[[str, dict], Awaitable[CallToolResult]] | None] = (
-        None
-    )
-
-    async def call(self) -> list[str | ImageContent | EmbeddedResource]:
-        kwargs = self.model_dump()
-        result = await self.__call_tool__(self._name(), kwargs)  # pyright: ignore [reportOptionalCall]
+def _create_tool_call(
+    name: str,
+    call_tool: Callable[[str, dict | None], Awaitable[CallToolResult]],
+) -> Callable[..., Awaitable[list[str | ImageContent | EmbeddedResource]]]:
+    async def call(self: BaseTool) -> list[str | ImageContent | EmbeddedResource]:
+        result = await call_tool(name, self.args)  # pyright: ignore [reportOptionalCall]
         if result.isError:
             raise RuntimeError(f"MCP Server returned error: {self._name()}")
         parsed_results = []
@@ -50,6 +47,8 @@ class MCPClientTool(BaseTool):
             content.text if isinstance(content, TextContent) else content
             for content in result.content
         ]
+
+    return call
 
 
 def _convert_prompt_message_to_base_message_params(
@@ -250,20 +249,14 @@ class MCPClient:
 
         return async_prompt
 
-    async def list_tools(self) -> list[type[MCPClientTool]]:
+    async def list_tools(self) -> list[type[BaseModel]]:
         list_tool_result = await self.session.list_tools()
 
         converted_tools = []
         for tool in list_tool_result.tools:
             model = create_model_from_tool(tool)
-
-            class CustomMCPTool(MCPClientTool):
-                __call_tool__ = self.session.call_tool
-                __custom_name__ = tool.name
-
-            converted_tools.append(
-                convert_base_model_to_base_tool(model, CustomMCPTool)
-            )
+            model.call = _create_tool_call(tool.name, self.session.call_tool)  # pyright: ignore [reportAttributeAccessIssue]
+            converted_tools.append(model)
         return converted_tools
 
 
