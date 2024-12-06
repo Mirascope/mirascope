@@ -379,10 +379,11 @@ async def test_mcp_client_methods():
     tools = await client.list_tools()
     assert len(tools) == 1
     t = tools[0]
-    assert issubclass(t, BaseTool)
+    assert issubclass(t, BaseModel)
 
     # call tool
-    ret = await t(genre="fantasy").call()  # pyright: ignore [reportCallIssue]
+    base_tool = BaseTool.type_from_base_model_type(t)
+    ret = await base_tool(genre="fantasy").call()  # pyright: ignore [reportCallIssue, reportAbstractUsage]
     assert ret == ["Tool result"]
 
 
@@ -414,7 +415,8 @@ async def test_mcp_client_tool_with_image():
     client = MCPClient(mock_session)
     tools = await client.list_tools()
     tool = tools[0]
-    result = await tool().call()
+    base_tool = BaseTool.type_from_base_model_type(tool)
+    result = await base_tool().call()  # pyright: ignore [reportAbstractUsage]
     assert len(result) == 1
     assert isinstance(result[0], ImageContent)
 
@@ -433,7 +435,7 @@ async def test_mcp_client_tool_with_image():
             )
         ],
     )
-    result = await tool().call()
+    result = await base_tool().call()  # pyright: ignore [reportAbstractUsage]
     # In this case call returns the content as is (EmbeddedResource)
     assert isinstance(result[0], EmbeddedResource)
 
@@ -443,5 +445,6 @@ async def test_mcp_client_tool_with_image():
     )
 
     error_tool = tools[1]
+    error_tool_type = BaseTool.type_from_base_model_type(error_tool)
     with pytest.raises(RuntimeError):
-        await error_tool().call()
+        await error_tool_type().call()  # pyright: ignore [reportAbstractUsage]
