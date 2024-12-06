@@ -259,6 +259,9 @@ nav:
       - Extensions:
           - Middleware: "learn/extensions/middleware.md"
           - Custom LLM Provider: "learn/extensions/custom_provider.md"
+      - MCP - Model Context Protocol:
+          - Server: "learn/mcp/server.md"
+          - Client: "learn/mcp/client.md"
   - Integrations:
       - OpenTelemetry: "integrations/otel.md"
       - HyperDX: "integrations/hyperdx.md"
