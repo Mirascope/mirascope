@@ -3,7 +3,7 @@
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [MCP Server](./mcp_server.md)
+        If you haven't already, we recommend first reading the section on [MCP Server](./server.md)
     </div>
 
 MCP Client in Mirascope enables you to interact with MCP servers through a standardized protocol. The client provides methods to access resources, tools, and prompts exposed by MCP servers.

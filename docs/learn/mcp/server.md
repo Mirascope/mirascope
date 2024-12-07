@@ -3,7 +3,7 @@
 !!! mira ""
 
     <div align="center">
-        If you haven't already, we recommend first reading the section on [Tools](./tools.md) and [Calls](./calls.md)
+        If you haven't already, we recommend first reading the section on [Tools](../tools.md)
     </div>
 
 MCP (Model Context Protocol) Server in Mirascope enables you to expose resources, tools, and prompts to LLM clients through a standardized protocol. This allows for secure and controlled interactions between host applications (like Claude Desktop) and local services.
@@ -16,7 +16,6 @@ Let's build a simple book recommendation server using MCP:
 --8<-- "examples/learn/mcp/server_decorators.py:3"
 ```
 
-
 This example demonstrates:
 
 1. Creating an MCP server with the `MCPServer` class
@@ -25,11 +24,11 @@ This example demonstrates:
 4. Creating a prompt template for book recommendations
 5. Running the server asynchronously
 
-## Server Components 
+## Server Components
 
 ### Tools
 
-Tools in MCP Server expose callable functions to clients. Tools can be registered using the `@app.tool()` decorator, which follows the same patterns as described in the [Tools](./tools.md) documentation:
+Tools in MCP Server expose callable functions to clients. Tools can be registered using the `@app.tool()` decorator, which follows the same patterns as described in the [Tools](../tools.md) documentation:
 
 ```python
 --8<-- "examples/learn/mcp/server_decorators.py:12:26"
@@ -42,7 +41,7 @@ The `@app.tool()` decorator supports all the same functionality as the standard 
 - Tool configurations and validation
 - Computed fields and dynamic configuration
 
-See the [Tools documentation](.././tools.md) for more details on defining and using tools.
+See the [Tools documentation](../tools.md) for more details on defining and using tools.
 
 ### Resources
 
@@ -56,7 +55,7 @@ Resources support both synchronous and asynchronous functions, making them flexi
 
 ### Prompts
 
-Prompts define reusable message templates. They can be registered using the `@app.prompt()` decorator, which provides the same functionality as the standard Mirascope `@prompt_template` decorator described in the [Prompts](./prompts.md) documentation:
+Prompts define reusable message templates. They can be registered using the `@app.prompt()` decorator, which provides the same functionality as the standard Mirascope `@prompt_template` decorator described in the [Prompts](../prompts.md) documentation:
 
 ```python
 --8<-- "examples/learn/mcp/server_decorators.py:42:49"
@@ -71,7 +70,7 @@ The `@app.prompt()` decorator supports all the features of standard Mirascope pr
 - Format specifiers
 - Computed fields and dynamic configuration
 
-See the [Prompts documentation](.././prompts.md) for more details on creating and using prompts.
+See the [Prompts documentation](../prompts.md) for more details on creating and using prompts.
 
 ## Alternative Definition Style
 
@@ -88,7 +87,7 @@ This alternative style offers several advantages:
 3. **Easier Testing**: Functions can be tested in isolation before being registered with the server
 4. **Code Organization**: Related functions can be grouped together in separate modules
 
-The same applies for prompts defined with `@prompt_template` - see the [Prompts](.././prompts.md) documentation for more details about prompt reusability.
+The same applies for prompts defined with `@prompt_template` - see the [Prompts](../prompts.md) documentation for more details about prompt reusability.
 
 Both the decorator style and this alternative style are fully supported - choose the one that better fits your application's needs.
 
