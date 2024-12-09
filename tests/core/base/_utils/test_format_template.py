@@ -61,3 +61,10 @@ def test_format_template_with_list_format_spec() -> None:
         formatted_template
         == "Recommend books from one of the following genres:\nfantasy\nscifi"
     )
+
+
+def test_format_template_with_internal_tab() -> None:
+    """Tests the `format_template` function with internal tab."""
+    template = "output \text"
+    formatted_template = format_template(template, {})
+    assert formatted_template == "output \text"
