@@ -1,6 +1,6 @@
 """This module contains the `format_template` function."""
 
-import inspect
+from textwrap import dedent
 from typing import Any
 
 from ._get_template_values import get_template_values
@@ -18,7 +18,7 @@ def format_template(template: str, attrs: dict[str, Any]) -> str:
         The formatted template.
 
     """
-    dedented_template = inspect.cleandoc(template).strip()
+    dedented_template = dedent(template).strip()
     template_vars = get_template_variables(dedented_template, True)
 
     values = get_template_values(template_vars, attrs)
