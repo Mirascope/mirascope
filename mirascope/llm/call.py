@@ -99,7 +99,7 @@ def call(
         raise ValueError(f"Unsupported model: {model}")
 
     return call_factory(
-        model=model,
+        model=model_name,
         stream=stream,
         tools=tools,
         response_model=response_model,
