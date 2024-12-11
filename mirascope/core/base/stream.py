@@ -118,6 +118,7 @@ class BaseStream(
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
         call_kwargs: BaseCallKwargs[_ToolSchemaT],
+        provider: str | None = None,
     ) -> None:
         """Initializes an instance of `BaseStream`."""
         self.content = ""
@@ -133,6 +134,7 @@ class BaseStream(
         self.call_params = call_params
         self.call_kwargs = call_kwargs
         self.user_message_param = get_possible_user_message_param(messages)  # pyright: ignore [reportAttributeAccessIssue]
+        self.provider = provider or self._provider
 
     def __iter__(
         self,
@@ -274,6 +276,7 @@ def stream_factory(  # noqa: ANN201
     handle_stream_async: HandleStreamAsync[
         _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
+    provider: str | None = None,
 ):
     @overload
     def decorator(
@@ -337,7 +340,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-        partial_tools: bool,
+        partial_tools: bool = False,
     ) -> Callable[_P, BaseStream] | Callable[_P, Awaitable[BaseStream]]:
         if not is_prompt_template(fn):
             fn = cast(
@@ -397,6 +400,7 @@ def stream_factory(  # noqa: ANN201
                     messages=messages,
                     call_params=call_params,
                     call_kwargs=call_kwargs,
+                    provider=provider,
                 )
 
             return inner_async
@@ -447,6 +451,7 @@ def stream_factory(  # noqa: ANN201
                     messages=messages,
                     call_params=call_params,
                     call_kwargs=call_kwargs,
+                    provider=provider,
                 )
 
             return inner

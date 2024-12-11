@@ -64,6 +64,7 @@ def create_factory(  # noqa: ANN202
         _AsyncResponseChunkT,
         _BaseToolT,
     ],
+    provider: str | None = None,
 ):
     """Returns the wrapped function with the provider specific interfaces."""
 
@@ -193,6 +194,7 @@ def create_factory(  # noqa: ANN202
                     user_message_param=get_possible_user_message_param(messages),
                     start_time=start_time,
                     end_time=end_time,
+                    provider=provider
                 )
                 output._model = model
                 return output if not output_parser else output_parser(output)
@@ -237,6 +239,7 @@ def create_factory(  # noqa: ANN202
                     user_message_param=get_possible_user_message_param(messages),
                     start_time=start_time,
                     end_time=end_time,
+                    provider=provider
                 )
                 output._model = model
                 return output if not output_parser else output_parser(output)
