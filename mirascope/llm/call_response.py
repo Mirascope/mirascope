@@ -67,13 +67,7 @@ class CallResponse(
 
     @model_validator(mode="after")
     def _post_init_normalize(self) -> CallResponse[_ResponseT]:
-        provider_converter: type[BaseProviderConverter] | None = None
-        if self.provider == "openai":
-            from .providers.openai import OpenAIProviderConverter
-
-            provider_converter = OpenAIProviderConverter
-
-        if provider_converter:
+        if provider_converter := _get_provider_converter(self.provider):
             self._message_param = provider_converter.get_message_param(
                 self.provider_call_response.message_param
             )
