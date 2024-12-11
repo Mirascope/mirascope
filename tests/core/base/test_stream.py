@@ -18,7 +18,6 @@ def mock_stream_decorator_kwargs() -> dict:
         "json_mode": True,
         "client": MagicMock(),
         "call_params": MagicMock(),
-        "partial_tools": False,
     }
 
 
