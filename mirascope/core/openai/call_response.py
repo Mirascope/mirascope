@@ -16,7 +16,7 @@ from openai.types.chat import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
-from ..base import BaseCallResponse
+from ..base import BaseCallResponse, transform_tool_outputs
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -169,6 +169,7 @@ class OpenAICallResponse(
         return None
 
     @classmethod
+    @transform_tool_outputs
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[OpenAITool, str]]
     ) -> list[ChatCompletionToolMessageParam]:

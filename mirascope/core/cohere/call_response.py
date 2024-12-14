@@ -12,7 +12,7 @@ from cohere.types import (
 )
 from pydantic import SkipValidation, computed_field
 
-from ..base import BaseCallResponse
+from ..base import BaseCallResponse, transform_tool_outputs
 from ._utils import calculate_cost
 from .call_params import CohereCallParams
 from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
@@ -146,6 +146,7 @@ class CohereCallResponse(
         return None
 
     @classmethod
+    @transform_tool_outputs
     def tool_message_params(
         cls,
         tools_and_outputs: list[tuple[CohereTool, str]],

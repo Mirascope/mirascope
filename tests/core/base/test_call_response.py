@@ -1,11 +1,19 @@
 """Tests the `call_response` module."""
 
+import base64
+import json
+from typing import Any
 from unittest.mock import MagicMock, patch
 
-from mirascope.core.base.call_response import BaseCallResponse
+import pytest
+from pydantic import BaseModel
+
+from mirascope.core.base.call_response import BaseCallResponse, transform_tool_outputs
 
 
 def test_base_call_response() -> None:
+    """Tests the `BaseCallResponse` class."""
+
     class MyCallResponse(BaseCallResponse):
         @property
         def content(self) -> str:
@@ -32,3 +40,115 @@ def test_base_call_response() -> None:
     assert call_response.serialize_tool_types([tool], info=MagicMock()) == [
         {"type": "function", "name": "mock_tool"}
     ]
+
+
+class SimpleModel(BaseModel):
+    name: str
+    value: int
+
+
+class NestedModel(BaseModel):
+    simple: SimpleModel
+    values: list[int]
+
+
+@pytest.fixture
+def process_tools():
+    @transform_tool_outputs
+    def _process_tools(cls: Any, tools_and_outputs: list[tuple[Any, str]]) -> list[str]:
+        return [output for _, output in tools_and_outputs]
+
+    return _process_tools
+
+
+@pytest.mark.parametrize(
+    "input_value,expected",
+    [
+        ("string value", "string value"),
+        (42, "42"),
+        (3.14, "3.14"),
+        (True, "true"),
+        (b"binary data", base64.b64encode(b"binary data").decode("utf-8")),
+    ],
+)
+def test_transform_tool_outputs_primitive_types(
+    process_tools: Any, input_value: Any, expected: str
+) -> None:
+    tool = MagicMock()
+    result = process_tools(None, [(tool, input_value)])
+    assert result[0] == expected
+
+
+@pytest.mark.parametrize(
+    "input_model,expected_dict",
+    [
+        (SimpleModel(name="test", value=1), {"name": "test", "value": 1}),
+        (
+            NestedModel(simple=SimpleModel(name="nested", value=2), values=[1, 2, 3]),
+            {"simple": {"name": "nested", "value": 2}, "values": [1, 2, 3]},
+        ),
+    ],
+)
+def test_transform_tool_outputs_pydantic_models(
+    process_tools: Any, input_model: BaseModel, expected_dict: dict
+) -> None:
+    tool = MagicMock()
+    result = process_tools(None, [(tool, input_model)])
+    assert json.loads(result[0]) == expected_dict
+
+
+@pytest.mark.parametrize(
+    "container_type,input_value,expected_type",
+    [
+        ("list", ["string", 42, SimpleModel(name="item", value=3)], list),
+        (
+            "tuple",
+            ("string", 42, SimpleModel(name="item", value=3)),
+            list,
+        ),
+    ],
+)
+def test_transform_tool_outputs_containers(
+    process_tools: Any, container_type: str, input_value: Any, expected_type: type
+) -> None:
+    tool = MagicMock()
+    result = process_tools(None, [(tool, input_value)])
+    parsed = json.loads(result[0])
+    assert isinstance(parsed, expected_type)
+    assert parsed == ["string", 42, {"name": "item", "value": 3}]
+
+
+def test_transform_tool_outputs_sets(process_tools: Any) -> None:
+    tool = MagicMock()
+    result = process_tools(None, [(tool, {"string", 42, 3.14})])
+    parsed = json.loads(result[0])
+    assert isinstance(parsed, list)
+    assert set(parsed) == {"string", 42, 3.14}
+
+
+def test_transform_tool_outputs_nested_dictionaries(process_tools: Any) -> None:
+    """Tests the serialization of nested dictionaries."""
+
+    class NestedModel(BaseModel):
+        simple: SimpleModel
+        values: list[int]
+
+    tool = MagicMock()
+    result = process_tools(
+        None,
+        [(tool, {"simple": SimpleModel(name="test", value=1), "values": [1, 2, 3]})],
+    )
+    parsed = json.loads(result[0])
+    assert parsed == {"simple": {"name": "test", "value": 1}, "values": [1, 2, 3]}
+
+
+def test_transform_tool_outputs_unsupported_type(process_tools: Any) -> None:
+    """Tests the serialization of an unsupported type."""
+
+    class UnsupportedType:
+        pass
+
+    tool = MagicMock()
+    with pytest.raises(TypeError) as exc_info:
+        process_tools(None, [(tool, UnsupportedType())])
+    assert "Unsupported type for serialization" in str(exc_info.value)
