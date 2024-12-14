@@ -15,7 +15,7 @@ repos:
       - id: ruff-format
         files: "^mirascope|^tests|^examples|^docs"
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.389
+    rev: v1.1.390
     hooks:
       - id: pyright
   - repo: local
