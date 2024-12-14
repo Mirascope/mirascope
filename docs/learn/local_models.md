@@ -16,7 +16,7 @@ Please consult the links below to see what features are supported by your local 
 ## Usage 
 
 Ollama hosts its API locally, so all you need to do is overwrite the URL the OpenAI integration uses.
-This is easily done by passing a [custom client](./calls.md#custom-client) to the `@openai.call(client=custom_client)` decorator.
+This is easily done by passing a [custom client](./calls.md#custom-client) to the `@openai.call()` decorator, like shown below.
 
 !!! mira ""
 
