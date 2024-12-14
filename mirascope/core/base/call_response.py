@@ -50,42 +50,6 @@ JsonableType: TypeAlias = (
 )
 
 
-# def transform_tool_outputs(
-#     fn: Callable[[type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]], list[Any]],
-# ) -> Callable[
-#     [type[_BaseCallResponseT], list[tuple[_BaseToolT, JsonableType]]],
-#     list[Any],
-# ]:
-#     @wraps(fn)
-#     def wrapper(
-#         cls: type[_BaseCallResponseT],
-#         tools_and_outputs: list[tuple[_BaseToolT, JsonableType]],
-#     ) -> list[Any]:
-#         def recursive_serializer(value: JsonableType) -> str:
-#             if isinstance(value, str):
-#                 return value
-#             if isinstance(value, int | float | bool):
-#                 return json.dumps(value)
-#             if isinstance(value, bytes):
-#                 return base64.b64encode(value).decode("utf-8")
-#             if isinstance(value, BaseModel):
-#                 return value.model_dump_json()
-#             if isinstance(value, list | set | tuple):
-#                 serialized_items = [recursive_serializer(item) for item in value]
-#                 return json.dumps(serialized_items)
-#             if isinstance(value, dict):
-#                 serialized_dict = {k: recursive_serializer(v) for k, v in value.items()}
-#                 return json.dumps(serialized_dict)
-#             raise TypeError(f"Unsupported type for serialization: {type(value)}")
-
-#         transformed_tools_and_outputs = [
-#             (tool, recursive_serializer(output)) for tool, output in tools_and_outputs
-#         ]
-#         return fn(cls, transformed_tools_and_outputs)
-
-#     return wrapper
-
-
 def transform_tool_outputs(
     fn: Callable[[type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]], list[Any]],
 ) -> Callable[
