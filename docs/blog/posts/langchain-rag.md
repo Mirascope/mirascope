@@ -80,7 +80,7 @@ Next, we convert the preprocessed text chunks into **vector embeddings** using a
 
 Converting a chunk of text into an embedding means turning it into a numerical fingerprint that captures the semantic meaning of the text, which in turn helps us do [similarity-based searches](https://www.pinecone.io/learn/what-is-similarity-search/) to identify relevant information based on context rather than word matches.
 
-Keep in mind, though, we don’t have to use vectors — we could insert a knowledge graph (or use any other appropriate structure like a document store) — it’s just that vectors are efficient under certain circumstances, like when querying large volumes of unstructured data.
+Keep in mind, though, we don’t have to use vectors — we could insert a [knowledge graph](https://mirascope.com/blog/how-to-build-a-knowledge-graph/) (or use any other appropriate structure like a document store) — it’s just that vectors are efficient under certain circumstances, like when querying large volumes of unstructured data.
 
 For the actual task of converting chunks into vectors, we generally use the LLM’s own embedding models, and LangChain makes available wrappers for these like `OpenAIEmbedding`.
 
