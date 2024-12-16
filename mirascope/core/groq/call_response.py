@@ -14,7 +14,7 @@ from groq.types.chat import (
 from groq.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, computed_field
 
-from ..base import BaseCallResponse
+from ..base import BaseCallResponse, transform_tool_outputs
 from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
@@ -140,6 +140,7 @@ class GroqCallResponse(
         return None
 
     @classmethod
+    @transform_tool_outputs
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[GroqTool, str]]
     ) -> list[ChatCompletionToolMessageParam]:

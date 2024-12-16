@@ -28,7 +28,7 @@ from ._utils import (
 )
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
-from .call_response import BaseCallResponse
+from .call_response import BaseCallResponse, JsonableType
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .messages import Messages
@@ -217,7 +217,7 @@ class BaseStream(
         ...
 
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[_BaseToolT, str]]
+        self, tools_and_outputs: list[tuple[_BaseToolT, JsonableType]]
     ) -> list[_ToolMessageParamT]:
         """Returns the tool message parameters for tool call results.
 
@@ -337,7 +337,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-        partial_tools: bool,
+        partial_tools: bool = False,
     ) -> Callable[_P, BaseStream] | Callable[_P, Awaitable[BaseStream]]:
         if not is_prompt_template(fn):
             fn = cast(

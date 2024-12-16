@@ -1,8 +1,8 @@
 """Utility for pulling the `prompt_template` from a call or `BasePrompt`."""
 
-import inspect
 import os
 from collections.abc import Callable
+from textwrap import dedent
 
 from pydantic import BaseModel
 
@@ -25,4 +25,4 @@ def get_prompt_template(fn: Callable | BaseModel) -> str:
             "You must explicitly enable docstring prompt templates by setting "
             "`MIRASCOPE_DOCSTRING_PROMPT_TEMPLATE=ENABLED` in your environment."
         )
-    return inspect.cleandoc(doc)
+    return dedent(doc).strip()
