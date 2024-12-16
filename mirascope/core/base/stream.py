@@ -337,7 +337,7 @@ def stream_factory(  # noqa: ANN201
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-        partial_tools: bool,
+        partial_tools: bool = False,
     ) -> Callable[_P, BaseStream] | Callable[_P, Awaitable[BaseStream]]:
         if not is_prompt_template(fn):
             fn = cast(
