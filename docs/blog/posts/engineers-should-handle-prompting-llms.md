@@ -30,7 +30,8 @@ In fact, **trying to write out that logic in text would be even more complicated
 
 Below, we outline how we arrived at this truth, and how the solution we’ve developed (a Python-based LLM development library) helps developers manage prompts in the codebase easily and efficiently, making, in our experience, LLM app development faster and more enjoyable.
 
-## **Our Frustrations with Developer Tools for Prompt Engineering**
+## Our Frustrations with Developer Tools for Prompt Engineering
+
 Our view on prompting started as we were using an early version of the OpenAI SDK to build out interpretable machine learning tools at a previous company. This was the standard OpenAI API for accessing GPT model functionalities.
 
 Back then we didn’t have the benefit of any useful helper libraries, so we wrote all the API code ourselves. This amounted to writing lots of boilerplate to accomplish what seemed like simple tasks. For example, automatically extracting the model configuration (such as constraints) from just the name of the features in a given dataset. This required many prompt iterations and it was a pain to evaluate them.
@@ -47,7 +48,7 @@ Beyond that, we noticed some other issues:
 
 All this led us to rethink how prompts should be managed to make developers’ lives easier. In the end, these frustrations boiled over into us wanting to build our own library that approached LLM development in a developer-first way to make LLM app development faster and more enjoyable. This ultimately became [Mirascope](https://github.com/mirascope/mirascope).
 
-## **How Mirascope Makes Prompt Engineering Intuitive and Scalable**
+## How Mirascope Makes Prompt Engineering Intuitive and Scalable
 
 For us, prompt engineering boils down to the relationship between the prompt and the API call. Mirascope represents what we feel is a best-in-class approach for generating that prompt, taking the LLM response, and tracking all aspects of that flow.
 
