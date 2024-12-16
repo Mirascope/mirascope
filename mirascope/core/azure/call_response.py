@@ -14,7 +14,7 @@ from azure.ai.inference.models import (
 )
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
-from ..base import BaseCallResponse
+from ..base import BaseCallResponse, transform_tool_outputs
 from ._utils import calculate_cost
 from .call_params import AzureCallParams
 from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
@@ -158,6 +158,7 @@ class AzureCallResponse(
         return tool_message
 
     @classmethod
+    @transform_tool_outputs
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[AzureTool, str]]
     ) -> list[ToolMessage]:
