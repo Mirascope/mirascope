@@ -1,6 +1,6 @@
 import io
 import wave
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -72,9 +72,16 @@ def test_convert_message_sequence_part_to_content_part_with_document_part():
     assert result == input_value
 
 
-def test_convert_message_sequence_part_to_content_part_with_pil_image():
+@patch(
+    "mirascope.core.base._utils._convert_messages_to_message_params.pil_image_to_bytes",
+    new_callable=MagicMock,
+)
+def test_convert_message_sequence_part_to_content_part_with_pil_image(
+    mock_pil_image_to_bytes: MagicMock,
+):
+    mock_pil_image_to_bytes.return_value = b"image_bytes"
     mock_image_instance = Mock()
-    mock_image_instance.tobytes.return_value = b"image_bytes"
+    mock_image_instance.format = "PNG"
 
     from PIL import Image
 
@@ -86,10 +93,6 @@ def test_convert_message_sequence_part_to_content_part_with_pil_image():
         patch(
             "mirascope.core.base._utils._convert_messages_to_message_params.Image.Image",
             Mock,
-        ),
-        patch(
-            "mirascope.core.base._utils._convert_messages_to_message_params.get_image_type",
-            return_value="png",
         ),
         patch(
             "mirascope.core.base._utils._convert_messages_to_message_params.isinstance",
