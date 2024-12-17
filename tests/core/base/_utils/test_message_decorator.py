@@ -1,5 +1,5 @@
 from typing import Any, cast
-from unittest.mock import Mock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from PIL import Image
@@ -138,13 +138,14 @@ def test_base_message_param_return():
     assert result[0].content == "hello! recommend a fantasy book"
 
 
-@pytest.fixture
-def mock_image():
-    return Mock(spec=Image.Image)
-
-
-def test_multimodal_return(mock_image):
-    mock_image.tobytes.return_value = b"\xff\xd8\xff"  # JPEG magic number
+@patch(
+    "mirascope.core.base._utils._convert_messages_to_message_params.pil_image_to_bytes",
+    new_callable=MagicMock,
+)
+def test_multimodal_return(mock_pil_image_to_bytes: MagicMock):
+    mock_pil_image_to_bytes.return_value = b"image_bytes"
+    mock_image = MagicMock(spec=Image.Image)
+    mock_image.format = "PNG"
 
     @messages_decorator()
     def recommend_book(previous_book: Image.Image) -> list[Any]:
@@ -159,7 +160,7 @@ def test_multimodal_return(mock_image):
     assert len(result[0].content) == 3
     assert result[0].content[0] == TextPart(type="text", text="I just read this book:")
     assert result[0].content[1] == ImagePart(
-        type="image", media_type="image/jpeg", image=b"\xff\xd8\xff", detail=None
+        type="image", media_type="image/png", image=b"image_bytes", detail=None
     )
     assert result[0].content[2] == TextPart(
         type="text", text="What should I read next?"
