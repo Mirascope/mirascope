@@ -1,0 +1,6628 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn how advanced prompt engineering techniques like in-context learning and few-shot prompts can boost LLM performance and accuracy.
+">
+      
+      
+      
+        <link rel="canonical" href="https://mirascope.com/blog/advanced-prompt-engineering/">
+      
+      
+        <link rel="prev" href="../prompt-engineering-vs-fine-tuning/">
+      
+      
+        <link rel="next" href="../llm-evaluation/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.32">
+    
+    <meta name="keywords" content="prompt engineering, prompt management, LLM, AI">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+
+    
+      
+        <title>A Guide to Advanced Prompt Engineering - Mirascope</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3cba04c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../extra/tweaks.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-DJHT1QG9GK"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-DJHT1QG9GK",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-DJHT1QG9GK",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+      
+        <meta  property="og:type"  content="website" >
+      
+        <meta  property="og:title"  content="A Guide to Advanced Prompt Engineering - Mirascope" >
+      
+        <meta  property="og:description"  content="Learn how advanced prompt engineering techniques like in-context learning and few-shot prompts can boost LLM performance and accuracy.
+" >
+      
+        <meta  property="og:image"  content="https://mirascope.com/assets/images/social/blog/posts/advanced-prompt-engineering.png" >
+      
+        <meta  property="og:image:type"  content="image/png" >
+      
+        <meta  property="og:image:width"  content="1200" >
+      
+        <meta  property="og:image:height"  content="630" >
+      
+        <meta  property="og:url"  content="https://mirascope.com/blog/advanced-prompt-engineering/" >
+      
+        <meta  name="twitter:card"  content="summary_large_image" >
+      
+        <meta  name="twitter:title"  content="A Guide to Advanced Prompt Engineering - Mirascope" >
+      
+        <meta  name="twitter:description"  content="Learn how advanced prompt engineering techniques like in-context learning and few-shot prompts can boost LLM performance and accuracy.
+" >
+      
+        <meta  name="twitter:image"  content="https://mirascope.com/assets/images/social/blog/posts/advanced-prompt-engineering.png" >
+      
+    
+    
+<!-- Google Tag Manager -->
+<script>
+  (function (w, d, s, l, i) {
+    w[l] = w[l] || [];
+    w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+    var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s),
+      dl = l != "dataLayer" ? "&l=" + l : "";
+    j.async = true;
+    j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+    f.parentNode.insertBefore(j, f);
+  })(window, document, "script", "dataLayer", "GTM-T8PZJDKM");
+</script>
+<!-- End Google Tag Manager -->
+<!-- Begin Google Analytics -->
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-DJHT1QG9GK"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+
+  gtag("config", "G-DJHT1QG9GK");
+</script>
+<!-- End Google Analytics -->
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#a-guide-to-advanced-prompt-engineering" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Mirascope" class="md-header__button md-logo" aria-label="Mirascope" data-md-component="logo">
+      
+  <img src="../../assets/brandmark.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Mirascope
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              A Guide to Advanced Prompt Engineering
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18V6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-2.69L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Mirascope/mirascope/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mirascope
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../WELCOME/" class="md-tabs__link">
+          
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started/quickstart/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../learn/" class="md-tabs__link">
+          
+  
+  Learn
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../integrations/otel/" class="md-tabs__link">
+          
+  
+  Integrations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/core/anthropic/call/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Mirascope" class="md-nav__button md-logo" aria-label="Mirascope" data-md-component="logo">
+      
+  <img src="../../assets/brandmark.png" alt="logo">
+
+    </a>
+    Mirascope
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Mirascope/mirascope/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mirascope
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WELCOME/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome to Mirascope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WHY/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Why Use Mirascope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HELP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MIGRATE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migration Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started/structured_outputs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Structured Outputs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started/dynamic_configuration_and_chaining/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dynamic Configuration &amp; Chaining
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started/tools_and_agents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools &amp; Agents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More Advanced
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            More Advanced
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/text_classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/text_translation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/text_summarization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Text Summarization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/search_with_sources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Search with Sources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/llm_validation_with_retries/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLM Validation With Retries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/extract_from_pdf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Extracting from PDF
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/knowledge_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Knowledge Graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/generating_captions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generate Captions for an Image
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/pii_scrubbing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PII Scrubbing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/extraction_using_vision/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Extraction using Vision
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/code_generation_and_execution/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code Generation and Execution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/support_ticket_routing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Support Ticket Routing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/document_segmentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Document Segmentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/generating_synthetic_data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generate Synthetic Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/removing_semantic_duplicates/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Removing Semantic Duplicates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/speech_transcription/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transcribing Speech
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/query_plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query Plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/named_entity_recognition/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Named Entity Recognition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/more_advanced/o1_style_thinking/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    o1 Style Thinking
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Agents
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Agents
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/web_search_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Web Search Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/qwant_search_agent_with_sources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Qwant Search Agent with Sources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/blog_writing_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agent Executor: Blog Writing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/sql_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Generate SQL with LLM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/localized_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Localized Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/local_chat_with_codebase/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Local Chat with Codebase
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agents/documentation_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Prompt Engineering
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Prompt Engineering
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4_1" id="__nav_3_4_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Text Based
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Text Based
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/self_ask/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self-Ask
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/plan_and_solve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plan and Solve
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/contrastive_chain_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contrastive Chain of Thought
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/tabular_chain_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tabular Chain of Thought
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/chain_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chain of Thought
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/thread_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thread of Thought
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/rereading/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rereading
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/emotion_prompting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emotion Prompting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/rephrase_and_respond/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Rephrase and Respond
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/common_phrases/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Common Phrases (Prompt Mining)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/text_based/role_prompting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Role Prompting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4_2" id="__nav_3_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Chaining Based
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Chaining Based
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/self_refine/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self-Refine: Enhancing LLM Outputs Through Iterative Self-Improvement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/self_consistency/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self-Consistency: Enhancing LLM Reasoning with Multiple Outputs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/reverse_chain_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reverse Chain of Thought: Enhancing LLM Reasoning with Self-Reflection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/prompt_paraphrasing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prompt Paraphrasing: Generating Diverse Prompts for LLM Testing and Evaluation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/mixture_of_reasoning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mixture of Reasoning: Enhancing LLM Performance with Multiple Techniques
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/demonstration_ensembling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Demonstration Ensembling: Enhancing LLM Responses with Aggregated Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/chain_of_verification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chain of Verification: Enhancing LLM Accuracy through Self-Verification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/least_to_most/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Least to Most: Enhancing LLM Reasoning with Subproblem Decomposition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/diverse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DiVeRSe: Enhancing LLM Reasoning with Prompt Variations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/decomposed_prompting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Decomposed Prompting: Enhancing LLM Problem-Solving with Tool-Based Subproblems
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/system_to_attention/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System to Attention (S2A): Enhancing LLM Focus with Query Filtering
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/step_back/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Step-back Prompting: Enhancing LLM Reasoning with High-Level Questions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/skeleton_of_thought/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Skeleton of Thought: Enhancing LLM Response Speed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prompt_engineering/chaining_based/sim_to_m/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sim to M: Enhancing LLM Reasoning with Perspective-Taking
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Evaluations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Evaluations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/evals/evaluating_sql_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluating Generating SQL with LLM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/evals/evaluating_web_search_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluating Web Search Agent with LLM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/evals/evaluating_documentation_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluating Documentation Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    LangGraph vs. Mirascope
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            LangGraph vs. Mirascope
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/langgraph_vs_mirascope/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LangGraph Quickstart using Mirascope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Learn
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Learn
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/prompts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prompts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/calls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Calls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/streams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Streams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/chaining/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chaining
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/response_models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Response Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/json_mode/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    JSON Mode
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/output_parsers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output Parsers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/agents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Agents
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/evals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evals
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/async/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Async
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/retries/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Retries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_14" id="__nav_4_14_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Provider-Specific Features
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_14">
+            <span class="md-nav__icon md-icon"></span>
+            Provider-Specific Features
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/provider_specific_features/openai/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenAI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/provider_specific_features/anthropic/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Anthropic
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_15" id="__nav_4_15_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Extensions
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_15">
+            <span class="md-nav__icon md-icon"></span>
+            Extensions
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/extensions/middleware/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Middleware
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/extensions/custom_provider/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom LLM Provider
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_16" id="__nav_4_16_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    MCP - Model Context Protocol
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_16">
+            <span class="md-nav__icon md-icon"></span>
+            MCP - Model Context Protocol
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/mcp/server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learn/mcp/client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Integrations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Integrations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/otel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenTelemetry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/hyperdx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HyperDX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/logfire/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logfire
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/langfuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Langfuse
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Core
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            Core
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_1" id="__nav_6_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Anthropic
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Anthropic
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/anthropic/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_2" id="__nav_6_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Azure AI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Azure AI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/azure/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_3" id="__nav_6_1_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Base
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            Base
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/call_factory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_factory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/merge_decorators/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    merge_decorators
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/message_param/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    message_param
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/metadata/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    metadata
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/prompt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    prompt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/structured_stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    structured_stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/base/toolkit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolkit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_4" id="__nav_6_1_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Bedrock
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            Bedrock
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/bedrock/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_5" id="__nav_6_1_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Cohere
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            Cohere
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/cohere/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_6" id="__nav_6_1_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Gemini
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Gemini
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/gemini/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_7" id="__nav_6_1_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Groq
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            Groq
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/groq/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_8" id="__nav_6_1_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    LiteLLM
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_8">
+            <span class="md-nav__icon md-icon"></span>
+            LiteLLM
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/litellm/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_9" id="__nav_6_1_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Mistral
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_9">
+            <span class="md-nav__icon md-icon"></span>
+            Mistral
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/mistral/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_10" id="__nav_6_1_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    OpenAI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_10">
+            <span class="md-nav__icon md-icon"></span>
+            OpenAI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/openai/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1_11" id="__nav_6_1_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vertex AI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_6_1_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1_11">
+            <span class="md-nav__icon md-icon"></span>
+            Vertex AI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/call/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/call_params/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_params
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/call_response/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/call_response_chunk/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    call_response_chunk
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/dynamic_config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dynamic_config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/stream/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stream
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/core/vertex/tool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/web/duckduckgo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DuckDuckGo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/web/httpx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTPX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/web/parse_url_content/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ParseURLContent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/web/requests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Requests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/system/file_system/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FileSystem
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/tools/system/docker_operation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DockerOperation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Integrations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Integrations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/integrations/langfuse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Langfuse
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/integrations/logfire/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logfire
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/integrations/middleware/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Middleware
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/integrations/otel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OpenTelemetry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/integrations/tenacity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tenacity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prompts &amp; Notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../behind-the-scenes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Behind the Scenes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../library-updates/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Library Updates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../tips--inspiration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tips &amp; Inspiration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-prompt-engineering-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Prompt Engineering Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Prompt Engineering Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-in-context-learning-to-write-better-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use In-Context Learning to Write Better Prompts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use In-Context Learning to Write Better Prompts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-few-shot-prompts-to-teach-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Few-Shot Prompts to Teach the Model
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#define-clear-roles-to-set-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Define Clear Roles to Set Context
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#leverage-prompt-templates-for-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leverage Prompt Templates for Consistency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-calls-together-to-do-complex-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chain Calls Together to Do Complex Tasks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-prompts-to-track-and-iterate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Prompts to Track and Iterate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrate-data-from-external-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrate Data from External Sources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrate Data from External Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-automated-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Automated Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retrieval-augmented-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retrieval Augmented Generation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-advanced-prompting-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      6 Advanced Prompting Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6 Advanced Prompting Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rephrase-and-respond-rar" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Rephrase and Respond (RaR)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-chain-of-thought-cot" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Chain of Thought (CoT)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-self-ask-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Self-Ask Prompt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-tree-of-thought-tot" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Tree of Thought (ToT)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-chain-of-verification-cov" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Chain of Verification (CoV)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-self-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Self-Consistency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#achieve-precision-in-prompt-design-with-mirascope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Achieve Precision in Prompt Design with Mirascope
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://avatars.githubusercontent.com/u/99370834?v=4" alt="William Bakst">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/willbakst">William Bakst</a>
+                        
+                      </strong>
+                      <br>
+                      Creator
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2024-11-11 00:00:00" class="md-ellipsis">November 11, 2024</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../tips--inspiration/">Tips &amp; Inspiration</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              18 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+  
+  
+
+
+<h1 id="a-guide-to-advanced-prompt-engineering">A Guide to Advanced Prompt Engineering<a class="headerlink" href="#a-guide-to-advanced-prompt-engineering" title="Permanent link">&para;</a></h1>
+<p>Advanced prompt engineering – which usually involves techniques such as few-shot learning, multi-step reasoning, and sophisticated prompting – enriches prompts with greater context and guidance to get better answers from the language model.</p>
+<p>This is in contrast to basic prompting where you give the LLM simpler, direct instructions.</p>
+<p>The more complex the task, the greater the need to structure prompts to guide the model with reasoning steps, external information, and specific examples.</p>
+<p>Done right, advanced prompt engineering techniques let you do some pretty impressive things, for instance:</p>
+<ul>
+<li>Not only write about Ernest Hemingway but write <em>like</em> Hemingway.  </li>
+<li>Generate product descriptions solely from e-commerce images, automatically extracting features like color, size, and material.  </li>
+<li>Fact check a debate or conversation in real time by allowing agents to search multiple web sources and present the most accurate information with citations.  </li>
+<li>Troubleshoot internal IT issues using a bot that identifies common issues and suggests solutions from the company’s knowledge base.</li>
+</ul>
+<!-- more -->
+
+<p>The key is you can’t achieve these results (with today’s language models) with a simple request (i.e., a basic prompt), so your prompts will require thought, effort, and iteration, and (in many cases) a framework to orchestrate the model’s responses.</p>
+<p>This is where you need advanced prompt engineering, which some refer to as a new kind of programming. And we’d agree: at the very least, it’s programming in human rather than computer language, and requires thoughtful design and iteration.</p>
+<p>With that in mind, we created this guide to outline some techniques for writing advanced prompts more effectively to influence the model’s output.</p>
+<p>Our own interest in prompting, in order to build, refine, and experiment with LLM agents, began with our experiences using the first versions of the OpenAI SDK, which we found frustrating because of how much unnecessary boilerplate we felt we had to write. We also found other libraries at the time were not exactly production ready.</p>
+<p>This led us to design <a href="https://github.com/mirascope/mirascope">Mirascope</a>, a modular toolkit for interacting with language models and developing clean, well-organized queries.</p>
+<h2 id="advanced-prompt-engineering-strategies">Advanced Prompt Engineering Strategies<a class="headerlink" href="#advanced-prompt-engineering-strategies" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://mirascope.com/blog/prompt-engineering-best-practices">strategies</a> below guide LLMs to generate more accurate and context-aware outputs by embedding structures, examples, and external data modules into prompts.</p>
+<h3 id="use-in-context-learning-to-write-better-prompts">Use In-Context Learning to Write Better Prompts<a class="headerlink" href="#use-in-context-learning-to-write-better-prompts" title="Permanent link">&para;</a></h3>
+<p>The fact that API calls are stateless requires that we build full context directly into our generative AI prompts.</p>
+<p>This is where in-context learning comes into play: the model uses the information in the current prompt as temporary memory to understand the task at hand and to better predict the next words, phrases, or sentences in its responses.</p>
+<p>This means you can add a few examples of, say, sentiment analysis in your prompt, and the model will infer that it needs to do sentiment analysis on a new piece of text without your explicit instruction.</p>
+<p>Below, we show different ways to incorporate in-context learning in your prompts.</p>
+<h4 id="use-few-shot-prompts-to-teach-the-model">Use Few-Shot Prompts to Teach the Model<a class="headerlink" href="#use-few-shot-prompts-to-teach-the-model" title="Permanent link">&para;</a></h4>
+<p>In few-shot prompting, you send multiple examples (i.e, “input-output pairs”) showing the format or pattern in which you want the natural language model to answer.</p>
+<p>This allows the model to generalize task requirements so it can leverage its existing knowledge to accomplish different tasks.</p>
+<p>In this few-shot prompt, we include several examples of classifying customer feedback as either positive or negative:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Instruction:
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>You are tasked with performing sentiment analysis on customer feedback regarding the customer service department of a corporate food catering company. Your goal is to classify whether the sentiment expressed in the feedback is &quot;positive&quot; or &quot;negative.&quot; Below are several examples of feedback along with their corresponding sentiment classifications to guide your understanding of the task. After reviewing these examples, classify the sentiment of the new feedback provided. Respond only with &quot;positive&quot; or &quot;negative.&quot;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Examples:
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>1. &quot;The customer service representative was incredibly helpful! They quickly resolved my issue and made sure I was satisfied with the outcome.&quot;
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>Sentiment: positive
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>2. &quot;I’ve been trying to reach the customer support team for days, and no one has responded. This is unacceptable.&quot;
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>Sentiment: negative
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>3. &quot;The team was very attentive to our needs and made sure we had everything set up for our event. It was a pleasure working with them.&quot;
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>Sentiment: positive
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>4. &quot;The service was delayed, and the representative I spoke to was rude. I won’t be using this catering service again.&quot;
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>Sentiment: negative
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>Now, analyze the sentiment of the following feedback:
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>&quot;The support team was polite but took way too long to get back to me. It made planning much more stressful than it should have been.&quot;
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>Classify the sentiment of the feedback:
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a># Output: negative
+</code></pre></div>
+<p>The examples clarify the instructions by providing further details on how the model should classify customer sentiment.</p>
+<h4 id="define-clear-roles-to-set-context">Define Clear Roles to Set Context<a class="headerlink" href="#define-clear-roles-to-set-context" title="Permanent link">&para;</a></h4>
+<p>Specifying roles you want the model to assume, like AI assistant, technical advisor, or a creative persona like a novelist, also helps guide its tone, style, and output to better match your task.</p>
+<p>For instance, you can describe roles in prompts for fitness advice or creative writing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>You are a professional fitness coach with extensive experience in helping individuals improve their endurance. Based on this expertise, create a personalized cardio workout plan that minimizes joint strain.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>You are a novelist known for your vivid descriptions and deep character development. Write an engaging opening paragraph for a mystery novel, set in a small coastal town, where a sudden disappearance shocks the close-knit community.
+</code></pre></div>
+<p>In a programmatic context, roles offer a structured way to manage interactions and maintain clear context over multiple exchanges.</p>
+<p>So you could specify roles such as SYSTEM, USER, and ASSISTANT to further refine the interaction by setting different responsibilities and behaviors for each role. For example:</p>
+<ul>
+<li>SYSTEM indicates the role or expertise the model should embody.  </li>
+<li>USER defines the input provided by the user.  </li>
+<li>ASSISTANT specifies the response expected from the model.</li>
+</ul>
+<p>Below, we prompt the SYSTEM to assume the role of an insightful fitness coach, the USER to express feedback and specific workout preferences, and the ASSISTANT to provide personalized, low-impact cardio recommendations based on the USER’s past experiences and physical limitations:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>SYSTEM
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>You are the world’s most insightful fitness coach, known for creating personalized workout routines that align with individual goals, fitness levels, and unique physical needs. When giving advice, always consider the user’s past workouts, preferences, and any physical limitations. Provide detailed explanations for each recommendation, including how it benefits the user’s specific goals.
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>USER:
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Can you suggest a HIIT workout for endurance?
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>ASSISTANT:
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Given your previous mention of knee discomfort, I recommend a modified low-impact HIIT routine that reduces joint strain. We can use exercises like cycling or swimming intervals that provide cardio benefits without the high impact on your knees.
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>USER:
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>That sounds good. Now, can you suggest a low-impact cardio routine for improving endurance?
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>ASSISTANT:
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>For improving endurance while minimizing knee strain, I suggest a low-impact routine focused on brisk walking or swimming. Both provide excellent cardiovascular benefits with minimal joint impact. I can also include some gentle strength exercises to build supporting muscles around your knees.
+</code></pre></div>
+<p>Such roles define the structure and expectations of the conversation to a higher degree and are usually <a href="https://mirascope.com/learn/prompts">used in conjunction with code</a> that dynamically manages the flow of interactions, ensuring consistent responses tailored to user inputs and context.</p>
+<h4 id="leverage-prompt-templates-for-consistency">Leverage Prompt Templates for Consistency<a class="headerlink" href="#leverage-prompt-templates-for-consistency" title="Permanent link">&para;</a></h4>
+<p>A prompt template is a reusable set of instructions that can be customized with specific details each time it's used. Instead of rewriting the entire prompt, you can simply fill in the template with the necessary information, ensuring consistency across prompts.</p>
+<p>In a coding context, you can add placeholders like <code>{variable}</code> to alter specific parts of the instruction during runtime (i.e., prompt execution) to allow automatic insertion of values into the prompt, like user input or context-specific information, while allowing the main instruction to stay the same.</p>
+<p>For example, you can experiment with the prompt below by specifying values for <code>{diet_type}</code>, such as “keto,” “vegan,” or “gluten free”:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>You are a nutritionist specializing in creating personalized meal plans. Based on the {diet_type} diet, suggest a healthy meal plan for the day.
+</code></pre></div>
+<p>At runtime the variable is resolved to the defined value and the entire prompt is sent to the LLM as text:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>You are a nutritionist specializing in creating personalized meal plans. Based on the vegan diet, suggest a healthy meal plan for the day.
+</code></pre></div>
+<p>Prompt templates help maintain a consistent format across your interactions, reducing the risk of variability or ambiguity in the prompt structure and making the model’s outputs more predictable.</p>
+<p>For good reason, the usage of prompt templates is widespread among many advanced prompt engineering libraries and frameworks such as <a href="https://mirascope.com/blog/langchain-prompt-template">LangChain</a>.</p>
+<p>For those applying prompt engineering in code, Mirascope offers an easy way to <a href="https://mirascope.com/learn/prompts">bind prompt templates</a> to functions and classes.</p>
+<h4 id="chain-calls-together-to-do-complex-tasks">Chain Calls Together to Do Complex Tasks<a class="headerlink" href="#chain-calls-together-to-do-complex-tasks" title="Permanent link">&para;</a></h4>
+<p>Prompt chaining, a popular prompting method, involves breaking down a large, multifaceted prompt into smaller, more manageable sub-tasks to be implemented in sequence.</p>
+<p>Each subtask is a prompt with its own LLM call, so the output of one call becomes input to the next. This allows the model to fully process the refined outputs of each intermediate step before proceeding to the next, leading to more accurate and coherent final results.</p>
+<p>For example, say you need to summarize a very lengthy legal document and then analyze whether certain clauses align with recent case law.</p>
+<p>With chaining, rather than entering both tasks in a single query (especially considering the length of the document), you’d first prompt the model to summarize the document itself to produce a more concise representation of its key points. After reviewing the output, you might then ask the model to analyze specific clauses using the summary as context.</p>
+<p>The summary serves as a clean input to the next task, allowing the model to focus on the legal analysis rather than juggling both tasks at once:</p>
+<p>First prompt:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Summarize the following contract in no more than three sentences: [Insert contract text].
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>The contract is a service agreement between Company A and Company B. It outlines the scope of services, payment terms, and termination conditions. Company B agrees to provide IT support for a period of one year, subject to renewal [...rest of summary].
+</code></pre></div>
+<p>Second prompt (chained to the output of the first prompt):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Based on the summary provided, does the termination clause align with recent case law regarding service contracts in California?
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>The termination clause in the summary seems to be a standard provision, but recent case law in California has indicated that service contracts must allow for a minimum 30-day notice period. You should verify if the contract specifies this time frame.
+</code></pre></div>
+<p>The above prompts show the basics of how prompt chaining works, but for those interested in intuitive ways of chaining LLM calls, Mirascope allows you to use <a href="https://mirascope.com/blog/prompt-chaining">computed fields and functions</a>.</p>
+<h3 id="version-prompts-to-track-and-iterate">Version Prompts to Track and Iterate<a class="headerlink" href="#version-prompts-to-track-and-iterate" title="Permanent link">&para;</a></h3>
+<p>It’s helpful to use version control to keep a clear record of changes and revert to earlier prompts if necessary.</p>
+<p>We recommend using a <a href="https://mirascope.com/blog/prompt-versioning">prompt management system</a> to track and document changes, compare different versions, and easily revert to previous iterations.</p>
+<p>Using version control also allows you to maintain separate prompt versions across different models so you can customize prompts for each model’s unique capabilities or context.</p>
+<p>An example of a prompt versioning system is <a href="https://lilypad.so/docs">Lilypad</a>, which you can download and install in your local workspace. In Lilypad, every LLM call is automatically versioned and traced for you so you don't have to worry about manually managing your prompts.</p>
+<h3 id="integrate-data-from-external-sources">Integrate Data from External Sources<a class="headerlink" href="#integrate-data-from-external-sources" title="Permanent link">&para;</a></h3>
+<p>Adding data from external systems and applications allows LLMs to move beyond simple text generation and do more in-depth, complex operations based on dynamic, real-world inputs.</p>
+<p>Models then become capable of retrieving real-time data, executing intricate workflows, and making informed decisions based on specific use cases and situational data.</p>
+<p>When building LLM-driven applications, it might be necessary to use <a href="https://mirascope.com/blog/llm-orchestration">data orchestration</a> to coordinate flows between the model’s inputs and external systems, and to ensure the desired output is appropriately routed or processed.</p>
+<p>This can mean connecting to databases, leveraging APIs, or pulling in real-time information from external applications — all while maintaining the integrity and relevance of the data to the user’s needs.</p>
+<p>Below are two popular applications incorporating external data:</p>
+<h4 id="use-automated-search">Use Automated Search<a class="headerlink" href="#use-automated-search" title="Permanent link">&para;</a></h4>
+<p>Large language models can tap into external tools and data sources like news databases, weather services, or custom APIs via search queries driven by user inputs.</p>
+<p>Being able to access the most recent information improves the accuracy of the model’s response and allows it to respond with precise details that may not be available within its pre-trained, existing knowledge.</p>
+<p>Our tutorial on <a href="https://mirascope.com/tutorials/agents/web_search_agent/">building a web search agent</a> that uses DuckDuckGo to find information relating to your queries provides more details about how automated search works.</p>
+<h4 id="retrieval-augmented-generation">Retrieval Augmented Generation<a class="headerlink" href="#retrieval-augmented-generation" title="Permanent link">&para;</a></h4>
+<p>Unlike web search, knowledge prompting through retrieval augmented generation (RAG) provides answers using a specific knowledge base.</p>
+<p>On the one hand, answers from RAG are confined to both the LLM’s own knowledge and that of the attached database. On the other, RAG gives you highly relevant and accurate information for domain-specific queries.</p>
+<p>RAG enables all kinds of applications. For instance, RAG could be implemented as a front-line chatbot assisting customers by retrieving policy-specific information and answering questions.</p>
+<p>The basic mechanism of how RAG works is this. Factual information from the knowledge base is incorporated into the prompt to enrich it contextually and to improve the quality of responses while drastically reducing hallucinations.</p>
+<p>The broad steps in this pipeline are:</p>
+<ol>
+<li>First, identify the information or datasets for the RAG to use. This will usually be unstructured, like blog articles, PDFs, and image files. Prepare the content for the next step by parsing it and splitting it into logical sections, and chunking it into sections suitable for encoding it into vectors (if you’re using vectorization in the first place).  </li>
+<li>Encode the chunks into vectors using an embedding model. Embedding models convert text or other data into numerical representations that capture the semantic meaning of the content, which allows the system to efficiently analyze and compare relationships between different pieces of information.  </li>
+<li>Load the vectorized content into a central repository or database, often referred to as a vector store.  </li>
+<li>When a user submits a query, the system similarly encodes it as a vector, which it then matches with the archived content in the vector store using a search algorithm (e.g.,  cosine similarity or dot product).</li>
+<li>The system retrieves the content and combines it with the user’s query as a prompt to send to the language model. This is what we refer to as a contextually enriched prompt; it gives the model more complete information to consider than a single question.</li>
+</ol>
+<p>For detailed information on how RAG works, our blog post on <a href="https://mirascope.com/blog/llm-pipeline">building LLM pipelines</a> shows how to set this up using Mirascope’s advanced prompt engineering features.</p>
+<h2 id="6-advanced-prompting-techniques">6 Advanced Prompting Techniques<a class="headerlink" href="#6-advanced-prompting-techniques" title="Permanent link">&para;</a></h2>
+<p>Below we explore six <a href="https://mirascope.com/blog/prompt-engineering-examples">sophisticated techniques</a> for improving model reasoning, consistency, and ability to modify its approach based on the prompt or task at hand:</p>
+<ul>
+<li>Rephrase and Respond (RaR)  </li>
+<li>Chain of Thought (CoT)  </li>
+<li>Self-Ask  </li>
+<li>Tree of Thought (ToT)  </li>
+<li>Chain of Verification  </li>
+<li>Self-Consistency</li>
+</ul>
+<h3 id="1-rephrase-and-respond-rar">1. Rephrase and Respond (RaR)<a class="headerlink" href="#1-rephrase-and-respond-rar" title="Permanent link">&para;</a></h3>
+<p>A prompt that gets the model to think through a problem step by step is rephrase and respond, where you first ask it to rephrase and expand on a question before providing its response.</p>
+<p>This allows the model to better understand and clarify the original query, especially if the prompt is vague or lacks detail.</p>
+<p>In the example below, we start with a rather brief and unclear prompt. By using RaR, the model rephrases the question before responding.</p>
+<p>First prompt:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>A coin is heads up. Aluino flips the coin. Arthur flips the coin. Is the coin still heads up? Flip means reverse. Rephrase and expand the question, and respond
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>A coin starts with the heads side facing up. If Aluino flips the coin, it will land with the tails side facing up. Then Arthur flips the coin again. After these two sequences of flips, can we say that the coin is still heads up?
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>To analyze the scenario, let’s break down the actions step by step:
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>1. Initial State: The coin starts with the heads side facing up.
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>2. Aluino Flips the Coin: When Aluino flips the coin, it reverses its position. Since the coin initially was heads up, after Aluino’s flip, the coin will now be tails up.
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>3. Arthur Flips the Coin: Next, Arthur takes his turn to flip the coin. Given that the current state of the coin is tails up, flipping it will reverse it again, resulting in the coin now being heads up.
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>At the end of these actions, after both Aluino and Arthur have flipped the coin, the final state of the coin is heads up once more.
+</code></pre></div>
+<p>You can also see a version of this <a href="https://mirascope.com/tutorials/prompt_engineering/text_based/rephrase_and_respond/">RaR prompt in Python</a> in our code tutorials.</p>
+<h3 id="2-chain-of-thought-cot">2. Chain of Thought (CoT)<a class="headerlink" href="#2-chain-of-thought-cot" title="Permanent link">&para;</a></h3>
+<p>Chain-of-thought prompting encourages the model to break a problem down into smaller, logical steps for separate consideration rather than just providing the answer immediately.</p>
+<p>This mirrors how a human might tackle a complex problem, and is effective for tasks requiring critical thinking, like math, reasoning tasks, and problem-solving scenarios.</p>
+<p>You’re basically asking the model to think aloud and explain each step of the process leading to the final answer.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Olivia has $23. She bought five bagels for $3 each. How much money does she have left? Let&#39;s think step by step.
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>First, let’s determine how much money Olivia spent on the bagels:
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Price of one bagel = $3
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Number of bagels = 5
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Total cost of the bagels = $3 × 5 = $15
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>Now, let’s subtract the total cost from Olivia’s initial amount:
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>Olivia started with $23
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>She spent $15
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>Amount left = $23 - $15 = $8
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>So, Olivia has $8 left after buying the bagels.
+</code></pre></div>
+<p>You can also check out our code tutorial for creating both zero- and few-shot variants of <a href="https://mirascope.com/tutorials/prompt_engineering/text_based/chain_of_thought/">CoT prompts</a> using Mirascope.</p>
+<h3 id="3-self-ask-prompt">3. Self-Ask Prompt<a class="headerlink" href="#3-self-ask-prompt" title="Permanent link">&para;</a></h3>
+<p>This prompt encourages the model to process complex queries by asking itself clarifying questions, which it in turn answers step by step before arriving at the final conclusion.</p>
+<p>Self-ask is great for tackling ambiguous or multi-faceted questions, ensuring the model considers all relevant aspects before responding.</p>
+<p>Compared with CoT, Self-Ask is more focused on questioning and clarifying ambiguities before answering, since it prompts the model to identify gaps in understanding or missing details.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Using the Self-Ask method, when does monsoon season end in the state where area code 575 is located? If follow-up questions are needed, please ask and answer them before providing the final answer.
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Are follow-up questions needed here: Yes.
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Follow-up question: Which state is area code 575 located in?
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>Intermediate answer: The area code 575 is located in New Mexico.
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>Follow-up question: When does monsoon season end in New Mexico?
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>Intermediate answer: Monsoon season in New Mexico typically ends in mid-September.
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>Final Answer: Monsoon season in the state where area code 575 is located (New Mexico) typically ends in mid-September.
+</code></pre></div>
+<p>Our <a href="https://mirascope.com/tutorials/prompt_engineering/text_based/self_ask/">self-ask prompt coding recipe</a> shows you how to implement both basic and enhanced (with dynamic example selection) versions.</p>
+<h3 id="4-tree-of-thought-tot">4. Tree of Thought (ToT)<a class="headerlink" href="#4-tree-of-thought-tot" title="Permanent link">&para;</a></h3>
+<p>A <a href="https://mirascope.com/blog/llm-prompt">Tree-of-Thought Prompt</a> allows a language model to explore multiple potential solutions or reasoning paths for a given task, rather than follow a single line of reasoning.</p>
+<p>ToT prompts the model to evaluate different approaches and weigh the pros and cons of each in order to choose the optimal optimal solution. This enlists the model’s problem-solving capabilities by letting it consider a variety of options before arriving at the final answer.</p>
+<p>This method’s problem-solving approach has three steps:</p>
+<ol>
+<li>Generate different approaches to solving a problem.  </li>
+<li>Evaluate the merits of each approach, considering both the advantages and disadvantages.  </li>
+<li>Discard less viable paths and converge on the best solution based on its evaluation.</li>
+</ol>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Design a new smartphone model for the mid-range market. Generate at least three different design approaches, evaluating the pros and cons of each, and then recommend the best design based on your analysis.
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Approach 1: Minimalist Design
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Pros: Simple, sleek design with fewer distractions. Lower production costs due to fewer components. Appeals to users who prefer clean, user-friendly interfaces.
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>Cons: Lacks premium features that may attract tech enthusiasts. Limited room for differentiation from other brands. May not appeal to customers who prioritize cutting-edge technology.
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>Approach 2: Camera-Centric Design
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>Pros: High-quality camera system with multiple lenses and advanced AI features for photography. Appeals to users who prioritize mobile photography and content creation. Strong marketing potential through the camera&#39;s performance.
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>Cons: Higher production costs due to the advanced camera hardware. Might sacrifice other features like battery life or overall performance. May alienate customers who don&#39;t prioritize camera quality.
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>Approach 3: Battery Life and Durability Focus
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>Pros: Large battery for extended usage, rugged build for durability, and water resistance. Appeals to users who need a reliable device for work, travel, or outdoor activities. Differentiates itself from other models based on reliability.
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>Cons: Bulky design, which may not be aesthetically appealing. Sacrifices some of the cutting-edge features like high refresh rate displays or advanced camera systems.
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>Final Conclusion:
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>After evaluating the pros and cons, the Camera-Centric Design seems the best option for the mid-range market. While it comes at a slightly higher cost, the advanced camera features will appeal to content creators and tech enthusiasts, making it a strong differentiator in a competitive space.
+</code></pre></div>
+<h3 id="5-chain-of-verification-cov">5. Chain of Verification (CoV)<a class="headerlink" href="#5-chain-of-verification-cov" title="Permanent link">&para;</a></h3>
+<p>This prompt improves an LLM’s response accuracy by implementing a self-verification process:</p>
+<ul>
+<li>After the LLM provides an initial answer to a query, the Chain of Verification prompts the model to create a set of verification questions based on the key facts in the initial response. These questions are designed to ensure that each piece of information provided is factually accurate and relevant to the original query.  </li>
+<li>Each verification question is then answered separately by the LLM, which "fact-checks" the original response. The answers to these questions help determine if the initial answer was correct or contained any errors.  </li>
+<li>Once the verification process is complete, the model uses the results from the fact-checking step to revise the initial response, ensuring the final answer is more accurate and reliable. If the verification reveals any errors, they are corrected in the final output.</li>
+</ul>
+<p>CoV is focused on post-answer validation, revisiting the model’s initial output and systematically checking the facts rather than just reasoning through the process.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>List five famous scientists and their primary field of contribution. Please make sure that all the facts are verified correctly by generating and answering verification questions for each scientist&#39;s field of contribution. After the verification process, update the list with any necessary corrections. This is very important.
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>Preliminary List of Scientists and Their Fields:
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>- Albert Einstein - Physics (Theory of Relativity)
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>- Marie Curie - Chemistry/Physics (Radioactivity)
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>- Isaac Newton - Physics/Mathematics (Classical Mechanics, Laws of Motion)
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>- Charles Darwin - Biology (Theory of Evolution)
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>- Niels Bohr - Physics (Quantum Mechanics)
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>Verification Questions
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>1. Albert Einstein:
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>Question: Is Einstein primarily known for contributions in the field of physics, specifically for his development of the theory of relativity?
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>Expected Answer: Yes, Einstein is renowned for his theories of special and general relativity, which revolutionized our understanding of space, time, and gravity.
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>2. Marie Curie:
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>Question: Did Marie Curie primarily contribute to both chemistry and physics through her pioneering work on radioactivity?
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>Expected Answer: Yes, Marie Curie won two Nobel Prizes—one in Physics (1903) for her work on radioactivity and one in Chemistry (1911) for her discovery of radium and polonium.
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>3. Isaac Newton:
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>Question: Is Newton’s primary contribution in the field of physics and mathematics, particularly with regard to the laws of motion and universal gravitation?
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>Expected Answer: Yes, Isaac Newton is most famous for his laws of motion and the law of universal gravitation, which laid the foundation for classical mechanics.
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>4. Charles Darwin:
+<a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a>Question: Is Darwin best known for his contributions to biology through his theory of evolution by natural selection?
+<a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>Expected Answer: Yes, Charles Darwin&#39;s theory of evolution by natural selection is a cornerstone of modern biology.
+<a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a>5. Niels Bohr:
+<a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a>Question: Did Niels Bohr primarily contribute to the field of physics, particularly in the development of quantum mechanics and the structure of the atom?
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a>Expected Answer: Yes, Niels Bohr made significant contributions to the development of quantum mechanics and the understanding of atomic structure, particularly with his model of the atom.
+<a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a>
+<a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a>Verified List of Scientists and Their Fields:
+<a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a>- Albert Einstein - Physics (Theory of Relativity)
+<a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a>- Marie Curie - Chemistry/Physics (Radioactivity)
+<a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a>- Isaac Newton - Physics/Mathematics (Classical Mechanics, Laws of Motion)
+<a id="__codelineno-18-29" name="__codelineno-18-29" href="#__codelineno-18-29"></a>- Charles Darwin - Biology (Theory of Evolution)
+<a id="__codelineno-18-30" name="__codelineno-18-30" href="#__codelineno-18-30"></a>- Niels Bohr - Physics (Quantum Mechanics, Atomic Structure)
+</code></pre></div>
+<p>See our <a href="https://mirascope.com/tutorials/prompt_engineering/chaining_based/chain_of_verification/">coding tutorial</a> for a complete example of building a CoV prompt using Python.</p>
+<h3 id="6-self-consistency">6. Self-Consistency<a class="headerlink" href="#6-self-consistency" title="Permanent link">&para;</a></h3>
+<p>The self-consistency technique generates multiple answers through CoT prompting and then selects the most common or consistent answer.</p>
+<p>This approach ensures accuracy and reliability, particularly in tasks involving complex reasoning like mathematics or symbolic problems.</p>
+<p>How it works:</p>
+<ol>
+<li>The LLM generates multiple responses to a single query, where each response is derived through a CoT reasoning process.  </li>
+<li>The model then selects the most frequent answer from these multiple outputs, assuming that the most common answer is likely to be the most accurate. This avoids the risk of the model making an isolated error or generating a less accurate outlier.</li>
+</ol>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Olivia has $23. She bought five bagels for $3 each. How much money does she have left? Please solve this problem by thinking step by step. Generate multiple answers using different approaches or considerations. After generating several responses, select the most frequent answer and explain why it is the best choice.
+</code></pre></div>
+<p>Response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Step-by-step analysis:
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Approach 1: Direct Subtraction Method
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>1. Initial money: Olivia has $23.
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>2. Cost of one bagel: Each bagel costs $3.
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>3. Total number of bagels: She buys 5 bagels.
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>4. Total cost of the bagels: 5 x 3 = 15 dollars.
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>5. Remaining money: 23 − 15 = 8 dollars.
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>Approach 2: Grouping method
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>1. Initial money: Olivia starts with $23.
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>2. Break down the expenses:
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>- Buying two bagels: 2 × 3 = 6 dollars.
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>- Buying three more bagels: 3 × 3 = 9 dollars.
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>3. Total cost: 6 + 9 = 15 dollars.
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>4. Remaining money: 23 − 15 = 8 dollars.
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>Approach 3: Counting backward
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>1. Start with $23.
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>2. Subtract $3 for each bagel:
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>- After buying the first bagel: 23 − 3 = 20.
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a>- After the second bagel: 20 − 3 = 17.
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>- After the third bagel: 17 − 3 =14.
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>- After the fourth bagel: 14 − 3 = 11.
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>- After the fifth bagel: 11 − 3 = 8.
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>3. Olivia has $8 left.
+<a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>Approach 4: Algebraic approach
+<a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a>Let x represent Olivia’s remaining money after buying 5 bagels.
+<a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a>1. Initial amount: $23.
+<a id="__codelineno-20-27" name="__codelineno-20-27" href="#__codelineno-20-27"></a>2. Total cost: 3 × 5 = 15 dollars.
+<a id="__codelineno-20-28" name="__codelineno-20-28" href="#__codelineno-20-28"></a>3. Equation: 23 − 15 = x.
+<a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a>4. Solve for x:x = 8.
+<a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a>Answer Evaluation:
+<a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a>All four approaches conclude that Olivia has $8 left.
+<a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a>Conclusion:
+<a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a>The most frequent and correct answer is $8. All approaches, whether direct subtraction, grouping, counting backward, or algebraic reasoning, reach the same result because they all properly account for the $15 spent on the bagels. This consistency makes $8 the best and accurate answer.
+</code></pre></div>
+<p>Our coding tutorial shows you how to construct both a basic version of the <a href="https://mirascope.com/tutorials/prompt_engineering/chaining_based/self_consistency/">self-consistency prompt</a>, as well as using automated answer extraction.</p>
+<h2 id="achieve-precision-in-prompt-design-with-mirascope">Achieve Precision in Prompt Design with Mirascope<a class="headerlink" href="#achieve-precision-in-prompt-design-with-mirascope" title="Permanent link">&para;</a></h2>
+<p>Ready to build smarter, more effective prompts? Mirascope allows you to construct advanced prompts for artificial intelligence applications using the Python you already know, and without needing to learn new, complex abstractions. Get started quickly building LLM-powered agents with our lightweight, modular toolkit.</p>
+<p>You can find Mirascope code samples and tutorials both on our <a href="https://mirascope.com">documentation site</a> and on our <a href="https://github.com/mirascope/mirascope">GitHub page</a>.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../prompt-engineering-vs-fine-tuning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Comparing Prompt Engineering vs Fine-Tuning">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Comparing Prompt Engineering vs Fine-Tuning
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../llm-evaluation/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview of LLM Evaluation Metrics and Approaches">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Overview of LLM Evaluation Metrics and Approaches
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2023 Mirascope, Inc.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Mirascope" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/WilliamBakst" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/wbakst/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "content.code.link", "navigation.footer", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.sections", "search.highlight", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.471ce7a9.min.js"></script>
+      
+    
+  </body>
+</html>
