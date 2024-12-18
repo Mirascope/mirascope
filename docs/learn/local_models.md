@@ -3,10 +3,10 @@ search:
   boost: 3
 ---
 
-# Local Models
+# Open-Source Models
 
-Many local model host (like [Ollama](https://github.com/ollama/ollama) & [vLLM](https://github.com/vllm-project/vllm)) have compatibility to the OpenAI API.
-This allows you to use all of their features via the OpenAi integration, but not all OpenAi features are available.
+Many local open-source model hosts (like [Ollama](https://github.com/ollama/ollama) & [vLLM](https://github.com/vllm-project/vllm)) have compatibility to the OpenAI API.
+This allows you to use all of their features via the OpenAI integration, but not all OpenAI features are available.
 
 For most usecases this should suffice. In Ollama, there is support for structures responses, vision, tools, and streaming - just to name a few.
 
