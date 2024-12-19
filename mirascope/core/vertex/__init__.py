@@ -12,6 +12,7 @@ from .call_params import VertexCallParams
 from .call_response import VertexCallResponse
 from .call_response_chunk import VertexCallResponseChunk
 from .dynamic_config import VertexDynamicConfig
+from .models import VertexModels
 from .stream import VertexStream
 from .tool import VertexTool
 
@@ -24,6 +25,7 @@ __all__ = [
     "VertexCallResponseChunk",
     "VertexDynamicConfig",
     "VertexMessageParam",
+    "VertexModels",
     "VertexStream",
     "VertexTool",
     "vertex_call",

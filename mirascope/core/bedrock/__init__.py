@@ -12,6 +12,7 @@ from .call_params import BedrockCallParams
 from .call_response import BedrockCallResponse
 from .call_response_chunk import BedrockCallResponseChunk
 from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
+from .models import BedrockModels
 from .stream import BedrockStream
 from .tool import BedrockTool, BedrockToolConfig
 
@@ -26,6 +27,7 @@ __all__ = [
     "BedrockCallResponseChunk",
     "BedrockDynamicConfig",
     "BedrockMessageParam",
+    "BedrockModels",
     "BedrockStream",
     "BedrockTool",
     "BedrockToolConfig",

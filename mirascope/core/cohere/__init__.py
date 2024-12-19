@@ -4,7 +4,9 @@ from typing import TypeAlias
 
 from cohere.types import ChatMessage, ToolResult
 
+from .models import CohereModels
 from ..base import BaseMessageParam
+from ..bedrock import BedrockModels
 from ._call import cohere_call
 from ._call import cohere_call as call
 from .call_params import CohereCallParams
@@ -24,6 +26,7 @@ __all__ = [
     "CohereCallResponse",
     "CohereCallResponseChunk",
     "CohereMessageParam",
+    "CohereModels",
     "CohereStream",
     "CohereTool",
     "cohere_call",

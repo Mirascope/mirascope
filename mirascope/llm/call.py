@@ -40,19 +40,74 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 
 if TYPE_CHECKING:
     from mirascope.core.anthropic import AnthropicModels
+    from mirascope.core.azure import AzureModels
+    from mirascope.core.bedrock import BedrockModels
+    from mirascope.core.cohere import CohereModels
+    from mirascope.core.gemini import GeminiModels
+    from mirascope.core.groq import GroqModels
+    from mirascope.core.litellm import LiteLLMModels
+    from mirascope.core.mistral import MistralModels
     from mirascope.core.openai import OpenAIModels
+    from mirascope.core.vertex import VertexModels
 
-    Models: TypeAlias = OpenAIModels | AnthropicModels
+    Models: TypeAlias = (
+        AnthropicModels
+        | AzureModels
+        | BedrockModels
+        | CohereModels
+        | GeminiModels
+        | GroqModels
+        | LiteLLMModels
+        | MistralModels
+        | OpenAIModels
+        | VertexModels
+    )
 else:
     _BaseToolT = None
     Models = None
 
 
 def _get_provider_call(provider: str) -> Callable[..., Any]:
-    if provider == "openai":
+    if provider == "anthropic":
+        from mirascope.core.anthropic import anthropic_call
+
+        return anthropic_call
+    elif provider == "azure":
+        from mirascope.core.azure import azure_call
+
+        return azure_call
+    elif provider == "bedrock":
+        from mirascope.core.bedrock import bedrock_call
+
+        return bedrock_call
+    elif provider == "cohere":
+        from mirascope.core.cohere import cohere_call
+
+        return cohere_call
+    elif provider == "gemini":
+        from mirascope.core.gemini import gemini_call
+
+        return gemini_call
+    elif provider == "groq":
+        from mirascope.core.groq import groq_call
+
+        return groq_call
+    elif provider == "litellm":
+        from mirascope.core.litellm import litellm_call
+
+        return litellm_call
+    elif provider == "mistral":
+        from mirascope.core.mistral import mistral_call
+
+        return mistral_call
+    elif provider == "openai":
         from mirascope.core.openai import openai_call
 
         return openai_call
+    elif provider == "vertex":
+        from mirascope.core.vertex import vertex_call
+
+        return vertex_call
     raise ValueError(f"Unsupported provider: {provider}")
 
 
