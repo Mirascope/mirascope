@@ -13,7 +13,15 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef as AsyncConverseResponseTypeDef,
 )
 
-from ..base import BaseCallResponse, transform_tool_outputs
+from .. import BaseMessageParam
+from ..base import (
+    BaseCallResponse,
+    DocumentPart,
+    ImagePart,
+    TextPart,
+    transform_tool_outputs,
+)
+from ..base.types import FinishReason, Usage
 from ._call_kwargs import BedrockCallKwargs
 from ._types import (
     AssistantMessageTypeDef,
@@ -28,9 +36,19 @@ from ._types import (
     UserMessageTypeDef,
 )
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 from .call_params import BedrockCallParams
 from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .tool import BedrockTool
+
+IMAGE_FORMAT_MAP = {
+    "JPEG": "image/jpeg",
+    "PNG": "image/png",
+    "GIF": "image/gif",
+    "WEBP": "image/webp",
+}
 
 
 class BedrockCallResponse(
@@ -209,3 +227,77 @@ class BedrockCallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        message_param = self.message_param
+        role = message_param["role"]
+        content_blocks = message_param["content"]
+
+        converted_content = []
+
+        for block in content_blocks:
+            if "text" in block:
+                text = block["text"]
+                if not isinstance(text, str):
+                    raise ValueError("Text content must be a string.")
+                converted_content.append(TextPart(type="text", text=text))
+
+            elif "image" in block:
+                image_block = block["image"]
+                img_format = image_block["format"]  # e.g. "JPEG"
+                source = image_block["source"]
+                if "bytes" not in source or not isinstance(source["bytes"], bytes):
+                    raise ValueError("Image block must have 'source.bytes' as bytes.")
+                media_type = IMAGE_FORMAT_MAP.get(img_format.upper())
+                if not media_type:
+                    raise ValueError(f"Unsupported image format: {img_format}")
+                converted_content.append(
+                    ImagePart(
+                        type="image",
+                        media_type=media_type,
+                        image=source["bytes"],
+                        detail=None,
+                    )
+                )
+
+            elif "document" in block:
+                doc_block = block["document"]
+                doc_format = doc_block["format"]  # e.g. "PDF"
+                if doc_format.upper() != "PDF":
+                    raise ValueError(
+                        f"Unsupported document format: {doc_format}. Only PDF is supported."
+                    )
+                source = doc_block["source"]
+                if "bytes" not in source or not isinstance(source["bytes"], bytes):
+                    raise ValueError(
+                        "Document block must have 'source.bytes' as bytes."
+                    )
+                converted_content.append(
+                    DocumentPart(
+                        type="document",
+                        media_type="application/pdf",
+                        document=source["bytes"],
+                    )
+                )
+
+            else:
+                raise ValueError("Content block does not contain supported content.")
+
+        return BaseMessageParam(role=str(role), content=converted_content)
+
+    @property
+    def common_usage(self) -> Usage | None:
+        if self.input_tokens is None and self.output_tokens is None:
+            return None
+        input_tokens = self.input_tokens or 0
+        output_tokens = self.output_tokens or 0
+        return Usage(
+            prompt_tokens=input_tokens,
+            completion_tokens=output_tokens,
+            total_tokens=input_tokens + output_tokens,
+        )

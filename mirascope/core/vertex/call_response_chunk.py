@@ -5,7 +5,11 @@ usage docs: learn/streams.md#handling-streamed-responses
 
 from vertexai.generative_models import FinishReason, GenerationResponse
 
-from ..base import BaseCallResponseChunk
+from ..base import BaseCallResponseChunk, types
+from ..base.types import Usage
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 
 
 class VertexCallResponseChunk(
@@ -76,4 +80,14 @@ class VertexCallResponseChunk(
     @property
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
+        return None
+
+    @property
+    def common_finish_reasons(self) -> list[types.FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(
+            [finish_reason.name for finish_reason in self.finish_reasons]
+        )
+
+    @property
+    def common_usage(self) -> Usage | None:
         return None

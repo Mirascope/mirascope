@@ -7,7 +7,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, ClassVar, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -24,6 +24,11 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
+from .types import FinishReason, Usage
+
+if TYPE_CHECKING:
+    from ...llm.tool import Tool
+    from .. import BaseMessageParam
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
@@ -253,4 +258,31 @@ class BaseCallResponse(
             tools_and_outputs: The list of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
+        ...
+
+    @property
+    @abstractmethod
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        ...
+
+    @property
+    @abstractmethod
+    def common_message_param(self) -> BaseMessageParam:
+        """Provider-agnostic assistant message param."""
+        ...
+
+    @property
+    def common_tools(self) -> list[Tool] | None:
+        """Provider-agnostic tools."""
+        from ...llm.tool import Tool
+
+        if not self.tools:
+            return None
+        return [Tool(tool=tool) for tool in self.tools]  # pyright: ignore [reportAbstractUsage]
+
+    @property
+    @abstractmethod
+    def common_usage(self) -> Usage | None:
+        """Provider-agnostic usage info."""
         ...

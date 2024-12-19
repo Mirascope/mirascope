@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 import base64
+from typing import cast
 
 from openai.types.chat import (
     ChatCompletion,
@@ -16,7 +17,12 @@ from openai.types.chat import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
-from ..base import BaseCallResponse, transform_tool_outputs
+from .. import BaseMessageParam
+from ..base import (
+    BaseCallResponse,
+    transform_tool_outputs,
+)
+from ..base.types import FinishReason, Usage
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -206,4 +212,33 @@ class OpenAICallResponse(
         """Returns the transcript of the audio content."""
         if audio := getattr(self.response.choices[0].message, "audio", None):
             return audio.transcript
+        return None
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        """Provider-agnostic assistant message param."""
+        role = self.message_param["role"]
+        content = self.message_param.get("content")
+        if isinstance(content, str):
+            return BaseMessageParam(role=role, content=content)
+        elif content is None:
+            return BaseMessageParam(role=role, content="")
+        contents = []
+        for part in content:
+            if "text" in part:
+                contents.append(BaseMessageParam(role=role, content=part["text"]))
+            else:
+                raise ValueError(part["refusal"])
+        return BaseMessageParam(role=role, content=contents)
+
+    @property
+    def common_usage(self) -> Usage | None:
+        """Provider-agnostic usage info."""
+        if self.usage:
+            return Usage.model_validate(self.usage, from_attributes=True)
         return None
