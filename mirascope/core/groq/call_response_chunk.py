@@ -3,11 +3,15 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
+from typing import cast
+
 from groq.types.chat import ChatCompletionChunk
 from groq.types.chat.chat_completion import Choice
 from groq.types.completion_usage import CompletionUsage
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponseChunk
+from ..base.types import Usage
 
 FinishReason = Choice.__annotations__["finish_reason"]
 
@@ -85,3 +89,22 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishRea
         if self.usage:
             return self.usage.completion_tokens
         return None
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        raise NotImplementedError
+
+    @property
+    def common_usage(self) -> Usage | None:
+        if self.output_tokens is None or self.input_tokens is None:
+            return None
+        output_tokens, input_tokens = self.output_tokens or 0, self.input_tokens or 0
+        return Usage(
+            completion_tokens=output_tokens,
+            prompt_tokens=input_tokens,
+            total_tokens=input_tokens + output_tokens,
+        )

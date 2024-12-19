@@ -232,24 +232,6 @@ class BaseStream(
         """Constructs the call response."""
         ...
 
-    @property
-    @abstractmethod
-    def common_cost(self) -> float | None:
-        """Provider-agnostic cost."""
-        ...
-
-    @abstractmethod
-    def common_construct_message_param(
-        self, tool_calls: list[Any] | None, content: str | None
-    ) -> _AssistantMessageParamT:
-        """Provider-agnostic message param construction."""
-        ...
-
-    @abstractmethod
-    def common_construct_call_response(self) -> _BaseCallResponseT:
-        """Provider-agnostic call response construction."""
-        ...
-
 
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)

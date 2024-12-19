@@ -4,7 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 import base64
-from typing import Any
+from typing import cast
 
 from openai.types.chat import (
     ChatCompletion,
@@ -17,9 +17,12 @@ from openai.types.chat import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
-from .. import BaseMessageParam, BaseTool
-from ..base import AudioPart, BaseCallResponse, ImagePart, TextPart, transform_tool_outputs
-from ..base.types import Usage
+from .. import BaseMessageParam
+from ..base import (
+    BaseCallResponse,
+    transform_tool_outputs,
+)
+from ..base.types import FinishReason, Usage
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -212,74 +215,30 @@ class OpenAICallResponse(
         return None
 
     @property
-    def common_finish_reasons(self) -> list[str] | None:
-        # We already have finish_reasons as a list[str].
-        return self.finish_reasons
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        # Convert from message_param (ChatCompletionAssistantMessageParam) to BaseMessageParam
-        mp = self.message_param
-        role = mp["role"]
-        content = mp.get("content")
+        """Provider-agnostic assistant message param."""
+        role = self.message_param["role"]
+        content = self.message_param.get("content")
         if isinstance(content, str):
             return BaseMessageParam(role=role, content=content)
         elif content is None:
             return BaseMessageParam(role=role, content="")
-        else:
-            parts = []
-            for part_dict in content:
-                part_type = part_dict.get("type")
-                if part_type == "text":
-                    parts.append(TextPart(type="text", text=part_dict["text"]))
-                elif part_type == "image_url":
-                    image_url = part_dict["image_url"]
-                    url = image_url["url"]
-                    detail = image_url.get("detail", "auto")
-                    media_info, b64data = url.split(",", 1)
-                    media_type = media_info.split(":")[1].split(";")[0]
-                    image_data = base64.b64decode(b64data)
-                    parts.append(
-                        ImagePart(
-                            type="image",
-                            media_type=media_type,
-                            image=image_data,
-                            detail=detail,
-                        )
-                    )
-                elif part_type == "input_audio":
-                    audio_info = part_dict["input_audio"]
-                    fmt = audio_info["format"]
-                    audio_data = base64.b64decode(audio_info["data"])
-                    media_type = f"audio/{fmt}"
-                    parts.append(
-                        AudioPart(type="audio", media_type=media_type, audio=audio_data)
-                    )
-                else:
-                    raise ValueError(f"Unsupported part type: {part_type}")
-            return BaseMessageParam(role=role, content=parts)
-
-    @property
-    def common_tools(self) -> list[BaseTool] | None:
-        # tools is already OpenAITool which inherits BaseTool
-        # so it can be returned as is.
-        return self.tools
+        contents = []
+        for part in content:
+            if "text" in part:
+                contents.append(BaseMessageParam(role=role, content=part["text"]))
+            else:
+                raise ValueError(part["refusal"])
+        return BaseMessageParam(role=role, content=contents)
 
     @property
     def common_usage(self) -> Usage | None:
+        """Provider-agnostic usage info."""
         if self.usage:
             return Usage.model_validate(self.usage, from_attributes=True)
         return None
-
-    def common_construct_call_response(self) -> BaseCallResponse:
-        # We can return self or create a new CallResponse from self
-        return self
-
-    def common_construct_message_param(
-        self, tool_calls: list[Any] | None, content: str | None
-    ) -> BaseMessageParam:
-        # Construct a simple BaseMessageParam from content
-        # For simplicity, if content is None, use empty string
-        if content is None:
-            content = ""
-        return BaseMessageParam(role="assistant", content=content)

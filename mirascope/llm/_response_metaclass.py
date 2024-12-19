@@ -10,7 +10,7 @@ class _ResponseMetaclass(ModelMetaclass):
         name: str,
         bases: tuple[type, ...],
         namespace: dict[str, Any],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> type:
         cls = super().__new__(mcls, name, bases, namespace)
         cls.__abstractmethods__ = frozenset()

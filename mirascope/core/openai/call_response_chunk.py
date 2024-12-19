@@ -6,7 +6,7 @@ usage docs: learn/streams.md#handling-streamed-responses
 from __future__ import annotations
 
 import base64
-from typing import Any
+from typing import cast
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice
@@ -14,6 +14,7 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponseChunk
+from ..base.types import Usage
 
 FinishReason = Choice.__annotations__["finish_reason"]
 
@@ -117,8 +118,12 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
-        pass
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)
 
     @property
-    def common_usage(self) -> Any | None:
-        pass
+    def common_usage(self) -> Usage | None:
+        """Provider-agnostic usage info."""
+        if self.usage:
+            return Usage.model_validate(self.usage, from_attributes=True)
+        return None

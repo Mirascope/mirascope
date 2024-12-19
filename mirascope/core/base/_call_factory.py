@@ -226,7 +226,8 @@ def call_factory(  # noqa: ANN202
             )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
             create_factory(
-                TCallResponse=TCallResponse, setup_call=setup_call,
+                TCallResponse=TCallResponse,
+                setup_call=setup_call,
             ),
             model=model,
             tools=tools,

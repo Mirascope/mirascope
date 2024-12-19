@@ -13,18 +13,16 @@ from typing import (
 
 from pydantic import BaseModel
 
-from mirascope.core.anthropic import AnthropicModels
+from mirascope.core import BaseTool
 from mirascope.core.base import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseStream,
-    BaseTool,
     BaseType,
     CommonCallParams,
 )
 from mirascope.core.base._utils import fn_is_async
 from mirascope.core.base.stream_config import StreamConfig
-from mirascope.core.openai import OpenAIModels
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
@@ -40,12 +38,14 @@ _AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", contravariant=Tru
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 
 
-Models: TypeAlias = OpenAIModels | AnthropicModels
-
 if TYPE_CHECKING:
-    from mirascope.core.base import BaseTool
+    from mirascope.core.anthropic import AnthropicModels
+    from mirascope.core.openai import OpenAIModels
 
-    _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+    Models: TypeAlias = OpenAIModels | AnthropicModels
+else:
+    _BaseToolT = None
+    Models = None
 
 
 def _get_provider_call(provider: str) -> Callable[..., Any]:
@@ -106,9 +106,9 @@ def call(
 
     def _wrap_result(result: BaseCallResponse | Stream) -> CallResponse | Stream:
         if isinstance(result, BaseCallResponse):
-            return CallResponse(response=result)
+            return CallResponse(response=result)  # pyright: ignore [reportAbstractUsage]
         elif isinstance(result, BaseStream):
-            return Stream(
+            return Stream(  # pyright: ignore [reportAbstractUsage]
                 stream=result.stream,
                 metadata=result.metadata,
                 tool_types=result.tool_types,

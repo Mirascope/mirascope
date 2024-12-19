@@ -15,7 +15,7 @@ class _DelegateAbstractMethodsForTool(ModelMetaclass):
         name: str,
         bases: tuple[type, ...],
         namespace: dict[str, Any],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401
     ) -> type:
         cls = super().__new__(mcls, name, bases, namespace)
         cls.__abstractmethods__ = frozenset()
@@ -29,15 +29,13 @@ class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):
     - Relies on _response having `common_` methods/properties if needed.
     """
 
-    _response: BaseTool
+    _tool: BaseTool
 
-    def __init__(self, response: BaseTool) -> None:
-        super().__init__(
-            **{field: getattr(response, field) for field in response.model_fields}
-        )
-        object.__setattr__(self, "_response", response)
+    def __init__(self, tool: BaseTool) -> None:
+        super().__init__(**{field: getattr(tool, field) for field in tool.model_fields})
+        object.__setattr__(self, "_tool", tool)
 
-    def __getattribute__(self, name: str) -> Any:
+    def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
             "provider",

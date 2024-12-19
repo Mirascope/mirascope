@@ -9,7 +9,9 @@ from mirascope.core.base import (
     BaseMessageParam,
     BaseTool,
 )
+from mirascope.core.base.types import FinishReason
 from mirascope.llm._response_metaclass import _ResponseMetaclass
+from mirascope.llm.tool import Tool
 
 _ResponseT = TypeVar("_ResponseT")
 
@@ -33,18 +35,18 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse
+    _response: BaseCallResponse[_ResponseT, Any, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse,
+        response: BaseCallResponse[_ResponseT, Any, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{field: getattr(response, field) for field in response.model_fields}
         )
         object.__setattr__(self, "_response", response)
 
-    def __getattribute__(self, name: str) -> Any:
+    def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
             "__dict__",
@@ -74,8 +76,7 @@ class CallResponse(
         return str(self._response)
 
     @property
-    def finish_reasons(self) -> list[str] | None:
-        # Use common_finish_reasons from _response
+    def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons
 
     @property
@@ -83,11 +84,11 @@ class CallResponse(
         return self._response.common_message_param
 
     @property
-    def tools(self) -> list[BaseTool] | None:
+    def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_tools
 
     @property
-    def tool(self) -> BaseTool | None:
+    def tool(self) -> Tool | None:
         tools = self._response.common_tools
         if tools:
             return tools[0]

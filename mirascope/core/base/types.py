@@ -45,11 +45,11 @@ FinishReason: TypeAlias = Literal[
 
 
 class Usage(BaseModel):
-    completion_tokens: int
+    completion_tokens: int = 0
     """Number of tokens in the generated completion."""
 
-    prompt_tokens: int
+    prompt_tokens: int = 0
     """Number of tokens in the prompt."""
 
-    total_tokens: int
+    total_tokens: int = 0
     """Total number of tokens used in the request (prompt + completion)."""

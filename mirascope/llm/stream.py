@@ -13,6 +13,7 @@ from mirascope.core.base import (
     Metadata,
 )
 from mirascope.core.base.stream import BaseStream
+from mirascope.llm.call_response import CallResponse
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -67,26 +68,10 @@ class Stream(
       (In this example, we assume _response is set somehow or common methods are directly implemented)
     """
 
-    @property
-    def common_cost(self) -> float | None:
-        raise NotImplementedError("Implement common_cost logic here.")
-
-    def common_construct_message_param(
-        self, tool_calls: list[Any] | None, content: str | None
-    ) -> _AssistantMessageParamT:
-        raise NotImplementedError(
-            "Implement common_construct_message_param logic here."
-        )
-
-    def common_construct_call_response(self) -> _BaseCallResponseT:
-        raise NotImplementedError(
-            "Implement common_construct_call_response logic here."
-        )
-
     def __init__(
         self,
         *,
-        stream: Any,
+        stream: Any,  # noqa: ANN401
         metadata: Metadata,
         tool_types: list[type[_BaseToolT]] | None,
         call_response_type: type[_BaseCallResponseT],
@@ -112,20 +97,6 @@ class Stream(
             call_kwargs=call_kwargs,
         )
 
-    @property
-    def cost(self) -> float | None:
-        # If _response has `common_cost`:
-        # return self._response.common_cost
-        return None
-
-    def _construct_message_param(
-        self, tool_calls: list[Any] | None = None, content: str | None = None
-    ) -> _AssistantMessageParamT:
-        # If _response has `common_construct_message_param`:
-        # return self._response.common_construct_message_param(tool_calls, content)
-        raise NotImplementedError("Implement _construct_message_param logic here.")
-
-    def construct_call_response(self) -> _BaseCallResponseT:
-        # If _response has `common_construct_call_response`:
-        # return self._response.common_construct_call_response()
-        raise NotImplementedError("Implement construct_call_response logic here.")
+    def common_construct_call_response(self) -> CallResponse:
+        """A common method that constructs a CallResponse instance."""
+        return CallResponse(response=self.construct_call_response())  # pyright: ignore [reportAbstractUsage]

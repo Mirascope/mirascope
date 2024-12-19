@@ -24,8 +24,10 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
+from .types import FinishReason, Usage
 
 if TYPE_CHECKING:
+    from ...llm.tool import Tool
     from .. import BaseMessageParam
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
@@ -260,7 +262,7 @@ class BaseCallResponse(
 
     @property
     @abstractmethod
-    def common_finish_reasons(self) -> list[str] | None:
+    def common_finish_reasons(self) -> list[FinishReason] | None:
         """Provider-agnostic finish reasons."""
         ...
 
@@ -271,25 +273,16 @@ class BaseCallResponse(
         ...
 
     @property
-    @abstractmethod
-    def common_tools(self) -> list[_BaseToolT] | None:
+    def common_tools(self) -> list[Tool] | None:
         """Provider-agnostic tools."""
-        ...
+        from ...llm.tool import Tool
+
+        if not self.tools:
+            return None
+        return [Tool(tool=tool) for tool in self.tools]  # pyright: ignore [reportAbstractUsage]
 
     @property
     @abstractmethod
-    def common_usage(self) -> Any:
+    def common_usage(self) -> Usage | None:
         """Provider-agnostic usage info."""
-        ...
-
-    @abstractmethod
-    def common_construct_call_response(self) -> BaseCallResponse:
-        """Construct a provider-agnostic call response."""
-        ...
-
-    @abstractmethod
-    def common_construct_message_param(
-        self, tool_calls: list[Any] | None, content: str | None
-    ) -> BaseMessageParam:
-        """Construct a provider-agnostic assistant message param."""
         ...

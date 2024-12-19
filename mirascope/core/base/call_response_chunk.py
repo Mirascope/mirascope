@@ -10,7 +10,7 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
-from mirascope.core.base.types import FinishReason
+from mirascope.core.base.types import FinishReason, Usage
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 _FinishReasonT = TypeVar("_FinishReasonT", bound=Any)
@@ -100,6 +100,6 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
 
     @property
     @abstractmethod
-    def common_usage(self) -> Any | None:
+    def common_usage(self) -> Usage | None:
         """Provider-agnostic usage info."""
         ...

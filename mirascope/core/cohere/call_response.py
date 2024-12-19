@@ -12,8 +12,13 @@ from cohere.types import (
 )
 from pydantic import SkipValidation, computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason, Usage
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 from .call_params import CohereCallParams
 from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from .tool import CohereTool
@@ -167,3 +172,25 @@ class CohereCallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        if self.finish_reasons is None:
+            return None
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        return BaseMessageParam(role="assistant", content=self.message_param)
+
+    @property
+    def common_usage(self) -> Usage | None:
+        if self.input_tokens is None and self.output_tokens is None:
+            return None
+        input_tokens = int(self.input_tokens or 0)
+        output_tokens = int(self.output_tokens or 0)
+        return Usage(
+            prompt_tokens=input_tokens,
+            completion_tokens=output_tokens,
+            total_tokens=input_tokens + output_tokens,
+        )

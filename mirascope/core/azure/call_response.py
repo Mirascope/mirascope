@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from typing import cast
+
 from azure.ai.inference.models import (
     AssistantMessage,
     ChatCompletions,
@@ -14,7 +16,9 @@ from azure.ai.inference.models import (
 )
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason, Usage
 from ._utils import calculate_cost
 from .call_params import AzureCallParams
 from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
@@ -174,3 +178,17 @@ class AzureCallResponse(
         return [
             cls._get_tool_message(tool, output) for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        message_param = self.message_param
+        return BaseMessageParam(role=message_param.role, content=message_param.content)
+
+    @property
+    def common_usage(self) -> Usage | None:
+        return Usage.model_validate(self.usage, from_attributes=True)
