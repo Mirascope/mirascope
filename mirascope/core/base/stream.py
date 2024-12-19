@@ -28,7 +28,7 @@ from ._utils import (
 )
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
-from .call_response import BaseCallResponse
+from .call_response import BaseCallResponse, JsonableType
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .messages import Messages
@@ -217,7 +217,7 @@ class BaseStream(
         ...
 
     def tool_message_params(
-        self, tools_and_outputs: list[tuple[_BaseToolT, str]]
+        self, tools_and_outputs: list[tuple[_BaseToolT, JsonableType]]
     ) -> list[_ToolMessageParamT]:
         """Returns the tool message parameters for tool call results.
 

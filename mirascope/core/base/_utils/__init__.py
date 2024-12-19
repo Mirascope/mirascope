@@ -25,6 +25,7 @@ from ._json_mode_content import json_mode_content
 from ._messages_decorator import MessagesDecorator, messages_decorator
 from ._parse_content_template import parse_content_template
 from ._parse_prompt_messages import parse_prompt_messages
+from ._pil_image_to_bytes import pil_image_to_bytes
 from ._protocols import (
     AsyncCreateFn,
     CalculateCost,
@@ -77,6 +78,7 @@ __all__ = [
     "messages_decorator",
     "parse_content_template",
     "parse_prompt_messages",
+    "pil_image_to_bytes",
     "SetupCall",
     "setup_call",
     "setup_extract_tool",

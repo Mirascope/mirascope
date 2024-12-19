@@ -18,7 +18,7 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from .. import BaseMessageParam, BaseTool
-from ..base import AudioPart, BaseCallResponse, ImagePart, TextPart
+from ..base import AudioPart, BaseCallResponse, ImagePart, TextPart, transform_tool_outputs
 from ..base.types import Usage
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
@@ -172,6 +172,7 @@ class OpenAICallResponse(
         return None
 
     @classmethod
+    @transform_tool_outputs
     def tool_message_params(
         cls, tools_and_outputs: list[tuple[OpenAITool, str]]
     ) -> list[ChatCompletionToolMessageParam]:

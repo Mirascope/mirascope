@@ -14,10 +14,12 @@ from ..message_param import (
     ImagePart,
     TextPart,
 )
+from ..types import Image, has_pil_module
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
 from ._get_document_type import get_document_type
 from ._get_image_type import get_image_type
+from ._pil_image_to_bytes import pil_image_to_bytes
 
 _PartType = Literal[
     "text", "texts", "image", "images", "audio", "audios", "cache_control"
@@ -85,15 +87,24 @@ def _load_media(source: str | bytes) -> bytes:
 
 
 def _construct_image_part(
-    source: str | bytes, options: dict[str, str] | None
+    source: str | bytes | Image.Image, options: dict[str, str] | None
 ) -> ImagePart:
-    image = _load_media(source)
+    if isinstance(source, Image.Image):
+        image = pil_image_to_bytes(source)
+        media_type = (
+            Image.MIME[source.format]
+            if has_pil_module and source.format
+            else "image/unknown"
+        )
+    else:
+        image = _load_media(source)
+        media_type = f"image/{get_image_type(image)}"
     detail = None
     if options:
         detail = options.get("detail", None)
     return ImagePart(
         type="image",
-        media_type=f"image/{get_image_type(image)}",
+        media_type=media_type,
         image=image,
         detail=detail,
     )

@@ -5,7 +5,7 @@ from ._call_factory import call_factory
 from ._utils import BaseType
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams, CommonCallParams
-from .call_response import BaseCallResponse
+from .call_response import BaseCallResponse, transform_tool_outputs
 from .call_response_chunk import BaseCallResponseChunk
 from .dynamic_config import BaseDynamicConfig
 from .from_call_args import FromCallArgs
@@ -58,6 +58,7 @@ __all__ = [
     "TextPart",
     "ToolConfig",
     "toolkit_tool",
+    "transform_tool_outputs",
     "_partial",
     "_utils",
 ]

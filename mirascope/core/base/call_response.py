@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import base64
+import json
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
+from collections.abc import Callable
+from functools import wraps
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -14,6 +18,7 @@ from pydantic import (
     field_serializer,
 )
 
+from ._utils import BaseType
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
@@ -30,6 +35,64 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound="BaseCallResponse")
+
+
+JsonableType: TypeAlias = (
+    str
+    | int
+    | float
+    | bool
+    | bytes
+    | list["JsonableType"]
+    | set["JsonableType"]
+    | tuple["JsonableType", ...]
+    | dict[str, "JsonableType"]
+    | BaseModel
+)
+
+
+def transform_tool_outputs(
+    fn: Callable[[type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]], list[Any]],
+) -> Callable[
+    [type[_BaseCallResponseT], list[tuple[_BaseToolT, JsonableType]]],
+    list[Any],
+]:
+    @wraps(fn)
+    def wrapper(
+        cls: type[_BaseCallResponseT],
+        tools_and_outputs: list[tuple[_BaseToolT, JsonableType]],
+    ) -> list[Any]:
+        def recursive_serializer(value: JsonableType) -> BaseType:
+            if isinstance(value, str):
+                return value
+            if isinstance(value, int | float | bool):
+                return value  # Don't serialize primitives yet
+            if isinstance(value, bytes):
+                return base64.b64encode(value).decode("utf-8")
+            if isinstance(value, BaseModel):
+                return value.model_dump()
+            if isinstance(value, list | set | tuple):
+                return [recursive_serializer(item) for item in value]
+            if isinstance(value, dict):
+                return {k: recursive_serializer(v) for k, v in value.items()}
+            raise TypeError(f"Unsupported type for serialization: {type(value)}")
+
+        transformed_tools_and_outputs = [
+            (
+                tool,
+                output.model_dump_json()
+                if isinstance(output, BaseModel)
+                else str(recursive_serializer(output))
+                if isinstance(output, str | bytes)
+                else json.dumps(recursive_serializer(output)),
+            )
+            for tool, output in tools_and_outputs
+        ]
+        return fn(cls, transformed_tools_and_outputs)
+
+    return wrapper
 
 
 class BaseCallResponse(
@@ -183,8 +246,9 @@ class BaseCallResponse(
 
     @classmethod
     @abstractmethod
+    @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[_BaseToolT, Any]]
+        cls, tools_and_outputs: list[tuple[_BaseToolT, str]]
     ) -> list[Any]:
         """Returns the tool message parameters for tool call results.
 
