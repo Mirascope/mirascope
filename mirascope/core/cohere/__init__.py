@@ -11,6 +11,7 @@ from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
 from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
+from .models import CohereModels
 from .stream import CohereStream
 from .tool import CohereTool
 
@@ -24,6 +25,7 @@ __all__ = [
     "CohereCallResponse",
     "CohereCallResponseChunk",
     "CohereMessageParam",
+    "CohereModels",
     "CohereStream",
     "CohereTool",
     "cohere_call",
