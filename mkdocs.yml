@@ -253,6 +253,7 @@ nav:
       - Evals: "learn/evals.md"
       - Async: "learn/async.md"
       - Retries: "learn/retries.md"
+      - Local Models: "learn/local_models.md"
       - Provider-Specific Features:
           - OpenAI: "learn/provider_specific_features/openai.md"
           - Anthropic: "learn/provider_specific_features/anthropic.md"
