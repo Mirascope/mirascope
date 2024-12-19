@@ -15,16 +15,13 @@ class DummyCallResponseChunk(BaseCallResponseChunk[Any, str]):
         return ["stop"]
 
     @property
-    def model(self) -> str | None:
-        return "chunk_model"
+    def model(self) -> str | None: ...
 
     @property
-    def id(self) -> str | None:
-        return "chunk_id"
+    def id(self) -> str | None: ...
 
     @property
-    def usage(self) -> Any:
-        return {"input_tokens": 2, "completion_tokens": 3}
+    def usage(self) -> Any: ...
 
     @property
     def input_tokens(self) -> int | float | None:

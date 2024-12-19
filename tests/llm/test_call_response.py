@@ -8,7 +8,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
 
 
@@ -22,8 +22,7 @@ class DummyMessageParam(BaseMessageParam):
 
 
 class DummyTool(BaseTool):
-    def call(self):
-        return "dummy_tool"
+    def call(self): ...
 
     @property
     def model_fields(self):  # pyright: ignore [reportIncompatibleMethodOverride]
@@ -56,42 +55,34 @@ class DummyProviderCallResponse(
         return "dummy_model"
 
     @property
-    def id(self) -> str | None:
-        return "dummy_id"
+    def id(self) -> str | None: ...
 
     @property
-    def usage(self) -> Any:
-        return {"input_tokens": 10, "completion_tokens": 5}
+    def usage(self) -> Any: ...
 
     @property
-    def input_tokens(self) -> int | float | None:
-        return 10
+    def input_tokens(self) -> int | float | None: ...
 
     @property
-    def output_tokens(self) -> int | float | None:
-        return 5
+    def output_tokens(self) -> int | float | None: ...
 
     @property
-    def cost(self) -> float | None:
-        return 0.01
+    def cost(self) -> float | None: ...
 
     @property
-    def message_param(self) -> Any:
-        return DummyMessageParam(role="assistant", content="Hello")
+    def message_param(self) -> Any: ...
 
     @property
     def tools(self) -> list[DummyTool] | None:
         return [DummyTool()]
 
     @property
-    def tool(self) -> DummyTool | None:
-        return DummyTool()
+    def tool(self) -> DummyTool | None: ...
 
     @classmethod
     def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
         cls, tools_and_outputs: list[tuple[DummyTool, str]]
-    ) -> list[Any]:
-        return [{"tool_output": output} for _, output in tools_and_outputs]
+    ) -> list[Any]: ...
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
@@ -102,16 +93,14 @@ class DummyProviderCallResponse(
         return DummyMessageParam(role="assistant", content="common_message")
 
     @property
-    def common_usage(self):
-        return Usage(prompt_tokens=10, completion_tokens=5, total_tokens=15)
+    def common_usage(self): ...
 
     def common_construct_call_response(self):
         return self
 
     def common_construct_message_param(
         self, tool_calls: list[Any] | None, content: str | None
-    ):
-        return DummyMessageParam(role="assistant", content=content or "")
+    ): ...
 
 
 def test_call_response():

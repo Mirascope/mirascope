@@ -8,7 +8,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import call
 
@@ -23,86 +23,68 @@ class DummyMessageParam(BaseMessageParam):
 
 
 class DummyTool(BaseTool):
-    def call(self):
-        return "tool_call"
+    def call(self): ...
 
     @property
-    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
-        return []
+    def model_fields(self) -> list[str]: ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
 
 class DummyProviderCallResponse(BaseCallResponse):
     @property
-    def content(self):
-        return ""
+    def content(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
-    def finish_reasons(self):
-        return ["done"]
+    def finish_reasons(self): ...
 
     @property
-    def model(self):
-        return "test_model"
+    def model(self): ...
 
     @property
-    def id(self):
-        return "test_id"
+    def id(self): ...
 
     @property
-    def usage(self):
-        return None
+    def usage(self): ...
 
     @property
-    def input_tokens(self):
-        return None
+    def input_tokens(self): ...
 
     @property
-    def output_tokens(self):
-        return None
+    def output_tokens(self): ...
 
     @property
-    def cost(self):
-        return None
+    def cost(self): ...
 
     @property
-    def message_param(self):
-        return BaseMessageParam(role="assistant", content="")
+    def message_param(self): ...
 
     @property
     def tools(self):
         return None
 
     @property
-    def tool(self):
-        return None
+    def tool(self): ...
 
     @classmethod
-    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]):  # pyright: ignore [reportIncompatibleMethodOverride]
-        return []
+    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
         return ["stop"]
 
     @property
-    def common_message_param(self):
-        return BaseMessageParam(role="assistant", content="")
+    def common_message_param(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
-    def common_tools(self):
-        return None
+    def common_tools(self): ...
 
     @property
-    def common_usage(self):
-        return Usage(prompt_tokens=0, completion_tokens=0, total_tokens=0)
+    def common_usage(self): ...
 
-    def common_construct_call_response(self):
-        return self
+    def common_construct_call_response(self): ...
 
     def common_construct_message_param(
         self, tool_calls: list | None, content: str | None
-    ):
-        return BaseMessageParam(role="assistant", content=content or "")
+    ): ...
 
 
 def dummy_decorator(*args, **kwargs):
@@ -134,8 +116,7 @@ def test_call_function():
     ):
 
         @call("openai:gpt-4o-mini")
-        def dummy_function():
-            return "hello"
+        def dummy_function(): ...
 
         result_instance = dummy_function()
         assert isinstance(result_instance, CallResponse)
