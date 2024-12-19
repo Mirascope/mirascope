@@ -1,6 +1,6 @@
 name: 🐛 Bug
 description: Report any issue with Mirascope
-labels: [Bug]
+labels: [bug]
 
 body:
   - type: textarea
