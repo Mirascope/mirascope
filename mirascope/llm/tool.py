@@ -38,7 +38,6 @@ class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
-            "provider",
             "__dict__",
             "__class__",
             "model_fields",

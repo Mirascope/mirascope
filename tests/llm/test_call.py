@@ -8,7 +8,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import Usage
+from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import call
 
@@ -19,7 +19,7 @@ class DummyCallParams(BaseCallParams):
 
 class DummyMessageParam(BaseMessageParam):
     role: str
-    content: str
+    content: str  # pyright: ignore [reportIncompatibleVariableOverride]
 
 
 class DummyTool(BaseTool):
@@ -27,7 +27,7 @@ class DummyTool(BaseTool):
         return "tool_call"
 
     @property
-    def model_fields(self):
+    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
         return []
 
 
@@ -77,12 +77,12 @@ class DummyProviderCallResponse(BaseCallResponse):
         return None
 
     @classmethod
-    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]):
+    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]):  # pyright: ignore [reportIncompatibleMethodOverride]
         return []
 
     @property
-    def common_finish_reasons(self):
-        return ["done"]
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return ["stop"]
 
     @property
     def common_message_param(self):
@@ -139,4 +139,4 @@ def test_call_function():
 
         result_instance = dummy_function()
         assert isinstance(result_instance, CallResponse)
-        assert result_instance.finish_reasons == ["done"]
+        assert result_instance.finish_reasons == ["stop"]

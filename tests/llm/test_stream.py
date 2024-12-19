@@ -15,6 +15,7 @@ from mirascope.core.base import (
 from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
+from mirascope.llm.tool import Tool
 
 
 class DummyCallParams(BaseCallParams):
@@ -31,7 +32,7 @@ class DummyTool(BaseTool):
         return "dummy_tool"
 
     @property
-    def model_fields(self) -> list[str]:
+    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
         return ["field1"]
 
     field1: str = "value"
@@ -87,22 +88,22 @@ class DummyProviderResponse(
         return None
 
     @classmethod
-    def tool_message_params(
+    def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
         cls, tools_and_outputs: list[tuple[DummyTool, str]]
     ) -> list[Any]:
         return []
 
     # common_ methods
     @property
-    def common_finish_reasons(self) -> list[str] | None:
-        return ["done"]
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return ["stop"]
 
     @property
     def common_message_param(self) -> DummyMessageParam:
         return DummyMessageParam(role="assistant", content="common_dp")
 
     @property
-    def common_tools(self) -> list[DummyTool] | None:
+    def common_tools(self) -> list[Tool] | None:
         return None
 
     @property
@@ -125,7 +126,7 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
 
     @property
     def finish_reasons(self) -> list[FinishReason] | None:
-        return ["finish"]
+        return ["stop"]
 
     @property
     def model(self) -> str | None:

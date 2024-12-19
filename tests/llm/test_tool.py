@@ -7,7 +7,7 @@ class DummyTool(BaseTool):
         return "dummy_tool_call"
 
     @property
-    def model_fields(self):
+    def model_fields(self):  # pyright: ignore [reportIncompatibleMethodOverride]
         return ["field1"]
 
     field1: str = "value"
@@ -15,6 +15,6 @@ class DummyTool(BaseTool):
 
 def test_tool():
     dummy_tool_instance = DummyTool()
-    tool_instance = Tool(tool=dummy_tool_instance)
+    tool_instance = Tool(tool=dummy_tool_instance)  # pyright: ignore [reportAbstractUsage]
     assert tool_instance.call() == "dummy_tool_call"
     assert tool_instance.field1 == "value"

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from mirascope.core.base import (
     BaseCallParams,
@@ -8,7 +8,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import Usage
+from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 
 
@@ -26,7 +26,7 @@ class DummyTool(BaseTool):
         return "dummy_tool"
 
     @property
-    def model_fields(self):
+    def model_fields(self):  # pyright: ignore [reportIncompatibleMethodOverride]
         return ["field1"]
 
     field1: str = "tool_field"
@@ -88,22 +88,18 @@ class DummyProviderCallResponse(
         return DummyTool()
 
     @classmethod
-    def tool_message_params(
+    def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
         cls, tools_and_outputs: list[tuple[DummyTool, str]]
     ) -> list[Any]:
         return [{"tool_output": output} for _, output in tools_and_outputs]
 
     @property
-    def common_finish_reasons(self):
-        return self.finish_reasons
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return cast(list[FinishReason], self.finish_reasons)
 
     @property
     def common_message_param(self):
         return DummyMessageParam(role="assistant", content="common_message")
-
-    @property
-    def common_tools(self):
-        return self.tools
 
     @property
     def common_usage(self):
@@ -133,7 +129,7 @@ def test_call_response():
         start_time=0,
         end_time=0,
     )
-    call_response_instance = CallResponse(response=dummy_response)
+    call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
 
     assert call_response_instance.finish_reasons == ["finish"]
     assert call_response_instance.message_param.role == "assistant"
