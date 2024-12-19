@@ -164,17 +164,7 @@ def call(
             return CallResponse(response=result)  # pyright: ignore [reportAbstractUsage]
         elif isinstance(result, BaseStream):
             return Stream(  # pyright: ignore [reportAbstractUsage]
-                stream=result.stream,
-                metadata=result.metadata,
-                tool_types=result.tool_types,
-                call_response_type=result.call_response_type,
-                model=result.model,
-                prompt_template=result.prompt_template,
-                fn_args=result.fn_args or {},
-                dynamic_config=result.dynamic_config,
-                messages=result.messages,
-                call_params=result.call_params,
-                call_kwargs=result.call_kwargs,
+                stream=result,
             )
         else:
             raise ValueError(f"Unsupported result type: {type(result)}")

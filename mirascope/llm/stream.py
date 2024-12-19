@@ -3,14 +3,12 @@ from __future__ import annotations
 from typing import Any, Generic, TypeVar
 
 from mirascope.core.base import (
-    BaseCallKwargs,
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseDynamicConfig,
     BaseMessageParam,
     BaseTool,
-    Metadata,
 )
 from mirascope.core.base.stream import BaseStream
 from mirascope.llm.call_response import CallResponse
@@ -61,42 +59,43 @@ class Stream(
     """
     A non-pydantic class that inherits from BaseStream.
 
-    This class:
-    - Inherits BaseStream
-    - Does not use BaseProviderConverter
-    - Calls `_response.common_...` methods/properties if `_response` is available
-      (In this example, we assume _response is set somehow or common methods are directly implemented)
     """
 
     def __init__(
         self,
         *,
-        stream: Any,  # noqa: ANN401
-        metadata: Metadata,
-        tool_types: list[type[_BaseToolT]] | None,
-        call_response_type: type[_BaseCallResponseT],
-        model: str,
-        prompt_template: str | None,
-        fn_args: dict[str, Any],
-        dynamic_config: _BaseDynamicConfigT,
-        messages: list[_MessageParamT],
-        call_params: _BaseCallParamsT,
-        call_kwargs: BaseCallKwargs[_ToolSchemaT],
+        stream: BaseStream,
     ) -> None:
+        """Initialize the Stream class."""
+        self._stream = stream
         super().__init__(
-            stream=stream,
-            metadata=metadata,
-            tool_types=tool_types,
-            call_response_type=call_response_type,
-            model=model,
-            prompt_template=prompt_template,
-            fn_args=fn_args,
-            dynamic_config=dynamic_config,
-            messages=messages,
-            call_params=call_params,
-            call_kwargs=call_kwargs,
+            stream=stream.stream,
+            metadata=stream.metadata,
+            tool_types=stream.tool_types,
+            call_response_type=stream.call_response_type,
+            model=stream.model,
+            prompt_template=stream.prompt_template,
+            fn_args=stream.fn_args or {},
+            dynamic_config=stream.dynamic_config,
+            messages=stream.messages,
+            call_params=stream.call_params,
+            call_kwargs=stream.call_kwargs,
         )
 
     def common_construct_call_response(self) -> CallResponse:
         """A common method that constructs a CallResponse instance."""
-        return CallResponse(response=self.construct_call_response())  # pyright: ignore [reportAbstractUsage]
+        return CallResponse(response=self._stream.construct_call_response())  # pyright: ignore [reportAbstractUsage]
+
+    @property
+    def cost(self) -> float | None:
+        return self._stream.cost
+
+    def _construct_message_param(
+        self, tool_calls: list[Any] | None = None, content: str | None = None
+    ) -> _AssistantMessageParamT:
+        return self._stream._construct_message_param(
+            tool_calls=tool_calls, content=content
+        )
+
+    def construct_call_response(self) -> CallResponse:
+        return self.common_construct_call_response()

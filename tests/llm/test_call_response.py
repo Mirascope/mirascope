@@ -51,8 +51,7 @@ class DummyProviderCallResponse(
         return ["finish"]
 
     @property
-    def model(self) -> str | None:
-        return "dummy_model"
+    def model(self) -> str | None: ...
 
     @property
     def id(self) -> str | None: ...
@@ -95,8 +94,7 @@ class DummyProviderCallResponse(
     @property
     def common_usage(self): ...
 
-    def common_construct_call_response(self):
-        return self
+    def common_construct_call_response(self): ...
 
     def common_construct_message_param(
         self, tool_calls: list[Any] | None, content: str | None

@@ -1,16 +1,15 @@
 from collections.abc import AsyncGenerator, Generator
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 
 from mirascope.core.base import (
-    BaseCallKwargs,
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseMessageParam,
     BaseTool,
-    Metadata,
 )
 from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
@@ -141,48 +140,26 @@ class DummyStream(
         DummyCallParams,
         FinishReason,
     ]
-):
-    @property
-    def cost(self) -> float:
-        # Return a float directly
-        return 0.02
-
-    def _construct_message_param(
-        self, tool_calls: list[Any] | None = None, content: str | None = None
-    ) -> DummyMessageParam:
-        return DummyMessageParam(role="assistant", content=content or "")
-
-    def construct_call_response(self) -> DummyProviderResponse:
-        return DummyProviderResponse(
-            metadata=Metadata(),
-            response={},
-            tool_types=None,
-            prompt_template=None,
-            fn_args={},
-            dynamic_config={},  # dynamic_config as a dict
-            messages=[],
-            call_params=DummyCallParams(),
-            call_kwargs=BaseCallKwargs(),
-            user_message_param=None,
-            start_time=0,
-            end_time=0,
-        )
+): ...
 
 
 @pytest.mark.asyncio
 async def test_stream():
-    dummy_stream_instance = DummyStream(
-        stream=None,
-        metadata=Metadata(),
-        tool_types=None,
-        call_response_type=DummyProviderResponse,
-        model="dummy_model",
-        prompt_template=None,
+    mock = MagicMock(cost=0.02)
+    mock.construct_call_response.return_value = DummyProviderResponse(
+        metadata={},
+        response={},
+        prompt_template="",
         fn_args={},
-        dynamic_config={},  # use a dict for dynamic_config
+        dynamic_config={},
         messages=[],
-        call_params=DummyCallParams(),
-        call_kwargs=BaseCallKwargs(),
+        call_params={},
+        call_kwargs={},
+        start_time=0,
+        end_time=0,
+    )
+    dummy_stream_instance = DummyStream(
+        stream=mock,
     )
 
     def empty_generator() -> (
@@ -200,12 +177,12 @@ async def test_stream():
     # Set the stream to a real generator for sync iteration
     dummy_stream_instance.stream = empty_generator()
     for _ in dummy_stream_instance:
-        ...
+        ...  # pragma: no cover
 
     # Set the stream to a real async generator for async iteration
     dummy_stream_instance.stream = async_empty_generator()
     async for _ in dummy_stream_instance:
-        ...
+        ...  # pragma: no cover
 
     assert dummy_stream_instance.cost == 0.02
     call_response_instance = dummy_stream_instance.common_construct_call_response()
