@@ -187,7 +187,9 @@ class AzureCallResponse(
     @property
     def common_message_param(self) -> BaseMessageParam:
         message_param = self.message_param
-        return BaseMessageParam(role=message_param.role, content=message_param.content)
+        return BaseMessageParam(
+            role=message_param.role, content=message_param.content or ""
+        )
 
     @property
     def common_usage(self) -> Usage | None:

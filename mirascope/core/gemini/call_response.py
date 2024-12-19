@@ -20,6 +20,9 @@ from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
+from ._utils._convert_parts_to_base_message_param import (
+    _convert_parts_to_base_message_param,
+)
 from .call_params import GeminiCallParams
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
@@ -190,7 +193,7 @@ class GeminiCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        return BaseMessageParam(role="assistant", content=self.response.parts)
+        return _convert_parts_to_base_message_param(self.response.parts)
 
     @property
     def common_usage(self) -> None:

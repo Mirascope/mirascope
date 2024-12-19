@@ -181,7 +181,7 @@ class CohereCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        return BaseMessageParam(role="assistant", content=self.message_param)
+        return BaseMessageParam(role="assistant", content=self.message_param.message)
 
     @property
     def common_usage(self) -> Usage | None:

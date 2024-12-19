@@ -20,6 +20,9 @@ from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import FinishReason, Usage
 from ._utils import calculate_cost
+from ._utils._convert_assistant_message_content_to_base_param_message import (
+    _assistant_message_content_to_base_param,
+)
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -180,7 +183,9 @@ class MistralCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        return BaseMessageParam(role="assistant", content=self.message_param.content)
+        if not isinstance(self.message_param.content, str | list):
+            return BaseMessageParam(role="assistant", content="")
+        return _assistant_message_content_to_base_param(self.message_param.content)
 
     @property
     def common_usage(self) -> Usage:

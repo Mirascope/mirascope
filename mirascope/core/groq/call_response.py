@@ -173,9 +173,9 @@ class GroqCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        return BaseMessageParam(
-            role="assistant", content=self.message_param.get("content", "")
-        )
+        if content := self.message_param.get("content"):
+            return BaseMessageParam(role="assistant", content=content)
+        return BaseMessageParam(role="assistant", content="")
 
     @property
     def common_usage(self) -> Usage | None:

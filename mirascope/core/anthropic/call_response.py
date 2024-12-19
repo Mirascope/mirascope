@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 import base64
+from os import PathLike
 
 from anthropic.types import (
     Message,
@@ -203,9 +204,9 @@ class AnthropicCallResponse(
                     raise ValueError(
                         "ImageBlockParam must have a 'source' with type='base64'."
                     )
-                image_data_base64 = source.get("data")
+                image_data = source.get("data")
                 media_type = source.get("media_type")
-                if not image_data_base64 or not media_type:
+                if not image_data or not media_type:
                     raise ValueError(
                         "ImageBlockParam source must have 'data' and 'media_type'."
                     )
@@ -219,12 +220,18 @@ class AnthropicCallResponse(
                         f"Unsupported image media type: {media_type}. "
                         "BaseMessageParam currently only supports JPEG, PNG, GIF, and WebP images."
                     )
-                image_data = base64.b64decode(image_data_base64)
+                if isinstance(image_data, str):
+                    decoded_image_data = base64.b64decode(image_data)
+                elif isinstance(image_data, PathLike):
+                    with open(image_data, "rb") as image_data:
+                        decoded_image_data = image_data.read()
+                else:
+                    decoded_image_data = image_data.read()
                 converted_content.append(
                     ImagePart(
                         type="image",
                         media_type=media_type,
-                        image=image_data,
+                        image=decoded_image_data,
                         detail=None,
                     )
                 )
