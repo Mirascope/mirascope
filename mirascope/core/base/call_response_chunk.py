@@ -6,7 +6,7 @@ usage docs: learn/streams.md#handling-streamed-responses
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar, TypeAlias, Literal
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -14,7 +14,6 @@ from mirascope.core.base.types import FinishReason
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 _FinishReasonT = TypeVar("_FinishReasonT", bound=Any)
-
 
 
 class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):

@@ -187,7 +187,7 @@ class OpenAIStream(
         )
 
     def common_construct_message_param(
-            self, tool_calls: list[Any] | None, content: str | None
+        self, tool_calls: list[Any] | None, content: str | None
     ) -> _AssistantMessageParamT:
         raise NotImplementedError
 

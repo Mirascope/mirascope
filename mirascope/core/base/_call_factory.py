@@ -219,7 +219,7 @@ def call_factory(  # noqa: ANN202
                     setup_call=setup_call,
                     handle_stream=handle_stream,
                     handle_stream_async=handle_stream_async,
-                    provider=provider
+                    provider=provider,
                 ),
                 model=model,
                 tools=tools,
@@ -229,7 +229,9 @@ def call_factory(  # noqa: ANN202
                 partial_tools=isinstance(stream, dict) and stream.get("partial_tools"),
             )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
-            create_factory(TCallResponse=TCallResponse, setup_call=setup_call, provider=provider),
+            create_factory(
+                TCallResponse=TCallResponse, setup_call=setup_call, provider=provider
+            ),
             model=model,
             tools=tools,
             output_parser=output_parser,

@@ -252,6 +252,7 @@ class BaseStream(
         """Provider-agnostic call response construction."""
         ...
 
+
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
 _SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
 _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)

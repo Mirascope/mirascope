@@ -98,21 +98,22 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
     def audio(self) -> bytes | None:
         """Returns the audio data of the response."""
 
-        if self.chunk.choices and ((audio :=  getattr(self.chunk.choices[0].delta, "audio", None)) and (
-            audio_data := audio.get("data"))
+        if self.chunk.choices and (
+            (audio := getattr(self.chunk.choices[0].delta, "audio", None))
+            and (audio_data := audio.get("data"))
         ):
             return base64.b64decode(audio_data)
         return None
-
 
     @computed_field
     @property
     def audio_transcript(self) -> str | None:
         """Returns the transcript of the audio content."""
-        if self.chunk.choices and (audio := getattr(self.chunk.choices[0].delta, "audio", None)):
+        if self.chunk.choices and (
+            audio := getattr(self.chunk.choices[0].delta, "audio", None)
+        ):
             return audio.get("transcript")
         return None
-
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
