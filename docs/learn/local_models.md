@@ -27,7 +27,7 @@ This is easily done by passing a [custom client](./calls.md#custom-client) to th
         
             [Click here for {{ method }} OpenAI compatibility info]({{ support_url }})
 
-        ```python hl_lines="10"
+        ```python hl_lines="7 9"
         --8<-- "examples/learn/local_models/{{ method.lower() }}.py"
         ```
     {% endfor %}
