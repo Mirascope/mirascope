@@ -166,7 +166,6 @@ def structured_stream_factory(  # noqa: ANN201
         _BaseToolT,
     ],
     get_json_output: GetJsonOutput[_BaseCallResponseChunkT],
-        provider: str | None = None,
 ):
     class CustomContentChunk(TCallResponseChunk):
         json_output: str
@@ -216,12 +215,12 @@ def structured_stream_factory(  # noqa: ANN201
         def handle_chunk(
             chunk: _ResponseChunkT | _AsyncResponseChunkT,
         ) -> tuple[_BaseCallResponseChunkT, None]:
-            call_response_chunk = TCallResponseChunk(chunk=chunk, provider=provider)
+            call_response_chunk = TCallResponseChunk(chunk=chunk)
             json_output = get_json_output(call_response_chunk, json_mode)
 
             call_response_chunk = cast(
                 _BaseCallResponseChunkT,
-                CustomContentChunk(chunk=chunk, json_output=json_output, provider=provider),  # pyright: ignore [reportAbstractUsage]
+                CustomContentChunk(chunk=chunk, json_output=json_output),  # pyright: ignore [reportAbstractUsage]
             )
             return call_response_chunk, None
 
@@ -247,7 +246,6 @@ def structured_stream_factory(  # noqa: ANN201
             setup_call=setup_call,
             handle_stream=handle_stream,
             handle_stream_async=handle_stream_async,
-            provider=provider,
         )
 
         tool = setup_extract_tool(response_model, TToolType)

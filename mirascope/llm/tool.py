@@ -29,15 +29,13 @@ class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):
     - Relies on _response having `common_` methods/properties if needed.
     """
 
-    _provider: str
     _response: BaseTool
 
-    def __init__(self, response: BaseTool, provider: str) -> None:
+    def __init__(self, response: BaseTool) -> None:
         super().__init__(
             **{field: getattr(response, field) for field in response.model_fields}
         )
         object.__setattr__(self, "_response", response)
-        object.__setattr__(self, "provider", provider)
 
     def __getattribute__(self, name: str) -> Any:
         special_names = {

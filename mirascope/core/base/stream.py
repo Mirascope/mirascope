@@ -292,7 +292,6 @@ def stream_factory(  # noqa: ANN201
     handle_stream_async: HandleStreamAsync[
         _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
-    provider: str | None = None,
 ):
     @overload
     def decorator(
@@ -416,7 +415,6 @@ def stream_factory(  # noqa: ANN201
                     messages=messages,
                     call_params=call_params,
                     call_kwargs=call_kwargs,
-                    provider=provider,
                 )
 
             return inner_async
@@ -467,7 +465,6 @@ def stream_factory(  # noqa: ANN201
                     messages=messages,
                     call_params=call_params,
                     call_kwargs=call_kwargs,
-                    provider=provider,
                 )
 
             return inner

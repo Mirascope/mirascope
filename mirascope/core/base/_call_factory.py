@@ -87,7 +87,6 @@ def call_factory(  # noqa: ANN202
     handle_stream_async: HandleStreamAsync[
         _AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT
     ],
-    provider: str | None = None,
 ) -> CallDecorator[
     _BaseCallResponseT,
     _BaseCallResponseChunkT,
@@ -186,7 +185,6 @@ def call_factory(  # noqa: ANN202
                         TToolType=TToolType,
                         setup_call=setup_call,
                         get_json_output=get_json_output,
-                        provider=provider,
                     ),
                     model=model,
                     response_model=response_model,
@@ -218,7 +216,6 @@ def call_factory(  # noqa: ANN202
                     setup_call=setup_call,
                     handle_stream=handle_stream,
                     handle_stream_async=handle_stream_async,
-                    provider=provider,
                 ),
                 model=model,
                 tools=tools,
@@ -229,7 +226,7 @@ def call_factory(  # noqa: ANN202
             )  # pyright: ignore [reportReturnType, reportCallIssue]
         return partial(
             create_factory(
-                TCallResponse=TCallResponse, setup_call=setup_call, provider=provider
+                TCallResponse=TCallResponse, setup_call=setup_call,
             ),
             model=model,
             tools=tools,
