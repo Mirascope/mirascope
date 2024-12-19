@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -19,6 +19,9 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
+
+if TYPE_CHECKING:
+    from .. import BaseMessageParam
 
 _ResponseT = TypeVar("_ResponseT", bound=Any)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
@@ -189,4 +192,40 @@ class BaseCallResponse(
             tools_and_outputs: The list of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
+        ...
+
+    @property
+    @abstractmethod
+    def common_finish_reasons(self) -> list[str] | None:
+        """Provider-agnostic finish reasons."""
+        ...
+
+    @property
+    @abstractmethod
+    def common_message_param(self) -> BaseMessageParam:
+        """Provider-agnostic assistant message param."""
+        ...
+
+    @property
+    @abstractmethod
+    def common_tools(self) -> list[_BaseToolT] | None:
+        """Provider-agnostic tools."""
+        ...
+
+    @property
+    @abstractmethod
+    def common_usage(self) -> Any:
+        """Provider-agnostic usage info."""
+        ...
+
+    @abstractmethod
+    def common_construct_call_response(self) -> BaseCallResponse:
+        """Construct a provider-agnostic call response."""
+        ...
+
+    @abstractmethod
+    def common_construct_message_param(
+        self, tool_calls: list[Any] | None, content: str | None
+    ) -> BaseMessageParam:
+        """Construct a provider-agnostic assistant message param."""
         ...

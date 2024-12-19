@@ -4,6 +4,7 @@ usage docs: learn/streams.md
 """
 
 from collections.abc import AsyncGenerator, Generator
+from typing import Any
 
 from openai.types.chat import (
     ChatCompletion,
@@ -20,7 +21,7 @@ from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_message_tool_call_param import Function
 from openai.types.completion_usage import CompletionUsage
 
-from ..base.stream import BaseStream
+from ..base.stream import BaseStream, _AssistantMessageParamT, _BaseCallResponseT
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
@@ -184,3 +185,14 @@ class OpenAIStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    def common_construct_message_param(
+            self, tool_calls: list[Any] | None, content: str | None
+    ) -> _AssistantMessageParamT:
+        raise NotImplementedError
+
+    def common_construct_call_response(self) -> _BaseCallResponseT:
+        raise NotImplementedError
+
+    def common_cost(self) -> float | None:
+        raise NotImplementedError

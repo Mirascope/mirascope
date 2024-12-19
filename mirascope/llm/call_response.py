@@ -1,132 +1,94 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, computed_field, model_validator
+from mirascope.core import BaseDynamicConfig
+from mirascope.core.base import (
+    BaseCallParams,
+    BaseCallResponse,
+    BaseMessageParam,
+    BaseTool,
+)
+from mirascope.llm._response_metaclass import _ResponseMetaclass
 
-from mirascope.core.base import BaseCallResponse
-from mirascope.core.base.call_params import BaseCallParams
-from mirascope.core.base.message_param import BaseMessageParam
-from mirascope.core.base.tool import BaseTool
-from mirascope.llm._get_provider_converter import _get_provider_converter
-
-if TYPE_CHECKING:
-    from mirascope.llm._base_provider_converter import BaseProviderConverter
-
-_ResponseT = TypeVar("_ResponseT", bound=Any)
-
-Provider = Literal["openai", "anthropic"]
-
-
-class Usage(BaseModel):
-    completion_tokens: int
-    """Number of tokens in the generated completion."""
-
-    prompt_tokens: int
-    """Number of tokens in the prompt."""
-
-    total_tokens: int
-    """Total number of tokens used in the request (prompt + completion)."""
+_ResponseT = TypeVar("_ResponseT")
 
 
 class CallResponse(
     BaseCallResponse[
         _ResponseT,
         BaseTool,
-        object,
         Any,
+        BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
         BaseCallParams,
         BaseMessageParam,
-    ]
+    ],
+    Generic[_ResponseT],
+    metaclass=_ResponseMetaclass,
 ):
     """
-    A provider-agnostic CallResponse with a single generic parameter.
+    A provider-agnostic CallResponse class.
 
-    Example usage:
-    CallResponse[ChatCompletion]
+    We rely on _response having `common_` methods or properties for normalization.
     """
 
-    provider: Provider
-    provider_call_response: BaseCallResponse
-    _message_param: BaseMessageParam
-    _usage: Usage
+    _response: BaseCallResponse
 
-    @model_validator(mode="before")
-    def _pre_init_validate(cls, values: Any) -> Any:  # noqa: ANN401
-        if (provider := values.get("provider")) and (provider_converter := _get_provider_converter(provider)):
-            provider_call_response = (
-                provider_converter.get_call_response_class().model_validate(values)
-            )
-            return {
-                **values,
-                "provider_call_response": provider_call_response,
-                "provider": provider,
-            }
-        raise ValueError("Invalid provider")
+    def __init__(
+        self,
+        response: BaseCallResponse,
+    ) -> None:
+        super().__init__(
+            **{field: getattr(response, field) for field in response.model_fields}
+        )
+        object.__setattr__(self, "_response", response)
 
-    @model_validator(mode="after")
-    def _post_init_normalize(self) -> CallResponse[_ResponseT]:
-        if provider_converter := _get_provider_converter(self.provider):
-            self._message_param = provider_converter.get_message_param(
-                self.provider_call_response.message_param
-            )
-            self._usage = provider_converter.get_usage(
-                self.provider_call_response.usage
-            )
-        return self
+    def __getattribute__(self, name: str) -> Any:
+        special_names = {
+            "_response",
+            "__dict__",
+            "__class__",
+            "model_fields",
+            "__annotations__",
+            "__pydantic_validator__",
+            "__pydantic_fields_set__",
+            "__pydantic_extra__",
+            "__pydantic_private__",
+            "__class_getitem__",
+            "__repr__",
+            "__str__",
+            "_properties",
+        } | set(object.__getattribute__(self, "_properties"))
 
-    @property
-    def content(self) -> str:
-        return self.provider_call_response.content
+        if name in special_names:
+            return object.__getattribute__(self, name)
+
+        try:
+            response = object.__getattribute__(self, "_response")
+            return getattr(response, name)
+        except AttributeError:
+            return object.__getattribute__(self, name)
+
+    def __str__(self) -> str:
+        return str(self._response)
 
     @property
     def finish_reasons(self) -> list[str] | None:
-        return self.provider_call_response.finish_reasons
+        # Use common_finish_reasons from _response
+        return self._response.common_finish_reasons
 
-    @property
-    def model(self) -> str | None:
-        return self.provider_call_response.model
-
-    @property
-    def id(self) -> str | None:
-        return self.provider_call_response.id
-
-    @property
-    def usage(self) -> object | None:
-        return self._usage
-
-    @property
-    def input_tokens(self) -> int | float | None:
-        return self.provider_call_response.input_tokens
-
-    @property
-    def output_tokens(self) -> int | float | None:
-        return self.provider_call_response.output_tokens
-
-    @property
-    def cost(self) -> float | None:
-        return self.provider_call_response.cost
-
-    @computed_field
     @property
     def message_param(self) -> BaseMessageParam:
-        return self._message_param
+        return self._response.common_message_param
 
-    @computed_field
     @property
     def tools(self) -> list[BaseTool] | None:
-        return self.provider_call_response.tools
+        return self._response.common_tools
 
     @property
     def tool(self) -> BaseTool | None:
-        return self.provider_call_response.tool
-
-    @classmethod
-    def tool_message_params(
-        cls, tools_and_outputs: list[tuple[BaseTool, str]]
-    ) -> list[BaseMessageParam]:
-        return [
-            BaseMessageParam(role="tool", content=output)
-            for _, output in tools_and_outputs
-        ]
+        tools = self._response.common_tools
+        if tools:
+            return tools[0]
+        return None

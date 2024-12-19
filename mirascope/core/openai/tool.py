@@ -5,6 +5,8 @@ usage docs: learn/tools.md
 
 from __future__ import annotations
 
+from typing import Any
+
 from openai.types.chat import (
     ChatCompletionMessageToolCall,
     ChatCompletionToolParam,
@@ -99,3 +101,12 @@ class OpenAITool(BaseTool):
         if allow_partial:
             return partial(cls, {"tool_call", "delta"}).model_validate(model_json)
         return cls.model_validate(model_json)
+
+    @property
+    def common_tool_name(self) -> str:
+        # Return a generic name for the tool, for example self._name()
+        return self._name()
+
+    def common_call_tool(self, *args: Any, **kwargs: Any) -> Any:
+        # Provider-agnostic tool call. Just delegate to self.call().
+        return self.call(*args, **kwargs)
