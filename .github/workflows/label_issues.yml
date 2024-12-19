@@ -1,23 +1,19 @@
-name: Auto Label Issues
+name: Label Issues
 
 on:
   issues:
-    types: [opened]
-
+    types:
+      - reopened
+      - opened
 jobs:
-  add-labels:
+  label_issues:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-    
     steps:
-      - name: Add default label
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              issue_number: context.issue.number,
-              labels: ['mirascope']
-            })
+      - run: gh issue edit "$NUMBER" --add-label "$LABELS"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LABELS: mirascope
