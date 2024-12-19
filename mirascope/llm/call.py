@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from enum import Enum
 from functools import wraps
-from typing import Any, Literal, ParamSpec, TypeAlias, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ParamSpec,
+    TypeAlias,
+    TypeVar,
+)
 
 from pydantic import BaseModel
 
+from mirascope.core.anthropic import AnthropicModels
 from mirascope.core.base import (
     BaseCallResponse,
     BaseCallResponseChunk,
@@ -17,6 +24,7 @@ from mirascope.core.base import (
 )
 from mirascope.core.base._utils import fn_is_async
 from mirascope.core.base.stream_config import StreamConfig
+from mirascope.core.openai import OpenAIModels
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
@@ -31,11 +39,13 @@ _BaseCallResponseChunkT = TypeVar(
 _AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 
-OpenAIModels = Literal["openai:gpt-4o-mini", "openai:gpt-4o-large", "openai:gpt-4o-xl"]
-AnthropicModels = Literal[
-    "anthropic:claude-3-5-sonnet-20240620", "claude-3-haiku-20240307"
-]
+
 Models: TypeAlias = OpenAIModels | AnthropicModels
+
+if TYPE_CHECKING:
+    from mirascope.core.base import BaseTool
+
+    _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
 def _get_provider_call(provider: str) -> Callable[..., Any]:
@@ -57,11 +67,16 @@ def call(
     | None = None,
     json_mode: bool = False,
     call_params: CommonCallParams | None = None,
-) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+) -> Callable[
+    [Callable[_P, _R | Awaitable[_R]]],
+    Callable[_P, CallResponse | Stream | Awaitable[CallResponse | Stream]],
+]:
     provider, model_name = model.split(":", 1)
     provider_call = _get_provider_call(provider)
 
-    def wrapper(fn: Callable[_P, _R]) -> Callable[_P, _R]:
+    def wrapper(
+        fn: Callable[_P, _R | Awaitable[_R]],
+    ) -> Callable[_P, CallResponse | Stream | Awaitable[CallResponse | Stream]]:
         decorated = provider_call(
             model=model_name,
             stream=stream,
@@ -73,21 +88,23 @@ def call(
         )(fn)
 
         @wraps(decorated)
-        def inner(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+        def inner(
+            *args: _P.args, **kwargs: _P.kwargs
+        ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
             result = decorated(*args, **kwargs)
-            if fn_is_async(result):
+            if fn_is_async(decorated):
 
-                async def async_wrapper() -> _R:
+                async def async_wrapper() -> CallResponse | Stream:
                     final = await result
-                    return _wrap_result(final, provider)
+                    return _wrap_result(final)
 
                 return async_wrapper()
             else:
-                return _wrap_result(result, provider)
+                return _wrap_result(result)
 
         return inner
 
-    def _wrap_result(result: Any, provider: str) -> Any:
+    def _wrap_result(result: BaseCallResponse | Stream) -> CallResponse | Stream:
         if isinstance(result, BaseCallResponse):
             return CallResponse(response=result)
         elif isinstance(result, BaseStream):
@@ -98,12 +115,11 @@ def call(
                 call_response_type=result.call_response_type,
                 model=result.model,
                 prompt_template=result.prompt_template,
-                fn_args=result.fn_args,
+                fn_args=result.fn_args or {},
                 dynamic_config=result.dynamic_config,
                 messages=result.messages,
                 call_params=result.call_params,
                 call_kwargs=result.call_kwargs,
-                provider=provider,
             )
         else:
             raise ValueError(f"Unsupported result type: {type(result)}")

@@ -97,7 +97,6 @@ class Stream(
         messages: list[_MessageParamT],
         call_params: _BaseCallParamsT,
         call_kwargs: BaseCallKwargs[_ToolSchemaT],
-        provider: str | None = None,
     ) -> None:
         super().__init__(
             stream=stream,
@@ -111,7 +110,6 @@ class Stream(
             messages=messages,
             call_params=call_params,
             call_kwargs=call_kwargs,
-            provider=provider,
         )
 
     @property
