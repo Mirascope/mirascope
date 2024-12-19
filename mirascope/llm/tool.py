@@ -54,7 +54,7 @@ class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):
             return object.__getattribute__(self, name)
 
         try:
-            response = object.__getattribute__(self, "_response")
-            return getattr(response, name)
+            tool = object.__getattribute__(self, "_tool")
+            return getattr(tool, name)
         except AttributeError:
             return object.__getattribute__(self, name)

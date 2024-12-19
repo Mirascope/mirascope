@@ -15,7 +15,12 @@ class _ResponseMetaclass(ModelMetaclass):
         cls = super().__new__(mcls, name, bases, namespace)
         cls.__abstractmethods__ = frozenset()
         cls._properties = [
-            n for n, v in inspect.getmembers(cls) if isinstance(v, property)
+            n
+            for n, v in inspect.getmembers(cls)
+            if isinstance(v, property)
+            and not getattr(
+                v.fget, "__isabstractmethod__", False
+            )  # Use only properties that are not abstract
         ]
 
         return cls

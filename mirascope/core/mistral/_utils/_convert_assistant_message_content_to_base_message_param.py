@@ -11,7 +11,7 @@ from mistralai.models import (
 from ...base import BaseMessageParam, ImagePart, TextPart
 
 
-def _assistant_message_content_to_base_param(
+def _assistant_message_content_to_base_message_param(
     content: AssistantMessageContent,
 ) -> BaseMessageParam:
     """
