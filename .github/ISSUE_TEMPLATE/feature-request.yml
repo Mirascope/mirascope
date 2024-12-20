@@ -1,6 +1,6 @@
 name: 💡 Feature Request
 description: Suggest a feature or new functionality for Mirascope
-labels: [Feature Request]
+labels: [enhancement]
 
 body:
   - type: textarea
