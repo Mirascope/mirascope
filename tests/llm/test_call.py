@@ -1,30 +1,23 @@
-import pytest
-from unittest.mock import patch
 from typing import Any
-from enum import Enum
+from unittest.mock import patch
+
+import pytest
 
 from mirascope.core.base import (
     BaseCallKwargs,
     BaseCallParams,
     BaseCallResponse,
-    BaseDynamicConfig,
-    BaseMessageParam,
     BaseStream,
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import _get_provider_call, _wrap_result, call
 from mirascope.llm.stream import Stream
 
 
-# Redefine FinishReason as an Enum for stable attribute access
-class FinishReason(Enum):
-    STOP = "stop"
+class DummyCallParams(BaseCallParams): ...
 
-class DummyCallParams(BaseCallParams):
-    pass
 
 class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     @property
@@ -145,45 +138,54 @@ def test_get_provider_call_anthropic():
         func = _get_provider_call("anthropic")
         assert func == "anthropic_mock"
 
+
 def test_get_provider_call_azure():
     with patch("mirascope.core.azure.azure_call", new="azure_mock"):
         func = _get_provider_call("azure")
         assert func == "azure_mock"
+
 
 def test_get_provider_call_bedrock():
     with patch("mirascope.core.bedrock.bedrock_call", new="bedrock_mock"):
         func = _get_provider_call("bedrock")
         assert func == "bedrock_mock"
 
+
 def test_get_provider_call_cohere():
     with patch("mirascope.core.cohere.cohere_call", new="cohere_mock"):
         func = _get_provider_call("cohere")
         assert func == "cohere_mock"
+
 
 def test_get_provider_call_gemini():
     with patch("mirascope.core.gemini.gemini_call", new="gemini_mock"):
         func = _get_provider_call("gemini")
         assert func == "gemini_mock"
 
+
 def test_get_provider_call_groq():
     with patch("mirascope.core.groq.groq_call", new="groq_mock"):
         func = _get_provider_call("groq")
         assert func == "groq_mock"
+
 
 def test_get_provider_call_litellm():
     with patch("mirascope.core.litellm.litellm_call", new="litellm_mock"):
         func = _get_provider_call("litellm")
         assert func == "litellm_mock"
 
+
 def test_get_provider_call_mistral():
     with patch("mirascope.core.mistral.mistral_call", new="mistral_mock"):
         func = _get_provider_call("mistral")
         assert func == "mistral_mock"
 
+
 def test_get_provider_call_openai():
     with patch("mirascope.core.openai.openai_call", new="openai_mock"):
         func = _get_provider_call("openai")
         assert func == "openai_mock"
+
 
 def test_get_provider_call_vertex():
     with patch("mirascope.core.vertex.vertex_call", new="vertex_mock"):
@@ -250,7 +252,9 @@ async def test_call_decorator_async():
                     start_time=0,
                     end_time=0,
                 )
+
             return inner
+
         return wrapper
 
     with patch(
