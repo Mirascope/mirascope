@@ -4,6 +4,7 @@ import io
 from unittest.mock import MagicMock, patch
 
 import pytest
+from google.generativeai import protos
 from google.generativeai.types import ContentDict
 
 from mirascope.core.base import (
@@ -12,6 +13,7 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolResultPart,
 )
 from mirascope.core.gemini._utils._convert_message_params import convert_message_params
 
@@ -32,6 +34,9 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail=None
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
             ],
         ),
     ]
@@ -43,7 +48,14 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
         {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
         {
             "role": "user",
-            "parts": ["test", "test", {"mime_type": "audio/wav", "data": b"audio"}],
+            "parts": [
+                "test",
+                "test",
+                {"mime_type": "audio/wav", "data": b"audio"},
+                protos.FunctionResponse(
+                    name="tool_name", response={"result": "result"}
+                ),
+            ],
         },
     ]
     mock_image_open.assert_called_once()

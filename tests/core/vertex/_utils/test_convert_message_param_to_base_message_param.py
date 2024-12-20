@@ -111,3 +111,24 @@ def test_vertex_convert_parts_unsupported_document():
         match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
         convert_message_param_to_base_message_param(Mock(parts=[mock_part]))
+
+
+def test_vertex_convert_parts_tool_result():
+    """
+    Test vertex_convert_parts with a Part containing only text.
+    """
+    Part = MagicMock()  # Mock Part class
+    mock_part = Part()
+    mock_part.text = None
+    mock_part.inline_data = None
+    mock_part.file_data = None
+    function_call = MagicMock()
+    function_call.name = "test"
+    function_call.arguments = [("arg1", "value1"), ("arg2", "value2")]
+    mock_part.function_call = function_call
+    result = convert_message_param_to_base_message_param(Mock(parts=[mock_part]))
+    assert isinstance(result, BaseMessageParam)
+    assert result.role == "tool"
+    assert len(result.content) == 1
+    assert result.content[0].type == "tool_call"  # pyright: ignore [reportAttributeAccessIssue]
+    assert result.content[0].name == "test"  # pyright: ignore [reportAttributeAccessIssue]

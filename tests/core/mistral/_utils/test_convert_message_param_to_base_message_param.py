@@ -8,8 +8,7 @@ from mirascope.core.mistral._utils._convert_message_param_to_base_message_param 
 
 
 class DummyTextChunk:
-    def __init__(self, text: str):
-        self.text = text
+    def __init__(self, text: str): ...
 
 
 class DummyImageURLChunk:

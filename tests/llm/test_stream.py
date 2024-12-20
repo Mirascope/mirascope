@@ -10,6 +10,7 @@ from mirascope.core.base import (
     BaseCallResponseChunk,
     BaseMessageParam,
     BaseTool,
+    ToolResultPart,
 )
 from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
@@ -187,3 +188,26 @@ async def test_stream():
     assert dummy_stream_instance.cost == 0.02
     call_response_instance = dummy_stream_instance.common_construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
+    assert isinstance(dummy_stream_instance.construct_call_response(), CallResponse)
+    output = "output"
+    tool_message_params = dummy_stream_instance.tool_message_params(
+        [(call_response_instance.tool, output)]  # pyright: ignore [reportArgumentType]
+    )
+    assert tool_message_params == mock.call_response_type.tool_message_params()
+    mock_tool = MagicMock()
+    mock_tool.tool_call.id = "id"
+    mock_tool._name.return_value = "name"
+    assert dummy_stream_instance.common_tool_message_params([(mock_tool, output)]) == [
+        BaseMessageParam(
+            role="tool",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="name",
+                    content="output",
+                    id="id",
+                    is_error=False,
+                )
+            ],
+        )
+    ]

@@ -3,7 +3,13 @@
 import pytest
 from groq.types.chat import ChatCompletionMessageParam
 
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    ImagePart,
+    TextPart,
+    ToolResultPart,
+)
 from mirascope.core.groq._utils._convert_message_params import convert_message_params
 
 
@@ -20,25 +26,34 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
             ],
         ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
-        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
-        {"role": "user", "content": "Hello"},
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {"content": "Hello", "role": "user"},
         {
-            "role": "user",
             "content": [
-                {"type": "text", "text": "Hello"},
+                {"text": "Hello", "type": "text"},
                 {
-                    "type": "image_url",
                     "image_url": {
-                        "url": "data:image/jpeg;base64,aW1hZ2U=",
                         "detail": "auto",
+                        "url": "data:image/jpeg;base64,aW1hZ2U=",
                     },
+                    "type": "image_url",
+                },
+                {
+                    "content": "result",
+                    "name": "tool_name",
+                    "role": "tool",
+                    "tool_call_id": "tool_id",
                 },
             ],
+            "role": "user",
         },
     ]
 

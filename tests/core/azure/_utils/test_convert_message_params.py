@@ -6,7 +6,13 @@ from azure.ai.inference.models import (
 )
 
 from mirascope.core.azure._utils._convert_message_params import convert_message_params
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    ImagePart,
+    TextPart,
+    ToolResultPart,
+)
 
 
 def test_convert_message_params() -> None:
@@ -24,6 +30,9 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ToolResultPart(
+                    type="tool_result", id="tool_id", content="result", name="tool_name"
+                ),
             ],
         ),
     ]
@@ -31,6 +40,7 @@ def test_convert_message_params() -> None:
     assert converted_message_params == [
         {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
         {"role": "user", "content": "Hello"},
+        {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
         {
             "role": "user",
             "content": [

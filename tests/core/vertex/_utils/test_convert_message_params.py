@@ -12,6 +12,7 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolResultPart,
 )
 from mirascope.core.vertex._utils._convert_message_params import convert_message_params
 
@@ -32,6 +33,9 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail=None
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
             ],
         ),
     ]
@@ -49,6 +53,12 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 {"text": "test"},
                 {"inline_data": {"data": "aW1hZ2U=", "mime_type": "image/jpeg"}},
                 {"inline_data": {"data": "YXVkaW8=", "mime_type": "audio/wav"}},
+                {
+                    "function_response": {
+                        "name": "tool_name",
+                        "response": {"content": {"result": "result"}},
+                    }
+                },
             ],
             "role": "user",
         },
