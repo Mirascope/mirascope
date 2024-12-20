@@ -21,7 +21,6 @@ def test_no_tool_calls_with_message():
     assert result.content == "Hello assistant"
 
 
-
 def test_tool_calls_with_message():
     """Covers the branch where tool_calls are present and message is provided."""
     tool_call = MagicMock()

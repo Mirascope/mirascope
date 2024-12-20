@@ -4,7 +4,7 @@ from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
 )
 
-from ...base import BaseMessageParam, ToolCallPart
+from ...base import BaseMessageParam, TextPart, ToolCallPart
 
 
 def convert_message_param_to_base_message_param(
@@ -21,7 +21,7 @@ def convert_message_param_to_base_message_param(
     elif isinstance(content, list):
         for part in content:
             if "text" in part:
-                contents.append(BaseMessageParam(role=role, content=part["text"]))
+                contents.append(TextPart(type="text", text=part["text"]))
             else:
                 raise ValueError(part["refusal"])
     if tool_calls := message_param.get("tool_calls"):
