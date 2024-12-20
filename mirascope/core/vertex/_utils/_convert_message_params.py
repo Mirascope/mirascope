@@ -71,6 +71,15 @@ def convert_message_params(
                     converted_content.append(
                         Part.from_data(mime_type=part.media_type, data=part.audio)
                     )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        Part.from_function_response(
+                            name=part.name,
+                            response={
+                                "content": {"result": part.content},
+                            },
+                        )
+                    )
                 else:
                     raise ValueError(
                         "Vertex currently only supports text, image, and audio parts. "
