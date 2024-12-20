@@ -8,6 +8,7 @@ from google.generativeai.types.file_types import FileDataType as FileData
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base.message_param import ToolCallPart
 
 
 def _is_image_mime(mime_type: str) -> bool:
@@ -67,7 +68,17 @@ def convert_message_param_to_base_message_param(
                 raise ValueError(
                     f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
                 )
-
+        elif part.function_call:
+            return BaseMessageParam(
+                role=role,
+                content=[
+                    ToolCallPart(
+                        type="tool_call",
+                        name=part.function_call.name,
+                        args=dict(part.function_call.args),
+                    )
+                ],
+            )
         else:
             raise ValueError(
                 "Part does not contain any supported content (text, image, or document)."

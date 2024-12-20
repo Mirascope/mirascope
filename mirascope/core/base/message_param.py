@@ -1,7 +1,7 @@
 """This module contains the base class for message parameters."""
 
 from collections.abc import Sequence
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -77,6 +77,35 @@ class DocumentPart(BaseModel):
     document: bytes
 
 
+class ToolCallPart(BaseModel):
+    """A content part for tool.
+
+    Attributes:
+        type: Always "tool"
+        name: The name of the tool
+        id: The id of the tool
+    """
+
+    type: Literal["tool_call"]
+    name: str
+    args: dict | None = None
+    id: str | None = None
+
+class ToolResultPart(BaseModel):
+    """A content part for tool.
+
+    Attributes:
+        type: Always "tool"
+        name: The name of the tool
+        id: The id of the tool
+    """
+
+    type: Literal["tool_result"]
+    name: str
+    content: str
+    id: str | None = None
+
+
 class BaseMessageParam(BaseModel):
     """A base class for message parameters.
 
@@ -91,6 +120,13 @@ class BaseMessageParam(BaseModel):
     role: str
     content: (
         str
-        | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]
+        | Sequence[
+            TextPart
+            | ImagePart
+            | AudioPart
+            | CacheControlPart
+            | DocumentPart
+            | ToolCallPart
+            | ToolResultPart
+            ]
     )
-    tool_name: str | None = None

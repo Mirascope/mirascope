@@ -3,6 +3,7 @@ from vertexai.generative_models import Content
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base.message_param import ToolCallPart
 
 
 def _is_image_mime(mime_type: str) -> bool:
@@ -29,10 +30,9 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
 
 def convert_message_param_to_base_message_param(
     message: Content,
-    role: str = "assistant",
 ) -> BaseMessageParam:
     """Converts a Part to a BaseMessageParam."""
-
+    role: str = "assistant"
     content_list = []
     for part in message.parts:
         if part.text:
@@ -63,7 +63,17 @@ def convert_message_param_to_base_message_param(
                 raise ValueError(
                     f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
                 )
-
+        elif part.function_call:
+            return BaseMessageParam(
+                role="tool",
+                content=[
+                    ToolCallPart(
+                        type="tool_call",
+                        name=part.function_call.name,
+                        args=dict(part.function_call.arguments),
+                    )
+                ],
+            )
         else:
             raise ValueError(
                 "Part does not contain any supported content (text, image, or document)."

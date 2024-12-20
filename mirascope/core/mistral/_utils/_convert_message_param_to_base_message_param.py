@@ -1,4 +1,5 @@
 import base64
+import json
 import re
 
 from mistralai.models import (
@@ -9,6 +10,7 @@ from mistralai.models import (
 )
 
 from ...base import BaseMessageParam, ImagePart, TextPart
+from ...base.message_param import ToolCallPart
 
 
 def convert_message_param_to_base_message_param(
@@ -17,6 +19,20 @@ def convert_message_param_to_base_message_param(
     """
     Convert AssistantMessageContent (str or List[ContentChunk]) into BaseMessageParam.
     """
+    if tool_calls := message_param.tool_calls:
+        tool = tool_calls[0]
+        return BaseMessageParam(
+            role="tool",
+            content=[
+                ToolCallPart(
+                    type="tool_call",
+                    name=tool.function.name,
+                    id=tool.id,
+                    args=json.loads(tool.function.arguments),
+                )
+            ],
+        )
+
     content = message_param.content
     if not content:
         return BaseMessageParam(role="assistant", content="")

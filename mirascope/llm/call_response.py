@@ -10,6 +10,7 @@ from mirascope.core.base import (
     BaseTool,
     transform_tool_outputs,
 )
+from mirascope.core.base.message_param import ToolResultPart
 from mirascope.core.base.types import FinishReason
 from mirascope.llm._response_metaclass import _ResponseMetaclass
 from mirascope.llm.tool import Tool
@@ -109,8 +110,11 @@ class CallResponse(
         return [
             BaseMessageParam(
                 role="tool",
-                content=output,
-                tool_name=tool._name(),
+                content=[
+                    ToolResultPart(
+                        type="tool_result", name=tool._name(), content=output
+                    )
+                ],
             )
             for tool, output in tools_and_outputs
         ]
