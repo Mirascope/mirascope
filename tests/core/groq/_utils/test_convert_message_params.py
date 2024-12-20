@@ -26,7 +26,7 @@ def test_convert_message_params() -> None:
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
         {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
-        {"role": "user", "content": "Hello"},
+        {"role": "user", "content": "Hello", "tool_name": None},
         {
             "role": "user",
             "content": [

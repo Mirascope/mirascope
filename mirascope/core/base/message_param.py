@@ -83,8 +83,9 @@ class BaseMessageParam(BaseModel):
     usage docs: learn/prompts.md#prompt-templates-messages
 
     Attributes:
-        role: The role of the message (e.g. "system", "user", "assistant")
+        role: The role of the message (e.g. "system", "user", "assistant", "tool")
         content: The content of the message
+        tool_name: The name of the tool, if any
     """
 
     role: str
@@ -92,3 +93,4 @@ class BaseMessageParam(BaseModel):
         str
         | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]
     )
+    tool_name: str | None = None

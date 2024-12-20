@@ -9,7 +9,6 @@ from mirascope.core.base import (
     BaseDynamicConfig,
     BaseMessageParam,
     BaseTool,
-    BaseToolMessageParam,
 )
 from mirascope.core.base.call_response import JsonableType
 from mirascope.core.base.stream import BaseStream
@@ -105,7 +104,7 @@ class Stream(
     @classmethod
     def common_tool_message_params(
         cls, tools_and_outputs: list[tuple[BaseTool, JsonableType]]
-    ) -> list[BaseToolMessageParam]:
+    ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.
 
         Args:
