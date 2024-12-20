@@ -58,8 +58,7 @@ class DummyProviderCallResponse(BaseCallResponse):
     def message_param(self): ...
 
     @property
-    def tools(self):
-        return None
+    def tools(self): ...
 
     @property
     def tool(self): ...

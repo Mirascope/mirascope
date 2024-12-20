@@ -36,3 +36,4 @@ def test_gemini_call_response_chunk() -> None:
     assert call_response_chunk.usage is None
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
+    assert call_response_chunk.common_finish_reasons == ["stop"]
