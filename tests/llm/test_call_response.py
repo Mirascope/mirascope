@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any, ClassVar, cast
 
 from mirascope.core.base import (
     BaseCallParams,
@@ -124,3 +124,75 @@ def test_call_response():
     assert call_response_instance.tool is not None
     assert str(call_response_instance) == "dummy_content"
     assert call_response_instance._response.common_finish_reasons == ["finish"]
+
+
+def test_call_response_attribute_fallback_on_instance():
+    # This test covers the try-except block in __getattribute__
+    # by accessing an attribute that doesn't exist on _response but exists on CallResponse instance.
+    dummy_response = DummyProviderCallResponse(
+        metadata=Metadata(),
+        response={},
+        tool_types=None,
+        prompt_template=None,
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params=DummyCallParams(),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
+    # Add an attribute directly to the call_response_instance that _response doesn't have
+    call_response_instance.custom_attr = "custom_value"  # pyright: ignore [reportAttributeAccessIssue]
+    # Accessing this attribute should trigger the except AttributeError block
+    assert call_response_instance.custom_attr == "custom_value"
+
+
+def test_tool_message_params_various_tool_call_ids_with_annotations():
+    class ToolCallWithID:
+        id = "tool_call_with_id"
+
+    class ToolWithID(BaseTool):
+        tool_call: ClassVar[Any] = ToolCallWithID()
+
+        def call(self): ...
+        @property
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+
+        field1: str = "tool_field"
+
+    class ToolNoCall(BaseTool):
+        tool_call: ClassVar[Any] = None
+
+        def call(self): ...
+        @property
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+
+        field1: str = "tool_field"
+
+    class ToolCallNoIDClass:
+        pass
+
+    class ToolCallNoID(BaseTool):
+        tool_call: ClassVar[Any] = ToolCallNoIDClass()  # no id attribute
+
+        def call(self): ...
+        @property
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+
+        field1: str = "tool_field"
+
+    tool_with_id = ToolWithID()
+    tool_no_call = ToolNoCall()
+    tool_call_no_id = ToolCallNoID()
+
+    result_with_id = CallResponse.tool_message_params([(tool_with_id, "output1")])
+    assert result_with_id[0].content[0].id == "tool_call_with_id"
+
+    result_no_call = CallResponse.tool_message_params([(tool_no_call, "output2")])
+    assert result_no_call[0].content[0].id is None
+
+    result_no_id = CallResponse.tool_message_params([(tool_call_no_id, "output3")])
+    assert result_no_id[0].content[0].id is None
