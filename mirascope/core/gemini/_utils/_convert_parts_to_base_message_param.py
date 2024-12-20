@@ -1,6 +1,9 @@
-from collections.abc import Sequence
+from typing import cast
 
-from google.generativeai.protos import Part
+from google.generativeai.types import (
+    ContentDict,
+    protos,
+)
 from google.generativeai.types.file_types import FileDataType as FileData
 
 from mirascope.core import BaseMessageParam
@@ -29,14 +32,13 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
     return DocumentPart(type="document", media_type=mime_type, document=data)
 
 
-def _convert_message_to_base_message_param(
-    parts: Sequence[Part],
-    role: str = "assistant",
+def convert_message_param_to_base_message_param(
+    message_param: ContentDict,
 ) -> BaseMessageParam:
     """Converts a Part to a BaseMessageParam."""
-
+    role: str = "assistant"
     content_list = []
-    for part in parts:
+    for part in cast(list[protos.Part], message_param["parts"]):
         if part.text:
             content_list.append(TextPart(type="text", text=part.text))
 

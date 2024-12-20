@@ -1,5 +1,5 @@
 from google.cloud.aiplatform_v1beta1.types.content import FileData
-from vertexai.generative_models._generative_models import Part
+from vertexai.generative_models import Content
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
@@ -27,14 +27,14 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
     return DocumentPart(type="document", media_type=mime_type, document=data)
 
 
-def _convert_message_to_base_message_param(
-    parts: list[Part],
+def convert_message_param_to_base_message_param(
+    message: Content,
     role: str = "assistant",
 ) -> BaseMessageParam:
     """Converts a Part to a BaseMessageParam."""
 
     content_list = []
-    for part in parts:
+    for part in message.parts:
         if part.text:
             content_list.append(TextPart(type="text", text=part.text))
 

@@ -4,10 +4,8 @@ import pytest
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
-
-# Import the target function from gemini utils
 from mirascope.core.gemini._utils._convert_parts_to_base_message_param import (
-    _convert_message_to_base_message_param as gemini_convert_parts,
+    convert_message_param_to_base_message_param,
 )
 
 
@@ -21,7 +19,9 @@ def test_gemini_convert_parts_text_only():
     mock_part.inline_data = None
     mock_part.file_data = None
 
-    result = gemini_convert_parts([mock_part])
+    result = convert_message_param_to_base_message_param(
+        {"role": "assistant", "parts": [mock_part]}
+    )
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
     assert len(result.content) == 1
@@ -44,7 +44,9 @@ def test_gemini_convert_parts_image():
     mock_inline_data.data = b"\x89PNG\r\n\x1a\n"
     mock_part.inline_data = mock_inline_data
 
-    result = gemini_convert_parts([mock_part])
+    result = convert_message_param_to_base_message_param(
+        {"role": "assistant", "parts": [mock_part]}
+    )
     assert isinstance(result, BaseMessageParam)
     assert len(result.content) == 1
     assert isinstance(result.content[0], ImagePart)
@@ -66,7 +68,9 @@ def test_gemini_convert_parts_document():
     mock_file_data.data = b"%PDF-1.4..."
     mock_part.file_data = mock_file_data
 
-    result = gemini_convert_parts([mock_part])
+    result = convert_message_param_to_base_message_param(
+        {"role": "assistant", "parts": [mock_part]}
+    )
     assert isinstance(result, BaseMessageParam)
     assert len(result.content) == 1
     assert isinstance(result.content[0], DocumentPart)
@@ -91,7 +95,9 @@ def test_gemini_convert_parts_unsupported_image():
         ValueError,
         match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
     ):
-        gemini_convert_parts([mock_part])
+        convert_message_param_to_base_message_param(
+            {"role": "assistant", "parts": [mock_part]}
+        )
 
 
 def test_gemini_convert_parts_unsupported_document():
@@ -112,7 +118,9 @@ def test_gemini_convert_parts_unsupported_document():
         ValueError,
         match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
-        gemini_convert_parts([mock_part])
+        convert_message_param_to_base_message_param(
+            {"role": "assistant", "parts": [mock_part]}
+        )
 
 
 def test_gemini_convert_parts_empty_part():
@@ -126,4 +134,6 @@ def test_gemini_convert_parts_empty_part():
     mock_part.file_data = None
 
     with pytest.raises(ValueError, match="Part does not contain any supported content"):
-        gemini_convert_parts([mock_part])
+        convert_message_param_to_base_message_param(
+            {"role": "assistant", "parts": [mock_part]}
+        )

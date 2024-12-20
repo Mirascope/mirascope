@@ -2,7 +2,7 @@ import base64
 import re
 
 from mistralai.models import (
-    AssistantMessageContent,
+    AssistantMessage,
     ImageURLChunk,
     ReferenceChunk,
     TextChunk,
@@ -11,12 +11,15 @@ from mistralai.models import (
 from ...base import BaseMessageParam, ImagePart, TextPart
 
 
-def _convert_message_to_base_message_param(
-    content: AssistantMessageContent,
+def convert_message_param_to_base_message_param(
+    message_param: AssistantMessage,
 ) -> BaseMessageParam:
     """
     Convert AssistantMessageContent (str or List[ContentChunk]) into BaseMessageParam.
     """
+    content = message_param.content
+    if not content:
+        return BaseMessageParam(role="assistant", content="")
     role: str = "assistant"
     if isinstance(content, str):
         return BaseMessageParam(role=role, content=content)
