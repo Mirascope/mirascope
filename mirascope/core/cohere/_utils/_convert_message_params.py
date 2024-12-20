@@ -20,6 +20,7 @@ def convert_message_params(
                 )
             )
         else:
+            # TODO: Add support tool_result
             if len(content) != 1 or content[0].type != "text":
                 raise ValueError("Cohere currently only supports text parts.")
             converted_message_params.append(

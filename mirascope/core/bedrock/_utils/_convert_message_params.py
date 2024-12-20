@@ -39,6 +39,16 @@ def convert_message_params(
                     converted_content.append(
                         {"format": part.media_type, "bytes": part.image}
                     )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        {
+                            "toolResult": {
+                                "toolUseId": part.id,
+                                "content": part.content,
+                            }
+                        }
+                    )
+
                 else:
                     raise ValueError(
                         "Bedrock currently only supports text and image parts. "

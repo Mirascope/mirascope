@@ -1,8 +1,9 @@
 """Utility for converting `BaseMessageParam` to `ChatRequestMessage`."""
 
 import base64
+from typing import cast
 
-from azure.ai.inference.models import ChatRequestMessage, UserMessage
+from azure.ai.inference.models import ChatRequestMessage, ToolMessage, UserMessage
 
 from ...base import BaseMessageParam
 
@@ -10,7 +11,7 @@ from ...base import BaseMessageParam
 def convert_message_params(
     message_params: list[BaseMessageParam | ChatRequestMessage],
 ) -> list[ChatRequestMessage]:
-    converted_message_params: list[ChatRequestMessage] = []
+    converted_message_params: list[ChatRequestMessage | ToolMessage] = []
     for message_param in message_params:
         if not isinstance(message_param, BaseMessageParam):
             converted_message_params.append(message_param)
@@ -41,6 +42,13 @@ def convert_message_params(
                                 "detail": part.detail if part.detail else "auto",
                             },
                         }
+                    )
+                elif part.type == "tool_result":
+                    converted_message_params.append(
+                        ToolMessage(
+                            content=part.content,
+                            tool_call_id=cast(str, part.id),
+                        )
                     )
                 else:
                     raise ValueError(

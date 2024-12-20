@@ -105,6 +105,7 @@ class ToolResultPart(BaseModel):
     name: str
     content: str
     id: str | None = None
+    is_error: bool = False
 
 
 class BaseMessageParam(BaseModel):

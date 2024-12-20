@@ -107,12 +107,24 @@ class CallResponse(
             tools_and_outputs: The list of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
+
+        def _get_tool_call_id(_tool: BaseTool) -> str | None:
+            """Get the tool call ID."""
+            if tool_call := getattr(_tool, "tool_call", None):
+                # Expect tool_call has an id attribute.
+                # If not, we should implement a method to get the id on the provider tool
+                return getattr(tool_call, "id", None)
+            return None
+
         return [
             BaseMessageParam(
                 role="tool",
                 content=[
                     ToolResultPart(
-                        type="tool_result", name=tool._name(), content=output
+                        type="tool_result",
+                        name=tool._name(),
+                        content=output,
+                        id=_get_tool_call_id(tool),
                     )
                 ],
             )
