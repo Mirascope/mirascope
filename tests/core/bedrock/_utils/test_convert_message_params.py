@@ -7,6 +7,7 @@ from mirascope.core.base import (
     BaseMessageParam,
     ImagePart,
     TextPart,
+    ToolResultPart,
 )
 from mirascope.core.bedrock import BedrockMessageParam
 from mirascope.core.bedrock._utils._convert_message_params import (
@@ -27,6 +28,9 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
             ],
         ),
     ]
@@ -35,7 +39,11 @@ def test_convert_message_params() -> None:
         {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
         {"content": [{"text": "Hello"}], "role": "user"},
         {
-            "content": [{"text": "Hello"}, {"bytes": b"image", "format": "image/jpeg"}],
+            "content": [
+                {"text": "Hello"},
+                {"bytes": b"image", "format": "image/jpeg"},
+                {"toolResult": {"content": "result", "toolUseId": "tool_id"}},
+            ],
             "role": "user",
         },
     ]
