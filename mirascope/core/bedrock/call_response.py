@@ -21,7 +21,7 @@ from ..base import (
     TextPart,
     transform_tool_outputs,
 )
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 from ._call_kwargs import BedrockCallKwargs
 from ._types import (
     AssistantMessageTypeDef,
@@ -289,15 +289,3 @@ class BedrockCallResponse(
                 raise ValueError("Content block does not contain supported content.")
 
         return BaseMessageParam(role=str(role), content=converted_content)
-
-    @property
-    def common_usage(self) -> Usage | None:
-        if self.input_tokens is None and self.output_tokens is None:
-            return None
-        input_tokens = self.input_tokens or 0
-        output_tokens = self.output_tokens or 0
-        return Usage(
-            prompt_tokens=input_tokens,
-            completion_tokens=output_tokens,
-            total_tokens=input_tokens + output_tokens,
-        )

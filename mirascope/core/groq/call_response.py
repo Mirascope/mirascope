@@ -18,7 +18,7 @@ from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
@@ -176,14 +176,3 @@ class GroqCallResponse(
         if content := self.message_param.get("content"):
             return BaseMessageParam(role="assistant", content=content)
         return BaseMessageParam(role="assistant", content="")
-
-    @property
-    def common_usage(self) -> Usage | None:
-        if self.output_tokens is None or self.input_tokens is None:
-            return None
-        output_tokens, input_tokens = self.output_tokens or 0, self.input_tokens or 0
-        return Usage(
-            completion_tokens=output_tokens,
-            prompt_tokens=input_tokens,
-            total_tokens=input_tokens + output_tokens,
-        )

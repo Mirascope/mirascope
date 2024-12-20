@@ -14,7 +14,6 @@ from openai.types.completion_usage import CompletionUsage
 from pydantic import SkipValidation, computed_field
 
 from ..base import BaseCallResponseChunk
-from ..base.types import Usage
 
 FinishReason = Choice.__annotations__["finish_reason"]
 
@@ -120,10 +119,3 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
     def common_finish_reasons(self) -> list[FinishReason] | None:
         """Provider-agnostic finish reasons."""
         return cast(list[FinishReason], self.finish_reasons)
-
-    @property
-    def common_usage(self) -> Usage | None:
-        """Provider-agnostic usage info."""
-        if self.usage:
-            return Usage.model_validate(self.usage, from_attributes=True)
-        return None

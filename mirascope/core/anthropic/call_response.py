@@ -244,11 +244,3 @@ class AnthropicCallResponse(
                 )
 
         return BaseMessageParam(role=role, content=converted_content)
-
-    @property
-    def common_usage(self) -> types.Usage | None:
-        return types.Usage(
-            completion_tokens=self.output_tokens,
-            prompt_tokens=self.input_tokens,
-            total_tokens=self.input_tokens + self.output_tokens,
-        )

@@ -39,9 +39,7 @@ else:
             def read(self) -> bytes: ...
 
 
-FinishReason: TypeAlias = Literal[
-    "stop", "length", "tool_calls", "content_filter", "function_call"
-]
+FinishReason: TypeAlias = Literal["stop", "length", "tool_calls", "content_filter"]
 
 
 class Usage(BaseModel):

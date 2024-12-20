@@ -18,7 +18,7 @@ from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 from ._utils import calculate_cost
 from .call_params import AzureCallParams
 from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
@@ -190,7 +190,3 @@ class AzureCallResponse(
         return BaseMessageParam(
             role=message_param.role, content=message_param.content or ""
         )
-
-    @property
-    def common_usage(self) -> Usage | None:
-        return Usage.model_validate(self.usage, from_attributes=True)

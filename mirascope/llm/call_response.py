@@ -8,6 +8,8 @@ from mirascope.core.base import (
     BaseCallResponse,
     BaseMessageParam,
     BaseTool,
+    BaseToolMessageParam,
+    transform_tool_outputs,
 )
 from mirascope.core.base.types import FinishReason
 from mirascope.llm._response_metaclass import _ResponseMetaclass
@@ -93,3 +95,23 @@ class CallResponse(
         if tools:
             return tools[0]
         return None
+
+    @classmethod
+    @transform_tool_outputs
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[BaseTool, str]]
+    ) -> list[BaseToolMessageParam]:
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+        """
+        return [
+            BaseToolMessageParam(
+                role="tool",
+                content=output,
+                name=tool._name(),
+            )
+            for tool, output in tools_and_outputs
+        ]

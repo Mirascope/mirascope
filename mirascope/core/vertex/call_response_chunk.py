@@ -6,7 +6,6 @@ usage docs: learn/streams.md#handling-streamed-responses
 from vertexai.generative_models import FinishReason, GenerationResponse
 
 from ..base import BaseCallResponseChunk, types
-from ..base.types import Usage
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -89,5 +88,5 @@ class VertexCallResponseChunk(
         )
 
     @property
-    def common_usage(self) -> Usage | None:
+    def common_usage(self) -> None:
         return None

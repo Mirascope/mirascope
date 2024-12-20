@@ -13,7 +13,7 @@ from azure.ai.inference.models import (
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 
 
 class AzureCallResponseChunk(
@@ -93,7 +93,3 @@ class AzureCallResponseChunk(
     def common_finish_reasons(self) -> list[FinishReason] | None:
         """Provider-agnostic finish reasons."""
         return cast(list[FinishReason], self.finish_reasons)
-
-    @property
-    def common_usage(self) -> Usage | None:
-        return Usage.model_validate(self.usage, from_attributes=True)

@@ -18,7 +18,7 @@ from pydantic import (
     field_serializer,
 )
 
-from ._utils import BaseType
+from ._utils import BaseType, get_common_usage
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
@@ -282,7 +282,6 @@ class BaseCallResponse(
         return [Tool(tool=tool) for tool in self.tools]  # pyright: ignore [reportAbstractUsage]
 
     @property
-    @abstractmethod
     def common_usage(self) -> Usage | None:
         """Provider-agnostic usage info."""
-        ...
+        return get_common_usage(self.input_tokens, self.output_tokens)

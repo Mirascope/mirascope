@@ -3,7 +3,7 @@ from typing import Literal, TypeAlias, cast
 from mirascope.core.base.types import FinishReason
 
 FinishReasonMappingValue: TypeAlias = Literal[
-    "stop", "length", "function_call", "tool_calls", "content_filter"
+    "stop", "length", "tool_calls", "content_filter"
 ]
 
 

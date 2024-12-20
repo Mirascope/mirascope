@@ -18,7 +18,7 @@ from pydantic import computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 from ._utils import calculate_cost
 from ._utils._convert_assistant_message_content_to_base_message_param import (
     _assistant_message_content_to_base_message_param,
@@ -187,12 +187,4 @@ class MistralCallResponse(
             return BaseMessageParam(role="assistant", content="")
         return _assistant_message_content_to_base_message_param(
             self.message_param.content
-        )
-
-    @property
-    def common_usage(self) -> Usage:
-        return Usage(
-            prompt_tokens=self.usage.prompt_tokens,
-            completion_tokens=self.usage.completion_tokens,
-            total_tokens=self.usage.total_tokens,
         )

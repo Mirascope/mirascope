@@ -113,15 +113,3 @@ class AnthropicCallResponseChunk(
         return _convert_finish_reasons_to_common_finish_reasons(
             cast(list[str], self.finish_reasons)
         )
-
-    @property
-    def common_usage(self) -> types.Usage | None:
-        if self.input_tokens is None and self.output_tokens is None:
-            return None
-        input_tokens = self.input_tokens or 0
-        output_tokens = self.output_tokens or 0
-        return types.Usage(
-            completion_tokens=output_tokens,
-            prompt_tokens=input_tokens,
-            total_tokens=input_tokens + output_tokens,
-        )

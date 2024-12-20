@@ -25,6 +25,7 @@ from .response_model_config_dict import ResponseModelConfigDict
 from .stream import BaseStream
 from .structured_stream import BaseStructuredStream
 from .tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
+from .tool_message_param import BaseToolMessageParam
 from .toolkit import BaseToolKit, toolkit_tool
 from .types import AudioSegment
 
@@ -42,6 +43,7 @@ __all__ = [
     "BaseStructuredStream",
     "BaseTool",
     "BaseToolKit",
+    "BaseToolMessageParam",
     "BaseType",
     "CacheControlPart",
     "call_factory",

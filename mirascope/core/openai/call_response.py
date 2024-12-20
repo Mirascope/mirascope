@@ -22,7 +22,7 @@ from ..base import (
     BaseCallResponse,
     transform_tool_outputs,
 )
-from ..base.types import FinishReason, Usage
+from ..base.types import FinishReason
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -235,10 +235,3 @@ class OpenAICallResponse(
             else:
                 raise ValueError(part["refusal"])
         return BaseMessageParam(role=role, content=contents)
-
-    @property
-    def common_usage(self) -> Usage | None:
-        """Provider-agnostic usage info."""
-        if self.usage:
-            return Usage.model_validate(self.usage, from_attributes=True)
-        return None
