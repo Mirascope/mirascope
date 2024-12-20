@@ -109,8 +109,6 @@ class CohereCallResponseChunk(
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:
-        if not self.finish_reasons:
-            return None
         return _convert_finish_reasons_to_common_finish_reasons(
             cast(list[str], self.finish_reasons)
         )

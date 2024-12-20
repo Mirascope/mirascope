@@ -76,7 +76,11 @@ def convert_message_param_to_base_message_param(
             )
         else:
             raise ValueError("Content block does not contain supported content.")
-
+    if len(converted_content) == 1 and isinstance(converted_content[0], TextPart):
+        return BaseMessageParam(
+            role="assistant",
+            content=converted_content[0].text,
+        )
     return BaseMessageParam(
         role="tool" if has_tool_call else "assistant", content=converted_content
     )

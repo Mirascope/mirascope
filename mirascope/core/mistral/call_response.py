@@ -183,6 +183,4 @@ class MistralCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        if not isinstance(self.message_param.content, str | list):
-            return BaseMessageParam(role="assistant", content="")
         return convert_message_param_to_base_message_param(self.message_param)

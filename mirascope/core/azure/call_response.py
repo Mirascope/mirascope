@@ -20,6 +20,9 @@ from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 from ._utils._convert_message_param_to_base_message_param import (
     convert_message_param_to_base_message_param,
 )
@@ -185,7 +188,9 @@ class AzureCallResponse(
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
         """Provider-agnostic finish reasons."""
-        return cast(list[FinishReason], self.finish_reasons)
+        return _convert_finish_reasons_to_common_finish_reasons(
+            cast(list[str], self.finish_reasons)
+        )
 
     @property
     def common_message_param(self) -> BaseMessageParam:

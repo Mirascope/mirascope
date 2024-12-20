@@ -13,7 +13,7 @@ def convert_message_param_to_base_message_param(
 ) -> BaseMessageParam:
     """Converts a Part to a BaseMessageParam."""
     role: str = "assistant"
-    if message_param.tool_calls:
+    if not message_param.tool_calls:
         return BaseMessageParam(role=role, content=message_param.content or "")
 
     contents = []

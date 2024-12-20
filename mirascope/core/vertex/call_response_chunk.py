@@ -86,7 +86,3 @@ class VertexCallResponseChunk(
         return _convert_finish_reasons_to_common_finish_reasons(
             [finish_reason.name for finish_reason in self.finish_reasons]
         )
-
-    @property
-    def common_usage(self) -> None:
-        return None

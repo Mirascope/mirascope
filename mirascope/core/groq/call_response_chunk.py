@@ -9,7 +9,6 @@ from groq.types.chat import ChatCompletionChunk
 from groq.types.chat.chat_completion import Choice
 from groq.types.completion_usage import CompletionUsage
 
-from .. import BaseMessageParam
 from ..base import BaseCallResponseChunk
 
 FinishReason = Choice.__annotations__["finish_reason"]
@@ -92,7 +91,3 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishRea
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
         return cast(list[FinishReason], self.finish_reasons)
-
-    @property
-    def common_message_param(self) -> BaseMessageParam:
-        raise NotImplementedError

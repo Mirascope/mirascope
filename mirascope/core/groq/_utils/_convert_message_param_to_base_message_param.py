@@ -28,5 +28,5 @@ def convert_message_param_to_base_message_param(
                 )
             )
     if len(contents) == 1 and isinstance(contents[0], TextPart):
-        return BaseMessageParam(role="assistant", content=contents)
+        return BaseMessageParam(role="assistant", content=contents[0].text)
     return BaseMessageParam(role="tool", content=contents)

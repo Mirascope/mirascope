@@ -88,8 +88,3 @@ class GeminiCallResponseChunk(
         return _convert_finish_reasons_to_common_finish_reasons(
             [finish_reason.name for finish_reason in self.finish_reasons]
         )
-
-    @property
-    def common_usage(self) -> None:
-        """Gemini does not have Usage, so we return None"""
-        return None

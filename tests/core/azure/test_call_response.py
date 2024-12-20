@@ -13,6 +13,7 @@ from azure.ai.inference.models import (
     ToolMessage,
 )
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.azure.call_response import AzureCallResponse
 from mirascope.core.azure.tool import AzureTool
 
@@ -63,6 +64,10 @@ def test_azure_call_response() -> None:
     }
     assert call_response.tools is None
     assert call_response.tool is None
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
 
 
 def test_azure_call_response_with_tools() -> None:

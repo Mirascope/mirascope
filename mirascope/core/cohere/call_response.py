@@ -178,8 +178,6 @@ class CohereCallResponse(
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
-        if self.finish_reasons is None:
-            return None
         return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
 
     @property

@@ -11,6 +11,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
 )
 from pydantic import ValidationError
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.base import BaseCallKwargs
 from mirascope.core.bedrock.call_params import BedrockCallParams
 from mirascope.core.bedrock.call_response import BedrockCallResponse
@@ -61,6 +62,10 @@ def test_bedrock_call_response() -> None:
     }
     assert call_response.tools is None
     assert call_response.tool is None
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
 
 
 def test_bedrock_call_response_no_message() -> None:

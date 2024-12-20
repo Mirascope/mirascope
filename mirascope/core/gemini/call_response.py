@@ -194,8 +194,3 @@ class GeminiCallResponse(
     @property
     def common_message_param(self) -> BaseMessageParam:
         return convert_message_param_to_base_message_param(self.message_param)
-
-    @property
-    def common_usage(self) -> None:
-        """Gemini does not have Usage, so we return None"""
-        return None

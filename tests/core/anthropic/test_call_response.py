@@ -9,9 +9,11 @@ from anthropic.types import (
     Usage,
 )
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
 from mirascope.core.anthropic.tool import AnthropicTool
+from mirascope.core.base import TextPart
 
 
 def test_anthropic_call_response() -> None:
@@ -56,6 +58,10 @@ def test_anthropic_call_response() -> None:
     }
     assert call_response.tools is None
     assert call_response.tool is None
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content=[TextPart(type="text", text="content")]
+    )
 
 
 def test_anthropic_call_response_with_tools() -> None:
