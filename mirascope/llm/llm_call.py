@@ -68,6 +68,7 @@ else:
 
 
 def _get_provider_call(provider: str) -> Callable[..., Any]:
+    """Returns the provider-specific call decorator based on the provider name."""
     if provider == "anthropic":
         from mirascope.core.anthropic import anthropic_call
 
@@ -111,6 +112,27 @@ def _get_provider_call(provider: str) -> Callable[..., Any]:
     raise ValueError(f"Unsupported provider: {provider}")
 
 
+def _wrap_result(result: BaseCallResponse | BaseStream) -> CallResponse | Stream:
+    """Wraps the result into a CallResponse or Stream instance.
+
+    Args:
+        result: The result returned by the provider-specific decorator.
+
+    Returns:
+        A `CallResponse` instance if `result` is a `BaseCallResponse`.
+        A `Stream` instance if `result` is a `BaseStream`.
+
+    Raises:
+        ValueError: If the result type is not supported.
+    """
+    if isinstance(result, BaseCallResponse):
+        return CallResponse(response=result)  # type: ignore
+    elif isinstance(result, BaseStream):
+        return Stream(stream=result)  # type: ignore
+    else:
+        raise ValueError(f"Unsupported result type: {type(result)}")
+
+
 def call(
     model: Models,
     stream: bool | StreamConfig = False,
@@ -126,6 +148,20 @@ def call(
     [Callable[_P, _R | Awaitable[_R]]],
     Callable[_P, CallResponse | Stream | Awaitable[CallResponse | Stream]],
 ]:
+    """A decorator for routing calls to provider-specific call decorators.
+
+    Args:
+        model: The model identifier (e.g. "openai:gpt-4o-mini").
+        stream: Whether streaming is enabled or a StreamConfig instance.
+        tools: The tools to use with the call.
+        response_model: The structured response model to parse into.
+        output_parser: A parser function for the raw response.
+        json_mode: Whether to use JSON mode.
+        call_params: Additional common call parameters.
+
+    Returns:
+        A decorator that, when applied to a function, returns a CallResponse or Stream.
+    """
     provider, model_name = model.split(":", 1)
     provider_call = _get_provider_call(provider)
 
@@ -158,15 +194,5 @@ def call(
                 return _wrap_result(result)
 
         return inner
-
-    def _wrap_result(result: BaseCallResponse | Stream) -> CallResponse | Stream:
-        if isinstance(result, BaseCallResponse):
-            return CallResponse(response=result)  # pyright: ignore [reportAbstractUsage]
-        elif isinstance(result, BaseStream):
-            return Stream(  # pyright: ignore [reportAbstractUsage]
-                stream=result,
-            )
-        else:
-            raise ValueError(f"Unsupported result type: {type(result)}")
 
     return wrapper
