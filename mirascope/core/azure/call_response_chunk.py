@@ -3,6 +3,8 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
+from typing import cast
+
 from azure.ai.inference.models import (
     CompletionsFinishReason,
     CompletionsUsage,
@@ -11,6 +13,7 @@ from azure.ai.inference.models import (
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
+from ..base.types import FinishReason
 
 
 class AzureCallResponseChunk(
@@ -85,3 +88,8 @@ class AzureCallResponseChunk(
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)

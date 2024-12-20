@@ -9,6 +9,7 @@ from ._extract_tool_return import extract_tool_return
 from ._fn_is_async import fn_is_async
 from ._format_template import format_template
 from ._get_audio_type import get_audio_type
+from ._get_common_usage import get_common_usage
 from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_fn
 from ._get_document_type import get_document_type
 from ._get_dynamic_configuration import get_dynamic_configuration
@@ -57,6 +58,7 @@ __all__ = [
     "GetJsonOutput",
     "get_audio_type",
     "get_async_create_fn",
+    "get_common_usage",
     "get_create_fn",
     "get_document_type",
     "get_dynamic_configuration",

@@ -60,6 +60,17 @@ def convert_message_params(
                             "type": "input_audio",
                         }
                     )
+                elif part.type == "tool_result":
+                    converted_message_params.append(
+                        {
+                            "role": "tool",
+                            "content": {
+                                "type": "tool_result",
+                                "content": part.content,
+                                "tool_call_id": part.id,
+                            },
+                        }
+                    )
                 else:
                     raise ValueError(
                         "OpenAI currently only supports text, image and audio parts. "

@@ -50,3 +50,4 @@ def test_anthropic_call_response_chunk() -> None:
     assert call_response_chunk_1.usage is None
     assert call_response_chunk_1.input_tokens is None
     assert call_response_chunk_1.output_tokens is None
+    assert call_response_chunk_1.common_finish_reasons is None

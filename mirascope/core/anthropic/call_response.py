@@ -12,8 +12,15 @@ from anthropic.types import (
 )
 from pydantic import SerializeAsAny, computed_field
 
-from ..base import BaseCallResponse, transform_tool_outputs
+from .. import BaseMessageParam
+from ..base import BaseCallResponse, transform_tool_outputs, types
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import AnthropicCallParams
 from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from .tool import AnthropicTool
@@ -163,3 +170,12 @@ class AnthropicCallResponse(
                 ],
             }
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[types.FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        return convert_message_param_to_base_message_param(self.message_param)

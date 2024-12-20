@@ -13,6 +13,7 @@ from mirascope.core.base import (
     DocumentPart,
     ImagePart,
     TextPart,
+    ToolResultPart,
 )
 
 
@@ -33,25 +34,27 @@ def test_convert_message_params() -> None:
                 DocumentPart(
                     type="document", media_type="application/pdf", document=b"pdf"
                 ),
+                ToolResultPart(
+                    type="tool_result", id="tool_id", content="result", name="tool_name"
+                ),
             ],
         ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
-        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
-        {"role": "user", "content": "Hello"},
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {"content": "Hello", "role": "user"},
         {
-            "role": "user",
             "content": [
-                {"type": "text", "text": "Hello"},
+                {"text": "Hello", "type": "text"},
                 {
-                    "type": "image",
+                    "cache_control": {"type": "ephemeral"},
                     "source": {
                         "data": "aW1hZ2U=",
                         "media_type": "image/jpeg",
                         "type": "base64",
                     },
-                    "cache_control": {"type": "ephemeral"},
+                    "type": "image",
                 },
                 {
                     "source": {
@@ -61,7 +64,14 @@ def test_convert_message_params() -> None:
                     },
                     "type": "document",
                 },
+                {
+                    "content": "result",
+                    "is_error": False,
+                    "tool_use_id": "tool_id",
+                    "type": "tool_result",
+                },
             ],
+            "role": "user",
         },
     ]
 

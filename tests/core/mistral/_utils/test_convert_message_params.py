@@ -12,7 +12,13 @@ from mistralai.models import (
 )
 from mistralai.types.basemodel import Unset
 
-from mirascope.core.base import AudioPart, BaseMessageParam, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    BaseMessageParam,
+    ImagePart,
+    TextPart,
+    ToolResultPart,
+)
 from mirascope.core.mistral._utils._convert_message_params import convert_message_params
 
 
@@ -40,6 +46,9 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ToolResultPart(
+                    type="tool_result", id="tool_id", content="result", name="tool_name"
+                ),
             ],
         ),
     ]
@@ -56,6 +65,9 @@ def test_convert_message_params() -> None:
         ),
         SystemMessage(content="Hello", role="system"),
         ToolMessage(content="Hello"),
+        ToolMessage(
+            content="result", tool_call_id="tool_id", name="tool_name", role="tool"
+        ),
         UserMessage(
             role="user",
             content=[

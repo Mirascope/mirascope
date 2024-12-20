@@ -42,6 +42,15 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        {
+                            "role": "tool",
+                            "content": part.content,
+                            "tool_call_id": part.id,
+                            "name": part.name,
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Groq currently only supports text and image parts. "

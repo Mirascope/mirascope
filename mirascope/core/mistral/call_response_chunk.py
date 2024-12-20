@@ -3,9 +3,14 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
+from typing import cast
+
 from mistralai.models import CompletionChunk, FinishReason, UsageInfo
 
-from ..base import BaseCallResponseChunk
+from ..base import BaseCallResponseChunk, types
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 
 
 class MistralCallResponseChunk(BaseCallResponseChunk[CompletionChunk, FinishReason]):
@@ -81,3 +86,9 @@ class MistralCallResponseChunk(BaseCallResponseChunk[CompletionChunk, FinishReas
         if self.usage:
             return self.usage.completion_tokens
         return None
+
+    @property
+    def common_finish_reasons(self) -> list[types.FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(
+            cast(list[str], self.finish_reasons)
+        )

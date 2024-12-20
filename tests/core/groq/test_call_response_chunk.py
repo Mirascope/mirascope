@@ -47,6 +47,7 @@ def test_groq_call_response_chunk() -> None:
     assert call_response_chunk.usage == usage
     assert call_response_chunk.input_tokens == 1
     assert call_response_chunk.output_tokens == 1
+    assert call_response_chunk.common_finish_reasons == ["stop"]
 
 
 def test_groq_call_response_chunk_no_choices_or_usage() -> None:
@@ -65,3 +66,4 @@ def test_groq_call_response_chunk_no_choices_or_usage() -> None:
     assert call_response_chunk.usage is None
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
+    assert call_response_chunk.common_finish_reasons == []

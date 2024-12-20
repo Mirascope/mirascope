@@ -3,6 +3,7 @@
 import io
 
 import PIL.Image
+from google.generativeai import protos
 from google.generativeai.types import ContentDict
 
 from ...base import BaseMessageParam
@@ -71,6 +72,12 @@ def convert_message_params(
                         )
                     converted_content.append(
                         {"mime_type": part.media_type, "data": part.audio}
+                    )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        protos.FunctionResponse(
+                            name=part.name, response={"result": part.content}
+                        )
                     )
                 else:
                     raise ValueError(

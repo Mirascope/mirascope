@@ -61,6 +61,15 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        {
+                            "tool_use_id": part.id,
+                            "type": "tool_result",
+                            "content": part.content,
+                            "is_error": part.is_error,
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Anthropic currently only supports text, image, and cache "

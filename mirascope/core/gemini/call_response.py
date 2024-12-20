@@ -13,8 +13,16 @@ from google.generativeai.types import (
 )
 from pydantic import computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import GeminiCallParams
 from .dynamic_config import GeminiDynamicConfig
 from .tool import GeminiTool
@@ -178,3 +186,11 @@ class GeminiCallResponse(
                 ],
             }
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        return convert_message_param_to_base_message_param(self.message_param)

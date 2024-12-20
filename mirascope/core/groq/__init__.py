@@ -11,6 +11,7 @@ from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
 from .call_response_chunk import GroqCallResponseChunk
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
+from .models import GroqModels
 from .stream import GroqStream
 from .tool import GroqTool
 
@@ -24,6 +25,7 @@ __all__ = [
     "GroqCallResponse",
     "GroqCallResponseChunk",
     "GroqMessageParam",
+    "GroqModels",
     "GroqStream",
     "GroqTool",
     "groq_call",

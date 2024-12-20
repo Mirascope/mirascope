@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from typing import cast
+
 from groq.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
@@ -14,8 +16,13 @@ from groq.types.chat import (
 from groq.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
@@ -162,3 +169,11 @@ class GroqCallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> BaseMessageParam:
+        return convert_message_param_to_base_message_param(self.message_param)
