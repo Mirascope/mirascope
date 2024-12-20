@@ -8,7 +8,7 @@ from mirascope.core.base import ImagePart
 
 # Import the target function from mistral utils
 from mirascope.core.mistral._utils._convert_assistant_message_content_to_base_message_param import (
-    _assistant_message_content_to_base_message_param as mistral_convert_content,
+    _convert_message_to_base_message_param as mistral_convert_content,
 )
 
 

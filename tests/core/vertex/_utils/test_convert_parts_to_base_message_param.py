@@ -4,10 +4,8 @@ import pytest
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
-
-# Import the target function from vertex utils
 from mirascope.core.vertex._utils._convert_parts_to_base_message_param import (
-    _convert_parts_to_base_message_param as vertex_convert_parts,
+    _convert_message_to_base_message_param as vertex_convert_parts,
 )
 
 

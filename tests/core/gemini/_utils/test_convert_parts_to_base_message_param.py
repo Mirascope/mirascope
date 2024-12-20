@@ -7,7 +7,7 @@ from mirascope.core.base import DocumentPart, ImagePart, TextPart
 
 # Import the target function from gemini utils
 from mirascope.core.gemini._utils._convert_parts_to_base_message_param import (
-    _convert_parts_to_base_message_param as gemini_convert_parts,
+    _convert_message_to_base_message_param as gemini_convert_parts,
 )
 
 

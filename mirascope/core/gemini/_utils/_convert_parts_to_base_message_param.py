@@ -29,7 +29,7 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
     return DocumentPart(type="document", media_type=mime_type, document=data)
 
 
-def _convert_parts_to_base_message_param(
+def _convert_message_to_base_message_param(
     parts: Sequence[Part],
     role: str = "assistant",
 ) -> BaseMessageParam:
