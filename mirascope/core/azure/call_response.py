@@ -20,6 +20,9 @@ from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import AzureCallParams
 from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from .tool import AzureTool
@@ -186,7 +189,4 @@ class AzureCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        message_param = self.message_param
-        return BaseMessageParam(
-            role=message_param.role, content=message_param.content or ""
-        )
+        return convert_message_param_to_base_message_param(self.message_param)

@@ -33,19 +33,20 @@ def convert_message_param_to_base_message_param(
 ) -> BaseMessageParam:
     """Converts a Part to a BaseMessageParam."""
     role: str = "assistant"
-    content_list = []
+    contents = []
+    has_tool_call = False
     for part in message.parts:
         if part.text:
-            content_list.append(TextPart(type="text", text=part.text))
+            contents.append(TextPart(type="text", text=part.text))
 
         elif part.inline_data:
             blob = part.inline_data
             mime = blob.mime_type
             data = blob.data
             if _is_image_mime(mime):
-                content_list.append(_to_image_part(mime, data))
+                contents.append(_to_image_part(mime, data))
             elif mime == "application/pdf":
-                content_list.append(_to_document_part(mime, data))
+                contents.append(_to_document_part(mime, data))
             else:
                 raise ValueError(
                     f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
@@ -56,30 +57,28 @@ def convert_message_param_to_base_message_param(
             mime = file_data.mime_type
             data = file_data.data
             if _is_image_mime(mime):
-                content_list.append(_to_image_part(mime, data))
+                contents.append(_to_image_part(mime, data))
             elif mime == "application/pdf":
-                content_list.append(_to_document_part(mime, data))
+                contents.append(_to_document_part(mime, data))
             else:
                 raise ValueError(
                     f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
                 )
         elif part.function_call:
-            return BaseMessageParam(
-                role="tool",
-                content=[
-                    ToolCallPart(
-                        type="tool_call",
-                        name=part.function_call.name,
-                        args=dict(part.function_call.arguments),
-                    )
-                ],
+            contents.append(
+                ToolCallPart(
+                    type="tool_call",
+                    name=part.function_call.name,
+                    args=dict(part.function_call.arguments),
+                )
             )
+            has_tool_call = True
         else:
             raise ValueError(
                 "Part does not contain any supported content (text, image, or document)."
             )
 
-    if len(content_list) == 1 and isinstance(content_list[0], TextPart):
-        return BaseMessageParam(role=role, content=content_list)
+    if len(contents) == 1 and isinstance(contents[0], TextPart):
+        return BaseMessageParam(role=role, content=contents)
 
-    return BaseMessageParam(role=role, content=content_list)
+    return BaseMessageParam(role="tool" if has_tool_call else role, content=contents)

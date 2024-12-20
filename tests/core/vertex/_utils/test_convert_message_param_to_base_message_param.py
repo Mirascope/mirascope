@@ -111,17 +111,3 @@ def test_vertex_convert_parts_unsupported_document():
         match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
         convert_message_param_to_base_message_param(Mock(parts=[mock_part]))
-
-
-def test_vertex_convert_parts_empty_part():
-    """
-    Test vertex_convert_parts with an empty part (no text, no inline_data, no file_data).
-    """
-    Part = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-
-    with pytest.raises(ValueError, match="Part does not contain any supported content"):
-        convert_message_param_to_base_message_param(Mock(parts=[mock_part]))

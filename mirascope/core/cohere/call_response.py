@@ -19,6 +19,9 @@ from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import CohereCallParams
 from .dynamic_config import AsyncCohereDynamicConfig, CohereDynamicConfig
 from .tool import CohereTool
@@ -181,4 +184,4 @@ class CohereCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        return BaseMessageParam(role="assistant", content=self.message_param.message)
+        return convert_message_param_to_base_message_param(self.message_param)

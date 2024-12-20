@@ -17,6 +17,8 @@ from .message_param import (
     DocumentPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from .messages import Messages
 from .metadata import Metadata
@@ -57,6 +59,8 @@ __all__ = [
     "ResponseModelConfigDict",
     "TextPart",
     "ToolConfig",
+    "ToolCallPart",
+    "ToolResultPart",
     "toolkit_tool",
     "transform_tool_outputs",
     "_partial",

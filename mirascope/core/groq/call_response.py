@@ -20,6 +20,9 @@ from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
@@ -173,6 +176,4 @@ class GroqCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        if content := self.message_param.get("content"):
-            return BaseMessageParam(role="assistant", content=content)
-        return BaseMessageParam(role="assistant", content="")
+        return convert_message_param_to_base_message_param(self.message_param)

@@ -4,7 +4,7 @@ import pytest
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart
-from mirascope.core.gemini._utils._convert_parts_to_base_message_param import (
+from mirascope.core.gemini._utils._convert_message_param_to_base_message_param import (
     convert_message_param_to_base_message_param,
 )
 
@@ -118,22 +118,6 @@ def test_gemini_convert_parts_unsupported_document():
         ValueError,
         match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
-        convert_message_param_to_base_message_param(
-            {"role": "assistant", "parts": [mock_part]}
-        )
-
-
-def test_gemini_convert_parts_empty_part():
-    """
-    Test gemini_convert_parts with an empty part (no text, no inline_data, no file_data).
-    """
-    Part = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-
-    with pytest.raises(ValueError, match="Part does not contain any supported content"):
         convert_message_param_to_base_message_param(
             {"role": "assistant", "parts": [mock_part]}
         )

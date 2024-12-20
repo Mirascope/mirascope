@@ -24,6 +24,9 @@ from ..base import (
 )
 from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
+)
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -222,16 +225,4 @@ class OpenAICallResponse(
     @property
     def common_message_param(self) -> BaseMessageParam:
         """Provider-agnostic assistant message param."""
-        role = self.message_param["role"]
-        content = self.message_param.get("content")
-        if isinstance(content, str):
-            return BaseMessageParam(role=role, content=content)
-        elif content is None:
-            return BaseMessageParam(role=role, content="")
-        contents = []
-        for part in content:
-            if "text" in part:
-                contents.append(BaseMessageParam(role=role, content=part["text"]))
-            else:
-                raise ValueError(part["refusal"])
-        return BaseMessageParam(role=role, content=contents)
+        return convert_message_param_to_base_message_param(self.message_param)

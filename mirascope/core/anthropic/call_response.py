@@ -3,9 +3,6 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-import base64
-from os import PathLike
-
 from anthropic.types import (
     Message,
     MessageParam,
@@ -16,10 +13,13 @@ from anthropic.types import (
 from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
-from ..base import BaseCallResponse, ImagePart, TextPart, transform_tool_outputs, types
+from ..base import BaseCallResponse, transform_tool_outputs, types
 from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._convert_message_param_to_base_message_param import (
+    convert_message_param_to_base_message_param,
 )
 from .call_params import AnthropicCallParams
 from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
@@ -178,69 +178,4 @@ class AnthropicCallResponse(
 
     @property
     def common_message_param(self) -> BaseMessageParam:
-        role = self.message_param["role"]
-        content = self.message_param["content"]
-
-        if isinstance(content, str):
-            return BaseMessageParam(role=role, content=content)
-
-        converted_content = []
-
-        for block in content:
-            if not isinstance(block, dict):
-                continue
-
-            block_type = block.get("type")
-
-            if block_type == "text":
-                text = block.get("text")
-                if not isinstance(text, str):
-                    raise ValueError("TextBlockParam must have a string 'text' field.")
-                converted_content.append(TextPart(type="text", text=text))
-
-            elif block_type == "image":
-                source = block.get("source")
-                if not source or source.get("type") != "base64":
-                    raise ValueError(
-                        "ImageBlockParam must have a 'source' with type='base64'."
-                    )
-                image_data = source.get("data")
-                media_type = source.get("media_type")
-                if not image_data or not media_type:
-                    raise ValueError(
-                        "ImageBlockParam source must have 'data' and 'media_type'."
-                    )
-                if media_type not in [
-                    "image/jpeg",
-                    "image/png",
-                    "image/gif",
-                    "image/webp",
-                ]:
-                    raise ValueError(
-                        f"Unsupported image media type: {media_type}. "
-                        "BaseMessageParam currently only supports JPEG, PNG, GIF, and WebP images."
-                    )
-                if isinstance(image_data, str):
-                    decoded_image_data = base64.b64decode(image_data)
-                elif isinstance(image_data, PathLike):
-                    with open(image_data, "rb") as image_data:
-                        decoded_image_data = image_data.read()
-                else:
-                    decoded_image_data = image_data.read()
-                converted_content.append(
-                    ImagePart(
-                        type="image",
-                        media_type=media_type,
-                        image=decoded_image_data,
-                        detail=None,
-                    )
-                )
-
-            else:
-                # Any other block type is not supported
-                raise ValueError(
-                    f"Unsupported block type '{block_type}'. "
-                    "BaseMessageParam currently only supports text and image parts."
-                )
-
-        return BaseMessageParam(role=role, content=converted_content)
+        return convert_message_param_to_base_message_param(self.message_param)

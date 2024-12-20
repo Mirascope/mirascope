@@ -1,7 +1,7 @@
 """This module contains the base class for message parameters."""
 
 from collections.abc import Sequence
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -91,6 +91,7 @@ class ToolCallPart(BaseModel):
     args: dict | None = None
     id: str | None = None
 
+
 class ToolResultPart(BaseModel):
     """A content part for tool.
 
@@ -128,5 +129,5 @@ class BaseMessageParam(BaseModel):
             | DocumentPart
             | ToolCallPart
             | ToolResultPart
-            ]
+        ]
     )
