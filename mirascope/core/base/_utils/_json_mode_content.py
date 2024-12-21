@@ -10,7 +10,7 @@ from ..tool import GenerateJsonSchemaNoTitles
 def json_mode_content(tool_type: type[BaseModel] | None) -> str:
     """Returns the content to request JSON mode from models without it."""
     if not tool_type:
-        return "\n\nFor your final response, output ONLY a valid JSON dict that adheres to the schema."
+        return "\n\nFor your final response, output ONLY a valid JSON dict that adheres to the schema"
     return f"""
 
 

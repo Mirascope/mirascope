@@ -6,6 +6,7 @@ from typing import Any, cast, overload
 from litellm import acompletion, completion
 from openai import OpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from pydantic import BaseModel
 
 from ...base import BaseTool
 from ...base._utils import AsyncCreateFn, CreateFn, fn_is_async
@@ -32,7 +33,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletion],
@@ -54,7 +55,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion],
@@ -75,7 +76,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletion]
@@ -94,7 +95,7 @@ def setup_call(
         tools=tools,
         json_mode=json_mode,
         call_params=call_params,
-        extract=extract,
+        response_model=response_model,
         stream=stream,
     )
     create = cast(

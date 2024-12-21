@@ -12,6 +12,7 @@ from google.generativeai.types import (
     GenerationConfigDict,
 )
 from google.generativeai.types.content_types import ToolConfigDict
+from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import (
@@ -42,7 +43,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncGenerateContentResponse, AsyncGenerateContentResponse],
@@ -64,7 +65,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse],
@@ -85,7 +86,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GeminiCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerateContentResponse, GenerateContentResponse]
@@ -111,13 +112,11 @@ def setup_call(
         generation_config = call_kwargs.get("generation_config", {})
         if is_dataclass(generation_config):
             generation_config = asdict(generation_config)
-        generation_config["response_mime_type"] = "application/json"
+        if not tools:
+            generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = cast(GenerationConfigDict, generation_config)
-        messages[-1]["parts"].append(
-            _utils.json_mode_content(tool_types[0] if tool_types else None)
-        )
-        call_kwargs.pop("tools", None)
-    elif extract:
+        messages[-1]["parts"].append(_utils.json_mode_content(response_model))
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
         tool_config = ToolConfigDict()

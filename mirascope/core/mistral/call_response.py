@@ -108,11 +108,9 @@ class MistralCallResponse(
 
     @computed_field
     @cached_property
-    def message_param(
-        self,
-    ) -> AssistantMessage:
+    def message_param(self) -> AssistantMessage:
         """Returns the assistants's response as a message parameter."""
-        return cast(AssistantMessage, self._response_choices[0].message)
+        return self._response_choices[0].message
 
     @computed_field
     @cached_property
