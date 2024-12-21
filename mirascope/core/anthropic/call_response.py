@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
+
 from anthropic.types import (
     Message,
     MessageParam,
@@ -97,13 +99,13 @@ class AnthropicCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> SerializeAsAny[MessageParam]:
         """Returns the assistants's response as a message parameter."""
         return MessageParam(**self.response.model_dump(include={"content", "role"}))
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[AnthropicTool] | None:
         """Returns any available tool calls as their `AnthropicTool` definition.
 
@@ -125,7 +127,7 @@ class AnthropicCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> AnthropicTool | None:
         """Returns the 0th tool for the 0th choice message.
 

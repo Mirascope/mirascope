@@ -3,6 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
 from typing import Any, cast
 
 from mistralai import ChatCompletionChoice
@@ -106,7 +107,7 @@ class MistralCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(
         self,
     ) -> AssistantMessage:
@@ -114,7 +115,7 @@ class MistralCallResponse(
         return cast(AssistantMessage, self._response_choices[0].message)
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[MistralTool] | None:
         """Returns the tools for the 0th choice message.
 
@@ -135,7 +136,7 @@ class MistralCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> MistralTool | None:
         """Returns the 0th tool for the 0th choice message.
 

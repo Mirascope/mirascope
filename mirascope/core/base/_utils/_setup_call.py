@@ -8,6 +8,8 @@ from collections.abc import (
 )
 from typing import Any, Protocol, TypeVar, cast
 
+from pydantic import BaseModel
+
 from ..call_kwargs import BaseCallKwargs
 from ..call_params import BaseCallParams, CommonCallParams
 from ..dynamic_config import BaseDynamicConfig

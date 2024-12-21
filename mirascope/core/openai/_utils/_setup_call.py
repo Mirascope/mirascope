@@ -12,6 +12,7 @@ from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
 )
+from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
@@ -36,7 +37,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -58,7 +59,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
@@ -80,7 +81,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
@@ -117,14 +118,11 @@ def setup_call(
             }
         else:
             call_kwargs["response_format"] = {"type": "json_object"}
-            json_mode_content = _utils.json_mode_content(
-                tool_types[0] if tool_types else None
-            ).strip()
+            json_mode_content = _utils.json_mode_content(response_model).strip()
             messages.append(
                 ChatCompletionUserMessageParam(role="user", content=json_mode_content)
             )
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         if tool_types and tool_types[0].model_config.get("strict", False):
             warnings.warn(

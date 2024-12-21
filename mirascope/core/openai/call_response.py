@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 import base64
+from functools import cached_property
 
 from openai.types.chat import (
     ChatCompletion,
@@ -116,7 +117,7 @@ class OpenAICallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
         message_param = self.response.choices[0].message.model_dump(
@@ -127,7 +128,7 @@ class OpenAICallResponse(
         return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[OpenAITool] | None:
         """Returns any available tool calls as their `OpenAITool` definition.
 
@@ -155,7 +156,7 @@ class OpenAICallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> OpenAITool | None:
         """Returns the 0th tool for the 0th choice message.
 

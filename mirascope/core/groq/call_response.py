@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
+
 from groq.types.chat import (
     ChatCompletion,
     ChatCompletionAssistantMessageParam,
@@ -98,7 +100,7 @@ class GroqCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
         message_param = self.response.choices[0].message.model_dump(
@@ -107,7 +109,7 @@ class GroqCallResponse(
         return ChatCompletionAssistantMessageParam(**message_param)
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[GroqTool] | None:
         """Returns any available tool calls as their `GroqTool` definition.
 
@@ -128,7 +130,7 @@ class GroqCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> GroqTool | None:
         """Returns the 0th tool for the 0th choice message.
 
