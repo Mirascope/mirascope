@@ -12,13 +12,13 @@ def test_json_mode_content() -> None:
 
     assert (
         json_mode_content(None)
-        == "\n\nExtract ONLY a valid JSON dict using the schema."
+        == "\n\nFor your final response, output ONLY a valid JSON dict that adheres to the schema"
     )
     assert (
         json_mode_content(Book)
         == """
 
-Extract ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to this schema:
+For your final response, output ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to this schema:
 {
   "properties": {
     "title": {

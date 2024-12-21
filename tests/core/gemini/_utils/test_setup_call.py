@@ -6,6 +6,7 @@ import pytest
 from google.generativeai import GenerativeModel  # type: ignore
 from google.generativeai.types import GenerationConfig
 from google.generativeai.types.content_types import ToolConfigDict
+from pydantic import BaseModel
 
 from mirascope.core.gemini._utils._convert_common_call_params import (
     convert_common_call_params,
@@ -55,7 +56,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
@@ -118,11 +119,11 @@ def test_setup_call_json_mode(
         tools=None,
         json_mode=True,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
-    assert "tools" not in call_kwargs
+    assert "tools" in call_kwargs
     assert "generation_config" in call_kwargs
     assert call_kwargs["generation_config"] == {
         "candidate_count": 1,
@@ -160,7 +161,7 @@ def test_setup_call_extract(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=True,
+        response_model=BaseModel,
         stream=False,
     )
     assert "tool_config" in call_kwargs and isinstance(

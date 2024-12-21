@@ -13,6 +13,5 @@ def json_mode_content(tool_type: type[BaseModel] | None) -> str:
         return "\n\nFor your final response, output ONLY a valid JSON dict that adheres to the schema"
     return f"""
 
-
 For your final response, output ONLY a valid JSON dict (NOT THE SCHEMA) from the content that adheres to this schema:
 {json.dumps(tool_type.model_json_schema(schema_generator=GenerateJsonSchemaNoTitles), indent=2)}"""
