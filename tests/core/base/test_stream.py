@@ -90,7 +90,7 @@ def test_stream_factory_sync(
         tools=mock_stream_decorator_kwargs["tools"],
         json_mode=mock_stream_decorator_kwargs["json_mode"],
         call_params=mock_stream_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=True,
     )
     mock_create.assert_called_once_with(stream=True, **mock_call_kwargs)
@@ -169,7 +169,7 @@ async def test_stream_factory_async(
         tools=mock_stream_decorator_kwargs["tools"],
         json_mode=mock_stream_decorator_kwargs["json_mode"],
         call_params=mock_stream_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=True,
     )
     mock_create.assert_called_once_with(stream=True, **mock_call_kwargs)

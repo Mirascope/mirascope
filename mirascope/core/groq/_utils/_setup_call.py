@@ -10,6 +10,7 @@ from groq.types.chat import (
     ChatCompletionChunk,
     ChatCompletionMessageParam,
 )
+from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
@@ -34,7 +35,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GroqCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -56,7 +57,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GroqCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
@@ -77,7 +78,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: GroqCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
@@ -100,10 +101,9 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        call_kwargs["response_format"] = {"type": "json_object"}
-        json_mode_content = _utils.json_mode_content(
-            tool_types[0] if tool_types else None
-        )
+        if not tools:
+            call_kwargs["response_format"] = {"type": "json_object"}
+        json_mode_content = _utils.json_mode_content(response_model)
         if messages[-1]["role"] == "user":
             if isinstance(messages[-1]["content"], str):
                 messages[-1]["content"] += json_mode_content
@@ -113,8 +113,7 @@ def setup_call(
                 ]
         else:
             messages.append({"role": "user", "content": json_mode_content.strip()})
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {
             "type": "function",

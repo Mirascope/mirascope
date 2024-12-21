@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
+
 from google.cloud.aiplatform_v1beta1.types import GenerateContentResponse
 from pydantic import computed_field
 from vertexai.generative_models import Content, GenerationResponse, Part, Tool
@@ -110,13 +112,13 @@ class VertexCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> Content:
         """Returns the models's response as a message parameter."""
         return Content(role="model", parts=self.response.candidates[0].content.parts)
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[VertexTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
         if self.tool_types is None:
@@ -133,7 +135,7 @@ class VertexCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> VertexTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.
 

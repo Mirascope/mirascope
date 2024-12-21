@@ -133,6 +133,7 @@ def test_openai_call_response_with_tools() -> None:
     ]
 
     completion.choices[0].message.refusal = "refusal message"
+    del call_response.tools
     with pytest.raises(ValueError, match="refusal message"):
         tool = call_response.tools
 

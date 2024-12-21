@@ -13,6 +13,7 @@ from anthropic import (
     AsyncAnthropicVertex,
 )
 from anthropic.types import Message, MessageParam, MessageStreamEvent
+from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
@@ -36,7 +37,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[Message, MessageStreamEvent],
@@ -58,7 +59,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[Message, MessageStreamEvent],
@@ -85,7 +86,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: AnthropicCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     Callable[..., Message | Awaitable[Message]],
@@ -111,17 +112,14 @@ def setup_call(
         call_kwargs["system"] = messages.pop(0)["content"]  # pyright: ignore [reportGeneralTypeIssues]
 
     if json_mode:
-        json_mode_content = _utils.json_mode_content(
-            tool_types[0] if tool_types else None
-        )
+        json_mode_content = _utils.json_mode_content(response_model)
         if isinstance(messages[-1]["content"], str):
             messages[-1]["content"] += json_mode_content
         else:
             messages[-1]["content"] = list(messages[-1]["content"]) + [
                 {"type": "text", "text": json_mode_content}
             ]
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = {"type": "tool", "name": tool_types[0]._name()}
     call_kwargs |= {
