@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from anthropic import Anthropic
+from pydantic import BaseModel
 
 from mirascope.core.anthropic._utils import convert_common_call_params
 from mirascope.core.anthropic._utils._setup_call import setup_call
@@ -42,7 +43,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={"max_tokens": 1000},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
@@ -85,7 +86,7 @@ def test_setup_call_system_message(
         tools=None,
         json_mode=False,
         call_params={"max_tokens": 1000},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert "system" in call_kwargs
@@ -119,14 +120,14 @@ def test_setup_call_json_mode(
         tools=None,
         json_mode=True,
         call_params={"max_tokens": 1000},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1]["content"][-1] == {  # type: ignore
         "type": "text",
         "text": mock_utils.json_mode_content.return_value,
     }
-    assert "tools" not in call_kwargs
+    assert "tools" in call_kwargs
 
     mock_utils.json_mode_content.return_value = "\n\njson"
     mock_base_setup_call.return_value[1] = [{"role": "user", "content": "test"}]
@@ -139,7 +140,7 @@ def test_setup_call_json_mode(
         tools=None,
         json_mode=True,
         call_params={"max_tokens": 1000},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1]["content"] == "test\n\njson"  # type: ignore
@@ -170,7 +171,7 @@ def test_setup_call_extract(
         tools=None,
         json_mode=False,
         call_params={"max_tokens": 1000},
-        extract=True,
+        response_model=BaseModel,
         stream=False,
     )
     assert isinstance(tool_types, list)

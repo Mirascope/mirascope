@@ -13,8 +13,10 @@ def get_json_output(
 ) -> str:
     """Extracts the JSON output from a Gemini response."""
     if isinstance(response, GeminiCallResponse):
-        if json_mode and response.content:
-            return response.content
+        if json_mode and (content := response.content):
+            json_start = content.index("{")
+            json_end = content.rfind("}")
+            return content[json_start : json_end + 1]
         elif tool_calls := [
             part.function_call
             for part in response.response.parts

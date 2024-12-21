@@ -6,7 +6,7 @@ import base64
 import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from functools import wraps
+from functools import cached_property, wraps
 from typing import Any, ClassVar, Generic, TypeAlias, TypeVar
 
 from pydantic import (
@@ -222,20 +222,21 @@ class BaseCallResponse(
         ...
 
     @computed_field
-    @property
+    @cached_property
     @abstractmethod
     def message_param(self) -> Any:  # noqa: ANN401
         """Returns the assistant's response as a message parameter."""
         ...
 
     @computed_field
-    @property
+    @cached_property
     @abstractmethod
     def tools(self) -> list[_BaseToolT] | None:
         """Returns the tools for the 0th choice message."""
         ...
 
-    @property
+    @computed_field
+    @cached_property
     @abstractmethod
     def tool(self) -> _BaseToolT | None:
         """Returns the 0th tool for the 0th choice message."""

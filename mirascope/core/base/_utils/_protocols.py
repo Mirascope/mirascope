@@ -202,7 +202,7 @@ class SetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
@@ -224,7 +224,7 @@ class SetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
@@ -245,7 +245,7 @@ class SetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
@@ -282,7 +282,7 @@ class SameSyncAndAsyncClientSetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         AsyncCreateFn[_AsyncResponseT, _AsyncResponseChunkT],
@@ -304,7 +304,7 @@ class SameSyncAndAsyncClientSetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT],
@@ -325,7 +325,7 @@ class SameSyncAndAsyncClientSetupCall(
         tools: list[type[BaseTool] | Callable] | None,
         json_mode: bool,
         call_params: _BaseCallParamsT,
-        extract: bool,
+        response_model: type[BaseModel] | None,
         stream: bool | StreamConfig,
     ) -> tuple[
         CreateFn[_ResponseT, _ResponseChunkT]
@@ -581,7 +581,7 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
@@ -597,7 +597,7 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
@@ -611,7 +611,7 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
@@ -625,7 +625,7 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
@@ -641,7 +641,7 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
@@ -655,13 +655,123 @@ class CallDecorator(
         model: str,
         *,
         stream: Literal[False] = False,
-        tools: list[type[BaseTool] | Callable] | None = None,
+        tools: None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        _ResponseModelT | _BaseCallResponseT,
+        _ResponseModelT | _BaseCallResponseT,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _ResponseModelT | _BaseCallResponseT,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[
+        _AsyncBaseDynamicConfigT,
+        _ResponseModelT | _BaseCallResponseT,
+    ]: ...
+
+    ####
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        _ParsedOutputT | _BaseCallResponseT,
+        _ParsedOutputT | _BaseCallResponseT,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _ParsedOutputT | _BaseCallResponseT,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable],
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[
+        _AsyncBaseDynamicConfigT,
+        _ParsedOutputT | _BaseCallResponseT,
+    ]: ...
+
+    ####
 
     @overload
     def __call__(
@@ -756,6 +866,7 @@ class CallDecorator(
             | _ParsedOutputT
             | _BaseStreamT
             | _ResponseModelT
+            | (_ResponseModelT | _BaseCallResponseT)
             | AsyncIterable[_ResponseModelT],
         ]
         | SyncLLMFunctionDecorator[
@@ -764,6 +875,8 @@ class CallDecorator(
             | _ParsedOutputT
             | _BaseStreamT
             | _ResponseModelT
+            | (_ResponseModelT | _BaseCallResponseT)
+            | (_ParsedOutputT | _BaseCallResponseT)
             | Iterable[_ResponseModelT],
         ]
         | LLMFunctionDecorator[
@@ -773,11 +886,15 @@ class CallDecorator(
             | _ParsedOutputT
             | _BaseStreamT
             | _ResponseModelT
+            | (_ResponseModelT | _BaseCallResponseT)
+            | (_ParsedOutputT | _BaseCallResponseT)
             | Iterable[_ResponseModelT],
             _BaseCallResponseT
             | _ParsedOutputT
             | _BaseStreamT
             | _ResponseModelT
+            | (_ResponseModelT | _BaseCallResponseT)
+            | (_ParsedOutputT | _BaseCallResponseT)
             | AsyncIterable[_ResponseModelT],
         ]
     ): ...

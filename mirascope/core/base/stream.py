@@ -369,7 +369,7 @@ def stream_factory(  # noqa: ANN201
                     tools=tools,
                     json_mode=json_mode,
                     call_params=call_params,
-                    extract=False,
+                    response_model=None,
                     stream=True,
                 )
 
@@ -418,7 +418,7 @@ def stream_factory(  # noqa: ANN201
                     tools=tools,
                     json_mode=json_mode,
                     call_params=call_params,
-                    extract=False,
+                    response_model=None,
                     stream=True,
                 )
 

@@ -16,6 +16,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ToolChoiceTypeDef,
     ToolConfigurationTypeDef,
 )
+from pydantic import BaseModel
 from types_aiobotocore_bedrock_runtime import (
     BedrockRuntimeClient as AsyncBedrockRuntimeClient,
 )
@@ -101,7 +102,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk],
@@ -123,7 +124,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ConverseResponseTypeDef, StreamOutputChunk],
@@ -145,7 +146,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: BedrockCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[AsyncConverseResponseTypeDef, AsyncStreamOutputChunk]
@@ -174,11 +175,12 @@ def setup_call(
             if (text := c.get("text"))
         ]
 
-    call_kwargs_tools = call_kwargs.pop("tools", None)
-    if json_mode:
-        json_mode_content = _utils.json_mode_content(
-            tool_types[0] if tool_types else None
+    if call_kwargs_tools := call_kwargs.pop("tools", None):
+        call_kwargs["toolConfig"] = cast(
+            ToolConfigurationTypeDef, {"tools": call_kwargs_tools}
         )
+    if json_mode:
+        json_mode_content = _utils.json_mode_content(response_model)
         if "text" in messages[-1]["content"][-1]:
             messages[-1]["content"][-1]["text"] += json_mode_content
         else:
@@ -186,18 +188,12 @@ def setup_call(
                 *messages[-1]["content"],
                 {"text": json_mode_content},
             ]
-
-    else:
-        if call_kwargs_tools:
-            call_kwargs["toolConfig"] = cast(
-                ToolConfigurationTypeDef, {"tools": call_kwargs_tools}
+    elif response_model:
+        assert tool_types, "At least one tool must be provided for extraction."
+        if "toolConfig" in call_kwargs:
+            call_kwargs["toolConfig"]["toolChoice"] = cast(
+                ToolChoiceTypeDef, {"type": "tool", "name": tool_types[0]._name()}
             )
-        if extract:
-            assert tool_types, "At least one tool must be provided for extraction."
-            if "toolConfig" in call_kwargs:
-                call_kwargs["toolConfig"]["toolChoice"] = cast(
-                    ToolChoiceTypeDef, {"type": "tool", "name": tool_types[0]._name()}
-                )
 
     call_kwargs |= cast(BedrockCallKwargs, {"modelId": model, "messages": messages})
 

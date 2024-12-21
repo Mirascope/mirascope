@@ -27,7 +27,7 @@ def mock_generate_content_response() -> GenerateContentResponseType:
                     finish_reason=1,
                     content=Content(
                         parts=[
-                            Part(text="json_output"),
+                            Part(text='{"key": "value"}'),
                             Part(
                                 function_call=FunctionCall(
                                     name="FormatBook",
@@ -64,7 +64,7 @@ def test_get_json_output_call_response(
         start_time=0,
         end_time=0,
     )
-    assert get_json_output(call_response, json_mode=True) == "json_output"
+    assert get_json_output(call_response, json_mode=True) == '{"key": "value"}'
     assert (
         get_json_output(call_response, json_mode=False)
         == '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
@@ -82,7 +82,7 @@ def test_get_json_output_call_response_chunk(
 ) -> None:
     """Tests the `get_json_output` function with a call response chunk."""
     call_response_chunk = GeminiCallResponseChunk(chunk=mock_generate_content_response)
-    assert get_json_output(call_response_chunk, json_mode=True) == "json_output"
+    assert get_json_output(call_response_chunk, json_mode=True) == '{"key": "value"}'
 
     with pytest.raises(
         ValueError, match="Gemini only supports structured streaming in json mode."
