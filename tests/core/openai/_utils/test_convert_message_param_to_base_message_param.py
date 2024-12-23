@@ -17,7 +17,9 @@ def test_convert_message_param_str_content():
     if isinstance(content, str):
         return BaseMessageParam(role=role, content=content)
     """
-    message_param = ChatCompletionAssistantMessageParam(content="Hello, world!")
+    message_param = ChatCompletionAssistantMessageParam(
+        role="assistant", content="Hello, world!"
+    )
     result = convert_message_param_to_base_message_param(message_param)
     assert isinstance(result, BaseMessageParam)
     assert result.content == "Hello, world!"
@@ -29,7 +31,8 @@ def test_convert_message_param_list_content_with_text():
     This covers the branch where 'text' in part leads to appending BaseMessageParam.
     """
     message_param = ChatCompletionAssistantMessageParam(
-        content=[{"text": "Hello"}, {"text": "World"}]
+        role="assistant",
+        content=[{"text": "Hello", "type": "text"}, {"text": "World", "type": "text"}],
     )
     result = convert_message_param_to_base_message_param(message_param)
     assert isinstance(result, BaseMessageParam)
@@ -46,7 +49,8 @@ def test_convert_message_param_list_content_with_refusal():
         raise ValueError(part["refusal"])
     """
     message_param = ChatCompletionAssistantMessageParam(
-        content=[{"refusal": "I cannot process this."}]
+        role="assistant",
+        content=[{"refusal": "I cannot process this.", "type": "refusal"}],
     )
     with pytest.raises(ValueError, match="I cannot process this."):
         convert_message_param_to_base_message_param(message_param)
@@ -58,9 +62,11 @@ def test_convert_message_param_tool_calls():
     This covers the branch where tool_calls are appended as ToolCallPart.
     """
     message_param = ChatCompletionAssistantMessageParam(
+        role="assistant",
         content=[{"text": "Some content"}],
         tool_calls=[
             {
+                "type": "function",
                 "function": {
                     "name": "test_tool",
                     "arguments": json.dumps({"key": "value"}),
@@ -83,7 +89,7 @@ def test_convert_message_param_no_content_no_tool_calls():
     Test when content is None and no tool_calls provided.
     Covers the scenario returning empty contents at the end.
     """
-    message_param = ChatCompletionAssistantMessageParam(content=None)
+    message_param = ChatCompletionAssistantMessageParam(role="assistant", content=None)
     result = convert_message_param_to_base_message_param(message_param)
     assert isinstance(result, BaseMessageParam)
     assert result.content == []

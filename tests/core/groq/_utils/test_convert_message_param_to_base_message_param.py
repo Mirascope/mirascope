@@ -15,7 +15,9 @@ def test_convert_with_only_content():
     Test when message_param has only a content string and no tool_calls.
     Expected result: role="assistant", content is a string.
     """
-    message_param = ChatCompletionAssistantMessageParam(content="Hello world")
+    message_param = ChatCompletionAssistantMessageParam(
+        role="assistant", content="Hello world"
+    )
     result = convert_message_param_to_base_message_param(message_param)
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
@@ -28,9 +30,11 @@ def test_convert_with_content_and_tool_calls():
     Expected result: role="tool", content is a list [TextPart, ToolCallPart].
     """
     message_param = ChatCompletionAssistantMessageParam(
+        role="assistant",
         content="This is a message",
         tool_calls=[
             {
+                "type": "function",
                 "function": {
                     "name": "test_tool",
                     "arguments": json.dumps({"param": "value"}),
@@ -57,9 +61,11 @@ def test_convert_with_only_tool_calls():
     Expected result: role="tool", content is a list containing only ToolCallParts.
     """
     message_param = ChatCompletionAssistantMessageParam(
+        role="assistant",
         content=None,
         tool_calls=[
             {
+                "type": "function",
                 "function": {
                     "name": "some_tool",
                     "arguments": json.dumps({"key": "val"}),
@@ -83,7 +89,9 @@ def test_convert_with_no_content_no_tool_calls():
     Test when message_param has neither content nor tool_calls.
     Expected result: role="tool", content is an empty list.
     """
-    message_param = ChatCompletionAssistantMessageParam(content=None, tool_calls=None)
+    message_param = ChatCompletionAssistantMessageParam(
+        role="assistant", content=None, tool_calls=[]
+    )
     result = convert_message_param_to_base_message_param(message_param)
     assert isinstance(result, BaseMessageParam)
     assert result.role == "tool"

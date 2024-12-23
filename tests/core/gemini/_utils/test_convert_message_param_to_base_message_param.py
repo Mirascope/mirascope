@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base import DocumentPart, ImagePart, TextPart, ToolCallPart
 from mirascope.core.gemini._utils._convert_message_param_to_base_message_param import (
     _to_document_part,
     _to_image_part,
@@ -202,6 +202,7 @@ def test_gemini_convert_function_call():
     )
     assert isinstance(result, BaseMessageParam)
     assert len(result.content) == 1
+    assert isinstance(result.content[0], ToolCallPart)
     assert result.content[0].type == "tool_call"
     assert result.content[0].name == "some_tool"
 

@@ -11,6 +11,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
+from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import _get_provider_call, _wrap_result, call
 from mirascope.llm.stream import Stream
@@ -57,7 +58,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...
 
     @property
-    def common_finish_reasons(self) -> list[str] | None:
+    def common_finish_reasons(self) -> list[FinishReason] | None:
         # Just return ["stop"] as a string to avoid AttributeError
         return ["stop"]
 
@@ -110,7 +111,7 @@ def test_wrap_result_with_concrete_response_and_stream():
         metadata=Metadata(),
         tool_types=None,
         call_response_type=None,
-        model=None,
+        model=None,  # pyright: ignore [reportArgumentType]
         prompt_template=None,
         fn_args={},
         dynamic_config={},
@@ -124,7 +125,7 @@ def test_wrap_result_with_concrete_response_and_stream():
 
 def test_wrap_result_unsupported_type():
     with pytest.raises(ValueError, match="Unsupported result type: <class 'int'>"):
-        _wrap_result(42)
+        _wrap_result(42)  # pyright: ignore [reportGeneralTypeIssues]
 
 
 def test_get_provider_call_unsupported():
