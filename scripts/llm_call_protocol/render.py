@@ -49,23 +49,7 @@ def generate() -> None:
         autoescape=False,
     )
 
-    result = env.get_template("llm_call_protocols.jinja2").render(
-        providers=[
-            Provider(
-                name="openai",
-                response="ChatCompletion",
-                response_chunk="ChatCompletionChunk",
-                base_stream="Stream[ChatCompletion, ChatCompletionChunk]",
-                base_tool="OpenAITool",
-                base_dynamic_config="OpenAIDynamicConfig",
-                async_base_dynamic_config="AsyncOpenAIDynamicConfig",
-                base_call_param="BaseCallParams",
-                sync_base_client="OpenAI | AzureOpenAI",
-                async_base_client="AsyncOpenAI | AsyncAzureOpenAI",
-                same_sync_and_async_base_client="None",
-            ),
-        ]
-    )
+    result = env.get_template("llm_call_protocols.jinja2").render(providers=PROVIDERS)
 
     header = WORK_DIR.joinpath("headers.py").read_text()
     OUTPUT_FILE.write_text(header + result)
