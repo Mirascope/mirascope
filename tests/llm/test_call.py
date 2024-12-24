@@ -196,7 +196,7 @@ def test_get_provider_call_vertex():
 
 def test_call_decorator_sync():
     def dummy_provider_call(
-        model, stream, tools, response_model, output_parser, json_mode, call_params
+        model, stream, tools, response_model, output_parser, json_mode, call_params, client
     ):
         def wrapper(fn):
             def inner(*args, **kwargs):
@@ -235,7 +235,7 @@ def test_call_decorator_sync():
 @pytest.mark.asyncio
 async def test_call_decorator_async():
     def dummy_async_provider_call(
-        model, stream, tools, response_model, output_parser, json_mode, call_params
+        model, stream, tools, response_model, output_parser, json_mode, call_params, client
     ):
         def wrapper(fn):
             async def inner(*args, **kwargs):
@@ -273,7 +273,7 @@ async def test_call_decorator_async():
 
 def test_call_unsupported_result_type():
     def dummy_str_call(
-        model, stream, tools, response_model, output_parser, json_mode, call_params
+        model, stream, tools, response_model, output_parser, json_mode, call_params, client
     ):
         def wrapper(fn):
             def inner(*args, **kwargs):
