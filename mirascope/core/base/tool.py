@@ -9,7 +9,7 @@ import inspect
 import warnings
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 import jiter
 from pydantic import BaseModel, ConfigDict
@@ -60,7 +60,10 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-class BaseTool(BaseModel):
+_ToolMessageParamT = TypeVar("_ToolMessageParamT")  # noqa: F821
+
+
+class BaseTool(BaseModel, Generic[_ToolMessageParamT]):
     '''A class for defining tools for LLM calls.
 
     Example:
@@ -87,6 +90,7 @@ class BaseTool(BaseModel):
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
     delta: SkipJsonSchema[str | None] = None
+    tool_call: SkipJsonSchema[_ToolMessageParamT | None] = None
 
     @classmethod
     def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:

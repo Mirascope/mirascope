@@ -170,7 +170,7 @@ class CohereCallResponse(
         """
         return [
             ToolResult(
-                call=tool.tool_call,
+                call=tool.tool_call,  # pyright: ignore [reportArgumentType]
                 outputs=[{"output": output}],
             )
             for tool, output in tools_and_outputs

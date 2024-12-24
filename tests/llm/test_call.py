@@ -1,5 +1,5 @@
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -22,7 +22,7 @@ class DummyCallParams(BaseCallParams): ...
 
 class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     @property
-    def content(self): ...
+    def content(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def finish_reasons(self): ...
@@ -55,7 +55,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     def tool(self): ...
 
     @classmethod
-    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...
+    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
@@ -63,7 +63,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
         return ["stop"]
 
     @property
-    def common_message_param(self): ...
+    def common_message_param(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def common_tools(self): ...
@@ -107,12 +107,12 @@ def test_wrap_result_with_concrete_response_and_stream():
     assert result.finish_reasons == ["stop"]
 
     strm = ConcreteStream(
-        stream=None,
+        stream=Mock(),
         metadata=Metadata(),
-        tool_types=None,
-        call_response_type=None,
-        model=None,  # pyright: ignore [reportArgumentType]
-        prompt_template=None,
+        tool_types=Mock(),
+        call_response_type=Mock(),  # pyright: ignore [reportArgumentType]
+        model=Mock(),  # pyright: ignore [reportArgumentType]
+        prompt_template=Mock(),
         fn_args={},
         dynamic_config={},
         messages=[],
@@ -125,12 +125,12 @@ def test_wrap_result_with_concrete_response_and_stream():
 
 def test_wrap_result_unsupported_type():
     with pytest.raises(ValueError, match="Unsupported result type: <class 'int'>"):
-        _wrap_result(42)  # pyright: ignore [reportGeneralTypeIssues]
+        _wrap_result(42)  # pyright: ignore [reportGeneralTypeIssues, reportArgumentType]
 
 
 def test_get_provider_call_unsupported():
     with pytest.raises(ValueError, match="Unsupported provider: bad_provider"):
-        _get_provider_call("bad_provider")
+        _get_provider_call("bad_provider")  # pyright: ignore [reportArgumentType]
 
 
 # Use `new=` instead of `return_value=` so that the call function is replaced by a string directly.
@@ -223,7 +223,7 @@ def test_call_decorator_sync():
         "mirascope.llm.llm_call._get_provider_call", return_value=dummy_provider_call
     ):
 
-        @call("openai:gpt-4o-mini")
+        @call(provider="openai", model="gpt-4o-mini")
         def dummy_function(): ...
 
         res = dummy_function()
@@ -263,7 +263,7 @@ async def test_call_decorator_async():
         return_value=dummy_async_provider_call,
     ):
 
-        @call("openai:gpt-4o-mini")
+        @call(provider="openai", model="gpt-4o-mini")
         async def dummy_async_function(): ...
 
         res = await dummy_async_function()
@@ -287,7 +287,7 @@ def test_call_unsupported_result_type():
         "mirascope.llm.llm_call._get_provider_call", return_value=dummy_str_call
     ):
 
-        @call("openai:gpt-4o-mini")
+        @call(provider="openai", model="gpt-4o-mini")
         def dummy_function_str(): ...
 
         with pytest.raises(ValueError, match="Unsupported result type: <class 'str'>"):

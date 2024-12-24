@@ -152,6 +152,7 @@ def test_anthropic_stream() -> None:
             type="tool_use",
         )
     )
+    assert format_book.tool_call is not None
     assert stream.message_param == {
         "role": "assistant",
         "content": [format_book.tool_call.model_dump()],

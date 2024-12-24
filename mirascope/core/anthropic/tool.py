@@ -52,7 +52,7 @@ class AnthropicTool(BaseTool):
     __provider__ = "anthropic"
     __tool_config_type__ = AnthropicToolConfig
 
-    tool_call: SkipJsonSchema[ToolUseBlock]
+    tool_call: SkipJsonSchema[ToolUseBlock | None] = None
 
     @classmethod
     def tool_schema(cls) -> ToolParam:

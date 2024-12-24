@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from mirascope.core import BaseDynamicConfig
 from mirascope.core.base import (
@@ -17,18 +17,20 @@ from mirascope.llm.tool import Tool
 
 _ResponseT = TypeVar("_ResponseT")
 
+_ToolMessageParamT = TypeVar("_ToolMessageParamT")
+_ToolT = TypeVar("_ToolT")
+
 
 class CallResponse(
     BaseCallResponse[
         _ResponseT,
-        BaseTool,
+        _ToolT,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
         BaseCallParams,
         BaseMessageParam,
     ],
-    Generic[_ResponseT],
     metaclass=_ResponseMetaclass,
 ):
     """
@@ -37,11 +39,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, Any, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[_ResponseT, _ToolT, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, Any, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[_ResponseT, _ToolT, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{field: getattr(response, field) for field in response.model_fields}

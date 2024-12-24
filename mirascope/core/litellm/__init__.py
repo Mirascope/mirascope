@@ -9,7 +9,6 @@ from .call_params import LiteLLMCallParams
 from .call_response import LiteLLMCallResponse
 from .call_response_chunk import LiteLLMCallResponseChunk
 from .dynamic_config import AsyncLiteLLMDynamicConfig, LiteLLMDynamicConfig
-from .models import LiteLLMModels
 from .stream import LiteLLMStream
 from .tool import LiteLLMTool
 
@@ -23,7 +22,6 @@ __all__ = [
     "LiteLLMCallResponseChunk",
     "LiteLLMDynamicConfig",
     "LiteLLMMessageParam",
-    "LiteLLMModels",
     "LiteLLMStream",
     "LiteLLMTool",
     "litellm_call",

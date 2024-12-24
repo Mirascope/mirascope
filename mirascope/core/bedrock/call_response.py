@@ -211,7 +211,7 @@ class BedrockCallResponse(
                         {
                             "toolResult": {
                                 "content": [{"text": output}],
-                                "toolUseId": tool.tool_call["toolUse"]["toolUseId"],
+                                "toolUseId": tool.tool_call["toolUse"]["toolUseId"],  # pyright: ignore [reportOptionalSubscript]
                                 "name": tool._name(),
                             }
                         },

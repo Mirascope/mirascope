@@ -63,7 +63,7 @@ def test_convert_message_param_tool_calls():
     """
     message_param = ChatCompletionAssistantMessageParam(
         role="assistant",
-        content=[{"text": "Some content"}],
+        content=[{"type": "text", "text": "Some content"}],
         tool_calls=[
             {
                 "type": "function",

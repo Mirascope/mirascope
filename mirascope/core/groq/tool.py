@@ -11,12 +11,11 @@ from groq.types.chat import (
     ChatCompletionToolParam,
 )
 from groq.types.shared_params import FunctionDefinition
-from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
 
-class GroqTool(BaseTool):
+class GroqTool(BaseTool[ChatCompletionMessageToolCall]):
     """A class for defining tools for Groq LLM calls.
 
     Example:
@@ -41,8 +40,6 @@ class GroqTool(BaseTool):
     """
 
     __provider__ = "groq"
-
-    tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
 
     @classmethod
     def tool_schema(cls) -> ChatCompletionToolParam:

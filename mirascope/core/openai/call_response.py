@@ -192,10 +192,10 @@ class OpenAICallResponse(
             The list of constructed `ChatCompletionToolMessageParam` parameters.
         """
         return [
-            ChatCompletionToolMessageParam(
+            ChatCompletionToolMessageParam(  # pyright: ignore [reportCallIssue]
                 role="tool",
                 content=output,
-                tool_call_id=tool.tool_call.id,
+                tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                 name=tool._name(),  # pyright: ignore [reportCallIssue]
             )
             for tool, output in tools_and_outputs

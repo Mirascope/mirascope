@@ -12,7 +12,6 @@ from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
 from .dynamic_config import GeminiDynamicConfig
-from .models import GeminiModels
 from .stream import GeminiStream
 from .tool import GeminiTool
 
@@ -25,7 +24,6 @@ __all__ = [
     "GeminiCallResponse",
     "GeminiCallResponseChunk",
     "GeminiMessageParam",
-    "GeminiModels",
     "GeminiStream",
     "GeminiTool",
     "gemini_call",

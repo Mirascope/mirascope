@@ -10,7 +10,6 @@ from openai.types.chat import (
     ChatCompletionToolParam,
 )
 from openai.types.shared_params import FunctionDefinition
-from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from ..base._partial import partial
@@ -26,7 +25,7 @@ class OpenAIToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class OpenAITool(BaseTool):
+class OpenAITool(BaseTool[ChatCompletionMessageToolCall]):
     """A class for defining tools for OpenAI LLM calls.
 
     Example:
@@ -53,8 +52,6 @@ class OpenAITool(BaseTool):
 
     __provider__ = "openai"
     __tool_config_type__ = OpenAIToolConfig
-
-    tool_call: SkipJsonSchema[ChatCompletionMessageToolCall]
 
     @classmethod
     def tool_schema(cls) -> ChatCompletionToolParam:

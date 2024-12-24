@@ -162,7 +162,7 @@ class AzureCallResponse(
         """Returns a tool message for the tool call."""
         tool_message = ToolMessage(
             content=output,
-            tool_call_id=tool.tool_call.id,
+            tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
         )
         tool_message.name = tool._name()  # pyright: ignore [reportCallIssue, reportAttributeAccessIssue]
         return tool_message

@@ -171,7 +171,7 @@ class MistralCallResponse(
         return [
             ToolMessage(
                 content=output,
-                tool_call_id=tool.tool_call.id,
+                tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                 name=tool._name(),
             )
             for tool, output in tools_and_outputs

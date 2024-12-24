@@ -162,7 +162,7 @@ class AnthropicCallResponse(
                 "role": "user",
                 "content": [
                     ToolResultBlockParam(
-                        tool_use_id=tool.tool_call.id,
+                        tool_use_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                         type="tool_result",
                         content=[{"text": output, "type": "text"}],
                     )

@@ -139,7 +139,6 @@ class DummyStream(
         Any,
         Any,
         DummyCallParams,
-        FinishReason,
     ]
 ): ...
 

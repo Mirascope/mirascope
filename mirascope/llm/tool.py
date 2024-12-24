@@ -22,16 +22,19 @@ class _DelegateAbstractMethodsForTool(ModelMetaclass):
         return cls
 
 
-class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):
+_ToolMessageParamT = TypeVar("_ToolMessageParamT")
+
+
+class Tool(BaseTool[_ToolMessageParamT], metaclass=_DelegateAbstractMethodsForTool):
     """
     A provider-agnostic Tool class.
     - No BaseProviderConverter
     - Relies on _response having `common_` methods/properties if needed.
     """
 
-    _tool: BaseTool
+    _tool: BaseTool[_ToolMessageParamT]
 
-    def __init__(self, tool: BaseTool) -> None:
+    def __init__(self, tool: BaseTool[_ToolMessageParamT]) -> None:
         super().__init__(**{field: getattr(tool, field) for field in tool.model_fields})
         object.__setattr__(self, "_tool", tool)
 

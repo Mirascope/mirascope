@@ -11,7 +11,6 @@ from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
 from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
-from .models import AnthropicModels
 from .stream import AnthropicStream
 from .tool import AnthropicTool, AnthropicToolConfig
 
@@ -25,7 +24,6 @@ __all__ = [
     "AnthropicCallResponse",
     "AnthropicCallResponseChunk",
     "AnthropicMessageParam",
-    "AnthropicModels",
     "AnthropicStream",
     "AnthropicTool",
     "AnthropicToolConfig",

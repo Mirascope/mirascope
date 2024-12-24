@@ -54,7 +54,7 @@ class AzureTool(BaseTool):
     __provider__ = "azure"
     __tool_config_type__ = AzureToolConfig
 
-    tool_call: SkipJsonSchema[ChatCompletionsToolCall]
+    tool_call: SkipJsonSchema[ChatCompletionsToolCall | None] = None
 
     @classmethod
     def tool_schema(cls) -> ChatCompletionsToolDefinition:

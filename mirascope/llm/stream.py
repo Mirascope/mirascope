@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator, Generator
 from typing import Any, Generic, TypeVar
 
 from mirascope.core.base import (
@@ -12,7 +13,10 @@ from mirascope.core.base import (
 )
 from mirascope.core.base.call_response import JsonableType
 from mirascope.core.base.stream import BaseStream
+from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
+from mirascope.llm.call_response_chunk import CallResponseChunk
+from mirascope.llm.tool import Tool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -41,7 +45,7 @@ class Stream(
         _ToolSchemaT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
-        _FinishReasonT,
+        FinishReason,
     ],
     Generic[
         _BaseCallResponseT,
@@ -54,7 +58,6 @@ class Stream(
         _ToolSchemaT,
         _BaseDynamicConfigT,
         _BaseCallParamsT,
-        _FinishReasonT,
     ],
 ):
     """
@@ -65,7 +68,19 @@ class Stream(
     def __init__(
         self,
         *,
-        stream: BaseStream,
+        stream: BaseStream[
+            _BaseCallResponseT,
+            _BaseCallResponseChunkT,
+            _UserMessageParamT,
+            _AssistantMessageParamT,
+            _ToolMessageParamT,
+            _MessageParamT,
+            _BaseToolT,
+            _ToolSchemaT,
+            _BaseDynamicConfigT,
+            _BaseCallParamsT,
+            FinishReason,
+        ],
     ) -> None:
         """Initialize the Stream class."""
         self._stream = stream
@@ -83,9 +98,44 @@ class Stream(
             call_kwargs=stream.call_kwargs,
         )
 
-    def common_construct_call_response(self) -> CallResponse:
+    def __iter__(
+        self,
+    ) -> Generator[
+        tuple[
+            CallResponseChunk[_BaseCallResponseChunkT], Tool[_ToolMessageParamT] | None
+        ],
+        None,
+        None,
+    ]:
+        """Iterate over the stream."""
+        for chunk, tool in super().__iter__():
+            yield (
+                CallResponseChunk(response=chunk),  # pyright: ignore [reportAbstractUsage]
+                Tool(tool=tool) if tool is not None else None,  # pyright: ignore [reportAbstractUsage]
+            )
+
+    async def __aiter__(
+        self,
+    ) -> AsyncGenerator[
+        tuple[
+            CallResponseChunk[_BaseCallResponseChunkT], Tool[_ToolMessageParamT] | None
+        ],
+        None,
+    ]:
+        """Iterates over the stream and stores useful information."""
+        async for chunk, tool in super().__aiter__():
+            yield (
+                CallResponseChunk(response=chunk),  # pyright: ignore [reportAbstractUsage]
+                Tool(tool=tool) if tool is not None else None,  # pyright: ignore [reportAbstractUsage]
+            )
+
+    def common_construct_call_response(
+        self,
+    ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
         """A common method that constructs a CallResponse instance."""
-        return CallResponse(response=self._stream.construct_call_response())  # pyright: ignore [reportAbstractUsage]
+        return CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]](
+            response=self._stream.construct_call_response()
+        )  # pyright: ignore [reportAbstractUsage]
 
     @property
     def cost(self) -> float | None:
@@ -98,7 +148,9 @@ class Stream(
             tool_calls=tool_calls, content=content
         )
 
-    def construct_call_response(self) -> CallResponse:
+    def construct_call_response(
+        self,
+    ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
         return self.common_construct_call_response()
 
     @classmethod
