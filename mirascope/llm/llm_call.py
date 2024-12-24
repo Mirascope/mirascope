@@ -25,9 +25,9 @@ from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
 from ..core.base.stream_config import StreamConfig
-from ._call_protocol import Call
 from ._protocols import (
     AsyncLLMFunctionDecorator,
+    CallDecorator,
     LLMFunctionDecorator,
     Provider,
     SyncLLMFunctionDecorator,
@@ -245,4 +245,4 @@ def _call(
     return wrapper
 
 
-call = cast(Call, _call)
+call = cast(CallDecorator, _call)

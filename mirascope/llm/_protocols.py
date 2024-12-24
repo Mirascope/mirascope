@@ -1,14 +1,15 @@
 """Protocols for reusable type hints."""
 
 from collections.abc import (
-    Awaitable,
+    AsyncIterable,
     Callable,
-    Coroutine,
+    Iterable,
 )
 from enum import Enum
 from typing import (
     Any,
     Literal,
+    NoReturn,
     ParamSpec,
     Protocol,
     TypeAlias,
@@ -18,8 +19,22 @@ from typing import (
 
 from pydantic import BaseModel
 
-from mirascope.core import BaseTool, Messages
-from mirascope.core.base import BaseType
+from mirascope.core import BaseDynamicConfig, BaseTool
+from mirascope.core.base import (
+    BaseCallResponse,
+    BaseCallResponseChunk,
+    BaseType,
+    CommonCallParams,
+)
+from mirascope.core.base._utils._protocols import (
+    AsyncLLMFunctionDecorator,
+    LLMFunctionDecorator,
+    SyncLLMFunctionDecorator,
+)
+from mirascope.core.base.stream_config import StreamConfig
+from mirascope.llm.call_response import CallResponse
+from mirascope.llm.call_response_chunk import CallResponseChunk
+from mirascope.llm.stream import Stream
 
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
@@ -38,78 +53,10 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _P = ParamSpec("_P")
 _R = TypeVar("_R", contravariant=True)
-
-
-class AsyncLLMFunctionDecorator(Protocol[_AsyncBaseDynamicConfigT, _AsyncResponseT]):
-    @overload
-    def __call__(
-        self,
-        fn: Callable[
-            _P,
-            Awaitable[_AsyncBaseDynamicConfigT]
-            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
-        ],
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    @overload
-    def __call__(
-        self,
-        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    def __call__(
-        self,
-        fn: Callable[
-            _P,
-            Awaitable[_AsyncBaseDynamicConfigT]
-            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
-        ]
-        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
-
-
-class SyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
-    @overload
-    def __call__(
-        self, fn: Callable[_P, _BaseDynamicConfigT]
-    ) -> Callable[_P, _ResponseT]: ...
-
-    @overload
-    def __call__(self, fn: Callable[_P, Messages.Type]) -> Callable[_P, _ResponseT]: ...
-
-    def __call__(
-        self, fn: Callable[_P, _BaseDynamicConfigT] | Callable[_P, Messages.Type]
-    ) -> Callable[_P, _ResponseT]: ...  # pragma: no cover
-
-
-class LLMFunctionDecorator(
-    Protocol[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ResponseT, _AsyncResponseT]
-):
-    @overload
-    def __call__(
-        self, fn: Callable[_P, _BaseDynamicConfigT]
-    ) -> Callable[_P, _ResponseT]: ...
-
-    @overload
-    def __call__(self, fn: Callable[_P, Messages.Type]) -> Callable[_P, _ResponseT]: ...
-
-    @overload
-    def __call__(
-        self, fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    @overload
-    def __call__(
-        self, fn: Callable[_P, Awaitable[Messages.Type]]
-    ) -> Callable[_P, Awaitable[_AsyncResponseT]]: ...
-
-    def __call__(
-        self,
-        fn: Callable[_P, _BaseDynamicConfigT]
-        | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]]
-        | Callable[_P, Messages.Type]
-        | Callable[_P, Awaitable[Messages.Type]],
-    ) -> Callable[_P, _ResponseT | Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
+_BaseCallResponseChunkT = TypeVar(
+    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
+)
 
 
 Provider: TypeAlias = Literal[
@@ -125,4 +72,443 @@ Provider: TypeAlias = Literal[
     "vertex",
 ]
 
-_ProviderT = TypeVar("_ProviderT", bound=Provider)
+
+class _CallDecorator(
+    Protocol[
+        _BaseCallResponseT,
+        _BaseCallResponseChunkT,
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        _BaseCallParamsT,
+        _BaseStreamT,
+        _SyncBaseClientT,
+        _AsyncBaseClientT,
+        _SameSyncAndAsyncClientT,
+    ],
+):
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        _BaseCallResponseT,
+        _BaseCallResponseT,
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[_AsyncBaseDynamicConfigT, _BaseCallResponseT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _BaseCallResponseT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[_AsyncBaseDynamicConfigT, _ParsedOutputT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseChunkT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> NoReturn: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseStreamT, _BaseStreamT
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[_AsyncBaseDynamicConfigT, _BaseStreamT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _BaseStreamT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseChunkT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> NoReturn: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig = True,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: None = None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT
+        | _SyncBaseClientT
+        | _AsyncBaseClientT
+        | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> NoReturn: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ResponseModelT, _ResponseModelT
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[_AsyncBaseDynamicConfigT, _ResponseModelT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ResponseModelT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ParsedOutputT, _ParsedOutputT
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[_AsyncBaseDynamicConfigT, _ParsedOutputT]: ...
+
+    @overload
+    def __call__(
+        self,
+        model: str,
+        *,
+        stream: Literal[False] = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> LLMFunctionDecorator[
+        _BaseDynamicConfigT,
+        _AsyncBaseDynamicConfigT,
+        Iterable[_ResponseModelT],
+        AsyncIterable[_ResponseModelT],
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _AsyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> AsyncLLMFunctionDecorator[
+        _AsyncBaseDynamicConfigT, AsyncIterable[_ResponseModelT]
+    ]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: None = None,
+        json_mode: bool = False,
+        client: _SyncBaseClientT = ...,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, Iterable[_ResponseModelT]]: ...
+
+    @overload
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: Literal[True] | StreamConfig,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT],
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
+        | Callable[[_BaseCallResponseChunkT], _ParsedOutputT]
+        | Callable[[_ResponseModelT], _ParsedOutputT]
+        | None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT
+        | _AsyncBaseClientT
+        | _SyncBaseClientT
+        | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> NoReturn: ...
+
+    def __call__(
+        self,
+        provider: Provider,
+        model: str,
+        *,
+        stream: bool | StreamConfig = False,
+        tools: list[type[BaseTool] | Callable] | None = None,
+        response_model: type[_ResponseModelT] | None = None,
+        output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
+        | Callable[[_BaseCallResponseChunkT], _ParsedOutputT]
+        | Callable[[_ResponseModelT], _ParsedOutputT]
+        | None = None,
+        json_mode: bool = False,
+        client: _SameSyncAndAsyncClientT
+        | _AsyncBaseClientT
+        | _SyncBaseClientT
+        | None = None,
+        call_params: _BaseCallParamsT | None = None,
+    ) -> (
+        AsyncLLMFunctionDecorator[
+            _AsyncBaseDynamicConfigT,
+            _BaseCallResponseT
+            | _ParsedOutputT
+            | _BaseStreamT
+            | _ResponseModelT
+            | AsyncIterable[_ResponseModelT],
+        ]
+        | SyncLLMFunctionDecorator[
+            _BaseDynamicConfigT,
+            _BaseCallResponseT
+            | _ParsedOutputT
+            | _BaseStreamT
+            | _ResponseModelT
+            | Iterable[_ResponseModelT],
+        ]
+        | LLMFunctionDecorator[
+            _BaseDynamicConfigT,
+            _AsyncBaseDynamicConfigT,
+            _BaseCallResponseT
+            | _ParsedOutputT
+            | _BaseStreamT
+            | _ResponseModelT
+            | Iterable[_ResponseModelT],
+            _BaseCallResponseT
+            | _ParsedOutputT
+            | _BaseStreamT
+            | _ResponseModelT
+            | AsyncIterable[_ResponseModelT],
+        ]
+    ): ...
+
+
+CallDecorator: TypeAlias = _CallDecorator[
+    CallResponse,
+    CallResponseChunk,
+    BaseDynamicConfig,
+    BaseDynamicConfig,
+    CommonCallParams,
+    Stream,
+    Any,
+    Any,
+    Any,
+]
