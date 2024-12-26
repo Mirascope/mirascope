@@ -4,7 +4,6 @@ from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from enum import Enum
 from functools import wraps
 from typing import (
-    TYPE_CHECKING,
     Any,
     ParamSpec,
     TypeVar,
@@ -19,6 +18,7 @@ from mirascope.core.base import (
     BaseCallResponseChunk,
     BaseStream,
     BaseType,
+    CommonCallParams,
 )
 from mirascope.core.base._utils import fn_is_async
 from mirascope.llm.call_response import CallResponse
@@ -34,13 +34,9 @@ from ._protocols import (
 )
 
 _P = ParamSpec("_P")
-_R = TypeVar("_R", contravariant=True)
+_R = TypeVar("_R")
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
-_CallResponseT = TypeVar("_CallResponseT", bound=BaseCallResponse)
-_BaseCallResponseChunkT = TypeVar(
-    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
-)
 _AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 
@@ -51,27 +47,10 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
-_ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
-_SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
-_SyncBaseClientT = TypeVar("_SyncBaseClientT", contravariant=True)
-_AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
-_BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
-_ResponseT = TypeVar("_ResponseT", covariant=True)
-_AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)
-_ResponseChunkT = TypeVar("_ResponseChunkT", covariant=True)
-_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT", covariant=True)
-_InvariantResponseChunkT = TypeVar("_InvariantResponseChunkT", contravariant=True)
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
-if TYPE_CHECKING:
-    pass
-
-else:
-    _BaseToolT = None
-
-
-def _get_provider_call(provider: str) -> Callable[..., Any]:
+def _get_provider_call(provider: str) -> Callable:
     """Returns the provider-specific call decorator based on the provider name."""
     if provider == "anthropic":
         from mirascope.core.anthropic import anthropic_call
@@ -149,11 +128,8 @@ def _call(
     | Callable[[_ResponseModelT], _ParsedOutputT]
     | None = None,
     json_mode: bool = False,
-    client: _SameSyncAndAsyncClientT
-    | _AsyncBaseClientT
-    | _SyncBaseClientT
-    | None = None,
-    call_params: _BaseCallParamsT | None = None,
+    client: Any = None,  # noqa: ANN401
+    call_params: CommonCallParams | Any = None,  # noqa: ANN401
 ) -> (
     AsyncLLMFunctionDecorator[
         _AsyncBaseDynamicConfigT,
@@ -186,20 +162,7 @@ def _call(
         | AsyncIterable[_ResponseModelT],
     ]
 ):
-    """A decorator for routing calls to provider-specific call decorators.
-
-    Args:
-        model: The model identifier (e.g. "openai:gpt-4o-mini").
-        stream: Whether streaming is enabled or a StreamConfig instance.
-        tools: The tools to use with the call.
-        response_model: The structured response model to parse into.
-        output_parser: A parser function for the raw response.
-        json_mode: Whether to use JSON mode.
-        call_params: Additional common call parameters.
-
-    Returns:
-        A decorator that, when applied to a function, returns a CallResponse or Stream.
-    """
+    """Decorator for defining a function that calls a language model."""
     provider_call = _get_provider_call(provider)
 
     def wrapper(
@@ -222,27 +185,26 @@ def _call(
         @wraps(decorated)
         def inner(
             *args: _P.args, **kwargs: _P.kwargs
-        ) -> (
-            CallResponse[_CallResponseT, _BaseToolT]
-            | Stream
-            | Awaitable[CallResponse[_CallResponseT, _BaseToolT] | Stream]
-        ):
+        ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
             result = decorated(*args, **kwargs)
             if fn_is_async(decorated):
 
-                async def async_wrapper() -> (
-                    CallResponse[_CallResponseT, _BaseToolT] | Stream
-                ):
+                async def async_wrapper() -> CallResponse | Stream:
                     final = await result
                     return _wrap_result(final)
 
                 return async_wrapper()
             else:
-                return _wrap_result(result)
+
+                def sync_wrapper() -> CallResponse | Stream:
+                    final = result
+                    return _wrap_result(final)
+
+                return sync_wrapper()
 
         return inner
 
-    return wrapper
+    return wrapper  # pyright: ignore [reportReturnType]
 
 
 call = cast(CallDecorator, _call)

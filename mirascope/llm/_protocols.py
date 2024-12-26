@@ -53,9 +53,11 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _P = ParamSpec("_P")
 _R = TypeVar("_R", contravariant=True)
-_BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
+_BaseCallResponseT = TypeVar(
+    "_BaseCallResponseT", bound=BaseCallResponse, covariant=True
+)
 _BaseCallResponseChunkT = TypeVar(
-    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk
+    "_BaseCallResponseChunkT", bound=BaseCallResponseChunk, covariant=True
 )
 
 
@@ -109,6 +111,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
+        provider: Provider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -365,6 +368,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
+        provider: Provider,
         model: str,
         *,
         stream: Literal[False] = False,

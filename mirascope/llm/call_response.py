@@ -18,13 +18,13 @@ from mirascope.llm.tool import Tool
 _ResponseT = TypeVar("_ResponseT")
 
 _ToolMessageParamT = TypeVar("_ToolMessageParamT")
-_ToolT = TypeVar("_ToolT")
+_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
 class CallResponse(
     BaseCallResponse[
         _ResponseT,
-        _ToolT,
+        _BaseToolT,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
@@ -39,11 +39,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, _ToolT, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, _ToolT, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{field: getattr(response, field) for field in response.model_fields}
