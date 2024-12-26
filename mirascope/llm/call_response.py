@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import Any, TypeVar
+
+from pydantic import computed_field
 
 from mirascope.core import BaseDynamicConfig
 from mirascope.core.base import (
@@ -83,15 +86,18 @@ class CallResponse(
     def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons
 
-    @property
+    @computed_field
+    @cached_property
     def message_param(self) -> BaseMessageParam:
         return self._response.common_message_param
 
-    @property
+    @computed_field
+    @cached_property
     def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_tools
 
-    @property
+    @computed_field
+    @cached_property
     def tool(self) -> Tool | None:
         tools = self._response.common_tools
         if tools:

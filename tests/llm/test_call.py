@@ -1,7 +1,9 @@
+from functools import cached_property
 from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+from pydantic import computed_field
 
 from mirascope.core.base import (
     BaseCallKwargs,
@@ -45,14 +47,17 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     @property
     def cost(self): ...
 
-    @property
-    def message_param(self): ...
+    @computed_field
+    @cached_property
+    def message_param(self) -> Any: ...
 
-    @property
-    def tools(self): ...
+    @computed_field
+    @cached_property
+    def tools(self) -> Any: ...
 
-    @property
-    def tool(self): ...
+    @computed_field
+    @cached_property
+    def tool(self) -> Any: ...
 
     @classmethod
     def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]

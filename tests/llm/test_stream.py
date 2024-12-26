@@ -1,8 +1,10 @@
 from collections.abc import AsyncGenerator, Generator
+from functools import cached_property
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+from pydantic import computed_field
 
 from mirascope.core.base import (
     BaseCallParams,
@@ -65,13 +67,16 @@ class DummyProviderResponse(
     @property
     def cost(self) -> float | None: ...
 
-    @property
+    @computed_field
+    @cached_property
     def message_param(self) -> DummyMessageParam: ...
 
-    @property
+    @computed_field
+    @cached_property
     def tools(self) -> list[DummyTool] | None: ...
 
-    @property
+    @computed_field
+    @cached_property
     def tool(self) -> DummyTool | None: ...
 
     @classmethod

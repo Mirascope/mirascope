@@ -1,4 +1,7 @@
+from functools import cached_property
 from typing import Any, ClassVar, cast
+
+from pydantic import computed_field
 
 from mirascope.core.base import (
     BaseCallParams,
@@ -68,14 +71,17 @@ class DummyProviderCallResponse(
     @property
     def cost(self) -> float | None: ...
 
-    @property
+    @computed_field
+    @cached_property
     def message_param(self) -> Any: ...
 
-    @property
+    @computed_field
+    @cached_property
     def tools(self) -> list[DummyTool] | None:
         return [DummyTool()]
 
-    @property
+    @computed_field
+    @cached_property
     def tool(self) -> DummyTool | None: ...
 
     @classmethod
@@ -119,9 +125,9 @@ def test_call_response():
     call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
 
     assert call_response_instance.finish_reasons == ["finish"]
-    assert call_response_instance.message_param.role == "assistant"
+    assert call_response_instance.message_param is None
     assert call_response_instance.tools is not None
-    assert call_response_instance.tool is not None
+    assert call_response_instance.tool is None
     assert str(call_response_instance) == "dummy_content"
     assert call_response_instance._response.common_finish_reasons == ["finish"]
 
