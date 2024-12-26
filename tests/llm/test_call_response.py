@@ -1,6 +1,8 @@
 from functools import cached_property
 from typing import Any, ClassVar, cast
+from unittest.mock import PropertyMock, patch
 
+import pytest
 from pydantic import computed_field
 
 from mirascope.core.base import (
@@ -13,6 +15,7 @@ from mirascope.core.base import (
 )
 from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
+from mirascope.llm.tool import Tool
 
 
 class DummyCallParams(BaseCallParams):
@@ -107,7 +110,8 @@ class DummyProviderCallResponse(
     ): ...
 
 
-def test_call_response():
+@pytest.fixture
+def dummy_call_response_instance():
     dummy_response = DummyProviderCallResponse(
         metadata=Metadata(),
         response={},
@@ -122,38 +126,21 @@ def test_call_response():
         start_time=0,
         end_time=0,
     )
-    call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
-
-    assert call_response_instance.finish_reasons == ["finish"]
-    assert call_response_instance.message_param.role == "assistant"
-    assert call_response_instance.tools is not None
-    assert call_response_instance.tool is not None
-    assert str(call_response_instance) == "dummy_content"
-    assert call_response_instance._response.common_finish_reasons == ["finish"]
+    return CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
 
 
-def test_call_response_attribute_fallback_on_instance():
-    # This test covers the try-except block in __getattribute__
-    # by accessing an attribute that doesn't exist on _response but exists on CallResponse instance.
-    dummy_response = DummyProviderCallResponse(
-        metadata=Metadata(),
-        response={},
-        tool_types=None,
-        prompt_template=None,
-        fn_args={},
-        dynamic_config={},
-        messages=[],
-        call_params=DummyCallParams(),
-        call_kwargs={},
-        user_message_param=None,
-        start_time=0,
-        end_time=0,
-    )
-    call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
-    # Add an attribute directly to the call_response_instance that _response doesn't have
-    call_response_instance.custom_attr = "custom_value"  # pyright: ignore [reportAttributeAccessIssue]
-    # Accessing this attribute should trigger the except AttributeError block
-    assert call_response_instance.custom_attr == "custom_value"
+def test_call_response(dummy_call_response_instance):
+    assert dummy_call_response_instance.finish_reasons == ["finish"]
+    assert dummy_call_response_instance.message_param.role == "assistant"
+    assert dummy_call_response_instance.tools is not None
+    assert dummy_call_response_instance.tool is not None
+    assert str(dummy_call_response_instance) == "dummy_content"
+    assert dummy_call_response_instance._response.common_finish_reasons == ["finish"]
+
+
+def test_call_response_attribute_fallback_on_instance(dummy_call_response_instance):
+    dummy_call_response_instance.custom_attr = "custom_value"  # pyright: ignore [reportAttributeAccessIssue]
+    assert dummy_call_response_instance.custom_attr == "custom_value"
 
 
 def test_tool_message_params_various_tool_call_ids_with_annotations():
@@ -202,3 +189,27 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
     result_no_id = CallResponse.tool_message_params([(tool_call_no_id, "output3")])
     assert result_no_id[0].content[0].id is None
+
+
+async def test_tool_property_returns_none(dummy_call_response_instance):
+    dummy_call_response_instance._response.common_tools = None
+
+    assert (
+        dummy_call_response_instance.tool is None
+    ), "Expected None when _response.common_tools is None"
+
+
+@pytest.mark.asyncio
+async def test_tool_property_returns_first_tool(dummy_call_response_instance):
+    first_tool = Tool(tool=DummyTool())  # pyright: ignore [reportAbstractUsage]
+
+    with patch.object(
+        type(dummy_call_response_instance._response),
+        "common_tools",
+        new_callable=PropertyMock,
+    ) as mock_common_tools:
+        mock_common_tools.return_value = [first_tool]
+
+        assert (
+            dummy_call_response_instance.tool == first_tool
+        ), "Expected the first Tool in _response.common_tools"

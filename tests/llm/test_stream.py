@@ -161,24 +161,19 @@ class DummyStream(
 
 @pytest.mark.asyncio
 async def test_stream():
-    # First, define our test generators.
     def sync_gen():
         mock_chunk = DummyProviderChunk(chunk=Mock())
-        # Patch the content property for test
         type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
         yield (mock_chunk, DummyTool())
 
     async def async_gen():
         mock_chunk = DummyProviderChunk(chunk=Mock())
-        # Patch the content property for test
         type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
         yield (mock_chunk, DummyTool())
 
-    # Create a mock for the base stream.
     mock_stream = MagicMock()
     mock_stream.cost = 0.02
 
-    # IMPORTANT: Pass all fields as keyword arguments
     mock_stream.construct_call_response.return_value = DummyProviderResponse(
         metadata={},
         response={},
@@ -192,27 +187,68 @@ async def test_stream():
         end_time=0,
     )
 
-    # Replace the .stream attribute with a generator for sync iteration
     mock_stream.stream = sync_gen()
 
     dummy_stream_instance = DummyStream(stream=mock_stream)
 
-    # Test synchronous iteration
     for chunk, tool in dummy_stream_instance:
         assert isinstance(chunk, CallResponseChunk)
         assert isinstance(tool, Tool)
 
-    # Test asynchronous iteration
     mock_stream.stream = async_gen()
     dummy_stream_instance.stream = async_gen()
     async for chunk, tool in dummy_stream_instance:
         assert isinstance(chunk, CallResponseChunk)
         assert isinstance(tool, Tool)
 
-    # Check cost
     assert dummy_stream_instance.cost == 0.02
 
-    # Check constructing call responses
     call_response_instance = dummy_stream_instance.common_construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
     ...
+
+
+@pytest.fixture
+def dummy_stream_instance() -> DummyStream:
+    def sync_gen():
+        mock_chunk = DummyProviderChunk(chunk=Mock())
+        type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue
+        yield (mock_chunk, DummyTool())
+
+    mock_stream = MagicMock()
+    mock_stream.cost = 0.02
+
+    mock_stream.construct_call_response.return_value = DummyProviderResponse(
+        metadata={},
+        response={},
+        prompt_template="",
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        start_time=0,
+        end_time=0,
+    )
+
+    mock_stream.stream = sync_gen()
+
+    dummy_stream = DummyStream(stream=mock_stream)
+
+    dummy_stream._response = MagicMock()  # pyright: ignore [reportAttributeAccessIssue
+
+    return dummy_stream
+
+
+@pytest.mark.asyncio
+async def test_construct_call_response(dummy_stream_instance: DummyStream):
+    call_resp = dummy_stream_instance.construct_call_response()  # pyright: ignore [reportAbstractUsage]
+    assert isinstance(call_resp, CallResponse), "Should return a CallResponse instance"
+
+
+@pytest.mark.asyncio
+async def test_common_tool_message_params(dummy_stream_instance: DummyStream):
+    tools_and_outputs = [(DummyTool(), "test output")]
+    result = dummy_stream_instance.common_tool_message_params(tools_and_outputs)  # pyright: ignore [reportArgumentType]
+
+    assert isinstance(result, list), "common_tool_message_params should return a list"
