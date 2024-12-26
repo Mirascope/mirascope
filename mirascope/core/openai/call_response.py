@@ -4,8 +4,8 @@ usage docs: learn/calls.md#handling-responses
 """
 
 import base64
-from typing import cast
 from functools import cached_property
+from typing import cast
 
 from openai.types.chat import (
     ChatCompletion,

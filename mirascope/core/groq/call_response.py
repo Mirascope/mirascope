@@ -3,9 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from typing import cast
 from functools import cached_property
-
+from typing import cast
 
 from groq.types.chat import (
     ChatCompletion,

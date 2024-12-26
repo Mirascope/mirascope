@@ -3,8 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from typing import cast
 from functools import cached_property
+from typing import cast
 
 from azure.ai.inference.models import (
     AssistantMessage,
