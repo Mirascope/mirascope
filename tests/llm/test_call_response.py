@@ -191,14 +191,6 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
     assert result_no_id[0].content[0].id is None
 
 
-async def test_tool_property_returns_none(dummy_call_response_instance):
-    dummy_call_response_instance._response.common_tools = None
-
-    assert (
-        dummy_call_response_instance.tool is None
-    ), "Expected None when _response.common_tools is None"
-
-
 @pytest.mark.asyncio
 async def test_tool_property_returns_first_tool(dummy_call_response_instance):
     first_tool = Tool(tool=DummyTool())  # pyright: ignore [reportAbstractUsage]
@@ -213,3 +205,17 @@ async def test_tool_property_returns_first_tool(dummy_call_response_instance):
         assert (
             dummy_call_response_instance.tool == first_tool
         ), "Expected the first Tool in _response.common_tools"
+
+
+@pytest.mark.asyncio
+async def test_tool_returns_none_when_no_tools(dummy_call_response_instance):
+    with patch.object(
+        type(dummy_call_response_instance._response),
+        "common_tools",
+        new_callable=PropertyMock,
+    ) as mock_common_tools:
+        mock_common_tools.return_value = None
+
+        assert (
+            dummy_call_response_instance.tool is None
+        ), "Expected None when _response.common_tools is None"
