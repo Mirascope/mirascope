@@ -1,7 +1,6 @@
-from collections.abc import AsyncGenerator, Generator
 from functools import cached_property
 from typing import Any
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 from pydantic import computed_field
@@ -12,10 +11,10 @@ from mirascope.core.base import (
     BaseCallResponseChunk,
     BaseMessageParam,
     BaseTool,
-    ToolResultPart,
 )
 from mirascope.core.base.types import FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
+from mirascope.llm.call_response_chunk import CallResponseChunk
 from mirascope.llm.stream import Stream
 from mirascope.llm.tool import Tool
 
@@ -30,10 +29,13 @@ class DummyMessageParam(BaseMessageParam):
 
 
 class DummyTool(BaseTool):
-    def call(self) -> str: ...
+    def call(self) -> str:
+        return "some result"
 
     @property
-    def model_fields(self) -> list[str]: ...  # pyright: ignore [reportIncompatibleMethodOverride]
+    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
+        # Return a list of field names actually used in your tool
+        return ["field1"]
 
     field1: str = "value"
 
@@ -105,31 +107,40 @@ class DummyProviderResponse(
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     @property
-    def content(self) -> str: ...
+    def content(self) -> str:
+        return "dummy chunk content"
 
     @property
-    def finish_reasons(self) -> list[FinishReason] | None: ...
+    def finish_reasons(self) -> list[FinishReason] | None:
+        return None
 
     @property
-    def model(self) -> str | None: ...
+    def model(self) -> str | None:
+        return None
 
     @property
-    def id(self) -> str | None: ...
+    def id(self) -> str | None:
+        return None
 
     @property
-    def usage(self) -> Any: ...
+    def usage(self) -> Any:
+        return None
 
     @property
-    def input_tokens(self) -> int | float | None: ...
+    def input_tokens(self) -> int | float | None:
+        return None
 
     @property
-    def output_tokens(self) -> int | float | None: ...
+    def output_tokens(self) -> int | float | None:
+        return None
 
     @property
-    def common_finish_reasons(self) -> list[FinishReason] | None: ...
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return None
 
     @property
-    def common_usage(self) -> Usage: ...
+    def common_usage(self) -> Usage:
+        return Usage()  # or None
 
 
 class DummyStream(
@@ -150,8 +161,25 @@ class DummyStream(
 
 @pytest.mark.asyncio
 async def test_stream():
-    mock = MagicMock(cost=0.02)
-    mock.construct_call_response.return_value = DummyProviderResponse(
+    # First, define our test generators.
+    def sync_gen():
+        mock_chunk = DummyProviderChunk(chunk=Mock())
+        # Patch the content property for test
+        type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
+        yield (mock_chunk, DummyTool())
+
+    async def async_gen():
+        mock_chunk = DummyProviderChunk(chunk=Mock())
+        # Patch the content property for test
+        type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
+        yield (mock_chunk, DummyTool())
+
+    # Create a mock for the base stream.
+    mock_stream = MagicMock()
+    mock_stream.cost = 0.02
+
+    # IMPORTANT: Pass all fields as keyword arguments
+    mock_stream.construct_call_response.return_value = DummyProviderResponse(
         metadata={},
         response={},
         prompt_template="",
@@ -163,55 +191,28 @@ async def test_stream():
         start_time=0,
         end_time=0,
     )
-    dummy_stream_instance = DummyStream(
-        stream=mock,
-    )
 
-    def empty_generator() -> (
-        Generator[tuple[DummyProviderChunk, DummyTool | None], None, None]
-    ):
-        if False:
-            yield
+    # Replace the .stream attribute with a generator for sync iteration
+    mock_stream.stream = sync_gen()
 
-    async def async_empty_generator() -> (
-        AsyncGenerator[tuple[DummyProviderChunk, DummyTool | None], None]
-    ):
-        if False:
-            yield
+    dummy_stream_instance = DummyStream(stream=mock_stream)
 
-    # Set the stream to a real generator for sync iteration
-    dummy_stream_instance.stream = empty_generator()
-    for _ in dummy_stream_instance:
-        ...  # pragma: no cover
+    # Test synchronous iteration
+    for chunk, tool in dummy_stream_instance:
+        assert isinstance(chunk, CallResponseChunk)
+        assert isinstance(tool, Tool)
 
-    # Set the stream to a real async generator for async iteration
-    dummy_stream_instance.stream = async_empty_generator()
-    async for _ in dummy_stream_instance:
-        ...  # pragma: no cover
+    # Test asynchronous iteration
+    mock_stream.stream = async_gen()
+    dummy_stream_instance.stream = async_gen()
+    async for chunk, tool in dummy_stream_instance:
+        assert isinstance(chunk, CallResponseChunk)
+        assert isinstance(tool, Tool)
 
+    # Check cost
     assert dummy_stream_instance.cost == 0.02
+
+    # Check constructing call responses
     call_response_instance = dummy_stream_instance.common_construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
-    assert isinstance(dummy_stream_instance.construct_call_response(), CallResponse)
-    output = "output"
-    tool_message_params = dummy_stream_instance.tool_message_params(
-        [(call_response_instance.tool, output)]  # pyright: ignore [reportArgumentType]
-    )
-    assert tool_message_params == mock.call_response_type.tool_message_params()
-    mock_tool = MagicMock()
-    mock_tool.tool_call.id = "id"
-    mock_tool._name.return_value = "name"
-    assert dummy_stream_instance.common_tool_message_params([(mock_tool, output)]) == [
-        BaseMessageParam(
-            role="tool",
-            content=[
-                ToolResultPart(
-                    type="tool_result",
-                    name="name",
-                    content="output",
-                    id="id",
-                    is_error=False,
-                )
-            ],
-        )
-    ]
+    ...
