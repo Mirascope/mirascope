@@ -29,8 +29,7 @@ class DummyMessageParam(BaseMessageParam):
 
 
 class DummyTool(BaseTool):
-    def call(self) -> str:
-        return "some result"
+    def call(self) -> str: ...
 
     @property
     def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
@@ -107,8 +106,7 @@ class DummyProviderResponse(
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     @property
-    def content(self) -> str:
-        return "dummy chunk content"
+    def content(self) -> str: ...
 
     @property
     def finish_reasons(self) -> list[FinishReason] | None:
@@ -123,8 +121,7 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
         return None
 
     @property
-    def usage(self) -> Any:
-        return None
+    def usage(self) -> Any: ...
 
     @property
     def input_tokens(self) -> int | float | None:
@@ -135,12 +132,10 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
         return None
 
     @property
-    def common_finish_reasons(self) -> list[FinishReason] | None:
-        return None
+    def common_finish_reasons(self) -> list[FinishReason] | None: ...
 
     @property
-    def common_usage(self) -> Usage:
-        return Usage()  # or None
+    def common_usage(self) -> Usage: ...
 
 
 class DummyStream(
@@ -210,10 +205,7 @@ async def test_stream():
 
 @pytest.fixture
 def dummy_stream_instance() -> DummyStream:
-    def sync_gen():
-        mock_chunk = DummyProviderChunk(chunk=Mock())
-        type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue
-        yield (mock_chunk, DummyTool())
+    def sync_gen(): ...
 
     mock_stream = MagicMock()
     mock_stream.cost = 0.02
