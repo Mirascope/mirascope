@@ -48,6 +48,7 @@ __all__ = [
     "CacheControlPart",
     "call_factory",
     "CommonCallParams",
+    "DocumentPart",
     "FromCallArgs",
     "GenerateJsonSchemaNoTitles",
     "ImagePart",

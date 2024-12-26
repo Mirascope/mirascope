@@ -1,4 +1,5 @@
 from contextlib import suppress
+from functools import cached_property
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -27,7 +28,7 @@ class MyCallResponse(BaseCallResponse):
     def content(self) -> str:
         return "content"  # pragma: no cover
 
-    @property
+    @cached_property
     def tools(self) -> list[BaseTool]:
         return [FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")]
 

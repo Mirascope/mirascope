@@ -1,4 +1,5 @@
 import json
+from functools import cached_property
 from typing import cast
 from unittest.mock import MagicMock, patch
 
@@ -28,7 +29,7 @@ class MyCallResponse(BaseCallResponse):
     def content(self) -> str:
         return "content"  # pragma: no cover
 
-    @property
+    @cached_property
     def tools(self) -> list[BaseTool]:
         return [
             FormatBook(title="The Name of the Wind", author="Rothfuss, Patrick")

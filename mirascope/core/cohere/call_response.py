@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
+
 from cohere.types import (
     ApiMetaBilledUnits,
     ChatMessage,
@@ -113,7 +115,7 @@ class CohereCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> ChatMessage:
         """Returns the assistant's response as a message parameter."""
         return ChatMessage(
@@ -123,7 +125,7 @@ class CohereCallResponse(
         )
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[CohereTool] | None:
         """Returns the tools for the 0th choice message.
 
@@ -141,7 +143,7 @@ class CohereCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> CohereTool | None:
         """Returns the 0th tool for the 0th choice message.
 

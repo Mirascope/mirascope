@@ -3,6 +3,8 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
+
 from google.generativeai.protos import FunctionResponse
 from google.generativeai.types import (
     AsyncGenerateContentResponse,
@@ -128,13 +130,13 @@ class GeminiCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[GeminiTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
         if self.tool_types is None:
@@ -151,7 +153,7 @@ class GeminiCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> GeminiTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.
 

@@ -3,6 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from functools import cached_property
 from typing import cast
 
 from mypy_boto3_bedrock_runtime.type_defs import (
@@ -136,7 +137,7 @@ class BedrockCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> SerializeAsAny[AssistantMessageTypeDef]:
         """Returns the assistants's response as a message parameter."""
         message = self.message
@@ -145,7 +146,7 @@ class BedrockCallResponse(
         return AssistantMessageTypeDef(role="assistant", content=message["content"])
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[BedrockTool] | None:
         """Returns any available tool calls as their `BedrockTool` definition.
 
@@ -175,7 +176,7 @@ class BedrockCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> BedrockTool | None:
         """Returns the 0th tool for the 0th choice message.
 

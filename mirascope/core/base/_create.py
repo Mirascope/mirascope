@@ -5,6 +5,8 @@ from collections.abc import Awaitable, Callable, Coroutine
 from functools import wraps
 from typing import Any, ParamSpec, TypeVar, cast, overload
 
+from pydantic import BaseModel
+
 from ._utils import (
     SameSyncAndAsyncClientSetupCall,
     SetupCall,
@@ -72,6 +74,7 @@ def create_factory(  # noqa: ANN202
         fn: Callable[_P, _BaseDynamicConfigT],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
+        response_model: type[BaseModel] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
@@ -83,6 +86,7 @@ def create_factory(  # noqa: ANN202
         fn: Callable[_P, Messages.Type],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
+        response_model: type[BaseModel] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
@@ -98,6 +102,7 @@ def create_factory(  # noqa: ANN202
         ],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
+        response_model: type[BaseModel] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
@@ -112,6 +117,7 @@ def create_factory(  # noqa: ANN202
         fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
+        response_model: type[BaseModel] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
@@ -132,6 +138,7 @@ def create_factory(  # noqa: ANN202
         | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
         model: str,
         tools: list[type[BaseTool] | Callable] | None,
+        response_model: type[BaseModel] | None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT] | None,
         json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | _SyncBaseClientT | None,
@@ -174,7 +181,7 @@ def create_factory(  # noqa: ANN202
                     tools=tools,
                     json_mode=json_mode,
                     call_params=call_params,
-                    extract=False,
+                    response_model=response_model,
                     stream=False,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
@@ -218,7 +225,7 @@ def create_factory(  # noqa: ANN202
                     tools=tools,
                     json_mode=json_mode,
                     call_params=call_params,
-                    extract=False,
+                    response_model=response_model,
                     stream=False,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000

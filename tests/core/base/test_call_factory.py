@@ -35,6 +35,7 @@ def test_call_factory_create(
     create_kwargs = {
         "model": "model",
         "tools": [],
+        "response_model": None,
         "output_parser": MagicMock(),
         "json_mode": True,
         "client": MagicMock(),
@@ -106,6 +107,38 @@ def test_call_factory_extract(
     )
     mock_partial.assert_called_once_with(
         mock_extract_factory.return_value, **extract_kwargs
+    )
+
+
+@patch(
+    "mirascope.core.base._call_factory.extract_with_tools_factory",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.base._call_factory.partial", new_callable=MagicMock)
+def test_call_factory_extract_with_tools(
+    mock_partial: MagicMock,
+    mock_extract_with_tools_factory: MagicMock,
+    mock_call_factory_kwargs: dict,
+) -> None:
+    """Tests the `extract_factory` route for the `call_factory` method."""
+    call = call_factory(**mock_call_factory_kwargs)
+    extract_with_tools_kwargs = {
+        "model": "model",
+        "tools": [MagicMock()],
+        "response_model": MagicMock,
+        "output_parser": None,
+        "client": MagicMock(),
+        "call_params": MagicMock(),
+    }
+    _ = call(**extract_with_tools_kwargs)
+    mock_extract_with_tools_factory.assert_called_once_with(
+        TCallResponse=mock_call_factory_kwargs["TCallResponse"],
+        setup_call=mock_call_factory_kwargs["setup_call"],
+        get_json_output=mock_call_factory_kwargs["get_json_output"],
+    )
+    mock_partial.assert_called_once_with(
+        mock_extract_with_tools_factory.return_value,
+        **extract_with_tools_kwargs,
     )
 
 

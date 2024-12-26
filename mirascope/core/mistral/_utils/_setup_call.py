@@ -19,6 +19,7 @@ from mistralai.models import (
     ToolMessage,
     UserMessage,
 )
+from pydantic import BaseModel
 
 from ... import BaseMessageParam
 from ...base import BaseTool, _utils
@@ -50,7 +51,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletionResponse, CompletionEvent],
@@ -72,7 +73,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent],
@@ -93,7 +94,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: MistralCallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletionResponse, CompletionEvent]
@@ -125,7 +126,8 @@ def setup_call(
     )
     messages = convert_message_params(messages)
     if json_mode:
-        call_kwargs["response_format"] = ResponseFormat(type="json_object")
+        if not tools:
+            call_kwargs["response_format"] = ResponseFormat(type="json_object")
         json_mode_content = _utils.json_mode_content(
             tool_types[0] if tool_types else None
         )
@@ -136,8 +138,7 @@ def setup_call(
                 messages[-1].content += json_mode_content
         else:
             messages.append(UserMessage(content=json_mode_content.strip()))
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs["tool_choice"] = cast(ToolChoiceEnum, "any")
     call_kwargs |= {"model": model, "messages": messages}

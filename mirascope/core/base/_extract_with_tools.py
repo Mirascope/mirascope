@@ -1,4 +1,4 @@
-"""The `extract_factory` method for generating provider specific create decorators."""
+"""The `extract_with_tools_factory` method."""
 
 from collections.abc import Awaitable, Callable
 from functools import wraps
@@ -14,7 +14,6 @@ from ._utils import (
     SetupCall,
     extract_tool_return,
     fn_is_async,
-    setup_extract_tool,
 )
 from ._utils._get_fields_from_call_args import get_fields_from_call_args
 from .call_params import BaseCallParams
@@ -39,10 +38,9 @@ _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType)
 _P = ParamSpec("_P")
 
 
-def extract_factory(  # noqa: ANN202
+def extract_with_tools_factory(  # noqa: ANN202
     *,
     TCallResponse: type[_BaseCallResponseT],
-    TToolType: type[BaseTool],
     setup_call: SameSyncAndAsyncClientSetupCall[
         _SameSyncAndAsyncClientT,
         _BaseDynamicConfigT,
@@ -70,73 +68,85 @@ def extract_factory(  # noqa: ANN202
 ):
     """Returns the wrapped function with the provider specific interfaces."""
     create_decorator = create_factory(
-        TCallResponse=TCallResponse,
-        setup_call=setup_call,
+        TCallResponse=TCallResponse, setup_call=setup_call
     )
 
     @overload
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT],
         model: str,
+        tools: list[type[BaseTool] | Callable],
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
-        json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, _ResponseModelT | _ParsedOutputT]: ...
+    ) -> Callable[
+        _P,
+        (_ResponseModelT | _BaseCallResponseT) | (_ParsedOutputT | _BaseCallResponseT),
+    ]: ...
 
     @overload
     def decorator(
         fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
+        tools: list[type[BaseTool] | Callable],
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
-        json_mode: bool,
         client: _SameSyncAndAsyncClientT | _AsyncBaseClientT | None,
         call_params: _BaseCallParamsT,
-    ) -> Callable[_P, Awaitable[_ResponseModelT | _ParsedOutputT]]: ...
+    ) -> Callable[
+        _P,
+        Awaitable[
+            (_ResponseModelT | _BaseCallResponseT)
+            | (_ParsedOutputT | _BaseCallResponseT)
+        ],
+    ]: ...
 
     def decorator(
         fn: Callable[_P, _BaseDynamicConfigT]
         | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]],
         model: str,
+        tools: list[type[BaseTool] | Callable],
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT] | None,
-        json_mode: bool,
         client: _SameSyncAndAsyncClientT | _SyncBaseClientT | None,
         call_params: _BaseCallParamsT,
     ) -> Callable[
         _P,
-        _ResponseModelT | _ParsedOutputT | Awaitable[_ResponseModelT | _ParsedOutputT],
+        (_ResponseModelT | _BaseCallResponseT)
+        | (_ParsedOutputT | _BaseCallResponseT)
+        | Awaitable[
+            (_ResponseModelT | _BaseCallResponseT)
+            | (_ParsedOutputT | _BaseCallResponseT)
+        ],
     ]:
         fn._model = model  # pyright: ignore [reportFunctionMemberAccess]
         fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         create_decorator_kwargs = {
             "model": model,
-            "tools": [setup_extract_tool(response_model, TToolType)]
-            if not json_mode
-            else None,
+            "tools": tools,
             "response_model": response_model,
             "output_parser": None,
-            "json_mode": json_mode,
+            "json_mode": True,
             "client": client,
             "call_params": call_params,
         }
-
         if fn_is_async(fn):
 
             @wraps(fn)
-            async def inner_async(
-                *args: _P.args, **kwargs: _P.kwargs
-            ) -> _ResponseModelT:
-                fields_from_call_args = get_fields_from_call_args(
-                    response_model, fn, args, kwargs
-                )
+            async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> (
+                _ResponseModelT | _BaseCallResponseT
+            ) | (_ParsedOutputT | _BaseCallResponseT):
                 call_response = await create_decorator(
                     fn=fn, **create_decorator_kwargs
                 )(*args, **kwargs)
                 try:
-                    json_output = get_json_output(call_response, json_mode)
+                    if call_response.tools:
+                        return call_response
+                    fields_from_call_args = get_fields_from_call_args(
+                        response_model, fn, args, kwargs
+                    )
+                    json_output = get_json_output(call_response, True)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
@@ -151,15 +161,19 @@ def extract_factory(  # noqa: ANN202
         else:
 
             @wraps(fn)
-            def inner(*args: _P.args, **kwargs: _P.kwargs) -> _ResponseModelT:
-                fields_from_call_args = get_fields_from_call_args(
-                    response_model, fn, args, kwargs
-                )
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> (
+                _ResponseModelT | _BaseCallResponseT
+            ) | (_ParsedOutputT | _BaseCallResponseT):
                 call_response = create_decorator(fn=fn, **create_decorator_kwargs)(
                     *args, **kwargs
                 )
                 try:
-                    json_output = get_json_output(call_response, json_mode)
+                    if call_response.tools:
+                        return call_response
+                    fields_from_call_args = get_fields_from_call_args(
+                        response_model, fn, args, kwargs
+                    )
+                    json_output = get_json_output(call_response, True)
                     output = extract_tool_return(
                         response_model, json_output, False, fields_from_call_args
                     )
@@ -168,7 +182,7 @@ def extract_factory(  # noqa: ANN202
                     raise e
                 if isinstance(output, BaseModel):
                     output._response = call_response  # pyright: ignore [reportAttributeAccessIssue]
-                return output if not output_parser else output_parser(output)  # pyright: ignore [reportReturnType, reportArgumentType]
+                return output if not output_parser else output_parser(output)  # pyright: ignore [reportArgumentType, reportReturnType]
 
             return inner
 

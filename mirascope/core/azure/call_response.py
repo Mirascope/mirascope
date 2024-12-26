@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from typing import cast
+from functools import cached_property
 
 from azure.ai.inference.models import (
     AssistantMessage,
@@ -111,7 +112,7 @@ class AzureCallResponse(
         return calculate_cost(self.input_tokens, self.output_tokens, self.model)
 
     @computed_field
-    @property
+    @cached_property
     def message_param(self) -> SerializeAsAny[AssistantMessage]:
         """Returns the assistants's response as a message parameter."""
         message_param = self.response.choices[0].message
@@ -120,7 +121,7 @@ class AzureCallResponse(
         )
 
     @computed_field
-    @property
+    @cached_property
     def tools(self) -> list[AzureTool] | None:
         """Returns any available tool calls as their `AzureTool` definition.
 
@@ -144,7 +145,7 @@ class AzureCallResponse(
         return extracted_tools
 
     @computed_field
-    @property
+    @cached_property
     def tool(self) -> AzureTool | None:
         """Returns the 0th tool for the 0th choice message.
 

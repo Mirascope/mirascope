@@ -14,7 +14,7 @@ def mock_extract_decorator_kwargs() -> dict:
     """Returns the mock kwargs (excluding fn) for the extract `decorator` function."""
     return {
         "model": "model",
-        "response_model": MagicMock,
+        "response_model": BaseModel,
         "output_parser": None,
         "json_mode": True,
         "client": MagicMock(),
@@ -72,7 +72,8 @@ def test_extract_factory_sync(
     mock_create_decorator.assert_called_once_with(
         fn=fn,
         model=mock_extract_decorator_kwargs["model"],
-        tools=[mock_setup_extract_tool.return_value],
+        tools=None,
+        response_model=BaseModel,
         output_parser=None,
         json_mode=mock_extract_decorator_kwargs["json_mode"],
         client=mock_extract_decorator_kwargs["client"],
@@ -141,7 +142,8 @@ async def test_extract_factory_async(
     mock_create_decorator.assert_called_once_with(
         fn=fn,
         model=mock_extract_decorator_kwargs["model"],
-        tools=[mock_setup_extract_tool.return_value],
+        tools=None,
+        response_model=BaseModel,
         output_parser=None,
         json_mode=mock_extract_decorator_kwargs["json_mode"],
         client=mock_extract_decorator_kwargs["client"],
