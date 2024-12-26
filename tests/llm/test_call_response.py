@@ -125,9 +125,9 @@ def test_call_response():
     call_response_instance = CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
 
     assert call_response_instance.finish_reasons == ["finish"]
-    assert call_response_instance.message_param is None
+    assert call_response_instance.message_param.role == "assistant"
     assert call_response_instance.tools is not None
-    assert call_response_instance.tool is None
+    assert call_response_instance.tool is not None
     assert str(call_response_instance) == "dummy_content"
     assert call_response_instance._response.common_finish_reasons == ["finish"]
 
