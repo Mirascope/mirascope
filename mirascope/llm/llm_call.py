@@ -184,10 +184,33 @@ def _call(
 
         @wraps(decorated)
         def inner(
-            *args: _P.args, **kwargs: _P.kwargs
+            *args: _P.args,
+            **kwargs: _P.kwargs,
         ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
-            result = decorated(*args, **kwargs)
-            if fn_is_async(decorated):
+            provider_override = kwargs.pop("provider_override", None)
+            model_override = kwargs.pop("model_override", None)
+            call_params_override = kwargs.pop("call_params_override", None)
+            if provider_override or model_override or call_params_override is None:
+                if provider_override:
+                    provider_call_override = _get_provider_call(provider_override)
+                else:
+                    provider_call_override = provider_call
+
+                decorated_provider_call = provider_call_override(
+                    model=model_override or model,
+                    stream=stream,
+                    tools=tools,
+                    response_model=response_model,
+                    output_parser=output_parser,
+                    json_mode=json_mode,
+                    client=client,
+                    call_params=call_params_override or call_params,
+                )(fn)
+            else:
+                decorated_provider_call = decorated
+            result = decorated_provider_call(*args, **kwargs)
+
+            if fn_is_async(decorated_provider_call):
 
                 async def async_wrapper() -> CallResponse | Stream:
                     final = await result

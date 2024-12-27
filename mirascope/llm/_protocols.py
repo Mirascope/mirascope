@@ -2,11 +2,14 @@
 
 from collections.abc import (
     AsyncIterable,
+    Awaitable,
     Callable,
+    Coroutine,
     Iterable,
 )
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
     Any,
     Literal,
     NoReturn,
@@ -19,17 +22,13 @@ from typing import (
 
 from pydantic import BaseModel
 
-from mirascope.core import BaseDynamicConfig, BaseTool
+from mirascope.core import BaseDynamicConfig, BaseTool, Messages
 from mirascope.core.base import (
+    BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseType,
     CommonCallParams,
-)
-from mirascope.core.base._utils._protocols import (
-    AsyncLLMFunctionDecorator,
-    LLMFunctionDecorator,
-    SyncLLMFunctionDecorator,
 )
 from mirascope.core.base.stream_config import StreamConfig
 from mirascope.llm.call_response import CallResponse
@@ -52,6 +51,7 @@ _InvariantResponseChunkT = TypeVar("_InvariantResponseChunkT", contravariant=Tru
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
 _P = ParamSpec("_P")
+_R_co = TypeVar("_R_co", covariant=True)
 _R = TypeVar("_R", contravariant=True)
 _BaseCallResponseT = TypeVar(
     "_BaseCallResponseT", bound=BaseCallResponse, covariant=True
@@ -73,6 +73,231 @@ Provider: TypeAlias = Literal[
     "openai",
     "vertex",
 ]
+
+if TYPE_CHECKING:
+    from mirascope.core.anthropic import AnthropicCallParams
+    from mirascope.core.azure import AzureCallParams
+    from mirascope.core.bedrock import BedrockCallParams
+    from mirascope.core.cohere import CohereCallParams
+    from mirascope.core.gemini import GeminiCallParams
+    from mirascope.core.groq import GroqCallParams
+    from mirascope.core.litellm import LiteLLMCallParams
+    from mirascope.core.mistral import MistralCallParams
+    from mirascope.core.openai import OpenAICallParams
+    from mirascope.core.vertex import VertexCallParams
+else:
+    AnthropicCallParams = AzureCallParams = BedrockCallParams = CohereCallParams = (
+        GeminiCallParams
+    ) = GroqCallParams = LiteLLMCallParams = MistralCallParams = OpenAICallParams = (
+        VertexCallParams
+    ) = None
+
+
+class DecoratedCall(Protocol[_P, _R_co]):
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["anthropic"] = "anthropic",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | AnthropicCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["azure"] = "azure",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | AzureCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["bedrock"] = "bedrock",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | BedrockCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["cohere"] = "cohere",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | CohereCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["gemini"] = "gemini",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | GeminiCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["groq"] = "groq",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | GroqCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["litellm"] = "litellm",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | LiteLLMCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["mistral"] = "mistral",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | MistralCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["openai"] = "openai",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | OpenAICallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Literal["vertex"] = "vertex",
+        model_override: str | None = None,
+        call_params_override: CommonCallParams | VertexCallParams | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    @overload
+    def __call__(
+        self,
+        provider_override: Provider | None,
+        model_override: str | None,
+        call_params_override: BaseCallParams | dict[str, Any],
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+    @overload
+    def __call__(
+        self,
+        provider_override: Provider | None,
+        model_override: str | None,
+        call_params_override: BaseCallParams | dict[str, Any],
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+    def __call__(
+        self,
+        provider_override: Provider | None = None,
+        model_override: str | None = None,
+        call_params_override: BaseCallParams | dict[str, Any] | None = None,
+        *args: _P.args,
+        **kwargs: _P.kwargs,
+    ) -> _R_co: ...
+
+
+class AsyncLLMFunctionDecorator(Protocol[_AsyncBaseDynamicConfigT, _AsyncResponseT]):
+    @overload
+    def __call__(
+        self,
+        fn: Callable[
+            _P,
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+        ],
+    ) -> DecoratedCall[_P, Awaitable[_AsyncResponseT]]: ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
+    ) -> DecoratedCall[_P, Awaitable[_AsyncResponseT]]: ...
+
+    def __call__(
+        self,
+        fn: Callable[
+            _P,
+            Awaitable[_AsyncBaseDynamicConfigT]
+            | Coroutine[Any, Any, _AsyncBaseDynamicConfigT],
+        ]
+        | Callable[_P, Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]],
+    ) -> DecoratedCall[_P, Awaitable[_AsyncResponseT]]: ...  # pragma: no cover
+
+
+class SyncLLMFunctionDecorator(Protocol[_BaseDynamicConfigT, _ResponseT]):
+    @overload
+    def __call__(
+        self, fn: Callable[_P, _BaseDynamicConfigT]
+    ) -> DecoratedCall[_P, _ResponseT]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Messages.Type]
+    ) -> DecoratedCall[_P, _ResponseT]: ...
+
+    def __call__(
+        self, fn: Callable[_P, _BaseDynamicConfigT] | Callable[_P, Messages.Type]
+    ) -> DecoratedCall[_P, _ResponseT]: ...  # pragma: no cover
+
+
+class LLMFunctionDecorator(
+    Protocol[_BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _ResponseT, _AsyncResponseT]
+):
+    @overload
+    def __call__(
+        self, fn: Callable[_P, _BaseDynamicConfigT]
+    ) -> DecoratedCall[_P, _ResponseT]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Messages.Type]
+    ) -> DecoratedCall[_P, _ResponseT]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]]
+    ) -> DecoratedCall[_P, Awaitable[_AsyncResponseT]]: ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[_P, Awaitable[Messages.Type]]
+    ) -> DecoratedCall[_P, Awaitable[_AsyncResponseT]]: ...
+
+    def __call__(
+        self,
+        fn: Callable[_P, _BaseDynamicConfigT]
+        | Callable[_P, Awaitable[_AsyncBaseDynamicConfigT]]
+        | Callable[_P, Messages.Type]
+        | Callable[_P, Awaitable[Messages.Type]],
+    ) -> DecoratedCall[
+        _P, _ResponseT | Awaitable[_AsyncResponseT]
+    ]: ...  # pragma: no cover
 
 
 class _CallDecorator(
