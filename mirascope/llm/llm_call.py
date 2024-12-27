@@ -185,11 +185,11 @@ def _call(
         @wraps(decorated)
         def inner(
             *args: _P.args,
+            provider_override: str | None = None,
+            model_override: str | None = None,
+            call_params_override: dict | None = None,
             **kwargs: _P.kwargs,
         ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
-            provider_override = kwargs.pop("provider_override", None)
-            model_override = kwargs.pop("model_override", None)
-            call_params_override = kwargs.pop("call_params_override", None)
             if provider_override or model_override or call_params_override is None:
                 if provider_override:
                     provider_call_override = _get_provider_call(provider_override)
