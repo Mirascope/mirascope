@@ -1,8 +1,8 @@
 from mirascope.core import BaseMessageParam
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="groq", model="llama-3.1-70b-versatile")
+@llm.call(provider="groq", model="llama-3.1-70b-versatile")
 def recommend_book(genre: str) -> list[BaseMessageParam]:
     return [BaseMessageParam(role="user", content=f"Recommend a {genre} book")]
 

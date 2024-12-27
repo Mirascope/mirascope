@@ -1,8 +1,8 @@
 from mirascope.core import prompt_template
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="bedrock", model="anthropic.claude-3-haiku-20240307-v1:0")
+@llm.call(provider="bedrock", model="anthropic.claude-3-haiku-20240307-v1:0")
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str): ...
 

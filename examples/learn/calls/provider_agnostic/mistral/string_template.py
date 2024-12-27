@@ -1,8 +1,8 @@
 from mirascope.core import prompt_template
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="mistral", model="mistral-large-latest")
+@llm.call(provider="mistral", model="mistral-large-latest")
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str): ...
 

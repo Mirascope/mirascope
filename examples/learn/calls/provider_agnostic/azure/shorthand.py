@@ -1,7 +1,7 @@
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="azure", model="gpt-4o-mini")
+@llm.call(provider="azure", model="gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 

@@ -1,7 +1,7 @@
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="groq", model="llama-3.1-70b-versatile")
+@llm.call(provider="groq", model="llama-3.1-70b-versatile")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 

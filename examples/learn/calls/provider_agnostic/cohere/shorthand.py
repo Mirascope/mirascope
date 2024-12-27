@@ -1,7 +1,7 @@
-from mirascope.llm import call
+from mirascope import llm
 
 
-@call(provider="cohere", model="command-r-plus")
+@llm.call(provider="cohere", model="command-r-plus")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
