@@ -465,6 +465,49 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
 
+### Provider-Agnostic Call Interface
+
+Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
+
+1. Write code once that works with any provider
+2. Switch providers at runtime 
+3. Work with standardized response types
+
+Here's an example:
+
+```python
+from mirascope import llm
+
+@llm.call(provider="openai", model="gpt-4o-mini") 
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+# Use OpenAI by default
+response = recommend_book("fantasy")
+print(response.content)
+
+# Switch to Anthropic at runtime
+response = recommend_book(
+    "fantasy",
+    model_override="anthropic:claude-3-5-sonnet-latest"
+)
+print(response.content)
+```
+
+The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider.
+
+The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
+
+- All message parameters (e.g. `message_param`, `user_message_param`) return provider-agnostic `BaseMessageParam` instances
+- Finish reasons and other provider-specific fields are normalized to consistent Mirascope types
+- The original provider response remains accessible through the `response` property
+
+This approach is particularly useful when:
+
+- Building applications that need to work with multiple providers
+- Implementing provider fallbacks or switching
+- Writing reusable code that isn't tied to a specific provider
+
 ## Next Steps
 
 By mastering calls in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
