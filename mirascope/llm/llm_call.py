@@ -208,3 +208,46 @@ def _call(
 
 
 call = cast(CallDecorator, _call)
+"""A decorator for making provider-agnostic LLM API calls with a typed function.
+
+usage docs: learn/calls.md
+
+This decorator enables writing provider-agnostic code by wrapping a typed function 
+that can call any supported LLM provider's API. It parses the prompt template of 
+the wrapped function as messages and templates the input arguments into each message's 
+template.
+
+Example:
+
+```python
+from mirascope.llm import call
+
+
+@call(provider="openai", model="gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")
+print(response.content)
+```
+
+Args:
+    provider (str): The LLM provider to use (e.g., "openai", "anthropic").
+    model (str): The model to use for the specified provider (e.g., "gpt-4o-mini").
+    stream (bool): Whether to stream the response from the API call.  
+    tools (list[BaseTool | Callable]): The tools available for the LLM to use.
+    response_model (BaseModel | BaseType): The response model into which the response
+        should be structured.
+    output_parser (Callable[[CallResponse | ResponseModelT], Any]): A function for
+        parsing the call response whose value will be returned in place of the
+        original call response.
+    json_mode (bool): Whether to use JSON Mode.
+    client (object): An optional custom client to use in place of the default client.
+    call_params (CommonCallParams): Provider-specific parameters to use in the API call.
+
+Returns:
+    decorator (Callable): A decorator that transforms a typed function into a
+        provider-agnostic LLM API call that returns standardized response types
+        regardless of the underlying provider used.
+"""

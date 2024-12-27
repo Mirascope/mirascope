@@ -370,6 +370,8 @@ nav:
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
+      - LLM:
+          - call: "api/llm/call.md"
   - Blog:
       - "blog/index.md"
 
