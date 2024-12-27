@@ -465,7 +465,7 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
 
-### Provider-Agnostic Call Interface
+## Provider-Agnostic Call Interface
 
 Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
 
@@ -475,24 +475,24 @@ Mirascope provides a unified interface through the `llm.call` decorator that ena
 
 Here's an example:
 
-```python
-from mirascope import llm
+!!! mira ""
 
-@llm.call(provider="openai", model="gpt-4o-mini") 
-def recommend_book(genre: str) -> str:
-    return f"Recommend a {genre} book"
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+            {% if method == "shorthand" %}
+            ```python hl_lines="1 4 9"
+            {% elif method == 'string_template' %}
+            ```python hl_lines="2 5 10"
+            {% else %}
+            ```python hl_lines="2 5 10"
+            {% endif %}
+            --8<-- "examples/learn/calls/provider_agnostic/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
 
-# Use OpenAI by default
-response = recommend_book("fantasy")
-print(response.content)
-
-# Switch to Anthropic at runtime
-response = recommend_book(
-    "fantasy",
-    model_override="anthropic:claude-3-5-sonnet-latest"
-)
-print(response.content)
-```
+        {% endfor %}
+    {% endfor %}
 
 The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider.
 
