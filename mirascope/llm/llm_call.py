@@ -171,46 +171,24 @@ def _call(
         _P,
         CallResponse | Stream | Awaitable[CallResponse | Stream],
     ]:
-        decorated = provider_call(
-            model=model,
-            stream=stream,
-            tools=tools,
-            response_model=response_model,
-            output_parser=output_parser,
-            json_mode=json_mode,
-            client=client,
-            call_params=call_params,
-        )(fn)
+        _original_args = {
+            "model": model,
+            "stream": stream,
+            "tools": tools,
+            "response_model": response_model,
+            "output_parser": output_parser,
+            "json_mode": json_mode,
+            "client": client,
+            "call_params": call_params,
+        }
+        decorated = provider_call(**_original_args)(fn)
 
         @wraps(decorated)
         def inner(
-            *args: _P.args,
-            provider_override: str | None = None,
-            model_override: str | None = None,
-            call_params_override: dict | None = None,
-            **kwargs: _P.kwargs,
+            *args: _P.args, **kwargs: _P.kwargs
         ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
-            if provider_override or model_override or call_params_override is None:
-                if provider_override:
-                    provider_call_override = _get_provider_call(provider_override)
-                else:
-                    provider_call_override = provider_call
-
-                decorated_provider_call = provider_call_override(
-                    model=model_override or model,
-                    stream=stream,
-                    tools=tools,
-                    response_model=response_model,
-                    output_parser=output_parser,
-                    json_mode=json_mode,
-                    client=client,
-                    call_params=call_params_override or call_params,
-                )(fn)
-            else:
-                decorated_provider_call = decorated
-            result = decorated_provider_call(*args, **kwargs)
-
-            if fn_is_async(decorated_provider_call):
+            result = decorated(*args, **kwargs)
+            if fn_is_async(decorated):
 
                 async def async_wrapper() -> CallResponse | Stream:
                     final = await result
@@ -225,6 +203,10 @@ def _call(
 
                 return sync_wrapper()
 
+        inner._original_args = _original_args # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_provider_call = provider_call # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_fn = fn # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
         return inner
 
     return wrapper  # pyright: ignore [reportReturnType]
