@@ -171,16 +171,17 @@ def _call(
         _P,
         CallResponse | Stream | Awaitable[CallResponse | Stream],
     ]:
-        decorated = provider_call(
-            model=model,
-            stream=stream,
-            tools=tools,
-            response_model=response_model,
-            output_parser=output_parser,
-            json_mode=json_mode,
-            client=client,
-            call_params=call_params,
-        )(fn)
+        _original_args = {
+            "model": model,
+            "stream": stream,
+            "tools": tools,
+            "response_model": response_model,
+            "output_parser": output_parser,
+            "json_mode": json_mode,
+            "client": client,
+            "call_params": call_params,
+        }
+        decorated = provider_call(**_original_args)(fn)
 
         @wraps(decorated)
         def inner(
@@ -202,6 +203,10 @@ def _call(
 
                 return sync_wrapper()
 
+        inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
         return inner
 
     return wrapper  # pyright: ignore [reportReturnType]
