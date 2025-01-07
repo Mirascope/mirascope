@@ -1,3 +1,5 @@
+"""Overrides the provider-specific call with the specified provider."""
+
 from __future__ import annotations
 
 from collections.abc import Callable

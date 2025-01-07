@@ -1,3 +1,5 @@
+"""This module contains the `call` decorator for making provider-agnostic LLM API calls with a typed function."""
+
 from __future__ import annotations
 
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable

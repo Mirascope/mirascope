@@ -1,3 +1,5 @@
+"""The CallResponse class for the LLM provider."""
+
 from __future__ import annotations
 
 from functools import cached_property

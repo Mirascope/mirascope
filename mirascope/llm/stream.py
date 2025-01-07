@@ -1,3 +1,5 @@
+"""This module contains the Stream class that inherits from BaseStream."""
+
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator, Generator
