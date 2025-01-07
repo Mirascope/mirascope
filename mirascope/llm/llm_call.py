@@ -203,9 +203,9 @@ def _call(
 
                 return sync_wrapper()
 
-        inner._original_args = _original_args # pyright: ignore [reportAttributeAccessIssue]
-        inner._original_provider_call = provider_call # pyright: ignore [reportAttributeAccessIssue]
-        inner._original_fn = fn # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+        inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
         inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
         return inner
 

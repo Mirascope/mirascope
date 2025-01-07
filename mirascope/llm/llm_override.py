@@ -1,18 +1,30 @@
-from collections.abc import Callable
-from typing import Any, Literal, ParamSpec, TypeVar, overload
+from __future__ import annotations
 
-from mirascope.core.anthropic import AnthropicCallParams
-from mirascope.core.azure import AzureCallParams
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, overload
+
 from mirascope.core.base import CommonCallParams
-from mirascope.core.bedrock import BedrockCallParams
-from mirascope.core.cohere import CohereCallParams
-from mirascope.core.gemini import GeminiCallParams
-from mirascope.core.groq import GroqCallParams
-from mirascope.core.mistral import MistralCallParams
-from mirascope.core.openai import OpenAICallParams
-from mirascope.core.vertex import VertexCallParams
 from mirascope.llm._protocols import Provider
 from mirascope.llm.llm_call import _call
+
+if TYPE_CHECKING:
+    from mirascope.core.anthropic import AnthropicCallParams
+    from mirascope.core.azure import AzureCallParams
+    from mirascope.core.bedrock import BedrockCallParams
+    from mirascope.core.cohere import CohereCallParams
+    from mirascope.core.gemini import GeminiCallParams
+    from mirascope.core.groq import GroqCallParams
+    from mirascope.core.litellm import LiteLLMCallParams
+    from mirascope.core.mistral import MistralCallParams
+    from mirascope.core.openai import OpenAICallParams
+    from mirascope.core.vertex import VertexCallParams
+else:
+    AnthropicCallParams = AzureCallParams = BedrockCallParams = CohereCallParams = (
+        GeminiCallParams
+    ) = GroqCallParams = LiteLLMCallParams = MistralCallParams = OpenAICallParams = (
+        VertexCallParams
+    ) = None
+
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -96,7 +108,7 @@ def override(
     *,
     provider_override: Literal["litellm"],
     model_override: str | None = None,
-    call_params_override: CommonCallParams | OpenAICallParams | None = None,
+    call_params_override: CommonCallParams | LiteLLMCallParams | None = None,
     client_override: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
@@ -151,7 +163,7 @@ def override(
             "If provider_override is specified, model_override or call_params_override must also be specified."
         )
 
-    return _call(
+    return _call(  # pyright: ignore [reportReturnType]
         provider=provider_override or provider_agnostic_call._original_provider,  # pyright: ignore [reportFunctionMemberAccess]
         model=model_override or _original_args["model"],
         stream=_original_args["stream"],
