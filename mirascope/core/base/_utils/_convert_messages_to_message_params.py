@@ -8,7 +8,6 @@ from wave import Wave_read
 from pydantic import BaseModel
 from typing_extensions import TypeIs
 
-from .._utils._get_image_type import get_image_type
 from ..message_param import (
     AudioPart,
     BaseMessageParam,
@@ -18,6 +17,7 @@ from ..message_param import (
     TextPart,
 )
 from ..types import AudioSegment, Image, has_pil_module, has_pydub_module
+from ._pil_image_to_bytes import pil_image_to_bytes
 
 SAMPLE_WIDTH = 2
 FRAME_RATE = 24000
@@ -43,11 +43,15 @@ def _convert_message_sequence_part_to_content_part(
     ):
         return message_sequence_part
     elif has_pil_module and isinstance(message_sequence_part, Image.Image):
-        image = message_sequence_part.tobytes()
+        media_type = (
+            Image.MIME[message_sequence_part.format]
+            if message_sequence_part.format
+            else "image/unknown"
+        )
         return ImagePart(
             type="image",
-            media_type=f"image/{get_image_type(image)}",
-            image=image,
+            media_type=media_type,
+            image=pil_image_to_bytes(message_sequence_part),
             detail=None,
         )
     elif has_pydub_module and isinstance(message_sequence_part, AudioSegment):

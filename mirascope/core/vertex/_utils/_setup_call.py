@@ -4,6 +4,7 @@ from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from typing import Any, cast, overload
 
 from google.cloud.aiplatform_v1beta1.types import FunctionCallingConfig
+from pydantic import BaseModel
 from vertexai.generative_models import (
     Content,
     GenerationConfig,
@@ -42,7 +43,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[GenerationResponse, AsyncIterable[GenerationResponse]],
@@ -64,7 +65,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]],
@@ -85,7 +86,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: VertexCallParams | CommonCallParams,
-    extract: bool = False,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[GenerationResponse, Iterable[GenerationResponse]]
@@ -109,20 +110,18 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         generation_config = call_kwargs.get(
-            "generation_config", GenerationConfig(response_mime_type="application/json")
+            "generation_config",
+            GenerationConfig(response_mime_type="application/json")
+            if not tools
+            else GenerationConfig(),
         )
         call_kwargs["generation_config"] = generation_config
         messages[-1] = Content(
             role="user",
             parts=messages[-1].parts
-            + [
-                Part.from_text(
-                    _utils.json_mode_content(tool_types[0] if tool_types else None)
-                )
-            ],
+            + [Part.from_text(_utils.json_mode_content(response_model))],
         )
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
         tool_config = ToolConfig(

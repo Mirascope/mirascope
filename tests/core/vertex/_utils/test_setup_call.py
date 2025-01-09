@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from pydantic import BaseModel
 from vertexai.generative_models import (
     Content,
     GenerationConfig,
@@ -54,7 +55,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
@@ -122,11 +123,11 @@ def test_setup_call_json_mode(
         tools=None,
         json_mode=True,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1].parts[-1].text == "mock content"
-    assert "tools" not in call_kwargs
+    assert "tools" in call_kwargs
     assert "generation_config" in call_kwargs
     generation_config = call_kwargs["generation_config"].to_dict()
     assert generation_config["temperature"] == 0.5
@@ -166,7 +167,7 @@ def test_setup_call_extract(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=True,
+        response_model=BaseModel,
         stream=False,
     )
     assert "tool_config" in call_kwargs and isinstance(

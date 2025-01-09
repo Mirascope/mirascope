@@ -30,7 +30,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     mock_setup_call_openai.assert_called_once_with(
@@ -42,7 +42,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert inspect.signature(create) == inspect.signature(completion)

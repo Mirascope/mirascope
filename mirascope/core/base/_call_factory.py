@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from ._create import create_factory
 from ._extract import extract_factory
+from ._extract_with_tools import extract_with_tools_factory
 from ._utils import (
     BaseType,
     GetJsonOutput,
@@ -192,6 +193,20 @@ def call_factory(  # noqa: ANN202
                     client=client,
                     call_params=call_params,
                 )  # pyright: ignore [reportReturnType, reportCallIssue]
+            elif tools:
+                return partial(
+                    extract_with_tools_factory(
+                        TCallResponse=TCallResponse,
+                        setup_call=setup_call,
+                        get_json_output=get_json_output,
+                    ),
+                    model=model,
+                    tools=tools,
+                    response_model=response_model,
+                    output_parser=output_parser,
+                    client=client,
+                    call_params=call_params,
+                )  # pyright: ignore [reportReturnType, reportCallIssue]
             else:
                 return partial(
                     extract_factory(
@@ -228,6 +243,7 @@ def call_factory(  # noqa: ANN202
             create_factory(TCallResponse=TCallResponse, setup_call=setup_call),
             model=model,
             tools=tools,
+            response_model=None,
             output_parser=output_parser,
             json_mode=json_mode,
             client=client,

@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from pydantic import BaseModel
 from types_aiobotocore_bedrock_runtime import (
     BedrockRuntimeClient as AsyncBedrockRuntimeClient,
 )
@@ -106,7 +107,7 @@ def test_setup_call(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert prompt_template == mock_base_setup_call.return_value[0]
@@ -141,7 +142,7 @@ def test_setup_call_system_message(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[0]["role"] == "user"
@@ -174,7 +175,7 @@ def test_setup_call_json_mode(
         tools=None,
         json_mode=True,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1]["content"] == [{"text": "testjson_content"}]
@@ -207,7 +208,7 @@ def test_setup_call_json_mode_no_text(
         tools=None,
         json_mode=True,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert messages[-1]["content"] == [
@@ -241,7 +242,7 @@ def test_setup_call_extract(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=True,
+        response_model=BaseModel,
         stream=False,
     )
     assert isinstance(tool_types, list)
@@ -272,7 +273,7 @@ def test_setup_call_with_tools(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert "toolConfig" in call_kwargs
@@ -302,7 +303,7 @@ def test_setup_call_client_creation(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
 
@@ -318,7 +319,7 @@ def test_setup_call_client_creation(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     mock_get_async_client.assert_called_once()
@@ -334,7 +335,7 @@ def test_setup_call_client_creation(
         tools=None,
         json_mode=False,
         call_params={},
-        extract=False,
+        response_model=None,
         stream=False,
     )
     assert mock_get_async_client.call_count == 1

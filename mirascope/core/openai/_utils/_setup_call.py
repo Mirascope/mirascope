@@ -12,9 +12,16 @@ from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionUserMessageParam,
 )
+from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
-from ...base._utils import AsyncCreateFn, CreateFn, get_async_create_fn, get_create_fn
+from ...base._utils import (
+    DEFAULT_TOOL_DOCSTRING,
+    AsyncCreateFn,
+    CreateFn,
+    get_async_create_fn,
+    get_create_fn,
+)
 from ...base.call_params import CommonCallParams
 from ...base.stream_config import StreamConfig
 from .._call_kwargs import OpenAICallKwargs
@@ -36,7 +43,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     AsyncCreateFn[ChatCompletion, ChatCompletionChunk],
@@ -58,7 +65,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk],
@@ -80,7 +87,7 @@ def setup_call(
     tools: list[type[BaseTool] | Callable] | None,
     json_mode: bool,
     call_params: OpenAICallParams | CommonCallParams,
-    extract: bool,
+    response_model: type[BaseModel] | None,
     stream: bool | StreamConfig,
 ) -> tuple[
     CreateFn[ChatCompletion, ChatCompletionChunk]
@@ -103,28 +110,25 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ChatCompletionMessageParam], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        if tool_types and tool_types[0].model_config.get("strict", False):
+        if response_model and response_model.model_config.get("strict", False):
             call_kwargs["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": tool_types[0]._name(),
-                    "description": tool_types[0]._description(),
+                    "name": response_model.__name__,
+                    "description": response_model.__doc__ or DEFAULT_TOOL_DOCSTRING,
                     "strict": True,
-                    "schema": tool_types[0].model_json_schema(
+                    "schema": response_model.model_json_schema(
                         schema_generator=GenerateOpenAIStrictToolJsonSchema
                     ),
                 },
             }
         else:
             call_kwargs["response_format"] = {"type": "json_object"}
-            json_mode_content = _utils.json_mode_content(
-                tool_types[0] if tool_types else None
-            ).strip()
+            json_mode_content = _utils.json_mode_content(response_model).strip()
             messages.append(
                 ChatCompletionUserMessageParam(role="user", content=json_mode_content)
             )
-        call_kwargs.pop("tools", None)
-    elif extract:
+    elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         if tool_types and tool_types[0].model_config.get("strict", False):
             warnings.warn(

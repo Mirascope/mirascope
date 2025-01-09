@@ -1,6 +1,6 @@
 name: ❓ Question
 description: Ask a question about anything related to Mirascope
-labels: [Question]
+labels: [question]
 
 body:
   - type: textarea

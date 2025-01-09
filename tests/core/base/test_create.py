@@ -22,6 +22,7 @@ def mock_create_decorator_kwargs() -> dict:
     return {
         "model": "model",
         "tools": [],
+        "response_model": None,
         "output_parser": output_parser,
         "json_mode": True,
         "client": MagicMock(),
@@ -95,7 +96,7 @@ def test_create_factory_sync(
         tools=mock_create_decorator_kwargs["tools"],
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=False,
     )
     mock_create.assert_called_once_with(stream=False, **mock_call_kwargs)
@@ -168,7 +169,7 @@ def test_create_factory_sync_dynamic_config_cases(
         tools=mock_create_decorator_kwargs["tools"],
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=False,
     )
     # Other asserts as in previous test
@@ -240,7 +241,7 @@ async def test_create_factory_async(
         tools=mock_create_decorator_kwargs["tools"],
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=False,
     )
     mock_create.assert_called_once_with(stream=False, **mock_call_kwargs)
@@ -318,7 +319,7 @@ async def test_create_factory_async_dynamic_config_cases(
         tools=mock_create_decorator_kwargs["tools"],
         json_mode=mock_create_decorator_kwargs["json_mode"],
         call_params=mock_create_decorator_kwargs["call_params"],
-        extract=False,
+        response_model=None,
         stream=False,
     )
     # Other asserts as in previous test

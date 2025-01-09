@@ -1,5 +1,5 @@
 ---
-title: 8 of the Best Prompt Engineering Tools in 2024
+title: 8 of the Best Prompt Engineering Tools in 2025
 description: >
   In this article, we list our 8 top prompt engineering tools to simplify your LLM prompting workflows and provide a great development experience.
 authors:
@@ -10,7 +10,7 @@ date: 2024-04-03
 slug: prompt-engineering-tools
 ---
 
-# 8 of the Best Prompt Engineering Tools in 2024
+# 8 of the Best Prompt Engineering Tools in 2025
 
 While anyone can develop LLM applications using just the OpenAI SDK—we used to do that since we didn’t find helper functions at the time to be particularly helpful—prompt engineering tools that simplify LLM interactions and enhance productivity are emerging as key players.
 
