@@ -3,32 +3,23 @@ search:
   boost: 3
 ---
 
-# Open-Source Models
+# Local (Open-Source) Models
 
-Many local open-source model hosts (like [Ollama](https://github.com/ollama/ollama) & [vLLM](https://github.com/vllm-project/vllm)) have compatibility to the OpenAI API.
-This allows you to use all of their features via the OpenAI integration, but not all OpenAI features are available.
+When hosting (fine-tuned) open-source LLMs yourself locally or in your own cloud with tools that have OpenAI compatibility (e.g. [Ollama](https://github.com/ollama/ollama), [vLLM](https://github.com/vllm-project/vllm), etc.), you can use the [`openai.call`](../api/core/openai/call.md) method with a [custom client](./calls.md#custom-client) to interact with your model using all of Mirascope's various features.
 
-For most usecases this should suffice. In Ollama, there is support for structures responses, vision, tools, and streaming - just to name a few.
-
-Please consult the links below to see what features are supported by your local model provider.
-
-
-## Usage 
-
-Ollama hosts its API locally, so all you need to do is overwrite the URL the OpenAI integration uses.
-This is easily done by passing a [custom client](./calls.md#custom-client) to the `@openai.call()` decorator, like shown below.
+Of course, not all open-source models or providers necessarily support all of OpenAI's available features, but most use-cases are generally available. Se the links we've included in each usage example below for more details.
 
 !!! mira ""
 
     {% for method, support_url in [("Ollama", "https://github.com/ollama/ollama/blob/main/docs/openai.md"), ("vLLM", "https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html")] %}
     === "{{ method }}"
-        
-        !!! info "OpenAI API Compatibility"
-        
-            [Click here for {{ method }} OpenAI compatibility info]({{ support_url }})
 
-        ```python hl_lines="7 9"
+        !!! info ""
+
+            [{{ method }} OpenAI Compatibility]({{ support_url }})
+
+        ```python hl_lines="5-8 11 26"
         --8<-- "examples/learn/local_models/{{ method.lower() }}.py"
         ```
+    
     {% endfor %}
-
