@@ -22,7 +22,7 @@ from ._get_image_type import get_image_type
 from ._pil_image_to_bytes import pil_image_to_bytes
 
 _PartType = Literal[
-    "text", "texts", "image", "images", "audio", "audios", "cache_control"
+    "text", "texts", "image", "images", "audio", "audios", "cache_control", "parts"
 ]
 
 
@@ -43,7 +43,7 @@ def _parse_parts(template: str) -> list[_Part]:
     # (image|images|...) captures the supported special type after the colon.
     #
     # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
-    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|text|texts|cache_control)(?:\(([^)]*)\))?\}"
+    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|text|texts|cache_control|parts)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
@@ -169,6 +169,23 @@ def _construct_parts(
                 else "ephemeral",
             )
         ]
+    elif part["type"] == "parts":
+        sources = attrs[part["template"]]
+        if not isinstance(sources, list):
+            raise ValueError(
+                f"When using 'parts' template, '{part['template']}' must be a list."
+            )
+
+        # validate each part is a valid content part
+        for source in sources:
+            if not isinstance(
+                source,
+                TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+            ):
+                raise ValueError(
+                    f"When using 'parts' template, '{part['template']}' must be a list of valid content parts."
+                )
+        return sources if sources else []
     elif part["type"] == "document":
         source = attrs[part["template"]]
         return [_construct_document_part(source)] if source else []

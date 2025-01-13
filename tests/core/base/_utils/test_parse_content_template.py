@@ -337,3 +337,57 @@ def test_parse_content_template_document(
         match="When using 'documents' template, 'urls' must be a list.",
     ):
         parse_content_template("user", template, {"urls": None})
+
+
+@patch(
+    "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
+)
+@patch("urllib.request.urlopen", new_callable=MagicMock)
+def test_parse_content_template_parts(
+    mock_urlopen: MagicMock, mock_open: MagicMock, mock_jpeg_bytes: bytes
+) -> None:
+    """Test the parse_content_template function with parts templates."""
+    # Test single parts template
+    template = "Process these parts: {content:parts}"
+    mixed_parts = [
+        TextPart(type="text", text="Hello world"),
+        ImagePart(
+            type="image",
+            media_type="image/jpeg",
+            image=mock_jpeg_bytes,
+            detail=None,
+        ),
+        AudioPart(
+            type="audio",
+            media_type="audio/mp3",
+            audio=b"audio_bytes",
+        ),
+    ]
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process these parts:"),
+            *mixed_parts,
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"content": mixed_parts}) == expected
+    )
+
+    # Test empty list
+    assert parse_content_template(
+        "user", template, {"content": []}
+    ) == BaseMessageParam(role="user", content="Process these parts:")
+
+    # Test parts validation
+    with pytest.raises(
+        ValueError,
+        match="When using 'parts' template, 'content' must be a list.",
+    ):
+        parse_content_template("user", template, {"content": "not a list"})
+
+    with pytest.raises(
+        ValueError,
+        match="When using 'parts' template, 'content' must be a list of valid content parts.",
+    ):
+        parse_content_template("user", template, {"content": ["invalid part"]})
