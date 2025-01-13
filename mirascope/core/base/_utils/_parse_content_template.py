@@ -164,6 +164,18 @@ def _construct_parts(
                 f"When using 'audios' template, '{part['template']}' must be a list."
             )
         return [_construct_audio_part(source) for source in sources] if sources else []
+    elif part["type"] == "document":
+        source = attrs[part["template"]]
+        return [_construct_document_part(source)] if source else []
+    elif part["type"] == "documents":
+        sources = attrs[part["template"]]
+        if not isinstance(sources, list):
+            raise ValueError(
+                f"When using 'documents' template, '{part['template']}' must be a list."
+            )
+        return (
+            [_construct_document_part(source) for source in sources] if sources else []
+        )
     elif part["type"] == "cache_control":
         return [
             CacheControlPart(
@@ -173,6 +185,16 @@ def _construct_parts(
                 else "ephemeral",
             )
         ]
+    elif part["type"] == "part":
+        source = attrs[part["template"]]
+        if not isinstance(
+            source,
+            TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+        ):
+            raise ValueError(
+                f"When using 'part' template, '{part['template']}' must be a valid content part."
+            )
+        return [source] if source else []
     elif part["type"] == "parts":
         sources = attrs[part["template"]]
         if not isinstance(sources, list):
@@ -190,18 +212,6 @@ def _construct_parts(
                     f"When using 'parts' template, '{part['template']}' must be a list of valid content parts."
                 )
         return sources if sources else []
-    elif part["type"] == "document":
-        source = attrs[part["template"]]
-        return [_construct_document_part(source)] if source else []
-    elif part["type"] == "documents":
-        sources = attrs[part["template"]]
-        if not isinstance(sources, list):
-            raise ValueError(
-                f"When using 'documents' template, '{part['template']}' must be a list."
-            )
-        return (
-            [_construct_document_part(source) for source in sources] if sources else []
-        )
     elif part["type"] == "texts":
         sources = attrs[part["template"]]
         if not isinstance(sources, list):
@@ -213,16 +223,6 @@ def _construct_parts(
             if sources
             else []
         )
-    elif part["type"] == "part":
-        source = attrs[part["template"]]
-        if not isinstance(
-            source,
-            TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
-        ):
-            raise ValueError(
-                f"When using 'part' template, '{part['template']}' must be a valid content part."
-            )
-        return [source] if source else []
     else:  # text type
         text = part["template"]
         if text in attrs:
