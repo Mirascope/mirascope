@@ -391,3 +391,31 @@ def test_parse_content_template_parts(
         match="When using 'parts' template, 'content' must be a list of valid content parts.",
     ):
         parse_content_template("user", template, {"content": ["invalid part"]})
+
+
+@patch(
+    "mirascope.core.base._utils._parse_content_template.open", new_callable=MagicMock
+)
+@patch("urllib.request.urlopen", new_callable=MagicMock)
+def test_parse_content_template_part(
+    mock_urlopen: MagicMock, mock_open: MagicMock
+) -> None:
+    """Test the parse_content_template function with a single part template."""
+    # Test single part template
+    template = "Process this part: {content:part}"
+    text_part = TextPart(type="text", text="Hello world")
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Process this part:"),
+            text_part,
+        ],
+    )
+    assert parse_content_template("user", template, {"content": text_part}) == expected
+
+    # Test validation
+    with pytest.raises(
+        ValueError,
+        match="When using 'part' template, 'content' must be a valid content part.",
+    ):
+        parse_content_template("user", template, {"content": "not a part"})

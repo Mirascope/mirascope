@@ -29,6 +29,7 @@ _PartType = Literal[
     "audio",
     "audios",
     "cache_control",
+    "part",
     "parts",
     "document",
     "documents",
@@ -52,7 +53,7 @@ def _parse_parts(template: str) -> list[_Part]:
     # (image|images|...) captures the supported special type after the colon.
     #
     # (?:\(([^)]*)\))? captures the optional additional options in parentheses.
-    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|text|texts|cache_control|parts)(?:\(([^)]*)\))?\}"
+    pattern = r"\{([^:{}]*):(image|images|audio|audios|document|documents|text|texts|cache_control|part|parts)(?:\(([^)]*)\))?\}"
     split = re.split(pattern, template)
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
@@ -138,13 +139,7 @@ def _construct_document_part(source: str | bytes) -> DocumentPart:
 
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> (
-    list[TextPart]
-    | list[ImagePart]
-    | list[AudioPart]
-    | list[CacheControlPart]
-    | list[DocumentPart]
-):
+) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]:
     if part["type"] == "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
@@ -218,6 +213,16 @@ def _construct_parts(
             if sources
             else []
         )
+    elif part["type"] == "part":
+        source = attrs[part["template"]]
+        if not isinstance(
+            source,
+            TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+        ):
+            raise ValueError(
+                f"When using 'part' template, '{part['template']}' must be a valid content part."
+            )
+        return [source] if source else []
     else:  # text type
         text = part["template"]
         if text in attrs:
