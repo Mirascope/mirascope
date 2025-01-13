@@ -22,7 +22,16 @@ from ._get_image_type import get_image_type
 from ._pil_image_to_bytes import pil_image_to_bytes
 
 _PartType = Literal[
-    "text", "texts", "image", "images", "audio", "audios", "cache_control", "parts"
+    "text",
+    "texts",
+    "image",
+    "images",
+    "audio",
+    "audios",
+    "cache_control",
+    "parts",
+    "document",
+    "documents",
 ]
 
 
