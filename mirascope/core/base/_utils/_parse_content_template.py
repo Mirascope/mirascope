@@ -2,7 +2,6 @@
 
 import re
 import urllib.request
-from textwrap import dedent
 from typing import Any, Literal, cast
 
 from typing_extensions import TypedDict
@@ -229,7 +228,7 @@ def _construct_parts(
         if text in attrs:
             source = attrs[text]
             return [TextPart(type="text", text=source)]
-        formatted_template = format_template(part["template"].strip(), attrs)
+        formatted_template = format_template(part["template"], attrs)
         if not formatted_template:
             return []
         return [TextPart(type="text", text=formatted_template)]
@@ -242,7 +241,6 @@ def parse_content_template(
     if not template:
         return None
 
-    template = dedent(template).strip()
     parts = [
         item
         for part in _parse_parts(template)
