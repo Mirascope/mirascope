@@ -294,23 +294,21 @@ Since Mirascope prompt templates are just formatted strings, standard Python for
         ```
     {% endfor %}
 
-When writing string templates, we also offer additional `list` and `lists` format specifiers for convenience around formatting lists:
+When writing string templates, we also offer additional format specifiers for convenience around formatting more dynamic content:
 
 !!! mira ""
 
-    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
-    === "{{ method_title }}"
+    {% for title, filename in [("List(s)", "lists"), ("Text(s)", "texts"), ("Part(s)", "parts")] %}
+    === "{{ title }}"
 
-        {% if method == "shorthand" %}
-        ```python hl_lines="8-9 13 16 32 38-48"
-        {% elif method == "messages" %}
-        ```python hl_lines="10-11 16 19 36 42-52"
-        {% elif method == "string_template" %}
-        ```python hl_lines="7 10 27 33-43"
+        {% if filename == "lists" %}
+        ```python hl_lines="7 10 17-21 26-36"
+        {% elif filename == "texts" %}
+        ```python hl_lines="7 10 17-21 26-32"
         {% else %}
-        ```python hl_lines="10-11 18 21 39 45-55"
+        ```python hl_lines="8 11 18-22 27-33"
         {% endif %}
-        --8<-- "examples/learn/prompts/format_specifiers/lists_format/{{ method }}.py"
+        --8<-- "examples/learn/prompts/format_specifiers/{{ filename }}.py"
         ```
     {% endfor %}
 
