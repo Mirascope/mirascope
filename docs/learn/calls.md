@@ -493,48 +493,6 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
 
-## Provider-Agnostic Call Interface
-
-Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
-
-1. Write code once that works with any provider
-2. Switch providers at runtime 
-3. Work with standardized response types
-
-Here's an example:
-
-!!! mira ""
-
-    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
-    === "{{ method_title }}"
-        {% for provider in supported_llm_providers %}
-        === "{{ provider }}"
-            {% if method == "shorthand" %}
-            ```python hl_lines="1 4 9"
-            {% elif method == 'string_template' %}
-            ```python hl_lines="2 5 10"
-            {% else %}
-            ```python hl_lines="2 5 10"
-            {% endif %}
-            --8<-- "examples/learn/calls/provider_agnostic/{{ provider | provider_dir }}/{{ method }}.py"
-            ```
-
-        {% endfor %}
-    {% endfor %}
-
-The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider.
-
-The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
-
-- All message parameters (e.g. `message_param`, `user_message_param`) return provider-agnostic `BaseMessageParam` instances
-- Finish reasons and other provider-specific fields are normalized to consistent Mirascope types
-- The original provider response remains accessible through the `response` property
-
-This approach is particularly useful when:
-
-- Building applications that need to work with multiple providers
-- Implementing provider fallbacks or switching
-- Writing reusable code that isn't tied to a specific provider
 
 ## Next Steps
 
