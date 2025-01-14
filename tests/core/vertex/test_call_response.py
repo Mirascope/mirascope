@@ -75,10 +75,10 @@ def test_vertex_call_response() -> None:
         "role": "model",
     }
     assert call_response.common_finish_reasons == ["stop"]
-    assert call_response.common_message_param == BaseMessageParam(
+    assert call_response.common_message_param == [BaseMessageParam(
         role="assistant",
-        content=[TextPart(type="text", text="The author is Patrick Rothfuss")],
-    )
+        content="The author is Patrick Rothfuss",
+    )]
 
 
 def test_vertex_call_response_with_tools() -> None:

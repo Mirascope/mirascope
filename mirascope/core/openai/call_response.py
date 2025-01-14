@@ -25,9 +25,7 @@ from ..base import (
 )
 from ..base.types import FinishReason
 from ._utils import calculate_cost
-from ._utils._convert_message_param_to_base_message_param import (
-    convert_message_param_to_base_message_param,
-)
+from ._utils._message_param_converter import OpenAIMessageParamConverter
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -224,6 +222,5 @@ class OpenAICallResponse(
         return cast(list[FinishReason], self.finish_reasons)
 
     @property
-    def common_message_param(self) -> BaseMessageParam:
-        """Provider-agnostic assistant message param."""
-        return convert_message_param_to_base_message_param(self.message_param)
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return OpenAIMessageParamConverter.from_provider([self.message_param])

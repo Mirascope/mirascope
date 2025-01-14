@@ -42,19 +42,19 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
 class GeminiMessageParamConverter(BaseMessageParamConverter):
     """Converts between Gemini `ContentDict` and Mirascope `BaseMessageParam`."""
 
-    def to_provider(self, message_params: list[BaseMessageParam]) -> list[ContentDict]:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[ContentDict]:
         """
         Convert from Mirascope `BaseMessageParam` to Gemini `ContentDict`.
         """
         return convert_message_params(message_params)
 
-    def from_provider(
-        self, message_params: list[ContentDict]
-    ) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[ContentDict]) -> list[BaseMessageParam]:
         """
         Convert from Gemini's `ContentDict` to Mirascope `BaseMessageParam`.
         """
-        results: list[BaseMessageParam] = []
+        converted: list[BaseMessageParam] = []
         for message_param in message_params:
             role: str = "assistant"
             content_list = []
@@ -88,15 +88,17 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                             f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
                         )
                 elif part.function_call:
-                    return BaseMessageParam(
-                        role=role,
-                        content=[
-                            ToolCallPart(
-                                type="tool_call",
-                                name=part.function_call.name,
-                                args=dict(part.function_call.args),
-                            )
-                        ],
+                    converted.append(
+                        BaseMessageParam(
+                            role=role,
+                            content=[
+                                ToolCallPart(
+                                    type="tool_call",
+                                    name=part.function_call.name,
+                                    args=dict(part.function_call.args),
+                                )
+                            ],
+                        )
                     )
                 else:
                     raise ValueError(
@@ -104,10 +106,10 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                     )
 
             if len(content_list) == 1 and isinstance(content_list[0], TextPart):
-                results.append(
+                converted.append(
                     BaseMessageParam(role=role, content=content_list[0].text)
                 )
             else:
-                results.append(BaseMessageParam(role=role, content=content_list))
+                converted.append(BaseMessageParam(role=role, content=content_list))
 
-        return results
+        return converted

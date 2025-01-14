@@ -17,16 +17,18 @@ from mirascope.core.groq._utils import convert_message_params
 class GroqMessageParamConverter(BaseMessageParamConverter):
     """Converts between Groq `ChatCompletionMessageParam` and Mirascope `BaseMessageParam`."""
 
+    @staticmethod
     def to_provider(
-        self, message_params: list[BaseMessageParam]
+        message_params: list[BaseMessageParam],
     ) -> list[ChatCompletionMessageParam]:
         """
         Convert from Mirascope `BaseMessageParam` to Groq `ChatCompletionMessageParam`.
         """
         return convert_message_params(message_params)
 
+    @staticmethod
     def from_provider(
-        self, message_params: list[ChatCompletionAssistantMessageParam]
+        message_params: list[ChatCompletionAssistantMessageParam],
     ) -> list[BaseMessageParam]:
         """
         Convert from Groq's `ChatCompletionAssistantMessageParam` to Mirascope `BaseMessageParam`.

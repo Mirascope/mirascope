@@ -24,9 +24,7 @@ from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
-from ._utils._convert_message_param_to_base_message_param import (
-    convert_message_param_to_base_message_param,
-)
+from ._utils._message_param_converter import MistralMessageParamConverter
 from .call_params import MistralCallParams
 from .dynamic_config import MistralDynamicConfig
 from .tool import MistralTool
@@ -181,5 +179,5 @@ class MistralCallResponse(
         return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
 
     @property
-    def common_message_param(self) -> BaseMessageParam:
-        return convert_message_param_to_base_message_param(self.message_param)
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return MistralMessageParamConverter.from_provider([self.message_param])

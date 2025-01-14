@@ -16,17 +16,15 @@ from mirascope.core.base.message_param import ToolCallPart
 class AzureMessageParamConverter(BaseMessageParamConverter):
     """Converts between Azure `ChatRequestMessage` / `AssistantMessage` and Mirascope `BaseMessageParam`."""
 
-    def to_provider(
-        self, message_params: list[BaseMessageParam]
-    ) -> list[ChatRequestMessage]:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[ChatRequestMessage]:
         """
         Convert from Mirascope `BaseMessageParam` to Azure's `ChatRequestMessage`.
         """
         return convert_message_params(message_params)
 
-    def from_provider(
-        self, message_params: list[AssistantMessage]
-    ) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[AssistantMessage]) -> list[BaseMessageParam]:
         """
         Convert from Azure's `AssistantMessage` back to Mirascope `BaseMessageParam`.
         """
@@ -34,7 +32,10 @@ class AzureMessageParamConverter(BaseMessageParamConverter):
         for message_param in message_params:
             role: str = "assistant"
             if not message_param.tool_calls:
-                return BaseMessageParam(role=role, content=message_param.content or "")
+                converted.append(
+                    BaseMessageParam(role=role, content=message_param.content or "")
+                )
+                continue
 
             contents = []
             if tool_calls := message_param.tool_calls:

@@ -21,7 +21,8 @@ from ...base.message_param import ToolCallPart
 class MistralMessageParamConverter(BaseMessageParamConverter):
     """Converts between Mistral `AssistantMessage` and Mirascope `BaseMessageParam`."""
 
-    def to_provider(self, message_params: list[BaseMessageParam]) -> list:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list:
         """
         Convert from Mirascope `BaseMessageParam` to Mistral messages (AssistantMessage, etc.).
         Mistral’s code snippet references convert_message_params returning a list of
@@ -29,9 +30,8 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
         """
         return convert_message_params(message_params)
 
-    def from_provider(
-        self, message_params: list[AssistantMessage]
-    ) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[AssistantMessage]) -> list[BaseMessageParam]:
         """
         Convert from Mistral's `AssistantMessage` to Mirascope `BaseMessageParam`.
         """

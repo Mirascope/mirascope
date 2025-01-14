@@ -35,13 +35,15 @@ def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
 class VertexMessageParamConverter(BaseMessageParamConverter):
     """Converts between Vertex `Content` and Mirascope `BaseMessageParam`."""
 
-    def to_provider(self, message_params: list[BaseMessageParam]) -> list[Content]:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[Content]:
         """
         Convert from Mirascope `BaseMessageParam` to Vertex `Content`.
         """
         return convert_message_params(message_params)
 
-    def from_provider(self, message_params: list[Content]) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[Content]) -> list[BaseMessageParam]:
         """
         Convert from Vertex's `Content` to Mirascope `BaseMessageParam`.
         """

@@ -20,21 +20,23 @@ IMAGE_FORMAT_MAP = {
 class BedrockMessageParamConverter(BaseMessageParamConverter):
     """Converts between Bedrock `InternalBedrockMessageParam` and Mirascope `BaseMessageParam`."""
 
+    @staticmethod
     def to_provider(
-        self, message_params: list[BaseMessageParam]
+        message_params: list[BaseMessageParam],
     ) -> list[InternalBedrockMessageParam]:
         """
         Convert from Mirascope `BaseMessageParam` to Bedrock's `InternalBedrockMessageParam`.
         """
         return convert_message_params(message_params)
 
+    @staticmethod
     def from_provider(
-        self, message_params: list[InternalBedrockMessageParam]
+        message_params: list[InternalBedrockMessageParam],
     ) -> list[BaseMessageParam]:
         """
         Convert from Bedrock's `InternalBedrockMessageParam` to Mirascope `BaseMessageParam`.
         """
-        results = []
+        converted = []
         for message_param in message_params:
             message_param["role"]
             content_blocks = message_param["content"]
@@ -104,12 +106,18 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
             if len(converted_content) == 1 and isinstance(
                 converted_content[0], TextPart
             ):
-                return BaseMessageParam(
-                    role="assistant",
-                    content=converted_content[0].text,
+                converted.append(
+                    BaseMessageParam(
+                        role="assistant",
+                        content=converted_content[0].text,
+                    )
                 )
-            return BaseMessageParam(
-                role="tool" if has_tool_call else "assistant", content=converted_content
-            )
+            else:
+                converted.append(
+                    BaseMessageParam(
+                        role="tool" if has_tool_call else "assistant",
+                        content=converted_content,
+                    )
+                )
 
-        return results
+        return converted

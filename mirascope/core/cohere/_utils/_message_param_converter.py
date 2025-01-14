@@ -11,22 +11,25 @@ from mirascope.core.cohere._utils import convert_message_params
 class CohereMessageParamConverter(BaseMessageParamConverter):
     """Converts between Cohere `ChatMessage` and Mirascope `BaseMessageParam`."""
 
-    def to_provider(self, message_params: list[BaseMessageParam]) -> list[ChatMessage]:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[ChatMessage]:
         """
         Convert from Mirascope `BaseMessageParam` to Cohere's `ChatMessage`.
         """
         return convert_message_params(message_params)
 
-    def from_provider(
-        self, message_params: list[ChatMessage]
-    ) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[ChatMessage]) -> list[BaseMessageParam]:
         """
         Convert from Cohere's `ChatMessage` to Mirascope `BaseMessageParam`.
         """
         converted = []
         for message_param in message_params:
             if not message_param.tool_calls:
-                return BaseMessageParam(role="assistant", content=message_param.message)
+                converted.append(
+                    BaseMessageParam(role="assistant", content=message_param.message)
+                )
+                continue
 
             converted_content = []
 

@@ -268,7 +268,7 @@ class BaseCallResponse(
 
     @property
     @abstractmethod
-    def common_message_param(self) -> BaseMessageParam:
+    def common_message_param(self) -> list[BaseMessageParam]:
         """Provider-agnostic assistant message param."""
         ...
 

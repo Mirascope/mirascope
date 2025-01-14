@@ -21,9 +21,7 @@ from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import FinishReason
 from ._utils import calculate_cost
-from ._utils._convert_message_param_to_base_message_param import (
-    convert_message_param_to_base_message_param,
-)
+from ._utils._message_param_converter import GroqMessageParamConverter
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
@@ -176,5 +174,5 @@ class GroqCallResponse(
         return cast(list[FinishReason], self.finish_reasons)
 
     @property
-    def common_message_param(self) -> BaseMessageParam:
-        return convert_message_param_to_base_message_param(self.message_param)
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return GroqMessageParamConverter.from_provider([self.message_param])

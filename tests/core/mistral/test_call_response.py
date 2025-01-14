@@ -60,9 +60,9 @@ def test_mistral_call_response() -> None:
     assert call_response.tools is None
     assert call_response.tool is None
     assert call_response.common_finish_reasons == ["stop"]
-    assert call_response.common_message_param == BaseMessageParam(
+    assert call_response.common_message_param == [BaseMessageParam(
         role="assistant", content="content"
-    )
+    )]
 
 
 def test_mistral_call_response_with_tools() -> None:

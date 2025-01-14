@@ -15,26 +15,26 @@ from mirascope.core.base._utils._base_message_param_converter import (
 class AnthropicMessageParamConverter(BaseMessageParamConverter):
     """Converts between Anthropic `MessageParam` objects and Mirascope `BaseMessageParam`."""
 
-    def to_provider(self, message_params: list[BaseMessageParam]) -> list[MessageParam]:
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[MessageParam]:
         """
         Convert from Mirascope `BaseMessageParam` to Anthropic's `MessageParam`.
         """
         return convert_message_params(message_params)
 
-    def from_provider(
-        self, message_params: list[MessageParam]
-    ) -> list[BaseMessageParam]:
+    @staticmethod
+    def from_provider(message_params: list[MessageParam]) -> list[BaseMessageParam]:
         """
         Convert from Anthropic's `MessageParam` back to Mirascope `BaseMessageParam`.
         """
-        result: list[BaseMessageParam] = []
+        converted: list[BaseMessageParam] = []
         for message_param in message_params:
             role: str = "assistant"
             content = message_param["content"]
             has_tool_call: bool = False
             if isinstance(content, str):
-                return BaseMessageParam(role=role, content=content)
-
+                converted.append(BaseMessageParam(role=role, content=content))
+                continue
             converted_content = []
 
             for block in content:
@@ -104,10 +104,10 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
                         "BaseMessageParam currently only supports text and image parts."
                     )
 
-            result.append(
+            converted.append(
                 BaseMessageParam(
                     role="tool" if has_tool_call else role, content=converted_content
                 )
             )
 
-        return result
+        return converted

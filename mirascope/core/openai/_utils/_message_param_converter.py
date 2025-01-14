@@ -16,14 +16,16 @@ from mirascope.core.openai._utils import convert_message_params
 
 
 class OpenAIMessageParamConverter(BaseMessageParamConverter):
+    @staticmethod
     def to_provider(
-        self, message_params: list[BaseMessageParam]
+        message_params: list[BaseMessageParam],
     ) -> list[ChatCompletionMessageParam]:
         """Converts base message params to OpenAI message params."""
         return convert_message_params(message_params)
 
+    @staticmethod
     def from_provider(
-        self, message_params: list[ChatCompletionAssistantMessageParam]
+        message_params: list[ChatCompletionAssistantMessageParam],
     ) -> list[BaseMessageParam]:
         """Converts OpenAI message params to base message params."""
         converted = []
@@ -32,7 +34,8 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
             role: str = "assistant"
             content = message_param.get("content")
             if isinstance(content, str):
-                return BaseMessageParam(role=role, content=content)
+                converted.append(BaseMessageParam(role=role, content=content))
+                continue
             elif isinstance(content, list):
                 for part in content:
                     if "text" in part:
