@@ -2,6 +2,7 @@
 
 import re
 import urllib.request
+from textwrap import dedent
 from typing import Any, Literal, cast
 
 from typing_extensions import TypedDict
@@ -241,6 +242,7 @@ def parse_content_template(
     if not template:
         return None
 
+    template = dedent(template).strip()
     parts = [
         item
         for part in _parse_parts(template)
