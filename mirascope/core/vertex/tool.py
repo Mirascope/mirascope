@@ -8,12 +8,13 @@ from __future__ import annotations
 from typing import Any
 
 from google.cloud.aiplatform_v1beta1.types import FunctionCall
+from pydantic.json_schema import SkipJsonSchema
 from vertexai.generative_models import FunctionDeclaration, Tool
 
 from ..base import BaseTool
 
 
-class VertexTool(BaseTool[FunctionCall]):
+class VertexTool(BaseTool):
     """A class for defining tools for Vertex LLM calls.
 
     Example:
@@ -39,6 +40,8 @@ class VertexTool(BaseTool[FunctionCall]):
     """
 
     __provider__ = "vertex"
+
+    tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod
     def tool_schema(cls) -> Tool:

@@ -9,11 +9,12 @@ from typing import Any
 
 import jiter
 from mistralai.models import ToolCall
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
 
-class MistralTool(BaseTool[ToolCall]):
+class MistralTool(BaseTool):
     """A class for defining tools for Mistral LLM calls.
 
     Example:
@@ -38,6 +39,8 @@ class MistralTool(BaseTool[ToolCall]):
     """
 
     __provider__ = "mistral"
+
+    tool_call: SkipJsonSchema[ToolCall]
 
     @classmethod
     def tool_schema(cls) -> dict[str, Any]:

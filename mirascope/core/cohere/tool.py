@@ -7,11 +7,12 @@ from __future__ import annotations
 
 from cohere.types import Tool, ToolCall, ToolParameterDefinitionsValue
 from pydantic import SkipValidation
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
 
-class CohereTool(BaseTool[SkipValidation[ToolCall]]):
+class CohereTool(BaseTool):
     """A class for defining tools for Cohere LLM calls.
 
     Example:
@@ -37,6 +38,8 @@ class CohereTool(BaseTool[SkipValidation[ToolCall]]):
     """
 
     __provider__ = "cohere"
+
+    tool_call: SkipValidation[SkipJsonSchema[ToolCall]]
 
     @classmethod
     def tool_schema(cls) -> Tool:

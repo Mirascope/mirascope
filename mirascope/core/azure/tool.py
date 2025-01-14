@@ -11,6 +11,7 @@ from azure.ai.inference.models import (
     ChatCompletionsToolDefinition,
     FunctionDefinition,
 )
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
@@ -25,7 +26,7 @@ class AzureToolConfig(ToolConfig, total=False):
     strict: bool
 
 
-class AzureTool(BaseTool[ChatCompletionsToolCall]):
+class AzureTool(BaseTool):
     """A class for defining tools for Azure LLM calls.
 
     Example:
@@ -52,6 +53,8 @@ class AzureTool(BaseTool[ChatCompletionsToolCall]):
 
     __provider__ = "azure"
     __tool_config_type__ = AzureToolConfig
+
+    tool_call: SkipJsonSchema[ChatCompletionsToolCall]
 
     @classmethod
     def tool_schema(cls) -> ChatCompletionsToolDefinition:

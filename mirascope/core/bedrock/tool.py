@@ -9,6 +9,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ToolSpecificationTypeDef,
     ToolTypeDef,
 )
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from ._types import ToolUseBlockContentTypeDef
@@ -24,7 +25,7 @@ class BedrockToolConfig(ToolConfig, total=False):
     pass
 
 
-class BedrockTool(BaseTool[ToolUseBlockContentTypeDef]):
+class BedrockTool(BaseTool):
     """A class for defining tools for Bedrock LLM calls.
 
     Example:
@@ -52,6 +53,8 @@ class BedrockTool(BaseTool[ToolUseBlockContentTypeDef]):
 
     __provider__ = "bedrock"
     __tool_config_type__ = BedrockToolConfig
+
+    tool_call: SkipJsonSchema[ToolUseBlockContentTypeDef]
 
     @classmethod
     def tool_schema(cls) -> ToolTypeDef:

@@ -12,11 +12,12 @@ from google.generativeai.types import (
     FunctionDeclaration,
     Tool,
 )
+from pydantic.json_schema import SkipJsonSchema
 
 from ..base import BaseTool
 
 
-class GeminiTool(BaseTool[FunctionCall]):
+class GeminiTool(BaseTool):
     """A class for defining tools for Gemini LLM calls.
 
     Example:
@@ -42,6 +43,8 @@ class GeminiTool(BaseTool[FunctionCall]):
     """
 
     __provider__ = "gemini"
+
+    tool_call: SkipJsonSchema[FunctionCall]
 
     @classmethod
     def tool_schema(cls) -> Tool:

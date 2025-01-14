@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import inspect
 import warnings
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 import jiter
 from pydantic import BaseModel, ConfigDict
@@ -63,7 +63,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
 _ToolMessageParamT = TypeVar("_ToolMessageParamT")  # noqa: F821
 
 
-class BaseTool(BaseModel, Generic[_ToolMessageParamT]):
+class BaseTool(BaseModel, ABC):
     '''A class for defining tools for LLM calls.
 
     Example:

@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from pydantic import BaseModel
+from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import Required, TypedDict
 
 from mirascope.core import BaseTool
@@ -30,7 +31,7 @@ class MCPToolToolConfig(ToolConfig, total=False):
     """A tool configuration for mcp-specific features."""
 
 
-class MCPTool(BaseTool[ToolUseBlock]):
+class MCPTool(BaseTool):
     """A class for defining tools for MCP LLM calls.
 
     Example:
@@ -53,6 +54,8 @@ class MCPTool(BaseTool[ToolUseBlock]):
 
     __provider__ = "mcp"
     __tool_config_type__ = MCPToolToolConfig
+
+    tool_call: SkipJsonSchema[ToolUseBlock]
 
     @classmethod
     def tool_schema(cls) -> ToolParam:
