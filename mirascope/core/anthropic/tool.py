@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any, cast
 
 from anthropic.types import ToolParam, ToolUseBlock
-from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import TypedDict
 
 from ..base import BaseTool, ToolConfig
@@ -25,7 +24,7 @@ class AnthropicToolConfig(ToolConfig, total=False):
     cache_control: _CacheControl
 
 
-class AnthropicTool(BaseTool):
+class AnthropicTool(BaseTool[ToolUseBlock]):
     """A class for defining tools for Anthropic LLM calls.
 
     Example:
@@ -51,8 +50,6 @@ class AnthropicTool(BaseTool):
 
     __provider__ = "anthropic"
     __tool_config_type__ = AnthropicToolConfig
-
-    tool_call: SkipJsonSchema[ToolUseBlock | None] = None
 
     @classmethod
     def tool_schema(cls) -> ToolParam:

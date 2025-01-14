@@ -156,9 +156,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         field1: str = "tool_field"
 
-    class ToolNoCall(BaseTool):
-        tool_call: ClassVar[Any] = None
-
+    class ToolNoCall(BaseTool[Any]):
         def call(self): ...
         @property
         def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
