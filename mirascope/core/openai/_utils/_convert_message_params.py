@@ -18,6 +18,7 @@ def convert_message_params(
             converted_message_params.append(message_param.model_dump())
         else:
             converted_content = []
+
             for part in content:
                 if part.type == "text":
                     converted_content.append(part.model_dump())
