@@ -1,4 +1,4 @@
-"""A new base converter approach."""
+"""Contains the BaseMessageParamConverter class."""
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -11,10 +11,10 @@ class BaseMessageParamConverter(ABC):
 
     @abstractmethod
     def to_provider(self, base_params: list[BaseMessageParam]) -> list[Any]:
-        """Converts Mirascope base message params -> provider-specific messages."""
+        """Converts base message params -> provider-specific messages."""
         pass
 
     @abstractmethod
     def from_provider(self, provider_messages: list[Any]) -> list[BaseMessageParam]:
-        """Converts provider-specific messages -> Mirascope base message params."""
+        """Converts provider-specific messages -> Base message params."""
         pass
