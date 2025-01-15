@@ -61,6 +61,15 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "tool_call":
+                    converted_content.append(
+                        {
+                            "id": part.id,
+                            "type": "tool_use",
+                            "name": part.name,
+                            "input": part.args,
+                        }
+                    )
                 elif part.type == "tool_result":
                     converted_content.append(
                         {

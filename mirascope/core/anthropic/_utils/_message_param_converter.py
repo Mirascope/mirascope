@@ -6,7 +6,7 @@ from anthropic.types import MessageParam
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic._utils import convert_message_params
-from mirascope.core.base import ImagePart, TextPart, ToolCallPart
+from mirascope.core.base import ImagePart, TextPart, ToolCallPart, ToolResultPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -29,11 +29,11 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
         """
         converted: list[BaseMessageParam] = []
         for message_param in message_params:
-            role: str = "assistant"
             content = message_param["content"]
-            has_tool_call: bool = False
             if isinstance(content, str):
-                converted.append(BaseMessageParam(role=role, content=content))
+                converted.append(
+                    BaseMessageParam(role=message_param["role"], content=content)
+                )
                 continue
             converted_content = []
 
@@ -88,26 +88,61 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
                     )
 
                 elif block["type"] == "tool_use":
-                    converted_content.append(
-                        ToolCallPart(
-                            type="tool_call",
-                            args=cast(dict, block["input"]),
-                            id=block["id"],
-                            name=block["name"],
+                    if converted_content:
+                        converted.append(
+                            BaseMessageParam(
+                                role=message_param["role"], content=converted_content
+                            )
+                        )
+                        converted_content = []
+                    converted.append(
+                        BaseMessageParam(
+                            role="assistant",
+                            content=[
+                                ToolCallPart(
+                                    type="tool_call",
+                                    args=cast(dict, block["input"]),
+                                    id=block["id"],
+                                    name=block["name"],
+                                )
+                            ],
                         )
                     )
-                    has_tool_call = True
+
+                elif block["type"] == "tool_result":
+                    if converted_content:
+                        converted.append(
+                            BaseMessageParam(
+                                role=message_param["role"], content=converted_content
+                            )
+                        )
+                        converted_content = []
+                    converted.append(
+                        BaseMessageParam(
+                            role="user",
+                            content=[
+                                ToolResultPart(
+                                    type="tool_result",
+                                    content=block["content"]
+                                    if isinstance(block["content"], str)
+                                    else block["content"][0]["text"],
+                                    id=block["tool_use_id"],
+                                    is_error=block.get("is_error", False),
+                                )
+                            ],
+                        )
+                    )
                 else:
                     # Any other block type is not supported
                     raise ValueError(
                         f"Unsupported block type '{block['type']}'. "
                         "BaseMessageParam currently only supports text and image parts."
                     )
-
-            converted.append(
-                BaseMessageParam(
-                    role="tool" if has_tool_call else role, content=converted_content
+            if converted_content:
+                converted.append(
+                    BaseMessageParam(
+                        role=message_param["role"], content=converted_content
+                    )
                 )
-            )
 
         return converted

@@ -102,7 +102,7 @@ class ToolResultPart(BaseModel):
     """
 
     type: Literal["tool_result"]
-    name: str
+    name: str | None = None
     content: str
     id: str | None = None
     is_error: bool = False
