@@ -132,7 +132,7 @@ def dummy_call_response_instance():
 def test_call_response(dummy_call_response_instance):
     assert dummy_call_response_instance.finish_reasons == ["finish"]
     assert isinstance(dummy_call_response_instance.message_param, list)
-    message_param = dummy_call_response_instance.message_param
+    message_param = dummy_call_response_instance.message_param[0]
     assert message_param.role == "assistant"
     assert dummy_call_response_instance.tools is not None
     assert dummy_call_response_instance.tool is not None
@@ -158,7 +158,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         field1: str = "tool_field"
 
-    class ToolNoCall(BaseTool[Any]):
+    class ToolNoCall(BaseTool):
         def call(self): ...
         @property
         def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]

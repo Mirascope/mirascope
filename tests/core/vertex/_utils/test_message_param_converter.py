@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base import DocumentPart, ImagePart
 from mirascope.core.vertex._utils._message_param_converter import (
     VertexMessageParamConverter,
 )
@@ -23,10 +23,8 @@ def test_vertex_convert_parts_text_only():
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert len(result.content) == 1
-    part = result.content[0]
-    assert isinstance(part, TextPart)
-    assert part.text == "hello world"
+    assert isinstance(result.content, str)
+    assert result.content == "hello world"
 
 
 def test_vertex_convert_parts_image():

@@ -135,7 +135,7 @@ class Stream(
         self,
     ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
         """A common method that constructs a CallResponse instance."""
-        return CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]](
+        return CallResponse[_BaseCallResponseT, Tool](
             response=self._stream.construct_call_response()
         )  # pyright: ignore [reportAbstractUsage]
 
