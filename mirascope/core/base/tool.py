@@ -90,7 +90,6 @@ class BaseTool(BaseModel, ABC):
     tool_config: ClassVar[ToolConfig] = ToolConfig()
     model_config = ConfigDict(arbitrary_types_allowed=True)
     delta: SkipJsonSchema[str | None] = None
-    tool_call: SkipJsonSchema[_ToolMessageParamT | None] = None
 
     @classmethod
     def _dict_from_json(cls, json: str, allow_partial: bool = False) -> dict[str, Any]:
