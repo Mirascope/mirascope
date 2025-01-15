@@ -1,5 +1,5 @@
 ---
-title: RAG Application: Benefits, Challenges & How to Build One
+title: RAG Application - Benefits, Challenges & How to Build One
 description: >
   Learn how a RAG application minimizes hallucinations and delivers domain expertise to your LLM applications. We also show you an example of how to build one.
 authors:
