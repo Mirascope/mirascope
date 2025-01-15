@@ -72,7 +72,12 @@ def convert_message_params(
                         Part.from_data(mime_type=part.media_type, data=part.audio)
                     )
                 elif part.type == "tool_result":
-                    converted_content.append(
+                    if converted_content:
+                        converted_message_params.append(
+                            Content(role=role, parts=converted_content)
+                        )
+                        converted_content = []
+                    converted_message_params.append(
                         Part.from_function_response(
                             name=part.name,
                             response={

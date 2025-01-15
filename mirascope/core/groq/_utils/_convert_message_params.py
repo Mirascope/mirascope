@@ -43,12 +43,21 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_result":
-                    converted_content.append(
+                    if converted_content:
+                        converted_message_params.append(
+                            ChatCompletionMessageParam(
+                                {
+                                    "role": message_param.role,
+                                    "content": converted_content,
+                                }
+                            )
+                        )
+                        converted_content = []
+                    converted_message_params.append(
                         {
                             "role": "tool",
                             "content": part.content,
                             "tool_call_id": part.id,
-                            "name": part.name,
                         }
                     )
                 else:

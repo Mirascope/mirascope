@@ -68,6 +68,13 @@ def convert_message_params(
                         )
                     )
                 elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            _make_message(
+                                role=message_param.role, content=converted_content
+                            )
+                        )
+                        converted_content = []
                     converted_message_params.append(
                         ToolMessage(
                             role="tool",

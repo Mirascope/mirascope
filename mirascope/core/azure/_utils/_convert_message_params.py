@@ -44,6 +44,16 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            ChatRequestMessage(
+                                {
+                                    "role": message_param.role,
+                                    "content": converted_content,
+                                }
+                            )
+                        )
+                        converted_content = []
                     converted_message_params.append(
                         ToolMessage(
                             content=part.content,
@@ -55,9 +65,10 @@ def convert_message_params(
                         "Azure currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                ChatRequestMessage(
-                    {"role": message_param.role, "content": converted_content}
+            if converted_content:
+                converted_message_params.append(
+                    ChatRequestMessage(
+                        {"role": message_param.role, "content": converted_content}
+                    )
                 )
-            )
     return converted_message_params

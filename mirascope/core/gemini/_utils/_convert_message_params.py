@@ -74,10 +74,24 @@ def convert_message_params(
                         {"mime_type": part.media_type, "data": part.audio}
                     )
                 elif part.type == "tool_result":
-                    converted_content.append(
-                        protos.FunctionResponse(
-                            name=part.name, response={"result": part.content}
+                    if converted_content:
+                        converted_message_params.append(
+                            {
+                                "role": role if role == "user" else "model",
+                                "parts": converted_content,
+                            }
                         )
+                        converted_content = []
+                    converted_message_params.append(
+                        {
+                            "role": "user",
+                            "parts": [
+                                protos.FunctionResponse(
+                                    name=part.name,
+                                    response={"result": part.content},
+                                )
+                            ],
+                        }
                     )
                 else:
                     raise ValueError(

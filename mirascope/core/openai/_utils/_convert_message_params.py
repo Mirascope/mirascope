@@ -62,6 +62,12 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_result":
+                    if converted_message_params:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+
                     converted_message_params.append(
                         {
                             "role": "tool",
@@ -77,7 +83,8 @@ def convert_message_params(
                         "OpenAI currently only supports text, image and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params

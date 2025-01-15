@@ -40,12 +40,23 @@ def convert_message_params(
                         {"format": part.media_type, "bytes": part.image}
                     )
                 elif part.type == "tool_result":
-                    converted_content.append(
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+
+                    converted_message_params.append(
                         {
-                            "toolResult": {
-                                "toolUseId": part.id,
-                                "content": part.content,
-                            }
+                            "role": "user",
+                            "content": [
+                                {
+                                    "toolResult": {
+                                        "toolUseId": part.id,
+                                        "content": part.content,
+                                    }
+                                }
+                            ],
                         }
                     )
 
@@ -54,7 +65,8 @@ def convert_message_params(
                         "Bedrock currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params
