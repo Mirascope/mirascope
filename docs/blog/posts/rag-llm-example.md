@@ -14,13 +14,13 @@ slug: rag-llm-example
 
 RAG is a way to make LLM responses more accurate and relevant by connecting the model to an external knowledge base that pulls in useful information to include in the prompt.
 
-This overcomes certain limitations of relying on language models alone, as responses now include up-to-date, specific, and contextually relevant information that aren’t limited to what the model learned during its training.
+**This overcomes certain limitations of relying on language models alone**, as responses now include up-to-date, specific, and contextually relevant information that aren’t limited to what the model learned during its training.
 
 It also contrasts with other techniques like semantic search, which retrieves relevant documents or snippets (based on the user’s meaning and intent) but leaves the task of understanding and contextualizing the information entirely to the user.
 
 RAG helps reduce the risk of hallucination and offers benefits in fields where accuracy, timeliness, and specialized knowledge are highly valued, such as healthcare, science, legal, and others.
 
-As an alternative to RAG you can [fine-tune a model](https://mirascope.com/blog/prompt-engineering-vs-fine-tuning/) to internalize domain-specific knowledge, which can result in faster and more consistent responses — as long as those tasks have specialized, fixed requirements — but it’s generally a time consuming and potentially expensive process.
+As an alternative to RAG you can [fine-tune a model](https://mirascope.com/blog/prompt-engineering-vs-fine-tuning/) to internalize domain-specific knowledge, which can result in faster and more consistent responses — as long as those tasks have specialized, fixed requirements — **but it’s generally a time consuming and potentially expensive process**.
 
 Also, the model’s knowledge is static, meaning you’ll need to fine-tune the model again to update it.
 
