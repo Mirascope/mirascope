@@ -25,6 +25,8 @@ You might want to generate artificial data in order to:
 * Save yourself the time and effort of collecting and managing real data yourself.  
 * Augment your datasets with synthetic data that covers more scenarios and edge cases; for example, simulating rare instances of poor lighting so your facial recognition model adapts better to such situations.
 
+<!-- more -->
+
 Generating high-quality synthetic data isn’t typically straightforward and you generally need to define rules and constraints, use statistical modeling, etc., which can be tedious and time-consuming.
 
 However, ML models can overcome these challenges due to their ability to generate realistic, contextually rich data because of their understanding of complex patterns and relationships within real-world datasets.
