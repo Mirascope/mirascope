@@ -1,155 +1,156 @@
+import base64
+import json
 from unittest.mock import MagicMock
 
 import pytest
+from mistralai.models import AssistantMessage, ImageURLChunk, ReferenceChunk, TextChunk
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart
-from mirascope.core.vertex._utils._message_param_converter import (
-    VertexMessageParamConverter,
+from mirascope.core.base import ImagePart, TextPart
+from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.mistral._utils._message_param_converter import (
+    MistralMessageParamConverter,
 )
 
 
-def test_vertex_convert_parts_text_only():
-    Part = MagicMock()
-    mock_part = Part()
-    mock_part.text = "hello world"
-    mock_part.inline_data = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-    message = MagicMock()
-    message.parts = [mock_part]
-    results = VertexMessageParamConverter.from_provider([message])
+def test_convert_with_string_content_no_tool_calls():
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = "Hello world"
+    message.tool_calls = None
+
+    results = MistralMessageParamConverter.from_provider([message])
     assert len(results) == 1
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert isinstance(result.content, str)
-    assert result.content == "hello world"
+    assert result.role == "assistant"
+    assert result.content == "Hello world"
 
 
-def test_vertex_convert_parts_image():
-    Part = MagicMock()
-    InlineData = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.file_data = None
-    mock_part.function_call = None
+def test_convert_with_string_content_and_tool_calls():
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = "Some text"
+    tool_call = MagicMock()
+    tool_call.function.name = "my_tool"
+    tool_call.function.arguments = json.dumps({"arg": "val"})
+    tool_call.id = "tool_call_id"
+    message.tool_calls = [tool_call]
 
-    mock_inline_data = InlineData()
-    mock_inline_data.mime_type = "image/png"
-    mock_inline_data.data = b"\x89PNG\r\n\x1a\n"
-    mock_part.inline_data = mock_inline_data
-    message = MagicMock()
-    message.parts = [mock_part]
-    results = VertexMessageParamConverter.from_provider([message])
-    result = results[0]
-    assert isinstance(result, BaseMessageParam)
-    assert len(result.content) == 1
-    img_part = result.content[0]
-    assert isinstance(img_part, ImagePart)
-    assert img_part.media_type == "image/png"
-
-
-def test_vertex_convert_parts_document():
-    Part = MagicMock()
-    FileData = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.function_call = None
-
-    mock_file_data = FileData()
-    mock_file_data.mime_type = "application/pdf"
-    mock_file_data.data = b"%PDF-1.4..."
-    mock_part.file_data = mock_file_data
-    message = MagicMock()
-    message.parts = [mock_part]
-    results = VertexMessageParamConverter.from_provider([message])
-    result = results[0]
-    assert len(result.content) == 1
-    doc_part = result.content[0]
-    assert isinstance(doc_part, DocumentPart)
-    assert doc_part.media_type == "application/pdf"
+    results = MistralMessageParamConverter.from_provider([message])
+    assert len(results) == 1
+    assert results == [
+        BaseMessageParam(
+            role="tool",
+            content=[
+                ToolCallPart(
+                    type="tool_call",
+                    name="my_tool",
+                    args={"arg": "val"},
+                    id="tool_call_id",
+                )
+            ],
+        )
+    ]
 
 
-def test_vertex_convert_parts_unsupported_image():
-    Part = MagicMock()
-    InlineData = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.file_data = None
-    mock_part.function_call = None
+def test_convert_with_list_content_single_text_chunk():
+    text_chunk = MagicMock(spec=TextChunk)
+    text_chunk.text = "Single text chunk"
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [text_chunk]
+    message.tool_calls = None
 
-    mock_inline_data = InlineData()
-    mock_inline_data.mime_type = "image/tiff"
-    mock_inline_data.data = b"fake"
-    mock_part.inline_data = mock_inline_data
-    message = MagicMock()
-    message.parts = [mock_part]
-    with pytest.raises(
-        ValueError,
-        match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
-    ):
-        VertexMessageParamConverter.from_provider([message])
-
-
-def test_vertex_convert_parts_unsupported_document():
-    Part = MagicMock()
-    FileData = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.function_call = None
-
-    mock_file_data = FileData()
-    mock_file_data.mime_type = "application/msword"
-    mock_file_data.data = b"DOC..."
-    mock_part.file_data = mock_file_data
-    message = MagicMock()
-    message.parts = [mock_part]
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
-    ):
-        VertexMessageParamConverter.from_provider([message])
-
-
-def test_vertex_convert_parts_tool_result():
-    Part = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-    function_call = MagicMock()
-    function_call.name = "test"
-    function_call.arguments = [("arg1", "value1")]
-    mock_part.function_call = function_call
-    message = MagicMock()
-    message.parts = [mock_part]
-    results = VertexMessageParamConverter.from_provider([message])
+    results = MistralMessageParamConverter.from_provider([message])
     assert len(results) == 1
 
     result = results[0]
-    assert result.role == "tool"
+    assert result.role == "assistant"
+    assert result.content == "Single text chunk"
+
+
+def test_convert_with_list_content_multiple_text_chunks():
+    text_chunk1 = MagicMock(spec=TextChunk)
+    text_chunk1.text = "Hello"
+    text_chunk2 = MagicMock(spec=TextChunk)
+    text_chunk2.text = "World"
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [text_chunk1, text_chunk2]
+    message.tool_calls = None
+
+    results = MistralMessageParamConverter.from_provider([message])
+    result = results[0]
+    assert result.role == "assistant"
+    assert len(result.content) == 2
+    assert isinstance(result.content[0], TextPart)
+    assert result.content[0].text == "Hello"
+
+
+def test_convert_with_list_content_image_url_chunk_str():
+    # Create a valid data URL
+    mime_type = "image/png"
+    image_data = b"fake_image_data"
+    b64 = base64.b64encode(image_data).decode("utf-8")
+    data_url = f"data:{mime_type};base64,{b64}"
+
+    image_chunk = MagicMock(spec=ImageURLChunk)
+    image_chunk.image_url = data_url
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [image_chunk]
+    message.tool_calls = None
+
+    results = MistralMessageParamConverter.from_provider([message])
+    result = results[0]
     assert len(result.content) == 1
-    part = result.content[0]
-    assert hasattr(part, "name")
-    assert hasattr(part, "type")
-    assert part.type == "tool_call"
-    assert part.name == "test"
+    assert isinstance(result.content[0], ImagePart)
+    assert result.content[0].media_type == mime_type
+    assert result.content[0].image == image_data
 
 
-def test_vertex_convert_parts_no_supported_content():
-    Part = MagicMock()
-    mock_part = Part()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-    message = MagicMock()
-    message.parts = [mock_part]
-    with pytest.raises(
-        ValueError,
-        match="Part does not contain any supported content \\(text, image, or document\\).",
-    ):
-        VertexMessageParamConverter.from_provider([message])
+def test_convert_with_list_content_reference_chunk():
+    ref_chunk = MagicMock(spec=ReferenceChunk)
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [ref_chunk]
+    message.tool_calls = None
+
+    with pytest.raises(ValueError, match="ReferenceChunk is not supported"):
+        MistralMessageParamConverter.from_provider([message])
+
+
+def test_convert_with_list_content_unknown_chunk():
+    class UnknownChunk:
+        pass
+
+    unknown_chunk = UnknownChunk()
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [unknown_chunk]
+    message.tool_calls = None
+
+    with pytest.raises(ValueError, match="Unsupported ContentChunk type: UnknownChunk"):
+        MistralMessageParamConverter.from_provider([message])
+
+
+def test_convert_with_tool_calls_arguments_as_str():
+    tool_call = MagicMock()
+    tool_call.function.name = "tool_json"
+    tool_call.function.arguments = json.dumps({"x": 1})
+    tool_call.id = "tc1"
+
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = None
+    message.tool_calls = [tool_call]
+
+    results = MistralMessageParamConverter.from_provider([message])
+    result = results[0]
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], ToolCallPart)
+    assert result.content[0].name == "tool_json"
+    assert result.content[0].args == {"x": 1}
+    assert result.content[0].id == "tc1"

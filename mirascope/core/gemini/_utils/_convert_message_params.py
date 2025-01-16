@@ -112,7 +112,11 @@ def convert_message_params(
                             ],
                         }
                     )
-
+                else:
+                    raise ValueError(
+                        "Gemini currently only supports text, image, and audio parts. "
+                        f"Part provided: {part.type}"
+                    )
             if converted_content:
                 converted_message_params.append(
                     {

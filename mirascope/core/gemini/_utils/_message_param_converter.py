@@ -82,11 +82,11 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                     elif part.file_data:
                         file_data: FileData = part.file_data
                         mime = file_data.mime_type
-                        data = file_data.data
+                        file_uri = file_data.file_uri
                         if _is_image_mime(mime):
-                            content_list.append(_to_image_part(mime, data))
+                            content_list.append(_to_image_part(mime, file_uri))
                         elif mime == "application/pdf":
-                            content_list.append(_to_document_part(mime, data))
+                            content_list.append(_to_document_part(mime, file_uri))
                         else:
                             raise ValueError(
                                 f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."

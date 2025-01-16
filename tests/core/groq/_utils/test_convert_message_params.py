@@ -46,15 +46,10 @@ def test_convert_message_params() -> None:
                     },
                     "type": "image_url",
                 },
-                {
-                    "content": "result",
-                    "name": "tool_name",
-                    "role": "tool",
-                    "tool_call_id": "tool_id",
-                },
             ],
             "role": "user",
         },
+        {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
     ]
 
     with pytest.raises(

@@ -1,7 +1,7 @@
-# test_gemini_message_param_converter.py
-from unittest.mock import MagicMock
+# file: tests/core/gemini/_utils/test_message_param_converter.py
 
 import pytest
+from google.generativeai import protos
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import DocumentPart, ImagePart, TextPart, ToolCallPart
@@ -12,150 +12,136 @@ from mirascope.core.gemini._utils._message_param_converter import (
 
 def test_gemini_convert_parts_text_only():
     """
-    If parts contain only text, produce one TextPart if multiple or a single string if just one.
+    If parts contain only text, the converter should produce
+    a BaseMessageParam with either a single text string or a list[TextPart].
     """
-    mock_part = MagicMock()
-    mock_part.text = "hello world"
-    mock_part.inline_data = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-
+    part = protos.Part(text="hello world")
     results = GeminiMessageParamConverter.from_provider(
-        [{"role": "assistant", "parts": [mock_part]}]
+        [
+            {
+                "role": "assistant",
+                "parts": [part],
+            }
+        ]
     )
     assert len(results) == 1
-
     result = results[0]
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
-    # one text part -> might become a single string
-    # multiple text parts -> a list of TextPart
-    # depends on your converter logic
-    if isinstance(result.content, list):
+
+    # If the converter merges a single text into a plain string:
+    if isinstance(result.content, str):
+        assert result.content == "hello world"
+    else:
+        # Otherwise, if it keeps them as TextPart objects:
         assert len(result.content) == 1
         assert isinstance(result.content[0], TextPart)
         assert result.content[0].text == "hello world"
-    else:
-        # single string
-        assert result.content == "hello world"
 
 
 def test_gemini_convert_parts_image():
-    InlineData = MagicMock()
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-
-    mock_inline_data = InlineData()
-    mock_inline_data.mime_type = "image/png"
-    mock_inline_data.data = b"\x89PNG\r\n\x1a\n"
-    mock_part.inline_data = mock_inline_data
-
-    results = GeminiMessageParamConverter.from_provider(
-        [{"role": "assistant", "parts": [mock_part]}]
+    """
+    If inline_data has an image mime type, produce an ImagePart.
+    """
+    part = protos.Part(
+        inline_data=protos.Blob(mime_type="image/png", data=b"\x89PNG\r\n\x1a\n")
     )
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
     result = results[0]
+    assert isinstance(result.content, list)
     assert len(result.content) == 1
     assert isinstance(result.content[0], ImagePart)
     assert result.content[0].media_type == "image/png"
+    assert result.content[0].image == b"\x89PNG\r\n\x1a\n"
 
 
 def test_gemini_convert_parts_document():
-    FileData = MagicMock()
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.function_call = None
-
-    mock_file_data = FileData()
-    mock_file_data.mime_type = "application/pdf"
-    mock_file_data.data = b"%PDF-1.4..."
-    mock_part.file_data = mock_file_data
-
-    results = GeminiMessageParamConverter.from_provider(
-        [{"role": "assistant", "parts": [mock_part]}]
+    """
+    If file_data is a PDF, produce a DocumentPart.
+    """
+    part = protos.Part(
+        file_data=protos.FileData(mime_type="application/pdf", file_uri=b"%PDF-1.4...")
     )
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
     result = results[0]
+    assert isinstance(result.content, list)
     assert len(result.content) == 1
     doc_part = result.content[0]
     assert isinstance(doc_part, DocumentPart)
     assert doc_part.media_type == "application/pdf"
+    assert doc_part.document == b"%PDF-1.4..."
 
 
 def test_gemini_convert_parts_unsupported_image():
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-
-    mock_inline_data = MagicMock()
-    mock_inline_data.mime_type = "image/tiff"
-    mock_inline_data.data = b"fake"
-    mock_part.inline_data = mock_inline_data
-
+    """
+    If inline_data has an unsupported image type (e.g. image/tiff),
+    the converter should raise ValueError.
+    """
+    part = protos.Part(inline_data=protos.Blob(mime_type="image/tiff", data=b"fake"))
     with pytest.raises(
         ValueError,
         match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
     ):
         GeminiMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [mock_part]}]
+            [{"role": "assistant", "parts": [part]}]
         )
 
 
 def test_gemini_convert_parts_unsupported_document():
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.function_call = None
-
-    mock_file_data = MagicMock()
-    mock_file_data.mime_type = "application/msword"
-    mock_file_data.data = b"DOC..."
-    mock_part.file_data = mock_file_data
-
+    """
+    If file_data has a non-PDF type (e.g. application/msword),
+    the converter should raise ValueError.
+    """
+    part = protos.Part(
+        file_data=protos.FileData(mime_type="application/msword", file_uri=b"DOC...")
+    )
     with pytest.raises(
         ValueError,
         match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
         GeminiMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [mock_part]}]
+            [{"role": "assistant", "parts": [part]}]
         )
 
 
 def test_gemini_convert_function_call():
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-
-    function_call = MagicMock()
-    function_call.name = "some_tool"
-    function_call.args = {"param1": "value1"}
-    mock_part.function_call = function_call
-
-    results = GeminiMessageParamConverter.from_provider(
-        [{"role": "assistant", "parts": [mock_part]}]
+    """
+    If the part has a function_call, the converter returns a new BaseMessageParam
+    with a ToolCallPart inside.
+    """
+    part = protos.Part(
+        function_call=protos.FunctionCall(name="some_tool", args={"param1": "value1"})
     )
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
     result = results[0]
-    assert isinstance(result, BaseMessageParam)
+    assert isinstance(result.content, list)
     assert len(result.content) == 1
-    part = result.content[0]
-    assert isinstance(part, ToolCallPart)
-    assert part.name == "some_tool"
+    part_call = result.content[0]
+    assert isinstance(part_call, ToolCallPart)
+    assert part_call.name == "some_tool"
+    assert part_call.args == {"param1": "value1"}
 
 
 def test_gemini_convert_no_supported_content():
-    mock_part = MagicMock()
-    mock_part.text = None
-    mock_part.inline_data = None
-    mock_part.file_data = None
-    mock_part.function_call = None
-
+    """
+    If none of text, inline_data, file_data, function_call, or function_response
+    is set, the converter should raise ValueError.
+    """
+    part = protos.Part()
+    # No text, no inline_data, no file_data, no function_call, no function_response
     with pytest.raises(
         ValueError,
         match="Part does not contain any supported content \\(text, image, or document\\).",
     ):
         GeminiMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [mock_part]}]
+            [{"role": "assistant", "parts": [part]}]
         )

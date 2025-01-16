@@ -76,6 +76,4 @@ def test_convert_message_param_tool_calls():
 def test_convert_message_param_no_content_no_tool_calls():
     message_param = ChatCompletionAssistantMessageParam(role="assistant", content=None)
     results = OpenAIMessageParamConverter.from_provider([message_param])
-    result = results[0]
-    assert isinstance(result.content, list)
-    assert len(result.content) == 0
+    assert not results

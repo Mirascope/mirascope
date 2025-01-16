@@ -15,6 +15,7 @@ from mirascope.core.mistral._utils._message_param_converter import (
 
 def test_convert_with_string_content_no_tool_calls():
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = "Hello world"
     message.tool_calls = None
 
@@ -29,6 +30,7 @@ def test_convert_with_string_content_no_tool_calls():
 
 def test_convert_with_string_content_and_tool_calls():
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = "Some text"
     tool_call = MagicMock()
     tool_call.function.name = "my_tool"
@@ -38,21 +40,26 @@ def test_convert_with_string_content_and_tool_calls():
 
     results = MistralMessageParamConverter.from_provider([message])
     assert len(results) == 1
-
-    result = results[0]
-    assert result.role == "assistant"
-    assert len(result.content) == 2
-    assert isinstance(result.content[0], TextPart)
-    assert isinstance(result.content[1], ToolCallPart)
-    assert result.content[1].name == "my_tool"
-    assert result.content[1].args == {"arg": "val"}
-    assert result.content[1].id == "tool_call_id"
+    assert results == [
+        BaseMessageParam(
+            role="tool",
+            content=[
+                ToolCallPart(
+                    type="tool_call",
+                    name="my_tool",
+                    args={"arg": "val"},
+                    id="tool_call_id",
+                )
+            ],
+        ),
+    ]
 
 
 def test_convert_with_list_content_single_text_chunk():
     text_chunk = MagicMock(spec=TextChunk)
     text_chunk.text = "Single text chunk"
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = [text_chunk]
     message.tool_calls = None
 
@@ -70,6 +77,7 @@ def test_convert_with_list_content_multiple_text_chunks():
     text_chunk2 = MagicMock(spec=TextChunk)
     text_chunk2.text = "World"
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = [text_chunk1, text_chunk2]
     message.tool_calls = None
 
@@ -91,6 +99,7 @@ def test_convert_with_list_content_image_url_chunk_str():
     image_chunk = MagicMock(spec=ImageURLChunk)
     image_chunk.image_url = data_url
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = [image_chunk]
     message.tool_calls = None
 
@@ -105,6 +114,7 @@ def test_convert_with_list_content_image_url_chunk_str():
 def test_convert_with_list_content_reference_chunk():
     ref_chunk = MagicMock(spec=ReferenceChunk)
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = [ref_chunk]
     message.tool_calls = None
 
@@ -118,6 +128,7 @@ def test_convert_with_list_content_unknown_chunk():
 
     unknown_chunk = UnknownChunk()
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = [unknown_chunk]
     message.tool_calls = None
 
@@ -132,6 +143,7 @@ def test_convert_with_tool_calls_arguments_as_str():
     tool_call.id = "tc1"
 
     message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
     message.content = None
     message.tool_calls = [tool_call]
 

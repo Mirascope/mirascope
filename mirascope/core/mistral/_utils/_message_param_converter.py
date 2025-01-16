@@ -147,8 +147,11 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
                     )
                 )
             else:
-                converted.append(
-                    BaseMessageParam(role=message_param.role, content=converted_parts)
-                )
+                if converted_parts:
+                    converted.append(
+                        BaseMessageParam(
+                            role=message_param.role, content=converted_parts
+                        )
+                    )
 
         return converted

@@ -65,9 +65,6 @@ def test_convert_message_params() -> None:
         ),
         SystemMessage(content="Hello", role="system"),
         ToolMessage(content="Hello"),
-        ToolMessage(
-            content="result", tool_call_id="tool_id", name="tool_name", role="tool"
-        ),
         UserMessage(
             role="user",
             content=[
@@ -78,6 +75,9 @@ def test_convert_message_params() -> None:
                     )
                 ),
             ],
+        ),
+        ToolMessage(
+            content="result", tool_call_id="tool_id", name="tool_name", role="tool"
         ),
     ]
 

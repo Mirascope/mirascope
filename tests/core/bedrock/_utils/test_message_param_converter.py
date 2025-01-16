@@ -146,6 +146,4 @@ def test_no_supported_content():
 def test_empty_content():
     message_param = {"role": "assistant", "content": []}
     results = BedrockMessageParamConverter.from_provider([message_param])
-    result = results[0]
-    assert result.role == "assistant"
-    assert result.content == []
+    assert not results

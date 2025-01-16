@@ -48,10 +48,11 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
         {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
         {
             "role": "user",
+            "parts": ["test", "test", {"mime_type": "audio/wav", "data": b"audio"}],
+        },
+        {
+            "role": "user",
             "parts": [
-                "test",
-                "test",
-                {"mime_type": "audio/wav", "data": b"audio"},
                 protos.FunctionResponse(
                     name="tool_name", response={"result": "result"}
                 ),

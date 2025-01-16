@@ -40,7 +40,6 @@ def test_convert_message_params() -> None:
     assert converted_message_params == [
         {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
         {"role": "user", "content": "Hello"},
-        {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
         {
             "role": "user",
             "content": [
@@ -54,6 +53,7 @@ def test_convert_message_params() -> None:
                 },
             ],
         },
+        {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
     ]
 
     with pytest.raises(

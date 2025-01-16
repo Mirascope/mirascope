@@ -57,10 +57,14 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
             "role": "user",
         },
         {
-            "function_response": {
-                "name": "tool_name",
-                "response": {"content": {"result": "result"}},
-            },
+            "parts": [
+                {
+                    "function_response": {
+                        "name": "tool_name",
+                        "response": {"content": {"result": "result"}},
+                    }
+                }
+            ],
             "role": "user",
         },
     ]

@@ -78,11 +78,16 @@ def convert_message_params(
                         )
                         converted_content = []
                     converted_message_params.append(
-                        Part.from_function_response(
-                            name=part.name,
-                            response={
-                                "content": {"result": part.content},
-                            },
+                        Content(
+                            role=role,
+                            parts=[
+                                Part.from_function_response(
+                                    name=part.name,
+                                    response={
+                                        "content": {"result": part.content},
+                                    },
+                                )
+                            ],
                         )
                     )
                 else:
@@ -90,5 +95,8 @@ def convert_message_params(
                         "Vertex currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(Content(role=role, parts=converted_content))
+            if converted_content:
+                converted_message_params.append(
+                    Content(role=role, parts=converted_content)
+                )
     return converted_message_params
