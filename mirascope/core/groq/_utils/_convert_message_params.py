@@ -1,8 +1,11 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`"""
 
 import base64
+import json
 
-from groq.types.chat import ChatCompletionMessageParam
+from groq.types.chat import (
+    ChatCompletionMessageParam,
+)
 
 from ...base import BaseMessageParam
 
@@ -42,6 +45,31 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            ChatCompletionMessageParam(
+                                {
+                                    "role": message_param.role,
+                                    "content": converted_content,
+                                }
+                            )
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        {
+                            "role": "assistant",
+                            "tool_calls": [
+                                {   "type": "function",
+                                    "id": part.id,
+                                    "function": {
+                                        "name": part.name,
+                                        "arguments": json.dumps(part.args),
+                                    },
+                                }
+                            ],
+                        }
+                    )
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(
@@ -65,7 +93,8 @@ def convert_message_params(
                         "Groq currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params
