@@ -1,3 +1,5 @@
+from typing import cast
+
 from cohere.types import ChatMessage
 
 from mirascope.core import BaseMessageParam
@@ -16,7 +18,9 @@ class CohereMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Cohere's `ChatMessage`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | ChatMessage], message_params)
+        )
 
     @staticmethod
     def from_provider(message_params: list[ChatMessage]) -> list[BaseMessageParam]:

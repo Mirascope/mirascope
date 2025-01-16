@@ -9,7 +9,7 @@ from mirascope.core.bedrock._utils._message_param_converter import (
 
 def test_single_text():
     message_param = {"role": "assistant", "content": [{"text": "Hello world"}]}
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert len(results) == 1
 
     result = results[0]
@@ -23,7 +23,7 @@ def test_multiple_text():
         "role": "assistant",
         "content": [{"text": "Hello"}, {"text": "World"}],
     }
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert len(results) == 1
 
     result = results[0]
@@ -38,7 +38,7 @@ def test_multiple_text():
 def test_text_not_string():
     message_param = {"role": "assistant", "content": [{"text": 123}]}
     with pytest.raises(ValueError, match="Text content must be a string."):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_image_block_valid():
@@ -48,7 +48,7 @@ def test_image_block_valid():
             {"image": {"format": "JPEG", "source": {"bytes": b"fake_jpeg_data"}}}
         ],
     }
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     result = results[0]
     assert len(result.content) == 1
     img_part = result.content[0]
@@ -65,7 +65,7 @@ def test_image_block_missing_bytes():
     with pytest.raises(
         ValueError, match="Image block must have 'source.bytes' as bytes."
     ):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_image_block_unsupported_format():
@@ -74,7 +74,7 @@ def test_image_block_unsupported_format():
         "content": [{"image": {"format": "TIFF", "source": {"bytes": b"something"}}}],
     }
     with pytest.raises(ValueError, match="Unsupported image format: TIFF"):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_document_block_valid():
@@ -82,7 +82,7 @@ def test_document_block_valid():
         "role": "assistant",
         "content": [{"document": {"format": "PDF", "source": {"bytes": b"pdf_data"}}}],
     }
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     result = results[0]
     assert len(result.content) == 1
     doc_part = result.content[0]
@@ -97,7 +97,7 @@ def test_document_block_unsupported_format():
         "content": [{"document": {"format": "DOCX", "source": {"bytes": b"doc_data"}}}],
     }
     with pytest.raises(ValueError, match="Unsupported document format: DOCX"):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_document_block_missing_bytes():
@@ -108,7 +108,7 @@ def test_document_block_missing_bytes():
     with pytest.raises(
         ValueError, match="Document block must have 'source.bytes' as bytes."
     ):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_tool_use_block():
@@ -124,9 +124,9 @@ def test_tool_use_block():
             }
         ],
     }
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     result = results[0]
-    assert result.role == "assistant"  # or "tool" if your converter logic sets that
+    assert result.role == "assistant"
     assert len(result.content) == 1
     part = result.content[0]
     assert isinstance(part, ToolCallPart)
@@ -140,10 +140,10 @@ def test_no_supported_content():
     with pytest.raises(
         ValueError, match="Content block does not contain supported content."
     ):
-        BedrockMessageParamConverter.from_provider([message_param])
+        BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_empty_content():
     message_param = {"role": "assistant", "content": []}
-    results = BedrockMessageParamConverter.from_provider([message_param])
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert not results

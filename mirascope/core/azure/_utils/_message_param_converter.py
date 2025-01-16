@@ -1,4 +1,5 @@
 import json
+from typing import cast
 
 from azure.ai.inference.models import (
     AssistantMessage,
@@ -21,7 +22,9 @@ class AzureMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Azure's `ChatRequestMessage`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | ChatRequestMessage], message_params)
+        )
 
     @staticmethod
     def from_provider(message_params: list[AssistantMessage]) -> list[BaseMessageParam]:

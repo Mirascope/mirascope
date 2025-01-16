@@ -20,7 +20,9 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Anthropic's `MessageParam`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | MessageParam], message_params)
+        )
 
     @staticmethod
     def from_provider(message_params: list[MessageParam]) -> list[BaseMessageParam]:
@@ -123,9 +125,9 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
                             content=[
                                 ToolResultPart(
                                     type="tool_result",
-                                    content=block["content"]
-                                    if isinstance(block["content"], str)
-                                    else block["content"][0]["text"],
+                                    content=block["content"]  # pyright: ignore [reportTypedDictNotRequiredAccess]
+                                    if isinstance(block["content"], str)  # pyright: ignore [reportTypedDictNotRequiredAccess]
+                                    else list(block["content"])[0]["text"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
                                     id=block["tool_use_id"],
                                     is_error=block.get("is_error", False),
                                 )

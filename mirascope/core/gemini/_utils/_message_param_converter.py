@@ -47,7 +47,9 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Gemini `ContentDict`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | ContentDict], message_params)
+        )
 
     @staticmethod
     def from_provider(message_params: list[ContentDict]) -> list[BaseMessageParam]:
@@ -84,9 +86,9 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                         mime = file_data.mime_type
                         file_uri = file_data.file_uri
                         if _is_image_mime(mime):
-                            content_list.append(_to_image_part(mime, file_uri))
+                            content_list.append(_to_image_part(mime, file_uri))  # pyright: ignore [reportArgumentType]
                         elif mime == "application/pdf":
-                            content_list.append(_to_document_part(mime, file_uri))
+                            content_list.append(_to_document_part(mime, file_uri))  # pyright: ignore [reportArgumentType]
                         else:
                             raise ValueError(
                                 f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
@@ -112,7 +114,7 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                                     ToolResultPart(
                                         type="tool_result",
                                         name=part.function_response.name,
-                                        content=part.function_response.response[
+                                        content=part.function_response.response[  # pyright: ignore [reportArgumentType]
                                             "result"
                                         ],
                                         id=None,
@@ -146,7 +148,7 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                                 ToolResultPart(
                                     type="tool_result",
                                     name=part.name,
-                                    content=part.response["result"],
+                                    content=part.response["result"],  # pyright: ignore [reportArgumentType]
                                     id=None,
                                     is_error=False,
                                 )

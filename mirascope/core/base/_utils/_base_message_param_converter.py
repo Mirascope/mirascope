@@ -11,12 +11,12 @@ class BaseMessageParamConverter(ABC):
 
     @staticmethod
     @abstractmethod
-    def to_provider(base_params: list[BaseMessageParam]) -> list[Any]:
+    def to_provider(message_params: list[BaseMessageParam]) -> list[Any]:
         """Converts base message params -> provider-specific messages."""
         pass
 
     @staticmethod
     @abstractmethod
-    def from_provider(provider_messages: list[Any]) -> list[BaseMessageParam]:
+    def from_provider(message_params: list[Any]) -> list[BaseMessageParam]:
         """Converts provider-specific messages -> Base message params."""
         pass

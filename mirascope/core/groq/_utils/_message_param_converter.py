@@ -1,4 +1,5 @@
 import json
+from typing import cast
 
 from groq.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -24,7 +25,9 @@ class GroqMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Groq `ChatCompletionMessageParam`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | ChatCompletionMessageParam], message_params)
+        )
 
     @staticmethod
     def from_provider(

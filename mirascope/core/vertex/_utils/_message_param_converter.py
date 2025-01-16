@@ -1,3 +1,5 @@
+from typing import cast
+
 from google.cloud.aiplatform_v1beta1.types.content import FileData
 from vertexai.generative_models import Content
 
@@ -40,7 +42,9 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Vertex `Content`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | Content], message_params)
+        )
 
     @staticmethod
     def from_provider(message_params: list[Content]) -> list[BaseMessageParam]:
@@ -62,7 +66,7 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                                 ToolResultPart(
                                     type="tool_result",
                                     name=part.function_response.name,
-                                    content=part.function_response.response["result"],
+                                    content=part.function_response.response["result"],  # pyright: ignore [reportReturnType, reportArgumentType]
                                     id=None,
                                     is_error=False,
                                 )

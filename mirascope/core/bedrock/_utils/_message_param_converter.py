@@ -1,3 +1,5 @@
+from typing import cast
+
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import (
     DocumentPart,
@@ -33,7 +35,9 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
         """
         Convert from Mirascope `BaseMessageParam` to Bedrock's `InternalBedrockMessageParam`.
         """
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | InternalBedrockMessageParam], message_params)
+        )
 
     @staticmethod
     def from_provider(
@@ -133,10 +137,10 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
                                 ToolResultPart(
                                     type="tool_result",
                                     id=tool_result["toolUseId"],
-                                    name=tool_result["name"],
+                                    name=tool_result["name"],  # pyright: ignore [reportGeneralTypeIssues]
                                     content=tool_result["content"]
                                     if isinstance(tool_result["content"], str)
-                                    else tool_result["content"][0]["text"],
+                                    else tool_result["content"][0]["text"],  # pyright: ignore [reportTypedDictNotRequiredAccess]
                                     is_error=tool_result.get("isError", False),
                                 )
                             ],

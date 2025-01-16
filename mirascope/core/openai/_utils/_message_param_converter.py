@@ -1,6 +1,7 @@
 """This module contains the OpenAIMessageParamConverter class."""
 
 import json
+from typing import cast
 
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
@@ -21,7 +22,9 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
         message_params: list[BaseMessageParam],
     ) -> list[ChatCompletionMessageParam]:
         """Converts base message params to OpenAI message params."""
-        return convert_message_params(message_params)
+        return convert_message_params(
+            cast(list[BaseMessageParam | ChatCompletionMessageParam], message_params)
+        )
 
     @staticmethod
     def from_provider(

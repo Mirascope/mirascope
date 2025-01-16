@@ -83,7 +83,8 @@ def convert_message_params(
                             tool_calls=[
                                 ToolCall(
                                     function=FunctionCall(
-                                        name=part.name, arguments=part.args
+                                        name=part.name,
+                                        arguments=part.args,  # pyright: ignore [reportArgumentType]
                                     ),
                                     id=part.id,
                                     type="function",

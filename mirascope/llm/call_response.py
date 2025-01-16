@@ -91,7 +91,7 @@ class CallResponse(
     @computed_field
     @cached_property
     def message_param(self) -> BaseMessageParam:
-        return self._response.common_message_param
+        return self._response.common_message_param  # pyright: ignore [reportReturnType]
 
     @computed_field
     @cached_property
