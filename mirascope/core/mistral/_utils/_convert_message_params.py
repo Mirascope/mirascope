@@ -4,10 +4,12 @@ import base64
 
 from mistralai.models import (
     AssistantMessage,
+    FunctionCall,
     ImageURL,
     ImageURLChunk,
     SystemMessage,
     TextChunk,
+    ToolCall,
     ToolMessage,
     UserMessage,
 )
@@ -67,6 +69,28 @@ def convert_message_params(
                             )
                         )
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            _make_message(
+                                role=message_param.role, content=converted_content
+                            )
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        AssistantMessage(
+                            role="assistant",
+                            tool_calls=[
+                                ToolCall(
+                                    function=FunctionCall(
+                                        name=part.name, arguments=part.args
+                                    ),
+                                    id=part.id,
+                                    type="function",
+                                )
+                            ],
+                        )
+                    )
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(
@@ -88,7 +112,8 @@ def convert_message_params(
                         "Mistral currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                _make_message(role=message_param.role, content=converted_content)
-            )
+            if converted_content:
+                converted_message_params.append(
+                    _make_message(role=message_param.role, content=converted_content)
+                )
     return converted_message_params

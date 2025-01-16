@@ -58,7 +58,10 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
         for message_param in message_params:
             role: str = "assistant"
             content_list = []
-            for part in cast(list[protos.Part | protos.FunctionCall | protos.FunctionResponse], message_param["parts"]):
+            for part in cast(
+                list[protos.Part | protos.FunctionCall | protos.FunctionResponse],
+                message_param["parts"],
+            ):
                 if isinstance(part, protos.Part):
                     if part.text:
                         content_list.append(TextPart(type="text", text=part.text))
@@ -109,7 +112,9 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                                     ToolResultPart(
                                         type="tool_result",
                                         name=part.function_response.name,
-                                        content=part.function_response.response["result"],
+                                        content=part.function_response.response[
+                                            "result"
+                                        ],
                                         id=None,
                                         is_error=False,
                                     )

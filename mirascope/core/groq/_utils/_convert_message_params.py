@@ -60,7 +60,8 @@ def convert_message_params(
                         {
                             "role": "assistant",
                             "tool_calls": [
-                                {   "type": "function",
+                                {
+                                    "type": "function",
                                     "id": part.id,
                                     "function": {
                                         "name": part.name,

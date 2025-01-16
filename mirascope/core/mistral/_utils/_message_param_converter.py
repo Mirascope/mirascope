@@ -7,6 +7,7 @@ from mistralai.models import (
     ImageURLChunk,
     ReferenceChunk,
     TextChunk,
+    ToolMessage,
 )
 
 from mirascope.core.base._utils._base_message_param_converter import (
@@ -14,7 +15,7 @@ from mirascope.core.base._utils._base_message_param_converter import (
 )
 from mirascope.core.mistral._utils import convert_message_params
 
-from ...base import BaseMessageParam, ImagePart, TextPart
+from ...base import BaseMessageParam, ImagePart, TextPart, ToolResultPart
 from ...base.message_param import ToolCallPart
 
 
@@ -38,10 +39,49 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
         converted: list[BaseMessageParam] = []
         for message_param in message_params:
             content = message_param.content
-            role: str = "assistant"
+
             converted_parts = []
 
-            if isinstance(content, str):
+            if tool_calls := getattr(message_param, "tool_calls", None):
+                for tool in tool_calls:
+                    arguments = tool.function.arguments
+                    converted.append(
+                        BaseMessageParam(
+                            role="tool",
+                            content=[
+                                ToolCallPart(
+                                    type="tool_call",
+                                    name=tool.function.name,
+                                    id=tool.id,
+                                    args=json.loads(arguments)
+                                    if isinstance(arguments, str)
+                                    else arguments,
+                                )
+                            ],
+                        )
+                    )
+            elif isinstance(message_param, ToolMessage):
+                if converted_parts:
+                    converted.append(
+                        BaseMessageParam(
+                            role=message_param.role, content=converted_parts
+                        )
+                    )
+                    converted_parts = []
+                converted.append(
+                    BaseMessageParam(
+                        role="tool",
+                        content=[
+                            ToolResultPart(
+                                type="tool_result",
+                                name=message_param.name,
+                                content=message_param.content,
+                                id=message_param.tool_call_id,
+                            )
+                        ],
+                    )
+                )
+            elif isinstance(content, str):
                 converted_parts.append(TextPart(type="text", text=content))
             elif isinstance(content, list):
                 for chunk in content:
@@ -100,25 +140,15 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
                             f"Unsupported ContentChunk type: {type(chunk).__name__}"
                         )
 
-            if tool_calls := message_param.tool_calls:
-                for tool in tool_calls:
-                    arguments = tool.function.arguments
-                    converted_parts.append(
-                        ToolCallPart(
-                            type="tool_call",
-                            name=tool.function.name,
-                            id=tool.id,
-                            args=json.loads(arguments)
-                            if isinstance(arguments, str)
-                            else arguments,
-                        )
-                    )
-
             if len(converted_parts) == 1 and isinstance(converted_parts[0], TextPart):
                 converted.append(
-                    BaseMessageParam(role=role, content=converted_parts[0].text)
+                    BaseMessageParam(
+                        role=message_param.role, content=converted_parts[0].text
+                    )
                 )
             else:
-                converted.append(BaseMessageParam(role=role, content=converted_parts))
+                converted.append(
+                    BaseMessageParam(role=message_param.role, content=converted_parts)
+                )
 
         return converted
