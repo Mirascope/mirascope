@@ -9,7 +9,7 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic._utils._message_param_converter import (
     AnthropicMessageParamConverter,
 )
-from mirascope.core.base import ImagePart, TextPart, ToolCallPart
+from mirascope.core.base import ImagePart, TextPart, ToolCallPart, ToolResultPart
 
 
 def test_content_is_string():
@@ -187,8 +187,7 @@ def test_image_block_pathlike():
     with patch("builtins.open", mock_open(read_data=mock_file_data)):
 
         class MockPath(PathLike):
-            def __fspath__(self):
-                return "fakepath.jpg"
+            def __fspath__(self): ...
 
         message_param = {
             "role": "assistant",
@@ -317,3 +316,67 @@ def test_empty_content_list():
     message_param = {"role": "assistant", "content": []}
     results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert len(results) == 0
+
+
+def test_to_provider():
+    results = AnthropicMessageParamConverter.to_provider(
+        [BaseMessageParam(role="assistant", content="Hello")]
+    )
+    assert results == [{"content": "Hello", "role": "assistant"}]
+
+
+def test_tool_result():
+    message_param = {
+        "role": "user",
+        "content": [
+            {
+                "tool_use_id": "tool_id",
+                "type": "tool_result",
+                "name": "tool_name",
+                "content": "result",
+                "is_error": False,
+            }
+        ],
+    }
+    results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert len(results) == 1
+    result = results[0]
+    assert result.role == "user"
+    assert len(result.content) == 1
+    assert result.content[0] == ToolResultPart(
+        type="tool_result", name="", content="result", id="tool_id", is_error=False
+    )
+
+
+def test_tool_result_with_text():
+    message_param = {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Hello"},
+            {
+                "tool_use_id": "tool_id",
+                "type": "tool_result",
+                "name": "tool_name",
+                "content": "result",
+                "is_error": False,
+            },
+        ],
+    }
+    results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert len(results) == 2
+
+    assert results == [
+        BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
+        BaseMessageParam(
+            role="user",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="",
+                    content="result",
+                    id="tool_id",
+                    is_error=False,
+                )
+            ],
+        ),
+    ]

@@ -13,6 +13,7 @@ from mirascope.core.base import (
     DocumentPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
     ToolResultPart,
 )
 
@@ -37,6 +38,7 @@ def test_convert_message_params() -> None:
                 ToolResultPart(
                     type="tool_result", id="tool_id", content="result", name="tool_name"
                 ),
+                ToolCallPart(type="tool_call", id="tool_id", name="tool_name"),
             ],
         ),
     ]
@@ -69,6 +71,12 @@ def test_convert_message_params() -> None:
                     "is_error": False,
                     "tool_use_id": "tool_id",
                     "type": "tool_result",
+                },
+                {
+                    "id": "tool_id",
+                    "input": None,
+                    "name": "tool_name",
+                    "type": "tool_use",
                 },
             ],
             "role": "user",

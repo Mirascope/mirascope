@@ -1,156 +1,192 @@
-import base64
-import json
-from unittest.mock import MagicMock
+from unittest.mock import PropertyMock, patch
 
 import pytest
-from mistralai.models import AssistantMessage, ImageURLChunk, ReferenceChunk, TextChunk
+from google.cloud.aiplatform_v1beta1.types import content as gapic_content_types
+from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
+from vertexai.generative_models import Content, Part
 
-from mirascope.core import BaseMessageParam
-from mirascope.core.base import ImagePart, TextPart
-from mirascope.core.base.message_param import ToolCallPart
-from mirascope.core.mistral._utils._message_param_converter import (
-    MistralMessageParamConverter,
+from mirascope.core.base import ImagePart
+from mirascope.core.base.message_param import (
+    BaseMessageParam,
+    DocumentPart,
+    ToolCallPart,
+    ToolResultPart,
+)
+from mirascope.core.vertex._utils._message_param_converter import (
+    VertexMessageParamConverter,
+    _to_document_part,
+    _to_image_part,
 )
 
 
-def test_convert_with_string_content_no_tool_calls():
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = "Hello world"
-    message.tool_calls = None
+def test_vertex_convert_parts_image():
+    raw_gapic_part = gapic_content_types.Part(
+        inline_data=gapic_content_types.Blob(
+            mime_type="image/png", data=b"\x89PNG\r\n\x1a\n"
+        )
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    with patch.object(Part, "text", new_callable=PropertyMock(return_value="")):
+        results = VertexMessageParamConverter.from_provider([message])
+        assert len(results) == 1
+        result = results[0]
+        assert isinstance(result.content, list)
+        assert len(result.content) == 1
+        assert isinstance(result.content[0], ImagePart)
+        assert result.content[0].media_type == "image/png"
+        assert result.content[0].image == b"\x89PNG\r\n\x1a\n"
+        assert result.role == "assistant"
 
-    results = MistralMessageParamConverter.from_provider([message])
-    assert len(results) == 1
 
-    result = results[0]
-    assert isinstance(result, BaseMessageParam)
-    assert result.role == "assistant"
-    assert result.content == "Hello world"
+def test_vertex_convert_parts_unsupported_image():
+    raw_gapic_part = gapic_content_types.Part(
+        inline_data=gapic_content_types.Blob(mime_type="image/tiff", data=b"fake")
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    with (
+        patch.object(Part, "text", new_callable=PropertyMock(return_value="")),
+        pytest.raises(
+            ValueError,
+            match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
+        ),
+    ):
+        VertexMessageParamConverter.from_provider([message])
 
 
-def test_convert_with_string_content_and_tool_calls():
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = "Some text"
-    tool_call = MagicMock()
-    tool_call.function.name = "my_tool"
-    tool_call.function.arguments = json.dumps({"arg": "val"})
-    tool_call.id = "tool_call_id"
-    message.tool_calls = [tool_call]
-
-    results = MistralMessageParamConverter.from_provider([message])
+def test_vertex_convert_parts_inline_data_pdf():
+    raw_gapic_part = gapic_content_types.Part(
+        inline_data=gapic_content_types.Blob(
+            mime_type="application/pdf", data=b"%PDF-1.4..."
+        )
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    results = VertexMessageParamConverter.from_provider([message])
     assert len(results) == 1
     assert results == [
         BaseMessageParam(
-            role="tool",
+            role="assistant",
             content=[
-                ToolCallPart(
-                    type="tool_call",
-                    name="my_tool",
-                    args={"arg": "val"},
-                    id="tool_call_id",
+                DocumentPart(
+                    type="document",
+                    media_type="application/pdf",
+                    document=b"%PDF-1.4...",
                 )
             ],
         )
     ]
 
 
-def test_convert_with_list_content_single_text_chunk():
-    text_chunk = MagicMock(spec=TextChunk)
-    text_chunk.text = "Single text chunk"
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = [text_chunk]
-    message.tool_calls = None
+def test_vertex_convert_parts_unsupported_inline_data():
+    raw_gapic_part = gapic_content_types.Part(
+        inline_data=gapic_content_types.Blob(mime_type="application/json", data=b"{}")
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    with (
+        patch.object(Part, "text", new_callable=PropertyMock(return_value="")),
+        pytest.raises(
+            ValueError,
+            match="Unsupported inline_data mime type: application/json. Cannot convert to BaseMessageParam.",
+        ),
+    ):
+        VertexMessageParamConverter.from_provider([message])
 
-    results = MistralMessageParamConverter.from_provider([message])
+
+def test_to_image_part_unsupported_image():
+    with pytest.raises(
+        ValueError,
+        match="Unsupported image media type: application/json. Expected one of: image/jpeg, image/png, image/gif, image/webp.",
+    ):
+        _to_image_part(mime_type="application/json", data=b"{}")
+
+
+def test_to_document_part_unsupported_document():
+    with pytest.raises(
+        ValueError,
+        match="Unsupported document media type: application/json. Only application/pdf is supported.",
+    ):
+        _to_document_part(mime_type="application/json", data=b"{}")
+
+
+def test_vertex_convert_parts_tool_result():
+    raw_gapic_part = gapic_content_types.Part(
+        function_call=gapic_tool_types.FunctionCall(
+            name="test", args={"arg1": "value1"}
+        )
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    with patch.object(Part, "text", new_callable=PropertyMock(return_value="")):
+        results = VertexMessageParamConverter.from_provider([message])
+        assert len(results) == 1
+        result = results[0]
+        assert result.role in ("assistant", "tool")
+        assert len(result.content) == 1
+        part_call = result.content[0]
+        assert isinstance(part_call, ToolCallPart)
+        assert part_call.type == "tool_call"
+        assert part_call.name == "test"
+        assert part_call.args == {"arg1": "value1"}
+
+
+def test_gemini_convert_parts_document():
+    """
+    If file_data is a PDF, produce a DocumentPart.
+    """
+    part = gapic_content_types.Part(
+        file_data=gapic_content_types.FileData(
+            mime_type="application/pdf", file_uri=b"%PDF-1.4..."
+        )
+    )
+    with pytest.raises(
+        ValueError,
+        match='FileData.file_uri is not support: mime_type: "application/pdf"\nfile_uri: "%PDF-1.4..."\n. Cannot convert to BaseMessageParam.',
+    ):
+        VertexMessageParamConverter.from_provider(
+            [Content(role="user", parts=[Part._from_gapic(part)])]
+        )
+
+
+def test_to_provider():
+    """
+    If there's no content but tool_calls, we only get ToolCallParts in the final list.
+    """
+    message_param = Content(
+        role="assistant",
+        parts=[
+            Part.from_text("This is a message"),
+        ],
+    )
+    results = VertexMessageParamConverter.to_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert len(results) == 1
-
-    result = results[0]
-    assert result.role == "assistant"
-    assert result.content == "Single text chunk"
+    assert results[0].role == "assistant"
+    assert results[0].parts[0].text == "This is a message"
 
 
-def test_convert_with_list_content_multiple_text_chunks():
-    text_chunk1 = MagicMock(spec=TextChunk)
-    text_chunk1.text = "Hello"
-    text_chunk2 = MagicMock(spec=TextChunk)
-    text_chunk2.text = "World"
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = [text_chunk1, text_chunk2]
-    message.tool_calls = None
-
-    results = MistralMessageParamConverter.from_provider([message])
-    result = results[0]
-    assert result.role == "assistant"
-    assert len(result.content) == 2
-    assert isinstance(result.content[0], TextPart)
-    assert result.content[0].text == "Hello"
-
-
-def test_convert_with_list_content_image_url_chunk_str():
-    # Create a valid data URL
-    mime_type = "image/png"
-    image_data = b"fake_image_data"
-    b64 = base64.b64encode(image_data).decode("utf-8")
-    data_url = f"data:{mime_type};base64,{b64}"
-
-    image_chunk = MagicMock(spec=ImageURLChunk)
-    image_chunk.image_url = data_url
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = [image_chunk]
-    message.tool_calls = None
-
-    results = MistralMessageParamConverter.from_provider([message])
-    result = results[0]
-    assert len(result.content) == 1
-    assert isinstance(result.content[0], ImagePart)
-    assert result.content[0].media_type == mime_type
-    assert result.content[0].image == image_data
-
-
-def test_convert_with_list_content_reference_chunk():
-    ref_chunk = MagicMock(spec=ReferenceChunk)
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = [ref_chunk]
-    message.tool_calls = None
-
-    with pytest.raises(ValueError, match="ReferenceChunk is not supported"):
-        MistralMessageParamConverter.from_provider([message])
-
-
-def test_convert_with_list_content_unknown_chunk():
-    class UnknownChunk:
-        pass
-
-    unknown_chunk = UnknownChunk()
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = [unknown_chunk]
-    message.tool_calls = None
-
-    with pytest.raises(ValueError, match="Unsupported ContentChunk type: UnknownChunk"):
-        MistralMessageParamConverter.from_provider([message])
-
-
-def test_convert_with_tool_calls_arguments_as_str():
-    tool_call = MagicMock()
-    tool_call.function.name = "tool_json"
-    tool_call.function.arguments = json.dumps({"x": 1})
-    tool_call.id = "tc1"
-
-    message = MagicMock(spec=AssistantMessage)
-    message.role = "assistant"
-    message.content = None
-    message.tool_calls = [tool_call]
-
-    results = MistralMessageParamConverter.from_provider([message])
-    result = results[0]
-    assert len(result.content) == 1
-    assert isinstance(result.content[0], ToolCallPart)
-    assert result.content[0].name == "tool_json"
-    assert result.content[0].args == {"x": 1}
-    assert result.content[0].id == "tc1"
+def test_function_response():
+    raw_gapic_part = gapic_content_types.Part(
+        function_response=gapic_tool_types.FunctionResponse(
+            name="test", response={"result": "value"}
+        )
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    results = VertexMessageParamConverter.from_provider([message])
+    assert len(results) == 1
+    assert results == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="test",
+                    content="value",
+                    id=None,
+                    is_error=False,
+                )
+            ],
+        )
+    ]

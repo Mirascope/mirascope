@@ -119,3 +119,20 @@ def test_convert_with_multiple_tool_calls():
     assert part2.name == "tool_two"
     assert part2.args == {"key2": "val2"}
     assert part2.id == "tc_2"
+
+
+def test_base_message_param_to_provider():
+    """
+    If we have a BaseMessageParam, we should be able to convert it to AzureMessageParam.
+    """
+    message_param = BaseMessageParam(role="user", content="Hello Azure")
+    results = AzureMessageParamConverter.to_provider([message_param])
+    assert results == [{"role": "user", "content": "Hello Azure"}]
+
+
+def test_empty_base_message_param_to_provider():
+    """
+    If we have an empty BaseMessageParam, we should get an empty list.
+    """
+    results = AzureMessageParamConverter.to_provider([])
+    assert results == []

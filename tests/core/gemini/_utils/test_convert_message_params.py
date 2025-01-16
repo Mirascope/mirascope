@@ -13,6 +13,7 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
     ToolResultPart,
 )
 from mirascope.core.gemini._utils._convert_message_params import convert_message_params
@@ -37,6 +38,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 ToolResultPart(
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
+                TextPart(type="text", text="test"),
+                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
             ],
         ),
     ]
@@ -58,7 +61,27 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 ),
             ],
         },
+        {"parts": ["test"], "role": "user"},
+        {
+            "role": "model",
+            "parts": [
+                protos.FunctionCall(
+                    name="tool_name",
+                    args={"arg": "val"},
+                ),
+            ],
+        },
     ]
+
+    one_part = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="test"),
+        ],
+    )
+    converted_message_params = convert_message_params([one_part])
+    assert converted_message_params == [{"parts": ["test"], "role": "user"}]
+
     mock_image_open.assert_called_once()
     bytes_io: io.BytesIO = mock_image_open.call_args.args[0]
     assert bytes_io.getvalue() == b"image"

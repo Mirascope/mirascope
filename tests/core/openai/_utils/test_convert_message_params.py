@@ -9,6 +9,7 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
     ToolResultPart,
 )
 from mirascope.core.openai._utils._convert_message_params import convert_message_params
@@ -31,6 +32,8 @@ def test_convert_message_params() -> None:
                 ToolResultPart(
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
+                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
+                TextPart(type="text", text="Hello"),
             ],
         ),
     ]
@@ -56,6 +59,18 @@ def test_convert_message_params() -> None:
             "role": "user",
         },
         {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
+        {
+            "name": "tool_name",
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"arguments": "null", "name": "tool_name"},
+                    "id": "tool_id",
+                    "type": "function",
+                }
+            ],
+        },
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
     ]
 
     with pytest.raises(

@@ -17,7 +17,6 @@ def convert_message_params(
         if not isinstance(message_param, BaseMessageParam):
             converted_message_params.append(message_param)
         elif (role := message_param.role) == "system":
-            content = message_param.content
             if not isinstance(message_param.content, str):
                 raise ValueError(
                     "System message content must be a single text string."

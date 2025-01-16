@@ -82,3 +82,17 @@ def test_tool_calls_no_message():
     assert isinstance(result.content[1], ToolCallPart)
     assert result.content[1].name == "tool_two"
     assert result.content[1].args == {"param2": "val2"}
+
+
+def test_base_message_param_to_provider():
+    """
+    Test that `to_provider` method returns a list of ChatMessage objects.
+    """
+    message_param = BaseMessageParam(role="assistant", content="Hello world")
+    results = CohereMessageParamConverter.to_provider([message_param])
+    assert len(results) == 1
+
+    result = results[0]
+    assert isinstance(result, ChatMessage)
+    assert result.message == "Hello world"
+    assert result.tool_calls is None

@@ -77,3 +77,45 @@ def test_convert_message_param_no_content_no_tool_calls():
     message_param = ChatCompletionAssistantMessageParam(role="assistant", content=None)
     results = OpenAIMessageParamConverter.from_provider([message_param])
     assert not results
+
+
+def test_to_provider():
+    message_param = BaseMessageParam(
+        role="assistant",
+        content=[
+            TextPart(type="text", text="Hello, world!"),
+            ToolCallPart(type="tool_call", name="test_tool", args={"key": "value"}),
+        ],
+    )
+    results = OpenAIMessageParamConverter.to_provider([message_param])
+    assert results == [
+        {"content": [{"text": "Hello, world!", "type": "text"}], "role": "assistant"},
+        {
+            "name": "test_tool",
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"arguments": '{"key": "value"}', "name": "test_tool"},
+                    "id": None,
+                    "type": "function",
+                }
+            ],
+        },
+    ]
+
+
+def test_convert_message_param_tool_result():
+    message_param = ChatCompletionAssistantMessageParam(  # pyright: ignore [reportCallIssue]
+        role="tool",
+        name="test_tool",
+        content="result",
+        tool_call_id="tool_call_1",
+    )
+    results = OpenAIMessageParamConverter.from_provider([message_param])
+    result = results[0]
+    assert len(result.content) == 1
+    assert result.content[0].name == "test_tool"  # pyright: ignore [reportAttributeAccessIssue]
+    assert result.content[0].content == "result"  # pyright: ignore [reportAttributeAccessIssue]
+    assert result.content[0].id == "tool_call_1"  # pyright: ignore [reportAttributeAccessIssue]
+    assert not result.content[0].is_error  # pyright: ignore [reportAttributeAccessIssue]
+    assert result.role == "tool"

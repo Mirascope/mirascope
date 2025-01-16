@@ -46,7 +46,11 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
         )
 
     @staticmethod
-    def from_provider(message_params: list[AssistantMessage]) -> list[BaseMessageParam]:
+    def from_provider(
+        message_params: list[
+            AssistantMessage | ToolMessage | SystemMessage | UserMessage
+        ],
+    ) -> list[BaseMessageParam]:
         """
         Convert from Mistral's `AssistantMessage` to Mirascope `BaseMessageParam`.
         """
@@ -75,14 +79,6 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
                         )
                     )
             elif isinstance(message_param, ToolMessage):
-                if converted_parts:
-                    converted.append(
-                        BaseMessageParam(
-                            role=message_param.role,  # pyright: ignore [reportArgumentType]
-                            content=converted_parts,
-                        )
-                    )
-                    converted_parts = []
                 converted.append(
                     BaseMessageParam(
                         role="tool",

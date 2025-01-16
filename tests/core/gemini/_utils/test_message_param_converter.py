@@ -1,12 +1,17 @@
-# file: tests/core/gemini/_utils/test_message_param_converter.py
-
 import pytest
 from google.generativeai import protos
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart, ToolCallPart
+from mirascope.core.base import (
+    DocumentPart,
+    ImagePart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.gemini._utils._message_param_converter import (
     GeminiMessageParamConverter,
+    _to_document_part,
+    _to_image_part,
 )
 
 
@@ -29,14 +34,7 @@ def test_gemini_convert_parts_text_only():
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
 
-    # If the converter merges a single text into a plain string:
-    if isinstance(result.content, str):
-        assert result.content == "hello world"
-    else:
-        # Otherwise, if it keeps them as TextPart objects:
-        assert len(result.content) == 1
-        assert isinstance(result.content[0], TextPart)
-        assert result.content[0].text == "hello world"
+    assert result.content == "hello world"
 
 
 def test_gemini_convert_parts_image():
@@ -65,17 +63,13 @@ def test_gemini_convert_parts_document():
     part = protos.Part(
         file_data=protos.FileData(mime_type="application/pdf", file_uri=b"%PDF-1.4...")
     )
-    results = GeminiMessageParamConverter.from_provider(
-        [{"role": "assistant", "parts": [part]}]
-    )
-    assert len(results) == 1
-    result = results[0]
-    assert isinstance(result.content, list)
-    assert len(result.content) == 1
-    doc_part = result.content[0]
-    assert isinstance(doc_part, DocumentPart)
-    assert doc_part.media_type == "application/pdf"
-    assert doc_part.document == b"%PDF-1.4..."
+    with pytest.raises(
+        ValueError,
+        match='FileData.file_uri is not support: mime_type: "application/pdf"\nfile_uri: "%PDF-1.4..."\n. Cannot convert to BaseMessageParam.',
+    ):
+        GeminiMessageParamConverter.from_provider(
+            [{"role": "assistant", "parts": [part]}]
+        )
 
 
 def test_gemini_convert_parts_unsupported_image():
@@ -87,23 +81,6 @@ def test_gemini_convert_parts_unsupported_image():
     with pytest.raises(
         ValueError,
         match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
-    ):
-        GeminiMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [part]}]
-        )
-
-
-def test_gemini_convert_parts_unsupported_document():
-    """
-    If file_data has a non-PDF type (e.g. application/msword),
-    the converter should raise ValueError.
-    """
-    part = protos.Part(
-        file_data=protos.FileData(mime_type="application/msword", file_uri=b"DOC...")
-    )
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/msword. Cannot convert to BaseMessageParam.",
     ):
         GeminiMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
@@ -145,3 +122,107 @@ def test_gemini_convert_no_supported_content():
         GeminiMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
         )
+
+
+def test_to_image_part_unsupported_image():
+    with pytest.raises(
+        ValueError,
+        match="Unsupported image media type: application/json. Expected one of: image/jpeg, image/png, image/gif, image/webp.",
+    ):
+        _to_image_part(mime_type="application/json", data=b"{}")
+
+
+def test_to_document_part_unsupported_document():
+    with pytest.raises(
+        ValueError,
+        match="Unsupported document media type: application/json. Only application/pdf is supported.",
+    ):
+        _to_document_part(mime_type="application/json", data=b"{}")
+
+
+def test_to_provider():
+    results = GeminiMessageParamConverter.to_provider(
+        [BaseMessageParam(role="assistant", content="Hello")]
+    )
+    assert results == [{"parts": ["Hello"], "role": "model"}]
+
+
+def test_inline_data_application_pdf():
+    part = protos.Part(
+        inline_data=protos.Blob(mime_type="application/pdf", data=b"%PDF-1.4...")
+    )
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], DocumentPart)
+    assert result.content[0].media_type == "application/pdf"
+    assert result.content[0].document == b"%PDF-1.4..."
+
+
+def test_function_response():
+    part = protos.Part(
+        function_response=protos.FunctionResponse(
+            name="some_tool", response={"result": "value"}
+        )
+    )
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    assert results == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="some_tool",
+                    content="value",
+                    id=None,
+                    is_error=False,
+                )
+            ],
+        )
+    ]
+
+
+def test_protos_function_response():
+    part = protos.FunctionResponse(name="some_tool", response={"result": "value"})
+
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    assert results == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="some_tool",
+                    content="value",
+                    id=None,
+                    is_error=False,
+                )
+            ],
+        )
+    ]
+
+
+def test_protos_function_call():
+    part = protos.FunctionCall(name="some_tool", args={"param1": "value1"})
+
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    part_call = result.content[0]
+    assert isinstance(part_call, ToolCallPart)
+    assert part_call.name == "some_tool"
+    assert part_call.args == {"param1": "value1"}

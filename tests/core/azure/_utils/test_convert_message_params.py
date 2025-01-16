@@ -11,6 +11,7 @@ from mirascope.core.base import (
     BaseMessageParam,
     ImagePart,
     TextPart,
+    ToolCallPart,
     ToolResultPart,
 )
 
@@ -33,6 +34,9 @@ def test_convert_message_params() -> None:
                 ToolResultPart(
                     type="tool_result", id="tool_id", content="result", name="tool_name"
                 ),
+                TextPart(type="text", text="Hello"),
+                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+                TextPart(type="text", text="Hello"),
             ],
         ),
     ]
@@ -54,6 +58,17 @@ def test_convert_message_params() -> None:
             ],
         },
         {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
+        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
+        {
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"name": "tool_name", "arguments": '{"arg": "val"}'},
+                    "type": "function",
+                }
+            ],
+        },
+        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
     ]
 
     with pytest.raises(

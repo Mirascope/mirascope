@@ -3,11 +3,20 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from mistralai.models import AssistantMessage, ImageURLChunk, ReferenceChunk, TextChunk
+from mistralai.models import (
+    AssistantMessage,
+    FunctionCall,
+    ImageURL,
+    ImageURLChunk,
+    ReferenceChunk,
+    TextChunk,
+    ToolCall,
+    ToolMessage,
+)
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import ImagePart, TextPart
-from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
 from mirascope.core.mistral._utils._message_param_converter import (
     MistralMessageParamConverter,
 )
@@ -111,6 +120,54 @@ def test_convert_with_list_content_image_url_chunk_str():
     assert result.content[0].image == image_data
 
 
+def test_convert_with_list_content_image_url_is_not_supported():
+    image_chunk = MagicMock(spec=ImageURLChunk)
+    image_chunk.image_url = "https://example.com/image.jpg"
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [image_chunk]
+    message.tool_calls = None
+
+    with pytest.raises(
+        ValueError,
+        match="ImageURLChunk image_url is not in a supported data URL format.",
+    ):
+        MistralMessageParamConverter.from_provider([message])
+
+
+def test_convert_with_list_content_image_url_type_is_ImageURL():
+    image_url = ImageURL(url="data:image/jpeg;base64,aW1hZ2U=")
+    image_chunk = ImageURLChunk(image_url=image_url)
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [image_chunk]
+    result = MistralMessageParamConverter.from_provider([message])
+    assert len(result) == 1
+    assert result == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ImagePart(
+                    type="image", media_type="image/jpeg", image=b"image", detail=None
+                )
+            ],
+        )
+    ]
+
+
+def test_convert_with_list_content_image_url_type_is_IageURL_url_invalid():
+    image_url = ImageURL(url="invalid")
+    image_chunk = ImageURLChunk(image_url=image_url)
+    message = MagicMock(spec=AssistantMessage)
+    message.role = "assistant"
+    message.content = [image_chunk]
+    with pytest.raises(
+        ValueError,
+        match="ImageURLChunk image_url is not in a supported data URL format.",
+    ):
+        MistralMessageParamConverter.from_provider([message])
+
+
 def test_convert_with_list_content_reference_chunk():
     ref_chunk = MagicMock(spec=ReferenceChunk)
     message = MagicMock(spec=AssistantMessage)
@@ -154,3 +211,109 @@ def test_convert_with_tool_calls_arguments_as_str():
     assert result.content[0].name == "tool_json"
     assert result.content[0].args == {"x": 1}
     assert result.content[0].id == "tc1"
+
+
+def test_to_provider():
+    message_param = BaseMessageParam(
+        role="assistant",
+        content=[
+            TextPart(type="text", text="Hello"),
+            ImagePart(
+                type="image",
+                media_type="image/jpeg",
+                image=b"image",
+                detail="auto",
+            ),
+            ToolCallPart(
+                type="tool_call",
+                name="tool_name",
+                args={"arg": "val"},
+                id="tool_id",
+            ),
+        ],
+    )
+
+    result = MistralMessageParamConverter.to_provider([message_param])
+    assert len(result) == 2
+    assert result == [
+        AssistantMessage(
+            content=[
+                TextChunk(text="Hello", TYPE="text"),
+                ImageURLChunk(
+                    image_url=ImageURL(
+                        url="data:image/jpeg;base64,aW1hZ2U=", detail="auto"
+                    ),
+                    TYPE="image_url",
+                ),
+            ],
+            prefix=False,
+            role="assistant",
+        ),
+        AssistantMessage(
+            tool_calls=[
+                ToolCall(
+                    function=FunctionCall(name="tool_name", arguments={"arg": "val"}),
+                    id="tool_id",
+                    type="function",
+                )
+            ],
+            prefix=False,
+            role="assistant",
+        ),
+    ]
+
+
+def test_tool_message():
+    result = MistralMessageParamConverter.from_provider(
+        [
+            ToolMessage(
+                content="Hello", role="tool", name="tool_name", tool_call_id="tool_id"
+            )
+        ]
+    )
+    assert len(result) == 1
+    assert result == [
+        BaseMessageParam(
+            role="tool",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="tool_name",
+                    content="Hello",
+                    id="tool_id",
+                    is_error=False,
+                )
+            ],
+        )
+    ]
+
+
+def test_tool_message_after_text():
+    result = MistralMessageParamConverter.from_provider(
+        [
+            AssistantMessage(
+                content="Hello",
+            ),
+            ToolMessage(
+                content="Hello",
+                role="tool",
+                name="tool_name",
+                tool_call_id="tool_id",
+            ),
+        ]
+    )
+    assert result == [
+        BaseMessageParam(role="assistant", content="Hello"),
+        BaseMessageParam(
+            role="tool",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="tool_name",
+                    content="Hello",
+                    id="tool_id",
+                    is_error=False,
+                )
+            ],
+        ),
+    ]

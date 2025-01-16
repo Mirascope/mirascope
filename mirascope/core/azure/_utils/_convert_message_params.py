@@ -1,9 +1,17 @@
 """Utility for converting `BaseMessageParam` to `ChatRequestMessage`."""
 
 import base64
+import json
 from typing import cast
 
-from azure.ai.inference.models import ChatRequestMessage, ToolMessage, UserMessage
+from azure.ai.inference.models import (
+    AssistantMessage,
+    ChatCompletionsToolCall,
+    ChatRequestMessage,
+    FunctionCall,
+    ToolMessage,
+    UserMessage,
+)
 
 from ...base import BaseMessageParam
 
@@ -42,6 +50,29 @@ def convert_message_params(
                                 "detail": part.detail if part.detail else "auto",
                             },
                         }
+                    )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            ChatRequestMessage(
+                                {
+                                    "role": message_param.role,
+                                    "content": converted_content,
+                                }
+                            )
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        AssistantMessage(
+                            tool_calls=[
+                                ChatCompletionsToolCall(
+                                    id=part.id,  # pyright: ignore [reportArgumentType]
+                                    function=FunctionCall(
+                                        name=part.name, arguments=json.dumps(part.args)
+                                    ),
+                                )
+                            ]
+                        )
                     )
                 elif part.type == "tool_result":
                     if converted_content:

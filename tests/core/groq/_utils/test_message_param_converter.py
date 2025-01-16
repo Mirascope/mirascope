@@ -108,3 +108,14 @@ def test_convert_with_no_content_no_tool_calls():
     # We'll assume "tool" if your code sets that. Adjust as needed:
     assert result.role == "tool"
     assert result.content == []
+
+
+def test_convert_base_message_param():
+    """
+    If there's a BaseMessageParam, we should get that as is.
+    """
+    message_param = BaseMessageParam(role="assistant", content="Hello world")
+    results = GroqMessageParamConverter.to_provider([message_param])
+    assert results == [
+        ChatCompletionAssistantMessageParam(role="assistant", content="Hello world")
+    ]

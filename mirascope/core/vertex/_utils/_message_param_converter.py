@@ -1,6 +1,5 @@
 from typing import cast
 
-from google.cloud.aiplatform_v1beta1.types.content import FileData
 from vertexai.generative_models import Content
 
 from mirascope.core import BaseMessageParam
@@ -57,7 +56,6 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
             contents = []
             has_tool_call = False
             for part in message_param.parts:
-                # if isinstance(part, Part):
                 if part.function_response:
                     converted.append(
                         BaseMessageParam(
@@ -73,9 +71,6 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                             ],
                         )
                     )
-                elif part.text:
-                    contents.append(TextPart(type="text", text=part.text))
-
                 elif part.inline_data:
                     blob = part.inline_data
                     mime = blob.mime_type
@@ -90,17 +85,10 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                         )
 
                 elif part.file_data:
-                    file_data: FileData = part.file_data
-                    mime = file_data.mime_type
-                    data = file_data.data
-                    if _is_image_mime(mime):
-                        contents.append(_to_image_part(mime, data))
-                    elif mime == "application/pdf":
-                        contents.append(_to_document_part(mime, data))
-                    else:
-                        raise ValueError(
-                            f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
-                        )
+                    # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
+                    raise ValueError(
+                        f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
+                    )
                 elif part.function_call:
                     converted.append(
                         BaseMessageParam(
@@ -109,12 +97,15 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                                 ToolCallPart(
                                     type="tool_call",
                                     name=part.function_call.name,
-                                    args=dict(part.function_call.arguments),
+                                    args=dict(part.function_call.args),
                                 )
                             ],
                         )
                     )
-                else:
+                elif part.text:
+                    contents.append(TextPart(type="text", text=part.text))
+
+                else:  # pragma: no cover
                     raise ValueError(
                         "Part does not contain any supported content (text, image, or document)."
                     )

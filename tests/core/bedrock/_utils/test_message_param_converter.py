@@ -1,7 +1,13 @@
 import pytest
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart, ToolCallPart
+from mirascope.core.base import (
+    DocumentPart,
+    ImagePart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.bedrock._utils._message_param_converter import (
     BedrockMessageParamConverter,
 )
@@ -147,3 +153,122 @@ def test_empty_content():
     message_param = {"role": "assistant", "content": []}
     results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert not results
+
+
+def test_tool_result():
+    message_param = {
+        "role": "user",
+        "content": [
+            {
+                "toolResult": {
+                    "toolUseId": "tool_123",
+                    "content": [{"text": "result"}],
+                    "name": "tool_123",
+                }
+            }
+        ],
+    }
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert results == [
+        BaseMessageParam(
+            role="user",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="tool_123",
+                    content="result",
+                    id="tool_123",
+                    is_error=False,
+                )
+            ],
+        )
+    ]
+
+
+def test_tool_use_with_text():
+    message_param = {
+        "role": "user",
+        "content": [
+            {"text": "Hello"},
+            {
+                "toolUse": {
+                    "name": "tool_name",
+                    "toolUseId": "tool_id",
+                    "input": {"arg": "val"},
+                }
+            },
+        ],
+    }
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert results == [
+        BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ToolCallPart(
+                    type="tool_call",
+                    name="tool_name",
+                    args={"arg": "val"},
+                    id="tool_id",
+                )
+            ],
+        ),
+    ]
+
+
+def test_tool_result_with_text():
+    message_param = {
+        "role": "user",
+        "content": [
+            {"text": "Hello"},
+            {
+                "toolResult": {
+                    "toolUseId": "tool_id",
+                    "content": [{"text": "result"}],
+                    "name": "tool_name",
+                }
+            },
+        ],
+    }
+    results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert results == [
+        BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
+        BaseMessageParam(
+            role="user",
+            content=[
+                ToolResultPart(
+                    type="tool_result",
+                    name="tool_name",
+                    content="result",
+                    id="tool_id",
+                    is_error=False,
+                )
+            ],
+        ),
+    ]
+
+
+def test_to_provider():
+    message_param = BaseMessageParam(
+        role="assistant",
+        content=[
+            TextPart(type="text", text="Hello, world!"),
+            ToolCallPart(type="tool_call", name="test_tool", args={"key": "value"}),
+        ],
+    )
+    results = BedrockMessageParamConverter.to_provider([message_param])
+    assert results == [
+        {"content": [{"text": "Hello, world!"}], "role": "assistant"},
+        {
+            "content": [
+                {
+                    "toolUse": {
+                        "input": {"key": "value"},
+                        "name": "test_tool",
+                        "toolUseId": None,
+                    }
+                }
+            ],
+            "role": "assistant",
+        },
+    ]
