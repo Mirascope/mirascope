@@ -53,13 +53,35 @@ def convert_message_params(
                                 {
                                     "toolResult": {
                                         "toolUseId": part.id,
-                                        "content": part.content,
+                                        "content": [{"text": part.content}]
+                                        if isinstance(part.content, str)
+                                        else part.content,
                                     }
                                 }
                             ],
                         }
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
 
+                    converted_message_params.append(
+                        {
+                            "role": "assistant",
+                            "content": [
+                                {
+                                    "toolUse": {
+                                        "toolUseId": part.id,
+                                        "name": part.name,
+                                        "input": part.args,
+                                    }
+                                }
+                            ],
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Bedrock currently only supports text and image parts. "

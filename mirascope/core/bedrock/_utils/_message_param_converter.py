@@ -1,5 +1,11 @@
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart, ToolCallPart
+from mirascope.core.base import (
+    DocumentPart,
+    ImagePart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -42,7 +48,6 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
             content_blocks = message_param["content"]
 
             converted_content = []
-            has_tool_call = False
             for block in content_blocks:
                 if "text" in block:
                     text = block["text"]
@@ -91,12 +96,50 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
                     )
                 elif "toolUse" in block:
                     tool_use = block["toolUse"]
-                    converted_content.append(
-                        ToolCallPart(
-                            type="tool_call",
-                            name=tool_use["name"],
-                            id=tool_use["toolUseId"],
-                            args=tool_use["input"],
+                    if converted_content:
+                        converted.append(
+                            BaseMessageParam(
+                                role=message_param["role"], content=converted_content
+                            )
+                        )
+                        converted_content = []
+
+                    converted.append(
+                        BaseMessageParam(
+                            role="assistant",
+                            content=[
+                                ToolCallPart(
+                                    type="tool_call",
+                                    name=tool_use["name"],
+                                    id=tool_use["toolUseId"],
+                                    args=tool_use["input"],
+                                )
+                            ],
+                        )
+                    )
+                elif "toolResult" in block:
+                    tool_result = block["toolResult"]
+                    if converted_content:
+                        converted.append(
+                            BaseMessageParam(
+                                role=message_param["role"], content=converted_content
+                            )
+                        )
+                        converted_content = []
+                    converted.append(
+                        BaseMessageParam(
+                            role="user",
+                            content=[
+                                ToolResultPart(
+                                    type="tool_result",
+                                    id=tool_result["toolUseId"],
+                                    name=tool_result["name"],
+                                    content=tool_result["content"]
+                                    if isinstance(tool_result["content"], str)
+                                    else tool_result["content"][0]["text"],
+                                    is_error=tool_result.get("isError", False),
+                                )
+                            ],
                         )
                     )
                 else:
@@ -108,16 +151,17 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
             ):
                 converted.append(
                     BaseMessageParam(
-                        role="assistant",
+                        role=message_param["role"],
                         content=converted_content[0].text,
                     )
                 )
             else:
-                converted.append(
-                    BaseMessageParam(
-                        role="tool" if has_tool_call else "assistant",
-                        content=converted_content,
+                if converted_content:
+                    converted.append(
+                        BaseMessageParam(
+                            role=message_param["role"],
+                            content=converted_content,
+                        )
                     )
-                )
 
         return converted
