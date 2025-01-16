@@ -229,6 +229,7 @@ def create_factory(  # noqa: ANN202
                     stream=False,
                 )
                 start_time = datetime.datetime.now().timestamp() * 1000
+                print(call_kwargs)
                 response = create(stream=False, **call_kwargs)
                 end_time = datetime.datetime.now().timestamp() * 1000
                 output = TCallResponse(

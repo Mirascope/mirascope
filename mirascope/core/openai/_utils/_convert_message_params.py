@@ -1,6 +1,7 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`."""
 
 import base64
+import json
 
 from openai.types.chat import ChatCompletionMessageParam
 
@@ -61,8 +62,31 @@ def convert_message_params(
                             "type": "input_audio",
                         }
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        {
+                            "role": "assistant",
+                            "name": part.name,
+                            "tool_calls":[
+                                {
+                                    "function": {
+                                        "name": part.name,
+                                        "arguments": json.dumps(part.args),
+                                    },
+                                    "type": "function",
+                                    "id": part.id,
+                                }
+                            ]
+
+                        }
+                    )
                 elif part.type == "tool_result":
-                    if converted_message_params:
+                    if converted_content:
                         converted_message_params.append(
                             {"role": message_param.role, "content": converted_content}
                         )
@@ -71,11 +95,8 @@ def convert_message_params(
                     converted_message_params.append(
                         {
                             "role": "tool",
-                            "content": {
-                                "type": "tool_result",
-                                "content": part.content,
-                                "tool_call_id": part.id,
-                            },
+                            "tool_call_id": part.id,
+                            "content": part.content,
                         }
                     )
                 else:

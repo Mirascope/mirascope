@@ -8,7 +8,7 @@ from openai.types.chat import (
 )
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import TextPart, ToolCallPart
+from mirascope.core.base import TextPart, ToolCallPart, ToolResultPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -29,12 +29,28 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
     ) -> list[BaseMessageParam]:
         """Converts OpenAI message params to base message params."""
         converted = []
+        print(message_params)
         for message_param in message_params:
             contents = []
-            role: str = "assistant"
             content = message_param.get("content")
-            if isinstance(content, str):
-                converted.append(BaseMessageParam(role=role, content=content))
+            if message_param["role"] == "tool":
+                converted.append(
+                    BaseMessageParam(
+                        role="tool",
+                        content=[
+                            ToolResultPart(
+                                type="tool_result",
+                                name=message_param["name"],
+                                content=message_param["content"],
+                                id=message_param["tool_call_id"],
+                                is_error=False,
+                            )
+                        ],
+                    )
+                )
+                continue
+            elif isinstance(content, str):
+                converted.append(BaseMessageParam(role=message_param["role"], content=content))
                 continue
             elif isinstance(content, list):
                 for part in content:
@@ -52,6 +68,6 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                             args=json.loads(tool_call["function"]["arguments"]),
                         )
                     )
-
-            converted.append(BaseMessageParam(role=role, content=contents))
+            if contents:
+                converted.append(BaseMessageParam(role=message_param["role"], content=contents))
         return converted
