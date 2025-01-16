@@ -133,6 +133,8 @@ def test_vertex_convert_parts_tool_result():
     assert result.role == "tool"
     assert len(result.content) == 1
     part = result.content[0]
+    assert hasattr(part, "name")
+    assert hasattr(part, "type")
     assert part.type == "tool_call"
     assert part.name == "test"
 

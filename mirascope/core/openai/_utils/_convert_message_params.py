@@ -72,7 +72,7 @@ def convert_message_params(
                         {
                             "role": "assistant",
                             "name": part.name,
-                            "tool_calls":[
+                            "tool_calls": [
                                 {
                                     "function": {
                                         "name": part.name,
@@ -81,8 +81,7 @@ def convert_message_params(
                                     "type": "function",
                                     "id": part.id,
                                 }
-                            ]
-
+                            ],
                         }
                     )
                 elif part.type == "tool_result":

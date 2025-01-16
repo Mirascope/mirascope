@@ -29,7 +29,6 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
     ) -> list[BaseMessageParam]:
         """Converts OpenAI message params to base message params."""
         converted = []
-        print(message_params)
         for message_param in message_params:
             contents = []
             content = message_param.get("content")
@@ -50,7 +49,9 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                 )
                 continue
             elif isinstance(content, str):
-                converted.append(BaseMessageParam(role=message_param["role"], content=content))
+                converted.append(
+                    BaseMessageParam(role=message_param["role"], content=content)
+                )
                 continue
             elif isinstance(content, list):
                 for part in content:
@@ -69,5 +70,7 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                         )
                     )
             if contents:
-                converted.append(BaseMessageParam(role=message_param["role"], content=contents))
+                converted.append(
+                    BaseMessageParam(role=message_param["role"], content=contents)
+                )
         return converted

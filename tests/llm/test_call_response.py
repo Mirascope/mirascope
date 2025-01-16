@@ -98,7 +98,7 @@ class DummyProviderCallResponse(
 
     @property
     def common_message_param(self):
-        return [DummyMessageParam(role="assistant", content="common_message")]
+        return [BaseMessageParam(role="assistant", content="common_message")]
 
     @property
     def common_usage(self): ...

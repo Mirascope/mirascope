@@ -53,13 +53,14 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 {"text": "test"},
                 {"inline_data": {"data": "aW1hZ2U=", "mime_type": "image/jpeg"}},
                 {"inline_data": {"data": "YXVkaW8=", "mime_type": "audio/wav"}},
-                {
-                    "function_response": {
-                        "name": "tool_name",
-                        "response": {"content": {"result": "result"}},
-                    }
-                },
             ],
+            "role": "user",
+        },
+        {
+            "function_response": {
+                "name": "tool_name",
+                "response": {"content": {"result": "result"}},
+            },
             "role": "user",
         },
     ]
