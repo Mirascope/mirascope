@@ -73,6 +73,26 @@ def convert_message_params(
                     converted_content.append(
                         {"mime_type": part.media_type, "data": part.audio}
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            {
+                                "role": role if role == "user" else "model",
+                                "parts": converted_content,
+                            }
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        {
+                            "role": "model",
+                            "parts": [
+                                protos.FunctionCall(
+                                    name=part.name,
+                                    args=part.args,
+                                )
+                            ],
+                        }
+                    )
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(
@@ -87,21 +107,17 @@ def convert_message_params(
                             "role": "user",
                             "parts": [
                                 protos.FunctionResponse(
-                                    name=part.name,
-                                    response={"result": part.content},
+                                    name=part.name, response={"result": part.content}
                                 )
                             ],
                         }
                     )
-                else:
-                    raise ValueError(
-                        "Gemini currently only supports text, image, and audio parts. "
-                        f"Part provided: {part.type}"
-                    )
-            converted_message_params.append(
-                {
-                    "role": role if role == "user" else "model",
-                    "parts": converted_content,
-                }
-            )
+
+            if converted_content:
+                converted_message_params.append(
+                    {
+                        "role": role if role == "user" else "model",
+                        "parts": converted_content,
+                    }
+                )
     return converted_message_params

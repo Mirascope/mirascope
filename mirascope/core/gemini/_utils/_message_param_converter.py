@@ -13,7 +13,7 @@ from mirascope.core.base import DocumentPart, ImagePart, TextPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
 from mirascope.core.gemini._utils import convert_message_params
 
 
@@ -58,36 +58,69 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
         for message_param in message_params:
             role: str = "assistant"
             content_list = []
-            for part in cast(list[protos.Part], message_param["parts"]):
-                if part.text:
-                    content_list.append(TextPart(type="text", text=part.text))
+            for part in cast(list[protos.Part | protos.FunctionCall | protos.FunctionResponse], message_param["parts"]):
+                if isinstance(part, protos.Part):
+                    if part.text:
+                        content_list.append(TextPart(type="text", text=part.text))
 
-                elif part.inline_data:
-                    blob = part.inline_data
-                    mime = blob.mime_type
-                    data = blob.data
-                    if _is_image_mime(mime):
-                        content_list.append(_to_image_part(mime, data))
-                    elif mime == "application/pdf":
-                        content_list.append(_to_document_part(mime, data))
+                    elif part.inline_data:
+                        blob = part.inline_data
+                        mime = blob.mime_type
+                        data = blob.data
+                        if _is_image_mime(mime):
+                            content_list.append(_to_image_part(mime, data))
+                        elif mime == "application/pdf":
+                            content_list.append(_to_document_part(mime, data))
+                        else:
+                            raise ValueError(
+                                f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
+                            )
+
+                    elif part.file_data:
+                        file_data: FileData = part.file_data
+                        mime = file_data.mime_type
+                        data = file_data.data
+                        if _is_image_mime(mime):
+                            content_list.append(_to_image_part(mime, data))
+                        elif mime == "application/pdf":
+                            content_list.append(_to_document_part(mime, data))
+                        else:
+                            raise ValueError(
+                                f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
+                            )
+                    elif part.function_call:
+                        converted.append(
+                            BaseMessageParam(
+                                role=role,
+                                content=[
+                                    ToolCallPart(
+                                        type="tool_call",
+                                        name=part.function_call.name,
+                                        args=dict(part.function_call.args),
+                                    )
+                                ],
+                            )
+                        )
+                    elif part.function_response:
+                        converted.append(
+                            BaseMessageParam(
+                                role=role,
+                                content=[
+                                    ToolResultPart(
+                                        type="tool_result",
+                                        name=part.function_response.name,
+                                        content=part.function_response.response["result"],
+                                        id=None,
+                                        is_error=False,
+                                    )
+                                ],
+                            )
+                        )
                     else:
                         raise ValueError(
-                            f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
+                            "Part does not contain any supported content (text, image, or document)."
                         )
-
-                elif part.file_data:
-                    file_data: FileData = part.file_data
-                    mime = file_data.mime_type
-                    data = file_data.data
-                    if _is_image_mime(mime):
-                        content_list.append(_to_image_part(mime, data))
-                    elif mime == "application/pdf":
-                        content_list.append(_to_document_part(mime, data))
-                    else:
-                        raise ValueError(
-                            f"Unsupported file_data mime type: {mime}. Cannot convert to BaseMessageParam."
-                        )
-                elif part.function_call:
+                elif isinstance(part, protos.FunctionCall):
                     converted.append(
                         BaseMessageParam(
                             role=role,
@@ -100,9 +133,20 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                             ],
                         )
                     )
-                else:
-                    raise ValueError(
-                        "Part does not contain any supported content (text, image, or document)."
+                elif isinstance(part, protos.FunctionResponse):
+                    converted.append(
+                        BaseMessageParam(
+                            role=role,
+                            content=[
+                                ToolResultPart(
+                                    type="tool_result",
+                                    name=part.name,
+                                    content=part.response["result"],
+                                    id=None,
+                                    is_error=False,
+                                )
+                            ],
+                        )
                     )
 
             if len(content_list) == 1 and isinstance(content_list[0], TextPart):
@@ -110,6 +154,7 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                     BaseMessageParam(role=role, content=content_list[0].text)
                 )
             else:
-                converted.append(BaseMessageParam(role=role, content=content_list))
+                if content_list:
+                    converted.append(BaseMessageParam(role=role, content=content_list))
 
         return converted
