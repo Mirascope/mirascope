@@ -176,7 +176,7 @@ The goal of our RAG application is to answer questions about a publicly availabl
 First, we install Mirascope and LangChain.
 
 ```py
-!pip install "mirascope[openai]"
+pip install "mirascope[openai]"
 pip install -qU langchain-openai
 ```
 
