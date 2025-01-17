@@ -52,28 +52,23 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_call":
-                    if converted_content:
-                        converted_message_params.append(
-                            ChatRequestMessage(
-                                {
-                                    "role": message_param.role,
-                                    "content": converted_content,
-                                }
+                    converted_message_param = AssistantMessage(
+                        tool_calls=[
+                            ChatCompletionsToolCall(
+                                id=part.id,  # pyright: ignore [reportArgumentType]
+                                function=FunctionCall(
+                                    name=part.name, arguments=json.dumps(part.args)
+                                ),
                             )
-                        )
-                        converted_content = []
-                    converted_message_params.append(
-                        AssistantMessage(
-                            tool_calls=[
-                                ChatCompletionsToolCall(
-                                    id=part.id,  # pyright: ignore [reportArgumentType]
-                                    function=FunctionCall(
-                                        name=part.name, arguments=json.dumps(part.args)
-                                    ),
-                                )
-                            ]
-                        )
+                        ]
                     )
+
+                    if len(converted_content) == 1 and isinstance(
+                        converted_content[0], str
+                    ):
+                        converted_message_param.content = converted_content[0]
+                        converted_content = []
+                    converted_message_params.append(converted_message_param)
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(

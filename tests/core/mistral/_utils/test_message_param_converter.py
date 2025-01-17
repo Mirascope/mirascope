@@ -234,7 +234,7 @@ def test_to_provider():
     )
 
     result = MistralMessageParamConverter.to_provider([message_param])
-    assert len(result) == 2
+    assert len(result) == 1
     assert result == [
         AssistantMessage(
             content=[
@@ -246,10 +246,6 @@ def test_to_provider():
                     TYPE="image_url",
                 ),
             ],
-            prefix=False,
-            role="assistant",
-        ),
-        AssistantMessage(
             tool_calls=[
                 ToolCall(
                     function=FunctionCall(name="tool_name", arguments={"arg": "val"}),
@@ -259,7 +255,7 @@ def test_to_provider():
             ],
             prefix=False,
             role="assistant",
-        ),
+        )
     ]
 
 

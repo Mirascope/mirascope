@@ -63,27 +63,25 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_call":
+                    converted_message_param = {
+                        "role": "assistant",
+                        "name": part.name,
+                        "tool_calls": [
+                            {
+                                "function": {
+                                    "name": part.name,
+                                    "arguments": json.dumps(part.args),
+                                },
+                                "type": "function",
+                                "id": part.id,
+                            }
+                        ],
+                    }
+
                     if converted_content:
-                        converted_message_params.append(
-                            {"role": message_param.role, "content": converted_content}
-                        )
+                        converted_message_param["content"] = converted_content
                         converted_content = []
-                    converted_message_params.append(
-                        {
-                            "role": "assistant",
-                            "name": part.name,
-                            "tool_calls": [
-                                {
-                                    "function": {
-                                        "name": part.name,
-                                        "arguments": json.dumps(part.args),
-                                    },
-                                    "type": "function",
-                                    "id": part.id,
-                                }
-                            ],
-                        }
-                    )
+                    converted_message_params.append(converted_message_param)
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(

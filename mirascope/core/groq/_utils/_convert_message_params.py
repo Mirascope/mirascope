@@ -46,29 +46,39 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_call":
-                    if converted_content:
-                        converted_message_params.append(
+                    converted_message_param = {
+                        "role": "assistant",
+                        "tool_calls": [
                             {
-                                "role": message_param.role,
-                                "content": converted_content,
+                                "type": "function",
+                                "id": part.id,
+                                "function": {
+                                    "name": part.name,
+                                    "arguments": json.dumps(part.args),
+                                },
                             }
-                        )
-                        converted_content = []
-                    converted_message_params.append(
-                        {
-                            "role": "assistant",
-                            "tool_calls": [
+                        ],
+                    }
+                    if converted_content:
+                        if len(converted_content) == 1:
+                            if isinstance(converted_content[0], str):
+                                converted_message_param["content"] = converted_content[
+                                    0
+                                ]
+                            elif converted_content[0]["type"] == "text":
+                                converted_message_param["content"] = converted_content[
+                                    0
+                                ]["text"]
+                        else:
+                            converted_message_params.append(
                                 {
-                                    "type": "function",
-                                    "id": part.id,
-                                    "function": {
-                                        "name": part.name,
-                                        "arguments": json.dumps(part.args),
-                                    },
+                                    "role": message_param.role,
+                                    "content": converted_content,
                                 }
-                            ],
-                        }
-                    )
+                            )
+                        converted_content = []
+                    converted_message_params.append(converted_message_param)
+
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(

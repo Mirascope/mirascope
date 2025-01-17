@@ -120,7 +120,6 @@ def setup_call(
             "function": {"name": tool_types[0]._name()},
         }
     call_kwargs |= {"model": model, "messages": messages}
-
     if client is None:
         client = AsyncGroq() if inspect.iscoroutinefunction(fn) else Groq()
 

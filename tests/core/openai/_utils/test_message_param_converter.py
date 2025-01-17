@@ -89,8 +89,8 @@ def test_to_provider():
     )
     results = OpenAIMessageParamConverter.to_provider([message_param])
     assert results == [
-        {"content": [{"text": "Hello, world!", "type": "text"}], "role": "assistant"},
         {
+            "content": [{"text": "Hello, world!", "type": "text"}],
             "name": "test_tool",
             "role": "assistant",
             "tool_calls": [
@@ -100,7 +100,7 @@ def test_to_provider():
                     "type": "function",
                 }
             ],
-        },
+        }
     ]
 
 

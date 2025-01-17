@@ -73,24 +73,11 @@ def convert_message_params(
                         {"mime_type": part.media_type, "data": part.audio}
                     )
                 elif part.type == "tool_call":
-                    if converted_content:
-                        converted_message_params.append(
-                            {
-                                "role": role if role == "user" else "model",
-                                "parts": converted_content,
-                            }
+                    converted_content.append(
+                        protos.FunctionCall(
+                            name=part.name,
+                            args=part.args,
                         )
-                        converted_content = []
-                    converted_message_params.append(
-                        {
-                            "role": "model",
-                            "parts": [
-                                protos.FunctionCall(
-                                    name=part.name,
-                                    args=part.args,
-                                )
-                            ],
-                        }
                     )
                 elif part.type == "tool_result":
                     if converted_content:

@@ -58,7 +58,6 @@ def test_convert_message_params() -> None:
             ],
         },
         {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
-        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
         {
             "role": "assistant",
             "tool_calls": [
@@ -68,7 +67,13 @@ def test_convert_message_params() -> None:
                 }
             ],
         },
-        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Hello"},
+                {"type": "text", "text": "Hello"},
+            ],
+        },
     ]
 
     with pytest.raises(

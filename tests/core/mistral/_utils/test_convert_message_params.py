@@ -75,7 +75,7 @@ def test_convert_message_params() -> None:
         ToolMessage(
             content="result", tool_call_id="tool_id", name="tool_name", role="tool"
         ),
-        UserMessage(
+        AssistantMessage(
             content=[
                 ImageURLChunk(
                     image_url=ImageURL(
@@ -84,10 +84,6 @@ def test_convert_message_params() -> None:
                     TYPE="image_url",
                 )
             ],
-            role="user",
-        ),
-        AssistantMessage(
-            content=Unset(),
             tool_calls=[
                 ToolCall(
                     function=FunctionCall(name="tool_name", arguments={"arg": "val"}),
