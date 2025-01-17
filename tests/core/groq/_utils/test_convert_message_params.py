@@ -31,26 +31,74 @@ def test_convert_message_params() -> None:
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
                 TextPart(type="text", text="Hello"),
+            ],
+        ),
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                TextPart(type="text", text="Hello"),
                 ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
                 TextPart(type="text", text="Hello"),
             ],
         ),
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                TextPart(type="text", text="Hello"),
+                TextPart(type="text", text="Hello"),
+                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
+            ],
+        ),
     ]
     converted_message_params = convert_message_params(message_params)
-    assert converted_message_params == [{'content': [{'text': 'Hello', 'type': 'text'}], 'role': 'user'},
- {'content': 'Hello', 'role': 'user'},
- {'content': [{'text': 'Hello', 'type': 'text'},
-              {'image_url': {'detail': 'auto',
-                             'url': 'data:image/jpeg;base64,aW1hZ2U='},
-               'type': 'image_url'}],
-  'role': 'user'},
- {'content': 'result', 'role': 'tool', 'tool_call_id': 'tool_id'},
- {'content': 'Hello',
-  'role': 'assistant',
-  'tool_calls': [{'function': {'arguments': 'null', 'name': 'tool_name'},
-                  'id': 'tool_id',
-                  'type': 'function'}]},
- {'content': [{'text': 'Hello', 'type': 'text'}], 'role': 'user'}]
+    assert converted_message_params == [
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {"content": "Hello", "role": "user"},
+        {
+            "content": [
+                {"text": "Hello", "type": "text"},
+                {
+                    "image_url": {
+                        "detail": "auto",
+                        "url": "data:image/jpeg;base64,aW1hZ2U=",
+                    },
+                    "type": "image_url",
+                },
+            ],
+            "role": "user",
+        },
+        {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {
+            "content": "Hello",
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"arguments": "null", "name": "tool_name"},
+                    "id": "tool_id",
+                    "type": "function",
+                }
+            ],
+        },
+        {"content": [{"text": "Hello", "type": "text"}], "role": "assistant"},
+        {
+            "content": [
+                {"text": "Hello", "type": "text"},
+                {"text": "Hello", "type": "text"},
+            ],
+            "role": "assistant",
+        },
+        {
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"arguments": "null", "name": "tool_name"},
+                    "id": "tool_id",
+                    "type": "function",
+                }
+            ],
+        },
+    ]
     with pytest.raises(
         ValueError,
         match="Unsupported image media type: image/svg. Groq currently only supports "

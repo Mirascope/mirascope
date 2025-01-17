@@ -40,10 +40,13 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 ),
             ],
         ),
-        BaseMessageParam(role="model", content=[
-            TextPart(type="text", text="test"),
-            ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
-        ]),
+        BaseMessageParam(
+            role="model",
+            content=[
+                TextPart(type="text", text="test"),
+                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+            ],
+        ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [

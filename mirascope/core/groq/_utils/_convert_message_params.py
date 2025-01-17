@@ -61,11 +61,7 @@ def convert_message_params(
                     }
                     if converted_content:
                         if len(converted_content) == 1:
-                            if isinstance(converted_content[0], str):
-                                converted_message_param["content"] = converted_content[
-                                    0
-                                ]
-                            elif converted_content[0]["type"] == "text":
+                            if converted_content[0]["type"] == "text":
                                 converted_message_param["content"] = converted_content[
                                     0
                                 ]["text"]

@@ -63,10 +63,21 @@ def convert_message_params(
                         ]
                     )
 
-                    if len(converted_content) == 1 and isinstance(
-                        converted_content[0], str
-                    ):
-                        converted_message_param.content = converted_content[0]
+                    if converted_content:
+                        if len(converted_content) == 1:
+                            if converted_content[0]["type"] == "text":
+                                converted_message_param["content"] = converted_content[
+                                    0
+                                ]["text"]
+                        else:
+                            converted_message_params.append(
+                                ChatRequestMessage(
+                                    {
+                                        "role": message_param.role,
+                                        "content": converted_content,
+                                    }
+                                )
+                            )
                         converted_content = []
                     converted_message_params.append(converted_message_param)
                 elif part.type == "tool_result":
