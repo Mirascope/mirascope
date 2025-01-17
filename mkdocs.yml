@@ -358,6 +358,8 @@ nav:
               - dynamic_config: "api/core/vertex/dynamic_config.md"
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
+      - LLM:
+          - call: "api/llm/call.md"
       - Tools:
           - DuckDuckGo: "api/tools/web/duckduckgo.md"
           - HTTPX: "api/tools/web/httpx.md"
@@ -371,8 +373,6 @@ nav:
           - Middleware: "api/integrations/middleware.md"
           - OpenTelemetry: "api/integrations/otel.md"
           - Tenacity: "api/integrations/tenacity.md"
-      - LLM:
-          - call: "api/llm/call.md"
   - Blog:
       - "blog/index.md"
 

@@ -60,9 +60,6 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-_ToolMessageParamT = TypeVar("_ToolMessageParamT")  # noqa: F821
-
-
 class BaseTool(BaseModel, ABC):
     '''A class for defining tools for LLM calls.
 
