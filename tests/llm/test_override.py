@@ -75,10 +75,10 @@ def dummy_provider_agnostic_call():
 
 def test_override_error_if_only_provider(dummy_provider_agnostic_call):
     with pytest.raises(ValueError, match="must also be specified"):
-        override(
+        override(  # pyright: ignore [reportCallIssue]
             provider_agnostic_call=dummy_provider_agnostic_call,
             provider="anthropic",
-            model=None,
+            model=None,  # pyright: ignore [reportArgumentType]
             call_params=None,
         )
 
@@ -100,10 +100,10 @@ def test_override_with_model(dummy_provider_agnostic_call):
 def test_override_with_callparams_override(dummy_provider_agnostic_call):
     new_call_params = OpenAICallParams(temperature=0.7, max_tokens=1111)
     with patch("mirascope.llm.llm_override._call") as mock_call:
-        override(
+        override(  # pyright: ignore [reportCallIssue]
             provider_agnostic_call=dummy_provider_agnostic_call,
             provider="openai",
-            model=None,
+            model=None,  # pyright: ignore [reportArgumentType]
             call_params=new_call_params,
         )
         mock_call.assert_called_once()
