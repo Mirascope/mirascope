@@ -549,7 +549,7 @@ We generally recommend building with computed fields:
 
 - Your pipelines will be more readable than with functions, as the flow of data and dependencies will be clear.
 - Once defined, properties can be reused multiple times.
-- Properties are evaluated only when accessed, which can be efficient if certain steps in the chain are conditionally required or re-used multiple times.
+- Properties are evaluated only when accessed, which can be efficient if certain steps in the chain are conditionally required or reused multiple times.
 - Using properties keeps the logic encapsulated within the class, making it easier to manage and debug. Each property represents a distinct step in the chain, and the dependencies are explicitly defined.
 
 ### Chaining Prompts Using Functions in Mirascope
