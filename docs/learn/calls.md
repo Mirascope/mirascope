@@ -398,7 +398,7 @@ You can pass a client to the `call` decorator using the `client` parameter:
             {% elif provider in ["OpenAI", "Vertex AI"] %}
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
-            ```python hl_lines="1-2 8-10"
+            ```python hl_lines="1-2 8-11"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 6"
             {% elif provider == "Mistral" %}
@@ -411,6 +411,7 @@ You can pass a client to the `call` decorator using the `client` parameter:
 
         {% endfor %}
     {% endfor %}
+
 
 __Dynamic Configuration:__
 
