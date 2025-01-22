@@ -93,7 +93,7 @@ class OpenAITool(BaseTool):
             tool_call: The OpenAI tool call from which to construct this tool instance.
             allow_partial: Whether to allow partial JSON data.
         """
-        model_json = {"tool_call": tool_call}
+        model_json = {"tool_call": tool_call.model_dump()}
         if args := tool_call.function.arguments:
             model_json |= cls._dict_from_json(args, allow_partial)
         if allow_partial:
