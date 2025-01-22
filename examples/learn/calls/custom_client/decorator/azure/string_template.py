@@ -6,7 +6,8 @@ from mirascope.core import azure, prompt_template
 @azure.call(
     "gpt-4o-mini",
     client=ChatCompletionsClient(
-        endpoint="your-endpoint", credential=AzureKeyCredential("your-credentials")
+        endpoint="https://my-endpoint.openai.azure.com/openai/deployments/gpt-4o-mini/",
+        credential=AzureKeyCredential("..."),
     ),
 )
 @prompt_template("Recommend a {genre} book")
