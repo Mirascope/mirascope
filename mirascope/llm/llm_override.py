@@ -37,7 +37,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["anthropic"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | AnthropicCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -46,7 +46,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["azure"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | AzureCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -55,7 +55,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["bedrock"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | BedrockCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -64,7 +64,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["cohere"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | CohereCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -73,7 +73,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["gemini"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | GeminiCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -82,7 +82,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["groq"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | GroqCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -91,7 +91,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["mistral"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | MistralCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -100,7 +100,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["openai"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | OpenAICallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -109,7 +109,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["litellm"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | LiteLLMCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -118,7 +118,7 @@ def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
     provider: Literal["vertex"],
-    model: str | None = None,
+    model: str,
     call_params: CommonCallParams | VertexCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
@@ -128,6 +128,15 @@ def override(
     *,
     provider: None = None,
     model: None = None,
+    call_params: CommonCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
+) -> Callable[_P, _R]: ...
+@overload
+def override(
+    provider_agnostic_call: Callable[_P, _R],
+    *,
+    provider: Provider,
+    model: str,
     call_params: CommonCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
