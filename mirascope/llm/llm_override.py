@@ -36,100 +36,109 @@ _R = TypeVar("_R")
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["anthropic"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | AnthropicCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["anthropic"],
+    model: str | None = None,
+    call_params: CommonCallParams | AnthropicCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["azure"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | AzureCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["azure"],
+    model: str | None = None,
+    call_params: CommonCallParams | AzureCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["bedrock"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | BedrockCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["bedrock"],
+    model: str | None = None,
+    call_params: CommonCallParams | BedrockCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["cohere"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | CohereCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["cohere"],
+    model: str | None = None,
+    call_params: CommonCallParams | CohereCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["gemini"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | GeminiCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["gemini"],
+    model: str | None = None,
+    call_params: CommonCallParams | GeminiCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["groq"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | GroqCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["groq"],
+    model: str | None = None,
+    call_params: CommonCallParams | GroqCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["mistral"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | MistralCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["mistral"],
+    model: str | None = None,
+    call_params: CommonCallParams | MistralCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["openai"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | OpenAICallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["openai"],
+    model: str | None = None,
+    call_params: CommonCallParams | OpenAICallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["litellm"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | LiteLLMCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["litellm"],
+    model: str | None = None,
+    call_params: CommonCallParams | LiteLLMCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Literal["vertex"],
-    model_override: str | None = None,
-    call_params_override: CommonCallParams | VertexCallParams | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    provider: Literal["vertex"],
+    model: str | None = None,
+    call_params: CommonCallParams | VertexCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
+) -> Callable[_P, _R]: ...
+@overload
+def override(
+    provider_agnostic_call: Callable[_P, _R],
+    *,
+    provider: None = None,
+    model: None = None,
+    call_params: CommonCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
 
 
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider_override: Provider | None = None,
-    model_override: str | None = None,
-    call_params_override: CommonCallParams
+    provider: Provider | None = None,
+    model: str | None = None,
+    call_params: CommonCallParams
     | AnthropicCallParams
     | GeminiCallParams
     | AzureCallParams
@@ -140,39 +149,34 @@ def override(
     | OpenAICallParams
     | VertexCallParams
     | None = None,
-    client_override: Any = None,  # noqa: ANN401
+    client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]:
     """Overrides the provider-specific call with the specified provider.
 
     Args:
         provider_agnostic_call: The provider-agnostic call to override.
-        provider_override: The provider to override with.
-        model_override: The model to override with.
-        call_params_override: The call params to override with.
-        client_override: The client to override with.
+        provider: The provider to override with.
+        model: The model to override with.
+        call_params: The call params to override with.
+        client: The client to override with.
 
     Returns:
         The overridden function.
     """
     _original_args = provider_agnostic_call._original_args  # pyright: ignore [reportFunctionMemberAccess]
-    if (
-        provider_override is not None
-        and not model_override
-        and call_params_override is None
-        and client_override is None
-    ):
+    if provider is not None and not model and call_params is None and client is None:
         raise ValueError(
-            "If provider_override is specified, model_override or call_params_override must also be specified."
+            "If provider is specified, model or call_params must also be specified."
         )
 
     return _call(  # pyright: ignore [reportReturnType]
-        provider=provider_override or provider_agnostic_call._original_provider,  # pyright: ignore [reportFunctionMemberAccess]
-        model=model_override or _original_args["model"],
+        provider=provider or provider_agnostic_call._original_provider,  # pyright: ignore [reportFunctionMemberAccess]
+        model=model or _original_args["model"],
         stream=_original_args["stream"],
         tools=_original_args["tools"],
         response_model=_original_args["response_model"],
         output_parser=_original_args["output_parser"],
         json_mode=_original_args["json_mode"],
-        client=client_override or _original_args["client"],
-        call_params=call_params_override or _original_args["call_params"],
+        client=client or _original_args["client"],
+        call_params=call_params or _original_args["call_params"],
     )(provider_agnostic_call._original_fn)  # pyright: ignore [reportFunctionMemberAccess]

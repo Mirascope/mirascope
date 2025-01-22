@@ -105,12 +105,12 @@ The `llm.call` decorator accepts a `provider` and `model` arguments and returns 
 
 You can override provider settings at runtime using `llm.override`. This takes a function decorated with `llm.call` and lets you specify:
 
-- `provider_override`: Change the provider being called 
-- `model_override`: Use a different model
-- `call_params_override`: Override call parameters like temperature
-- `client_override`: Use a different client instance
+- `provider`: Change the provider being called 
+- `model`: Use a different model
+- `call_params`: Override call parameters like temperature
+- `client`: Use a different client instance
 
-When using `provider_override`, you must also specify either `model_override` or `call_params_override`.
+When using `provider`, you must also specify either `model` or `call_params`.
 
 The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
 

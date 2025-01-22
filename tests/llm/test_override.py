@@ -73,23 +73,23 @@ def dummy_provider_agnostic_call():
     return dummy_sync_function
 
 
-def test_override_error_if_only_provider_override(dummy_provider_agnostic_call):
+def test_override_error_if_only_provider(dummy_provider_agnostic_call):
     with pytest.raises(ValueError, match="must also be specified"):
         override(
             provider_agnostic_call=dummy_provider_agnostic_call,
-            provider_override="anthropic",
-            model_override=None,
-            call_params_override=None,
+            provider="anthropic",
+            model=None,
+            call_params=None,
         )
 
 
-def test_override_with_model_override(dummy_provider_agnostic_call):
+def test_override_with_model(dummy_provider_agnostic_call):
     with patch("mirascope.llm.llm_override._call") as mock_call:
         override(
             provider_agnostic_call=dummy_provider_agnostic_call,
-            provider_override="openai",
-            model_override="overridden-model",
-            call_params_override=CommonCallParams(),
+            provider="openai",
+            model="overridden-model",
+            call_params=CommonCallParams(),
         )
         mock_call.assert_called_once()
         _, kwargs = mock_call.call_args
@@ -102,24 +102,24 @@ def test_override_with_callparams_override(dummy_provider_agnostic_call):
     with patch("mirascope.llm.llm_override._call") as mock_call:
         override(
             provider_agnostic_call=dummy_provider_agnostic_call,
-            provider_override="openai",
-            model_override=None,
-            call_params_override=new_call_params,
+            provider="openai",
+            model=None,
+            call_params=new_call_params,
         )
         mock_call.assert_called_once()
         _, kwargs = mock_call.call_args
         assert kwargs["call_params"] is new_call_params
 
 
-def test_override_with_client_override(dummy_provider_agnostic_call):
+def test_override_with_client(dummy_provider_agnostic_call):
     new_client = object()
     with patch("mirascope.llm.llm_override._call") as mock_call:
         override(
             provider_agnostic_call=dummy_provider_agnostic_call,
-            provider_override="openai",
-            model_override="overridden-model",
-            call_params_override=CommonCallParams(),
-            client_override=new_client,
+            provider="openai",
+            model="overridden-model",
+            call_params=CommonCallParams(),
+            client=new_client,
         )
         mock_call.assert_called_once()
         _, kwargs = mock_call.call_args
