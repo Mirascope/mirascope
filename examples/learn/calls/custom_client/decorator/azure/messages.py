@@ -6,7 +6,8 @@ from mirascope.core import Messages, azure
 @azure.call(
     "gpt-4o-mini",
     client=ChatCompletionsClient(
-        endpoint="your-endpoint", credential=AzureKeyCredential("your-credentials")
+        endpoint="https://my-endpoint.openai.azure.com/openai/deployments/gpt-4o-mini/",
+        credential=AzureKeyCredential("..."),
     ),
 )
 def recommend_book(genre: str) -> Messages.Type:
