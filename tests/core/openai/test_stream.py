@@ -128,6 +128,7 @@ def test_openai_stream() -> None:
             type="function",
         )
     )
+    assert format_book.tool_call is not None
     assert stream.message_param == {
         "role": "assistant",
         "content": "content",

@@ -12,6 +12,8 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from mirascope.core.vertex._utils._convert_message_params import convert_message_params
 
@@ -32,6 +34,12 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail=None
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
+                TextPart(type="text", text="test"),
+                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+                TextPart(type="text", text="test"),
             ],
         ),
     ]
@@ -52,6 +60,23 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
             ],
             "role": "user",
         },
+        {
+            "parts": [
+                {
+                    "function_response": {
+                        "name": "tool_name",
+                        "response": {"content": {"result": "result"}},
+                    }
+                }
+            ],
+            "role": "user",
+        },
+        {"parts": [{"text": "test"}], "role": "user"},
+        {
+            "parts": [{"function_call": {"args": {"arg": "val"}, "name": "tool_name"}}],
+            "role": "user",
+        },
+        {"parts": [{"text": "test"}], "role": "user"},
     ]
     mock_image_open.assert_called_once()
     bytes_io: io.BytesIO = mock_image_open.call_args.args[0]

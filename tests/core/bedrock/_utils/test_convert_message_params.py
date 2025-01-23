@@ -7,6 +7,8 @@ from mirascope.core.base import (
     BaseMessageParam,
     ImagePart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from mirascope.core.bedrock import BedrockMessageParam
 from mirascope.core.bedrock._utils._convert_message_params import (
@@ -27,6 +29,12 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
+                TextPart(type="text", text="Hello"),
+                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
+                TextPart(type="text", text="Hello"),
             ],
         ),
     ]
@@ -38,6 +46,31 @@ def test_convert_message_params() -> None:
             "content": [{"text": "Hello"}, {"bytes": b"image", "format": "image/jpeg"}],
             "role": "user",
         },
+        {
+            "content": [
+                {
+                    "toolResult": {
+                        "content": [{"text": "result"}],
+                        "toolUseId": "tool_id",
+                    }
+                }
+            ],
+            "role": "user",
+        },
+        {"content": [{"text": "Hello"}], "role": "user"},
+        {
+            "content": [
+                {
+                    "toolUse": {
+                        "input": None,
+                        "name": "tool_name",
+                        "toolUseId": "tool_id",
+                    }
+                }
+            ],
+            "role": "assistant",
+        },
+        {"content": [{"text": "Hello"}], "role": "user"},
     ]
 
     with pytest.raises(

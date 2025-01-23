@@ -40,6 +40,8 @@ def test_base_call_response() -> None:
     assert call_response.serialize_tool_types([tool], info=MagicMock()) == [
         {"type": "function", "name": "mock_tool"}
     ]
+    assert call_response.common_tools is None
+    assert call_response.common_usage is None
 
 
 class SimpleModel(BaseModel):

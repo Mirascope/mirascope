@@ -61,3 +61,4 @@ def test_bedrock_call_response_chunk() -> None:
     assert call_response_chunk_2.usage == usage
     assert call_response_chunk_2.input_tokens == 1
     assert call_response_chunk_2.output_tokens == 1
+    assert call_response_chunk_2.common_finish_reasons == ["stop"]

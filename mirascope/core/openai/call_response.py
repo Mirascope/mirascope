@@ -5,6 +5,7 @@ usage docs: learn/calls.md#handling-responses
 
 import base64
 from functools import cached_property
+from typing import cast
 
 from openai.types.chat import (
     ChatCompletion,
@@ -17,8 +18,14 @@ from openai.types.chat import (
 from openai.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
-from ..base import BaseCallResponse, transform_tool_outputs
+from .. import BaseMessageParam
+from ..base import (
+    BaseCallResponse,
+    transform_tool_outputs,
+)
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._message_param_converter import OpenAIMessageParamConverter
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
 from .tool import OpenAITool
@@ -184,10 +191,10 @@ class OpenAICallResponse(
             The list of constructed `ChatCompletionToolMessageParam` parameters.
         """
         return [
-            ChatCompletionToolMessageParam(
+            ChatCompletionToolMessageParam(  # pyright: ignore [reportCallIssue]
                 role="tool",
                 content=output,
-                tool_call_id=tool.tool_call.id,
+                tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                 name=tool._name(),  # pyright: ignore [reportCallIssue]
             )
             for tool, output in tools_and_outputs
@@ -208,3 +215,12 @@ class OpenAICallResponse(
         if audio := getattr(self.response.choices[0].message, "audio", None):
             return audio.transcript
         return None
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return OpenAIMessageParamConverter.from_provider([self.message_param])

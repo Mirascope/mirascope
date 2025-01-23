@@ -1,5 +1,7 @@
 """Utility for converting `BaseMessageParam` to `Content`"""
 
+from google.cloud.aiplatform_v1beta1.types import content as gapic_content_types
+from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
 from vertexai.generative_models import Content, Image, Part
 
 from ...base import BaseMessageParam
@@ -71,10 +73,49 @@ def convert_message_params(
                     converted_content.append(
                         Part.from_data(mime_type=part.media_type, data=part.audio)
                     )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            Content(role=role, parts=converted_content)
+                        )
+                        converted_content = []
+                    raw_gapic_part = gapic_content_types.Part(
+                        function_call=gapic_tool_types.FunctionCall(
+                            name=part.name, args=part.args
+                        )
+                    )
+                    converted_message_params.append(
+                        Content(
+                            role=role,
+                            parts=[Part._from_gapic(raw_gapic_part)],
+                        )
+                    )
+                elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            Content(role=role, parts=converted_content)
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        Content(
+                            role=role,
+                            parts=[
+                                Part.from_function_response(
+                                    name=part.name,
+                                    response={
+                                        "content": {"result": part.content},
+                                    },
+                                )
+                            ],
+                        )
+                    )
                 else:
                     raise ValueError(
                         "Vertex currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(Content(role=role, parts=converted_content))
+            if converted_content:
+                converted_message_params.append(
+                    Content(role=role, parts=converted_content)
+                )
     return converted_message_params

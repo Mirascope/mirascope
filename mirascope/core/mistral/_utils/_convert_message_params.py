@@ -4,10 +4,12 @@ import base64
 
 from mistralai.models import (
     AssistantMessage,
+    FunctionCall,
     ImageURL,
     ImageURLChunk,
     SystemMessage,
     TextChunk,
+    ToolCall,
     ToolMessage,
     UserMessage,
 )
@@ -67,12 +69,47 @@ def convert_message_params(
                             )
                         )
                     )
+                elif part.type == "tool_call":
+                    converted_message_params.append(
+                        AssistantMessage(
+                            role="assistant",
+                            content=converted_content if converted_content else None,
+                            tool_calls=[
+                                ToolCall(
+                                    function=FunctionCall(
+                                        name=part.name,
+                                        arguments=part.args,  # pyright: ignore [reportArgumentType]
+                                    ),
+                                    id=part.id,
+                                    type="function",
+                                ),
+                            ],
+                        )
+                    )
+                    converted_content = []
+                elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            _make_message(
+                                role=message_param.role, content=converted_content
+                            )
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        ToolMessage(
+                            role="tool",
+                            content=part.content,
+                            tool_call_id=part.id,
+                            name=part.name,
+                        )
+                    )
                 else:
                     raise ValueError(
                         "Mistral currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                _make_message(role=message_param.role, content=converted_content)
-            )
+            if converted_content:
+                converted_message_params.append(
+                    _make_message(role=message_param.role, content=converted_content)
+                )
     return converted_message_params

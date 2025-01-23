@@ -79,9 +79,13 @@ In these above Mirascope examples, we are directly tying the prompt to a specifi
 
 ### Provider-Agnostic Usage
 
-We've implemented calls as decorators so that they work for both provider-specific cases (as seen above) as well as provider-agnostic cases.
+Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
 
-Let's take a look at a basic example using Mirascope to call both OpenAI and Anthropic with the same prompt:
+1. Write code once that works with any provider
+2. Switch providers at runtime 
+3. Work with standardized response types
+
+Here's an example showing both basic usage and runtime provider override:
 
 !!! mira ""
 
@@ -96,6 +100,30 @@ Let's take a look at a basic example using Mirascope to call both OpenAI and Ant
         --8<-- "examples/learn/calls/basic_usage/provider_agnostic/{{ method }}.py"
         ```
     {% endfor %}
+
+The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider.
+
+You can override provider settings at runtime using `llm.override`. This takes a function decorated with `llm.call` and lets you specify:
+
+- `provider`: Change the provider being called 
+- `model`: Use a different model
+- `call_params`: Override call parameters like temperature
+- `client`: Use a different client instance
+
+When overriding with a specific `provider`, you must specify the `model` parameter.
+
+The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
+
+- All message parameters (e.g. `message_param`, `user_message_param`) return provider-agnostic `BaseMessageParam` instances
+- Finish reasons and other provider-specific fields are normalized to consistent Mirascope types 
+- The original provider response remains accessible through the `response` property
+
+This approach is particularly useful when:
+
+- Building applications that need to work with multiple providers
+- Implementing provider fallbacks or switching
+- Writing reusable code that isn't tied to a specific provider
+- Testing different providers or models with the same code
 
 ## Handling Responses
 
@@ -465,6 +493,7 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
     {% endfor %}
 
 By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
+
 
 ## Next Steps
 

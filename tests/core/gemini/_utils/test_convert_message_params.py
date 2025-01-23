@@ -4,6 +4,7 @@ import io
 from unittest.mock import MagicMock, patch
 
 import pytest
+from google.generativeai import protos
 from google.generativeai.types import ContentDict
 
 from mirascope.core.base import (
@@ -12,6 +13,8 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from mirascope.core.gemini._utils._convert_message_params import convert_message_params
 
@@ -32,6 +35,16 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail=None
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
+            ],
+        ),
+        BaseMessageParam(
+            role="model",
+            content=[
+                TextPart(type="text", text="test"),
+                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
             ],
         ),
     ]
@@ -45,7 +58,35 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
             "role": "user",
             "parts": ["test", "test", {"mime_type": "audio/wav", "data": b"audio"}],
         },
+        {
+            "role": "user",
+            "parts": [
+                protos.FunctionResponse(
+                    name="tool_name", response={"result": "result"}
+                ),
+            ],
+        },
+        {
+            "role": "model",
+            "parts": [
+                "test",
+                protos.FunctionCall(
+                    name="tool_name",
+                    args={"arg": "val"},
+                ),
+            ],
+        },
     ]
+
+    one_part = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="test"),
+        ],
+    )
+    converted_message_params = convert_message_params([one_part])
+    assert converted_message_params == [{"parts": ["test"], "role": "user"}]
+
     mock_image_open.assert_called_once()
     bytes_io: io.BytesIO = mock_image_open.call_args.args[0]
     assert bytes_io.getvalue() == b"image"

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import inspect
 import warnings
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any, ClassVar, TypeVar
 
@@ -60,7 +60,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         return json_schema
 
 
-class BaseTool(BaseModel):
+class BaseTool(BaseModel, ABC):
     '''A class for defining tools for LLM calls.
 
     Example:

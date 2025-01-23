@@ -77,18 +77,58 @@ class DocumentPart(BaseModel):
     document: bytes
 
 
+class ToolCallPart(BaseModel):
+    """A content part for tool.
+
+    Attributes:
+        type: Always "tool"
+        name: The name of the tool
+        id: The id of the tool
+    """
+
+    type: Literal["tool_call"]
+    name: str
+    args: dict | None = None
+    id: str | None = None
+
+
+class ToolResultPart(BaseModel):
+    """A content part for tool.
+
+    Attributes:
+        type: Always "tool"
+        name: The name of the tool
+        id: The id of the tool
+    """
+
+    type: Literal["tool_result"]
+    name: str = ""
+    content: str
+    id: str | None = None
+    is_error: bool = False
+
+
 class BaseMessageParam(BaseModel):
     """A base class for message parameters.
 
     usage docs: learn/prompts.md#prompt-templates-messages
 
     Attributes:
-        role: The role of the message (e.g. "system", "user", "assistant")
+        role: The role of the message (e.g. "system", "user", "assistant", "tool")
         content: The content of the message
+        tool_name: The name of the tool, if any
     """
 
     role: str
     content: (
         str
-        | Sequence[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]
+        | Sequence[
+            TextPart
+            | ImagePart
+            | AudioPart
+            | CacheControlPart
+            | DocumentPart
+            | ToolCallPart
+            | ToolResultPart
+        ]
     )

@@ -44,3 +44,4 @@ def test_cohere_call_response_chunk() -> None:
     assert call_response_chunk_finish.input_tokens == 1
     assert call_response_chunk_finish.output_tokens == 1
     assert call_response_chunk_finish.finish_reasons == ["COMPLETE"]
+    assert call_response_chunk_finish.common_finish_reasons == ["stop"]

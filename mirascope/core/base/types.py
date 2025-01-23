@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, TypeAlias
+
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -35,3 +37,17 @@ else:
             def set_sample_width(self, sample_width: int) -> AudioSegment: ...
             def export(self, format: str) -> FileIO: ...
             def read(self) -> bytes: ...
+
+
+FinishReason: TypeAlias = Literal["stop", "length", "tool_calls", "content_filter"]
+
+
+class Usage(BaseModel):
+    completion_tokens: int = 0
+    """Number of tokens in the generated completion."""
+
+    prompt_tokens: int = 0
+    """Number of tokens in the prompt."""
+
+    total_tokens: int = 0
+    """Total number of tokens used in the request (prompt + completion)."""

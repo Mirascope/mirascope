@@ -358,6 +358,8 @@ nav:
               - dynamic_config: "api/core/vertex/dynamic_config.md"
               - stream: "api/core/vertex/stream.md"
               - tool: "api/core/vertex/tool.md"
+      - LLM:
+          - call: "api/llm/call.md"
       - Tools:
           - DuckDuckGo: "api/tools/web/duckduckgo.md"
           - HTTPX: "api/tools/web/httpx.md"

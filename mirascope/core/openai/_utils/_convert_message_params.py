@@ -1,6 +1,7 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`."""
 
 import base64
+import json
 
 from openai.types.chat import ChatCompletionMessageParam
 
@@ -18,6 +19,7 @@ def convert_message_params(
             converted_message_params.append(message_param.model_dump())
         else:
             converted_content = []
+
             for part in content:
                 if part.type == "text":
                     converted_content.append(part.model_dump())
@@ -60,12 +62,47 @@ def convert_message_params(
                             "type": "input_audio",
                         }
                     )
+                elif part.type == "tool_call":
+                    converted_message_param = {
+                        "role": "assistant",
+                        "name": part.name,
+                        "tool_calls": [
+                            {
+                                "function": {
+                                    "name": part.name,
+                                    "arguments": json.dumps(part.args),
+                                },
+                                "type": "function",
+                                "id": part.id,
+                            }
+                        ],
+                    }
+
+                    if converted_content:
+                        converted_message_param["content"] = converted_content
+                        converted_content = []
+                    converted_message_params.append(converted_message_param)
+                elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+
+                    converted_message_params.append(
+                        {
+                            "role": "tool",
+                            "tool_call_id": part.id,
+                            "content": part.content,
+                        }
+                    )
                 else:
                     raise ValueError(
                         "OpenAI currently only supports text, image and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params

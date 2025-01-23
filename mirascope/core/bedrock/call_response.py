@@ -14,7 +14,12 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef as AsyncConverseResponseTypeDef,
 )
 
-from ..base import BaseCallResponse, transform_tool_outputs
+from .. import BaseMessageParam
+from ..base import (
+    BaseCallResponse,
+    transform_tool_outputs,
+)
+from ..base.types import FinishReason
 from ._call_kwargs import BedrockCallKwargs
 from ._types import (
     AssistantMessageTypeDef,
@@ -29,6 +34,10 @@ from ._types import (
     UserMessageTypeDef,
 )
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._message_param_converter import BedrockMessageParamConverter
 from .call_params import BedrockCallParams
 from .dynamic_config import AsyncBedrockDynamicConfig, BedrockDynamicConfig
 from .tool import BedrockTool
@@ -201,7 +210,7 @@ class BedrockCallResponse(
                         {
                             "toolResult": {
                                 "content": [{"text": output}],
-                                "toolUseId": tool.tool_call["toolUse"]["toolUseId"],
+                                "toolUseId": tool.tool_call["toolUse"]["toolUseId"],  # pyright: ignore [reportOptionalSubscript]
                                 "name": tool._name(),
                             }
                         },
@@ -210,3 +219,11 @@ class BedrockCallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return BedrockMessageParamConverter.from_provider([self.message_param])

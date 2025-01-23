@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from functools import cached_property
+from typing import cast
 
 from azure.ai.inference.models import (
     AssistantMessage,
@@ -16,8 +17,14 @@ from azure.ai.inference.models import (
 )
 from pydantic import SerializeAsAny, SkipValidation, computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._message_param_converter import AzureMessageParamConverter
 from .call_params import AzureCallParams
 from .dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from .tool import AzureTool
@@ -154,7 +161,7 @@ class AzureCallResponse(
         """Returns a tool message for the tool call."""
         tool_message = ToolMessage(
             content=output,
-            tool_call_id=tool.tool_call.id,
+            tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
         )
         tool_message.name = tool._name()  # pyright: ignore [reportCallIssue, reportAttributeAccessIssue]
         return tool_message
@@ -176,3 +183,14 @@ class AzureCallResponse(
         return [
             cls._get_tool_message(tool, output) for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        """Provider-agnostic finish reasons."""
+        return _convert_finish_reasons_to_common_finish_reasons(
+            cast(list[str], self.finish_reasons)
+        )
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return AzureMessageParamConverter.from_provider([self.message_param])

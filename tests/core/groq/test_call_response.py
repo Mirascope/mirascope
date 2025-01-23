@@ -9,6 +9,7 @@ from groq.types.chat.chat_completion_message_tool_call import (
 )
 from groq.types.completion_usage import CompletionUsage
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.groq.call_response import GroqCallResponse
 from mirascope.core.groq.tool import GroqTool
 
@@ -61,6 +62,10 @@ def test_groq_call_response() -> None:
     }
     assert call_response.tools is None
     assert call_response.tool is None
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == [
+        BaseMessageParam(role="assistant", content="content")
+    ]
 
 
 def test_groq_call_response_with_tools() -> None:

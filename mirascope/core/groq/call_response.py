@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from functools import cached_property
+from typing import cast
 
 from groq.types.chat import (
     ChatCompletion,
@@ -16,8 +17,11 @@ from groq.types.chat import (
 from groq.types.completion_usage import CompletionUsage
 from pydantic import SerializeAsAny, computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._message_param_converter import GroqMessageParamConverter
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
 from .tool import GroqTool
@@ -156,11 +160,19 @@ class GroqCallResponse(
             The list of constructed `ChatCompletionToolMessageParam` parameters.
         """
         return [
-            ChatCompletionToolMessageParam(
+            ChatCompletionToolMessageParam(  # pyright: ignore [reportCallIssue]
                 role="tool",
                 content=output,
-                tool_call_id=tool.tool_call.id,
+                tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                 name=tool._name(),  # pyright: ignore [reportCallIssue]
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return cast(list[FinishReason], self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return GroqMessageParamConverter.from_provider([self.message_param])

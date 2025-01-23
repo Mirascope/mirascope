@@ -39,12 +39,56 @@ def convert_message_params(
                     converted_content.append(
                         {"format": part.media_type, "bytes": part.image}
                     )
+                elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+
+                    converted_message_params.append(
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "toolResult": {
+                                        "toolUseId": part.id,
+                                        "content": [{"text": part.content}]
+                                        if isinstance(part.content, str)
+                                        else part.content,
+                                    }
+                                }
+                            ],
+                        }
+                    )
+                elif part.type == "tool_call":
+                    if converted_content:
+                        converted_message_params.append(
+                            {"role": message_param.role, "content": converted_content}
+                        )
+                        converted_content = []
+
+                    converted_message_params.append(
+                        {
+                            "role": "assistant",
+                            "content": [
+                                {
+                                    "toolUse": {
+                                        "toolUseId": part.id,
+                                        "name": part.name,
+                                        "input": part.args,
+                                    }
+                                }
+                            ],
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Bedrock currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params

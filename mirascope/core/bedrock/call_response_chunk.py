@@ -3,11 +3,16 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
+from typing import cast
+
 from pydantic import SkipValidation
 from types_aiobotocore_bedrock_runtime.literals import StopReasonType as FinishReason
 
-from ..base import BaseCallResponseChunk
+from ..base import BaseCallResponseChunk, types
 from ._types import AsyncStreamOutputChunk, StreamOutputChunk, TokenUsageTypeDef
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 
 
 class BedrockCallResponseChunk(
@@ -87,3 +92,9 @@ class BedrockCallResponseChunk(
         if self.usage:
             return self.usage["outputTokens"]
         return None
+
+    @property
+    def common_finish_reasons(self) -> list[types.FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(
+            cast(list[str], self.finish_reasons)
+        )

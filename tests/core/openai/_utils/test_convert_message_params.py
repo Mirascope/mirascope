@@ -9,6 +9,8 @@ from mirascope.core.base import (
     CacheControlPart,
     ImagePart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from mirascope.core.openai._utils._convert_message_params import convert_message_params
 
@@ -27,33 +29,48 @@ def test_convert_message_params() -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                ToolResultPart(
+                    name="tool_name", id="tool_id", content="result", type="tool_result"
+                ),
+                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
+                TextPart(type="text", text="Hello"),
             ],
         ),
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
-        {"role": "user", "content": [{"type": "text", "text": "Hello"}]},
-        {"role": "user", "content": "Hello"},
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {"content": "Hello", "role": "user"},
         {
-            "role": "user",
             "content": [
-                {"type": "text", "text": "Hello"},
+                {"text": "Hello", "type": "text"},
                 {
-                    "type": "image_url",
                     "image_url": {
-                        "url": "data:image/jpeg;base64,aW1hZ2U=",
                         "detail": "auto",
+                        "url": "data:image/jpeg;base64,aW1hZ2U=",
                     },
+                    "type": "image_url",
                 },
                 {
-                    "input_audio": {
-                        "data": "YXVkaW8=",
-                        "format": "wav",
-                    },
+                    "input_audio": {"data": "YXVkaW8=", "format": "wav"},
                     "type": "input_audio",
                 },
             ],
+            "role": "user",
         },
+        {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
+        {
+            "name": "tool_name",
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "function": {"arguments": "null", "name": "tool_name"},
+                    "id": "tool_id",
+                    "type": "function",
+                }
+            ],
+        },
+        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
     ]
 
     with pytest.raises(

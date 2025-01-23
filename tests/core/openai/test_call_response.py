@@ -13,6 +13,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 )
 from openai.types.completion_usage import CompletionUsage
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.openai.call_response import OpenAICallResponse
 from mirascope.core.openai.tool import OpenAITool
 
@@ -136,6 +137,10 @@ def test_openai_call_response_with_tools() -> None:
     del call_response.tools
     with pytest.raises(ValueError, match="refusal message"):
         tool = call_response.tools
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == [
+        BaseMessageParam(role="assistant", content="content")
+    ]
 
 
 def test_openai_call_response_with_audio() -> None:

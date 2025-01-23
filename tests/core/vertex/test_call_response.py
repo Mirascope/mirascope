@@ -14,6 +14,7 @@ from vertexai.generative_models import (  # type: ignore
     GenerationResponse as GenerateContentResponseType,
 )
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.vertex.call_response import VertexCallResponse
 from mirascope.core.vertex.tool import VertexTool
 
@@ -72,6 +73,13 @@ def test_vertex_call_response() -> None:
         "parts": [{"text": "The author is Patrick Rothfuss"}],
         "role": "model",
     }
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == [
+        BaseMessageParam(
+            role="assistant",
+            content="The author is Patrick Rothfuss",
+        )
+    ]
 
 
 def test_vertex_call_response_with_tools() -> None:

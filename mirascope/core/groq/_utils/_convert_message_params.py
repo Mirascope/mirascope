@@ -1,8 +1,11 @@
 """Utility for converting `BaseMessageParam` to `ChatCompletionMessageParam`"""
 
 import base64
+import json
 
-from groq.types.chat import ChatCompletionMessageParam
+from groq.types.chat import (
+    ChatCompletionMessageParam,
+)
 
 from ...base import BaseMessageParam
 
@@ -42,12 +45,59 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "tool_call":
+                    converted_message_param = {
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "type": "function",
+                                "id": part.id,
+                                "function": {
+                                    "name": part.name,
+                                    "arguments": json.dumps(part.args),
+                                },
+                            }
+                        ],
+                    }
+                    if converted_content:
+                        if len(converted_content) == 1:
+                            if converted_content[0]["type"] == "text":
+                                converted_message_param["content"] = converted_content[
+                                    0
+                                ]["text"]
+                        else:
+                            converted_message_params.append(
+                                {
+                                    "role": message_param.role,
+                                    "content": converted_content,
+                                }
+                            )
+                        converted_content = []
+                    converted_message_params.append(converted_message_param)
+
+                elif part.type == "tool_result":
+                    if converted_content:
+                        converted_message_params.append(
+                            {
+                                "role": message_param.role,
+                                "content": converted_content,
+                            }
+                        )
+                        converted_content = []
+                    converted_message_params.append(
+                        {
+                            "role": "tool",
+                            "content": part.content,
+                            "tool_call_id": part.id,
+                        }
+                    )
                 else:
                     raise ValueError(
                         "Groq currently only supports text and image parts. "
                         f"Part provided: {part.type}"
                     )
-            converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
-            )
+            if converted_content:
+                converted_message_params.append(
+                    {"role": message_param.role, "content": converted_content}
+                )
     return converted_message_params

@@ -17,8 +17,14 @@ from mistralai.models import (
 )
 from pydantic import computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._message_param_converter import MistralMessageParamConverter
 from .call_params import MistralCallParams
 from .dynamic_config import MistralDynamicConfig
 from .tool import MistralTool
@@ -162,8 +168,16 @@ class MistralCallResponse(
         return [
             ToolMessage(
                 content=output,
-                tool_call_id=tool.tool_call.id,
+                tool_call_id=tool.tool_call.id,  # pyright: ignore [reportOptionalMemberAccess]
                 name=tool._name(),
             )
             for tool, output in tools_and_outputs
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return MistralMessageParamConverter.from_provider([self.message_param])
