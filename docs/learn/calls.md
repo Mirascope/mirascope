@@ -110,7 +110,7 @@ You can override provider settings at runtime using `llm.override`. This takes a
 - `call_params`: Override call parameters like temperature
 - `client`: Use a different client instance
 
-When using `provider`, you must also specify either `model` or `call_params`.
+When overriding with a specific `provider`, you must specify the `model` parameter.
 
 The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
 
