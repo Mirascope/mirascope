@@ -82,7 +82,7 @@ In these above Mirascope examples, we are directly tying the prompt to a specifi
 Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
 
 1. Write code once that works with any provider
-2. Switch providers at runtime 
+2. Switch providers at runtime
 3. Work with standardized response types
 
 Here's an example showing both basic usage and runtime provider override:
@@ -92,16 +92,22 @@ Here's an example showing both basic usage and runtime provider override:
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
 
-        {% if method == "string_template" %}
-        ```python hl_lines="4-5 10 16"
-        {% else %}
-        ```python hl_lines="4-6 11 17"
-        {% endif %}
-        --8<-- "examples/learn/calls/basic_usage/provider_agnostic/{{ method }}.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            {% if method == "shorthand" %}
+            ```python hl_lines="4-6 12-17"
+            {% else %}
+            ```python hl_lines="5-7 13-18"
+            {% endif %}
+            --8<-- "examples/learn/calls/provider_agnostic/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+
     {% endfor %}
 
-The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider.
+The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider. You can find more information on `CallResponse` in the [section below](#handling-responses) on handling responses.
 
 You can override provider settings at runtime using `llm.override`. This takes a function decorated with `llm.call` and lets you specify:
 
