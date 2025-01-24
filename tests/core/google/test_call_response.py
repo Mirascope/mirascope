@@ -9,6 +9,7 @@ from google.genai.types import (
 )
 from google.genai.types import FinishReason as GoogleFinishReason
 
+from mirascope.core import BaseMessageParam
 from mirascope.core.google.call_response import GoogleCallResponse
 from mirascope.core.google.tool import GoogleTool
 
@@ -57,6 +58,13 @@ def test_google_call_response() -> None:
         "role": "model",
         "parts": [Part(text="The author is Patrick Rothfuss")],
     }
+    assert call_response.common_finish_reasons == ["stop"]
+    assert call_response.common_message_param == [
+        BaseMessageParam(
+            role="assistant",
+            content="The author is Patrick Rothfuss",
+        )
+    ]
 
 
 def test_google_call_response_with_tools() -> None:

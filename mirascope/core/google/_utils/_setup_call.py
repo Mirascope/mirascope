@@ -9,6 +9,7 @@ from google.genai.types import (
     FunctionCallingConfig,
     FunctionCallingConfigMode,
     GenerateContentConfig,
+    GenerateContentConfigDict,
     GenerateContentResponse,
     PartDict,
     ToolConfig,
@@ -32,6 +33,14 @@ from ..dynamic_config import GoogleDynamicConfig
 from ..tool import GoogleTool
 from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
+
+
+def _get_generate_content_config(
+    config: GenerateContentConfig | GenerateContentConfigDict,
+) -> GenerateContentConfig:
+    if isinstance(config, dict):
+        return GenerateContentConfig.model_validate(config)
+    return config
 
 
 @overload
@@ -112,8 +121,7 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         config = call_kwargs.get("config", {})
-        if isinstance(config, dict):
-            config = GenerateContentConfig.model_validate(config)
+        config = _get_generate_content_config(config)
         if not tools:
             config.response_mime_type = "application/json"
         call_kwargs["config"] = config
@@ -123,8 +131,7 @@ def setup_call(
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         config = call_kwargs.get("config", {})
-        if isinstance(config, dict):
-            config = GenerateContentConfig.model_validate(config)
+        config = _get_generate_content_config(config)
         config.tool_config = ToolConfig(
             function_calling_config=FunctionCallingConfig(
                 mode=FunctionCallingConfigMode.ANY,
@@ -135,8 +142,7 @@ def setup_call(
     config_tools = call_kwargs.pop("tools", None)
     if config_tools:
         config = call_kwargs.get("config", {})
-        if isinstance(config, dict):
-            config = GenerateContentConfig.model_validate(config)
+        config = _get_generate_content_config(config)
         config.tools = cast(ToolListUnion, config_tools)
         call_kwargs["config"] = config
     call_kwargs |= {"model": model, "contents": messages}
