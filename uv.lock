@@ -1662,6 +1662,22 @@ wheels = [
 ]
 
 [[package]]
+name = "google-genai"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-auth" },
+    { name = "pillow" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cb/b9/e00466a72ef89ca53430a34dfd3b642425876e219ff36de13f6963915fee/google_genai-0.6.0.tar.gz", hash = "sha256:8fff8e0eab073fca4bdbd0608a1600ecaad73782b99ac2e353fc98960cdc3dc8", size = 113102 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dc/be/541b905a800962fde771cdf5e3c5ed4594190f594204f074ccc3e4f9b3f0/google_genai-0.6.0-py3-none-any.whl", hash = "sha256:93a250998b03d7665b257d5e0d0c642194e94213327bab24edc74ece43e14c24", size = 118733 },
+]
+
+[[package]]
 name = "google-generativeai"
 version = "0.7.2"
 source = { registry = "https://pypi.org/simple" }
@@ -3186,6 +3202,9 @@ gemini = [
     { name = "google-generativeai" },
     { name = "pillow" },
 ]
+google = [
+    { name = "google-genai" },
+]
 groq = [
     { name = "groq" },
 ]
@@ -3275,6 +3294,7 @@ requires-dist = [
     { name = "cohere", marker = "extra == 'cohere'", specifier = ">=5.5.8,<6" },
     { name = "docstring-parser", specifier = ">=0.15,<1.0" },
     { name = "google-cloud-aiplatform", marker = "extra == 'vertex'", specifier = ">=1.38.0,<2" },
+    { name = "google-genai", marker = "extra == 'google'", specifier = ">=0.6.0,<1" },
     { name = "google-generativeai", marker = "extra == 'gemini'", specifier = ">=0.4.0,<1" },
     { name = "groq", marker = "extra == 'groq'", specifier = ">=0.9.0,<1" },
     { name = "hyperdx-opentelemetry", marker = "extra == 'hyperdx'", specifier = ">=0.1.0,<1" },
