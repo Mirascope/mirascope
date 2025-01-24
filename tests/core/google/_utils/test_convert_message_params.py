@@ -1,10 +1,10 @@
-"""Tests the `gemini._utils.convert_message_params` function."""
+"""Tests the `google._utils.convert_message_params` function."""
 
 import io
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.generativeai.types import ContentDict
+from google.genai.types import ContentDict
 
 from mirascope.core.base import (
     AudioPart,
@@ -13,7 +13,7 @@ from mirascope.core.base import (
     ImagePart,
     TextPart,
 )
-from mirascope.core.gemini._utils._convert_message_params import convert_message_params
+from mirascope.core.google._utils._convert_message_params import convert_message_params
 
 
 @patch("PIL.Image.open", new_callable=MagicMock)
@@ -52,7 +52,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
 
     with pytest.raises(
         ValueError,
-        match="Unsupported image media type: image/svg. Gemini currently only supports "
+        match="Unsupported image media type: image/svg. Google currently only supports "
         "JPEG, PNG, WebP, HEIC, and HEIF images.",
     ):
         convert_message_params(
@@ -74,7 +74,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
     with pytest.raises(
         ValueError,
         match="Unsupported audio media type: audio/unknown. "
-        "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+        "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
         "and FLAC audio file types.",
     ):
         convert_message_params(
@@ -92,7 +92,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
 
     with pytest.raises(
         ValueError,
-        match="Gemini currently only supports text, image, and audio parts. Part provided: cache_control",
+        match="Google currently only supports text, image, and audio parts. Part provided: cache_control",
     ):
         convert_message_params(
             [

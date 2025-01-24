@@ -8,9 +8,12 @@ from functools import cached_property
 from google.genai.types import (
     ContentDict,
     ContentListUnion,
+    ContentListUnionDict,
     FunctionResponseDict,
     GenerateContentResponse,
     PartDict,
+    # Import manually SchemaDict to avoid Pydantic error
+    SchemaDict,  # noqa: F401
     Tool,
 )
 from pydantic import computed_field
@@ -34,7 +37,7 @@ class GoogleCallResponse(
         GoogleTool,
         Tool,
         GoogleDynamicConfig,
-        ContentListUnion,
+        ContentListUnion | ContentListUnionDict,
         GoogleCallParams,
         ContentDict,
     ]

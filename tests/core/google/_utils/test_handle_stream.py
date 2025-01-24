@@ -1,56 +1,52 @@
-"""Tests the `gemini._utils.handle_stream` module."""
+"""Tests the `google._utils.handle_stream` module."""
 
 import pytest
-from google.ai.generativelanguage import (
+from google.genai.types import (
     Candidate,
     Content,
     GenerateContentResponse,
     Part,
 )
-from google.generativeai.types import (  # type: ignore
-    GenerateContentResponse as GenerateContentResponseType,
+from google.genai.types import (
+    FinishReason as GoogleFinishReason,
 )
 
-from mirascope.core.gemini._utils._handle_stream import (
+from mirascope.core.google._utils._handle_stream import (
     handle_stream,
     handle_stream_async,
 )
 
 
 @pytest.fixture()
-def mock_chunks() -> list[GenerateContentResponseType]:
+def mock_chunks() -> list[GenerateContentResponse]:
     """Returns a list of mock `GenerateContentResponse` instances."""
     return [
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="The author is ")],
-                            role="model",
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="The author is ")],
+                        role="model",
+                    ),
+                )
+            ]
         ),
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="Patrick Rothfuss")],
-                            role="model",
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="Patrick Rothfuss")],
+                        role="model",
+                    ),
+                )
+            ]
         ),
     ]
 
 
-def test_handle_stream(mock_chunks: list[GenerateContentResponseType]) -> None:
+def test_handle_stream(mock_chunks: list[GenerateContentResponse]) -> None:
     """Tests the `handle_stream` function."""
     result = list(handle_stream((chunk for chunk in mock_chunks), tool_types=None))
     assert len(result) == 2
@@ -62,7 +58,7 @@ def test_handle_stream(mock_chunks: list[GenerateContentResponseType]) -> None:
 
 @pytest.mark.asyncio
 async def test_handle_stream_async(
-    mock_chunks: list[GenerateContentResponseType],
+    mock_chunks: list[GenerateContentResponse],
 ) -> None:
     """Tests the `handle_stream_async` function."""
     result = []

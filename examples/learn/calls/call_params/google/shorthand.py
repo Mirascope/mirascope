@@ -1,4 +1,3 @@
-from google.generativeai import GenerationConfig
 from mirascope.core import google
 
 

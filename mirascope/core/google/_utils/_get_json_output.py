@@ -18,15 +18,17 @@ def get_json_output(
             json_end = content.rfind("}")
             return content[json_start : json_end + 1]
         elif tool_calls := [
-            part.function_call
-            for part in response.response.candidates[0].content.parts  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
-            if part.function_call.args  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
+            function_call
+            for function_call in (response.response.function_calls or [])  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
+            if function_call.args  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
         ]:
             return json.dumps(
                 {
                     k: v if not isinstance(v, RepeatedComposite) else list(v)
-                    for k, v in ((tool_calls or [[]])[0].args or {}).items()  # pyright: ignore [reportOptionalMemberAccess]
+                    for k, v in (tool_calls[0].args or {}).items()  # pyright: ignore [reportOptionalMemberAccess]
                 }
+                if isinstance(tool_calls, list) and tool_calls[0]
+                else {}
             )
         else:
             raise ValueError("No tool call or JSON object found in response.")

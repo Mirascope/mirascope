@@ -1,36 +1,35 @@
-"""Tests the `gemini.call_response_chunk` module."""
+"""Tests the `google.call_response_chunk` module."""
 
-from google.ai.generativelanguage import (
+from google.genai.types import (
     Candidate,
     Content,
     GenerateContentResponse,
     Part,
 )
-from google.generativeai.types import (  # type: ignore
-    GenerateContentResponse as GenerateContentResponseType,
+from google.genai.types import (
+    FinishReason as GoogleFinishReason,
 )
 
-from mirascope.core.gemini.call_response_chunk import GeminiCallResponseChunk
+from mirascope.core.google.call_response_chunk import GoogleCallResponseChunk
 
 
-def test_gemini_call_response_chunk() -> None:
-    """Tests the `GeminiCallResponseChunk` class."""
-    chunk = GenerateContentResponseType.from_response(
-        GenerateContentResponse(
-            candidates=[
-                Candidate(
-                    finish_reason=1,
-                    content=Content(
-                        parts=[Part(text="The author is Patrick Rothfuss")],
-                        role="model",
-                    ),
-                )
-            ]
-        )
+def test_google_call_response_chunk() -> None:
+    """Tests the `GoogleCallResponseChunk` class."""
+    chunk = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[Part(text="The author is Patrick Rothfuss")],
+                    role="model",
+                ),
+            )
+        ]
     )
-    call_response_chunk = GeminiCallResponseChunk(chunk=chunk)
+
+    call_response_chunk = GoogleCallResponseChunk(chunk=chunk)
     assert call_response_chunk.content == "The author is Patrick Rothfuss"
-    assert call_response_chunk.finish_reasons == [Candidate.FinishReason.STOP]
+    assert call_response_chunk.finish_reasons == [GoogleFinishReason.STOP]
     assert call_response_chunk.model is None
     assert call_response_chunk.id is None
     assert call_response_chunk.usage is None

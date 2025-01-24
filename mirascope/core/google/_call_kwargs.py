@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 
-from google.genai.types import ContentDict, Tool, ToolDict
+from google.genai.types import ContentDict, ToolDict
 
 from ..base import BaseCallKwargs
 from .call_params import GoogleCallParams

@@ -1,31 +1,31 @@
-"""Tests the `gemini.call` module."""
+"""Tests the `google.call` module."""
 
 import sys
 from unittest.mock import MagicMock, patch
 
-from mirascope.core.gemini import _utils
-from mirascope.core.gemini.call_response import GeminiCallResponse
-from mirascope.core.gemini.call_response_chunk import GeminiCallResponseChunk
-from mirascope.core.gemini.stream import GeminiStream
-from mirascope.core.gemini.tool import GeminiTool
+from mirascope.core.google import _utils
+from mirascope.core.google.call_response import GoogleCallResponse
+from mirascope.core.google.call_response_chunk import GoogleCallResponseChunk
+from mirascope.core.google.stream import GoogleStream
+from mirascope.core.google.tool import GoogleTool
 
 
-def test_gemini_call() -> None:
-    """Tests the `gemini_call` decorator."""
+def test_google_call() -> None:
+    """Tests the `google_call` decorator."""
 
-    if "mirascope.core.gemini._call" in sys.modules:
-        del sys.modules["mirascope.core.gemini._call"]
+    if "mirascope.core.google._call" in sys.modules:
+        del sys.modules["mirascope.core.google._call"]
 
     with patch(
         "mirascope.core.base.call_factory", new_callable=MagicMock
     ) as mock_call_factory:
-        import mirascope.core.gemini._call  # noqa: F401
+        import mirascope.core.google._call  # noqa: F401
 
         mock_call_factory.assert_called_once_with(
-            TCallResponse=GeminiCallResponse,
-            TCallResponseChunk=GeminiCallResponseChunk,
-            TToolType=GeminiTool,
-            TStream=GeminiStream,
+            TCallResponse=GoogleCallResponse,
+            TCallResponseChunk=GoogleCallResponseChunk,
+            TToolType=GoogleTool,
+            TStream=GoogleStream,
             default_call_params={},
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,

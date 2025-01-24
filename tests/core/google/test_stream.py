@@ -1,61 +1,57 @@
-"""Tests the `gemini.stream` module."""
+"""Tests the `google.stream` module."""
 
 import pytest
-from google.ai.generativelanguage import (
+from google.genai.types import (
     Candidate,
     Content,
+    ContentDict,
     GenerateContentResponse,
     Part,
+    PartDict,
 )
-from google.generativeai.types import (  # type: ignore
-    GenerateContentResponse as GenerateContentResponseType,
+from google.genai.types import (
+    FinishReason as GoogleFinishReason,
 )
 
-from mirascope.core.gemini.call_response import GeminiCallResponse
-from mirascope.core.gemini.call_response_chunk import GeminiCallResponseChunk
-from mirascope.core.gemini.stream import GeminiStream
+from mirascope.core.google.call_response import GoogleCallResponse
+from mirascope.core.google.call_response_chunk import GoogleCallResponseChunk
+from mirascope.core.google.stream import GoogleStream
 
 
-def test_gemini_stream() -> None:
-    """Tests the `GeminiStream` class."""
-    assert GeminiStream._provider == "gemini"
+def test_google_stream() -> None:
+    """Tests the `GoogleStream` class."""
+    assert GoogleStream._provider == "google"
 
     chunks = [
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="The author is ")], role="model"
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(parts=[Part(text="The author is ")], role="model"),
+                )
+            ]
         ),
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="Patrick Rothfuss")], role="model"
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="Patrick Rothfuss")], role="model"
+                    ),
+                )
+            ]
         ),
     ]
-    stream = GeminiStream(
-        stream=((GeminiCallResponseChunk(chunk=chunk), None) for chunk in chunks),
+    stream = GoogleStream(
+        stream=((GoogleCallResponseChunk(chunk=chunk), None) for chunk in chunks),
         metadata={},
         tool_types=None,
-        call_response_type=GeminiCallResponse,
-        model="gemini-1.5-flash",
+        call_response_type=GoogleCallResponse,
+        model="google-1.5-flash",
         prompt_template="",
         fn_args={},
         dynamic_config=None,
-        messages=[{"role": "user", "parts": ["Who is the author?"]}],
+        messages=[{"role": "user", "parts": [{"text": "Who is the author?"}]}],
         call_params={},
         call_kwargs={},
     )
@@ -77,41 +73,37 @@ def test_gemini_stream() -> None:
 
 def test_construct_call_response() -> None:
     chunks = [
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="The author is ")], role="model"
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(parts=[Part(text="The author is ")], role="model"),
+                )
+            ]
         ),
-        GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=1,
-                        content=Content(
-                            parts=[Part(text="Patrick Rothfuss")], role="model"
-                        ),
-                    )
-                ]
-            )
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="Patrick Rothfuss")], role="model"
+                    ),
+                )
+            ]
         ),
     ]
-    stream = GeminiStream(
-        stream=((GeminiCallResponseChunk(chunk=chunk), None) for chunk in chunks),
+    stream = GoogleStream(
+        stream=((GoogleCallResponseChunk(chunk=chunk), None) for chunk in chunks),
         metadata={},
         tool_types=None,
-        call_response_type=GeminiCallResponse,
-        model="gemini-1.5-flash",
+        call_response_type=GoogleCallResponse,
+        model="google-1.5-flash",
         prompt_template="",
         fn_args={},
         dynamic_config=None,
-        messages=[{"role": "user", "parts": ["Who is the author?"]}],
+        messages=[
+            ContentDict(role="user", parts=[PartDict(text="Who is the author?")])
+        ],
         call_params={},
         call_kwargs={},
     )
@@ -119,20 +111,18 @@ def test_construct_call_response() -> None:
     for _ in stream:
         pass
 
-    response = GenerateContentResponseType.from_response(
-        GenerateContentResponse(
-            candidates=[
-                Candidate(
-                    finish_reason=1,
-                    content=Content(
-                        parts=[Part(text="The author is Patrick Rothfuss")],
-                        role="model",
-                    ),
-                )
-            ]
-        )
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[Part(text="The author is Patrick Rothfuss")],
+                    role="model",
+                ),
+            )
+        ]
     )
-    call_response = GeminiCallResponse(
+    call_response = GoogleCallResponse(
         metadata={},
         response=response,
         tool_types=None,
@@ -142,7 +132,7 @@ def test_construct_call_response() -> None:
         messages=[],
         call_params={},
         call_kwargs={},
-        user_message_param=None,
+        user_message_param={},
         start_time=0,
         end_time=0,
     )
