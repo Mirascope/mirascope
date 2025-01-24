@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast, get_type_hints
 
 import jiter
-from docstring_parser import parse
+from docstring_parser import Docstring, DocstringMeta, compose, parse
 from pydantic import BaseModel, create_model
 from pydantic.fields import FieldInfo
 
@@ -48,6 +48,19 @@ def convert_function_to_base_tool(
         for example in docstring.examples or []:
             if example.description:
                 examples.append(jiter.from_json(example.description.encode()))
+        cleaned_docstring = Docstring(style=docstring.style)
+        cleaned_docstring.short_description = docstring.short_description
+        cleaned_docstring.blank_after_short_description = (
+            docstring.blank_after_short_description
+        )
+        cleaned_docstring.long_description = docstring.long_description
+        cleaned_docstring.blank_after_long_description = (
+            docstring.blank_after_long_description
+        )
+        cleaned_docstring.meta = cast(
+            list[DocstringMeta], docstring.many_returns + docstring.raises
+        )
+        func_doc = compose(cleaned_docstring)
 
     field_definitions = {}
     hints = get_type_hints(fn, include_extras=True)

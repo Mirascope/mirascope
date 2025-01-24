@@ -130,3 +130,33 @@ def test_convert_function_to_base_tool_missing_parameter_description() -> None:
 
     with pytest.raises(ValueError):
         convert_function_to_base_tool(format_book, BaseTool)
+
+
+def test_convert_function_to_base_tool_docstring_reconstruction() -> None:
+    """Tests the docstring reconstruction in `convert_function_to_base_tool`."""
+
+    def format_book(title: str) -> None:
+        """Short description.
+
+        Long description.
+
+        Examples:
+            {"title": "The Name of the Wind"}
+
+        Args:
+            title: The title of the book.
+
+        Raises:
+            ValueError: If the title is invalid.
+        """
+
+    tool_type = convert_function_to_base_tool(format_book, BaseTool)
+    assert (
+        tool_type._description()
+        == """Short description.
+
+Long description.
+
+Raises:
+    ValueError: If the title is invalid."""
+    )
