@@ -1,15 +1,14 @@
 """This module contains the setup_call function, which is used to set up the"""
 
 from collections.abc import Awaitable, Callable
-from dataclasses import asdict, is_dataclass
 from typing import Any, cast, overload
 
 from google.genai import Client
 from google.genai.types import (
     ContentDict,
     FunctionCallingConfigMode,
+    GenerateContentConfigDict,
     GenerateContentResponse,
-    GenerationConfigDict,
     ToolConfigDict,
 )
 from pydantic import BaseModel
@@ -110,21 +109,25 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         config = call_kwargs.get("config", {})
-        if is_dataclass(config):
-            config = asdict(config)
+        if isinstance(config, BaseModel):
+            config = config.model_dump()
         if not tools:
             config["response_mime_type"] = "application/json"
-        call_kwargs["config"] = cast(GenerationConfigDict, config)
+        call_kwargs["config"] = cast(GenerateContentConfigDict, config)
         messages[-1]["parts"].append(_utils.json_mode_content(response_model))  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
-        call_kwargs.pop("tool_config", None)
+        config = call_kwargs.get("config", {})
+        if isinstance(config, BaseModel):
+            config = config.model_dump()
+        config.pop("tool_config", None)
         tool_config = ToolConfigDict()
         tool_config["function_calling_config"] = {
             "mode": FunctionCallingConfigMode.ANY,
             "allowed_function_names": [tool_types[0]._name()],
         }
-        call_kwargs["config"]["tool_config"] = tool_config
+        config["tool_config"] = tool_config
+        call_kwargs["config"] = cast(GenerateContentConfigDict, config)
     call_kwargs |= {"contents": messages}
 
     if client is None:
