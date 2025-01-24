@@ -47,7 +47,9 @@ def extract_book(text: str) -> Book:
         },
     )
     if tool_calls := [
-        function_call for function_call in (response.function_calls or []) if function_call.args
+        function_call
+        for function_call in (response.function_calls or [])
+        if function_call.args
     ]:
         return Book.model_validate(
             {

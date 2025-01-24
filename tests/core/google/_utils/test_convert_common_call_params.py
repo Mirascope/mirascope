@@ -1,11 +1,11 @@
 from mirascope.core.base.call_params import CommonCallParams
-from mirascope.core.gemini._utils._convert_common_call_params import (
+from mirascope.core.google._utils._convert_common_call_params import (
     convert_common_call_params,
 )
 
 
-def test_gemini_conversion_full():
-    """Test full parameter conversion for Gemini."""
+def test_google_conversion_full():
+    """Test full parameter conversion for Google."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "max_tokens": 100,
@@ -23,8 +23,8 @@ def test_gemini_conversion_full():
     }
 
 
-def test_gemini_conversion_single_stop():
-    """Test single stop sequence conversion for Gemini."""
+def test_google_conversion_single_stop():
+    """Test single stop sequence conversion for Google."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "stop": "STOP",
@@ -38,14 +38,14 @@ def test_gemini_conversion_single_stop():
     }
 
 
-def test_gemini_conversion_empty():
-    """Test empty parameters conversion for Gemini."""
+def test_google_conversion_empty():
+    """Test empty parameters conversion for Google."""
     result = convert_common_call_params({})
     assert result == {}
 
 
-def test_gemini_conversion_full_with_invalid_key():
-    """Test full parameter conversion for Gemini."""
+def test_google_conversion_full_with_invalid_key():
+    """Test full parameter conversion for Google."""
     params: CommonCallParams = {
         "temperature": 0.7,
         "max_tokens": 100,

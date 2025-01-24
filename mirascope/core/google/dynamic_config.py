@@ -1,13 +1,13 @@
 """This module defines the function return type for functions as LLM calls."""
 
 from google.genai import Client
-from google.genai.types import ContentListUnion
+from google.genai.types import ContentListUnion, ContentListUnionDict
 
 from ..base import BaseDynamicConfig, BaseMessageParam
 from .call_params import GoogleCallParams
 
 GoogleDynamicConfig = BaseDynamicConfig[
-    ContentListUnion | BaseMessageParam, GoogleCallParams, Client
+    ContentListUnion | ContentListUnionDict | BaseMessageParam, GoogleCallParams, Client
 ]
 """The function return type for functions wrapped with the `google_call` decorator.
 
