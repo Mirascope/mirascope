@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.genai import Client
 from google.genai.types import (
     FunctionCallingConfig,
     FunctionCallingConfigMode,
@@ -32,25 +31,15 @@ def mock_base_setup_call() -> MagicMock:
 )
 @patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
 @patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
-@patch(
-    "google.genai.models.Models.generate_content",
-    new_callable=MagicMock,
-)
-@patch(
-    "google.genai.models.Models.generate_content_stream",
-    new_callable=MagicMock,
-)
 def test_setup_call(
-    mock_generate_content_stream: MagicMock,
-    mock_generate_content: MagicMock,
-    mock_client: MagicMock,
+    mock_client_class: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     """Tests the `setup_call` function."""
-    client = Client()
-    mock_client.return_value = client
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -75,15 +64,15 @@ def test_setup_call(
         mock_base_setup_call.return_value[1]
     )
     assert messages == mock_convert_message_params.return_value
-    mock_client.assert_called_once_with()
+    mock_client_class.assert_called_once_with()
     assert create(**call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs)
-    mock_generate_content.reset_mock()
+    mock_client.models.generate_content.assert_called_once_with(**call_kwargs)
+    mock_client.models.generate_content.reset_mock()
     assert create(stream=True, **call_kwargs)
-    mock_generate_content_stream.assert_called_once_with(**call_kwargs)
-    mock_generate_content_stream.reset_mock()
+    mock_client.models.generate_content_stream.assert_called_once_with(**call_kwargs)
+    mock_client.models.generate_content_stream.reset_mock()
     assert create(stream=False, **call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs)
+    mock_client.models.generate_content.assert_called_once_with(**call_kwargs)
 
 
 @pytest.mark.parametrize(
