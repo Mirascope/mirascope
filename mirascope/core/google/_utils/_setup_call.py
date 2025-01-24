@@ -6,10 +6,13 @@ from typing import Any, cast, overload
 from google.genai import Client
 from google.genai.types import (
     ContentDict,
+    FunctionCallingConfig,
     FunctionCallingConfigMode,
-    GenerateContentConfigDict,
+    GenerateContentConfig,
     GenerateContentResponse,
-    ToolConfigDict,
+    PartDict,
+    ToolConfig,
+    ToolListUnion,
 )
 from pydantic import BaseModel
 
@@ -109,34 +112,47 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         config = call_kwargs.get("config", {})
-        if isinstance(config, BaseModel):
-            config = config.model_dump()
+        if isinstance(config, dict):
+            config = GenerateContentConfig.model_validate(config)
         if not tools:
-            config["response_mime_type"] = "application/json"
-        call_kwargs["config"] = cast(GenerateContentConfigDict, config)
-        messages[-1]["parts"].append(_utils.json_mode_content(response_model))  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
+            config.response_mime_type = "application/json"
+        call_kwargs["config"] = config
+        messages[-1]["parts"].append(  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
+            PartDict(text=_utils.json_mode_content(response_model))
+        )  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         config = call_kwargs.get("config", {})
-        if isinstance(config, BaseModel):
-            config = config.model_dump()
-        config.pop("tool_config", None)
-        tool_config = ToolConfigDict()
-        tool_config["function_calling_config"] = {
-            "mode": FunctionCallingConfigMode.ANY,
-            "allowed_function_names": [tool_types[0]._name()],
-        }
-        config["tool_config"] = tool_config
-        call_kwargs["config"] = cast(GenerateContentConfigDict, config)
+        if isinstance(config, dict):
+            config = GenerateContentConfig.model_validate(config)
+        config.tool_config = ToolConfig(
+            function_calling_config=FunctionCallingConfig(
+                mode=FunctionCallingConfigMode.ANY,
+                allowed_function_names=[tool_types[0]._name()],
+            )
+        )
+        call_kwargs["config"] = config
+    config_tools = call_kwargs.pop("tools", None)
+    if config_tools:
+        config = call_kwargs.get("config", {})
+        if isinstance(config, dict):
+            config = GenerateContentConfig.model_validate(config)
+        config.tools = cast(ToolListUnion, config_tools)
+        call_kwargs["config"] = config
     call_kwargs |= {"model": model, "contents": messages}
 
     if client is None:
         client = Client()
 
     create = (
-        get_async_create_fn(client.aio.models.generate_content)
+        get_async_create_fn(
+            client.aio.models.generate_content,
+            client.aio.models.generate_content_stream,
+        )
         if fn_is_async(fn)
-        else get_create_fn(client.models.generate_content)
+        else get_create_fn(
+            client.models.generate_content, client.models.generate_content_stream
+        )
     )
 
     return create, prompt_template, messages, tool_types, call_kwargs

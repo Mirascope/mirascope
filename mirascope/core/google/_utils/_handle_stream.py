@@ -11,6 +11,7 @@ from ..tool import GoogleTool
 def handle_stream(
     stream: Generator[GenerateContentResponse, None, None],
     tool_types: list[type[GoogleTool]] | None = None,
+    partial_tools: bool = False,
 ) -> Generator[tuple[GoogleCallResponseChunk, None], None, None]:
     """Iterator over the stream and constructs tools as they are streamed.
 
@@ -23,6 +24,7 @@ def handle_stream(
 async def handle_stream_async(
     stream: AsyncGenerator[GenerateContentResponse, None],
     tool_types: list[type[GoogleTool]] | None = None,
+    partial_tools: bool = False,
 ) -> AsyncGenerator[tuple[GoogleCallResponseChunk, None], None]:
     """
     Async iterator over the stream and constructs tools as they are streamed.

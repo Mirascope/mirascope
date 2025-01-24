@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from google.genai import Client
 from google.genai.types import (
+    FunctionCallingConfig,
     FunctionCallingConfigMode,
     GenerateContentConfig,
 )
@@ -35,7 +36,12 @@ def mock_base_setup_call() -> MagicMock:
     "google.genai.models.Models.generate_content",
     new_callable=MagicMock,
 )
+@patch(
+    "google.genai.models.Models.generate_content_stream",
+    new_callable=MagicMock,
+)
 def test_setup_call(
+    mock_generate_content_stream: MagicMock,
     mock_generate_content: MagicMock,
     mock_client: MagicMock,
     mock_utils: MagicMock,
@@ -74,59 +80,15 @@ def test_setup_call(
     mock_generate_content.assert_called_once_with(**call_kwargs)
     mock_generate_content.reset_mock()
     assert create(stream=True, **call_kwargs)
-    mock_generate_content.assert_called_once_with(**call_kwargs, stream=True)
-    mock_generate_content.reset_mock()
+    mock_generate_content_stream.assert_called_once_with(**call_kwargs)
+    mock_generate_content_stream.reset_mock()
     assert create(stream=False, **call_kwargs)
     mock_generate_content.assert_called_once_with(**call_kwargs)
 
 
 @pytest.mark.parametrize(
-    "generation_config_type,expected",
-    [
-        [
-            dict,
-            {
-                "candidate_count": 1,
-                "max_output_tokens": 100,
-                "response_mime_type": "application/json",
-                "response_schema": None,
-                "stop_sequences": ["\n"],
-                "temperature": 0.5,
-                "top_k": 0,
-                "top_p": 0,
-            },
-        ],
-        [
-            GenerateContentConfig,
-            {
-                "audio_timestamp": None,
-                "automatic_function_calling": None,
-                "cached_content": None,
-                "candidate_count": 1,
-                "frequency_penalty": None,
-                "logprobs": None,
-                "max_output_tokens": 100,
-                "media_resolution": None,
-                "presence_penalty": None,
-                "response_logprobs": None,
-                "response_mime_type": "application/json",
-                "response_modalities": None,
-                "response_schema": None,
-                "routing_config": None,
-                "safety_settings": None,
-                "seed": None,
-                "speech_config": None,
-                "stop_sequences": ["\n"],
-                "system_instruction": None,
-                "temperature": 0.5,
-                "thinking_config": None,
-                "tool_config": None,
-                "tools": None,
-                "top_k": 0.0,
-                "top_p": 0.0,
-            },
-        ],
-    ],
+    "generation_config_type",
+    [dict, GenerateContentConfig],
 )
 @patch(
     "mirascope.core.google._utils._setup_call.convert_message_params",
@@ -138,7 +100,6 @@ def test_setup_call_json_mode(
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
     generation_config_type: type,
-    expected: dict,
 ) -> None:
     """Tests the `setup_call` function with JSON mode."""
     mock_utils.setup_call = mock_base_setup_call
@@ -146,7 +107,8 @@ def test_setup_call_json_mode(
     mock_base_setup_call.return_value[1] = [
         {"role": "user", "parts": [{"type": "text", "text": "test"}]}
     ]
-    mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
+    tools = [MagicMock()]
+    mock_base_setup_call.return_value[-1]["tools"] = tools
     mock_base_setup_call.return_value[-1]["config"] = generation_config_type(
         candidate_count=1,
         max_output_tokens=100,
@@ -173,10 +135,37 @@ def test_setup_call_json_mode(
     assert isinstance(messages[-1], dict)
     assert "parts" in messages[-1]
     assert isinstance(messages[-1]["parts"], list)
-    assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
-    assert "tools" in call_kwargs
+    assert messages[-1]["parts"][-1] == {
+        "text": mock_utils.json_mode_content.return_value
+    }
     assert "config" in call_kwargs
-    assert call_kwargs["config"] == expected
+    assert call_kwargs["config"] == GenerateContentConfig(
+        system_instruction=None,
+        temperature=0.5,
+        top_p=0.0,
+        top_k=0.0,
+        candidate_count=1,
+        max_output_tokens=100,
+        stop_sequences=["\n"],
+        response_logprobs=None,
+        logprobs=None,
+        presence_penalty=None,
+        frequency_penalty=None,
+        seed=None,
+        response_mime_type="application/json",
+        response_schema=None,
+        routing_config=None,
+        safety_settings=None,
+        tools=tools,  # pyright: ignore [reportArgumentType]
+        tool_config=None,
+        cached_content=None,
+        response_modalities=None,
+        media_resolution=None,
+        speech_config=None,
+        audio_timestamp=None,
+        automatic_function_calling=None,
+        thinking_config=None,
+    )
 
 
 @patch(
@@ -206,14 +195,12 @@ def test_setup_call_extract(
         response_model=BaseModel,
         stream=False,
     )
-    assert "config" in call_kwargs and isinstance(call_kwargs["config"], dict)
-    config = call_kwargs["config"]
-    assert "tool_config" in config and isinstance(config["tool_config"], dict)
-    assert "function_calling_config" in config["tool_config"] and isinstance(
-        config["tool_config"]["function_calling_config"], dict
+    assert "config" in call_kwargs and isinstance(
+        call_kwargs["config"], GenerateContentConfig
     )
-    tool_config = config["tool_config"]
-    assert tool_config["function_calling_config"] == {
-        "allowed_function_names": ["test"],
-        "mode": FunctionCallingConfigMode.ANY,
-    }
+    config = call_kwargs["config"]
+    assert config.tool_config is not None
+    assert config.tool_config.function_calling_config is not None
+    assert config.tool_config.function_calling_config == FunctionCallingConfig(
+        mode=FunctionCallingConfigMode.ANY, allowed_function_names=["test"]
+    )
