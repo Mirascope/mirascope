@@ -109,12 +109,12 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
     if json_mode:
-        generation_config = call_kwargs.get("generation_config", {})
-        if is_dataclass(generation_config):
-            generation_config = asdict(generation_config)
+        config = call_kwargs.get("config", {})
+        if is_dataclass(config):
+            config = asdict(config)
         if not tools:
-            generation_config["response_mime_type"] = "application/json"
-        call_kwargs["generation_config"] = cast(GenerationConfigDict, generation_config)
+            config["response_mime_type"] = "application/json"
+        call_kwargs["config"] = cast(GenerationConfigDict, config)
         messages[-1]["parts"].append(_utils.json_mode_content(response_model))  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
@@ -124,7 +124,7 @@ def setup_call(
             "mode": FunctionCallingConfigMode.ANY,
             "allowed_function_names": [tool_types[0]._name()],
         }
-        call_kwargs["tool_config"] = tool_config
+        call_kwargs["config"]["tool_config"] = tool_config
     call_kwargs |= {"contents": messages}
 
     if client is None:

@@ -1,6 +1,6 @@
 import asyncio
 
-from mirascope.core import gemini, prompt_template
+from mirascope.core import google, prompt_template
 
 
 @google.call("gemini-1.5-flash", stream=True)

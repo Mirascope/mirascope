@@ -1,7 +1,6 @@
-from google.generativeai import GenerativeModel
-from mirascope.core import gemini
+from mirascope.core import google
 
 
-@google.call("", client=GenerativeModel(model_name="gemini-1.5-flash"))
+@google.call("gemini-1.5-flash")
 async def recommend_book_async(genre: str) -> str:
     return f"Recommend a {genre} book"

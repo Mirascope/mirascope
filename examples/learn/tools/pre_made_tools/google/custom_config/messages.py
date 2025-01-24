@@ -1,4 +1,4 @@
-from mirascope.core import gemini, Messages
+from mirascope.core import google, Messages
 from mirascope.tools import DuckDuckGoSearch, DuckDuckGoSearchConfig
 
 config = DuckDuckGoSearchConfig(max_results_per_query=5)

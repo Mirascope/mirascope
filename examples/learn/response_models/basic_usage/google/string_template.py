@@ -1,6 +1,6 @@
 from typing import cast
 
-from mirascope.core import gemini, prompt_template
+from mirascope.core import google, prompt_template
 from pydantic import BaseModel
 
 

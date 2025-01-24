@@ -1,4 +1,4 @@
-from mirascope.core import gemini
+from mirascope.core import google
 
 
 def get_book_author(title: str) -> str:

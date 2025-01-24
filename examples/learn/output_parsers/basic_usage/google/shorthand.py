@@ -1,4 +1,4 @@
-from mirascope.core import gemini
+from mirascope.core import google
 
 
 def parse_recommendation(response: google.GoogleCallResponse) -> tuple[str, str]:

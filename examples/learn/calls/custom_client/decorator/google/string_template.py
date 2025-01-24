@@ -1,7 +1,7 @@
-from google.generativeai import GenerativeModel
-from mirascope.core import gemini, prompt_template
+from google.genai import Client
+from mirascope.core import google, prompt_template
 
 
-@google.call("", client=GenerativeModel(model_name="gemini-1.5-flash"))
+@google.call("gemini-1.5-flash", client=Client())
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str): ...

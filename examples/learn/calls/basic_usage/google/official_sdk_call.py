@@ -1,13 +1,14 @@
-from google.generativeai import GenerativeModel
+from google.genai import Client
 
-client = GenerativeModel("gemini-1.5-flash")
+client = Client()
 
 
 def recommend_book(genre: str) -> str:
-    generation = client.generate_content(
-        contents=[{"role": "user", "parts": f"Recommend a {genre} book"}]  # pyright: ignore [reportArgumentType]
+    generation = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents={"role": "user", "parts": [{"text": f"Recommend a {genre} book"}]},  # pyright: ignore [reportArgumentType]
     )
-    return generation.candidates[0].content.parts[0].text
+    return generation.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalSubscript, reportOptionalMemberAccess, reportReturnType]
 
 
 output = recommend_book("fantasy")
