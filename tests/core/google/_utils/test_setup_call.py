@@ -84,7 +84,9 @@ def test_setup_call(
     new_callable=MagicMock,
 )
 @patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
 def test_setup_call_json_mode(
+    mock_client_class: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
@@ -121,6 +123,7 @@ def test_setup_call_json_mode(
         response_model=None,
         stream=False,
     )
+    mock_client_class.assert_called_once_with()
     assert isinstance(messages[-1], dict)
     assert "parts" in messages[-1]
     assert isinstance(messages[-1]["parts"], list)
@@ -162,7 +165,9 @@ def test_setup_call_json_mode(
     new_callable=MagicMock,
 )
 @patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
 def test_setup_call_extract(
+    mock_client_class: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
@@ -184,6 +189,7 @@ def test_setup_call_extract(
         response_model=BaseModel,
         stream=False,
     )
+    mock_client_class.assert_called_once_with()
     assert "config" in call_kwargs and isinstance(
         call_kwargs["config"], GenerateContentConfig
     )
