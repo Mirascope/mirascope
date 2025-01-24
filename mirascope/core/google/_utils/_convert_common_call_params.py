@@ -7,7 +7,7 @@ from google.genai.types import (
 from ...base.call_params import CommonCallParams
 from ..call_params import GoogleCallParams
 
-GEMINI_PARAM_MAPPING = {
+GOOGLE_PARAM_MAPPING = {
     "temperature": "temperature",
     "max_tokens": "max_output_tokens",
     "top_p": "top_p",
@@ -20,7 +20,7 @@ def convert_common_call_params(common_params: CommonCallParams) -> GoogleCallPar
     generation_config = {}
 
     for key, value in common_params.items():
-        if key not in GEMINI_PARAM_MAPPING or value is None:
+        if key not in GOOGLE_PARAM_MAPPING or value is None:
             continue
 
         if key == "stop":
@@ -28,7 +28,7 @@ def convert_common_call_params(common_params: CommonCallParams) -> GoogleCallPar
                 [value] if isinstance(value, str) else value
             )
         else:
-            generation_config[GEMINI_PARAM_MAPPING[key]] = value
+            generation_config[GOOGLE_PARAM_MAPPING[key]] = value
 
     if not generation_config:
         return cast(GoogleCallParams, {})
