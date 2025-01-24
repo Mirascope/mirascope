@@ -1,0 +1,181 @@
+"""This module contains the `GoogleCallResponse` class.
+
+usage docs: learn/calls.md#handling-responses
+"""
+
+from functools import cached_property
+
+from google.genai.types import (
+    ContentDict,
+    ContentListUnion,
+    FunctionResponse,
+    GenerateContentResponse,
+    Tool,
+)
+from pydantic import computed_field
+
+from ..base import BaseCallResponse, transform_tool_outputs
+from ._utils import calculate_cost
+from .call_params import GoogleCallParams
+from .dynamic_config import GoogleDynamicConfig
+from .tool import GoogleTool
+
+
+class GoogleCallResponse(
+    BaseCallResponse[
+        GenerateContentResponse,
+        GoogleTool,
+        Tool,
+        GoogleDynamicConfig,
+        ContentListUnion,
+        GoogleCallParams,
+        ContentDict,
+    ]
+):
+    """A convenience wrapper around the Google API response.
+
+    When calling the Google API using a function decorated with `google_call`, the
+    response will be a `GoogleCallResponse` instance with properties that allow for
+    more convenient access to commonly used attributes.
+
+
+    Example:
+
+    ```python
+    from mirascope.core import prompt_template
+    from mirascope.core.google import google_call
+
+
+    @google_call("google-1.5-flash")
+    def recommend_book(genre: str) -> str:
+        return f"Recommend a {genre} book"
+
+
+    response = recommend_book("fantasy")  # response is an `GoogleCallResponse` instance
+    print(response.content)
+    ```
+    """
+
+    _provider = "google"
+
+    @property
+    def content(self) -> str:
+        """Returns the contained string content for the 0th choice."""
+        return self.response.candidates[0].content.parts[0].text
+
+    @property
+    def finish_reasons(self) -> list[str]:
+        """Returns the finish reasons of the response."""
+        finish_reasons = [
+            "FINISH_REASON_UNSPECIFIED",
+            "STOP",
+            "MAX_TOKENS",
+            "SAFETY",
+            "RECITATION",
+            "OTHER",
+        ]
+
+        return [
+            finish_reasons[candidate.finish_reason]
+            for candidate in self.response.candidates
+        ]
+
+    @property
+    def model(self) -> str:
+        """Returns the model name.
+
+        google.generativeai does not return model, so we return the model provided by
+        the user.
+        """
+        return self._model
+
+    @property
+    def id(self) -> str | None:
+        """Returns the id of the response.
+
+        google.generativeai does not return an id
+        """
+        return None
+
+    @property
+    def usage(self) -> None:
+        """Returns the usage of the chat completion.
+
+        google.generativeai does not have Usage, so we return None
+        """
+        return None
+
+    @property
+    def input_tokens(self) -> None:
+        """Returns the number of input tokens."""
+        return None
+
+    @property
+    def output_tokens(self) -> None:
+        """Returns the number of output tokens."""
+        return None
+
+    @property
+    def cost(self) -> float | None:
+        """Returns the cost of the call."""
+        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+
+    @computed_field
+    @cached_property
+    def message_param(self) -> ContentDict:
+        """Returns the models's response as a message parameter."""
+        return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
+
+    @computed_field
+    @cached_property
+    def tools(self) -> list[GoogleTool] | None:
+        """Returns the list of tools for the 0th candidate's 0th content part."""
+        if self.tool_types is None:
+            return None
+
+        extracted_tools = []
+        for part in self.response.candidates[0].content.parts:
+            tool_call = part.function_call
+            for tool_type in self.tool_types:
+                if tool_call.name == tool_type._name():
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                    break
+
+        return extracted_tools
+
+    @computed_field
+    @cached_property
+    def tool(self) -> GoogleTool | None:
+        """Returns the 0th tool for the 0th candidate's 0th content part.
+
+        Raises:
+            ValidationError: if the tool call doesn't match the tool's schema.
+        """
+        tools = self.tools
+        if tools:
+            return tools[0]
+        return None
+
+    @classmethod
+    @transform_tool_outputs
+    def tool_message_params(
+        cls, tools_and_outputs: list[tuple[GoogleTool, str]]
+    ) -> list[ContentDict]:
+        """Returns the tool message parameters for tool call results.
+
+        Args:
+            tools_and_outputs: The list of tools and their outputs from which the tool
+                message parameters should be constructed.
+
+        Returns:
+            The list of constructed `FunctionResponse` parameters.
+        """
+        return [
+            {
+                "role": "user",
+                "parts": [
+                    FunctionResponse(name=tool._name(), response={"result": output})
+                    for tool, output in tools_and_outputs
+                ],
+            }
+        ]
