@@ -118,7 +118,7 @@ async def handle_stream_async(
     )
     current_tool_type = None
     async for chunk in stream:
-        if not tool_types or not chunk.choices[0].delta.tool_calls:
+        if not tool_types or not chunk.choices or not chunk.choices[0].delta.tool_calls:
             if current_tool_type:
                 yield (
                     OpenAICallResponseChunk(chunk=chunk),
