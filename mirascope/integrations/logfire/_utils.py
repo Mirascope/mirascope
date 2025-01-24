@@ -45,7 +45,7 @@ def _get_call_response_span_data(result: BaseCallResponse) -> dict[str, Any]:
         "call_kwargs": result.call_kwargs,
         "model": result.model,
         "provider": result._provider,
-        "prompt_template": result.prompt_template,
+        "prompt_template": result.prompt_template or "",
         "template_variables": result.fn_args,
         "messages": result.messages,
         "response_data": result.response,
