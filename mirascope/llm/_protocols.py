@@ -67,6 +67,7 @@ Provider: TypeAlias = Literal[
     "bedrock",
     "cohere",
     "gemini",
+    "google",
     "groq",
     "litellm",
     "mistral",

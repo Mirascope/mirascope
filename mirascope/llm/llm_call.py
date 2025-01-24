@@ -74,6 +74,10 @@ def _get_provider_call(provider: str) -> Callable:
         from mirascope.core.gemini import gemini_call
 
         return gemini_call
+    elif provider == "google":
+        from mirascope.core.google import google_call
+
+        return google_call
     elif provider == "groq":
         from mirascope.core.groq import groq_call
 

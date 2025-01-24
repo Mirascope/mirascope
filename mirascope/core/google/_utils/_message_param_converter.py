@@ -1,10 +1,9 @@
 from typing import cast
 
 from google.genai.types import (
+    Content,
     ContentDict,
-    FunctionCall,
-    FunctionResponse,
-    Part,
+    ContentOrDict,
 )
 
 from mirascope.core import BaseMessageParam
@@ -51,101 +50,71 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
         )
 
     @staticmethod
-    def from_provider(message_params: list[ContentDict]) -> list[BaseMessageParam]:
+    def from_provider(message_params: list[ContentOrDict]) -> list[BaseMessageParam]:
         """
         Convert from Google's `ContentDict` to Mirascope `BaseMessageParam`.
         """
         converted: list[BaseMessageParam] = []
         for message_param in message_params:
+            if isinstance(message_param, dict):
+                message_param = Content.model_validate(message_param)
             role: str = "assistant"
             content_list = []
-            for part in cast(
-                list[Part | FunctionCall | FunctionResponse],
-                message_param["parts"],  # pyright: ignore [reportTypedDictNotRequiredAccess]
-            ):
-                if isinstance(part, Part):
-                    if part.text:
-                        content_list.append(TextPart(type="text", text=part.text))
+            for part in message_param.parts or []:
+                if part.text:
+                    content_list.append(TextPart(type="text", text=part.text))
 
-                    elif part.inline_data:
-                        blob = part.inline_data
-                        mime = blob.mime_type or ""
-                        data = blob.data or b""
-                        if _is_image_mime(mime or ""):
-                            content_list.append(_to_image_part(mime, data))
-                        elif mime == "application/pdf":
-                            content_list.append(_to_document_part(mime, data))
-                        else:
-                            raise ValueError(
-                                f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
-                            )
-
-                    elif part.file_data:
-                        # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
-                        raise ValueError(
-                            f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
-                        )
-                    elif part.function_call:
-                        converted.append(
-                            BaseMessageParam(
-                                role=role,
-                                content=[
-                                    ToolCallPart(
-                                        type="tool_call",
-                                        name=part.function_call.name,  # pyright: ignore [reportArgumentType]
-                                        args=part.function_call.args,
-                                    )
-                                ],
-                            )
-                        )
-                    elif part.function_response:
-                        converted.append(
-                            BaseMessageParam(
-                                role=role,
-                                content=[
-                                    ToolResultPart(
-                                        type="tool_result",
-                                        name=part.function_response.name,  # pyright: ignore [reportArgumentType]
-                                        content=part.function_response.response[  # pyright: ignore [reportArgumentType, reportOptionalSubscript]
-                                            "result"
-                                        ],
-                                        id=None,
-                                        is_error=False,
-                                    )
-                                ],
-                            )
-                        )
+                elif part.inline_data:
+                    blob = part.inline_data
+                    mime = blob.mime_type or ""
+                    data = blob.data or b""
+                    if _is_image_mime(mime or ""):
+                        content_list.append(_to_image_part(mime, data))
+                    elif mime == "application/pdf":
+                        content_list.append(_to_document_part(mime, data))
                     else:
                         raise ValueError(
-                            "Part does not contain any supported content (text, image, or document)."
+                            f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
                         )
-                elif isinstance(part, FunctionCall):
+
+                elif part.file_data:
+                    # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
+                    raise ValueError(
+                        f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
+                    )
+                elif part.function_call:
                     converted.append(
                         BaseMessageParam(
                             role=role,
                             content=[
                                 ToolCallPart(
                                     type="tool_call",
-                                    name=part.name,  # pyright: ignore [reportArgumentType]
-                                    args=part.args,
+                                    name=part.function_call.name,  # pyright: ignore [reportArgumentType]
+                                    args=part.function_call.args,
                                 )
                             ],
                         )
                     )
-                elif isinstance(part, FunctionResponse):
+                elif part.function_response:
                     converted.append(
                         BaseMessageParam(
                             role=role,
                             content=[
                                 ToolResultPart(
                                     type="tool_result",
-                                    name=part.name,  # pyright: ignore [reportArgumentType]
-                                    content=part.response["result"],  # pyright: ignore [reportArgumentType, reportOptionalSubscript]
+                                    name=part.function_response.name,  # pyright: ignore [reportArgumentType]
+                                    content=part.function_response.response[  # pyright: ignore [reportArgumentType, reportOptionalSubscript]
+                                        "result"
+                                    ],
                                     id=None,
                                     is_error=False,
                                 )
                             ],
                         )
+                    )
+                else:
+                    raise ValueError(
+                        "Part does not contain any supported content (text, image, or document)."
                     )
 
             if len(content_list) == 1 and isinstance(content_list[0], TextPart):
