@@ -13,11 +13,8 @@ from google.genai.types import (
     FinishReason,
     FunctionCall,
     GenerateContentResponse,
-    PartUnionDict,
+    PartDict,
     Tool,
-)
-from google.genai.types import (
-    GenerateContentResponse as GenerateContentResponseType,
 )
 
 from ..base.stream import BaseStream
@@ -77,7 +74,16 @@ class GoogleStream(
         return {
             "role": "model",
             "parts": cast(
-                list[PartUnionDict], [{"text": content}] + (tool_calls or [])
+                list[PartDict],
+                [{"text": content}]
+                + (
+                    [
+                        {"function_call": tool_call}
+                        for tool_call in (tool_calls or [])
+                        if tool_calls
+                    ]
+                    or []
+                ),
             ),
         }
 
@@ -91,21 +97,20 @@ class GoogleStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )
-        response = GenerateContentResponseType.from_response(
-            GenerateContentResponse(
-                candidates=[
-                    Candidate(
-                        finish_reason=self.finish_reasons[0]
-                        if self.finish_reasons
-                        else Candidate.FinishReason.STOP,
-                        content=Content(
-                            role=self.message_param["role"],
-                            parts=self.message_param["parts"],
-                        ),
-                    )
-                ]
-            )
+        response = GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=self.finish_reasons[0]
+                    if self.finish_reasons
+                    else FinishReason.STOP,
+                    content=Content(
+                        role=self.message_param["role"],  # pyright: ignore [reportTypedDictNotRequiredAccess]
+                        parts=self.message_param["parts"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportArgumentType]
+                    ),
+                )
+            ]
         )
+
         return GoogleCallResponse(
             metadata=self.metadata,
             response=response,

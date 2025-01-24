@@ -7,6 +7,7 @@ from typing import Any, cast, overload
 from google.genai import Client
 from google.genai.types import (
     ContentDict,
+    FunctionCallingConfigMode,
     GenerateContentResponse,
     GenerationConfigDict,
     ToolConfigDict,
@@ -114,13 +115,13 @@ def setup_call(
         if not tools:
             generation_config["response_mime_type"] = "application/json"
         call_kwargs["generation_config"] = cast(GenerationConfigDict, generation_config)
-        messages[-1]["parts"].append(_utils.json_mode_content(response_model))
+        messages[-1]["parts"].append(_utils.json_mode_content(response_model))  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         call_kwargs.pop("tool_config", None)
         tool_config = ToolConfigDict()
-        tool_config.function_calling_config = {
-            "mode": "any",
+        tool_config["function_calling_config"] = {
+            "mode": FunctionCallingConfigMode.ANY,
             "allowed_function_names": [tool_types[0]._name()],
         }
         call_kwargs["tool_config"] = tool_config

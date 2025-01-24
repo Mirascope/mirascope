@@ -3,14 +3,21 @@
 usage docs: learn/streams.md#handling-streamed-responses
 """
 
-from google.ai.generativelanguage import Candidate
+from typing import cast
+
+from google.genai.types import FinishReason as GoogleFinishReason
 from google.genai.types import GenerateContentResponse
 
+from mirascope.core.base.types import FinishReason
+
 from ..base import BaseCallResponseChunk
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
 
 
 class GoogleCallResponseChunk(
-    BaseCallResponseChunk[GenerateContentResponse, Candidate.FinishReason]
+    BaseCallResponseChunk[GenerateContentResponse, GoogleFinishReason]
 ):
     """A convenience wrapper around the Google API streamed response chunks.
 
@@ -38,12 +45,16 @@ class GoogleCallResponseChunk(
     @property
     def content(self) -> str:
         """Returns the chunk content for the 0th choice."""
-        return self.chunk.candidates[0].content.parts[0].text
+        return self.chunk.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalMemberAccess, reportOptionalSubscript, reportReturnType]
 
     @property
-    def finish_reasons(self) -> list[Candidate.FinishReason]:
+    def finish_reasons(self) -> list[GoogleFinishReason]:
         """Returns the finish reasons of the response."""
-        return [candidate.finish_reason for candidate in self.chunk.candidates]
+        return [
+            candidate.finish_reason
+            for candidate in (self.chunk.candidates or [])
+            if candidate.finish_reason is not None
+        ]
 
     @property
     def model(self) -> None:
@@ -78,3 +89,9 @@ class GoogleCallResponseChunk(
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(
+            cast(list[str], self.finish_reasons)
+        )

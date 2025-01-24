@@ -19,13 +19,13 @@ def get_json_output(
             return content[json_start : json_end + 1]
         elif tool_calls := [
             part.function_call
-            for part in response.response.parts
-            if part.function_call.args
+            for part in response.response.candidates[0].content.parts  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
+            if part.function_call.args  # pyright: ignore [reportOptionalSubscript, reportOptionalIterable, reportOptionalMemberAccess]
         ]:
             return json.dumps(
                 {
                     k: v if not isinstance(v, RepeatedComposite) else list(v)
-                    for k, v in tool_calls[0].args.items()
+                    for k, v in ((tool_calls or [[]])[0].args or {}).items()  # pyright: ignore [reportOptionalMemberAccess]
                 }
             )
         else:

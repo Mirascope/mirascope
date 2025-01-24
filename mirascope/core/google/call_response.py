@@ -8,14 +8,21 @@ from functools import cached_property
 from google.genai.types import (
     ContentDict,
     ContentListUnion,
-    FunctionResponse,
+    FunctionResponseDict,
     GenerateContentResponse,
+    PartDict,
     Tool,
 )
 from pydantic import computed_field
 
+from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
+from ..base.types import FinishReason
 from ._utils import calculate_cost
+from ._utils._convert_finish_reason_to_common_finish_reasons import (
+    _convert_finish_reasons_to_common_finish_reasons,
+)
+from ._utils._message_param_converter import GoogleMessageParamConverter
 from .call_params import GoogleCallParams
 from .dynamic_config import GoogleDynamicConfig
 from .tool import GoogleTool
@@ -61,23 +68,16 @@ class GoogleCallResponse(
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
-        return self.response.candidates[0].content.parts[0].text
+        return self.response.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalSubscript, reportReturnType, reportOptionalMemberAccess, reportOptionalIterable]
 
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
-        finish_reasons = [
-            "FINISH_REASON_UNSPECIFIED",
-            "STOP",
-            "MAX_TOKENS",
-            "SAFETY",
-            "RECITATION",
-            "OTHER",
-        ]
 
         return [
-            finish_reasons[candidate.finish_reason]
-            for candidate in self.response.candidates
+            candidate.finish_reason.value
+            for candidate in (self.response.candidates or [])
+            if candidate and candidate.finish_reason is not None
         ]
 
     @property
@@ -124,7 +124,7 @@ class GoogleCallResponse(
     @cached_property
     def message_param(self) -> ContentDict:
         """Returns the models's response as a message parameter."""
-        return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
+        return {"role": "model", "parts": self.response.candidates[0].content.parts}  # pyright: ignore [reportReturnType, reportOptionalSubscript, reportOptionalMemberAccess]
 
     @computed_field
     @cached_property
@@ -134,11 +134,11 @@ class GoogleCallResponse(
             return None
 
         extracted_tools = []
-        for part in self.response.candidates[0].content.parts:
+        for part in self.response.candidates[0].content.parts:  # pyright: ignore [reportReturnType, reportOptionalSubscript, reportOptionalMemberAccess, reportOptionalIterable]
             tool_call = part.function_call
             for tool_type in self.tool_types:
-                if tool_call.name == tool_type._name():
-                    extracted_tools.append(tool_type.from_tool_call(tool_call))
+                if tool_call.name == tool_type._name():  # pyright: ignore [reportOptionalMemberAccess]
+                    extracted_tools.append(tool_type.from_tool_call(tool_call))  # pyright: ignore [reportArgumentType]
                     break
 
         return extracted_tools
@@ -174,8 +174,20 @@ class GoogleCallResponse(
             {
                 "role": "user",
                 "parts": [
-                    FunctionResponse(name=tool._name(), response={"result": output})
+                    PartDict(
+                        function_response=FunctionResponseDict(
+                            name=tool._name(), response={"result": output}
+                        )
+                    )
                     for tool, output in tools_and_outputs
                 ],
             }
         ]
+
+    @property
+    def common_finish_reasons(self) -> list[FinishReason] | None:
+        return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
+
+    @property
+    def common_message_param(self) -> list[BaseMessageParam]:
+        return GoogleMessageParamConverter.from_provider([self.message_param])
