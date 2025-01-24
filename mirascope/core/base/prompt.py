@@ -2,6 +2,7 @@
 
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from functools import reduce, wraps
+from textwrap import dedent
 from typing import (
     Any,
     ClassVar,
@@ -372,6 +373,7 @@ def prompt_template(
         decorator = messages_decorator()
         decorator.__mirascope_prompt_template__ = True  # pyright: ignore [reportAttributeAccessIssue]
         return decorator
+    template = dedent(template).strip()
 
     @overload
     def inner(
