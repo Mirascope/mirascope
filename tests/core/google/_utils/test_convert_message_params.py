@@ -1,6 +1,5 @@
 """Tests the `google._utils.convert_message_params` function."""
 
-import io
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -37,18 +36,19 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
-        {"role": "user", "parts": ["You are a helpful assistant."]},
-        {"role": "model", "parts": ["Ok! I will adhere to this system message."]},
-        {"role": "user", "parts": ["Hello"]},
-        {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
+        {"parts": ["You are a helpful assistant."], "role": "user"},
+        {"parts": ["Ok! I will adhere to this system message."], "role": "model"},
+        {"parts": [{"text": "Hello"}], "role": "user"},
+        {"parts": ["Hello", {"text": "Hello", "type": "text"}], "role": "user"},
         {
+            "parts": [
+                {"text": "test"},
+                {"data": b"image", "mime_type": "image/jpeg"},
+                {"data": b"audio", "mime_type": "audio/wav"},
+            ],
             "role": "user",
-            "parts": ["test", "test", {"mime_type": "audio/wav", "data": b"audio"}],
         },
     ]
-    mock_image_open.assert_called_once()
-    bytes_io: io.BytesIO = mock_image_open.call_args.args[0]
-    assert bytes_io.getvalue() == b"image"
 
     with pytest.raises(
         ValueError,

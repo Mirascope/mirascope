@@ -128,7 +128,7 @@ def setup_call(
         }
         config["tool_config"] = tool_config
         call_kwargs["config"] = cast(GenerateContentConfigDict, config)
-    call_kwargs |= {"contents": messages}
+    call_kwargs |= {"model": model, "contents": messages}
 
     if client is None:
         client = Client()
