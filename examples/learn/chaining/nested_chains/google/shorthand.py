@@ -1,4 +1,4 @@
-from mirascope.core import gemini
+from mirascope.core import google
 
 
 @google.call("gemini-1.5-flash")

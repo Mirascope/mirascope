@@ -1,6 +1,6 @@
 from typing import Annotated, cast
 
-from mirascope.core import gemini
+from mirascope.core import google
 from pydantic import AfterValidator, BaseModel, ValidationError
 
 

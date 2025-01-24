@@ -5,18 +5,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict, with_config
-from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
 
 if TYPE_CHECKING:
     from google.genai.types import (
+        AutomaticFunctionCallingConfigDict,
+        ContentUnionDict,
         GenerationConfig,
         GenerationConfigDict,
-        # RequestOptions,
-        SafetySetting,
-        ToolConfigOrDict,
-    )
+        GenerationConfigRoutingConfigDict,
+        MediaResolution,
+    # RequestOptions,
+        SafetySettingDict,
+        SchemaUnionDict,
+        SpeechConfigUnionDict,
+        ThinkingConfigDict,
+        ToolConfigDict, GenerateContentConfigOrDict,
+)
 else:
     from google.genai.types import (
         GenerationConfig as _GenerationConfig,
@@ -40,13 +46,7 @@ class GoogleCallParams(BaseCallParams):
     [Google API Reference](https://ai.google.dev/google-api/docs/text-generation?lang=python)
 
     Attributes:
-        generation_config: ...
-        safety_settings: ...
-        request_options: ...
-        tool_config: ...
+        config: ...
     """
 
-    generation_config: NotRequired[GenerationConfigDict | GenerationConfig]
-    safety_settings: NotRequired[SafetySetting]
-    # request_options: NotRequired[RequestOptions]
-    tool_config: NotRequired[ToolConfigOrDict]
+    config: GenerateContentConfigOrDict

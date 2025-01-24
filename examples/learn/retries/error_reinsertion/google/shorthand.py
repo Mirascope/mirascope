@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from mirascope.core import gemini
+from mirascope.core import google
 from mirascope.retries.tenacity import collect_errors
 from pydantic import AfterValidator, ValidationError
 from tenacity import retry, stop_after_attempt

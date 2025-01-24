@@ -1,9 +1,9 @@
-from google.generativeai import GenerativeModel
-from google.generativeai.types import FunctionDeclaration, Tool, content_types
+from google.genai import Client
+from google.genai.types import FunctionDeclaration, Tool
 from proto.marshal.collections import RepeatedComposite
 from pydantic import BaseModel
 
-model = GenerativeModel("gemini-1.5-flash")
+client = Client()
 
 
 class Book(BaseModel):
@@ -14,44 +14,45 @@ class Book(BaseModel):
 
 
 def extract_book(text: str) -> Book:
-    response = model.generate_content(
-        f"Extract {text}",
-        tools=[
-            Tool(
-                function_declarations=[
-                    FunctionDeclaration(
-                        **{
-                            "name": "Book",
-                            "description": "An extracted book.",
-                            "parameters": {
-                                "properties": {
-                                    "title": {"type": "string"},
-                                    "author": {"type": "string"},
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents={"parts": [{"text": f"Extract {text}"}]},
+        config={
+            "tools": [
+                Tool(
+                    function_declarations=[
+                        FunctionDeclaration(
+                            **{
+                                "name": "Book",
+                                "description": "An extracted book.",
+                                "parameters": {
+                                    "properties": {
+                                        "title": {"type": "string"},
+                                        "author": {"type": "string"},
+                                    },
+                                    "required": ["title", "author"],
+                                    "type": "object",
                                 },
-                                "required": ["title", "author"],
-                                "type": "object",
-                            },
-                        }
-                    )
-                ]
-            )
-        ],
-        tool_config=content_types.to_tool_config(
-            {
+                            }
+                        )
+                    ]
+                )
+            ],
+            "tool_config": {
                 "function_calling_config": {
                     "mode": "any",
                     "allowed_function_names": ["Book"],
                 }
-            }  # pyright: ignore [reportArgumentType]
-        ),
+            },  # pyright: ignore [reportArgumentType]
+        },
     )
     if tool_calls := [
-        part.function_call for part in response.parts if part.function_call.args
+        function_call for function_call in (response.function_calls or []) if function_call.args
     ]:
         return Book.model_validate(
             {
                 k: v if not isinstance(v, RepeatedComposite) else list(v)
-                for k, v in tool_calls[0].args.items()
+                for k, v in (tool_calls[0].args or {}).items()
             }
         )
     raise ValueError("No tool call found")

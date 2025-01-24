@@ -1,10 +1,10 @@
-from google.generativeai import GenerativeModel
-from mirascope.core import gemini, Messages
+from google.genai import Client
+from mirascope.core import google, Messages
 
 
-@google.call("")
+@google.call("gemini-1.5-flash")
 async def recommend_book(genre: str) -> google.GoogleDynamicConfig:
     return {
         "messages": [Messages.User(f"Recommend a {genre} book")],
-        "client": GenerativeModel(model_name="gemini-1.5-flash"),
+        "client": Client(),
     }

@@ -2,11 +2,11 @@
 
 from collections.abc import Sequence
 
-from google.genai.types import ContentDict, Tool
+from google.genai.types import ContentDict, Tool, ToolDict
 
 from ..base import BaseCallKwargs
 from .call_params import GoogleCallParams
 
 
-class GoogleCallKwargs(GoogleCallParams, BaseCallKwargs[Tool]):
+class GoogleCallKwargs(GoogleCallParams, BaseCallKwargs[ToolDict]):
     contents: Sequence[ContentDict]

@@ -1,4 +1,4 @@
-from mirascope.core import gemini
+from mirascope.core import google
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 

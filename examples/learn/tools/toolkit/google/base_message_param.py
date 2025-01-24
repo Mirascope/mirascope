@@ -2,7 +2,7 @@ from mirascope.core import (
     BaseDynamicConfig,
     BaseMessageParam,
     BaseToolKit,
-    gemini,
+    google,
     toolkit_tool,
 )
 

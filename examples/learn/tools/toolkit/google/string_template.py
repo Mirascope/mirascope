@@ -1,7 +1,7 @@
 from mirascope.core import (
     BaseDynamicConfig,
     BaseToolKit,
-    gemini,
+    google,
     prompt_template,
     toolkit_tool,
 )

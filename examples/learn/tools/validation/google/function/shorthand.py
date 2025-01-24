@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from mirascope.core import gemini
+from mirascope.core import google
 from pydantic import AfterValidator, ValidationError
 
 

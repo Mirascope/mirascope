@@ -1,4 +1,4 @@
-from mirascope.core import gemini, BaseMessageParam
+from mirascope.core import google, BaseMessageParam
 from mirascope.tools import DuckDuckGoSearch
 
 

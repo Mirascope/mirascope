@@ -1,7 +1,7 @@
-from google.generativeai import GenerativeModel
-from google.generativeai.types import FunctionDeclaration, Tool
+from google.genai import Client
+from google.genai.types import FunctionDeclaration, Tool
 
-model = GenerativeModel("gemini-1.5-flash")
+client = Client()
 
 
 def get_book_author(title: str) -> str:
@@ -14,28 +14,31 @@ def get_book_author(title: str) -> str:
 
 
 def identify_author(book: str) -> str:
-    response = model.generate_content(
-        f"Who wrote {book}?",
-        tools=[
-            Tool(
-                function_declarations=[
-                    FunctionDeclaration(
-                        **{
-                            "name": "get_book_author",
-                            "description": "Returns the author of the book with the given title.",
-                            "parameters": {
-                                "properties": {"title": {"type": "string"}},
-                                "required": ["title"],
-                                "type": "object",
-                            },
-                        }
-                    )
-                ]
-            )
-        ],
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents={"parts": [{"text": f"Who wrote {book}?"}]},
+        config={
+            "tools": [
+                Tool(
+                    function_declarations=[
+                        FunctionDeclaration(
+                            **{
+                                "name": "get_book_author",
+                                "description": "Returns the author of the book with the given title.",
+                                "parameters": {
+                                    "properties": {"title": {"type": "string"}},
+                                    "required": ["title"],
+                                    "type": "object",
+                                },
+                            }
+                        )
+                    ]
+                )
+            ]
+        },
     )
     if tool_calls := [
-        part.function_call for part in response.parts if part.function_call.args
+        function_call for function_call in response.function_calls if function_call.args
     ]:
         if tool_calls[0].name == "get_book_author":
             return get_book_author(**dict(tool_calls[0].args.items()))  # pyright: ignore [reportArgumentType]
