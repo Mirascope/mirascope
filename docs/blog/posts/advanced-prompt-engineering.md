@@ -16,7 +16,7 @@ Advanced prompt engineering – which usually involves techniques such as few-sh
 
 This is in contrast to basic prompting where you give the LLM simpler, direct instructions.
 
-The more complex the task, the greater the need to structure prompts to guide the model with reasoning steps, external information, and specific examples.
+The more complex the task, **the greater the need to structure prompts to guide the model with reasoning steps, external information, and specific examples**.
 
 Done right, advanced prompt engineering techniques let you do some pretty impressive things, for instance:
 
