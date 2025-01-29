@@ -49,7 +49,7 @@ _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", covariant=True, bound=BaseCallResponseChunk
 )
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+_ResultT = TypeVar("_ResultT")
 
 
 def _get_provider_call(provider: str) -> Callable:
@@ -97,7 +97,9 @@ def _get_provider_call(provider: str) -> Callable:
     raise ValueError(f"Unsupported provider: {provider}")
 
 
-def _wrap_result(result: BaseCallResponse | BaseStream) -> CallResponse | Stream:
+def _wrap_result(
+    result: BaseCallResponse | BaseStream | _ResultT,
+) -> CallResponse | Stream | _ResultT:
     """Wraps the result into a CallResponse or Stream instance.
 
     Args:
@@ -115,7 +117,7 @@ def _wrap_result(result: BaseCallResponse | BaseStream) -> CallResponse | Stream
     elif isinstance(result, BaseStream):
         return Stream(stream=result)  # type: ignore
     else:
-        raise ValueError(f"Unsupported result type: {type(result)}")
+        return result
 
 
 def _call(
