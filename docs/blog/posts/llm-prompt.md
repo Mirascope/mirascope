@@ -589,7 +589,7 @@ For instance, `response` below is assigned the output of an OpenAI call that ret
 
 Just like code, prompts are iterated and refined over time, so they too should be placed under [version control](https://mirascope.com/blog/prompt-versioning).
 
-It's helpful to use a local working directory for this. Mirascope offers a dedicated [prompt management frmework](https://lilypad.so/docs) called Lilypad that versions and traces every prompt and LLM call automatically.
+It's helpful to use a local working directory for this. Mirascope offers a dedicated prompt management framework called [Lilypad](https://lilypad.so/docs) that versions and traces every prompt and LLM call automatically.
 
 ## Use Mirascope for Effective Prompting
 
