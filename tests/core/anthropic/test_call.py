@@ -27,7 +27,7 @@ def test_anthropic_call() -> None:
             TCallResponseChunk=AnthropicCallResponseChunk,
             TStream=AnthropicStream,
             TToolType=AnthropicTool,
-            default_call_params=AnthropicCallParams(max_tokens=1000),
+            default_call_params=AnthropicCallParams(max_tokens=1024),
             setup_call=_utils.setup_call,
             get_json_output=_utils.get_json_output,
             handle_stream=_utils.handle_stream,

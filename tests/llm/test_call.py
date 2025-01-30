@@ -92,7 +92,7 @@ class ConcreteStream(BaseStream):
     def cost(self): ...
 
 
-def test_wrap_result_with_concrete_response_and_stream():
+def test_wrap_result():
     resp = ConcreteResponse(
         metadata=Metadata(),
         response={},
@@ -127,10 +127,9 @@ def test_wrap_result_with_concrete_response_and_stream():
     result_stream = _wrap_result(strm)
     assert isinstance(result_stream, Stream)
 
-
-def test_wrap_result_unsupported_type():
-    with pytest.raises(ValueError, match="Unsupported result type: <class 'int'>"):
-        _wrap_result(42)  # pyright: ignore [reportGeneralTypeIssues, reportArgumentType]
+    output = _wrap_result("parsed output")
+    assert isinstance(output, str)
+    assert output == "parsed output"
 
 
 def test_get_provider_call_unsupported():
@@ -294,33 +293,3 @@ async def test_call_decorator_async():
         res = await dummy_async_function()
         assert isinstance(res, CallResponse)
         assert res.finish_reasons == ["stop"]
-
-
-def test_call_unsupported_result_type():
-    def dummy_str_call(
-        model,
-        stream,
-        tools,
-        response_model,
-        output_parser,
-        json_mode,
-        call_params,
-        client,
-    ):
-        def wrapper(fn):
-            def inner(*args, **kwargs):
-                return "not a supported result"
-
-            return inner
-
-        return wrapper
-
-    with patch(
-        "mirascope.llm.llm_call._get_provider_call", return_value=dummy_str_call
-    ):
-
-        @call(provider="openai", model="gpt-4o-mini")
-        def dummy_function_str(): ...
-
-        with pytest.raises(ValueError, match="Unsupported result type: <class 'str'>"):
-            dummy_function_str()

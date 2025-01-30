@@ -18,7 +18,7 @@ anthropic_call = call_factory(
     TCallResponseChunk=AnthropicCallResponseChunk,
     TStream=AnthropicStream,
     TToolType=AnthropicTool,
-    default_call_params=AnthropicCallParams(max_tokens=1000),
+    default_call_params=AnthropicCallParams(max_tokens=1024),
     setup_call=setup_call,
     get_json_output=get_json_output,
     handle_stream=handle_stream,
