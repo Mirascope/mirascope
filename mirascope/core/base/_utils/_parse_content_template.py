@@ -2,6 +2,7 @@
 
 import re
 import urllib.request
+from functools import reduce
 from typing import Any, Literal, cast
 
 from typing_extensions import TypedDict
@@ -42,6 +43,39 @@ class _Part(TypedDict):
     options: dict[str, str] | None
 
 
+def _cleanup_text_preserve_newlines(text: str) -> str:
+    def clean_line(line: str) -> str:
+        # Remove '\r' to handle Windows-style line breaks
+        line = line.replace("\r", "")
+
+        # Remove zero-width spaces (common examples)
+        zero_width_spaces = ["\u200b", "\u200c", "\u200d", "\ufeff"]
+        for zw in zero_width_spaces:
+            line = line.replace(zw, "")
+
+        # Remove all fullwidth spaces (u3000) anywhere in the line
+        line = line.replace("\u3000", "")
+
+        # Strip leading/trailing half-width spaces (but keep tabs/newlines)
+        line = line.strip(" ")
+
+        # Remove leading tabs
+        line = line.lstrip("\t")
+        # Remove trailing tabs
+        line = line.rstrip("\t")
+
+        return line
+
+    # Split lines but preserve the newline at the end of each line
+    lines = text.splitlines(keepends=True)
+
+    # Use `map` to apply `clean_line` to each line
+    cleaned_lines = map(clean_line, lines)
+
+    # Use `reduce` to concatenate all lines into a single string
+    return reduce(lambda acc, x: acc + x, cleaned_lines, "")
+
+
 def _parse_parts(template: str) -> list[_Part]:
     # \{ and \} match the literal curly braces.
     #
@@ -58,7 +92,13 @@ def _parse_parts(template: str) -> list[_Part]:
     parts: list[_Part] = []
     for i in range(0, len(split), 4):
         if split[i]:
-            parts.append(_Part(template=split[i], type="text", options=None))
+            parts.append(
+                _Part(
+                    template=_cleanup_text_preserve_newlines(split[i]),
+                    type="text",
+                    options=None,
+                )
+            )
         if i + 3 < len(split):
             special_content = split[i + 1]
             special_type = cast(_PartType, split[i + 2])
@@ -228,7 +268,7 @@ def _construct_parts(
         if text in attrs:
             source = attrs[text]
             return [TextPart(type="text", text=source)]
-        formatted_template = format_template(part["template"], attrs)
+        formatted_template = format_template(part["template"], attrs, strip=False)
         if not formatted_template:
             return []
         return [TextPart(type="text", text=formatted_template)]
@@ -243,7 +283,7 @@ def parse_content_template(
 
     parts = [
         item
-        for part in _parse_parts(template)
+        for part in _parse_parts(template.strip())
         for item in _construct_parts(part, attrs)
     ]
 
