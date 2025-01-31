@@ -22,6 +22,7 @@ def test_parse_content_template() -> None:
     assert parse_content_template("user", "", {}) is None
     assert parse_content_template("user", " ", {}) is None
     assert parse_content_template("system", "", {}) is None
+    assert parse_content_template("system", " \u200b ", {}) is None
     template = "This is a {var1} template with {var2} variables."
     values = {"var1": "test", "var2": "two"}
     expected = BaseMessageParam(
