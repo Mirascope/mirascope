@@ -14,6 +14,7 @@ def calculate_cost(
     gpt-4o-mini             $0.15 / 1M tokens   $0.60  / 1M tokens
     gpt-4o-mini-2024-07-18  $0.15 / 1M tokens   $0.60  / 1M tokens
     gpt-4o                  $2.50 / 1M tokens   $10.00 / 1M tokens
+    gpt-4o-2024-11-20       $2.50 / 1M tokens   $10.00 / 1M tokens
     gpt-4o-2024-08-06       $2.50 / 1M tokens   $10.00 / 1M tokens
     gpt-4o-2024-05-13       $5.00 / 1M tokens   $15.00 / 1M tokens
     gpt-4-turbo             $10.00 / 1M tokens  $30.00 / 1M tokens
@@ -36,6 +37,10 @@ def calculate_cost(
             "completion": 0.000_000_6,
         },
         "gpt-4o": {
+            "prompt": 0.000_002_5,
+            "completion": 0.000_01,
+        },
+        "gpt-4o-2024-11-20": {
             "prompt": 0.000_002_5,
             "completion": 0.000_01,
         },
