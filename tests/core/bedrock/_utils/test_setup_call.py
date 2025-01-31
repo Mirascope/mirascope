@@ -247,7 +247,11 @@ def test_setup_call_extract(
     )
     assert isinstance(tool_types, list)
     assert "toolConfig" in call_kwargs and call_kwargs["toolConfig"] == {
-        "toolChoice": {"name": "mock_tool", "type": "tool"}
+        "toolChoice": {
+            "tool": {
+                "name": "mock_tool",
+            }
+        }
     }
 
 
