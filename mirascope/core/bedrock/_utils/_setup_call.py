@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import Any, ParamSpec, cast, overload
 
+import aiobotocore.client
 from aiobotocore.session import AioSession, get_session
 from boto3.session import Session
 from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
@@ -21,11 +21,18 @@ from types_aiobotocore_bedrock_runtime import (
     BedrockRuntimeClient as AsyncBedrockRuntimeClient,
 )
 from types_aiobotocore_bedrock_runtime.type_defs import (
+    ConverseRequestRequestTypeDef as AsyncConverseRequestRequestTypeDef,
+)
+from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseResponseTypeDef as AsyncConverseResponseTypeDef,
+)
+from types_aiobotocore_bedrock_runtime.type_defs import (
+    ConverseStreamRequestRequestTypeDef as AsyncConverseStreamRequestRequestTypeDef,
 )
 from types_aiobotocore_bedrock_runtime.type_defs import (
     ConverseStreamResponseTypeDef as AsyncConverseStreamResponseTypeDef,
 )
+from typing_extensions import Unpack
 
 from ... import BaseMessageParam
 from ...base import BaseTool, _utils
@@ -86,9 +93,28 @@ def _extract_async_stream_fn(
     return _inner
 
 
-async def _get_async_client(session: AioSession) -> AsyncBedrockRuntimeClient:
-    async with session.create_client("bedrock-runtime") as client:
-        return client
+class _AsyncBedrockRuntimeWrappedClient:
+    def __init__(self, session: AioSession, model: str) -> None:
+        self.session: AioSession = session
+        self.model: str = model
+
+    async def converse(
+        self, **kwargs: Unpack[AsyncConverseRequestRequestTypeDef]
+    ) -> AsyncConverseResponseTypeDef:
+        async with self.session.create_client("bedrock-runtime") as client:
+            return await client.converse(**kwargs)
+
+    async def converse_stream(
+        self, **kwargs: Unpack[AsyncConverseStreamRequestRequestTypeDef]
+    ) -> AsyncGenerator[AsyncStreamOutputChunk, None]:
+        async with self.session.create_client("bedrock-runtime") as client:
+            response = await client.converse_stream(**kwargs)
+            async for chunk in response["stream"]:
+                yield AsyncStreamOutputChunk(
+                    responseMetadata=response["ResponseMetadata"],
+                    model=self.model,
+                    **chunk,
+                )
 
 
 @overload
@@ -200,18 +226,21 @@ def setup_call(
     if client is None:
         if fn_is_async(fn):
             session = get_session()
-            client = asyncio.run(_get_async_client(session))
+            _client = _AsyncBedrockRuntimeWrappedClient(session, model)
         else:
             session = Session()
-            client = session.client("bedrock-runtime")
+            _client = session.client("bedrock-runtime")
+    else:
+        _client = client
+    if isinstance(_client, aiobotocore.client.AioBaseClient):
+        create = get_async_create_fn(
+            _client.converse, _extract_async_stream_fn(_client.converse_stream, model)
+        )
+    elif isinstance(_client, _AsyncBedrockRuntimeWrappedClient):
+        create = get_async_create_fn(_client.converse, _client.converse_stream)
 
-    create = (
-        get_async_create_fn(
-            client.converse, _extract_async_stream_fn(client.converse_stream, model)
+    else:
+        create = get_create_fn(
+            _client.converse, _extract_sync_stream_fn(_client.converse_stream, model)
         )
-        if isinstance(client, AsyncBedrockRuntimeClient)
-        else get_create_fn(
-            client.converse, _extract_sync_stream_fn(client.converse_stream, model)
-        )
-    )
     return create, prompt_template, messages, tool_types, call_kwargs
