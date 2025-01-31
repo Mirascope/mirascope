@@ -330,7 +330,7 @@ It also shows auto-suggestions:
 
 Mirascope is also compatible with the latest version of Pydantic (V2).
 
-## How to Make an LLM-Driven Chatbot that Searches the Web {#how-to-make-an-llm-driven-chatbot-that-searches-the-web}
+## [How to Make an LLM-Driven Chatbot that Searches the Web](#how-to-make-an-llm-driven-chatbot-that-searches-the-web)
 
 We split this tutorial into two parts:
 
