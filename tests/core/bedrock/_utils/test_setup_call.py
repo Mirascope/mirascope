@@ -312,7 +312,7 @@ def test_setup_call_client_creation(
         stream=False,
     )
 
-    mock_get_session.called_once()
+    mock_get_session.assert_called_once()
 
     # Test when client is provided
     mock_client = MagicMock()
