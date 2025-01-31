@@ -192,7 +192,7 @@ def setup_call(
         assert tool_types, "At least one tool must be provided for extraction."
         if "toolConfig" in call_kwargs:
             call_kwargs["toolConfig"]["toolChoice"] = cast(
-                ToolChoiceTypeDef, {"type": "tool", "name": tool_types[0]._name()}
+                ToolChoiceTypeDef, {"tool": {"name": tool_types[0]._name()}}
             )
 
     call_kwargs |= cast(BedrockCallKwargs, {"modelId": model, "messages": messages})
