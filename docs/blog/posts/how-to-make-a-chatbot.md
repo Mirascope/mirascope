@@ -69,7 +69,7 @@ The ability to change models or even model providers (e.g., OpenAI to Anthropic)
 
 For instance, Mirascope’s LLM call decorator provides a consistent interface across different AI models and providers so you can easily change from, say, OpenAI:
 
-```py
+```python
 from mirascope.core import openai
 
 @openai.call("gpt-4o-mini")
@@ -82,7 +82,7 @@ original_response = response.response
 
 To, Anthropic:
 
-```py
+```python
 from mirascope.core import anthropic
 
 @anthropic.call("claude-3-5-sonnet-20240620")
@@ -107,7 +107,7 @@ A case in point is [LangChain’s runnable](https://mirascope.com/blog/langchain
 
 For example, a corporate chatbot might pass a user query such as “What’s the status of my expense reimbursement request?” through a [pipeline](https://mirascope.com/blog/llm-pipeline/) defined using `runnable`, where `RunnablePassthrough` forwards the query unchanged, a prompt formats the query for processing, and `runnable.bind(stop="END")` configures the language model to stop generating a response once it encounters the keyword "END:”
 
-```py
+```python
 runnable = (
     {"equation_statement": RunnablePassthrough()}
     | prompt
@@ -126,7 +126,7 @@ The time and effort needed for handling any errors will only go up the more comp
 
 Why not just use standard Python for such a chain?
 
-```py
+```python
 from mirascope.core import openai
 
 
@@ -159,7 +159,7 @@ Prompt versioning typically allows you to:
 
 [Lilypad](https://lilypad.so/), which works with Mirascope, is an open source prompt engineering framework that automatically versions your code every time you make an LLM call. You can use Lilypad by adding the `lilypad.generation()` decorator to any Python function:
 
-```py
+```python
 import lilypad
 from openai import OpenAI
 
@@ -217,7 +217,7 @@ The following example demonstrates a custom tool (`GetArtGalleryInfo`) that exte
 
 If the user asks “Tell me about the Louvre,” the LLM uses the tool to formulate a precise response by invoking the `GetArtGalleryInfo` tool, which retrieves specific information about the Louvre and then integrates this information into the final response provided to the user:
 
-```py
+```python
 from mirascope.core import BaseTool, openai, prompt_template
 from pydantic import Field
 
@@ -267,7 +267,7 @@ For example, below we define a class `BookRecommendationInput` that extends `Bas
 
 The moment this class is instantiated, values for the fields `genre` and `audience` will be constrained by the type annotations and validation rules defined in class, such as required types (`str`), minimum length (`min_length=3` for `genre`), and the presence of mandatory fields.
 
-```py
+```python
 from typing import Annotated
 
 from mirascope.core import openai
@@ -300,7 +300,7 @@ Mirascope also validates LLM outputs via its **response model**, which uses Pyda
 
 As shown below, you define a `response_model` as a Pydantic `BaseModel` and add it to an LLM call to validate the output.
 
-```py
+```python
 from pydantic import BaseModel
 from mirascope.core import openai, prompt_template
 
@@ -343,11 +343,11 @@ These steps are based on [Mirascope’s tutorial](https://mirascope.com/tutorial
 
 Before running these tutorials, we install Mirascope and its dependencies:
 
-```py
-!pip install "mirascope[openai]"
+```bash
+pip install "mirascope[openai]"
 ```
 
-```py
+```python
 import os
 
 os.environ["OPENAI_API_KEY"] = "YOUR_API_KEY"
@@ -369,7 +369,7 @@ First we build the basic version of the AI assistant with several features:
 
 As you’ll see later on, we use `BaseMessageParam` as our message object and Pydantic’s `BaseModel` to make sure the message history is always a list of specific kinds of messages for a better customer experience and in order to avoid errors.
 
-```py
+```python
 from mirascope.core import BaseMessageParam, openai, prompt_template
 from pydantic import BaseModel
 ```
@@ -378,7 +378,7 @@ from pydantic import BaseModel
 
 We create `Chatbot` to define how the chatbot works and to preserve state (i.e., to remember past interactions):
 
-```py
+```python
 # Define a Chatbot class that uses Pydantic for validation 
 class Chatbot(BaseModel):
 # Attribute to store the conversation history, containing both user and helper messages 
@@ -430,7 +430,7 @@ In the code above, we define:
 
 Finally, we instantiate the chatbot class and start the interactive loop using the `run` method:
 
-```py
+```python
 Chatbot().run()
 ```
 
@@ -458,13 +458,13 @@ Below, we add search capabilities to our basic chatbot, using the [DuckDuckGo Py
 
 Below, we install packages for DuckDuckGo, Beautiful Soup (library for parsing HTML and XML documents), and the `requests` library, which simplifies HTTP requests, such as fetching webpage content:
 
-```py
-!pip install duckduckgo-search beautifulsoup4 requests 
+```bash
+pip install duckduckgo-search beautifulsoup4 requests 
 ```
 
 Next, we import the modules we need, such as `DDGS` (a DuckDuckGo search API wrapper for retrieving search results programmatically) and Pydantic modules for validating inputs for the `WebSearch` class we’ll define:
 
-```py
+```python
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
@@ -475,7 +475,7 @@ from pydantic import BaseModel, Field
 
 This class represents a web search tool that leverages the DuckDuckGo Search API for retrieving and parsing information from webpages related to a specific query.
 
-```py
+```python
 
 class WebSearch(openai.OpenAITool):
     """Search the web for the given text and parse the paragraphs of the results."""
@@ -529,7 +529,7 @@ Below we add our web search tool to the parameter list of `@openai.call`, enabli
 
 We also add the `_step()` method, which we explain in more detail below:
 
-```py
+```python
 class Chatbot(BaseModel):
     history: list[BaseMessageParam | openai.OpenAIMessageParam] = []
 
@@ -591,7 +591,7 @@ The response itself may consist of text chunks (the helper’s reply) or tool in
 
 After updating the code for the new web search tool, we start the interactive loop using the `run` method:
 
-```py
+```python
 Chatbot().run()
 ```
 
