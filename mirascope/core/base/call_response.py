@@ -155,6 +155,7 @@ class BaseCallResponse(
         """Returns the string content of the response."""
         return self.content
 
+    @computed_field
     @property
     @abstractmethod
     def content(self) -> str:
@@ -168,6 +169,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def finish_reasons(self) -> list[str] | None:
@@ -177,18 +179,21 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def model(self) -> str | None:
         """Should return the name of the response model."""
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def id(self) -> str | None:
         """Should return the id of the response."""
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def usage(self) -> Any:  # noqa: ANN401
@@ -198,6 +203,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def input_tokens(self) -> int | float | None:
@@ -207,6 +213,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def output_tokens(self) -> int | float | None:
@@ -216,6 +223,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def cost(self) -> float | None:

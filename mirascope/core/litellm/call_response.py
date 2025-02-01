@@ -4,6 +4,7 @@ usage docs: learn/calls.md#handling-responses
 """
 
 from litellm.cost_calculator import completion_cost
+from pydantic import computed_field
 
 from ..openai import OpenAICallResponse
 
@@ -17,6 +18,7 @@ class LiteLLMCallResponse(OpenAICallResponse):
 
     _provider = "litellm"
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
