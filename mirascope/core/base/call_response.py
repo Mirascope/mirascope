@@ -193,7 +193,6 @@ class BaseCallResponse(
         """Should return the id of the response."""
         ...
 
-    @computed_field
     @property
     @abstractmethod
     def usage(self) -> Any:  # noqa: ANN401
