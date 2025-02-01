@@ -90,6 +90,7 @@ class BedrockCallResponse(
             return cast(SyncMessageTypeDef | AsyncMessageTypeDef, message)
         return None
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
@@ -99,16 +100,19 @@ class BedrockCallResponse(
             return content[0].get("text", "")
         return ""
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [self.response["stopReason"]]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the name of the response model."""
         return cast(BedrockCallKwargs, self.call_kwargs)["modelId"]
 
+    @computed_field
     @property
     def id(self) -> str:
         """Returns the id of the response."""
@@ -119,16 +123,19 @@ class BedrockCallResponse(
         """Returns the usage of the chat completion."""
         return self.response["usage"]
 
+    @computed_field
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
         return self.usage["inputTokens"] if self.usage else None
 
+    @computed_field
     @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage["outputTokens"] if self.usage else None
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""

@@ -69,11 +69,13 @@ class MistralCallResponse(
     def _response_choices(self) -> list[ChatCompletionChoice]:
         return self.response.choices or []
 
+    @computed_field
     @property
     def content(self) -> str:
         """The content of the chat completion for the 0th choice."""
         return cast(str, self._response_choices[0].message.content) or ""
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
@@ -82,11 +84,13 @@ class MistralCallResponse(
             for choice in self._response_choices
         ]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the name of the response model."""
         return self.response.model
 
+    @computed_field
     @property
     def id(self) -> str:
         """Returns the id of the response."""
@@ -97,16 +101,19 @@ class MistralCallResponse(
         """Returns the usage of the chat completion."""
         return self.response.usage
 
+    @computed_field
     @property
     def input_tokens(self) -> int:
         """Returns the number of input tokens."""
         return self.usage.prompt_tokens
 
+    @computed_field
     @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""

@@ -65,11 +65,13 @@ class GeminiCallResponse(
 
     _provider = "gemini"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
@@ -87,6 +89,7 @@ class GeminiCallResponse(
             for candidate in self.response.candidates
         ]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the model name.
@@ -96,6 +99,7 @@ class GeminiCallResponse(
         """
         return self._model
 
+    @computed_field
     @property
     def id(self) -> str | None:
         """Returns the id of the response.
@@ -112,16 +116,19 @@ class GeminiCallResponse(
         """
         return None
 
+    @computed_field
     @property
     def input_tokens(self) -> None:
         """Returns the number of input tokens."""
         return None
 
+    @computed_field
     @property
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
