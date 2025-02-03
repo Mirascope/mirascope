@@ -112,12 +112,12 @@ Overview:"""
 
 custom_overview_prompt = PromptTemplate.from_template(template)
 
-overview_chain = (
+**overview_chain = (
     {"information": retriever | format_docs, "subject": RunnablePassthrough()}
     | custom_overview_prompt
     | llm
     | StrOutputParser()
-)
+)**
 
 output = overview_chain.invoke("Describe machine learning")
 print(output)
