@@ -193,7 +193,7 @@ The above snippet shows how you can build a RAG pipeline using [LangChain](https
 
 #### A Convenient Approach to LLM Calling 
 
-Mirascope’s [call decorator](https://mirascope.com/docs/learn/calls/) (e.g., `@openai.call()` converts regular Python functions into [prompts](https://mirascope.com/blog/advanced-prompt-engineering/) by turning the function signature and return statement into an API request.
+Mirascope’s [call decorator](https://mirascope.com/docs/learn/calls/) (e.g., `@openai.call()`) converts regular Python functions into [prompts](https://mirascope.com/blog/advanced-prompt-engineering/) by turning the function signature and return statement into an API request.
 
 This automates prompt formatting, model selection, and response parsing, while ensuring type safety and smooth integration with various LLM providers.
 
