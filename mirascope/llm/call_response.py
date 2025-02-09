@@ -85,7 +85,6 @@ class CallResponse(
         return str(self._response)
 
     @computed_field
-    @computed_field
     @property
     def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons

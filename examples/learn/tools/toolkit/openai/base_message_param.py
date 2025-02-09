@@ -17,6 +17,7 @@ class BookTools(BaseToolKit):
         """Suggests an author for the user to read based on their reading level.
 
         User reading level: {self.reading_level}
+        Author you suggest must be appropriate for the user's reading level.
         """
         return f"I would suggest you read some books by {author}"
 
