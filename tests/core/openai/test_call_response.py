@@ -138,9 +138,9 @@ def test_openai_call_response_with_tools() -> None:
     with pytest.raises(ValueError, match="refusal message"):
         tool = call_response.tools
     assert call_response.common_finish_reasons == ["stop"]
-    assert call_response.common_message_param == [
-        BaseMessageParam(role="assistant", content="content")
-    ]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
 
 
 def test_openai_call_response_with_audio() -> None:

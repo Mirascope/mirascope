@@ -98,7 +98,7 @@ class DummyProviderCallResponse(
 
     @property
     def common_message_param(self):
-        return [BaseMessageParam(role="assistant", content="common_message")]
+        return BaseMessageParam(role="assistant", content="common_message")
 
     @property
     def common_usage(self): ...
@@ -131,8 +131,8 @@ def dummy_call_response_instance():
 
 def test_call_response(dummy_call_response_instance):
     assert dummy_call_response_instance.finish_reasons == ["finish"]
-    assert isinstance(dummy_call_response_instance.message_param, list)
-    message_param = dummy_call_response_instance.message_param[0]
+    assert isinstance(dummy_call_response_instance.message_param, BaseMessageParam)
+    message_param = dummy_call_response_instance.message_param
     assert message_param.role == "assistant"
     assert dummy_call_response_instance.tools is not None
     assert dummy_call_response_instance.tool is not None

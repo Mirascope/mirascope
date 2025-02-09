@@ -181,5 +181,5 @@ class GroqCallResponse(
         return cast(list[FinishReason], self.finish_reasons)
 
     @property
-    def common_message_param(self) -> list[BaseMessageParam]:
-        return GroqMessageParamConverter.from_provider([self.message_param])
+    def common_message_param(self) -> BaseMessageParam:
+        return GroqMessageParamConverter.from_provider([self.message_param])[0]
