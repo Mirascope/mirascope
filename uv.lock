@@ -3156,7 +3156,7 @@ wheels = [
 
 [[package]]
 name = "mirascope"
-version = "1.16.6"
+version = "1.16.8"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -3281,7 +3281,7 @@ requires-dist = [
     { name = "jiter", specifier = ">=0.5.0" },
     { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
     { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.42.12,<2" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=1.0.0,<3" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=1.0.0,<4" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0.0" },
     { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=1.0.0,<2" },
     { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
