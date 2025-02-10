@@ -188,3 +188,11 @@ class AnthropicCallResponse(
     @property
     def common_message_param(self) -> BaseMessageParam:
         return AnthropicMessageParamConverter.from_provider([(self.message_param)])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return AnthropicMessageParamConverter.from_provider(
+            [(self.user_message_param)]
+        )[0]

@@ -29,9 +29,10 @@ class CohereMessageParamConverter(BaseMessageParamConverter):
         """
         converted = []
         for message_param in message_params:
+            role = getattr(message_param, "role", "assistant")
             if not message_param.tool_calls:
                 converted.append(
-                    BaseMessageParam(role="assistant", content=message_param.message)
+                    BaseMessageParam(role=role, content=message_param.message)
                 )
                 continue
 
@@ -49,5 +50,5 @@ class CohereMessageParamConverter(BaseMessageParamConverter):
                     )
                 )
 
-            converted.append(BaseMessageParam(role="tool", content=converted_content))
+            converted.append(BaseMessageParam(role=role, content=converted_content))
         return converted

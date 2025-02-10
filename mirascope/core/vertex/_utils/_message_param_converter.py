@@ -52,14 +52,16 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
         """
         converted = []
         for message_param in message_params:
-            role: str = "assistant"
+            role: str = (
+                "assistant" if message_param.role == "model" else message_param.role
+            )
             contents = []
             has_tool_call = False
             for part in message_param.parts:
                 if part.function_response:
                     converted.append(
                         BaseMessageParam(
-                            role=role,
+                            role=message_param.role,
                             content=[
                                 ToolResultPart(
                                     type="tool_result",

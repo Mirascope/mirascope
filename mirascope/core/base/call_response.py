@@ -280,6 +280,12 @@ class BaseCallResponse(
         ...
 
     @property
+    @abstractmethod
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        """Provider-agnostic user message param."""
+        ...
+
+    @property
     def common_tools(self) -> list[Tool] | None:
         """Provider-agnostic tools."""
         from ...llm.tool import Tool

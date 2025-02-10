@@ -8,6 +8,7 @@ from mistralai.models import (
     ToolCall,
     ToolMessage,
     UsageInfo,
+    UserMessage,
 )
 
 from mirascope.core import BaseMessageParam
@@ -62,6 +63,11 @@ def test_mistral_call_response() -> None:
     assert call_response.common_finish_reasons == ["stop"]
     assert call_response.common_message_param == BaseMessageParam(
         role="assistant", content="content"
+    )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = UserMessage(content="content")
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
     )
 
 

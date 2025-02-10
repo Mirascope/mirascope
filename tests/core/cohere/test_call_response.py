@@ -58,6 +58,14 @@ def test_cohere_call_response() -> None:
     assert call_response.common_message_param == BaseMessageParam(
         role="assistant", content="content"
     )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = ChatMessage(
+        message="content",
+        role="user",  # type: ignore
+    )
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_cohere_call_response_with_tools() -> None:

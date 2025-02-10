@@ -101,6 +101,10 @@ class DummyProviderCallResponse(
         return BaseMessageParam(role="assistant", content="common_message")
 
     @property
+    def common_user_message_param(self):
+        return BaseMessageParam(role="user", content="common_user_message")
+
+    @property
     def common_usage(self): ...
 
     def common_construct_call_response(self): ...

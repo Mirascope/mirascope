@@ -67,6 +67,14 @@ def test_gemini_call_response() -> None:
         role="assistant",
         content="The author is Patrick Rothfuss",
     )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = {
+        "role": "user",
+        "parts": [Part(text="content")],
+    }
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_gemini_call_response_with_tools() -> None:

@@ -66,6 +66,11 @@ def test_groq_call_response() -> None:
     assert call_response.common_message_param == BaseMessageParam(
         role="assistant", content="content"
     )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = {"role": "user", "content": "content"}
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_groq_call_response_with_tools() -> None:

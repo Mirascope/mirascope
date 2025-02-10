@@ -62,6 +62,11 @@ def test_anthropic_call_response() -> None:
     assert call_response.common_message_param == BaseMessageParam(
         role="assistant", content=[TextPart(type="text", text="content")]
     )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = {"role": "user", "content": "content"}
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_anthropic_call_response_with_tools() -> None:

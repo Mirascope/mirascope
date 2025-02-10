@@ -43,7 +43,7 @@ def test_tool_calls_with_message():
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert result.role == "tool"
+    assert result.role == "assistant"
     assert len(result.content) == 2
     assert isinstance(result.content[0], TextPart)
     assert result.content[0].text == "Message before tool"
@@ -74,7 +74,7 @@ def test_tool_calls_no_message():
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert result.role == "tool"
+    assert result.role == "assistant"
     assert len(result.content) == 2
     assert isinstance(result.content[0], ToolCallPart)
     assert result.content[0].name == "tool_one"

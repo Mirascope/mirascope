@@ -193,3 +193,9 @@ class VertexCallResponse(
     @property
     def common_message_param(self) -> BaseMessageParam:
         return VertexMessageParamConverter.from_provider([self.message_param])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return VertexMessageParamConverter.from_provider([self.user_message_param])[0]
