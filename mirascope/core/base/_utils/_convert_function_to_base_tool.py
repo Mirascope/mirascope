@@ -114,7 +114,7 @@ def convert_function_to_base_tool(
     if examples:
         model.model_config["json_schema_extra"] = {"examples": examples}
 
-    def call(self: base) -> Any:  # noqa: ANN401
+    def call(self: base) -> Any:  # pyright: ignore [reportInvalidTypeForm] # noqa: ANN401
         return fn(
             **(
                 ({"self": self} if has_self else {})
@@ -129,7 +129,7 @@ def convert_function_to_base_tool(
             )
         )
 
-    async def call_async(self: base) -> Callable:
+    async def call_async(self: base) -> Callable:  # pyright: ignore [reportInvalidTypeForm]
         return await call(self)
 
     if inspect.iscoroutinefunction(fn):

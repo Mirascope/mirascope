@@ -63,9 +63,17 @@ def test_bedrock_call_response() -> None:
     assert call_response.tools is None
     assert call_response.tool is None
     assert call_response.common_finish_reasons == ["stop"]
-    assert call_response.common_message_param == [
-        BaseMessageParam(role="assistant", content="content")
-    ]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = {
+        "role": "user",
+        "content": [{"text": "content"}],
+    }
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_bedrock_call_response_no_message() -> None:

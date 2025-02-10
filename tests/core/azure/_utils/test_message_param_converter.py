@@ -1,11 +1,18 @@
 import json
 from unittest.mock import MagicMock
 
+from azure.ai.inference.models import (
+    AssistantMessage,
+    TextContentItem,
+    ToolMessage,
+    UserMessage,
+)
+
 from mirascope.core import BaseMessageParam
 from mirascope.core.azure._utils._message_param_converter import (
     AzureMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.base.message_param import TextPart, ToolCallPart, ToolResultPart
 
 
 def test_convert_no_tool_calls_with_content():
@@ -13,7 +20,7 @@ def test_convert_no_tool_calls_with_content():
     If there are no tool_calls and content is present, we expect a single BaseMessageParam
     with role="assistant" and content as a string.
     """
-    message_param = MagicMock()
+    message_param = MagicMock(spec=AssistantMessage)
     message_param.tool_calls = None
     message_param.content = "Hello Azure"
 
@@ -26,12 +33,47 @@ def test_convert_no_tool_calls_with_content():
     assert result.content == "Hello Azure"
 
 
+def test_convert_content_list():
+    """Test that we can convert a list of content parts properly."""
+    message_param = MagicMock(spec=AssistantMessage)
+    message_param.tool_calls = None
+    message_param.content = [
+        TextContentItem(text="Content 1"),
+        TextContentItem(text="Content 2"),
+    ]
+
+    results = AzureMessageParamConverter.from_provider([message_param])
+    assert len(results) == 1
+
+    result = results[0]
+    assert result.role == "assistant"
+    assert len(result.content) == 2
+    assert result.content[0] == TextPart(type="text", text="Content 1")
+    assert result.content[1] == TextPart(type="text", text="Content 2")
+
+    message_param = MagicMock(spec=UserMessage)
+    message_param.tool_calls = None
+    message_param.content = [
+        TextContentItem(text="Content 1"),
+        TextContentItem(text="Content 2"),
+    ]
+
+    results = AzureMessageParamConverter.from_provider([message_param])
+    assert len(results) == 1
+
+    result = results[0]
+    assert result.role == "user"
+    assert len(result.content) == 2
+    assert result.content[0] == TextPart(type="text", text="Content 1")
+    assert result.content[1] == TextPart(type="text", text="Content 2")
+
+
 def test_convert_no_tool_calls_no_content():
     """
     If there are no tool_calls and no content, expect a single BaseMessageParam
     with role="assistant" and empty string content.
     """
-    message_param = MagicMock()
+    message_param = MagicMock(spec=AssistantMessage)
     message_param.tool_calls = None
     message_param.content = None  # or ""
 
@@ -56,7 +98,7 @@ def test_convert_with_single_tool_call():
     tool_call.id = "tool_call_1"
     tool_call.function = function
 
-    message_param = MagicMock()
+    message_param = MagicMock(spec=AssistantMessage)
     message_param.tool_calls = [tool_call]
     message_param.content = "Content should be ignored because of tool_calls"
 
@@ -65,7 +107,7 @@ def test_convert_with_single_tool_call():
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert result.role == "tool"
+    assert result.role == "assistant"
     assert len(result.content) == 1
     part = result.content[0]
     assert isinstance(part, ToolCallPart)
@@ -96,7 +138,7 @@ def test_convert_with_multiple_tool_calls():
     tool_call2.id = "tc_2"
     tool_call2.function = function2
 
-    message_param = MagicMock()
+    message_param = MagicMock(spec=AssistantMessage)
     message_param.tool_calls = [tool_call1, tool_call2]
     message_param.content = "Ignored content"
 
@@ -105,7 +147,7 @@ def test_convert_with_multiple_tool_calls():
 
     result = results[0]
     assert isinstance(result, BaseMessageParam)
-    assert result.role == "tool"
+    assert result.role == "assistant"
     assert len(result.content) == 2
 
     part1 = result.content[0]
@@ -119,6 +161,29 @@ def test_convert_with_multiple_tool_calls():
     assert part2.name == "tool_two"
     assert part2.args == {"key2": "val2"}
     assert part2.id == "tc_2"
+
+
+def test_convert_tool_message_param():
+    """Tests converting a message parameter with the tool role."""
+    message_param = MagicMock(spec=ToolMessage)
+    message_param.role = "tool"
+    message_param.content = "Message before tool"
+    message_param.tool_call_id = "id"
+
+    results = AzureMessageParamConverter.from_provider([message_param])
+    assert len(results) == 1
+
+    result = results[0]
+    assert isinstance(result, BaseMessageParam)
+    assert result.role == "tool"
+    assert len(result.content) == 1
+    assert result.content[0] == ToolResultPart(
+        type="tool_result",
+        name="",
+        content="Message before tool",
+        id="id",
+        is_error=False,
+    )
 
 
 def test_base_message_param_to_provider():

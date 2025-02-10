@@ -105,4 +105,5 @@ def convert_message_params(
                 converted_message_params.append(
                     {"role": message_param.role, "content": converted_content}
                 )
+    # print(converted_message_params)
     return converted_message_params
