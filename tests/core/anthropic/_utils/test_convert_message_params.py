@@ -1,5 +1,8 @@
 """Tests the `anthropic._utils.convert_message_params` function."""
 
+import base64
+from unittest.mock import patch
+
 import pytest
 from anthropic.types import MessageParam
 
@@ -12,13 +15,22 @@ from mirascope.core.base import (
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
 )
 
 
-def test_convert_message_params() -> None:
+@patch(
+    "mirascope.core.anthropic._utils._convert_message_params._load_media",
+    return_value=b"imagedata",
+)
+@patch(
+    "mirascope.core.anthropic._utils._convert_message_params.get_image_type",
+    return_value="png",
+)
+def test_convert_message_params(mock_get_image_type, mock_load_media) -> None:
     """Tests the `convert_message_params` function."""
 
     message_params: list[BaseMessageParam | MessageParam] = [
@@ -39,6 +51,9 @@ def test_convert_message_params() -> None:
                     type="tool_result", id="tool_id", content="result", name="tool_name"
                 ),
                 ToolCallPart(type="tool_call", id="tool_id", name="tool_name"),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/image", detail=None
+                ),
             ],
         ),
     ]
@@ -78,15 +93,25 @@ def test_convert_message_params() -> None:
                     "name": "tool_name",
                     "type": "tool_use",
                 },
+                {
+                    "type": "image",
+                    "source": {
+                        "data": base64.b64encode(b"imagedata").decode("utf-8"),
+                        "media_type": "image/png",
+                        "type": "base64",
+                    },
+                },
             ],
             "role": "user",
         },
     ]
 
+    mock_load_media.assert_called_once_with("http://example.com/image")
+    mock_get_image_type.assert_called_once_with(b"imagedata")
+
     with pytest.raises(
         ValueError,
-        match="Unsupported image media type: image/svg. Anthropic currently only "
-        "supports JPEG, PNG, GIF, and WebP images.",
+        match="Unsupported image media type: image/svg. Anthropic currently only supports JPEG, PNG, GIF, and WebP images.",
     ):
         convert_message_params(
             [
@@ -106,8 +131,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Anthropic currently only supports text, image, and cache control parts. "
-        "Part provided: audio",
+        match="Anthropic currently only supports text, image, and cache control parts. Part provided: audio",
     ):
         convert_message_params(
             [
@@ -134,6 +158,21 @@ def test_convert_message_params() -> None:
                             media_type="application/docx",
                             document=b"docx",
                         )
+                    ],
+                )
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="Anthropic currently only supports text, image, and cache control parts. Part provided: cache_control",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        CacheControlPart(type="cache_control", cache_type="ephemeral")
                     ],
                 )
             ]
