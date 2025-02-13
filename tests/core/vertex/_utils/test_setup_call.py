@@ -139,6 +139,73 @@ def test_setup_call_json_mode(
     assert generation_config["response_mime_type"] == "application/xml"
 
 
+@pytest.mark.parametrize("generation_config_type", [dict, GenerationConfig])
+@patch(
+    "mirascope.core.vertex._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.vertex._utils._setup_call._utils", new_callable=MagicMock)
+@patch(
+    "mirascope.core.vertex._utils._setup_call.GenerativeModel", new_callable=MagicMock
+)
+def test_setup_call_system_instruction(
+    mock_generative_model: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+    generation_config_type: type,
+) -> None:
+    """Tests the `setup_call` function with JSON mode."""
+    mock_utils.setup_call = mock_base_setup_call
+    mock_utils.json_mode_content = MagicMock(return_value="mock content")
+    mock_generative_model.return_value = MagicMock()
+    mock_base_setup_call.return_value[1] = [
+        Content(role="system", parts=[Part.from_text("system_instruction test")]),
+        Content(role="user", parts=[Part.from_text("test")]),
+    ]
+    mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
+    mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfig(
+        candidate_count=1,
+        max_output_tokens=100,
+        response_mime_type="application/xml",
+        response_schema=None,
+        stop_sequences=["\n"],
+        temperature=0.5,
+        top_k=0,
+        top_p=0,
+    )
+    mock_convert_message_params.side_effect = lambda x: x
+    _, _, messages, _, call_kwargs = setup_call(
+        model="gemini-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+    assert messages[-1].parts[-1].text == "mock content"
+    assert "tools" in call_kwargs
+    assert "generation_config" in call_kwargs
+    generation_config = call_kwargs["generation_config"].to_dict()
+    assert generation_config["temperature"] == 0.5
+    assert generation_config["top_p"] == 0
+    assert generation_config["top_k"] == 0
+    assert generation_config["candidate_count"] == 1
+    assert generation_config["max_output_tokens"] == 100
+    assert generation_config["stop_sequences"] == ["\n"]
+    assert generation_config["response_mime_type"] == "application/xml"
+    assert "system_instruction" in call_kwargs
+    system_instruction = call_kwargs["system_instruction"]
+    assert isinstance(system_instruction, list)
+    assert len(system_instruction) == 1
+    assert isinstance(system_instruction[0], Part)
+    assert system_instruction[0].text == "system_instruction test"  # pyright: ignore [reportIndexIssue]
+
+
 @patch(
     "mirascope.core.vertex._utils._setup_call.convert_message_params",
     new_callable=MagicMock,

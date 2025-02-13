@@ -108,6 +108,13 @@ def setup_call(
     call_kwargs = cast(VertexCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | Content], messages)
     messages = convert_message_params(messages)
+
+    if messages and messages[0].role == "system":
+        system_instruction = call_kwargs.pop("system_instruction", [])
+        if not isinstance(system_instruction, list):
+            system_instruction = [system_instruction]
+        system_instruction.extend(messages.pop(0).parts)
+        call_kwargs["system_instruction"] = system_instruction
     if json_mode:
         generation_config = call_kwargs.get(
             "generation_config",

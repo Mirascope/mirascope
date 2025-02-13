@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from google.generativeai.types.content_types import ToolConfigType
+from google.generativeai.types.content_types import (
+    PartType,
+    ToolConfigType,
+)
 from google.generativeai.types.safety_types import SafetySettingOptions
 from pydantic import ConfigDict, with_config
 from typing_extensions import NotRequired
@@ -50,3 +53,4 @@ class GeminiCallParams(BaseCallParams):
     safety_settings: NotRequired[SafetySettingOptions]
     request_options: NotRequired[RequestOptions]
     tool_config: NotRequired[ToolConfigType]
+    system_instruction: NotRequired[list[PartType] | PartType]

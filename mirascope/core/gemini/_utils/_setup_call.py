@@ -108,6 +108,14 @@ def setup_call(
     call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
+
+    if messages and messages[0]["role"] == "system":
+        system_instruction = call_kwargs.pop("system_instruction", [])
+        if not isinstance(system_instruction, list):
+            system_instruction = [system_instruction]
+        system_instruction.extend(messages.pop(0)["parts"])
+        call_kwargs["system_instruction"] = system_instruction
+
     if json_mode:
         generation_config = call_kwargs.get("generation_config", {})
         if is_dataclass(generation_config):
