@@ -3,12 +3,7 @@
 from __future__ import annotations
 
 from typing_extensions import NotRequired
-from vertexai.generative_models import (
-    GenerationConfig,
-    Part,
-    SafetySetting,
-    ToolConfig,
-)
+from vertexai.generative_models import GenerationConfig, SafetySetting, ToolConfig
 
 from ..base import BaseCallParams
 
@@ -27,4 +22,3 @@ class VertexCallParams(BaseCallParams):
     generation_config: NotRequired[GenerationConfig]
     safety_settings: NotRequired[SafetySetting]
     tool_config: NotRequired[ToolConfig]
-    system_instruction: NotRequired[str | Part | list[str | Part]]

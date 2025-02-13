@@ -163,6 +163,8 @@ def test_setup_call_system_instruction(
         Content(role="system", parts=[Part.from_text("system_instruction test")]),
         Content(role="user", parts=[Part.from_text("test")]),
     ]
+    mock_client = MagicMock()
+    mock_client._system_instruction = None
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfig(
         candidate_count=1,
@@ -177,7 +179,7 @@ def test_setup_call_system_instruction(
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
         model="gemini-1.5-flash",
-        client=None,
+        client=mock_client,
         fn=MagicMock(),
         fn_args={},
         dynamic_config=None,
@@ -198,12 +200,7 @@ def test_setup_call_system_instruction(
     assert generation_config["max_output_tokens"] == 100
     assert generation_config["stop_sequences"] == ["\n"]
     assert generation_config["response_mime_type"] == "application/xml"
-    assert "system_instruction" in call_kwargs
-    system_instruction = call_kwargs["system_instruction"]
-    assert isinstance(system_instruction, list)
-    assert len(system_instruction) == 1
-    assert isinstance(system_instruction[0], Part)
-    assert system_instruction[0].text == "system_instruction test"  # pyright: ignore [reportIndexIssue]
+    assert mock_client._system_instruction[0].text == "system_instruction test"
 
 
 @patch(

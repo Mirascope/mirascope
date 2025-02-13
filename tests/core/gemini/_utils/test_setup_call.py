@@ -155,10 +155,12 @@ def test_setup_call_system_instruction(
     mock_base_setup_call.return_value[1] = [
         {
             "role": "system",
-            "parts": [{"type": "text", "text": "system_instruction test"}],
+            "parts": ["system_instruction test"],
         },
         {"role": "user", "parts": [{"type": "text", "text": "test"}]},
     ]
+    mock_client = MagicMock()
+    mock_client._system_instruction = None
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_base_setup_call.return_value[-1]["generation_config"] = generation_config_type(
         candidate_count=1,
@@ -173,7 +175,7 @@ def test_setup_call_system_instruction(
     mock_convert_message_params.side_effect = lambda x: x
     _, _, messages, _, call_kwargs = setup_call(
         model="gemini-1.5-flash",
-        client=None,
+        client=mock_client,
         fn=MagicMock(),
         fn_args={},
         dynamic_config=None,
@@ -184,10 +186,7 @@ def test_setup_call_system_instruction(
         stream=False,
     )
     assert messages[-1]["parts"][-1] == mock_utils.json_mode_content.return_value
-    assert "system_instruction" in call_kwargs
-    assert call_kwargs["system_instruction"] == [
-        {"text": "system_instruction test", "type": "text"}
-    ]
+    assert mock_client._system_instruction.parts[0].text == "system_instruction test"
 
 
 @patch(
