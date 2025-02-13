@@ -43,7 +43,10 @@ def test_convert_message_params() -> None:
         {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
         {"content": [{"text": "Hello"}], "role": "user"},
         {
-            "content": [{"text": "Hello"}, {"bytes": b"image", "format": "image/jpeg"}],
+            "content": [
+                {"text": "Hello"},
+                {"image": {"format": "jpeg", "source": {"bytes": b"image"}}},
+            ],
             "role": "user",
         },
         {

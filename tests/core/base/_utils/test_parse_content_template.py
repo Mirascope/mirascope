@@ -9,10 +9,12 @@ from PIL import Image
 from mirascope.core.base._utils._parse_content_template import parse_content_template
 from mirascope.core.base.message_param import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
 )
 
@@ -53,6 +55,14 @@ def test_parse_content_template_images(
         role="user",
         content=[
             TextPart(type="text", text="Analyze this image:"),
+            ImageURLPart(type="image_url", url="https://", detail=None),
+        ],
+    )
+    assert parse_content_template("user", template, {"url": "https://"}) == expected
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this image:"),
             ImagePart(
                 type="image",
                 media_type="image/jpeg",
@@ -61,7 +71,6 @@ def test_parse_content_template_images(
             ),
         ],
     )
-    assert parse_content_template("user", template, {"url": "https://"}) == expected
     assert parse_content_template("user", template, {"url": "./image.jpg"}) == expected
     assert (
         parse_content_template("user", template, {"url": mock_jpeg_bytes}) == expected
@@ -78,18 +87,25 @@ def test_parse_content_template_images(
         role="user",
         content=[
             TextPart(type="text", text="Analyze this image:"),
-            ImagePart(
-                type="image",
-                media_type="image/jpeg",
-                image=mock_jpeg_bytes,
-                detail="low",
-            ),
+            ImageURLPart(type="image_url", url="https://", detail="low"),
         ],
     )
     assert parse_content_template("user", template, {"url": "https://"}) == expected
 
     template = "Analyze these images: {urls:images}"
     expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze these images:"),
+            ImageURLPart(type="image_url", url="https://", detail=None),
+            ImageURLPart(type="image_url", url="https://.", detail=None),
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"urls": ["https://", "https://."]})
+        == expected
+    )
+    expected = expected = BaseMessageParam(
         role="user",
         content=[
             TextPart(type="text", text="Analyze these images:"),
@@ -106,10 +122,6 @@ def test_parse_content_template_images(
                 detail=None,
             ),
         ],
-    )
-    assert (
-        parse_content_template("user", template, {"urls": ["https://", "https://."]})
-        == expected
     )
     assert (
         parse_content_template(
@@ -149,14 +161,34 @@ def test_parse_content_template_audio(
         role="user",
         content=[
             TextPart(type="text", text="Analyze this audio:"),
-            AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
+            AudioURLPart(type="audio_url", url="https://"),
         ],
     )
     assert parse_content_template("user", template, {"url": "https://"}) == expected
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze this audio:"),
+            AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
+        ],
+    )
     assert parse_content_template("user", template, {"url": "./audio.mp3"}) == expected
     assert parse_content_template("user", template, {"url": audio_data}) == expected
 
     template = "Analyze these audio files: {urls:audios}"
+
+    expected = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Analyze these audio files:"),
+            AudioURLPart(type="audio_url", url="https://"),
+            AudioURLPart(type="audio_url", url="https://."),
+        ],
+    )
+    assert (
+        parse_content_template("user", template, {"urls": ["https://", "https://."]})
+        == expected
+    )
     expected = BaseMessageParam(
         role="user",
         content=[
@@ -164,10 +196,6 @@ def test_parse_content_template_audio(
             AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
             AudioPart(type="audio", media_type="audio/mp3", audio=audio_data),
         ],
-    )
-    assert (
-        parse_content_template("user", template, {"urls": ["https://", "https://."]})
-        == expected
     )
     assert (
         parse_content_template(

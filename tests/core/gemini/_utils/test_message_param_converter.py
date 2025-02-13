@@ -65,7 +65,7 @@ def test_gemini_convert_parts_document():
     )
     with pytest.raises(
         ValueError,
-        match='FileData.file_uri is not support: mime_type: "application/pdf"\nfile_uri: "%PDF-1.4..."\n. Cannot convert to BaseMessageParam.',
+        match="Unsupported file_data mime type: application/pdf. Cannot convert to BaseMessageParam.",
     ):
         GeminiMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
