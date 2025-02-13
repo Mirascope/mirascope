@@ -67,7 +67,7 @@ bedrock = [
 ]
 cohere = ["cohere>=5.5.8,<6"]
 gemini = ["google-generativeai>=0.4.0,<1", "pillow>=10.4.0,<11"]
-google = ["google-genai>=0.6.0,<1"]
+google = ["google-genai>=1.2.0,<2"]
 groq = ["groq>=0.9.0,<1"]
 tenacity = ["tenacity>=8.4.2,<9"]
 hyperdx = ["hyperdx-opentelemetry>=0.1.0,<1"]
