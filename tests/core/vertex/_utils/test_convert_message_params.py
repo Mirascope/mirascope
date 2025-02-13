@@ -211,6 +211,52 @@ def test_image_url_conversion(
 
 @patch(
     "mirascope.core.vertex._utils._convert_message_params._load_media",
+    return_value=b"imagedata",
+)
+@patch("PIL.Image.open", new_callable=MagicMock)
+@patch("mirascope.core.vertex._utils._convert_message_params.Part.from_uri")
+def test_image_url_conversion_with_format_invalid(
+    mock_from_uri, mock_image_open: MagicMock, mock_load_media
+) -> None:
+    """Tests conversion of an image_url part with format invalid."""
+    with patch.dict("PIL.Image.MIME", {"JPEG": "image/invalid"}):
+        dummy_image = MagicMock()
+        dummy_image.format = "JPEG"
+        mock_image_open.return_value = dummy_image
+
+        # Define a dummy Part to be returned by Part.from_uri.
+        class DummyPart:
+            def __init__(self, data):
+                # Set _raw_part to mimic a valid Part with file_data.
+                self._raw_part = {
+                    "file_data": {
+                        "file_uri": data["file_uri"],
+                        "mime_type": data["mime_type"],
+                    }
+                }
+
+            def to_dict(self):
+                return self._raw_part
+
+        expected_dummy = DummyPart(
+            {"file_uri": "http://example.com/image", "mime_type": "image/jpeg"}
+        )
+        mock_from_uri.return_value = expected_dummy
+
+        # Create an instance of ImageURLPart.
+        dummy_part = ImageURLPart(
+            type="image_url", url="http://example.com/image", detail="auto"
+        )
+        message = BaseMessageParam(role="user", content=[dummy_part])
+        with pytest.raises(
+            ValueError,
+            match="Unsupported image media type: image/invalid. Gemini currently only supports JPEG, PNG, WebP, HEIC, and HEIF images.",
+        ):
+            convert_message_params([message])
+
+
+@patch(
+    "mirascope.core.vertex._utils._convert_message_params._load_media",
     return_value=b"audiodata",
 )
 @patch(
