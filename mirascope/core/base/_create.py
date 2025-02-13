@@ -166,7 +166,7 @@ def create_factory(  # noqa: ANN202
             @wraps(fn)
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> TCallResponse | _ParsedOutputT:
+            ) -> TCallResponse | _ParsedOutputT:  # pyright: ignore [reportInvalidTypeForm]
                 fn_args = get_fn_args(fn, args, kwargs)
                 dynamic_config = await get_dynamic_configuration(fn, args, kwargs)
                 nonlocal client

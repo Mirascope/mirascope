@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.16.3"
+version = "1.16.9"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -73,7 +73,7 @@ tenacity = ["tenacity>=8.4.2,<9"]
 hyperdx = ["hyperdx-opentelemetry>=0.1.0,<1"]
 langfuse = ["langfuse>=2.30.0,<3"]
 litellm = ["litellm>=1.42.12,<2"]
-logfire = ["logfire>=1.0.0,<3"]
+logfire = ["logfire>=1.0.0,<4"]
 mistral = ["mistralai>=1.0.0,<2"]
 openai = ["openai>=1.6.0,<2"]
 opentelemetry = ["opentelemetry-api>=1.22.0,<2", "opentelemetry-sdk>=1.22.0,<2"]
@@ -90,7 +90,7 @@ mcp = ["mcp>=1.0.0"]
 dev-dependencies = [
     "ruff>=0.6.1",
     "pytest>=8.3.2",
-    "pyright>=1.1.391",
+    "pyright>=1.1.393",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",

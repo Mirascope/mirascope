@@ -68,22 +68,26 @@ class AzureCallResponse(
 
     _provider = "azure"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
         message = self.response.choices[0].message
         return message.content if message.content is not None else ""
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [str(choice.finish_reason) for choice in self.response.choices]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the name of the response model."""
         return self.response.model
 
+    @computed_field
     @property
     def id(self) -> str:
         """Returns the id of the response."""
@@ -94,16 +98,19 @@ class AzureCallResponse(
         """Returns the usage of the chat completion."""
         return self.response.usage
 
+    @computed_field
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
         return self.usage.prompt_tokens if self.usage else None
 
+    @computed_field
     @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
@@ -192,5 +199,11 @@ class AzureCallResponse(
         )
 
     @property
-    def common_message_param(self) -> list[BaseMessageParam]:
-        return AzureMessageParamConverter.from_provider([self.message_param])
+    def common_message_param(self) -> BaseMessageParam:
+        return AzureMessageParamConverter.from_provider([self.message_param])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return AzureMessageParamConverter.from_provider([self.user_message_param])[0]

@@ -71,6 +71,9 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     def common_message_param(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
+    def common_user_message_param(self): ...
+
+    @property
     def common_tools(self): ...
 
     @property

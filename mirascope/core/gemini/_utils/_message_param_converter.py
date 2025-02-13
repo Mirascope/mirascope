@@ -57,7 +57,11 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
         """
         converted: list[BaseMessageParam] = []
         for message_param in message_params:
-            role: str = "assistant"
+            role: str = (
+                "assistant"
+                if message_param["role"] == "model"
+                else message_param["role"]
+            )
             content_list = []
             for part in cast(
                 list[protos.Part | protos.FunctionCall | protos.FunctionResponse],

@@ -3,10 +3,7 @@
 import json
 from typing import cast
 
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-)
+from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import TextPart, ToolCallPart, ToolResultPart
@@ -28,14 +25,18 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
 
     @staticmethod
     def from_provider(
-        message_params: list[ChatCompletionAssistantMessageParam],
+        message_params: list[ChatCompletionMessageParam],
     ) -> list[BaseMessageParam]:
         """Converts OpenAI message params to base message params."""
         converted = []
         for message_param in message_params:
             contents = []
             content = message_param.get("content")
-            if message_param["role"] == "tool":
+            if (
+                message_param["role"] == "tool"
+                and "name" in message_param
+                and "content" in message_param
+            ):
                 converted.append(
                     BaseMessageParam(
                         role="tool",
@@ -61,7 +62,8 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                     if "text" in part:
                         contents.append(TextPart(type="text", text=part["text"]))
                     else:
-                        raise ValueError(part["refusal"])
+                        # TODO: add support for image and audio parts here
+                        raise ValueError(part["refusal"])  # pyright: ignore [reportGeneralTypeIssues]
             if tool_calls := message_param.get("tool_calls"):
                 for tool_call in tool_calls:
                     contents.append(

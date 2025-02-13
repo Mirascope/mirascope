@@ -63,16 +63,19 @@ class CohereCallResponse(
 
     _provider = "cohere"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the content of the chat completion for the 0th choice."""
         return self.response.text
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str] | None:
         """Returns the finish reasons of the response."""
         return [str(self.response.finish_reason)]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the name of the response model.
@@ -81,6 +84,7 @@ class CohereCallResponse(
         """
         return self._model
 
+    @computed_field
     @property
     def id(self) -> str | None:
         """Returns the id of the response."""
@@ -93,6 +97,7 @@ class CohereCallResponse(
             return self.response.meta.billed_units
         return None
 
+    @computed_field
     @property
     def input_tokens(self) -> float | None:
         """Returns the number of input tokens."""
@@ -100,6 +105,7 @@ class CohereCallResponse(
             return self.usage.input_tokens
         return None
 
+    @computed_field
     @property
     def output_tokens(self) -> float | None:
         """Returns the number of output tokens."""
@@ -107,6 +113,7 @@ class CohereCallResponse(
             return self.usage.output_tokens
         return None
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the response."""
@@ -181,5 +188,11 @@ class CohereCallResponse(
         return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
 
     @property
-    def common_message_param(self) -> list[BaseMessageParam]:
-        return CohereMessageParamConverter.from_provider([self.message_param])
+    def common_message_param(self) -> BaseMessageParam:
+        return CohereMessageParamConverter.from_provider([self.message_param])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return CohereMessageParamConverter.from_provider([self.user_message_param])[0]

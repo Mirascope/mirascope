@@ -64,22 +64,26 @@ class AnthropicCallResponse(
 
     _provider = "anthropic"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the string text of the 0th text block."""
         block = self.response.content[0]
         return block.text if block.type == "text" else ""
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [str(self.response.stop_reason)]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the name of the response model."""
         return self.response.model
 
+    @computed_field
     @property
     def id(self) -> str:
         """Returns the id of the response."""
@@ -90,16 +94,19 @@ class AnthropicCallResponse(
         """Returns the usage of the message."""
         return self.response.usage
 
+    @computed_field
     @property
     def input_tokens(self) -> int:
         """Returns the number of input tokens."""
         return self.usage.input_tokens
 
+    @computed_field
     @property
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.output_tokens
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
@@ -179,5 +186,13 @@ class AnthropicCallResponse(
         return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
 
     @property
-    def common_message_param(self) -> list[BaseMessageParam]:
-        return AnthropicMessageParamConverter.from_provider([(self.message_param)])
+    def common_message_param(self) -> BaseMessageParam:
+        return AnthropicMessageParamConverter.from_provider([(self.message_param)])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return AnthropicMessageParamConverter.from_provider(
+            [(self.user_message_param)]
+        )[0]

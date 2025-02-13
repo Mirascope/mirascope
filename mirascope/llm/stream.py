@@ -100,7 +100,7 @@ class Stream(
             call_kwargs=stream.call_kwargs,
         )
 
-    def __iter__(
+    def __iter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> Generator[
         tuple[
@@ -116,7 +116,7 @@ class Stream(
                 Tool(tool=tool) if tool is not None else None,  # pyright: ignore [reportAbstractUsage]
             )
 
-    async def __aiter__(
+    async def __aiter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> AsyncGenerator[
         tuple[
@@ -150,7 +150,7 @@ class Stream(
             tool_calls=tool_calls, content=content
         )
 
-    def construct_call_response(
+    def construct_call_response(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
         return self.common_construct_call_response()

@@ -3172,7 +3172,7 @@ wheels = [
 
 [[package]]
 name = "mirascope"
-version = "1.16.3"
+version = "1.16.9"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -3301,7 +3301,7 @@ requires-dist = [
     { name = "jiter", specifier = ">=0.5.0" },
     { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.30.0,<3" },
     { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.42.12,<2" },
-    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=1.0.0,<3" },
+    { name = "logfire", marker = "extra == 'logfire'", specifier = ">=1.0.0,<4" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0.0" },
     { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=1.0.0,<2" },
     { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
@@ -3343,7 +3343,7 @@ dev = [
     { name = "pillow", specifier = ">=10.4.0" },
     { name = "pinecone-client", specifier = ">=5.0.1" },
     { name = "pre-commit", specifier = ">=3.8.0" },
-    { name = "pyright", specifier = ">=1.1.391" },
+    { name = "pyright", specifier = ">=1.1.393" },
     { name = "pytest", specifier = ">=8.3.2" },
     { name = "pytest-asyncio", specifier = ">=0.23.8" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
@@ -5002,15 +5002,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.391"
+version = "1.1.393"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/11/05/4ea52a8a45cc28897edb485b4102d37cbfd5fce8445d679cdeb62bfad221/pyright-1.1.391.tar.gz", hash = "sha256:66b2d42cdf5c3cbab05f2f4b76e8bec8aa78e679bfa0b6ad7b923d9e027cadb2", size = 21965 }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/c1/aede6c74e664ab103673e4f1b7fd3d058fef32276be5c43572f4067d4a8e/pyright-1.1.393.tar.gz", hash = "sha256:aeeb7ff4e0364775ef416a80111613f91a05c8e01e58ecfefc370ca0db7aed9c", size = 3790430 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/89/66f49552fbeb21944c8077d11834b2201514a56fd1b7747ffff9630f1bd9/pyright-1.1.391-py3-none-any.whl", hash = "sha256:54fa186f8b3e8a55a44ebfa842636635688670c6896dcf6cf4a7fc75062f4d15", size = 18579 },
+    { url = "https://files.pythonhosted.org/packages/92/47/f0dd0f8afce13d92e406421ecac6df0990daee84335fc36717678577d3e0/pyright-1.1.393-py3-none-any.whl", hash = "sha256:8320629bb7a44ca90944ba599390162bf59307f3d9fb6e27da3b7011b8c17ae5", size = 5646057 },
 ]
 
 [[package]]

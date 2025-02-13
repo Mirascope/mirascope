@@ -155,6 +155,7 @@ class BaseCallResponse(
         """Returns the string content of the response."""
         return self.content
 
+    @computed_field
     @property
     @abstractmethod
     def content(self) -> str:
@@ -168,6 +169,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def finish_reasons(self) -> list[str] | None:
@@ -177,12 +179,14 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def model(self) -> str | None:
         """Should return the name of the response model."""
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def id(self) -> str | None:
@@ -198,6 +202,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def input_tokens(self) -> int | float | None:
@@ -207,6 +212,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def output_tokens(self) -> int | float | None:
@@ -216,6 +222,7 @@ class BaseCallResponse(
         """
         ...
 
+    @computed_field
     @property
     @abstractmethod
     def cost(self) -> float | None:
@@ -268,8 +275,14 @@ class BaseCallResponse(
 
     @property
     @abstractmethod
-    def common_message_param(self) -> list[BaseMessageParam]:
+    def common_message_param(self) -> BaseMessageParam:
         """Provider-agnostic assistant message param."""
+        ...
+
+    @property
+    @abstractmethod
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        """Provider-agnostic user message param."""
         ...
 
     @property

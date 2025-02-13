@@ -1,18 +1,17 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import aiobotocore.client
 import pytest
+from aiobotocore.session import AioSession
 from pydantic import BaseModel
-from types_aiobotocore_bedrock_runtime import (
-    BedrockRuntimeClient as AsyncBedrockRuntimeClient,
-)
 
 from mirascope.core.bedrock._utils._convert_common_call_params import (
     convert_common_call_params,
 )
 from mirascope.core.bedrock._utils._setup_call import (
+    _AsyncBedrockRuntimeWrappedClient,
     _extract_async_stream_fn,
     _extract_sync_stream_fn,
-    _get_async_client,
     setup_call,
 )
 from mirascope.core.bedrock.tool import BedrockTool
@@ -23,20 +22,6 @@ def mock_base_setup_call() -> MagicMock:
     mock_setup_call = MagicMock()
     mock_setup_call.return_value = [MagicMock() for _ in range(3)] + [{}]
     return mock_setup_call
-
-
-@pytest.mark.asyncio
-async def test_get_async_client():
-    mock_session = MagicMock()
-
-    mock_client = MagicMock(spec=AsyncBedrockRuntimeClient)
-    mock_session.create_client.return_value.__aenter__.return_value = mock_client
-
-    client = await _get_async_client(mock_session)
-
-    assert isinstance(client, MagicMock)
-    assert client == mock_client
-    mock_session.create_client.assert_called_once_with("bedrock-runtime")
 
 
 def test_extract_sync_stream_fn():
@@ -247,7 +232,11 @@ def test_setup_call_extract(
     )
     assert isinstance(tool_types, list)
     assert "toolConfig" in call_kwargs and call_kwargs["toolConfig"] == {
-        "toolChoice": {"name": "mock_tool", "type": "tool"}
+        "toolChoice": {
+            "tool": {
+                "name": "mock_tool",
+            }
+        }
     }
 
 
@@ -280,11 +269,11 @@ def test_setup_call_with_tools(
     assert call_kwargs["toolConfig"] == {"tools": [{"name": "test_tool"}]}
 
 
-@patch("mirascope.core.bedrock._utils._setup_call._get_async_client")
+@patch("mirascope.core.bedrock._utils._setup_call.get_session")
 @patch("mirascope.core.bedrock._utils._setup_call._utils", new_callable=MagicMock)
 def test_setup_call_client_creation(
     mock_utils: MagicMock,
-    mock_get_async_client: AsyncMock,
+    mock_get_session: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
     mock_utils.setup_call = mock_base_setup_call
@@ -322,7 +311,8 @@ def test_setup_call_client_creation(
         response_model=None,
         stream=False,
     )
-    mock_get_async_client.assert_called_once()
+
+    mock_get_session.assert_called_once()
 
     # Test when client is provided
     mock_client = MagicMock()
@@ -338,4 +328,168 @@ def test_setup_call_client_creation(
         response_model=None,
         stream=False,
     )
-    assert mock_get_async_client.call_count == 1
+
+
+@patch("mirascope.core.bedrock._utils._setup_call.get_async_create_fn")
+@patch("mirascope.core.bedrock._utils._setup_call._utils", new_callable=MagicMock)
+def test_setup_call_aiobotocore_client(
+    mock_utils: MagicMock,
+    mock_get_async_create_fn: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """
+    Test that when the provided client is an instance of aiobotocore.client.AioBaseClient,
+    setup_call uses get_async_create_fn with client.converse and the _extract_async_stream_fn.
+    """
+    mock_utils.setup_call = mock_base_setup_call
+    mock_base_setup_call.return_value = [
+        "prompt",
+        [{"role": "user", "content": [{"text": "test"}]}],
+        None,
+        {},
+    ]
+
+    mock_aiobotocore_client = MagicMock(spec=aiobotocore.client.AioBaseClient)
+    mock_aiobotocore_client.converse = AsyncMock()
+    mock_aiobotocore_client.converse_stream = AsyncMock()
+
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="anthropic.claude-v2",
+        client=mock_aiobotocore_client,
+        fn=MagicMock(),  # can be any callable
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+
+    mock_get_async_create_fn.assert_called_once()
+    args, kwargs = mock_get_async_create_fn.call_args
+
+    assert args[0] is mock_aiobotocore_client.converse
+    assert callable(args[1])
+
+    assert create == mock_get_async_create_fn.return_value
+
+    assert prompt_template == "prompt"
+    assert messages[0]["role"] == "user"
+    assert call_kwargs["modelId"] == "anthropic.claude-v2"
+
+
+@patch("mirascope.core.bedrock._utils._setup_call.get_async_create_fn")
+@patch("mirascope.core.bedrock._utils._setup_call._utils", new_callable=MagicMock)
+def test_setup_call_async_bedrock_runtime_wrapped_client(
+    mock_utils: MagicMock,
+    mock_get_async_create_fn: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """
+    Test that when the provided client is an instance of _AsyncBedrockRuntimeWrappedClient,
+    setup_call uses get_async_create_fn correctly with client.converse and client.converse_stream.
+    """
+    mock_utils.setup_call = mock_base_setup_call
+    mock_base_setup_call.return_value = [
+        "prompt",
+        [{"role": "user", "content": [{"text": "test"}]}],
+        None,
+        {},
+    ]
+
+    wrapped_client = _AsyncBedrockRuntimeWrappedClient(
+        MagicMock(), "anthropic.claude-v2"
+    )
+
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(  # pyright: ignore [reportCallIssue]
+        model="anthropic.claude-v2",
+        client=wrapped_client,  # pyright: ignore [reportArgumentType]
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+
+    mock_get_async_create_fn.assert_called_once_with(
+        wrapped_client.converse,
+        wrapped_client.converse_stream,
+    )
+    assert create == mock_get_async_create_fn.return_value
+    assert prompt_template == "prompt"
+    assert messages[0]["role"] == "user"
+    assert "modelId" in call_kwargs and call_kwargs["modelId"] == "anthropic.claude-v2"
+
+
+@pytest.mark.asyncio
+async def test_async_bedrock_runtime_wrapped_client_converse():
+    """
+    Test that _AsyncBedrockRuntimeWrappedClient.converse calls client.converse inside the context
+    manager and returns the response.
+    """
+    mock_session = MagicMock(spec=AioSession)
+    mock_client = AsyncMock()
+    mock_client.converse = AsyncMock(return_value={"some": "result"})
+
+    mock_context_manager = AsyncMock()
+    mock_context_manager.__aenter__.return_value = mock_client
+    mock_context_manager.__aexit__.return_value = None
+
+    mock_session.create_client.return_value = mock_context_manager
+
+    wrapped_client = _AsyncBedrockRuntimeWrappedClient(mock_session, "test-model")
+    result = await wrapped_client.converse(param1="value1")  # pyright: ignore [reportCallIssue]
+
+    assert result == {"some": "result"}
+
+    mock_client.converse.assert_called_once_with(param1="value1")
+
+    mock_session.create_client.assert_called_once_with("bedrock-runtime")
+
+
+@pytest.mark.asyncio
+async def test_async_bedrock_runtime_wrapped_client_converse_stream():
+    """
+    Test that _AsyncBedrockRuntimeWrappedClient.converse_stream calls client.converse_stream
+    and yields dicts with the correct keys and values, aligning with the AsyncStreamOutputChunk structure.
+    """
+    mock_session = MagicMock(spec=AioSession)
+    mock_client = AsyncMock()
+
+    async def fake_stream():
+        yield {"content": "chunk1"}
+        yield {"content": "chunk2"}
+
+    mock_client.converse_stream = AsyncMock(
+        return_value={
+            "ResponseMetadata": {"request": "id"},
+            "stream": fake_stream(),
+        }
+    )
+
+    mock_context_manager = AsyncMock()
+    mock_context_manager.__aenter__.return_value = mock_client
+    mock_context_manager.__aexit__.return_value = None
+    mock_session.create_client.return_value = mock_context_manager
+
+    wrapped_client = _AsyncBedrockRuntimeWrappedClient(mock_session, "test-model")
+
+    chunks = []
+    async for chunk in wrapped_client.converse_stream(param2="value2"):  # pyright: ignore [reportCallIssue]
+        chunks.append(chunk)
+
+    assert len(chunks) == 2
+
+    for i, expected_content in enumerate(["chunk1", "chunk2"]):
+        assert isinstance(chunks[i], dict)
+        assert chunks[i]["model"] == "test-model"
+        assert chunks[i]["content"] == expected_content
+        assert chunks[i]["responseMetadata"] == {"request": "id"}
+
+    mock_client.converse_stream.assert_called_once_with(param2="value2")
+
+    mock_session.create_client.assert_called_once_with("bedrock-runtime")

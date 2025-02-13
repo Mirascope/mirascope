@@ -58,11 +58,13 @@ class VertexCallResponse(
 
     _provider = "vertex"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
@@ -80,6 +82,7 @@ class VertexCallResponse(
             for candidate in self.response.candidates
         ]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the model name.
@@ -89,6 +92,7 @@ class VertexCallResponse(
         """
         return self._model
 
+    @computed_field
     @property
     def id(self) -> str | None:
         """Returns the id of the response.
@@ -102,16 +106,19 @@ class VertexCallResponse(
         """Returns the usage of the chat completion."""
         return self.response.usage_metadata
 
+    @computed_field
     @property
     def input_tokens(self) -> int:
         """Returns the number of input tokens."""
         return self.usage.prompt_token_count
 
+    @computed_field
     @property
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.candidates_token_count
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
@@ -184,5 +191,11 @@ class VertexCallResponse(
         return _convert_finish_reasons_to_common_finish_reasons(self.finish_reasons)
 
     @property
-    def common_message_param(self) -> list[BaseMessageParam]:
-        return VertexMessageParamConverter.from_provider([self.message_param])
+    def common_message_param(self) -> BaseMessageParam:
+        return VertexMessageParamConverter.from_provider([self.message_param])[0]
+
+    @property
+    def common_user_message_param(self) -> BaseMessageParam | None:
+        if not self.user_message_param:
+            return None
+        return VertexMessageParamConverter.from_provider([self.user_message_param])[0]

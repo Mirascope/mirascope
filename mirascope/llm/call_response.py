@@ -54,10 +54,14 @@ class CallResponse(
             **{field: getattr(response, field) for field in response.model_fields}
         )
         object.__setattr__(self, "_response", response)
+        object.__setattr__(
+            self, "user_message_param", response.common_user_message_param
+        )
 
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
+            "user_message_param",
             "__dict__",
             "__class__",
             "model_fields",
@@ -84,6 +88,7 @@ class CallResponse(
     def __str__(self) -> str:
         return str(self._response)
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons
@@ -95,12 +100,12 @@ class CallResponse(
 
     @computed_field
     @cached_property
-    def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
+    def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         return self._response.common_tools
 
     @computed_field
     @cached_property
-    def tool(self) -> Tool | None:
+    def tool(self) -> Tool | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         tools = self._response.common_tools
         if tools:
             return tools[0]

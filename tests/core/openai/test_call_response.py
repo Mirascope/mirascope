@@ -3,7 +3,11 @@
 import base64
 
 import pytest
-from openai.types.chat import ChatCompletion, ChatCompletionToolMessageParam
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+)
 from openai.types.chat.chat_completion import Choice
 from openai.types.chat.chat_completion_audio import ChatCompletionAudio
 from openai.types.chat.chat_completion_message import ChatCompletionMessage
@@ -138,9 +142,16 @@ def test_openai_call_response_with_tools() -> None:
     with pytest.raises(ValueError, match="refusal message"):
         tool = call_response.tools
     assert call_response.common_finish_reasons == ["stop"]
-    assert call_response.common_message_param == [
-        BaseMessageParam(role="assistant", content="content")
-    ]
+    assert call_response.common_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = ChatCompletionUserMessageParam(
+        role="user", content="content"
+    )
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="user", content="content"
+    )
 
 
 def test_openai_call_response_with_audio() -> None:

@@ -32,14 +32,14 @@ export OPENAI_API_KEY=XXXXX
 Make your first call to an LLM to extract the title and author of a book from unstructured text:
 
 ```python
-from mirascope.core import openai
+from mirascope import llm
 from pydantic import BaseModel
 
 class Book(BaseModel):
     title: str
     author: str
 
-@openai.call("gpt-4o-mini", response_model=Book)
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=Book)
 def extract_book(text: str) -> str:
     return f"Extract {text}"
 
