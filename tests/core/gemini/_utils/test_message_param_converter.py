@@ -3,13 +3,16 @@ from google.generativeai import protos
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import (
+    AudioPart,
+    AudioURLPart,
     DocumentPart,
     ImagePart,
-    ToolCallPart,
-    ToolResultPart,
+    ImageURLPart,
 )
+from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
 from mirascope.core.gemini._utils._message_param_converter import (
     GeminiMessageParamConverter,
+    _to_audio_part,
     _to_document_part,
     _to_image_part,
 )
@@ -140,6 +143,22 @@ def test_to_document_part_unsupported_document():
         _to_document_part(mime_type="application/json", data=b"{}")
 
 
+def test_to_audio_part_supported():
+    """Test _to_audio_part with a supported audio mime type."""
+    result = _to_audio_part(mime_type="audio/mp3", data=b"audio")
+    assert isinstance(result, AudioPart)
+    assert result.media_type == "audio/mp3"
+    assert result.audio == b"audio"
+
+
+def test_to_audio_part_unsupported():
+    with pytest.raises(
+        ValueError,
+        match="Unsupported audio media type: application/json. Expected one of: audio/wav, audio/mp3, audio/aiff, audio/aac, audio/ogg, audio/flac.",
+    ):
+        _to_audio_part(mime_type="application/json", data=b"{}")
+
+
 def test_to_provider():
     results = GeminiMessageParamConverter.to_provider(
         [BaseMessageParam(role="assistant", content="Hello")]
@@ -226,3 +245,58 @@ def test_protos_function_call():
     assert isinstance(part_call, ToolCallPart)
     assert part_call.name == "some_tool"
     assert part_call.args == {"param1": "value1"}
+
+
+def test_gemini_convert_parts_file_data_image():
+    """
+    When a part has file_data with an image mime type, it should produce an ImageURLPart.
+    """
+    file_data = protos.FileData(
+        mime_type="image/jpeg", file_uri="http://example.com/img"
+    )
+    part = protos.Part(file_data=file_data)
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], ImageURLPart)
+    assert result.content[0].url == "http://example.com/img"
+
+
+def test_gemini_convert_parts_file_data_audio():
+    """
+    When a part has file_data with an audio mime type, it should produce an AudioURLPart.
+    """
+    file_data = protos.FileData(
+        mime_type="audio/mp3", file_uri="http://example.com/audio"
+    )
+    part = protos.Part(file_data=file_data)
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], AudioURLPart)
+    assert result.content[0].url == "http://example.com/audio"
+
+
+def test_gemini_convert_parts_file_data_unsupported():
+    """
+    When a part has file_data with an unsupported mime type, the converter should raise ValueError.
+    """
+    file_data = protos.FileData(
+        mime_type="application/zip", file_uri="http://example.com/zip"
+    )
+    part = protos.Part(file_data=file_data)
+    with pytest.raises(
+        ValueError,
+        match="Unsupported file_data mime type: application/zip. Cannot convert to BaseMessageParam.",
+    ):
+        GeminiMessageParamConverter.from_provider(
+            [{"role": "assistant", "parts": [part]}]
+        )

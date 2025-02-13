@@ -64,7 +64,6 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                     BaseMessageParam(role=message_param["role"], content=content)
                 )
                 continue
-            # elif isinstance(content, list):
             elif isinstance(content, Iterable):
                 for part in content:
                     if part["type"] == "text":

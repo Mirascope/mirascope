@@ -4,7 +4,12 @@ import pytest
 from openai.types.chat import ChatCompletionAssistantMessageParam
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import TextPart, ToolCallPart
+from mirascope.core.base import (
+    AudioPart,
+    ImageURLPart,
+    TextPart,
+    ToolCallPart,
+)
 from mirascope.core.openai._utils._message_param_converter import (
     OpenAIMessageParamConverter,
 )
@@ -119,3 +124,45 @@ def test_convert_message_param_tool_result():
     assert result.content[0].id == "tool_call_1"  # pyright: ignore [reportAttributeAccessIssue]
     assert not result.content[0].is_error  # pyright: ignore [reportAttributeAccessIssue]
     assert result.role == "tool"
+
+
+def test_convert_message_param_list_content_with_image_url():
+    message_param = ChatCompletionAssistantMessageParam(
+        role="assistant",
+        content=[
+            {  # pyright: ignore [reportArgumentType]
+                "type": "image_url",
+                "image_url": {"url": "https://example.com/image", "detail": "custom"},
+            }
+        ],
+    )
+    results = OpenAIMessageParamConverter.from_provider([message_param])
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    part = result.content[0]
+    assert isinstance(part, ImageURLPart)
+    assert part.url == "https://example.com/image"
+    assert part.detail == "custom"
+
+
+def test_convert_message_param_list_content_with_input_audio():
+    message_param = ChatCompletionAssistantMessageParam(
+        role="assistant",
+        content=[
+            {  # pyright: ignore [reportArgumentType]
+                "type": "input_audio",
+                "input_audio": {"format": "mp3", "data": "YXVkaW8="},
+            }
+        ],
+    )
+    results = OpenAIMessageParamConverter.from_provider([message_param])
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    part = result.content[0]
+    assert isinstance(part, AudioPart)
+    assert part.media_type == "audio/mp3"
+    assert part.audio == "YXVkaW8="
