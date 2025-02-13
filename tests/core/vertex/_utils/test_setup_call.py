@@ -139,7 +139,16 @@ def test_setup_call_json_mode(
     assert generation_config["response_mime_type"] == "application/xml"
 
 
-@pytest.mark.parametrize("generation_config_type", [dict, GenerationConfig])
+@pytest.mark.parametrize(
+    "mock_system_instruction, expected_system_instruction",
+    [
+        (None, ["system_instruction test"]),
+        (
+            ["default system instruction"],
+            ["default system instruction", "system_instruction test"],
+        ),
+    ],
+)
 @patch(
     "mirascope.core.vertex._utils._setup_call.convert_message_params",
     new_callable=MagicMock,
@@ -153,7 +162,8 @@ def test_setup_call_system_instruction(
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
-    generation_config_type: type,
+    mock_system_instruction: None | list[str],
+    expected_system_instruction: str,
 ) -> None:
     """Tests the `setup_call` function with JSON mode."""
     mock_utils.setup_call = mock_base_setup_call
@@ -164,7 +174,7 @@ def test_setup_call_system_instruction(
         Content(role="user", parts=[Part.from_text("test")]),
     ]
     mock_client = MagicMock()
-    mock_client._system_instruction = None
+    mock_client._system_instruction = mock_system_instruction
     mock_base_setup_call.return_value[-1]["tools"] = MagicMock()
     mock_base_setup_call.return_value[-1]["generation_config"] = GenerationConfig(
         candidate_count=1,
@@ -200,7 +210,10 @@ def test_setup_call_system_instruction(
     assert generation_config["max_output_tokens"] == 100
     assert generation_config["stop_sequences"] == ["\n"]
     assert generation_config["response_mime_type"] == "application/xml"
-    assert mock_client._system_instruction[0].text == "system_instruction test"
+    assert [
+        part if isinstance(part, str) else part.text
+        for part in mock_client._system_instruction
+    ] == expected_system_instruction
 
 
 @patch(

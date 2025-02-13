@@ -132,8 +132,9 @@ def setup_call(
 
     if messages and messages[0]["role"] == "system":
         system_instruction = client._system_instruction
-        if not isinstance(system_instruction, list):
-            system_instruction = [system_instruction] if system_instruction else []
+        system_instruction = (
+            list(system_instruction.parts) if system_instruction else []
+        )
         system_instruction.extend(messages.pop(0)["parts"])  # pyright: ignore [reportArgumentType]
         client._system_instruction = to_content(system_instruction)  # pyright: ignore [reportArgumentType]
 
