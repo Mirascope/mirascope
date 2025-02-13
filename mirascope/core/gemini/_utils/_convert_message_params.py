@@ -7,7 +7,7 @@ from google.generativeai import protos
 from google.generativeai.types import ContentDict
 
 from ...base import BaseMessageParam
-from ...base._utils import get_audio_type, get_image_type
+from ...base._utils import get_audio_type
 from ...base._utils._parse_content_template import _load_media
 
 

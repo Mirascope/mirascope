@@ -1,6 +1,5 @@
 """Utility for converting `BaseMessageParam` to `BedrockMessageParam`."""
 
-import base64
 from typing import cast
 
 from ...base import BaseMessageParam

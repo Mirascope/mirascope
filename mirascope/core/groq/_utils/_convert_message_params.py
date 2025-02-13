@@ -46,12 +46,14 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "image_url":
-                    converted_content.append({
-                        "type": "image_url",
-                        "image_url": {
-                            "url": part.url,
-                        },
-                    })
+                    converted_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": part.url,
+                            },
+                        }
+                    )
                 elif part.type == "tool_call":
                     converted_message_param = {
                         "role": "assistant",

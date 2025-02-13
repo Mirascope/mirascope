@@ -1,4 +1,6 @@
 """Utility for converting `BaseMessageParam` to `Content`"""
+
+import base64
 import io
 
 import PIL.Image
@@ -80,7 +82,9 @@ def convert_message_params(
                             "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
                             "and HEIF images."
                         )
-                    converted_content.append(Part.from_uri(part.url, mime_type=media_type))
+                    converted_content.append(
+                        Part.from_uri(part.url, mime_type=media_type)
+                    )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -96,7 +100,12 @@ def convert_message_params(
                             "and FLAC audio file types."
                         )
                     converted_content.append(
-                        Part.from_data(mime_type=part.media_type, data=part.audio)
+                        Part.from_data(
+                            mime_type=part.media_type,
+                            data=part.audio
+                            if isinstance(part.audio, bytes)
+                            else base64.b64decode(part.audio),
+                        )
                     )
                 elif part.type == "audio_url":
                     # Should download the audio to determine the media type
@@ -115,7 +124,9 @@ def convert_message_params(
                             "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
                             "and FLAC audio file types."
                         )
-                    converted_content.append(Part.from_uri(part.url, mime_type=audio_type))
+                    converted_content.append(
+                        Part.from_uri(part.url, mime_type=audio_type)
+                    )
                 elif part.type == "tool_call":
                     if converted_content:
                         converted_message_params.append(

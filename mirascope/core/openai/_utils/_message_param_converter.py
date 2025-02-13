@@ -9,7 +9,6 @@ from openai.types.chat import ChatCompletionMessageParam
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import (
     AudioPart,
-    AudioURLPart,
     ImageURLPart,
     TextPart,
     ToolCallPart,
