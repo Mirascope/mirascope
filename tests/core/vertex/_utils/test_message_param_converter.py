@@ -9,6 +9,7 @@ from mirascope.core.base import ImagePart
 from mirascope.core.base.message_param import (
     BaseMessageParam,
     DocumentPart,
+    ImageURLPart,
     ToolCallPart,
     ToolResultPart,
 )
@@ -36,6 +37,25 @@ def test_vertex_convert_parts_image():
         assert isinstance(result.content[0], ImagePart)
         assert result.content[0].media_type == "image/png"
         assert result.content[0].image == b"\x89PNG\r\n\x1a\n"
+        assert result.role == "assistant"
+
+
+def test_vertex_convert_parts_image_url():
+    raw_gapic_part = gapic_content_types.Part(
+        file_data=gapic_content_types.FileData(
+            mime_type="image/png", file_uri="https://example.com/image.png"
+        )
+    )
+    part = Part._from_gapic(raw_gapic_part)
+    message = Content(role="assistant", parts=[part])
+    with patch.object(Part, "text", new_callable=PropertyMock(return_value="")):
+        results = VertexMessageParamConverter.from_provider([message])
+        assert len(results) == 1
+        result = results[0]
+        assert isinstance(result.content, list)
+        assert len(result.content) == 1
+        assert isinstance(result.content[0], ImageURLPart)
+        assert result.content[0].url == "https://example.com/image.png"
         assert result.role == "assistant"
 
 
@@ -158,7 +178,6 @@ def test_to_provider():
         role="assistant",
         parts=[
             Part.from_text("This is a message"),
-            Part.from_data(b"\x89PNG\r\n\x1a\n", "image/png"),
         ],
     )
     results = VertexMessageParamConverter.to_provider([message_param])  # pyright: ignore [reportArgumentType]

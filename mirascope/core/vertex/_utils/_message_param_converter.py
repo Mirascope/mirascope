@@ -95,11 +95,10 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                                 detail=None,
                             )
                         )
-
-                    # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
-                    raise ValueError(
-                        f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
-                    )
+                    else:
+                        raise ValueError(
+                            f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
+                        )
                 elif part.function_call:
                     converted.append(
                         BaseMessageParam(
