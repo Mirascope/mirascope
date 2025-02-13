@@ -1,6 +1,7 @@
 """This module contains the setup_call function, which is used to set up the"""
 
-from collections.abc import Awaitable, Callable
+import contextlib
+from collections.abc import Awaitable, Callable, Generator
 from typing import Any, cast, overload
 
 from google.genai import Client
@@ -11,6 +12,7 @@ from google.genai.types import (
     GenerateContentConfig,
     GenerateContentConfigDict,
     GenerateContentResponse,
+    Part,
     PartDict,
     ToolConfig,
     ToolListUnion,
@@ -41,6 +43,16 @@ def _get_generate_content_config(
     if isinstance(config, dict):
         return GenerateContentConfig.model_validate(config)
     return config
+
+
+@contextlib.contextmanager
+def _generate_content_config_context(
+    call_kwargs: GoogleCallKwargs,
+) -> Generator[GenerateContentConfig, None, None]:
+    config = call_kwargs.get("config", {})
+    config = _get_generate_content_config(config)
+    yield config
+    call_kwargs["config"] = config
 
 
 @overload
@@ -119,32 +131,35 @@ def setup_call(
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
+
+    if messages[0] and messages[0].get("role") == "system":
+        with _generate_content_config_context(call_kwargs) as config:
+            config.system_instruction = [
+                Part.model_validate(part)
+                for part in (messages.pop(0).get("parts") or [])
+            ]
+
     if json_mode:
-        config = call_kwargs.get("config", {})
-        config = _get_generate_content_config(config)
-        if not tools:
-            config.response_mime_type = "application/json"
-        call_kwargs["config"] = config
+        with _generate_content_config_context(call_kwargs) as config:
+            if not tools:
+                config.response_mime_type = "application/json"
         messages[-1]["parts"].append(  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
             PartDict(text=_utils.json_mode_content(response_model))
         )  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
-        config = call_kwargs.get("config", {})
-        config = _get_generate_content_config(config)
-        config.tool_config = ToolConfig(
-            function_calling_config=FunctionCallingConfig(
-                mode=FunctionCallingConfigMode.ANY,
-                allowed_function_names=[tool_types[0]._name()],
+        with _generate_content_config_context(call_kwargs) as config:
+            config.tool_config = ToolConfig(
+                function_calling_config=FunctionCallingConfig(
+                    mode=FunctionCallingConfigMode.ANY,
+                    allowed_function_names=[tool_types[0]._name()],
+                )
             )
-        )
-        call_kwargs["config"] = config
     config_tools = call_kwargs.pop("tools", None)
     if config_tools:
-        config = call_kwargs.get("config", {})
-        config = _get_generate_content_config(config)
-        config.tools = cast(ToolListUnion, config_tools)
-        call_kwargs["config"] = config
+        with _generate_content_config_context(call_kwargs) as config:
+            config.tools = cast(ToolListUnion, config_tools)
+
     call_kwargs |= {"model": model, "contents": messages}
 
     if client is None:
