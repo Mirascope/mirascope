@@ -19,13 +19,9 @@ def convert_message_params(
                 )  # pragma: no cover
             converted_message_params += [
                 {
-                    "role": "user",
-                    "parts": [message_param.content],
-                },
-                {
-                    "role": "model",
-                    "parts": ["Ok! I will adhere to this system message."],
-                },
+                    "role": "system",
+                    "parts": [PartDict(text=message_param.content)],
+                }
             ]
         elif isinstance((content := message_param.content), str):
             converted_message_params.append(
