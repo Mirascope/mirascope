@@ -7,6 +7,7 @@ from google.genai.types import (
     FunctionCallingConfig,
     FunctionCallingConfigMode,
     GenerateContentConfig,
+    Part,
 )
 from pydantic import BaseModel
 
@@ -96,7 +97,11 @@ def test_setup_call_json_mode(
     mock_utils.setup_call = mock_base_setup_call
     mock_utils.json_mode_content = MagicMock()
     mock_base_setup_call.return_value[1] = [
-        {"role": "user", "parts": [{"type": "text", "text": "test"}]}
+        {
+            "role": "system",
+            "parts": [{"text": "this is system message"}],
+        },
+        {"role": "user", "parts": [{"type": "text", "text": "test"}]},
     ]
     tools = [MagicMock()]
     mock_base_setup_call.return_value[-1]["tools"] = tools
@@ -132,7 +137,19 @@ def test_setup_call_json_mode(
     }
     assert "config" in call_kwargs
     assert call_kwargs["config"] == GenerateContentConfig(
-        system_instruction=None,
+        system_instruction=[
+            Part(
+                video_metadata=None,
+                thought=None,
+                code_execution_result=None,
+                executable_code=None,
+                file_data=None,
+                function_call=None,
+                function_response=None,
+                inline_data=None,
+                text="this is system message",
+            )
+        ],
         temperature=0.5,
         top_p=0.0,
         top_k=0.0,

@@ -134,3 +134,11 @@ def test_google_call_response_with_tools() -> None:
             "role": "user",
         }
     ]
+    assert call_response.common_user_message_param is None
+    call_response.user_message_param = {
+        "role": "assistant",
+        "parts": [{"text": "content"}],
+    }
+    assert call_response.common_user_message_param == BaseMessageParam(
+        role="assistant", content="content"
+    )
