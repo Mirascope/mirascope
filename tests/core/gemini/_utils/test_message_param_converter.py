@@ -59,6 +59,20 @@ def test_gemini_convert_parts_image():
     assert result.content[0].image == b"\x89PNG\r\n\x1a\n"
 
 
+def test_gemini_convert_parts_audio():
+    part = protos.Part(inline_data=protos.Blob(mime_type="audio/mp3", data=b"audio"))
+    results = GeminiMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], AudioPart)
+    assert result.content[0].media_type == "audio/mp3"
+    assert result.content[0].audio == b"audio"
+
+
 def test_gemini_convert_parts_document():
     """
     If file_data is a PDF, produce a DocumentPart.

@@ -12,6 +12,7 @@ from mirascope.core.base import (
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -31,6 +32,9 @@ def test_convert_message_params() -> None:
                 TextPart(type="text", text="Hello"),
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
+                ),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/image", detail="auto"
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
                 ToolResultPart(
@@ -53,6 +57,10 @@ def test_convert_message_params() -> None:
                         "detail": "auto",
                         "url": "data:image/jpeg;base64,aW1hZ2U=",
                     },
+                    "type": "image_url",
+                },
+                {
+                    "image_url": {"detail": "auto", "url": "http://example.com/image"},
                     "type": "image_url",
                 },
                 {

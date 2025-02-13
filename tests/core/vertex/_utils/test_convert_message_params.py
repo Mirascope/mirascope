@@ -107,6 +107,25 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
 
     with pytest.raises(
         ValueError,
+        match="Failed to load or encode data from http://example.com/image",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        ImageURLPart(
+                            type="image_url",
+                            url="http://example.com/image",
+                            detail=None,
+                        )
+                    ],
+                ),
+            ]
+        )
+
+    with pytest.raises(
+        ValueError,
         match="Unsupported audio media type: audio/unknown. "
         "Vertex currently only supports WAV, MP3, AIFF, AAC, OGG, "
         "and FLAC audio file types.",
