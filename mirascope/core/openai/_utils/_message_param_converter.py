@@ -1,12 +1,20 @@
 """This module contains the OpenAIMessageParamConverter class."""
 
 import json
+from collections.abc import Iterable
 from typing import cast
 
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import TextPart, ToolCallPart, ToolResultPart
+from mirascope.core.base import (
+    AudioPart,
+    AudioURLPart,
+    ImageURLPart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -57,12 +65,30 @@ class OpenAIMessageParamConverter(BaseMessageParamConverter):
                     BaseMessageParam(role=message_param["role"], content=content)
                 )
                 continue
-            elif isinstance(content, list):
+            # elif isinstance(content, list):
+            elif isinstance(content, Iterable):
                 for part in content:
-                    if "text" in part:
+                    if part["type"] == "text":
                         contents.append(TextPart(type="text", text=part["text"]))
+                    elif part["type"] == "image_url":
+                        image_url = part["image_url"]
+                        contents.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=image_url["url"],
+                                detail=image_url.get("detail", None),
+                            )
+                        )
+                    elif part["type"] == "input_audio":
+                        input_audio = part["input_audio"]
+                        contents.append(
+                            AudioPart(
+                                type="audio",
+                                media_type=f"audio/{input_audio['format']}",
+                                audio=input_audio["data"],
+                            )
+                        )
                     else:
-                        # TODO: add support for image and audio parts here
                         raise ValueError(part["refusal"])  # pyright: ignore [reportGeneralTypeIssues]
             if tool_calls := message_param.get("tool_calls"):
                 for tool_call in tool_calls:

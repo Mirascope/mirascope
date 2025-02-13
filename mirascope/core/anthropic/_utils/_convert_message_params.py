@@ -5,6 +5,7 @@ import base64
 from anthropic.types import MessageParam
 
 from ...base import BaseMessageParam
+from ...base._utils._parse_content_template import _load_media, get_image_type
 
 
 def convert_message_params(
@@ -41,6 +42,18 @@ def convert_message_params(
                             "source": {
                                 "data": base64.b64encode(part.image).decode("utf-8"),
                                 "media_type": part.media_type,
+                                "type": "base64",
+                            },
+                        }
+                    )
+                elif part.type == "image_url":
+                    image = _load_media(part.url)
+                    converted_content.append(
+                        {
+                            "type": "image",
+                            "source": {
+                                "data": base64.b64encode(image).decode("utf-8"),
+                                "media_type": f"image/{get_image_type(image)}",
                                 "type": "base64",
                             },
                         }

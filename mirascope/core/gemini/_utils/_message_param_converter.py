@@ -8,7 +8,14 @@ from google.generativeai.types import (
 )
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base import (
+    AudioPart,
+    AudioURLPart,
+    DocumentPart,
+    ImagePart,
+    ImageURLPart,
+    TextPart,
+)
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -27,6 +34,28 @@ def _to_image_part(mime_type: str, data: bytes) -> ImagePart:
             "Expected one of: image/jpeg, image/png, image/gif, image/webp."
         )
     return ImagePart(type="image", media_type=mime_type, image=data, detail=None)
+
+
+def _is_audio_mime(mime_type: str) -> bool:
+    return mime_type in [
+        "audio/wav",
+        "audio/mp3",
+        "audio/wav",
+        "audio/mp3",
+        "audio/aiff",
+        "audio/aac",
+        "audio/ogg",
+        "audio/flac",
+    ]
+
+
+def _to_audio_part(mime_type: str, data: bytes) -> AudioPart:
+    if not _is_audio_mime(mime_type):
+        raise ValueError(
+            f"Unsupported audio media type: {mime_type}. "
+            "Expected one of: audio/wav, audio/mp3, audio/aiff, audio/aac, audio/ogg, audio/flac."
+        )
+    return AudioPart(type="audio", media_type=mime_type, audio=data)
 
 
 def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
@@ -77,6 +106,8 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                         data = blob.data
                         if _is_image_mime(mime):
                             content_list.append(_to_image_part(mime, data))
+                        elif _is_audio_mime(mime):
+                            content_list.append(_to_audio_part(mime, data))
                         elif mime == "application/pdf":
                             content_list.append(_to_document_part(mime, data))
                         else:
@@ -85,10 +116,25 @@ class GeminiMessageParamConverter(BaseMessageParamConverter):
                             )
 
                     elif part.file_data:
-                        # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
-                        raise ValueError(
-                            f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
-                        )
+                        if _is_image_mime(part.file_data.mime_type):
+                            content_list.append(
+                                ImageURLPart(
+                                    type="image_url",
+                                    url=part.file_data.file_uri,
+                                    detail=None,
+                                )
+                            )
+                        elif _is_audio_mime(part.file_data.mime_type):
+                            content_list.append(
+                                AudioURLPart(
+                                    type="audio_url",
+                                    url=part.file_data.file_uri,
+                                )
+                            )
+                        else:
+                            raise ValueError(
+                                f"Unsupported file_data mime type: {part.file_data.mime_type}. Cannot convert to BaseMessageParam."
+                            )
                     elif part.function_call:
                         converted.append(
                             BaseMessageParam(
