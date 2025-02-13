@@ -9,10 +9,12 @@ from typing_extensions import TypedDict
 
 from ..message_param import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
 )
 from ..types import Image, has_pil_module
@@ -138,7 +140,12 @@ def _load_media(source: str | bytes) -> bytes:
 
 def _construct_image_part(
     source: str | bytes | Image.Image, options: dict[str, str] | None
-) -> ImagePart:
+) -> ImagePart | ImageURLPart:
+    detail = None
+    if options:
+        detail = options.get("detail", None)
+    if isinstance(source, str) and source.startswith(("http://", "https://", "gs://")):
+        return ImageURLPart(type="image_url", url=source, detail=detail)
     if isinstance(source, Image.Image):
         image = pil_image_to_bytes(source)
         media_type = (
@@ -149,9 +156,6 @@ def _construct_image_part(
     else:
         image = _load_media(source)
         media_type = f"image/{get_image_type(image)}"
-    detail = None
-    if options:
-        detail = options.get("detail", None)
     return ImagePart(
         type="image",
         media_type=media_type,
@@ -160,8 +164,10 @@ def _construct_image_part(
     )
 
 
-def _construct_audio_part(source: str | bytes) -> AudioPart:
+def _construct_audio_part(source: str | bytes) -> AudioPart | AudioURLPart:
     # Note: audio does not currently support additional options, at least for now.
+    if isinstance(source, str) and source.startswith(("http://", "https://", "gs://")):
+        return AudioURLPart(type="audio_url", url=source)
     audio = _load_media(source)
     return AudioPart(
         type="audio", media_type=f"audio/{get_audio_type(audio)}", audio=audio
@@ -179,8 +185,16 @@ def _construct_document_part(source: str | bytes) -> DocumentPart:
 
 def _construct_parts(
     part: _Part, attrs: dict[str, Any]
-) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart]:
-    if part["type"] == "image":
+) -> list[
+    TextPart
+    | ImagePart
+    | ImageURLPart
+    | AudioPart
+    | AudioURLPart
+    | CacheControlPart
+    | DocumentPart
+]:
+    if part["type"] in "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
     elif part["type"] == "images":
@@ -229,7 +243,13 @@ def _construct_parts(
         source = attrs[part["template"]]
         if not isinstance(
             source,
-            TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+            TextPart
+            | ImagePart
+            | ImageURLPart
+            | AudioPart
+            | AudioURLPart
+            | CacheControlPart
+            | DocumentPart,
         ):
             raise ValueError(
                 f"When using 'part' template, '{part['template']}' must be a valid content part."
@@ -246,7 +266,13 @@ def _construct_parts(
         for source in sources:
             if not isinstance(
                 source,
-                TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+                TextPart
+                | ImagePart
+                | ImageURLPart
+                | AudioPart
+                | AudioURLPart
+                | CacheControlPart
+                | DocumentPart,
             ):
                 raise ValueError(
                     f"When using 'parts' template, '{part['template']}' must be a list of valid content parts."

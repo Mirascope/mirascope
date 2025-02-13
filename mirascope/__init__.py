@@ -6,6 +6,14 @@ from contextlib import suppress
 with suppress(ImportError):
     from . import core as core
 
+from .core import (
+    BaseDynamicConfig,
+    BaseMessageParam,
+    BaseTool,
+    BaseToolKit,
+    prompt_template,
+)
+
 with suppress(ImportError):
     from . import integrations as integrations
 
@@ -14,4 +22,14 @@ with suppress(ImportError):
 
 __version__ = importlib.metadata.version("mirascope")
 
-__all__ = ["core", "integrations", "retries", "__version__"]
+__all__ = [
+    "BaseDynamicConfig",
+    "BaseMessageParam",
+    "BaseTool",
+    "BaseToolKit",
+    "core",
+    "integrations",
+    "prompt_template",
+    "retries",
+    "__version__",
+]

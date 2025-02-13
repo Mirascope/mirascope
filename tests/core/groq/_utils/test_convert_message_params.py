@@ -7,6 +7,7 @@ from mirascope.core.base import (
     AudioPart,
     BaseMessageParam,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -31,6 +32,9 @@ def test_convert_message_params() -> None:
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
                 TextPart(type="text", text="Hello"),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/image", detail="ignored"
+                ),
             ],
         ),
         BaseMessageParam(
@@ -68,7 +72,13 @@ def test_convert_message_params() -> None:
             "role": "user",
         },
         {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
-        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {
+            "content": [
+                {"text": "Hello", "type": "text"},
+                {"image_url": {"url": "http://example.com/image"}, "type": "image_url"},
+            ],
+            "role": "user",
+        },
         {
             "content": "Hello",
             "role": "assistant",

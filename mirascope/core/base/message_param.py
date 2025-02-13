@@ -49,18 +49,44 @@ class ImagePart(BaseModel):
     detail: str | None
 
 
+class ImageURLPart(BaseModel):
+    """A content part for images with a URL or base64 encoded image data.
+
+    Attributes:
+        type: Always "image_url"
+        url: The URL to the image
+        detail: (Optional) The detail to use for the image (supported by OpenAI)
+    """
+
+    type: Literal["image_url"]
+    url: str
+    detail: str | None
+
+
 class AudioPart(BaseModel):
     """A content part for audio.
 
     Attributes:
         type: Always "audio"
         media_type: The media type (e.g. audio/wav)
-        audio: The raw audio bytes
+        audio: The raw audio bytes or base64 encoded audio data
     """
 
     type: Literal["audio"]
     media_type: str
-    audio: bytes
+    audio: bytes | str
+
+
+class AudioURLPart(BaseModel):
+    """A content part for audio with a URL or base64 encoded audio data.
+
+    Attributes:
+        type: Always "audio_url"
+        url: The URL to the audio
+    """
+
+    type: Literal["audio_url"]
+    url: str
 
 
 class DocumentPart(BaseModel):
@@ -125,7 +151,9 @@ class BaseMessageParam(BaseModel):
         | Sequence[
             TextPart
             | ImagePart
+            | ImageURLPart
             | AudioPart
+            | AudioURLPart
             | CacheControlPart
             | DocumentPart
             | ToolCallPart

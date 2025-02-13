@@ -1,10 +1,16 @@
 """Utility for converting `BaseMessageParam` to `Content`"""
 
+import base64
+import io
+
+import PIL.Image
 from google.cloud.aiplatform_v1beta1.types import content as gapic_content_types
 from google.cloud.aiplatform_v1beta1.types import tool as gapic_tool_types
 from vertexai.generative_models import Content, Image, Part
 
 from ...base import BaseMessageParam
+from ...base._utils import get_audio_type
+from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
@@ -56,6 +62,29 @@ def convert_message_params(
                         )
                     image = Image.from_bytes(part.image)
                     converted_content.append(Part.from_image(image))
+                elif part.type == "image_url":
+                    # Should download the image to determine the media type
+                    image = PIL.Image.open(io.BytesIO(_load_media(part.url)))
+                    media_type = (
+                        PIL.Image.MIME[image.format]
+                        if image.format
+                        else "image/unknown"
+                    )
+                    if media_type not in [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                        "image/heic",
+                        "image/heif",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported image media type: {media_type}. "
+                            "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
+                            "and HEIF images."
+                        )
+                    converted_content.append(
+                        Part.from_uri(part.url, mime_type=media_type)
+                    )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -71,7 +100,32 @@ def convert_message_params(
                             "and FLAC audio file types."
                         )
                     converted_content.append(
-                        Part.from_data(mime_type=part.media_type, data=part.audio)
+                        Part.from_data(
+                            mime_type=part.media_type,
+                            data=part.audio
+                            if isinstance(part.audio, bytes)
+                            else base64.b64decode(part.audio),
+                        )
+                    )
+                elif part.type == "audio_url":
+                    # Should download the audio to determine the media type
+                    audio = _load_media(part.url)
+                    audio_type = get_audio_type(audio)
+                    if audio_type not in [
+                        "audio/wav",
+                        "audio/mp3",
+                        "audio/aiff",
+                        "audio/aac",
+                        "audio/ogg",
+                        "audio/flac",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported audio media type: {audio_type}. "
+                            "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+                            "and FLAC audio file types."
+                        )
+                    converted_content.append(
+                        Part.from_uri(part.url, mime_type=audio_type)
                     )
                 elif part.type == "tool_call":
                     if converted_content:

@@ -6,6 +6,8 @@ import json
 from openai.types.chat import ChatCompletionMessageParam
 
 from ...base import BaseMessageParam
+from ...base._utils import get_audio_type
+from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
@@ -44,6 +46,16 @@ def convert_message_params(
                             },
                         }
                     )
+                elif part.type == "image_url":
+                    converted_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": part.url,
+                                "detail": part.detail if part.detail else "auto",
+                            },
+                        }
+                    )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -53,11 +65,36 @@ def convert_message_params(
                             f"Unsupported audio media type: {part.media_type}. "
                             "OpenAI currently only supports WAV and MP3 audio file types."
                         )
+                    data = (
+                        part.audio
+                        if isinstance(part.audio, str)
+                        else base64.b64encode(part.audio).decode("utf-8")
+                    )
                     converted_content.append(
                         {
                             "input_audio": {
                                 "format": part.media_type.split("/")[-1],
-                                "data": base64.b64encode(part.audio).decode("utf-8"),
+                                "data": data,
+                            },
+                            "type": "input_audio",
+                        }
+                    )
+                elif part.type == "audio_url":
+                    audio = _load_media(part.url)
+                    audio_type = get_audio_type(audio)
+                    if audio_type not in [
+                        "audio/wav",
+                        "audio/mp3",
+                    ]:
+                        raise ValueError(
+                            f"Unsupported audio media type: {audio_type}. "
+                            "OpenAI currently only supports WAV and MP3 audio file types."
+                        )
+                    converted_content.append(
+                        {
+                            "input_audio": {
+                                "format": audio_type.split("/")[-1],
+                                "data": base64.b64encode(audio).decode("utf-8"),
                             },
                             "type": "input_audio",
                         }

@@ -8,7 +8,7 @@ from mirascope.core.base import TextPart, ToolResultPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.base.message_param import ImageURLPart, ToolCallPart
 from mirascope.core.groq._utils import convert_message_params
 
 
@@ -70,7 +70,14 @@ class GroqMessageParamConverter(BaseMessageParamConverter):
                 for part in content:
                     if "text" in part:
                         contents.append(TextPart(type="text", text=part["text"]))
-                    # TODO: add support for image parts here
+                    elif "image_url" in part:
+                        contents.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=part["image_url"]["url"],
+                                detail=part["image_url"].get("detail"),
+                            )
+                        )
             if contents:
                 converted.append(
                     BaseMessageParam(role=message_param["role"], content=contents)

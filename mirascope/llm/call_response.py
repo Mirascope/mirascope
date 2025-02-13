@@ -51,7 +51,11 @@ class CallResponse(
         response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
-            **{field: getattr(response, field) for field in response.model_fields}
+            **{
+                field: getattr(response, field)
+                for field in response.model_fields
+                if field != "user_message_param"
+            }
         )
         object.__setattr__(self, "_response", response)
         object.__setattr__(

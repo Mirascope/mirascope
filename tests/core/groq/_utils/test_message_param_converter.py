@@ -7,7 +7,7 @@ from groq.types.chat import (
 )
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import TextPart, ToolCallPart, ToolResultPart
+from mirascope.core.base import ImageURLPart, TextPart, ToolCallPart, ToolResultPart
 from mirascope.core.groq._utils._message_param_converter import (
     GroqMessageParamConverter,
 )
@@ -32,14 +32,26 @@ def test_convert_with_only_content():
 def test_convert_content_list():
     """Test that we can convert a list of content parts properly."""
     message_param = ChatCompletionUserMessageParam(
-        role="user", content=[{"type": "text", "text": "content"}]
+        role="user",
+        content=[
+            {"type": "text", "text": "content"},
+            {
+                "type": "image_url",
+                "image_url": {"url": "https://example.com/image.jpg"},
+            },
+        ],
     )
     results = GroqMessageParamConverter.from_provider([message_param])
     assert len(results) == 1
 
     result = results[0]
     assert result.role == "user"
-    assert result.content == [TextPart(type="text", text="content")]
+    assert result.content == [
+        TextPart(type="text", text="content"),
+        ImageURLPart(
+            type="image_url", url="https://example.com/image.jpg", detail=None
+        ),
+    ]
 
 
 def test_convert_with_content_and_tool_calls():

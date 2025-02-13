@@ -10,10 +10,12 @@ from typing_extensions import TypeIs
 
 from ..message_param import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
 )
 from ..types import AudioSegment, Image, has_pil_module, has_pydub_module
@@ -29,17 +31,33 @@ def _convert_message_sequence_part_to_content_part(
     | TextPart
     | CacheControlPart
     | ImagePart
+    | ImageURLPart
     | Image.Image
     | AudioPart
+    | AudioURLPart
     | AudioSegment
     | Wave_read
     | DocumentPart,
-) -> TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart:
+) -> (
+    TextPart
+    | ImagePart
+    | ImageURLPart
+    | AudioPart
+    | AudioURLPart
+    | CacheControlPart
+    | DocumentPart
+):
     if isinstance(message_sequence_part, str):
         return TextPart(text=message_sequence_part, type="text")
     elif isinstance(
         message_sequence_part,
-        TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart,
+        TextPart
+        | ImagePart
+        | ImageURLPart
+        | AudioPart
+        | AudioURLPart
+        | CacheControlPart
+        | DocumentPart,
     ):
         return message_sequence_part
     elif has_pil_module and isinstance(message_sequence_part, Image.Image):
@@ -82,13 +100,26 @@ def convert_message_content_to_message_param_content(
         | TextPart
         | CacheControlPart
         | ImagePart
+        | ImageURLPart
         | Image.Image
         | AudioPart
+        | AudioURLPart
         | AudioSegment
         | Wave_read
         | DocumentPart
     ],
-) -> list[TextPart | ImagePart | AudioPart | CacheControlPart | DocumentPart] | str:
+) -> (
+    list[
+        TextPart
+        | ImagePart
+        | ImageURLPart
+        | AudioPart
+        | AudioURLPart
+        | CacheControlPart
+        | DocumentPart
+    ]
+    | str
+):
     if isinstance(message_sequence, str):
         return message_sequence
     return [
@@ -113,8 +144,10 @@ def convert_messages_to_message_params(
         | TextPart
         | CacheControlPart
         | ImagePart
+        | ImageURLPart
         | Image.Image
         | AudioPart
+        | AudioURLPart
         | AudioSegment
         | Wave_read
         | DocumentPart

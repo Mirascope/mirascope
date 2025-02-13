@@ -3,6 +3,8 @@ from unittest.mock import MagicMock
 
 from azure.ai.inference.models import (
     AssistantMessage,
+    ImageContentItem,
+    ImageUrl,
     TextContentItem,
     ToolMessage,
     UserMessage,
@@ -12,6 +14,7 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.azure._utils._message_param_converter import (
     AzureMessageParamConverter,
 )
+from mirascope.core.base import ImageURLPart
 from mirascope.core.base.message_param import TextPart, ToolCallPart, ToolResultPart
 
 
@@ -40,6 +43,7 @@ def test_convert_content_list():
     message_param.content = [
         TextContentItem(text="Content 1"),
         TextContentItem(text="Content 2"),
+        ImageContentItem(image_url=ImageUrl(url="https://example.com/image.jpg")),
     ]
 
     results = AzureMessageParamConverter.from_provider([message_param])
@@ -47,15 +51,19 @@ def test_convert_content_list():
 
     result = results[0]
     assert result.role == "assistant"
-    assert len(result.content) == 2
+    assert len(result.content) == 3
     assert result.content[0] == TextPart(type="text", text="Content 1")
     assert result.content[1] == TextPart(type="text", text="Content 2")
+    assert result.content[2] == ImageURLPart(
+        type="image_url", url="https://example.com/image.jpg", detail=None
+    )
 
     message_param = MagicMock(spec=UserMessage)
     message_param.tool_calls = None
     message_param.content = [
         TextContentItem(text="Content 1"),
         TextContentItem(text="Content 2"),
+        ImageContentItem(image_url=ImageUrl(url="https://example.com/image.jpg")),
     ]
 
     results = AzureMessageParamConverter.from_provider([message_param])
@@ -63,9 +71,12 @@ def test_convert_content_list():
 
     result = results[0]
     assert result.role == "user"
-    assert len(result.content) == 2
+    assert len(result.content) == 3
     assert result.content[0] == TextPart(type="text", text="Content 1")
     assert result.content[1] == TextPart(type="text", text="Content 2")
+    assert result.content[2] == ImageURLPart(
+        type="image_url", url="https://example.com/image.jpg", detail=None
+    )
 
 
 def test_convert_no_tool_calls_no_content():
@@ -108,7 +119,7 @@ def test_convert_with_single_tool_call():
     result = results[0]
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
-    assert len(result.content) == 1
+    assert len(result.content) == 2
     part = result.content[0]
     assert isinstance(part, ToolCallPart)
     assert part.name == "test_tool"
@@ -148,7 +159,7 @@ def test_convert_with_multiple_tool_calls():
     result = results[0]
     assert isinstance(result, BaseMessageParam)
     assert result.role == "assistant"
-    assert len(result.content) == 2
+    assert len(result.content) == 3
 
     part1 = result.content[0]
     assert isinstance(part1, ToolCallPart)
