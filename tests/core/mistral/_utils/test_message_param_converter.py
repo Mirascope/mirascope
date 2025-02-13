@@ -16,7 +16,7 @@ from mistralai.models import (
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import ImagePart, TextPart
-from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
+from mirascope.core.base.message_param import ImageURLPart, ToolCallPart, ToolResultPart
 from mirascope.core.mistral._utils._message_param_converter import (
     MistralMessageParamConverter,
 )
@@ -120,7 +120,7 @@ def test_convert_with_list_content_image_url_chunk_str():
     assert result.content[0].image == image_data
 
 
-def test_convert_with_list_content_image_url_is_not_supported():
+def test_convert_with_list_content_image_url():
     image_chunk = MagicMock(spec=ImageURLChunk)
     image_chunk.image_url = "https://example.com/image.jpg"
     message = MagicMock(spec=AssistantMessage)
@@ -128,11 +128,16 @@ def test_convert_with_list_content_image_url_is_not_supported():
     message.content = [image_chunk]
     message.tool_calls = None
 
-    with pytest.raises(
-        ValueError,
-        match="ImageURLChunk image_url is not in a supported data URL format.",
-    ):
-        MistralMessageParamConverter.from_provider([message])
+    assert MistralMessageParamConverter.from_provider([message]) == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ImageURLPart(
+                    type="image_url", url="https://example.com/image.jpg", detail=None
+                )
+            ],
+        ),
+    ]
 
 
 def test_convert_with_list_content_image_url_type_is_ImageURL():
@@ -155,17 +160,22 @@ def test_convert_with_list_content_image_url_type_is_ImageURL():
     ]
 
 
-def test_convert_with_list_content_image_url_type_is_IageURL_url_invalid():
-    image_url = ImageURL(url="invalid")
+def test_convert_with_list_content_image_url_type_is_IageURL_url_valid():
+    image_url = ImageURL(url="https://example.com/image.jpg")
     image_chunk = ImageURLChunk(image_url=image_url)
     message = MagicMock(spec=AssistantMessage)
     message.role = "assistant"
     message.content = [image_chunk]
-    with pytest.raises(
-        ValueError,
-        match="ImageURLChunk image_url is not in a supported data URL format.",
-    ):
-        MistralMessageParamConverter.from_provider([message])
+    assert MistralMessageParamConverter.from_provider([message]) == [
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ImageURLPart(
+                    type="image_url", url="https://example.com/image.jpg", detail=None
+                )
+            ],
+        ),
+    ]
 
 
 def test_convert_with_list_content_reference_chunk():

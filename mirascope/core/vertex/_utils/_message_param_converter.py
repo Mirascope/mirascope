@@ -7,7 +7,7 @@ from mirascope.core.base import DocumentPart, ImagePart, TextPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
+from mirascope.core.base.message_param import ImageURLPart, ToolCallPart, ToolResultPart
 from mirascope.core.vertex._utils import convert_message_params
 
 
@@ -87,6 +87,15 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                         )
 
                 elif part.file_data:
+                    if _is_image_mime(part.file_data.mime_type):
+                        contents.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=part.file_data.file_uri,
+                                detail=None,
+                            )
+                        )
+
                     # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
                     raise ValueError(
                         f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."

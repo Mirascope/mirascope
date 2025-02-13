@@ -4,13 +4,20 @@ from typing import cast
 from azure.ai.inference.models import (
     AssistantMessage,
     ChatRequestMessage,
+    ImageContentItem,
     TextContentItem,
     ToolMessage,
     UserMessage,
 )
 
 from mirascope.core.azure._utils import convert_message_params
-from mirascope.core.base import BaseMessageParam, TextPart, ToolCallPart, ToolResultPart
+from mirascope.core.base import (
+    BaseMessageParam,
+    ImageURLPart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -47,6 +54,15 @@ class AzureMessageParamConverter(BaseMessageParamConverter):
                             converted_parts.append(
                                 TextPart(type="text", text=part.text)
                             )
+                        elif isinstance(part, ImageContentItem):
+                            converted_parts.append(
+                                ImageURLPart(
+                                    type="image_url",
+                                    url=part.image_url.url,
+                                    detail=part.image_url.detail,
+                                )
+                            )
+
                         # TODO: add support for image and audio parts here
                     converted.append(
                         BaseMessageParam(role="user", content=converted_parts)
