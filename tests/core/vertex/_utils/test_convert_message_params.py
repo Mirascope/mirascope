@@ -235,8 +235,7 @@ def test_image_url_conversion_with_format_invalid(
                     }
                 }
 
-            def to_dict(self):
-                return self._raw_part
+            def to_dict(self): ...
 
         expected_dummy = DummyPart(
             {"file_uri": "http://example.com/image", "mime_type": "image/jpeg"}

@@ -158,6 +158,7 @@ def test_to_provider():
         role="assistant",
         parts=[
             Part.from_text("This is a message"),
+            Part.from_data(b"\x89PNG\r\n\x1a\n", "image/png"),
         ],
     )
     results = VertexMessageParamConverter.to_provider([message_param])  # pyright: ignore [reportArgumentType]
