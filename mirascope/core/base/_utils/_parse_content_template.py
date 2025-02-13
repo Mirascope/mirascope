@@ -194,7 +194,7 @@ def _construct_parts(
     | CacheControlPart
     | DocumentPart
 ]:
-    if part["type"] == "image":
+    if part["type"] in "image":
         source = attrs[part["template"]]
         return [_construct_image_part(source, part["options"])] if source else []
     elif part["type"] == "images":

@@ -1,8 +1,11 @@
 """Utility for converting `BaseMessageParam` to `BedrockMessageParam`."""
 
+import base64
 from typing import cast
 
 from ...base import BaseMessageParam
+from ...base._utils import get_image_type
+from ...base._utils._parse_content_template import _load_media
 from .._types import ConversationRoleType, InternalBedrockMessageParam
 
 
@@ -37,7 +40,22 @@ def convert_message_params(
                             " currently only supports JPEG, PNG, GIF, and WebP images."
                         )
                     converted_content.append(
-                        {"format": part.media_type, "bytes": part.image}
+                        {
+                            "image": {
+                                "format": part.media_type.split("/")[-1],
+                                "source": {"bytes": part.image},
+                            }
+                        }
+                    )
+                elif part.type == "image_url":
+                    image = _load_media(part.url)
+                    converted_content.append(
+                        {
+                            "image": {
+                                "format": get_image_type(image),
+                                "source": {"bytes": image},
+                            },
+                        }
                     )
                 elif part.type == "tool_result":
                     if converted_content:
