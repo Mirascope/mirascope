@@ -71,7 +71,7 @@ def test_google_convert_parts_document():
     )
     with pytest.raises(
         ValueError,
-        match="FileData.file_uri is not support: file_uri='%PDF-1.4...' mime_type='application/pdf'. Cannot convert to BaseMessageParam.",
+        match="Unsupported file_data mime type: application/pdf. Cannot convert to BaseMessageParam.",
     ):
         GoogleMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]

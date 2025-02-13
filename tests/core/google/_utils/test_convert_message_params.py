@@ -42,8 +42,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
         {
             "parts": [
                 {"text": "test"},
-                {"data": b"image", "mime_type": "image/jpeg"},
-                {"data": b"audio", "mime_type": "audio/wav"},
+                {"inline_data": {"data": b"image", "mime_type": "image/jpeg"}},
+                {"inline_data": {"data": b"audio", "mime_type": "audio/wav"}},
             ],
             "role": "user",
         },

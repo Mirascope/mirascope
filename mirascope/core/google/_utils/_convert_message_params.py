@@ -1,8 +1,14 @@
 """Utility for converting `BaseMessageParam` to `ContentsType`"""
 
-from google.genai.types import BlobDict, ContentDict, PartDict
+import base64
+import io
+
+import PIL.Image
+from google.genai.types import BlobDict, ContentDict, FileDataDict, PartDict
 
 from ...base import BaseMessageParam
+from ...base._utils import get_audio_type
+from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
@@ -49,7 +55,40 @@ def convert_message_params(
                             "and HEIF images."
                         )
                     converted_content.append(
-                        BlobDict(data=part.image, mime_type=part.media_type)
+                        PartDict(
+                            inline_data=BlobDict(
+                                data=part.image, mime_type=part.media_type
+                            )
+                        )
+                    )
+                elif part.type == "image_url":
+                    if part.url.startswith(("https://", "http://")):
+                        image = PIL.Image.open(io.BytesIO(_load_media(part.url)))
+                        media_type = (
+                            PIL.Image.MIME[image.format]
+                            if image.format
+                            else "image/unknown"
+                        )
+                        if media_type not in [
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp",
+                            "image/heic",
+                            "image/heif",
+                        ]:
+                            raise ValueError(
+                                f"Unsupported image media type: {media_type}. "
+                                "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
+                                "and HEIF images."
+                            )
+                    else:
+                        media_type = "image/unknown"
+                    converted_content.append(
+                        PartDict(
+                            file_data=FileDataDict(
+                                file_uri=part.url, mime_type=media_type
+                            )
+                        )
                     )
                 elif part.type == "audio":
                     if part.media_type not in [
@@ -66,7 +105,43 @@ def convert_message_params(
                             "and FLAC audio file types."
                         )
                     converted_content.append(
-                        BlobDict(data=part.audio, mime_type=part.media_type)
+                        PartDict(
+                            inline_data=BlobDict(
+                                data=part.audio
+                                if isinstance(part.audio, bytes)
+                                else base64.b64decode(part.audio),
+                                mime_type=part.media_type,
+                            )
+                        )
+                    )
+                elif part.type == "audio_url":
+                    if part.url.startswith(("https://", "http://")):
+                        audio = _load_media(part.url)
+                        audio_type = get_audio_type(audio)
+                        if audio_type not in [
+                            "audio/wav",
+                            "audio/mp3",
+                            "audio/aiff",
+                            "audio/aac",
+                            "audio/ogg",
+                            "audio/flac",
+                        ]:
+                            raise ValueError(
+                                f"Unsupported audio media type: {audio_type}. "
+                                "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+                                "and FLAC audio file types."
+                            )
+                        converted_content.append(
+                            {"mime_type": audio_type, "data": audio}
+                        )
+                    else:
+                        audio_type = "audio/unknown"
+                    converted_content.append(
+                        PartDict(
+                            file_data=FileDataDict(
+                                file_uri=part.url, mime_type=audio_type
+                            )
+                        )
                     )
                 else:
                     raise ValueError(

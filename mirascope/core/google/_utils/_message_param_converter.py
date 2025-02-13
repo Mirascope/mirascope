@@ -11,7 +11,13 @@ from mirascope.core.base import DocumentPart, ImagePart, TextPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
+from mirascope.core.base.message_param import (
+    AudioURLPart,
+    ImageURLPart,
+    ToolCallPart,
+    ToolResultPart,
+)
+from mirascope.core.gemini._utils._message_param_converter import _is_audio_mime
 from mirascope.core.google._utils import convert_message_params
 
 
@@ -78,10 +84,25 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                         )
 
                 elif part.file_data:
-                    # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
-                    raise ValueError(
-                        f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
-                    )
+                    if _is_image_mime(cast(str, part.file_data.mime_type)):
+                        content_list.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=cast(str, part.file_data.file_uri),
+                                detail=None,
+                            )
+                        )
+                    elif _is_audio_mime(cast(str, part.file_data.mime_type)):
+                        content_list.append(
+                            AudioURLPart(
+                                type="audio_url",
+                                url=cast(str, part.file_data.file_uri),
+                            )
+                        )
+                    else:
+                        raise ValueError(
+                            f"Unsupported file_data mime type: {part.file_data.mime_type}. Cannot convert to BaseMessageParam."
+                        )
                 elif part.function_call:
                     converted.append(
                         BaseMessageParam(
