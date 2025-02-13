@@ -78,7 +78,7 @@ def convert_message_params(
                         ]:
                             raise ValueError(
                                 f"Unsupported image media type: {media_type}. "
-                                "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
+                                "Google currently only supports JPEG, PNG, WebP, HEIC, "
                                 "and HEIF images."
                             )
                     else:
@@ -128,7 +128,7 @@ def convert_message_params(
                         ]:
                             raise ValueError(
                                 f"Unsupported audio media type: {audio_type}. "
-                                "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+                                "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
                                 "and FLAC audio file types."
                             )
                         converted_content.append(

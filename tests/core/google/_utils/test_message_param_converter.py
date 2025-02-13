@@ -9,8 +9,10 @@ from google.genai.types import (
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.base import (
+    AudioURLPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     ToolCallPart,
     ToolResultPart,
 )
@@ -193,3 +195,54 @@ def test_function_response():
             ],
         )
     ]
+
+
+def test_google_convert_parts_file_data_image():
+    """
+    When a part has file_data with an image mime type, it should produce an ImageURLPart.
+    """
+    file_data = FileDataDict(mime_type="image/jpeg", file_uri="http://example.com/img")
+    part = PartDict(file_data=file_data)
+    results = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], ImageURLPart)
+    assert result.content[0].url == "http://example.com/img"
+
+
+def test_google_convert_parts_file_data_audio():
+    """
+    When a part has file_data with an audio mime type, it should produce an AudioURLPart.
+    """
+    file_data = FileDataDict(mime_type="audio/mp3", file_uri="http://example.com/audio")
+    part = PartDict(file_data=file_data)
+    results = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], AudioURLPart)
+    assert result.content[0].url == "http://example.com/audio"
+
+
+def test_google_convert_parts_file_data_unsupported():
+    """
+    When a part has file_data with an unsupported mime type, the converter should raise ValueError.
+    """
+    file_data = FileDataDict(
+        mime_type="application/zip", file_uri="http://example.com/zip"
+    )
+    part = PartDict(file_data=file_data)
+    with pytest.raises(
+        ValueError,
+        match="Unsupported file_data mime type: application/zip. Cannot convert to BaseMessageParam.",
+    ):
+        GoogleMessageParamConverter.from_provider(
+            [{"role": "assistant", "parts": [part]}]
+        )
