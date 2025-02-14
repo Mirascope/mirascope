@@ -11,6 +11,7 @@ from .core import (
     BaseMessageParam,
     BaseTool,
     BaseToolKit,
+    Messages,
     prompt_template,
 )
 

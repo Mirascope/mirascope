@@ -108,6 +108,7 @@ def setup_call(
     call_kwargs = cast(VertexCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | Content], messages)
     messages = convert_message_params(messages)
+
     if json_mode:
         generation_config = call_kwargs.get(
             "generation_config",
@@ -131,10 +132,18 @@ def setup_call(
             )
         )
         call_kwargs["tool_config"] = tool_config
-    call_kwargs |= {"contents": messages}
 
     if client is None:
         client = GenerativeModel(model_name=model)
+
+    if messages and messages[0].role == "system":
+        system_instruction = client._system_instruction
+        if not isinstance(system_instruction, list):
+            system_instruction = [system_instruction] if system_instruction else []
+        system_instruction.extend(messages.pop(0).parts)
+        client._system_instruction = system_instruction
+
+    call_kwargs |= {"contents": messages}
 
     create = (
         cast(
