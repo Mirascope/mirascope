@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from mirascope.core.bedrock import BedrockCallParams
     from mirascope.core.cohere import CohereCallParams
     from mirascope.core.gemini import GeminiCallParams
+    from mirascope.core.google import GoogleCallParams
     from mirascope.core.groq import GroqCallParams
     from mirascope.core.litellm import LiteLLMCallParams
     from mirascope.core.mistral import MistralCallParams
@@ -23,9 +24,9 @@ if TYPE_CHECKING:
 else:
     AnthropicCallParams = AzureCallParams = BedrockCallParams = CohereCallParams = (
         GeminiCallParams
-    ) = GroqCallParams = LiteLLMCallParams = MistralCallParams = OpenAICallParams = (
-        VertexCallParams
-    ) = None
+    ) = GoogleCallParams = GroqCallParams = LiteLLMCallParams = MistralCallParams = (
+        OpenAICallParams
+    ) = VertexCallParams = None
 
 
 _P = ParamSpec("_P")
@@ -77,6 +78,17 @@ def override(
     call_params: CommonCallParams | GeminiCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+@overload
+def override(
+    provider_agnostic_call: Callable[_P, _R],
+    *,
+    provider: Literal["google"],
+    model: str,
+    call_params: CommonCallParams | GoogleCallParams | None = None,
+    client: Any = None,  # noqa: ANN401
+) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -150,6 +162,7 @@ def override(
     call_params: CommonCallParams
     | AnthropicCallParams
     | GeminiCallParams
+    | GoogleCallParams
     | AzureCallParams
     | BedrockCallParams
     | CohereCallParams

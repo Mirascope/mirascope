@@ -64,6 +64,7 @@ extra:
     - Anthropic
     - Mistral
     - Gemini
+    - Google
     - Groq
     - Cohere
     - LiteLLM
@@ -324,6 +325,14 @@ nav:
               - dynamic_config: "api/core/gemini/dynamic_config.md"
               - stream: "api/core/gemini/stream.md"
               - tool: "api/core/gemini/tool.md"
+          - Google:
+              - call: "api/core/google/call.md"
+              - call_params: "api/core/google/call_params.md"
+              - call_response: "api/core/google/call_response.md"
+              - call_response_chunk: "api/core/google/call_response_chunk.md"
+              - dynamic_config: "api/core/google/dynamic_config.md"
+              - stream: "api/core/google/stream.md"
+              - tool: "api/core/google/tool.md"
           - Groq:
               - call: "api/core/groq/call.md"
               - call_params: "api/core/groq/call_params.md"

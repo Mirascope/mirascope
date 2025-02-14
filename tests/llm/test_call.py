@@ -171,6 +171,12 @@ def test_get_provider_call_gemini():
         assert func == "gemini_mock"
 
 
+def test_get_provider_call_google():
+    with patch("mirascope.core.google.google_call", new="google_mock"):
+        func = _get_provider_call("google")
+        assert func == "google_mock"
+
+
 def test_get_provider_call_groq():
     with patch("mirascope.core.groq.groq_call", new="groq_mock"):
         func = _get_provider_call("groq")
