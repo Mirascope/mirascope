@@ -8,5 +8,7 @@ def recommend_book(genre: str) -> google.GoogleDynamicConfig:
         "messages": [
             BaseMessageParam(role="user", content=f"Recommend a {genre} book")
         ],
-        "client": Client(),
+        "client": Client(
+            vertexai=True, project="your-project-id", location="us-central1"
+        ),
     }
