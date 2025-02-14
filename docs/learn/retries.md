@@ -15,7 +15,9 @@ You can install the necessary packages directly or use the `tenacity` extras fla
 pip install "mirascope[tenacity]"
 ```
 
-## Calls
+## Tenacity `retry` Decorator
+
+### Calls
 
 Let's take a look at a basic Mirascope call that retries with exponential back-off:
 
@@ -38,7 +40,7 @@ Ideally the call to `recommend_book` will succeed on the first attempt, but now 
 
 The call will then throw a `RetryError` after 3 attempts if unsuccessful. This error should be caught and handled.
 
-## Streams
+### Streams
 
 When streaming, the generator is not actually run until you start iterating. This means the initial API call may be successful but fail during the actual iteration through the stream.
 
@@ -59,7 +61,7 @@ Instead, you need to wrap your call and add retries to this wrapper:
 
     {% endfor %}
 
-## Tools
+### Tools
 
 When using tools, `ValidationError` errors won't happen until you attempt to construct the tool (either when calling `response.tools` or iterating through a stream with tools).
 
@@ -80,7 +82,7 @@ You need to handle retries in this case the same way as streams:
 
     {% endfor %}
 
-## Error Reinsertion
+### Error Reinsertion
 
 Every example above simply retries after a failed attempt without making any updates to the call. This approach can be sufficient for some use-cases where we can safely expect the call to succeed on subsequent attempts (e.g. rate limits).
 
@@ -112,3 +114,39 @@ To make it easier to make such updates, Mirascope provides a `collect_errors` ha
 In this example the first attempt fails because the identified author is not all uppercase. The `ValidationError` is then reinserted into the subsequent call, which enables the model to learn from it's mistake and correct its error.
 
 Of course, we could always engineer a better prompt (i.e. ask for all caps), but even prompt engineering does not guarantee perfect results. The purpose of this example is to demonstrate the power of a feedback loop by reinserting errors to build more robust systems.
+
+## Fallback
+
+When using the provider-agnostic `llm.call` decorator, you can use the `fallback` decorator to automatically catch certain errors and use a backup provider/model to attempt the call again.
+
+For example, we may want to attempt the call with Anthropic in the event that we get a `RateLimitError` from OpenAI:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        ```python hl_lines="7-16 24 28"
+        --8<-- "examples/learn/retries/fallback/{{ method }}.py"
+        ```
+
+    {% endfor %}
+
+Here, we first attempt to call OpenAI (the default setting). If we catch the `OpenAIRateLimitError`, then we'll attempt to call Anthropic. If we catch the `AnthropicRateLimitError`, then we'll receive a `FallbackError` since all attempts failed.
+
+You can provide an `Exception` or tuple of multiple to catch, and you can stack the `fallback` decorator to handle different errors differently if desired.
+
+### Fallback With Retries
+
+The decorator also works well with Tenacity's `retry` decorator. For example, we may want to first attempt to call OpenAI multiple times with exponential backoff, but if we fail 3 times fall back to Anthropic, which we'll also attempt to call 3 times:
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        ```python hl_lines="14-28"
+        --8<-- "examples/learn/retries/fallback_retries/{{ method }}.py"
+        ```
+
+    {% endfor %}
