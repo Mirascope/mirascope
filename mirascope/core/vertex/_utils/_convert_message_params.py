@@ -28,14 +28,10 @@ def convert_message_params(
                 )  # pragma: no cover
             converted_message_params += [
                 Content(
-                    role="user",
+                    role="system",
                     parts=[
                         Part.from_text(content) if isinstance(content, str) else content
                     ],
-                ),
-                Content(
-                    role="model",
-                    parts=[Part.from_text("Ok! I will adhere to this system message.")],
                 ),
             ]
         elif isinstance((content := message_param.content), str):

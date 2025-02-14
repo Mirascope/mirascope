@@ -52,8 +52,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
     ]
     converted_message_params = convert_message_params(message_params)
     assert converted_message_params == [
-        {"role": "user", "parts": ["You are a helpful assistant."]},
-        {"role": "model", "parts": ["Ok! I will adhere to this system message."]},
+        {"role": "system", "parts": ["You are a helpful assistant."]},
         {"role": "user", "parts": ["Hello"]},
         {"role": "user", "parts": ["Hello", {"type": "text", "text": "Hello"}]},
         {
