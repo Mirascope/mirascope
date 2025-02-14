@@ -154,6 +154,48 @@ def test_image_url_with_http_valid(
     return_value=b"image_url_data",
 )
 @patch("PIL.Image.open", new_callable=MagicMock)
+def test_image_url_with_http_valid_gemini(
+    mock_image_open: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Test image_url part with an HTTP URL and valid media type."""
+    fake_image = MagicMock()
+    fake_image.format = "PNG"
+    mock_image_open.return_value = fake_image
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ImageURLPart(type="image_url", url="https://example.com/image", detail=None)
+        ],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_file = MagicMock(uri="file://local/path/image", mime_type="image/jpeg")
+    mock_client.files.upload.return_value = mock_file
+    result = convert_message_params([message], mock_client)
+    # Expect the image to be processed via PIL.Image.open and returned in parts.
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://local/path/image",
+                        "mime_type": "image/jpeg",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+    # Check that _load_media was called with the URL.
+    mock_load_media.assert_called_once_with("https://example.com/image")
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"image_url_data",
+)
+@patch("PIL.Image.open", new_callable=MagicMock)
 def test_image_url_with_http_invalid_media_type(
     mock_image_open: MagicMock, mock_load_media: MagicMock
 ) -> None:
