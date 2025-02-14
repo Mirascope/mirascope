@@ -409,6 +409,8 @@ You can pass a client to the `call` decorator using the `client` parameter:
             ```python hl_lines="1 6"
             {% elif provider == "Mistral" %}
             ```python hl_lines="4 8"
+            {% elif provider == "Google" %}
+            ```python hl_lines="1 7"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
@@ -439,6 +441,8 @@ You can also configure the client dynamically at runtime through the dynamic con
             ```python hl_lines="1 11"
             {% elif provider == "Mistral" %}
             ```python hl_lines="4 13"
+            {% elif provider == "Google" %}
+            ```python hl_lines="1 11-13"
             {% else %}
             ```python hl_lines="2 11"
             {% endif %}
@@ -457,7 +461,9 @@ You can also configure the client dynamically at runtime through the dynamic con
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 11"
             {% elif provider == "Mistral" %}
-            ```python hl_lines="4 11"            
+            ```python hl_lines="4 11"    
+            {% elif provider == "Google" %}
+            ```python hl_lines="1 9-11"        
             {% else %}
             ```python hl_lines="2 9"
             {% endif %}

@@ -63,13 +63,11 @@ extra:
     - OpenAI
     - Anthropic
     - Mistral
-    - Gemini
     - Google
     - Groq
     - Cohere
     - LiteLLM
     - Azure AI
-    - Vertex AI
     - Bedrock
   prompt_writing_methods:
     - shorthand

@@ -6,5 +6,7 @@ from mirascope.core import Messages, google
 def recommend_book(genre: str) -> google.GoogleDynamicConfig:
     return {
         "messages": [Messages.User(f"Recommend a {genre} book")],
-        "client": Client(),
+        "client": Client(
+            vertexai=True, project="your-project-id", location="us-central1"
+        ),
     }
