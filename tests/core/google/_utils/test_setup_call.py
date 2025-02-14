@@ -62,7 +62,7 @@ def test_setup_call(
         fn, {}, None, None, GoogleTool, {}, convert_common_call_params
     )
     mock_convert_message_params.assert_called_once_with(
-        mock_base_setup_call.return_value[1]
+        mock_base_setup_call.return_value[1], mock_client
     )
     assert messages == mock_convert_message_params.return_value
     mock_client_class.assert_called_once_with()
@@ -94,6 +94,8 @@ def test_setup_call_json_mode(
     generation_config_type: type,
 ) -> None:
     """Tests the `setup_call` function with JSON mode."""
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
     mock_utils.setup_call = mock_base_setup_call
     mock_utils.json_mode_content = MagicMock()
     mock_base_setup_call.return_value[1] = [
@@ -115,7 +117,7 @@ def test_setup_call_json_mode(
         top_k=0,
         top_p=0,
     )
-    mock_convert_message_params.side_effect = lambda x: x
+    mock_convert_message_params.side_effect = lambda x, y: x
     _, _, messages, _, call_kwargs = setup_call(
         model="google-1.5-flash",
         client=None,

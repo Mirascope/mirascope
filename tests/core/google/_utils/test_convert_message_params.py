@@ -36,7 +36,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
             ],
         ),
     ]
-    converted_message_params = convert_message_params(message_params)
+    mock_client = MagicMock()
+    converted_message_params = convert_message_params(message_params, mock_client)
     assert converted_message_params == [
         {"parts": [{"text": "You are a helpful assistant."}], "role": "system"},
         {"parts": [{"text": "Hello"}], "role": "user"},
@@ -69,7 +70,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                         )
                     ],
                 ),
-            ]
+            ],
+            mock_client,
         )
 
     with pytest.raises(
@@ -88,7 +90,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                         )
                     ],
                 ),
-            ]
+            ],
+            mock_client,
         )
 
     with pytest.raises(
@@ -103,7 +106,8 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                         CacheControlPart(type="cache_control", cache_type="ephemeral")
                     ],
                 )
-            ]
+            ],
+            mock_client,
         )
 
 
@@ -126,7 +130,7 @@ def test_image_url_with_http_valid(
             ImageURLPart(type="image_url", url="https://example.com/image", detail=None)
         ],
     )
-    result = convert_message_params([message])
+    result = convert_message_params([message], MagicMock())
     # Expect the image to be processed via PIL.Image.open and returned in parts.
     assert result == [
         {
@@ -172,7 +176,7 @@ def test_image_url_with_http_invalid_media_type(
             ValueError,
             match="Unsupported image media type: image/svg. Google currently only supports JPEG, PNG, WebP, HEIC, and HEIF images.",
         ):
-            convert_message_params([message])
+            convert_message_params([message], MagicMock())
 
 
 @patch("mirascope.core.google._utils._convert_message_params._load_media")
@@ -185,7 +189,7 @@ def test_image_url_with_non_http(mock_load_media: MagicMock) -> None:
             ImageURLPart(type="image_url", url="file://local/path/image", detail=None)
         ],
     )
-    result = convert_message_params([message])
+    result = convert_message_params([message], MagicMock())
     # Expect the part to be a FileData with file_uri equal to the URL.
     assert len(result) == 1
     assert "parts" in result[0]
@@ -217,7 +221,7 @@ def test_audio_url_with_http_valid(
         role="user",
         content=[AudioURLPart(type="audio_url", url="https://example.com/audio")],
     )
-    result = convert_message_params([message])
+    result = convert_message_params([message], MagicMock())
     assert result == [
         {
             "parts": [
@@ -256,7 +260,7 @@ def test_audio_url_with_http_invalid(
         ValueError,
         match="Unsupported audio media type: audio/unknown. Google currently only supports WAV, MP3, AIFF, AAC, OGG, and FLAC audio file types.",
     ):
-        convert_message_params([message])
+        convert_message_params([message], MagicMock())
     mock_load_media.assert_called_once_with("https://example.com/audio")
     mock_get_audio_type.assert_called_once_with(b"audio_data")
 
@@ -267,7 +271,7 @@ def test_audio_url_with_non_http() -> None:
         role="user",
         content=[AudioURLPart(type="audio_url", url="ftp://example.com/audio")],
     )
-    result = convert_message_params([message])
+    result = convert_message_params([message], MagicMock())
     assert len(result) == 1
     assert "parts" in result[0]
     assert result[0]["parts"]

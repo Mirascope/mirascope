@@ -1,5 +1,6 @@
 from typing import cast
 
+from google.genai import Client
 from google.genai.types import (
     Content,
     ContentDict,
@@ -47,12 +48,15 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
     """Converts between Google `ContentDict` and Mirascope `BaseMessageParam`."""
 
     @staticmethod
-    def to_provider(message_params: list[BaseMessageParam]) -> list[ContentDict]:
+    def to_provider(
+        message_params: list[BaseMessageParam], client: Client | None = None
+    ) -> list[ContentDict]:
         """
         Convert from Mirascope `BaseMessageParam` to Google `ContentDict`.
         """
         return convert_message_params(
-            cast(list[BaseMessageParam | ContentDict], message_params)
+            cast(list[BaseMessageParam | ContentDict], message_params),
+            client or Client(),
         )
 
     @staticmethod
