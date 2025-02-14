@@ -1,7 +1,20 @@
+from typing import Annotated
+
+from pydantic import Field
+
 from mirascope.core import BaseMessageParam, groq
 
 
-def get_book_author(title: str) -> str:
+def get_book_author(
+    title: Annotated[
+        str,
+        Field(
+            ...,
+            description="The title of the book.",
+            examples=["The Name of the Wind"],
+        ),
+    ],
+) -> str:
     """Returns the author of the book with the given title
 
     Example:
