@@ -1,5 +1,7 @@
 """The Mirascope Gemini Module."""
 
+import inspect
+import warnings
 from typing import TypeAlias
 
 from google.generativeai.protos import FunctionResponse
@@ -16,6 +18,14 @@ from .stream import GeminiStream
 from .tool import GeminiTool
 
 GeminiMessageParam: TypeAlias = ContentDict | FunctionResponse | BaseMessageParam
+
+warnings.warn(
+    inspect.cleandoc("""
+    The `mirascope.core.gemini` module is deprecated and will be removed in a future release.
+    Please use the `mirascope.core.google` module instead.
+    """),
+    category=DeprecationWarning,
+)
 
 __all__ = [
     "call",
