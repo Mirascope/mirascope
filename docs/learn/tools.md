@@ -419,9 +419,9 @@ The `BaseToolKit` class enables:
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="10 11 13 15 19 27 28 33 36 38 41"
+            ```python hl_lines="10 11 13 15 19 28 29 34 37 39 42"
             {% else %}
-            ```python hl_lines="10 11 13 15 19 26 28 33 36 38 41"
+            ```python hl_lines="10 11 13 15 19 27 29 34 37 39 42"
             {% endif %}
             --8<-- "examples/learn/tools/toolkit/{{ provider | provider_dir }}/{{ method }}.py"
             ```

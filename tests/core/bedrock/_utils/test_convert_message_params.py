@@ -1,11 +1,14 @@
 """Tests the `bedrock._utils.convert_message_params` function."""
 
+from unittest.mock import patch
+
 import pytest
 
 from mirascope.core.base import (
     AudioPart,
     BaseMessageParam,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -16,7 +19,15 @@ from mirascope.core.bedrock._utils._convert_message_params import (
 )
 
 
-def test_convert_message_params() -> None:
+@patch(
+    "mirascope.core.bedrock._utils._convert_message_params._load_media",
+    return_value=b"imgdata",
+)
+@patch(
+    "mirascope.core.bedrock._utils._convert_message_params.get_image_type",
+    return_value="png",
+)
+def test_convert_message_params(mock_get_image_type, mock_load_media) -> None:
     """Tests the `convert_message_params` function."""
 
     message_params: list[BaseMessageParam | BedrockMessageParam] = [
@@ -35,6 +46,9 @@ def test_convert_message_params() -> None:
                 TextPart(type="text", text="Hello"),
                 ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
                 TextPart(type="text", text="Hello"),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/image", detail="auto"
+                ),
             ],
         ),
     ]
@@ -43,15 +57,18 @@ def test_convert_message_params() -> None:
         {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
         {"content": [{"text": "Hello"}], "role": "user"},
         {
-            "content": [{"text": "Hello"}, {"bytes": b"image", "format": "image/jpeg"}],
+            "content": [
+                {"text": "Hello"},
+                {"image": {"format": "jpeg", "source": {"bytes": b"image"}}},
+            ],
             "role": "user",
         },
         {
             "content": [
                 {
                     "toolResult": {
-                        "content": [{"text": "result"}],
                         "toolUseId": "tool_id",
+                        "content": [{"text": "result"}],
                     }
                 }
             ],
@@ -62,16 +79,25 @@ def test_convert_message_params() -> None:
             "content": [
                 {
                     "toolUse": {
-                        "input": None,
-                        "name": "tool_name",
                         "toolUseId": "tool_id",
+                        "name": "tool_name",
+                        "input": None,
                     }
                 }
             ],
             "role": "assistant",
         },
-        {"content": [{"text": "Hello"}], "role": "user"},
+        {
+            "content": [
+                {"text": "Hello"},
+                {"image": {"format": "png", "source": {"bytes": b"imgdata"}}},
+            ],
+            "role": "user",
+        },
     ]
+
+    mock_load_media.assert_called_once_with("http://example.com/image")
+    mock_get_image_type.assert_called_once_with(b"imgdata")
 
     with pytest.raises(
         ValueError,
@@ -108,3 +134,31 @@ def test_convert_message_params() -> None:
                 )
             ]
         )
+
+
+@patch(
+    "mirascope.core.bedrock._utils._convert_message_params._load_media",
+    return_value=b"imgdata",
+)
+@patch(
+    "mirascope.core.bedrock._utils._convert_message_params.get_image_type",
+    return_value="png",
+)
+def test_image_url_conversion(mock_get_image_type, mock_load_media) -> None:
+    """Tests conversion of an image_url part."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ImageURLPart(
+                type="image_url", url="http://example.com/image", detail="auto"
+            )
+        ],
+    )
+    result = convert_message_params([message])
+    expected = {
+        "role": "user",
+        "content": [{"image": {"format": "png", "source": {"bytes": b"imgdata"}}}],
+    }
+    assert result == [expected]
+    mock_load_media.assert_called_once_with("http://example.com/image")
+    mock_get_image_type.assert_called_once_with(b"imgdata")

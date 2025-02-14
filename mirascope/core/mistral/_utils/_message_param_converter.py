@@ -19,7 +19,22 @@ from mirascope.core.base._utils._base_message_param_converter import (
 from mirascope.core.mistral._utils import convert_message_params
 
 from ...base import BaseMessageParam, ImagePart, TextPart, ToolResultPart
-from ...base.message_param import ToolCallPart
+from ...base.message_param import ImageURLPart, ToolCallPart
+
+
+def _create_image_part_from_data_url(image_url: str) -> ImagePart | None:
+    match = re.match(r"data:(image/\w+);base64,(.+)", image_url)
+    if not match:
+        return None
+    mime_type = match.group(1)
+    image_base64 = match.group(2)
+    image_data = base64.b64decode(image_base64)
+    return ImagePart(
+        type="image",
+        media_type=mime_type,
+        image=image_data,
+        detail=None,
+    )
 
 
 class MistralMessageParamConverter(BaseMessageParamConverter):
@@ -102,44 +117,35 @@ class MistralMessageParamConverter(BaseMessageParamConverter):
                     elif isinstance(chunk, ImageURLChunk):
                         image_url = chunk.image_url
                         if isinstance(image_url, str):
-                            # Extract data from the data URL
-                            match = re.match(r"data:(image/\w+);base64,(.+)", image_url)
-                            if not match:
-                                raise ValueError(
-                                    "ImageURLChunk image_url is not in a supported data URL format."
+                            if image_part := _create_image_part_from_data_url(
+                                image_url
+                            ):
+                                converted_parts.append(image_part)
+                            else:
+                                converted_parts.append(
+                                    ImageURLPart(
+                                        type="image_url",
+                                        url=image_url,
+                                        detail=None,
+                                    )
                                 )
-                            mime_type = match.group(1)
-                            image_base64 = match.group(2)
-                            image_data = base64.b64decode(image_base64)
-                            converted_parts.append(
-                                ImagePart(
-                                    type="image",
-                                    media_type=mime_type,
-                                    image=image_data,
-                                    detail=None,
-                                )
-                            )
+
                         else:
                             img_url_str = image_url.url  # type: ignore
-                            match = re.match(
-                                r"data:(image/\w+);base64,(.+)", img_url_str
-                            )
-                            if not match:
-                                raise ValueError(
-                                    "ImageURLChunk image_url is not in a supported data URL format."
+                            if image_part := _create_image_part_from_data_url(
+                                img_url_str
+                            ):
+                                converted_parts.append(image_part)
+                            else:
+                                converted_parts.append(
+                                    ImageURLPart(
+                                        type="image_url",
+                                        url=img_url_str,
+                                        detail=image_url.detail
+                                        if isinstance(image_url.detail, str)
+                                        else None,
+                                    )
                                 )
-                            mime_type = match.group(1)
-                            image_base64 = match.group(2)
-                            image_data = base64.b64decode(image_base64)
-                            converted_parts.append(
-                                ImagePart(
-                                    type="image",
-                                    media_type=mime_type,
-                                    image=image_data,
-                                    detail=None,
-                                )
-                            )
-
                     elif isinstance(chunk, ReferenceChunk):
                         raise ValueError(
                             "ReferenceChunk is not supported for conversion to BaseMessageParam."

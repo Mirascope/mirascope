@@ -7,7 +7,7 @@ from mirascope.core.base import DocumentPart, ImagePart, TextPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart, ToolResultPart
+from mirascope.core.base.message_param import ImageURLPart, ToolCallPart, ToolResultPart
 from mirascope.core.vertex._utils import convert_message_params
 
 
@@ -52,14 +52,16 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
         """
         converted = []
         for message_param in message_params:
-            role: str = "assistant"
+            role: str = (
+                "assistant" if message_param.role == "model" else message_param.role
+            )
             contents = []
             has_tool_call = False
             for part in message_param.parts:
                 if part.function_response:
                     converted.append(
                         BaseMessageParam(
-                            role=role,
+                            role=message_param.role,
                             content=[
                                 ToolResultPart(
                                     type="tool_result",
@@ -85,10 +87,18 @@ class VertexMessageParamConverter(BaseMessageParamConverter):
                         )
 
                 elif part.file_data:
-                    # part.file_data.file_uri has Google storage URI like "gs://bucket_name/file_name"
-                    raise ValueError(
-                        f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
-                    )
+                    if _is_image_mime(part.file_data.mime_type):
+                        contents.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=part.file_data.file_uri,
+                                detail=None,
+                            )
+                        )
+                    else:
+                        raise ValueError(
+                            f"FileData.file_uri is not support: {part.file_data}. Cannot convert to BaseMessageParam."
+                        )
                 elif part.function_call:
                     converted.append(
                         BaseMessageParam(

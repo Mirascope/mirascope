@@ -12,10 +12,12 @@ from .from_call_args import FromCallArgs
 from .merge_decorators import merge_decorators
 from .message_param import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -32,6 +34,7 @@ from .types import AudioSegment
 
 __all__ = [
     "AudioPart",
+    "AudioURLPart",
     "AudioSegment",
     "BaseCallKwargs",
     "BaseCallParams",
@@ -52,6 +55,7 @@ __all__ = [
     "FromCallArgs",
     "GenerateJsonSchemaNoTitles",
     "ImagePart",
+    "ImageURLPart",
     "merge_decorators",
     "metadata",
     "Messages",

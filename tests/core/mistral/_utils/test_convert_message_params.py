@@ -18,6 +18,7 @@ from mirascope.core.base import (
     AudioPart,
     BaseMessageParam,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -53,6 +54,9 @@ def test_convert_message_params() -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
                 ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/img", detail="ignored"
+                ),
             ],
         ),
     ]
@@ -71,7 +75,12 @@ def test_convert_message_params() -> None:
         ),
         SystemMessage(content="Hello", role="system"),
         ToolMessage(content="Hello", tool_call_id=Unset(), name=Unset(), role="tool"),
-        UserMessage(content=[TextChunk(text="Hello", TYPE="text")], role="user"),
+        UserMessage(
+            content=[
+                TextChunk(text="Hello", TYPE="text"),
+            ],
+            role="user",
+        ),
         ToolMessage(
             content="result", tool_call_id="tool_id", name="tool_name", role="tool"
         ),
@@ -80,8 +89,7 @@ def test_convert_message_params() -> None:
                 ImageURLChunk(
                     image_url=ImageURL(
                         url="data:image/jpeg;base64,aW1hZ2U=", detail="auto"
-                    ),
-                    TYPE="image_url",
+                    )
                 )
             ],
             tool_calls=[
@@ -93,6 +101,12 @@ def test_convert_message_params() -> None:
             ],
             prefix=False,
             role="assistant",
+        ),
+        UserMessage(
+            content=[
+                ImageURLChunk(image_url="http://example.com/img", TYPE="image_url")
+            ],
+            role="user",
         ),
     ]
 
@@ -145,3 +159,29 @@ def test_convert_message_params() -> None:
                 )
             ]
         )
+
+
+def test_tool_call_no_content() -> None:
+    """Tests conversion of a tool_call part when there is no preceding content."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ToolCallPart(
+                type="tool_call", name="my_tool", args={"param": "value"}, id="tc123"
+            )
+        ],
+    )
+    result = convert_message_params([message])
+    expected = AssistantMessage(
+        content=None,
+        tool_calls=[
+            ToolCall(
+                function=FunctionCall(name="my_tool", arguments={"param": "value"}),
+                id="tc123",
+                type="function",
+            )
+        ],
+        prefix=False,
+        role="assistant",
+    )
+    assert result == [expected]

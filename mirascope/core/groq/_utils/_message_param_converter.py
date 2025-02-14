@@ -1,17 +1,14 @@
 import json
 from typing import cast
 
-from groq.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-)
+from groq.types.chat import ChatCompletionMessageParam
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import TextPart
+from mirascope.core.base import TextPart, ToolResultPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
-from mirascope.core.base.message_param import ToolCallPart
+from mirascope.core.base.message_param import ImageURLPart, ToolCallPart
 from mirascope.core.groq._utils import convert_message_params
 
 
@@ -31,16 +28,29 @@ class GroqMessageParamConverter(BaseMessageParamConverter):
 
     @staticmethod
     def from_provider(
-        message_params: list[ChatCompletionAssistantMessageParam],
+        message_params: list[ChatCompletionMessageParam],
     ) -> list[BaseMessageParam]:
-        """
-        Convert from Groq's `ChatCompletionAssistantMessageParam` to Mirascope `BaseMessageParam`.
-        """
+        """Convert from Groq's `ChatCompletionAssistantMessageParam` to Mirascope `BaseMessageParam`."""
         converted = []
         for message_param in message_params:
             contents = []
-            if (content := message_param.get("content")) and content is not None:
-                contents.append(TextPart(text=content, type="text"))
+            content = message_param.get("content")
+            if message_param["role"] == "tool":
+                converted.append(
+                    BaseMessageParam(
+                        role="tool",
+                        content=[
+                            ToolResultPart(
+                                type="tool_result",
+                                name=getattr(message_param, "name", ""),
+                                content=message_param["content"],
+                                id=message_param["tool_call_id"],
+                                is_error=False,
+                            )
+                        ],
+                    )
+                )
+                continue
             if tool_calls := message_param.get("tool_calls"):
                 for tool_call in tool_calls:
                     contents.append(
@@ -51,10 +61,29 @@ class GroqMessageParamConverter(BaseMessageParamConverter):
                             args=json.loads(tool_call["function"]["arguments"]),
                         )
                     )
-            if len(contents) == 1 and isinstance(contents[0], TextPart):
+            elif isinstance(content, str):
                 converted.append(
-                    BaseMessageParam(role="assistant", content=contents[0].text)
+                    BaseMessageParam(role=message_param["role"], content=content)
+                )
+                continue
+            elif isinstance(content, list):
+                for part in content:
+                    if "text" in part:
+                        contents.append(TextPart(type="text", text=part["text"]))
+                    elif "image_url" in part:
+                        contents.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=part["image_url"]["url"],
+                                detail=part["image_url"].get("detail"),
+                            )
+                        )
+            if contents:
+                converted.append(
+                    BaseMessageParam(role=message_param["role"], content=contents)
                 )
             else:
-                converted.append(BaseMessageParam(role="tool", content=contents))
+                converted.append(
+                    BaseMessageParam(role=message_param["role"], content="")
+                )
         return converted

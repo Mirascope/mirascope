@@ -1,5 +1,7 @@
 """Tests the `azure._utils.convert_message_params` function."""
 
+import json
+
 import pytest
 from azure.ai.inference.models import (
     ChatRequestMessage,
@@ -10,6 +12,7 @@ from mirascope.core.base import (
     AudioPart,
     BaseMessageParam,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -31,6 +34,9 @@ def test_convert_message_params() -> None:
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
                 ),
+                ImageURLPart(
+                    type="image_url", url="https://example.com/image.jpg", detail="auto"
+                ),
                 ToolResultPart(
                     type="tool_result", id="tool_id", content="result", name="tool_name"
                 ),
@@ -41,7 +47,9 @@ def test_convert_message_params() -> None:
             role="assistant",
             content=[
                 TextPart(type="text", text="Hello"),
-                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+                ToolCallPart(
+                    type="tool_call", name="tool_name", args={"arg": "val"}, id="tc1"
+                ),
             ],
         ),
         BaseMessageParam(
@@ -49,7 +57,9 @@ def test_convert_message_params() -> None:
             content=[
                 TextPart(type="text", text="Hello"),
                 TextPart(type="text", text="Hello"),
-                ToolCallPart(type="tool_call", name="tool_name", args={"arg": "val"}),
+                ToolCallPart(
+                    type="tool_call", name="tool_name", args={"arg": "val"}, id="tc2"
+                ),
             ],
         ),
     ]
@@ -68,6 +78,13 @@ def test_convert_message_params() -> None:
                         "detail": "auto",
                     },
                 },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "https://example.com/image.jpg",
+                        "detail": "auto",
+                    },
+                },
             ],
         },
         {"role": "tool", "content": "result", "tool_call_id": "tool_id"},
@@ -76,7 +93,11 @@ def test_convert_message_params() -> None:
             "role": "assistant",
             "tool_calls": [
                 {
-                    "function": {"name": "tool_name", "arguments": '{"arg": "val"}'},
+                    "id": "tc1",
+                    "function": {
+                        "name": "tool_name",
+                        "arguments": json.dumps({"arg": "val"}),
+                    },
                     "type": "function",
                 }
             ],
@@ -93,7 +114,11 @@ def test_convert_message_params() -> None:
             "role": "assistant",
             "tool_calls": [
                 {
-                    "function": {"name": "tool_name", "arguments": '{"arg": "val"}'},
+                    "id": "tc2",
+                    "function": {
+                        "name": "tool_name",
+                        "arguments": json.dumps({"arg": "val"}),
+                    },
                     "type": "function",
                 }
             ],
@@ -102,8 +127,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Unsupported image media type: image/svg. Azure currently only supports "
-        "JPEG, PNG, GIF, and WebP images.",
+        match="Unsupported image media type: image/svg. Azure currently only supports JPEG, PNG, GIF, and WebP images.",
     ):
         convert_message_params(
             [
@@ -123,8 +147,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Azure currently only supports text and image parts. "
-        "Part provided: audio",
+        match="Azure currently only supports text and image parts. Part provided: audio",
     ):
         convert_message_params(
             [

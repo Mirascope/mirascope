@@ -7,6 +7,8 @@ from google.generativeai import protos
 from google.generativeai.types import ContentDict
 
 from ...base import BaseMessageParam
+from ...base._utils import get_audio_type
+from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
@@ -23,12 +25,8 @@ def convert_message_params(
                 )  # pragma: no cover
             converted_message_params += [
                 {
-                    "role": "user",
+                    "role": "system",
                     "parts": [message_param.content],
-                },
-                {
-                    "role": "model",
-                    "parts": ["Ok! I will adhere to this system message."],
                 },
             ]
         elif isinstance((content := message_param.content), str):
@@ -55,6 +53,29 @@ def convert_message_params(
                         )
                     image = PIL.Image.open(io.BytesIO(part.image))
                     converted_content.append(image)
+                elif part.type == "image_url":
+                    if part.url.startswith(("https://", "http://")):
+                        image = PIL.Image.open(io.BytesIO(_load_media(part.url)))
+                        media_type = (
+                            PIL.Image.MIME[image.format]
+                            if image.format
+                            else "image/unknown"
+                        )
+                        if media_type not in [
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp",
+                            "image/heic",
+                            "image/heif",
+                        ]:
+                            raise ValueError(
+                                f"Unsupported image media type: {media_type}. "
+                                "Gemini currently only supports JPEG, PNG, WebP, HEIC, "
+                                "and HEIF images."
+                            )
+                        converted_content.append(image)
+                    else:
+                        converted_content.append(protos.FileData(file_uri=part.url))
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -72,6 +93,28 @@ def convert_message_params(
                     converted_content.append(
                         {"mime_type": part.media_type, "data": part.audio}
                     )
+                elif part.type == "audio_url":
+                    if part.url.startswith(("https://", "http://")):
+                        audio = _load_media(part.url)
+                        audio_type = get_audio_type(audio)
+                        if audio_type not in [
+                            "audio/wav",
+                            "audio/mp3",
+                            "audio/aiff",
+                            "audio/aac",
+                            "audio/ogg",
+                            "audio/flac",
+                        ]:
+                            raise ValueError(
+                                f"Unsupported audio media type: {audio_type}. "
+                                "Gemini currently only supports WAV, MP3, AIFF, AAC, OGG, "
+                                "and FLAC audio file types."
+                            )
+                        converted_content.append(
+                            {"mime_type": audio_type, "data": audio}
+                        )
+                    else:
+                        converted_content.append(protos.FileData(file_uri=part.url))
                 elif part.type == "tool_call":
                     converted_content.append(
                         protos.FunctionCall(

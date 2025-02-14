@@ -1,13 +1,18 @@
 """Tests the `openai._utils.convert_message_params` function."""
 
+import base64
+from unittest.mock import patch
+
 import pytest
 from openai.types.chat import ChatCompletionMessageParam
 
 from mirascope.core.base import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
     ToolCallPart,
     ToolResultPart,
@@ -27,6 +32,9 @@ def test_convert_message_params() -> None:
                 TextPart(type="text", text="Hello"),
                 ImagePart(
                     type="image", media_type="image/jpeg", image=b"image", detail="auto"
+                ),
+                ImageURLPart(
+                    type="image_url", url="http://example.com/image", detail="auto"
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
                 ToolResultPart(
@@ -52,6 +60,10 @@ def test_convert_message_params() -> None:
                     "type": "image_url",
                 },
                 {
+                    "image_url": {"detail": "auto", "url": "http://example.com/image"},
+                    "type": "image_url",
+                },
+                {
                     "input_audio": {"data": "YXVkaW8=", "format": "wav"},
                     "type": "input_audio",
                 },
@@ -65,8 +77,8 @@ def test_convert_message_params() -> None:
             "tool_calls": [
                 {
                     "function": {"arguments": "null", "name": "tool_name"},
-                    "id": "tool_id",
                     "type": "function",
+                    "id": "tool_id",
                 }
             ],
         },
@@ -123,3 +135,70 @@ def test_convert_message_params() -> None:
                 )
             ]
         )
+
+
+@patch(
+    "mirascope.core.openai._utils._convert_message_params._load_media",
+    return_value=b"audio_data",
+)
+@patch(
+    "mirascope.core.openai._utils._convert_message_params.get_audio_type",
+    return_value="audio/wav",
+)
+def test_audio_url_valid(mock_get_audio_type, mock_load_media) -> None:
+    """Tests conversion of a valid audio_url part."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            AudioURLPart(
+                type="audio_url",
+                url="http://example.com/audio",
+                detail="ignored",  # pyright: ignore [reportCallIssue]
+            )
+        ],
+    )
+    result = convert_message_params([message])
+    expected = {
+        "content": [
+            {
+                "input_audio": {
+                    "format": "wav",
+                    "data": base64.b64encode(b"audio_data").decode("utf-8"),
+                },
+                "type": "input_audio",
+            }
+        ],
+        "role": "user",
+    }
+    assert result == [expected]
+    mock_load_media.assert_called_once_with("http://example.com/audio")
+    mock_get_audio_type.assert_called_once_with(b"audio_data")
+
+
+@patch(
+    "mirascope.core.openai._utils._convert_message_params._load_media",
+    return_value=b"audio_data",
+)
+@patch(
+    "mirascope.core.openai._utils._convert_message_params.get_audio_type",
+    return_value="audio/aiff",
+)
+def test_audio_url_invalid(mock_get_audio_type, mock_load_media) -> None:
+    """Tests conversion of an audio_url part with an unsupported audio type."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            AudioURLPart(
+                type="audio_url",
+                url="http://example.com/audio",
+                detail="ignored",  # pyright: ignore [reportCallIssue]
+            )
+        ],
+    )
+    with pytest.raises(
+        ValueError,
+        match="Unsupported audio media type: audio/aiff. OpenAI currently only supports WAV and MP3 audio file types.",
+    ):
+        convert_message_params([message])
+    mock_load_media.assert_called_once_with("http://example.com/audio")
+    mock_get_audio_type.assert_called_once_with(b"audio_data")

@@ -11,7 +11,7 @@ from google.generativeai.types import (
     GenerateContentResponse,
     GenerationConfigDict,
 )
-from google.generativeai.types.content_types import ToolConfigDict
+from google.generativeai.types.content_types import ToolConfigDict, to_content
 from pydantic import BaseModel
 
 from ...base import BaseMessageParam, BaseTool, _utils
@@ -108,6 +108,7 @@ def setup_call(
     call_kwargs = cast(GeminiCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
     messages = convert_message_params(messages)
+
     if json_mode:
         generation_config = call_kwargs.get("generation_config", {})
         if is_dataclass(generation_config):
@@ -125,10 +126,19 @@ def setup_call(
             "allowed_function_names": [tool_types[0]._name()],
         }
         call_kwargs["tool_config"] = tool_config
-    call_kwargs |= {"contents": messages}
 
     if client is None:
         client = GenerativeModel(model_name=model)
+
+    if messages and messages[0]["role"] == "system":
+        system_instruction = client._system_instruction
+        system_instruction = (
+            list(system_instruction.parts) if system_instruction else []
+        )
+        system_instruction.extend(messages.pop(0)["parts"])  # pyright: ignore [reportArgumentType]
+        client._system_instruction = to_content(system_instruction)  # pyright: ignore [reportArgumentType]
+
+    call_kwargs |= {"contents": messages}
 
     create = (
         get_async_create_fn(client.generate_content_async)

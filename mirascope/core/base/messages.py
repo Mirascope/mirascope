@@ -10,10 +10,12 @@ from ._utils._convert_messages_to_message_params import (
 )
 from .message_param import (
     AudioPart,
+    AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
     ImagePart,
+    ImageURLPart,
     TextPart,
 )
 from .types import AudioSegment
@@ -27,8 +29,10 @@ class Messages:
             | TextPart
             | CacheControlPart
             | ImagePart
+            | ImageURLPart
             | Image.Image
             | AudioPart
+            | AudioURLPart
             | AudioSegment
             | Wave_read
             | DocumentPart
@@ -46,8 +50,10 @@ class Messages:
             | TextPart
             | CacheControlPart
             | ImagePart
+            | ImageURLPart
             | Image.Image
             | AudioPart
+            | AudioURLPart
             | AudioSegment
             | Wave_read
             | DocumentPart
@@ -67,8 +73,10 @@ class Messages:
             | TextPart
             | CacheControlPart
             | ImagePart
+            | ImageURLPart
             | Image.Image
             | AudioPart
+            | AudioURLPart
             | AudioSegment
             | Wave_read
             | DocumentPart
@@ -88,8 +96,10 @@ class Messages:
             | TextPart
             | CacheControlPart
             | ImagePart
+            | ImageURLPart
             | Image.Image
             | AudioPart
+            | AudioURLPart
             | AudioSegment
             | Wave_read
             | DocumentPart
