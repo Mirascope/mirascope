@@ -25,6 +25,9 @@ with suppress(ImportError):
     from . import cohere as cohere
 
 with suppress(ImportError):
+    from . import google as google
+
+with suppress(ImportError):
     from . import gemini as gemini
 
 with suppress(ImportError):
@@ -57,6 +60,7 @@ __all__ = [
     "cohere",
     "FromCallArgs",
     "gemini",
+    "google",
     "groq",
     "litellm",
     "merge_decorators",
