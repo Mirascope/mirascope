@@ -381,7 +381,7 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
             === "{{ provider }}"
 
                 {% if tool_method == "function" %}
-                ```python hl_lines="7-8"
+                ```python hl_lines="14 20-21"
                 {% else %}
                 ```python hl_lines="11 15"
                 {% endif %}
@@ -393,9 +393,10 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
 
     {% endfor %}
 
-!!! note "Only `BaseTool` supports field level examples"
+Both approaches will result in the same tool schema with examples included. The function approach gets automatically converted to use Pydantic fields internally, making both methods equivalent in terms of functionality.
 
-    Currently we only support field level examples for `BaseTool` definitions of tools. We are working on identifying the best interface for adding examples at the field level for function tool definitions.
+!!! note "Field level examples in both styles"
+    Both `BaseTool` and function-style definitions support field level examples through Pydantic's `Field`. When using function-style definitions, you'll need to wrap the type with `Annotated` to use `Field`.
 
 ## ToolKit
 
