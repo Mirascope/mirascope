@@ -130,7 +130,11 @@ def setup_call(
     )
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
-    messages = convert_message_params(messages)
+
+    if client is None:
+        client = Client()
+
+    messages = convert_message_params(messages, client)
 
     if messages[0] and messages[0].get("role") == "system":
         with _generate_content_config_context(call_kwargs) as config:
@@ -161,9 +165,6 @@ def setup_call(
             config.tools = cast(ToolListUnion, config_tools)
 
     call_kwargs |= {"model": model, "contents": messages}
-
-    if client is None:
-        client = Client()
 
     create = (
         get_async_create_fn(

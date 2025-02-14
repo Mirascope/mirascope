@@ -4,6 +4,7 @@ import base64
 import io
 
 import PIL.Image
+from google.genai import Client
 from google.genai.types import BlobDict, ContentDict, FileDataDict, PartDict
 
 from ...base import BaseMessageParam
@@ -12,7 +13,7 @@ from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
-    message_params: list[BaseMessageParam | ContentDict],
+    message_params: list[BaseMessageParam | ContentDict], client: Client
 ) -> list[ContentDict]:
     converted_message_params = []
     for message_param in message_params:
@@ -63,7 +64,8 @@ def convert_message_params(
                     )
                 elif part.type == "image_url":
                     if part.url.startswith(("https://", "http://")):
-                        image = PIL.Image.open(io.BytesIO(_load_media(part.url)))
+                        downloaded_image = io.BytesIO(_load_media(part.url))
+                        image = PIL.Image.open(downloaded_image)
                         media_type = (
                             PIL.Image.MIME[image.format]
                             if image.format
@@ -81,15 +83,33 @@ def convert_message_params(
                                 "Google currently only supports JPEG, PNG, WebP, HEIC, "
                                 "and HEIF images."
                             )
-                    else:
-                        media_type = "image/unknown"
-                    converted_content.append(
-                        PartDict(
-                            file_data=FileDataDict(
-                                file_uri=part.url, mime_type=media_type
+                        if client.vertexai:
+                            uri = part.url
+                        else:
+                            downloaded_image.seek(0)
+                            file_ref = client.files.upload(
+                                file=downloaded_image, config={"mime_type": media_type}
+                            )
+                            uri = file_ref.uri
+                            media_type = file_ref.mime_type
+
+                        converted_content.append(
+                            PartDict(
+                                file_data=FileDataDict(
+                                    file_uri=uri, mime_type=media_type
+                                )
                             )
                         )
-                    )
+                    else:
+                        media_type = "image/unknown"
+                        uri = part.url
+                        converted_content.append(
+                            PartDict(
+                                file_data=FileDataDict(
+                                    file_uri=uri, mime_type=media_type
+                                )
+                            )
+                        )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
