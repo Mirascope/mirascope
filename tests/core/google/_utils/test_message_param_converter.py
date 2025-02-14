@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 from google.genai.types import (
     BlobDict,
@@ -148,11 +150,16 @@ def test_to_document_part_unsupported_document():
         _to_document_part(mime_type="application/json", data=b"{}")
 
 
-def test_to_provider():
+@patch(
+    "mirascope.core.google._utils._message_param_converter.Client",
+    new_callable=MagicMock,
+)
+def test_to_provider(mock_client_class):
     results = GoogleMessageParamConverter.to_provider(
         [BaseMessageParam(role="assistant", content="Hello")]
     )
     assert results == [{"parts": [{"text": "Hello"}], "role": "model"}]
+    mock_client_class.assert_called_once_with()
 
 
 def test_inline_data_application_pdf():
