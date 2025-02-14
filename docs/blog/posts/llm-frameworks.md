@@ -67,7 +67,7 @@ Take a complex workflow like chaining, for example. When looking at how framewor
 
 Developers using LangChain often encapsulate chaining operations in [runnables and pipe moderators](https://python.langchain.com/docs/tutorials/rag/), as shown in the code snippet below for a retrieval augmented generation (RAG) pipeline:
 
-```py
+```python hl_lines="45-50"
 from bs4 import SoupStrainer
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
