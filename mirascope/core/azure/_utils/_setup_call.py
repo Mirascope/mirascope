@@ -47,7 +47,7 @@ except ImportError:
         JsonSchemaFormat as FormatJSON,  # pyright: ignore [reportAttributeAccessIssue]
     )
 
-    json_object = "json_object" # pyright: ignore [reportAssignmentType]
+    json_object = "json_object"  # pyright: ignore [reportAssignmentType]
 
 
 @overload
