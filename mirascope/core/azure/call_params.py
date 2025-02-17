@@ -15,7 +15,7 @@ try:
     )
 
     ResponseFormatJSON: TypeAlias = ChatCompletionsResponseFormatJSON  # pyright: ignore [reportRedeclaration]
-except ImportError:
+except ImportError:  # pragma: no cover
     from azure.ai.inference.models import (
         JsonSchemaFormat,  # pyright: ignore [reportAttributeAccessIssue]
     )

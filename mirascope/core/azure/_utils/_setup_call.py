@@ -41,7 +41,7 @@ try:
     )
 
     json_object: ResponseFormatJSON | None = None
-except ImportError:
+except ImportError:  # pragma: no cover
     # https://github.com/Azure/azure-sdk-for-python/commit/cf61ada8243d619ee6164bf1d32b3939b3c271e5#diff-0fb29d8cce6df3a014592ba8e9959409b8c471088381549807239324f5e8ddc4R15-R17
     from azure.ai.inference.models._models import (
         JsonSchemaFormat as FormatJSON,  # pyright: ignore [reportAttributeAccessIssue]
