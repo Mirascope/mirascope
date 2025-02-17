@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 
+from docs.generate_provider_examples import generate_provider_examples
+
 
 def get_output_path(input_path: Path) -> Path:
     """
@@ -74,3 +76,17 @@ def on_post_build(config, **kwargs):
         print("Successfully copied generated .html.md files to site directory")
     except Exception as e:
         print(f"Error copying .html.md files: {e}")
+
+
+def on_pre_build(config, **kwargs):
+    """
+    Hook that runs before the build.
+    Generate provider specific examples.
+    """
+
+    try:
+        generate_provider_examples(config)
+        print("Successfully generated provider examples")
+    except Exception as e:
+        print(f"Error generating provider examples: {e}")
+        raise e

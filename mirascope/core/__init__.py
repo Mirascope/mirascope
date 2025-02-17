@@ -54,6 +54,7 @@ __all__ = [
     "anthropic",
     "azure",
     "base",
+    "BaseCallResponse",
     "BaseDynamicConfig",
     "BaseMessageParam",
     "BasePrompt",
