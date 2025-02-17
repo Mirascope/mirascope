@@ -2,13 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal, TypeAlias
 
 from azure.ai.inference.models import (
     ChatCompletionsNamedToolChoice,
-    ChatCompletionsResponseFormat,
     ChatCompletionsToolChoicePreset,
 )
+
+try:
+    from azure.ai.inference.models import (
+        ChatCompletionsResponseFormatJSON,
+    )
+
+    ResponseFormatJSON: TypeAlias = ChatCompletionsResponseFormatJSON  # pyright: ignore [reportRedeclaration]
+except ImportError:
+    from azure.ai.inference.models import (
+        JsonSchemaFormat,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+
+    ResponseFormatJSON: TypeAlias = JsonSchemaFormat | Literal["json_object"]  # pyright: ignore [reportRedeclaration]
+
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
@@ -36,7 +49,7 @@ class AzureCallParams(BaseCallParams):
     max_tokens: NotRequired[int | None]
     model_extras: NotRequired[dict[str, Any] | None]
     presence_penalty: NotRequired[float | None]
-    response_format: NotRequired[ChatCompletionsResponseFormat | None]
+    response_format: NotRequired[ResponseFormatJSON | None]
     seed: NotRequired[int | None]
     stop: NotRequired[list[str] | None]
     temperature: NotRequired[float | None]

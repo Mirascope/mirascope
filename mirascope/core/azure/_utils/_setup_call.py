@@ -10,7 +10,6 @@ from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.aio import ChatCompletionsClient as AsyncChatCompletionsClient
 from azure.ai.inference.models import (
     ChatCompletions,
-    ChatCompletionsResponseFormatJSON,
     ChatRequestMessage,
     StreamingChatCompletionsUpdate,
     UserMessage,
@@ -29,12 +28,26 @@ from ...base._utils import (
 from ...base.call_params import CommonCallParams
 from ...base.stream_config import StreamConfig
 from .._call_kwargs import AzureCallKwargs
-from ..call_params import AzureCallParams
+from ..call_params import AzureCallParams, ResponseFormatJSON
 from ..dynamic_config import AsyncAzureDynamicConfig, AzureDynamicConfig
 from ..tool import AzureTool, GenerateAzureStrictToolJsonSchema
 from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 from ._get_credential import get_credential
+
+try:
+    from azure.ai.inference.models._models import (
+        ChatCompletionsResponseFormatJSON as FormatJSON,
+    )
+
+    json_object: ResponseFormatJSON | None = None
+except ImportError:
+    # https://github.com/Azure/azure-sdk-for-python/commit/cf61ada8243d619ee6164bf1d32b3939b3c271e5#diff-0fb29d8cce6df3a014592ba8e9959409b8c471088381549807239324f5e8ddc4R15-R17
+    from azure.ai.inference.models._models import (
+        JsonSchemaFormat as FormatJSON,  # pyright: ignore [reportAttributeAccessIssue]
+    )
+
+    json_object = "json_object" # pyright: ignore [reportAssignmentType]
 
 
 @overload
@@ -116,7 +129,7 @@ def setup_call(
     messages = convert_message_params(messages)
     if json_mode:
         if response_model and response_model.model_config.get("strict", False):
-            call_kwargs["response_format"] = ChatCompletionsResponseFormatJSON(
+            call_kwargs["response_format"] = FormatJSON(
                 {
                     "name": response_model.__name__,
                     "description": response_model.__doc__ or DEFAULT_TOOL_DOCSTRING,
@@ -127,7 +140,7 @@ def setup_call(
                 }
             )
         else:
-            call_kwargs["response_format"] = ChatCompletionsResponseFormatJSON()
+            call_kwargs["response_format"] = json_object or FormatJSON()
             json_mode_content = _utils.json_mode_content(response_model).strip()
             messages.append(UserMessage(content=json_mode_content))
     elif response_model:
