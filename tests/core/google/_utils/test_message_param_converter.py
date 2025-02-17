@@ -73,13 +73,10 @@ def test_google_convert_parts_document():
     part = PartDict(
         file_data=FileDataDict(mime_type="application/pdf", file_uri="%PDF-1.4...")
     )
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/pdf. Cannot convert to BaseMessageParam.",
-    ):
-        GoogleMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [part]}]
-        )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], ImageURLPart)
 
 
 def test_google_convert_parts_unsupported_image():
@@ -238,18 +235,14 @@ def test_google_convert_parts_file_data_audio():
     assert result.content[0].url == "http://example.com/audio"
 
 
-def test_google_convert_parts_file_data_unsupported():
-    """
-    When a part has file_data with an unsupported mime type, the converter should raise ValueError.
-    """
+def test_google_convert_parts_file_data_unknown_mime_type():
+    """When a part has file_data with an unknown mime type, it should use ImageURLPart."""
     file_data = FileDataDict(
-        mime_type="application/zip", file_uri="http://example.com/zip"
+        mime_type="application/zip",
+        file_uri="http://generativelanguage.googleapis.com/files/zip",
     )
     part = PartDict(file_data=file_data)
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/zip. Cannot convert to BaseMessageParam.",
-    ):
-        GoogleMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [part]}]
-        )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], ImageURLPart)

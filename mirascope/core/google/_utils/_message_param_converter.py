@@ -104,8 +104,14 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                             )
                         )
                     else:
-                        raise ValueError(
-                            f"Unsupported file_data mime type: {part.file_data.mime_type}. Cannot convert to BaseMessageParam."
+                        # Since `FileDataDict` handles any file data, we use
+                        # `ImageURLPart` for unknown mime types
+                        content_list.append(
+                            ImageURLPart(
+                                type="image_url",
+                                url=cast(str, part.file_data.file_uri),
+                                detail=None,
+                            )
                         )
                 elif part.function_call:
                     converted.append(

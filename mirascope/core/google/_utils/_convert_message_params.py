@@ -63,7 +63,10 @@ def convert_message_params(
                         )
                     )
                 elif part.type == "image_url":
-                    if part.url.startswith(("https://", "http://")):
+                    if (
+                        part.url.startswith(("https://", "http://"))
+                        and "generativelanguage.googleapis.com" not in part.url
+                    ):
                         downloaded_image = io.BytesIO(_load_media(part.url))
                         image = PIL.Image.open(downloaded_image)
                         media_type = (
@@ -92,24 +95,15 @@ def convert_message_params(
                             )
                             uri = file_ref.uri
                             media_type = file_ref.mime_type
-
-                        converted_content.append(
-                            PartDict(
-                                file_data=FileDataDict(
-                                    file_uri=uri, mime_type=media_type
-                                )
-                            )
-                        )
                     else:
-                        media_type = "image/unknown"
                         uri = part.url
-                        converted_content.append(
-                            PartDict(
-                                file_data=FileDataDict(
-                                    file_uri=uri, mime_type=media_type
-                                )
-                            )
+                        media_type = None
+
+                    converted_content.append(
+                        PartDict(
+                            file_data=FileDataDict(file_uri=uri, mime_type=media_type)
                         )
+                    )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -135,9 +129,12 @@ def convert_message_params(
                         )
                     )
                 elif part.type == "audio_url":
-                    if part.url.startswith(("https://", "http://")):
-                        audio = _load_media(part.url)
-                        audio_type = get_audio_type(audio)
+                    if (
+                        part.url.startswith(("https://", "http://"))
+                        and "generativelanguage.googleapis.com" not in part.url
+                    ):
+                        downloaded_audio = _load_media(part.url)
+                        audio_type = get_audio_type(downloaded_audio)
                         if audio_type not in [
                             "audio/wav",
                             "audio/mp3",
@@ -151,16 +148,23 @@ def convert_message_params(
                                 "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
                                 "and FLAC audio file types."
                             )
-                        converted_content.append(
-                            {"mime_type": audio_type, "data": audio}
-                        )
+                        if client.vertexai:
+                            uri = part.url
+                        else:
+                            downloaded_audio = io.BytesIO(downloaded_audio)
+                            downloaded_audio.seek(0)
+                            file_ref = client.files.upload(
+                                file=downloaded_audio, config={"mime_type": audio_type}
+                            )
+                            uri = file_ref.uri
+                            media_type = file_ref.mime_type
                     else:
-                        audio_type = "audio/unknown"
+                        uri = part.url
+                        audio_type = None
+
                     converted_content.append(
                         PartDict(
-                            file_data=FileDataDict(
-                                file_uri=part.url, mime_type=audio_type
-                            )
+                            file_data=FileDataDict(file_uri=uri, mime_type=audio_type)
                         )
                     )
                 else:
