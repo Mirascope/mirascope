@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.18.0"
+version = "1.18.1"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
