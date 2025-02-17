@@ -241,7 +241,7 @@ def test_image_url_with_non_http(mock_load_media: MagicMock) -> None:
     assert part == {
         "file_data": {
             "file_uri": "file://local/path/image",
-            "mime_type": "image/unknown",
+            "mime_type": None,
         }
     }
     mock_load_media.assert_not_called()
@@ -267,7 +267,6 @@ def test_audio_url_with_http_valid(
     assert result == [
         {
             "parts": [
-                {"data": b"audio_data", "mime_type": "audio/wav"},
                 {
                     "file_data": {
                         "file_uri": "https://example.com/audio",
@@ -322,6 +321,6 @@ def test_audio_url_with_non_http() -> None:
     assert part == {
         "file_data": {
             "file_uri": "ftp://example.com/audio",
-            "mime_type": "audio/unknown",
+            "mime_type": None,
         }
     }
