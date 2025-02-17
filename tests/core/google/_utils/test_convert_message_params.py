@@ -282,6 +282,44 @@ def test_audio_url_with_http_valid(
 
 
 @patch(
+    "mirascope.core.google._utils._convert_message_params.get_audio_type",
+    return_value="audio/wav",
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"audio_data",
+)
+def test_audio_url_with_http_valid_gemini(
+    mock_load_media: MagicMock, mock_get_audio_type: MagicMock
+) -> None:
+    """Test image_url part with an HTTP URL and valid media type."""
+    message = BaseMessageParam(
+        role="user",
+        content=[AudioURLPart(type="audio_url", url="https://example.com/audio")],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_file = MagicMock(uri="file://local/path/audio", mime_type="audio/wav")
+    mock_client.files.upload.return_value = mock_file
+    result = convert_message_params([message], mock_client)
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://local/path/audio",
+                        "mime_type": "audio/wav",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+    # Check that _load_media was called with the URL.
+    mock_load_media.assert_called_once_with("https://example.com/audio")
+
+
+@patch(
     "mirascope.core.google._utils._convert_message_params._load_media",
     return_value=b"audio_data",
 )
