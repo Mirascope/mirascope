@@ -498,7 +498,8 @@ async def test_async_upload_error_handling() -> None:
 
 @pytest.mark.asyncio
 async def test_mixed_content_with_async_uploads() -> None:
-    """Test handling mixed content types with some requiring async uploads. And also testing that only imagesactually put in the message are counted towards the 15MB limit."""
+    """Test handling mixed content types with some requiring async uploads. And also testing that only images
+    actually put in the message are counted towards the 15MB limit."""
     large_image = bytes([0] * (16 * 1024 * 1024))  # 16MB
     small_image = bytes([0] * (1 * 1024 * 1024))  # 1MB
 
@@ -551,3 +552,91 @@ async def test_mixed_content_with_async_uploads() -> None:
     mock_client.aio.files.upload.assert_called_once()
     call_args = mock_client.aio.files.upload.call_args
     assert call_args[1]["config"]["mime_type"] == "image/jpeg"
+
+
+@pytest.mark.asyncio
+async def test_audio_part_handling() -> None:
+    """Test handling of audio parts including large and small audio files."""
+    large_audio = bytes([0] * (16 * 1024 * 1024))  # 16MB
+    small_audio = bytes([0] * (1 * 1024 * 1024))  # 1MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Start text"),
+            AudioPart(type="audio", media_type="audio/wav", audio=large_audio),
+            AudioPart(type="audio", media_type="audio/mp3", audio=small_audio),
+            TextPart(type="text", text="End text"),
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_file = MagicMock(uri="file://uploaded/large_audio", mime_type="audio/wav")
+    mock_client.aio.files.upload = AsyncMock(return_value=mock_file)
+
+    result = await _convert_message_params_async([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {"text": "Start text"},
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/large_audio",
+                        "mime_type": "audio/wav",
+                    }
+                },
+                {
+                    "inline_data": {
+                        "data": small_audio,
+                        "mime_type": "audio/mp3",
+                    }
+                },
+                {"text": "End text"},
+            ],
+            "role": "user",
+        }
+    ]
+
+    # Verify only large audio was uploaded async
+    mock_client.aio.files.upload.assert_called_once()
+    call_args = mock_client.aio.files.upload.call_args
+    assert call_args[1]["config"]["mime_type"] == "audio/wav"
+
+
+def test_sync_context_handling() -> None:
+    """Test that convert_message_params properly handles being called from a sync context."""
+    message = BaseMessageParam(role="user", content="Test message")
+    mock_client = MagicMock()
+
+    # This will create a new event loop since we're in a sync function
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "role": "user",
+            "parts": [{"text": "Test message"}],
+        }
+    ]
+
+
+def test_convert_message_params_with_running_loop(event_loop) -> None:
+    """Test that convert_message_params properly handles being called when an event loop exists."""
+    message = BaseMessageParam(role="user", content="Test message")
+    mock_client = MagicMock()
+
+    async def async_operation():
+        return await _convert_message_params_async([message], mock_client)
+
+    # Use the existing event loop to run our async operation
+    result = event_loop.run_until_complete(async_operation())
+
+    assert result == [
+        {
+            "role": "user",
+            "parts": [{"text": "Test message"}],
+        }
+    ]

@@ -28,16 +28,8 @@ def convert_message_params(
     If called from sync context, uses asyncio.run().
     If called from async context, uses the current event loop.
     """
-    try:
-        # Check if we're in an event loop
-        loop = asyncio.get_running_loop()
-        # we're in an async context
-        return loop.run_until_complete(
-            _convert_message_params_async(message_params, client)
-        )
-    except RuntimeError:
-        # Launch a new event loop if not in async context
-        return asyncio.run(_convert_message_params_async(message_params, client))
+    # Launch a new event loop
+    return asyncio.run(_convert_message_params_async(message_params, client))
 
 
 async def _convert_message_params_async(
@@ -173,16 +165,32 @@ async def _convert_message_params_async(
                             "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
                             "and FLAC audio file types."
                         )
-                    converted_content.append(
-                        PartDict(
-                            inline_data=BlobDict(
-                                data=part.audio
-                                if isinstance(part.audio, bytes)
-                                else base64.b64decode(part.audio),
-                                mime_type=part.media_type,
+
+                    audio_data = (
+                        part.audio
+                        if isinstance(part.audio, bytes)
+                        else base64.b64decode(part.audio)
+                    )
+                    audio_size = len(audio_data)
+
+                    if total_size + audio_size > 15 * 1024 * 1024:  # 15MB
+                        # Upload audio asynchronously
+                        audio_data_io = io.BytesIO(audio_data)
+                        task = asyncio.create_task(
+                            _upload_image(client, audio_data_io, part.media_type)
+                        )
+                        upload_tasks.append((task, len(converted_content)))
+                        converted_content.append(None)  # Placeholder
+                    else:
+                        total_size += audio_size
+                        converted_content.append(
+                            PartDict(
+                                inline_data=BlobDict(
+                                    data=audio_data,
+                                    mime_type=part.media_type,
+                                )
                             )
                         )
-                    )
                 elif part.type == "audio_url":
                     if (
                         part.url.startswith(("https://", "http://"))
