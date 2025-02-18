@@ -109,14 +109,22 @@ class GoogleCallResponse(
         return None
 
     @property
-    def input_tokens(self) -> None:
+    def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        return None
+        return (
+            self.response.usage_metadata.prompt_token_count
+            if self.response.usage_metadata
+            else None
+        )
 
     @property
-    def output_tokens(self) -> None:
+    def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
-        return None
+        return (
+            self.response.usage_metadata.candidates_token_count
+            if self.response.usage_metadata
+            else None
+        )
 
     @property
     def cost(self) -> float | None:
