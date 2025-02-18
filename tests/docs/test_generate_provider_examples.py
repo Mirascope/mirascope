@@ -1,10 +1,13 @@
 import inspect
+import tempfile
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from docs.generate_provider_examples import (
     PROVIDER_INFO,
+    generate_provider_examples,
     get_supported_providers,
     substitute_llm_call_decorator,
     substitute_provider_cast,
@@ -24,7 +27,7 @@ def test_substitute_llm_call_decorator_single_line():
     expected = inspect.cleandoc("""
         from mirascope import llm
 
-        @llm.call(provider="anthropic", model="claude-3-5-sonnet-20240620", response_model=Book)
+        @llm.call(provider="anthropic", model="claude-3-5-sonnet-latest", response_model=Book)
         def extract_book(text: str):
             pass
         """)
@@ -49,7 +52,7 @@ def test_substitute_llm_call_decorator_multi_line():
 
         @llm.call(
             provider="anthropic",
-            model="claude-3-5-sonnet-20240620",
+            model="claude-3-5-sonnet-latest",
             response_model=Book
         )
         def extract_book(text: str):
@@ -88,10 +91,10 @@ def test_substitute_llm_call_decorator_multiple_decorators():
         def func2(): pass
         """)
     expected = inspect.cleandoc("""
-        @llm.call(provider="anthropic", model="claude-3-5-sonnet-20240620")
+        @llm.call(provider="anthropic", model="claude-3-5-sonnet-latest")
         def func1(): pass
 
-        @llm.call(provider="anthropic", model="claude-3-5-sonnet-20240620")
+        @llm.call(provider="anthropic", model="claude-3-5-sonnet-latest")
         def func2(): pass
         """)
     result = substitute_llm_call_decorator(content, "anthropic")
@@ -178,7 +181,7 @@ def test_substitute_provider_specific_content():
             author: str
 
 
-        @llm.call(provider="anthropic", model="claude-3-5-sonnet-20240620", response_model=Book)
+        @llm.call(provider="anthropic", model="claude-3-5-sonnet-latest", response_model=Book)
         def extract_book(text: str) -> list[BaseMessageParam]:
             return [BaseMessageParam(role="user", content=f"Extract {text}")]
 
@@ -236,3 +239,48 @@ def test_substitute_llm_call_decorator_all_providers():
         assert info.provider in result
         assert info.model in result
         assert "func(): pass" in result
+
+
+def test_generate_provider_example():
+    # Create a temporary directory for the test
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Convert the temporary directory path to a Path object
+        temp_path = Path(temp_dir)
+
+        examples_root = Path("examples")
+        example = "learn/response_models/basic_usage"
+        assert (examples_root / example / "shorthand.py").exists()
+        config = {"extra": {"provider_example_dirs": [example]}}
+        snippets_dir = temp_path / "build/snippets"
+        generate_provider_examples(
+            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+        )
+
+        anthropic_example = snippets_dir / example / "anthropic" / "shorthand.py"
+        assert anthropic_example.exists()
+        with open(anthropic_example) as f:
+            content = f.read()
+        assert "anthropic" in content
+        assert "claude-3-5-sonnet-latest" in content
+        assert "openai" not in content
+
+
+def test_generate_provider_example_removes_existing_files():
+    # Create a temporary directory for the test
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Convert the temporary directory path to a Path object
+        temp_path = Path(temp_dir)
+
+        examples_root = Path("../examples")
+        example = "learn/response_models/basic_usage"
+
+        config = {"extra": {"provider_example_dirs": [example]}}
+        snippets_dir = temp_path / "build/snippets"
+        errata = snippets_dir / "learn/response_models/basic_usage/anthropic/errata.py"
+        errata.parent.mkdir(parents=True, exist_ok=True)
+        errata.touch()
+        generate_provider_examples(
+            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+        )
+
+        assert not errata.exists()

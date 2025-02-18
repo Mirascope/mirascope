@@ -85,7 +85,11 @@ def on_pre_build(config, **kwargs):
     """
 
     try:
-        generate_provider_examples(config)
+        generate_provider_examples(
+            config=config,
+            examples_root=Path("examples"),
+            snippets_dir=Path("build/snippets"),
+        )
         print("Successfully generated provider examples")
     except Exception as e:
         print(f"Error generating provider examples: {e}")

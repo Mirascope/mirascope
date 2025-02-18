@@ -4,9 +4,6 @@ from pathlib import Path
 from mirascope.llm import Provider
 from pydantic import BaseModel
 
-EXAMPLES_ROOT = Path("examples")
-SNIPPETS_DIR = Path("build/snippets")
-
 
 class ProviderInfo(BaseModel):
     """Provider information for UI and substitutions."""
@@ -19,12 +16,12 @@ class ProviderInfo(BaseModel):
 PROVIDER_INFO: dict[Provider, ProviderInfo] = {
     "openai": ProviderInfo(provider="openai", title="OpenAI", model="gpt-4o-mini"),
     "anthropic": ProviderInfo(
-        provider="anthropic", title="Anthropic", model="claude-3-5-sonnet-20240620"
+        provider="anthropic", title="Anthropic", model="claude-3-5-sonnet-latest"
     ),
     "mistral": ProviderInfo(
         provider="mistral", title="Mistral", model="mistral-large-latest"
     ),
-    "google": ProviderInfo(provider="google", title="Google", model="gemini-1.5-flash"),
+    "google": ProviderInfo(provider="google", title="Google", model="gemini-2.0-flash"),
     "groq": ProviderInfo(
         provider="groq", title="Groq", model="llama-3.1-70b-versatile"
     ),
@@ -117,18 +114,20 @@ def get_supported_providers() -> list[ProviderInfo]:
     return list(PROVIDER_INFO.values())
 
 
-def generate_provider_examples(config: dict) -> None:
+def generate_provider_examples(
+    *, config: dict, examples_root: Path, snippets_dir: Path
+) -> None:
     """Generate provider-specific examples for python files in configured paths."""
     # Clear/create snippets directory
-    if SNIPPETS_DIR.exists():
-        for file in SNIPPETS_DIR.rglob("*.py"):
+    if snippets_dir.exists():
+        for file in snippets_dir.rglob("*.py"):
             file.unlink()
-    SNIPPETS_DIR.mkdir(exist_ok=True)
+    snippets_dir.mkdir(exist_ok=True, parents=True)
     supported_providers = get_supported_providers()
 
     example_dirs = config["extra"]["provider_example_dirs"]
     for example_dir in example_dirs:
-        source_dir = EXAMPLES_ROOT / example_dir
+        source_dir = examples_root / example_dir
 
         for base_file in source_dir.glob("*.py"):
             content = base_file.read_text()
@@ -136,7 +135,7 @@ def generate_provider_examples(config: dict) -> None:
             # Generate for each provider
             for info in supported_providers:
                 # Create provider directory
-                output_dir = SNIPPETS_DIR / example_dir / info.provider
+                output_dir = snippets_dir / example_dir / info.provider
 
                 output_dir.mkdir(parents=True, exist_ok=True)
 
