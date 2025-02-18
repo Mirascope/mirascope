@@ -146,6 +146,7 @@ venv.bak/
 /site
 docs/**/*.html.md
 docs/llms.txt
+build/snippets/
 
 # mypy
 .mypy_cache/
