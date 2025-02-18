@@ -209,6 +209,7 @@ exclude = [
     "examples/learn/calls/basic_usage/bedrock/official_sdk_call.py",
     "examples/learn/tools/basic_usage/bedrock/official_sdk.py",
     "examples/learn/response_models/basic_usage/bedrock/official_sdk.py",
+    ".venv"
 ]
 venvPath = "."
 venv = ".venv"
