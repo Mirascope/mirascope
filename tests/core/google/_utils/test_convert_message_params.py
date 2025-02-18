@@ -1,6 +1,7 @@
 """Tests the `google._utils.convert_message_params` function."""
 
-from unittest.mock import MagicMock, patch
+import io
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from google.genai.types import ContentDict
@@ -14,7 +15,10 @@ from mirascope.core.base import (
     ImageURLPart,
     TextPart,
 )
-from mirascope.core.google._utils._convert_message_params import convert_message_params
+from mirascope.core.google._utils._convert_message_params import (
+    _convert_message_params_async,
+    convert_message_params,
+)
 
 
 @patch("PIL.Image.open", new_callable=MagicMock)
@@ -362,3 +366,188 @@ def test_audio_url_with_non_http() -> None:
             "mime_type": None,
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_async_large_image_upload() -> None:
+    """Test async upload of large images (>15MB)."""
+    # Create a large image (>15MB)
+    large_image = bytes([0] * (22 * 1024 * 1024))  # 22MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ImagePart(
+                type="image", media_type="image/jpeg", image=large_image, detail=None
+            )
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_file = MagicMock(uri="file://uploaded/image", mime_type="image/jpeg")
+    mock_client.aio.files.upload = AsyncMock(return_value=mock_file)
+
+    result = await _convert_message_params_async([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/image",
+                        "mime_type": "image/jpeg",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+
+    # Verify async upload was called
+    mock_client.aio.files.upload.assert_called_once()
+    call_args = mock_client.aio.files.upload.call_args
+    assert isinstance(call_args[1]["file"], io.BytesIO)
+    assert call_args[1]["config"]["mime_type"] == "image/jpeg"
+
+
+@pytest.mark.asyncio
+async def test_multiple_async_image_uploads() -> None:
+    """Test multiple concurrent async image uploads."""
+    large_image = bytes([0] * (16 * 1024 * 1024))  # 16MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ImagePart(
+                type="image", media_type="image/jpeg", image=large_image, detail=None
+            ),
+            TextPart(type="text", text="Some text in between"),
+            ImagePart(
+                type="image", media_type="image/png", image=large_image, detail=None
+            ),
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+
+    mock_files = [
+        MagicMock(uri=f"file://uploaded/image{i}", mime_type=f"image/{fmt}")
+        for i, fmt in enumerate(["jpeg", "png"])
+    ]
+    mock_client.aio.files.upload = AsyncMock(side_effect=mock_files)
+
+    result = await _convert_message_params_async([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/image0",
+                        "mime_type": "image/jpeg",
+                    }
+                },
+                {"text": "Some text in between"},
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/image1",
+                        "mime_type": "image/png",
+                    }
+                },
+            ],
+            "role": "user",
+        }
+    ]
+
+    assert mock_client.aio.files.upload.call_count == 2
+    calls = mock_client.aio.files.upload.call_args_list
+    assert calls[0][1]["config"]["mime_type"] == "image/jpeg"
+    assert calls[1][1]["config"]["mime_type"] == "image/png"
+
+
+@pytest.mark.asyncio
+async def test_async_upload_error_handling() -> None:
+    """Test error handling during async uploads."""
+    large_image = bytes([0] * (16 * 1024 * 1024))  # 16MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            ImagePart(
+                type="image", media_type="image/jpeg", image=large_image, detail=None
+            ),
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_client.aio.files.upload = AsyncMock(side_effect=Exception("Upload failed"))
+
+    with pytest.raises(Exception) as exc_info:
+        await _convert_message_params_async([message], mock_client)
+    assert str(exc_info.value) == "Upload failed"
+
+
+@pytest.mark.asyncio
+async def test_mixed_content_with_async_uploads() -> None:
+    """Test handling mixed content types with some requiring async uploads. And also testing that only imagesactually put in the message are counted towards the 15MB limit."""
+    large_image = bytes([0] * (16 * 1024 * 1024))  # 16MB
+    small_image = bytes([0] * (1 * 1024 * 1024))  # 1MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="Start text"),
+            ImagePart(
+                type="image", media_type="image/jpeg", image=large_image, detail=None
+            ),
+            ImagePart(
+                type="image", media_type="image/png", image=small_image, detail=None
+            ),
+            TextPart(type="text", text="End text"),
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_file = MagicMock(uri="file://uploaded/large_image", mime_type="image/jpeg")
+    mock_client.aio.files.upload = AsyncMock(return_value=mock_file)
+
+    result = await _convert_message_params_async([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {"text": "Start text"},
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/large_image",
+                        "mime_type": "image/jpeg",
+                    }
+                },
+                {
+                    "inline_data": {
+                        "data": small_image,
+                        "mime_type": "image/png",
+                    }
+                },
+                {"text": "End text"},
+            ],
+            "role": "user",
+        }
+    ]
+
+    # Verify only large image was uploaded async
+    mock_client.aio.files.upload.assert_called_once()
+    call_args = mock_client.aio.files.upload.call_args
+    assert call_args[1]["config"]["mime_type"] == "image/jpeg"

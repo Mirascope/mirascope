@@ -1,11 +1,19 @@
 """Utility for converting `BaseMessageParam` to `ContentsType`"""
 
+import asyncio
 import base64
 import io
 
 import PIL.Image
 from google.genai import Client
-from google.genai.types import BlobDict, ContentDict, FileDataDict, PartDict
+from google.genai.types import (
+    BlobDict,
+    ContentDict,
+    File,
+    FileDataDict,
+    PartDict,
+    UploadFileConfigDict,
+)
 
 from ...base import BaseMessageParam
 from ...base._utils import get_audio_type
@@ -13,6 +21,26 @@ from ...base._utils._parse_content_template import _load_media
 
 
 def convert_message_params(
+    message_params: list[BaseMessageParam | ContentDict], client: Client
+) -> list[ContentDict]:
+    """Convert message params to Google's ContentDict format.
+
+    If called from sync context, uses asyncio.run().
+    If called from async context, uses the current event loop.
+    """
+    try:
+        # Check if we're in an event loop
+        loop = asyncio.get_running_loop()
+        # we're in an async context
+        return loop.run_until_complete(
+            _convert_message_params_async(message_params, client)
+        )
+    except RuntimeError:
+        # Launch a new event loop if not in async context
+        return asyncio.run(_convert_message_params_async(message_params, client))
+
+
+async def _convert_message_params_async(
     message_params: list[BaseMessageParam | ContentDict], client: Client
 ) -> list[ContentDict]:
     converted_message_params = []
@@ -39,6 +67,9 @@ def convert_message_params(
             )
         else:
             converted_content = []
+            total_size = 0
+            upload_tasks = []
+
             for part in content:
                 if part.type == "text":
                     converted_content.append(PartDict(text=part.text))
@@ -55,13 +86,26 @@ def convert_message_params(
                             "Google currently only supports JPEG, PNG, WebP, HEIC, "
                             "and HEIF images."
                         )
-                    converted_content.append(
-                        PartDict(
-                            inline_data=BlobDict(
-                                data=part.image, mime_type=part.media_type
+
+                    image_size = len(part.image)
+
+                    if total_size + image_size > 15 * 1024 * 1024:  # 15MB
+                        # Upload image asynchronously
+                        image_data = io.BytesIO(part.image)
+                        task = asyncio.create_task(
+                            _upload_image(client, image_data, part.media_type)
+                        )
+                        upload_tasks.append((task, len(converted_content)))
+                        converted_content.append(None)  # Placeholder
+                    else:
+                        total_size += image_size
+                        converted_content.append(
+                            PartDict(
+                                inline_data=BlobDict(
+                                    data=part.image, mime_type=part.media_type
+                                )
                             )
                         )
-                    )
                 elif part.type == "image_url":
                     if (
                         part.url.startswith(("https://", "http://"))
@@ -86,24 +130,35 @@ def convert_message_params(
                                 "Google currently only supports JPEG, PNG, WebP, HEIC, "
                                 "and HEIF images."
                             )
+
                         if client.vertexai:
                             uri = part.url
                         else:
                             downloaded_image.seek(0)
                             file_ref = client.files.upload(
-                                file=downloaded_image, config={"mime_type": media_type}
+                                file=downloaded_image,
+                                config={"mime_type": media_type},
                             )
                             uri = file_ref.uri
                             media_type = file_ref.mime_type
+
+                        converted_content.append(
+                            PartDict(
+                                file_data=FileDataDict(
+                                    file_uri=uri, mime_type=media_type
+                                )
+                            )
+                        )
                     else:
                         uri = part.url
                         media_type = None
-
-                    converted_content.append(
-                        PartDict(
-                            file_data=FileDataDict(file_uri=uri, mime_type=media_type)
+                        converted_content.append(
+                            PartDict(
+                                file_data=FileDataDict(
+                                    file_uri=uri, mime_type=media_type
+                                )
+                            )
                         )
-                    )
                 elif part.type == "audio":
                     if part.media_type not in [
                         "audio/wav",
@@ -172,6 +227,19 @@ def convert_message_params(
                         "Google currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
+
+            # Wait for all uploads to complete
+            if upload_tasks:
+                results = await asyncio.gather(*(task for task, _ in upload_tasks))
+
+                # Replace placeholders with FileDataDict
+                for (_, index), file_ref in zip(upload_tasks, results, strict=False):
+                    converted_content[index] = PartDict(
+                        file_data=FileDataDict(
+                            file_uri=file_ref.uri, mime_type=file_ref.mime_type
+                        )
+                    )
+
             converted_message_params.append(
                 {
                     "role": role if role == "user" else "model",
@@ -179,3 +247,11 @@ def convert_message_params(
                 }
             )
     return converted_message_params
+
+
+async def _upload_image(
+    client: Client, image_data: io.BytesIO, media_type: str
+) -> File:
+    return await client.aio.files.upload(
+        file=image_data, config=UploadFileConfigDict(mime_type=media_type)
+    )
