@@ -10,9 +10,9 @@ from docs.generate_provider_examples import (
     generate_provider_examples,
     get_supported_providers,
     substitute_llm_call_decorator,
-    substitute_provider_cast,
     substitute_provider_import,
     substitute_provider_specific_content,
+    substitute_provider_type,
 )
 
 
@@ -123,26 +123,26 @@ def test_substitute_provider_import_multi_import():
     assert result == expected
 
 
-def test_substitute_provider_cast():
+def test_substitute_provider_type():
     content = inspect.cleandoc("""
         cast(openai.OpenAICallResponse, response)
         """)
     expected = inspect.cleandoc("""
         cast(anthropic.AnthropicCallResponse, response)
         """)
-    result = substitute_provider_cast(content, "anthropic")
+    result = substitute_provider_type(content, "anthropic")
     assert result == expected
 
 
-def test_substitute_provider_cast_litellm():
+def test_substitute_provider_type_special_caps():
     content = inspect.cleandoc("""
         cast(openai.OpenAICallResponse, response)
         """)
     expected = inspect.cleandoc("""
         cast(litellm.LiteLLMCallResponse, response)
         """)
-    result = substitute_provider_cast(content, "litellm")
-    assert result == expected
+    assert substitute_provider_type(content, "litellm") == expected
+    assert substitute_provider_type(content, "openai") == content
 
 
 def test_substitute_provider_specific_content():
@@ -194,8 +194,8 @@ def test_substitute_provider_specific_content():
         print(response.model_dump())
         # > {'metadata': {}, 'response': {'id': ...}, ...}
         """)
-    result = substitute_provider_specific_content(content, "anthropic")
-    assert result == expected
+    assert substitute_provider_specific_content(content, "anthropic") == expected
+    assert substitute_provider_specific_content(content, "openai") == content
 
 
 def test_substitute_fails_invalid_provider():

@@ -31,7 +31,7 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
     "bedrock": ProviderInfo(
         provider="bedrock",
         title="Bedrock",
-        model="anthropic.claude-3-haiku-20240307-v1:0",
+        model="amazon.nova-lite-v1:0",
     ),
 }
 
@@ -45,8 +45,8 @@ def substitute_provider_import(content: str, provider: Provider) -> str:
     )
 
 
-def substitute_provider_cast(content: str, provider: Provider) -> str:
-    """Substitute provider in cast statement."""
+def substitute_provider_type(content: str, provider: Provider) -> str:
+    """Substitute provider in type names (e.g. openai.OpenAICallResponse)."""
     provider_name = provider.capitalize()
 
     if provider == "litellm":
@@ -55,8 +55,8 @@ def substitute_provider_cast(content: str, provider: Provider) -> str:
         provider_name = "OpenAI"
 
     return re.sub(
-        r"cast\(openai\.OpenAICallResponse,",
-        f"cast({provider}.{provider_name}CallResponse,",
+        r"openai\.OpenAI",
+        f"{provider}.{provider_name}",
         content,
     )
 
@@ -103,7 +103,7 @@ def substitute_provider_specific_content(content: str, provider: Provider) -> st
 
     content = substitute_llm_call_decorator(content, provider)
     content = substitute_provider_import(content, provider)
-    content = substitute_provider_cast(content, provider)
+    content = substitute_provider_type(content, provider)
     return content
 
 

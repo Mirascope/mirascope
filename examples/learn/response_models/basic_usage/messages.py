@@ -1,7 +1,6 @@
 from typing import cast
 
 from mirascope import Messages, llm
-from mirascope.core import openai
 from pydantic import BaseModel
 
 
@@ -21,6 +20,6 @@ book = extract_book("The Name of the Wind by Patrick Rothfuss")
 print(book)
 # Output: title='The Name of the Wind' author='Patrick Rothfuss'
 
-response = cast(openai.OpenAICallResponse, book._response)  # pyright: ignore[reportAttributeAccessIssue]
+response = cast(llm.CallResponse, book._response)  # pyright: ignore[reportAttributeAccessIssue]
 print(response.model_dump())
 # > {'metadata': {}, 'response': {'id': ...}, ...}

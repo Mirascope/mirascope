@@ -73,9 +73,8 @@ Make your first call to an LLM to extract the title and author of a book from th
         === "{{ provider }}"
 
             ```python hl_lines="10 15 17"
-            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:3"
-            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:5:8"
-            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:11:22"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:7"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:10:21"
             ```
         {% endfor %}
 
