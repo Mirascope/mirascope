@@ -32,5 +32,6 @@ __all__ = [
     "integrations",
     "prompt_template",
     "retries",
+    "Messages",
     "__version__",
 ]
