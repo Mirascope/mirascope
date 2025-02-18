@@ -4,9 +4,11 @@ from contextlib import suppress
 
 from . import base
 from .base import (
+    BaseCallResponse,
     BaseDynamicConfig,
     BaseMessageParam,
     BasePrompt,
+    BaseStream,
     BaseTool,
     BaseToolKit,
     FromCallArgs,
@@ -57,6 +59,8 @@ __all__ = [
     "BasePrompt",
     "BaseTool",
     "BaseToolKit",
+    "BaseCallResponse",
+    "BaseStream",
     "cohere",
     "FromCallArgs",
     "gemini",
