@@ -52,8 +52,8 @@ def _check_audio_media_type(media_type: str) -> None:
 
 
 def _over_file_size_limit(size: int) -> bool:
-    """Check if the total file size exceeds the limit (15mb)."""
-    return size > 10 * 1024 * 1024  # 15MB
+    """Check if the total file size exceeds the limit (10mb). Google limit is 20MB but base64 adds 33% to the size. And there is also text..."""
+    return size > 10 * 1024 * 1024  # 10MB
 
 
 async def _convert_message_params_async(
