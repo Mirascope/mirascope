@@ -191,31 +191,59 @@ def _call(
         }
         decorated = provider_call(**_original_args)(fn)
 
-        @wraps(decorated)
-        def inner(
-            *args: _P.args, **kwargs: _P.kwargs
-        ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
-            result = decorated(*args, **kwargs)
-            if fn_is_async(decorated):
+        if fn_is_async(decorated):
 
-                async def async_wrapper() -> CallResponse | Stream:
-                    final = await result
-                    return _wrap_result(final)
+            @wraps(decorated)
+            async def inner_async(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> CallResponse | Stream:
+                result = await decorated(*args, **kwargs)
+                return _wrap_result(result)
 
-                return async_wrapper()
-            else:
+            inner_async._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
+            inner_async._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+            inner_async._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+            inner_async._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
 
-                def sync_wrapper() -> CallResponse | Stream:
-                    final = result
-                    return _wrap_result(final)
+            return inner_async
+        else:
 
-                return sync_wrapper()
+            @wraps(decorated)
+            def inner(*args: _P.args, **kwargs: _P.kwargs) -> CallResponse | Stream:
+                result = decorated(*args, **kwargs)
+                return _wrap_result(result)
 
-        inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
-        inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
-        inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
-        inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
-        return inner
+            inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
+            inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+            inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+            inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
+            return inner
+
+        # @wraps(decorated)
+        # def inner(
+        #     *args: _P.args, **kwargs: _P.kwargs
+        # ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
+        #     result = decorated(*args, **kwargs)
+        #     if fn_is_async(decorated):
+
+        #         async def async_wrapper() -> CallResponse | Stream:
+        #             final = await result
+        #             return _wrap_result(final)
+
+        #         return async_wrapper()
+        #     else:
+
+        #         def sync_wrapper() -> CallResponse | Stream:
+        #             final = result
+        #             return _wrap_result(final)
+
+        #         return sync_wrapper()
+
+        # inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
+        # inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+        # inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+        # inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
+        # return inner
 
     return wrapper  # pyright: ignore [reportReturnType]
 
