@@ -1,9 +1,9 @@
 import json
 
-from mirascope.core import BaseMessageParam, cohere
+from mirascope import BaseMessageParam, llm
 
 
-@cohere.call("command-r-plus", json_mode=True)
+@llm.call(provider="openai", model="gpt-4o-mini", json_mode=True)
 def get_book_info(book_title: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(

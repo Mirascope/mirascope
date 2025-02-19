@@ -47,7 +47,7 @@ Let's take a look at a basic example using JSON Mode:
             {% else %}
             ```python hl_lines="6 8 13"
             {% endif %}
-            --8<-- "examples/learn/json_mode/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/json_mode/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -76,7 +76,7 @@ While JSON Mode can signifanctly improve the structure of model outputs, it's im
             {% else %}
             ```python hl_lines="11 14"
             {% endif %}
-            --8<-- "examples/learn/json_mode/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/json_mode/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 

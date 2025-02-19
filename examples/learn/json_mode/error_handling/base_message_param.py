@@ -1,9 +1,9 @@
 import json
 
-from mirascope.core import BaseMessageParam, google
+from mirascope import BaseMessageParam, llm
 
 
-@google.call("gemini-1.5-flash", json_mode=True)
+@llm.call(provider="openai", model="gpt-4o-mini", json_mode=True)
 def get_book_info(book_title: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(

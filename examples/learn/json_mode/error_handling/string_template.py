@@ -1,9 +1,9 @@
 import json
 
-from mirascope.core import anthropic, prompt_template
+from mirascope import llm, prompt_template
 
 
-@anthropic.call("claude-3-5-sonnet-20240620", json_mode=True)
+@llm.call(provider="openai", model="gpt-4o-mini", json_mode=True)
 @prompt_template("Provide the author and genre of {book_title}")
 def get_book_info(book_title: str): ...
 

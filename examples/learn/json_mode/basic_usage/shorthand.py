@@ -1,9 +1,9 @@
 import json
 
-from mirascope.core import groq
+from mirascope import llm
 
 
-@groq.call("llama-3.1-70b-versatile", json_mode=True)
+@llm.call(provider="openai", model="gpt-4o-mini", json_mode=True)
 def get_book_info(book_title: str) -> str:
     return f"Provide the author and genre of {book_title}"
 
