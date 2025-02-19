@@ -78,12 +78,10 @@ class DummyProviderCallResponse(
     @cached_property
     def message_param(self) -> Any: ...
 
-    @computed_field
     @cached_property
     def tools(self) -> list[DummyTool] | None:
         return [DummyTool()]
 
-    @computed_field
     @cached_property
     def tool(self) -> DummyTool | None: ...
 

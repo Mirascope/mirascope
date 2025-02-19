@@ -140,7 +140,6 @@ class GeminiCallResponse(
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[GeminiTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
@@ -157,7 +156,6 @@ class GeminiCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> GeminiTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.

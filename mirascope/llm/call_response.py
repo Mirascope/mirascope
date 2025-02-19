@@ -102,12 +102,10 @@ class CallResponse(
     def message_param(self) -> BaseMessageParam:
         return self._response.common_message_param  # pyright: ignore [reportReturnType]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         return self._response.common_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> Tool | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         tools = self._response.common_tools

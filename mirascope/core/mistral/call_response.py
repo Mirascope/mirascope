@@ -125,7 +125,6 @@ class MistralCallResponse(
         """Returns the assistants's response as a message parameter."""
         return self._response_choices[0].message
 
-    @computed_field
     @cached_property
     def tools(self) -> list[MistralTool] | None:
         """Returns the tools for the 0th choice message.
@@ -146,7 +145,6 @@ class MistralCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> MistralTool | None:
         """Returns the 0th tool for the 0th choice message.

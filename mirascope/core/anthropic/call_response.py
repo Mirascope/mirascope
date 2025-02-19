@@ -118,7 +118,6 @@ class AnthropicCallResponse(
         """Returns the assistants's response as a message parameter."""
         return MessageParam(**self.response.model_dump(include={"content", "role"}))
 
-    @computed_field
     @cached_property
     def tools(self) -> list[AnthropicTool] | None:
         """Returns any available tool calls as their `AnthropicTool` definition.
@@ -140,7 +139,6 @@ class AnthropicCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> AnthropicTool | None:
         """Returns the 0th tool for the 0th choice message.

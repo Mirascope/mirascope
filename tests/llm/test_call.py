@@ -51,11 +51,9 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     @cached_property
     def message_param(self) -> Any: ...
 
-    @computed_field
     @cached_property
     def tools(self) -> Any: ...
 
-    @computed_field
     @cached_property
     def tool(self) -> Any: ...
 
