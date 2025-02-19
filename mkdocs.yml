@@ -5,6 +5,9 @@ site_description: Mirascope streamlines LLM development with a unified interface
 repo_name: mirascope
 repo_url: https://github.com/Mirascope/mirascope/
 strict: true
+watch:
+  - docs/
+  - examples/
 theme:
   name: material
   custom_dir: docs/overrides
@@ -79,6 +82,8 @@ extra:
     - Messages
     - String Template
     - BaseMessageParam
+  provider_example_dirs:
+    - learn/response_models/basic_usage
 
 markdown_extensions:
   - pymdownx.highlight:
