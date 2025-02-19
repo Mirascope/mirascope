@@ -125,7 +125,6 @@ class AzureCallResponse(
             content=message_param.content, tool_calls=message_param.tool_calls
         )
 
-    @computed_field
     @cached_property
     def tools(self) -> list[AzureTool] | None:
         """Returns any available tool calls as their `AzureTool` definition.
@@ -149,7 +148,6 @@ class AzureCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> AzureTool | None:
         """Returns the 0th tool for the 0th choice message.

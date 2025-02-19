@@ -141,7 +141,6 @@ class OpenAICallResponse(
             message_param["audio"] = {"id": audio.id}
         return ChatCompletionAssistantMessageParam(**message_param)
 
-    @computed_field
     @cached_property
     def tools(self) -> list[OpenAITool] | None:
         """Returns any available tool calls as their `OpenAITool` definition.
@@ -169,7 +168,6 @@ class OpenAICallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> OpenAITool | None:
         """Returns the 0th tool for the 0th choice message.

@@ -129,7 +129,6 @@ class CohereCallResponse(
             role="assistant",  # pyright: ignore [reportCallIssue]
         )
 
-    @computed_field
     @cached_property
     def tools(self) -> list[CohereTool] | None:
         """Returns the tools for the 0th choice message.
@@ -147,7 +146,6 @@ class CohereCallResponse(
                     break
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> CohereTool | None:
         """Returns the 0th tool for the 0th choice message.

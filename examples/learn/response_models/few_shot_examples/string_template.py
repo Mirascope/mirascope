@@ -16,10 +16,10 @@ class Book(BaseModel):
 
 
 @llm.call(provider="openai", model="gpt-4o-mini", response_model=Book, json_mode=True)
-@prompt_template("Extract {text}. Match example format excluding 'examples' key.")
+@prompt_template("Extract {text}. Match example format EXCLUDING 'examples' key.")
 def extract_book(text: str): ...
 
 
 book = extract_book("The Way of Kings by Brandon Sanderson")
 print(book)
-# Output: title='THE NAME OF THE WIND' author='Rothfuss, Patrick'
+# Output: title='THE WAY OF KINGS' author='Sanderson, Brandon'

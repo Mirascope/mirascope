@@ -72,11 +72,9 @@ class DummyProviderResponse(
     @cached_property
     def message_param(self) -> DummyMessageParam: ...
 
-    @computed_field
     @cached_property
     def tools(self) -> list[DummyTool] | None: ...
 
-    @computed_field
     @cached_property
     def tool(self) -> DummyTool | None: ...
 

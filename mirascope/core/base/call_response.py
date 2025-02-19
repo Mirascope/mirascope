@@ -239,14 +239,12 @@ class BaseCallResponse(
         """Returns the assistant's response as a message parameter."""
         ...
 
-    @computed_field
     @cached_property
     @abstractmethod
     def tools(self) -> list[_BaseToolT] | None:
         """Returns the tools for the 0th choice message."""
         ...
 
-    @computed_field
     @cached_property
     @abstractmethod
     def tool(self) -> _BaseToolT | None:

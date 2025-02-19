@@ -119,7 +119,6 @@ class GroqCallResponse(
         )
         return ChatCompletionAssistantMessageParam(**message_param)
 
-    @computed_field
     @cached_property
     def tools(self) -> list[GroqTool] | None:
         """Returns any available tool calls as their `GroqTool` definition.
@@ -140,7 +139,6 @@ class GroqCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> GroqTool | None:
         """Returns the 0th tool for the 0th choice message.

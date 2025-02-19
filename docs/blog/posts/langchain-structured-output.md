@@ -425,7 +425,7 @@ class Destination(BaseModel):
 @prompt_template(
     """
     Recommend a {travel_type} travel destination.
-    Match example format excluding 'examples' key.
+    Match example format EXCLUDING 'examples' key.
     """
 )
 def recommend_destination(travel_type: str): ...

@@ -130,7 +130,6 @@ class VertexCallResponse(
         """Returns the models's response as a message parameter."""
         return Content(role="model", parts=self.response.candidates[0].content.parts)
 
-    @computed_field
     @cached_property
     def tools(self) -> list[VertexTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
@@ -147,7 +146,6 @@ class VertexCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> VertexTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.

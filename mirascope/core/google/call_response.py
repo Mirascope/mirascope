@@ -137,7 +137,6 @@ class GoogleCallResponse(
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.candidates[0].content.parts}  # pyright: ignore [reportReturnType, reportOptionalSubscript, reportOptionalMemberAccess]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[GoogleTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
@@ -154,7 +153,6 @@ class GoogleCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> GoogleTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.
