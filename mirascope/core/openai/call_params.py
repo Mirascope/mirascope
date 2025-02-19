@@ -27,14 +27,17 @@ else:
             ChatCompletionAudioParam,
             ChatCompletionModality,
         )
-        from openai.types.chat.chat_completion_reasoning_effort import (
-            ChatCompletionReasoningEffort,
-        )
     except ImportError:
 
         class ChatCompletionAudioParam: ...
 
         class ChatCompletionModality: ...
+
+    try:
+        from openai.types.chat.chat_completion_reasoning_effort import (  # pyright: ignore [reportMissingImports]
+            ChatCompletionReasoningEffort,
+        )
+    except ImportError:
 
         class ChatCompletionReasoningEffort: ...
 
