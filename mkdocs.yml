@@ -90,6 +90,8 @@ extra:
     - learn/response_models/json_mode
     - learn/response_models/streaming
     - learn/response_models/validation
+    - learn/json_mode/basic_usage
+    - learn/json_mode/error_handling
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true

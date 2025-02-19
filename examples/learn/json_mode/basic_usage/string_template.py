@@ -1,9 +1,9 @@
 import json
 
-from mirascope.core import cohere, prompt_template
+from mirascope import llm, prompt_template
 
 
-@cohere.call("command-r-plus", json_mode=True)
+@llm.call(provider="openai", model="gpt-4o-mini", json_mode=True)
 @prompt_template("Provide the author and genre of {book_title}")
 def get_book_info(book_title: str): ...
 
