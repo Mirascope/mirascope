@@ -90,7 +90,7 @@ class _CallDecorator(
     ],
 ):
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         provider: Provider,
         model: str,
@@ -110,7 +110,7 @@ class _CallDecorator(
     ]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         provider: Provider,
         model: str,
@@ -140,7 +140,7 @@ class _CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _BaseCallResponseT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         provider: Provider,
         model: str,
@@ -288,7 +288,7 @@ class _CallDecorator(
     ) -> NoReturn: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         provider: Provider,
         model: str,
@@ -382,7 +382,7 @@ class _CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         provider: Provider,
         model: str,

@@ -23,7 +23,7 @@ def custom_context_manager(
 ) -> Generator[logfire.LogfireSpan, Any, None]:
     metadata: Metadata = _utils.get_metadata(fn, None)
     tags = metadata.get("tags", [])
-    with logfire.with_settings(custom_scope_suffix="mirascope", tags=list(tags)).span(
+    with logfire.with_settings(custom_scope_suffix="mirascope", tags=list(tags)).span(  # pyright: ignore[reportGeneralTypeIssues]
         fn.__name__
     ) as logfire_span:
         yield logfire_span

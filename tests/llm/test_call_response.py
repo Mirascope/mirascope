@@ -1,6 +1,6 @@
 from functools import cached_property
 from typing import Any, ClassVar, cast
-from unittest.mock import PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from pydantic import computed_field
@@ -12,6 +12,7 @@ from mirascope.core.base import (
     BaseMessageParam,
     BaseTool,
     Metadata,
+    ToolResultPart,
 )
 from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
@@ -27,7 +28,7 @@ class DummyMessageParam(BaseMessageParam):
     content: Any
 
 
-class DummyTool(BaseTool):
+class DummyTool(Tool):
     def call(self): ...
 
     @property
@@ -80,7 +81,7 @@ class DummyProviderCallResponse(
 
     @cached_property
     def tools(self) -> list[DummyTool] | None:
-        return [DummyTool()]
+        return [DummyTool(MagicMock(spec=BaseTool))]
 
     @cached_property
     def tool(self) -> DummyTool | None: ...
@@ -128,7 +129,7 @@ def dummy_call_response_instance():
         start_time=0,
         end_time=0,
     )
-    return CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage]
+    return CallResponse(response=dummy_response)  # pyright: ignore [reportAbstractUsage,reportArgumentType]
 
 
 def test_call_response(dummy_call_response_instance):
@@ -151,7 +152,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
     class ToolCallWithID:
         id = "tool_call_with_id"
 
-    class ToolWithID(BaseTool):
+    class ToolWithID(Tool):
         tool_call: ClassVar[Any] = ToolCallWithID()
 
         def call(self): ...
@@ -160,7 +161,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         field1: str = "tool_field"
 
-    class ToolNoCall(BaseTool):
+    class ToolNoCall(Tool):
         def call(self): ...
         @property
         def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
@@ -170,7 +171,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
     class ToolCallNoIDClass:
         pass
 
-    class ToolCallNoID(BaseTool):
+    class ToolCallNoID(Tool):
         tool_call: ClassVar[Any] = ToolCallNoIDClass()  # no id attribute
 
         def call(self): ...
@@ -179,23 +180,28 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         field1: str = "tool_field"
 
-    tool_with_id = ToolWithID()
-    tool_no_call = ToolNoCall()
-    tool_call_no_id = ToolCallNoID()
+    mock_tool = MagicMock(spec=BaseTool)
+    mock_tool._name.return_value = "tool_name"
+    tool_with_id = ToolWithID(mock_tool)
+    tool_no_call = ToolNoCall(mock_tool)
+    tool_call_no_id = ToolCallNoID(mock_tool)
 
     result_with_id = CallResponse.tool_message_params([(tool_with_id, "output1")])
+    assert isinstance(result_with_id[0].content[0], ToolResultPart)
     assert result_with_id[0].content[0].id == "tool_call_with_id"
 
     result_no_call = CallResponse.tool_message_params([(tool_no_call, "output2")])
+    assert isinstance(result_no_call[0].content[0], ToolResultPart)
     assert result_no_call[0].content[0].id is None
 
     result_no_id = CallResponse.tool_message_params([(tool_call_no_id, "output3")])
+    assert isinstance(result_no_id[0].content[0], ToolResultPart)
     assert result_no_id[0].content[0].id is None
 
 
 @pytest.mark.asyncio
 async def test_tool_property_returns_first_tool(dummy_call_response_instance):
-    first_tool = Tool(tool=DummyTool())  # pyright: ignore [reportAbstractUsage]
+    first_tool = Tool(tool=DummyTool(MagicMock(spec=BaseTool)))  # pyright: ignore [reportAbstractUsage]
 
     with patch.object(
         type(dummy_call_response_instance._response),
