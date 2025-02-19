@@ -5,7 +5,6 @@ from openai.types.chat.chat_completion_message_tool_call import (
     ChatCompletionMessageToolCall,
     Function,
 )
-from pydantic import Field
 
 from mirascope.core.base.tool import BaseTool
 from mirascope.core.openai.tool import OpenAITool, OpenAIToolConfig
@@ -17,7 +16,7 @@ def test_openai_tool() -> None:
     class FormatBook(OpenAITool):
         """Returns the title and author nicely formatted."""
 
-        title: str = Field(title="Custom Title")
+        title: str
         author: str
 
         def call(self) -> str:
@@ -47,7 +46,7 @@ def test_openai_tool() -> None:
             "description": "Returns the title and author nicely formatted.",
             "parameters": {
                 "properties": {
-                    "title": {"type": "string", "title": "Custom Title"},
+                    "title": {"type": "string"},
                     "author": {"type": "string"},
                 },
                 "required": ["title", "author"],
