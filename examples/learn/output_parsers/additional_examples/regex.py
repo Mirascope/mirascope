@@ -1,9 +1,9 @@
 import re
 
-from mirascope.core import openai, prompt_template
+from mirascope import llm, prompt_template
 
 
-def parse_cot(response: openai.OpenAICallResponse) -> str:
+def parse_cot(response: llm.CallResponse) -> str:
     pattern = r"<thinking>.?*</thinking>.*?<output>(.*?)</output>"
     match = re.search(pattern, response.content, re.DOTALL)
     if not match:
@@ -11,7 +11,7 @@ def parse_cot(response: openai.OpenAICallResponse) -> str:
     return match.group(1).strip()
 
 
-@openai.call("gpt-4o-mini", output_parser=parse_cot)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_cot)
 @prompt_template(
     """
     First, output your thought process in <thinking> tags.

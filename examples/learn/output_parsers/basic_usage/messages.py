@@ -1,12 +1,12 @@
-from mirascope.core import Messages, anthropic
+from mirascope import Messages, llm
 
 
-def parse_recommendation(response: anthropic.AnthropicCallResponse) -> tuple[str, str]:
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
     title, author = response.content.split(" by ")
     return (title, author)
 
 
-@anthropic.call("claude-3-5-sonnet-20240620", output_parser=parse_recommendation)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_recommendation)
 def recommend_book(genre: str) -> Messages.Type:
     return Messages.User(f"Recommend a {genre} book. Output only Title by Author")
 

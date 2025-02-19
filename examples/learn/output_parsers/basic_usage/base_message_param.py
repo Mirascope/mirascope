@@ -1,12 +1,12 @@
-from mirascope.core import BaseMessageParam, google
+from mirascope import BaseMessageParam, llm
 
 
-def parse_recommendation(response: google.GoogleCallResponse) -> tuple[str, str]:
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
     title, author = response.content.split(" by ")
     return (title, author)
 
 
-@google.call("gemini-1.5-flash", output_parser=parse_recommendation)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_recommendation)
 def recommend_book(genre: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(
