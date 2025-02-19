@@ -129,21 +129,20 @@ def generate_provider_examples(
     for example_dir in example_dirs:
         source_dir = examples_root / example_dir
 
-        for base_file in source_dir.glob("*.py"):
-            content = base_file.read_text()
+        for info in supported_providers:
+            provider_name = info.provider
+            output_dir = snippets_dir / example_dir / provider_name
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-            # Generate for each provider
-            for info in supported_providers:
-                # Create provider directory
-                output_dir = snippets_dir / example_dir / info.provider
-
-                output_dir.mkdir(parents=True, exist_ok=True)
-
-                # Generate provider-specific version
-                substituted = substitute_provider_specific_content(
-                    content, info.provider
-                )
-
-                # Write to temporary file
+            for base_file in source_dir.glob("*.py"):
+                content = base_file.read_text()
+                output = substitute_provider_specific_content(content, provider_name)
                 out_file = output_dir / base_file.name
-                out_file.write_text(substituted)
+                out_file.write_text(output)
+
+            for override_file in (source_dir / provider_name).glob("*.py"):
+                # If there was a file specified for this provider, use it,
+                # potentially overriding the default content.
+                content = override_file.read_text()
+                out_file = output_dir / override_file.name
+                out_file.write_text(content)

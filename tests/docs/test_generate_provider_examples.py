@@ -1,4 +1,5 @@
 import inspect
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -242,9 +243,7 @@ def test_substitute_llm_call_decorator_all_providers():
 
 
 def test_generate_provider_example():
-    # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Convert the temporary directory path to a Path object
         temp_path = Path(temp_dir)
 
         examples_root = Path("examples")
@@ -266,9 +265,7 @@ def test_generate_provider_example():
 
 
 def test_generate_provider_example_removes_existing_files():
-    # Create a temporary directory for the test
     with tempfile.TemporaryDirectory() as temp_dir:
-        # Convert the temporary directory path to a Path object
         temp_path = Path(temp_dir)
 
         examples_root = Path("../examples")
@@ -284,3 +281,46 @@ def test_generate_provider_example_removes_existing_files():
         )
 
         assert not errata.exists()
+
+
+def test_generate_provider_example_overrides():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        examples_root = temp_path / "examples"
+        example = "learn/response_models/basic_usage"
+        example_dir = examples_root / example
+
+        # copy contents of examples/learn/response_models/basic_usage/ to examples_root
+        # so we can modify it by adding a dummy override
+        shutil.copytree(Path("examples") / example, example_dir)
+
+        assert (example_dir / "messages.py").exists()
+
+        # pretend anthropic has an override for a basic method file
+        (example_dir / "anthropic").mkdir(parents=True, exist_ok=True)
+        (example_dir / "anthropic" / "messages.py").write_text("# Not Supported")
+
+        # anthropic also has a special sdk file
+        (example_dir / "anthropic" / "special_sdk.py").write_text("# Special Sauce")
+
+        config = {"extra": {"provider_example_dirs": [example]}}
+        snippets_dir = temp_path / "build/snippets"
+        generate_provider_examples(
+            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+        )
+
+        snippet_example = snippets_dir / example
+
+        with open(snippet_example / "openai" / "messages.py") as f:
+            openai_content = f.read()
+            assert "Not Supported" not in openai_content
+            assert "@llm.call" in openai_content
+
+        with open(snippet_example / "anthropic" / "messages.py") as f:
+            anthropic_content = f.read()
+            assert "Not Supported" in anthropic_content
+            assert "@llm.call" not in anthropic_content
+
+        with open(snippet_example / "anthropic" / "special_sdk.py") as f:
+            anthropic_content = f.read()
+            assert "Special Sauce" in anthropic_content

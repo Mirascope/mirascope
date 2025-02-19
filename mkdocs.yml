@@ -84,7 +84,12 @@ extra:
     - BaseMessageParam
   provider_example_dirs:
     - learn/response_models/basic_usage
-
+    - learn/response_models/builtin_types
+    - learn/response_models/few_shot_examples
+    - learn/response_models/from_call_args
+    - learn/response_models/json_mode
+    - learn/response_models/streaming
+    - learn/response_models/validation
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
