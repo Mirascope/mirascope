@@ -133,9 +133,9 @@ class Stream(
 
     def common_construct_call_response(
         self,
-    ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
+    ) -> CallResponse[_BaseCallResponseT]:
         """A common method that constructs a CallResponse instance."""
-        return CallResponse[_BaseCallResponseT, Tool](
+        return CallResponse[_BaseCallResponseT](
             response=self._stream.construct_call_response()
         )  # pyright: ignore [reportAbstractUsage]
 
@@ -152,12 +152,12 @@ class Stream(
 
     def construct_call_response(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
-    ) -> CallResponse[_BaseCallResponseT, Tool[_ToolMessageParamT]]:
+    ) -> CallResponse[_BaseCallResponseT]:
         return self.common_construct_call_response()
 
     @classmethod
     def common_tool_message_params(
-        cls, tools_and_outputs: list[tuple[BaseTool, JsonableType]]
+        cls, tools_and_outputs: list[tuple[Tool, JsonableType]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.
 

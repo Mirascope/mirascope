@@ -23,6 +23,7 @@ from pydantic.json_schema import (
 from pydantic_core.core_schema import CoreSchema
 from typing_extensions import TypedDict
 
+from ..base.types import JsonableType
 from . import _utils
 
 _BaseToolT = TypeVar("_BaseToolT", bound=BaseModel)
@@ -121,7 +122,7 @@ class BaseTool(BaseModel, ABC):
         }
 
     @abstractmethod
-    def call(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    def call(self, *args: Any, **kwargs: Any) -> JsonableType:  # noqa: ANN401
         """The method to call the tool."""
         ...
 

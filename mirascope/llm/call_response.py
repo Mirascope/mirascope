@@ -23,13 +23,12 @@ from mirascope.llm.tool import Tool
 _ResponseT = TypeVar("_ResponseT")
 
 _ToolMessageParamT = TypeVar("_ToolMessageParamT")
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 
 
 class CallResponse(
     BaseCallResponse[
         _ResponseT,
-        _BaseToolT,
+        Tool,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
@@ -44,11 +43,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{
@@ -116,7 +115,7 @@ class CallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[BaseTool, str]]
+        cls, tools_and_outputs: list[tuple[Tool, str]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.
 

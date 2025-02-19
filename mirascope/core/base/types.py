@@ -51,3 +51,17 @@ class Usage(BaseModel):
 
     total_tokens: int = 0
     """Total number of tokens used in the request (prompt + completion)."""
+
+
+JsonableType: TypeAlias = (
+    str
+    | int
+    | float
+    | bool
+    | bytes
+    | list["JsonableType"]
+    | set["JsonableType"]
+    | tuple["JsonableType", ...]
+    | dict[str, "JsonableType"]
+    | BaseModel
+)

@@ -7,7 +7,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property, wraps
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -24,7 +24,7 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import FinishReason, Usage
+from .types import FinishReason, JsonableType, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
@@ -35,36 +35,26 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_ToolMessageParamT = TypeVar("_ToolMessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound="BaseCallResponse")
 
 
-JsonableType: TypeAlias = (
-    str
-    | int
-    | float
-    | bool
-    | bytes
-    | list["JsonableType"]
-    | set["JsonableType"]
-    | tuple["JsonableType", ...]
-    | dict[str, "JsonableType"]
-    | BaseModel
-)
-
-
 def transform_tool_outputs(
-    fn: Callable[[type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]], list[Any]],
+    fn: Callable[
+        [type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]],
+        list[_ToolMessageParamT],
+    ],
 ) -> Callable[
     [type[_BaseCallResponseT], list[tuple[_BaseToolT, JsonableType]]],
-    list[Any],
+    list[_ToolMessageParamT],
 ]:
     @wraps(fn)
     def wrapper(
         cls: type[_BaseCallResponseT],
         tools_and_outputs: list[tuple[_BaseToolT, JsonableType]],
-    ) -> list[Any]:
+    ) -> list[_ToolMessageParamT]:
         def recursive_serializer(value: JsonableType) -> BaseType:
             if isinstance(value, str):
                 return value
