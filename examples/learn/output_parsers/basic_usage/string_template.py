@@ -1,12 +1,12 @@
-from mirascope.core import mistral, prompt_template
+from mirascope import llm, prompt_template
 
 
-def parse_recommendation(response: mistral.MistralCallResponse) -> tuple[str, str]:
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
     title, author = response.content.split(" by ")
     return (title, author)
 
 
-@mistral.call("mistral-large-latest", output_parser=parse_recommendation)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_recommendation)
 @prompt_template("Recommend a {genre} book. Output only Title by Author")
 def recommend_book(genre: str): ...
 

@@ -1,15 +1,17 @@
 import json
 
-from mirascope.core import anthropic
+from mirascope import llm
 
 
-def only_json(response: anthropic.AnthropicCallResponse) -> str:
+def only_json(response: llm.CallResponse) -> str:
     json_start = response.content.index("{")
     json_end = response.content.rfind("}")
     return response.content[json_start : json_end + 1]
 
 
-@anthropic.call("claude-3-5-sonnet-20240620", json_mode=True, output_parser=only_json)
+@llm.call(
+    provider="openai", model="gpt-4o-mini", json_mode=True, output_parser=only_json
+)
 def json_extraction(text: str, fields: list[str]) -> str:
     return f"Extract {fields} from the following text: {text}"
 

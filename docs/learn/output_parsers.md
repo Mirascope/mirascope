@@ -45,7 +45,7 @@ Let's take a look at a basic example:
             ```python hl_lines="9 15"
             {% endif %}
             {% endif %}
-            --8<-- "examples/learn/output_parsers/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/output_parsers/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -61,21 +61,37 @@ Here are a few examples:
 
     === "Regular Expression"
 
-        ```python hl_lines="7 14 17 18"
-        --8<-- "examples/learn/output_parsers/additional_examples/regex.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="7 14 17 18"
+            --8<-- "build/snippets/learn/output_parsers/additional_examples/{{ provider | provider_dir }}/regex.py"
+            ```
+
+        {% endfor %}
+
 
     === "XML"
 
-        ```python hl_lines="14-28 31 35-40"
-        --8<-- "examples/learn/output_parsers/additional_examples/xml.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="14-28 31 35-40"
+            --8<-- "build/snippets/learn/output_parsers/additional_examples/{{ provider | provider_dir }}/xml.py"
+            ```
+
+        {% endfor %}
 
     === "JSON Mode"
 
-        ```python hl_lines="7-9 12"
-        --8<-- "examples/learn/output_parsers/additional_examples/json_mode.py"
-        ```
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="7-9 12-14"
+            --8<-- "build/snippets/learn/output_parsers/additional_examples/{{ provider | provider_dir }}/json_mode.py"
+            ```
+
+        {% endfor %}
 
 ## Next Steps
 

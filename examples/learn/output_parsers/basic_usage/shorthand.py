@@ -1,14 +1,12 @@
-from mirascope.core import bedrock
+from mirascope import llm
 
 
-def parse_recommendation(response: bedrock.BedrockCallResponse) -> tuple[str, str]:
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
     title, author = response.content.split(" by ")
     return (title, author)
 
 
-@bedrock.call(
-    "anthropic.claude-3-haiku-20240307-v1:0", output_parser=parse_recommendation
-)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_recommendation)
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book. Output only Title by Author"
 
