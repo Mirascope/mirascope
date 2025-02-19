@@ -18,17 +18,25 @@ if TYPE_CHECKING:
         ChatCompletionAudioParam,
         ChatCompletionModality,  # pyright: ignore [reportAttributeAccessIssue]
     )
+    from openai.types.chat.chat_completion_reasoning_effort import (  # pyright: ignore [reportMissingImports]
+        ChatCompletionReasoningEffort,  # pyright: ignore [reportAttributeAccessIssue]
+    )
 else:
     try:
         from openai.types.chat.chat_completion_audio_param import (  # pyright: ignore [reportMissingImports]
             ChatCompletionAudioParam,
             ChatCompletionModality,
         )
+        from openai.types.chat.chat_completion_reasoning_effort import (
+            ChatCompletionReasoningEffort,
+        )
     except ImportError:
 
         class ChatCompletionAudioParam: ...
 
         class ChatCompletionModality: ...
+
+        class ChatCompletionReasoningEffort: ...
 
 
 class OpenAICallParams(BaseCallParams):
@@ -46,6 +54,7 @@ class OpenAICallParams(BaseCallParams):
         n: ...
         parallel_tool_calls: ...
         presence_penalty: ...
+        reasoning_effort: ...
         response_format: ...
         seed: ...
         stop: ...
@@ -67,6 +76,7 @@ class OpenAICallParams(BaseCallParams):
     n: NotRequired[int | None]
     parallel_tool_calls: NotRequired[bool]
     presence_penalty: NotRequired[float | None]
+    reasoning_effort: NotRequired[ChatCompletionReasoningEffort | None]
     response_format: NotRequired[ResponseFormat]
     seed: NotRequired[int | None]
     stop: NotRequired[str | list[str] | None]
