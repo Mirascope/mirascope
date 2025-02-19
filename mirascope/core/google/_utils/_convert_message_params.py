@@ -3,33 +3,57 @@
 import asyncio
 import base64
 import io
+from concurrent.futures import ThreadPoolExecutor
 
-import PIL.Image
 from google.genai import Client
 from google.genai.types import (
     BlobDict,
     ContentDict,
-    File,
     FileDataDict,
     PartDict,
-    UploadFileConfigDict,
 )
 
 from ...base import BaseMessageParam
-from ...base._utils import get_audio_type
+from ...base._utils import get_audio_type, get_image_type
 from ...base._utils._parse_content_template import _load_media
 
 
-def convert_message_params(
-    message_params: list[BaseMessageParam | ContentDict], client: Client
-) -> list[ContentDict]:
-    """Convert message params to Google's ContentDict format.
+def _check_image_media_type(media_type: str) -> None:
+    """Raises a `ValueError` if the image media type is not supported."""
+    if media_type not in [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/heic",
+        "image/heif",
+    ]:
+        raise ValueError(
+            f"Unsupported image media type: {media_type}. "
+            "Google currently only supports JPEG, PNG, WebP, HEIC, "
+            "and HEIF images."
+        )
 
-    If called from sync context, uses asyncio.run().
-    If called from async context, uses the current event loop.
-    """
-    # Launch a new event loop
-    return asyncio.run(_convert_message_params_async(message_params, client))
+
+def _check_audio_media_type(media_type: str) -> None:
+    """Raises a `ValueError` if the audio media type is not supported."""
+    if media_type not in [
+        "audio/wav",
+        "audio/mp3",
+        "audio/aiff",
+        "audio/aac",
+        "audio/ogg",
+        "audio/flac",
+    ]:
+        raise ValueError(
+            f"Unsupported audio media type: {media_type}. "
+            "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
+            "and FLAC audio file types."
+        )
+
+
+def _over_file_size_limit(size: int) -> bool:
+    """Check if the total file size exceeds the limit (15mb)."""
+    return size > 15 * 1024 * 1024  # 15MB
 
 
 async def _convert_message_params_async(
@@ -59,189 +83,103 @@ async def _convert_message_params_async(
             )
         else:
             converted_content = []
-            total_size = 0
-            upload_tasks = []
-
-            for part in content:
+            total_file_size = 0
+            must_upload: dict[int, BlobDict] = {}
+            for index, part in enumerate(content):
                 if part.type == "text":
                     converted_content.append(PartDict(text=part.text))
                 elif part.type == "image":
-                    if part.media_type not in [
-                        "image/jpeg",
-                        "image/png",
-                        "image/webp",
-                        "image/heic",
-                        "image/heif",
-                    ]:
-                        raise ValueError(
-                            f"Unsupported image media type: {part.media_type}. "
-                            "Google currently only supports JPEG, PNG, WebP, HEIC, "
-                            "and HEIF images."
-                        )
-
+                    _check_image_media_type(part.media_type)
+                    blob_dict = BlobDict(data=part.image, mime_type=part.media_type)
+                    converted_content.append(PartDict(inline_data=blob_dict))
                     image_size = len(part.image)
-
-                    if total_size + image_size > 15 * 1024 * 1024:  # 15MB
-                        # Upload image asynchronously
-                        image_data = io.BytesIO(part.image)
-                        task = asyncio.create_task(
-                            _upload_image(client, image_data, part.media_type)
-                        )
-                        upload_tasks.append((task, len(converted_content)))
-                        converted_content.append(None)  # Placeholder
-                    else:
-                        total_size += image_size
-                        converted_content.append(
-                            PartDict(
-                                inline_data=BlobDict(
-                                    data=part.image, mime_type=part.media_type
-                                )
-                            )
-                        )
+                    total_file_size += image_size
+                    if _over_file_size_limit(total_file_size):
+                        must_upload[index] = blob_dict
+                        total_file_size -= image_size
                 elif part.type == "image_url":
                     if (
-                        part.url.startswith(("https://", "http://"))
-                        and "generativelanguage.googleapis.com" not in part.url
+                        client.vertexai
+                        or not part.url.startswith(("https://", "http://"))
+                        or "generativelanguage.googleapis.com" in part.url
                     ):
-                        downloaded_image = io.BytesIO(_load_media(part.url))
-                        image = PIL.Image.open(downloaded_image)
-                        media_type = (
-                            PIL.Image.MIME[image.format]
-                            if image.format
-                            else "image/unknown"
-                        )
-                        if media_type not in [
-                            "image/jpeg",
-                            "image/png",
-                            "image/webp",
-                            "image/heic",
-                            "image/heif",
-                        ]:
-                            raise ValueError(
-                                f"Unsupported image media type: {media_type}. "
-                                "Google currently only supports JPEG, PNG, WebP, HEIC, "
-                                "and HEIF images."
-                            )
-
-                        if client.vertexai:
-                            uri = part.url
-                        else:
-                            downloaded_image.seek(0)
-                            file_ref = client.files.upload(
-                                file=downloaded_image,
-                                config={"mime_type": media_type},
-                            )
-                            uri = file_ref.uri
-                            media_type = file_ref.mime_type
-
                         converted_content.append(
                             PartDict(
                                 file_data=FileDataDict(
-                                    file_uri=uri, mime_type=media_type
+                                    file_uri=part.url, mime_type=None
                                 )
                             )
                         )
                     else:
-                        uri = part.url
-                        media_type = None
-                        converted_content.append(
-                            PartDict(
-                                file_data=FileDataDict(
-                                    file_uri=uri, mime_type=media_type
-                                )
-                            )
+                        downloaded_image = _load_media(part.url)
+                        media_type = get_image_type(downloaded_image)
+                        _check_image_media_type(media_type)
+                        blob_dict = BlobDict(
+                            data=downloaded_image, mime_type=media_type
                         )
+                        converted_content.append(PartDict(inline_data=blob_dict))
+                        image_size = len(downloaded_image)
+                        total_file_size += image_size
+                        if _over_file_size_limit(total_file_size):
+                            must_upload[index] = blob_dict
+                            total_file_size -= image_size
                 elif part.type == "audio":
-                    if part.media_type not in [
-                        "audio/wav",
-                        "audio/mp3",
-                        "audio/aiff",
-                        "audio/aac",
-                        "audio/ogg",
-                        "audio/flac",
-                    ]:
-                        raise ValueError(
-                            f"Unsupported audio media type: {part.media_type}. "
-                            "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
-                            "and FLAC audio file types."
-                        )
-
+                    _check_audio_media_type(part.media_type)
                     audio_data = (
                         part.audio
                         if isinstance(part.audio, bytes)
                         else base64.b64decode(part.audio)
                     )
+                    blob_dict = BlobDict(data=audio_data, mime_type=part.media_type)
+                    converted_content.append(PartDict(inline_data=blob_dict))
                     audio_size = len(audio_data)
-
-                    if total_size + audio_size > 15 * 1024 * 1024:  # 15MB
-                        # Upload audio asynchronously
-                        audio_data_io = io.BytesIO(audio_data)
-                        task = asyncio.create_task(
-                            _upload_image(client, audio_data_io, part.media_type)
-                        )
-                        upload_tasks.append((task, len(converted_content)))
-                        converted_content.append(None)  # Placeholder
-                    else:
-                        total_size += audio_size
+                    total_file_size += audio_size
+                    if _over_file_size_limit(total_file_size):
+                        must_upload[index] = blob_dict
+                        total_file_size -= audio_size
+                elif part.type == "audio_url":
+                    if (
+                        client.vertexai
+                        or not part.url.startswith(("https://", "http://"))
+                        or "generativelanguage.googleapis.com" in part.url
+                    ):
                         converted_content.append(
                             PartDict(
-                                inline_data=BlobDict(
-                                    data=audio_data,
-                                    mime_type=part.media_type,
+                                file_data=FileDataDict(
+                                    file_uri=part.url, mime_type=None
                                 )
                             )
                         )
-                elif part.type == "audio_url":
-                    if (
-                        part.url.startswith(("https://", "http://"))
-                        and "generativelanguage.googleapis.com" not in part.url
-                    ):
-                        downloaded_audio = _load_media(part.url)
-                        audio_type = get_audio_type(downloaded_audio)
-                        if audio_type not in [
-                            "audio/wav",
-                            "audio/mp3",
-                            "audio/aiff",
-                            "audio/aac",
-                            "audio/ogg",
-                            "audio/flac",
-                        ]:
-                            raise ValueError(
-                                f"Unsupported audio media type: {audio_type}. "
-                                "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
-                                "and FLAC audio file types."
-                            )
-                        if client.vertexai:
-                            uri = part.url
-                        else:
-                            downloaded_audio = io.BytesIO(downloaded_audio)
-                            downloaded_audio.seek(0)
-                            file_ref = client.files.upload(
-                                file=downloaded_audio, config={"mime_type": audio_type}
-                            )
-                            uri = file_ref.uri
-                            media_type = file_ref.mime_type
                     else:
-                        uri = part.url
-                        audio_type = None
-
-                    converted_content.append(
-                        PartDict(
-                            file_data=FileDataDict(file_uri=uri, mime_type=audio_type)
+                        downloaded_audio = _load_media(part.url)
+                        media_type = get_audio_type(downloaded_audio)
+                        _check_audio_media_type(media_type)
+                        blob_dict = BlobDict(
+                            data=downloaded_audio, mime_type=media_type
                         )
-                    )
+                        converted_content.append(PartDict(inline_data=blob_dict))
+                        audio_size = len(downloaded_audio)
+                        total_file_size += audio_size
+                        if _over_file_size_limit(total_file_size):
+                            must_upload[index] = blob_dict
+                            total_file_size -= audio_size
                 else:
                     raise ValueError(
                         "Google currently only supports text, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
 
-            # Wait for all uploads to complete
-            if upload_tasks:
-                results = await asyncio.gather(*(task for task, _ in upload_tasks))
-
-                # Replace placeholders with FileDataDict
-                for (_, index), file_ref in zip(upload_tasks, results, strict=False):
+            if must_upload:
+                indices, blob_dicts = zip(*must_upload.items(), strict=True)
+                upload_tasks = [
+                    client.aio.files.upload(
+                        file=io.BytesIO(blob_dict["data"]),
+                        config={"mime_type": blob_dict.get("mime_type", None)},
+                    )
+                    for blob_dict in blob_dicts
+                ]
+                file_refs = await asyncio.gather(*upload_tasks)
+                for index, file_ref in zip(indices, file_refs, strict=True):
                     converted_content[index] = PartDict(
                         file_data=FileDataDict(
                             file_uri=file_ref.uri, mime_type=file_ref.mime_type
@@ -257,9 +195,20 @@ async def _convert_message_params_async(
     return converted_message_params
 
 
-async def _upload_image(
-    client: Client, image_data: io.BytesIO, media_type: str
-) -> File:
-    return await client.aio.files.upload(
-        file=image_data, config=UploadFileConfigDict(mime_type=media_type)
-    )
+def convert_message_params(
+    message_params: list[BaseMessageParam | ContentDict], client: Client
+) -> list[ContentDict]:
+    """Convert message params to Google's ContentDict format.
+
+    If called from sync context, uses asyncio.run().
+    If called from async context, uses the current event loop.
+    """
+    try:
+        asyncio.get_running_loop()
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(
+                asyncio.run, _convert_message_params_async(message_params, client)
+            )
+            return future.result()
+    except RuntimeError:
+        return asyncio.run(_convert_message_params_async(message_params, client))
