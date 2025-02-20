@@ -52,8 +52,8 @@ def _check_audio_media_type(media_type: str) -> None:
 
 
 def _over_file_size_limit(size: int) -> bool:
-    """
-    Check if the total file size exceeds the limit (10mb).
+    """Check if the total file size exceeds the limit (10mb).
+
     Google limit is 20MB but base64 adds 33% to the size.
     """
     return size > 10 * 1024 * 1024  # 10MB
@@ -63,6 +63,7 @@ async def _convert_message_params_async(
     message_params: list[BaseMessageParam | ContentDict], client: Client
 ) -> list[ContentDict]:
     converted_message_params = []
+    total_payload_size = 0
     for message_param in message_params:
         if not isinstance(message_param, BaseMessageParam):
             converted_message_params.append(message_param)
@@ -86,7 +87,6 @@ async def _convert_message_params_async(
             )
         else:
             converted_content = []
-            total_file_size = 0
             must_upload: dict[int, BlobDict] = {}
             for index, part in enumerate(content):
                 if part.type == "text":
@@ -96,10 +96,10 @@ async def _convert_message_params_async(
                     blob_dict = BlobDict(data=part.image, mime_type=part.media_type)
                     converted_content.append(PartDict(inline_data=blob_dict))
                     image_size = len(part.image)
-                    total_file_size += image_size
-                    if _over_file_size_limit(total_file_size):
+                    total_payload_size += image_size
+                    if _over_file_size_limit(total_payload_size):
                         must_upload[index] = blob_dict
-                        total_file_size -= image_size
+                        total_payload_size -= image_size
                 elif part.type == "image_url":
                     if (
                         client.vertexai
@@ -122,10 +122,10 @@ async def _convert_message_params_async(
                         )
                         converted_content.append(PartDict(inline_data=blob_dict))
                         image_size = len(downloaded_image)
-                        total_file_size += image_size
-                        if _over_file_size_limit(total_file_size):
+                        total_payload_size += image_size
+                        if _over_file_size_limit(total_payload_size):
                             must_upload[index] = blob_dict
-                            total_file_size -= image_size
+                            total_payload_size -= image_size
                 elif part.type == "audio":
                     _check_audio_media_type(part.media_type)
                     audio_data = (
@@ -136,10 +136,10 @@ async def _convert_message_params_async(
                     blob_dict = BlobDict(data=audio_data, mime_type=part.media_type)
                     converted_content.append(PartDict(inline_data=blob_dict))
                     audio_size = len(audio_data)
-                    total_file_size += audio_size
-                    if _over_file_size_limit(total_file_size):
+                    total_payload_size += audio_size
+                    if _over_file_size_limit(total_payload_size):
                         must_upload[index] = blob_dict
-                        total_file_size -= audio_size
+                        total_payload_size -= audio_size
                 elif part.type == "audio_url":
                     if (
                         client.vertexai
@@ -162,10 +162,10 @@ async def _convert_message_params_async(
                         )
                         converted_content.append(PartDict(inline_data=blob_dict))
                         audio_size = len(downloaded_audio)
-                        total_file_size += audio_size
-                        if _over_file_size_limit(total_file_size):
+                        total_payload_size += audio_size
+                        if _over_file_size_limit(total_payload_size):
                             must_upload[index] = blob_dict
-                            total_file_size -= audio_size
+                            total_payload_size -= audio_size
                 else:
                     raise ValueError(
                         "Google currently only supports text, image, and audio parts. "
