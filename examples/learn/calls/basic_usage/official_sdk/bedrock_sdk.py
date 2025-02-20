@@ -6,7 +6,7 @@ bedrock_client = boto3.client(service_name="bedrock-runtime")
 def recommend_book(genre: str) -> str:
     messages = [{"role": "user", "content": [{"text": f"Recommend a {genre} book"}]}]
     response = bedrock_client.converse(
-        modelId="anthropic.claude-3-haiku-20240307-v1:0",
+        modelId="amazon.nova-lite-v1:0",
         messages=messages,
         inferenceConfig={"maxTokens": 1024},
     )

@@ -110,7 +110,7 @@ Let's compare structured outputs using Mirascope vs. the official SDKs:
         {% else %}
         ```python hl_lines="18-39 44"
         {% endif %}
-        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
+        --8<-- "examples/learn/response_models/basic_usage/official_sdk/{{ provider | provider_dir }}_sdk.py"
         ```
 
     {% endfor %}
