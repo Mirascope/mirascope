@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from jiter import jiter
+import jiter
 from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import NotRequired, TypedDict
 

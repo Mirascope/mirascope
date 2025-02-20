@@ -3,11 +3,11 @@
 from abc import update_abstractmethods
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from mirascope.core.base._utils import DEFAULT_TOOL_DOCSTRING
 from mirascope.core.base.response_model_config_dict import ResponseModelConfigDict
-from mirascope.core.base.tool import BaseTool, ToolConfig
+from mirascope.core.base.tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 
 
 def test_base_tool() -> None:
@@ -183,3 +183,21 @@ def test_base_tool_dict_from_json() -> None:
     # Test partial JSON with allow_partial=False (should use jiter's default behavior)
     with pytest.raises(ValueError):  # jiter would raise an exception for invalid JSON
         BaseTool._dict_from_json(partial_json, allow_partial=False)
+
+
+def test_generate_json_schema_no_titles_schema_generator() -> None:
+    """Tests the `GenerateJsonSchemaNoTitles` class."""
+
+    class MyModel(BaseModel):
+        title: str = Field(title="Custom Title")
+        other: str
+
+    json_schema = MyModel.model_json_schema(schema_generator=GenerateJsonSchemaNoTitles)
+    assert json_schema == {
+        "properties": {
+            "title": {"type": "string", "title": "Custom Title"},
+            "other": {"type": "string"},
+        },
+        "required": ["title", "other"],
+        "type": "object",
+    }

@@ -30,7 +30,7 @@ from .stream import BaseStream
 from .structured_stream import BaseStructuredStream
 from .tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from .toolkit import BaseToolKit, toolkit_tool
-from .types import AudioSegment
+from .types import AudioSegment, JsonableType
 
 __all__ = [
     "AudioPart",
@@ -56,6 +56,7 @@ __all__ = [
     "GenerateJsonSchemaNoTitles",
     "ImagePart",
     "ImageURLPart",
+    "JsonableType",
     "merge_decorators",
     "metadata",
     "Messages",
