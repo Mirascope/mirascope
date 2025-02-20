@@ -1,4 +1,4 @@
-from mirascope.core import groq, prompt_template
+from mirascope import llm, prompt_template
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +7,7 @@ class Eval(BaseModel):
     score: float = Field(..., description="A score between [0, 5]")
 
 
-@groq.call("llama-3.1-70b-versatile", response_model=Eval)
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=Eval)
 @prompt_template(
     """
     Text is toxic if it contains content that is:

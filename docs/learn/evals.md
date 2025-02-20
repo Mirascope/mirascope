@@ -42,7 +42,7 @@ One powerful approach to evaluating LLM outputs is to use other LLMs as evaluato
             {% else %}
             ```python hl_lines="8-9 23-28 42 49"
             {% endif %}
-            --8<-- "examples/learn/evals/llm/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/evals/llm/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -71,13 +71,13 @@ Let's take a look at an example using OpenAI and Anthropic:
 
 
         {% if method == "string_template" %}
-        ```python hl_lines="34-37 40-43 49-50"
+        ```python hl_lines="34-39 42-45 51-52"
         {% elif method == "messages" %}
-        ```python hl_lines="39-42 45-48 54-55"
+        ```python hl_lines="39-44 47-50 56-57"
         {% elif method == "base_message_param" %}
-        ```python hl_lines="42-45 48-51 57-58"
+        ```python hl_lines="42-47 50-53 59-60"
         {% else %}
-        ```python hl_lines="37-40 43-46 52-53"
+        ```python hl_lines="37-42 45-48 54-55"
         {% endif %}
         --8<-- "examples/learn/evals/panel/{{ method }}.py"
         ```
