@@ -91,9 +91,9 @@ class GoogleCallResponse(
         google.generativeai does not return model, so we return the model provided by
         the user.
         """
-        if self.response.model_version:
-            return self.response.model_version
-        return self._model
+        return (
+            self.response.model_version if self.response.model_version else self._model
+        )
 
     @property
     def id(self) -> str | None:

@@ -101,6 +101,7 @@ class Stream(
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_stream",
+            "cost",
             "_construct_message_param",
             "construct_call_response",
             "tool_message_params",
@@ -114,12 +115,8 @@ class Stream(
 
         if name in special_names:
             return object.__getattribute__(self, name)
-
-        try:
-            response = object.__getattribute__(self, "_stream")
-            return getattr(response, name)
-        except AttributeError:
-            return object.__getattribute__(self, name)
+        response = object.__getattribute__(self, "_stream")
+        return getattr(response, name)
 
     def __iter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
