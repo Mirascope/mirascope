@@ -35,7 +35,7 @@ def extract_book(text: str) -> Book:
         "toolChoice": {"type": "tool", "name": "Book"},
     }
     response = bedrock_client.converse(
-        modelId="anthropic.claude-3-haiku-20240307-v1:0",
+        modelId="amazon.nova-lite-v1:0",
         messages=messages,
         toolConfig=tool_config,
     )

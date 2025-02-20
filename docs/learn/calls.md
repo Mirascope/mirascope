@@ -68,7 +68,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         {% else %}
         ```python hl_lines="7-11"
         {% endif %}
-        --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/official_sdk_call.py"
+        --8<-- "examples/learn/calls/basic_usage/official_sdk/{{ provider | provider_dir }}_sdk.py"
         ```
 
     {% endfor %}
