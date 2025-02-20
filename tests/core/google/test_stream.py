@@ -6,6 +6,7 @@ from google.genai.types import (
     Content,
     ContentDict,
     GenerateContentResponse,
+    GenerateContentResponseUsageMetadata,
     Part,
     PartDict,
 )
@@ -120,7 +121,11 @@ def test_construct_call_response() -> None:
                     role="model",
                 ),
             )
-        ]
+        ],
+        model_version="google-1.5-flash",
+        usage_metadata=GenerateContentResponseUsageMetadata(
+            candidates_token_count=None, prompt_token_count=None, total_token_count=0
+        ),
     )
     call_response = GoogleCallResponse(
         metadata={},
