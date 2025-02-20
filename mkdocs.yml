@@ -83,6 +83,14 @@ extra:
     - String Template
     - BaseMessageParam
   provider_example_dirs:
+    - learn/agents/human_in_the_loop
+    - learn/agents/state_management
+    - learn/agents/streaming
+    - learn/agents/tools
+    - learn/json_mode/basic_usage
+    - learn/json_mode/error_handling
+    - learn/output_parsers/additional_examples
+    - learn/output_parsers/basic_usage
     - learn/response_models/basic_usage
     - learn/response_models/builtin_types
     - learn/response_models/few_shot_examples
@@ -90,10 +98,6 @@ extra:
     - learn/response_models/json_mode
     - learn/response_models/streaming
     - learn/response_models/validation
-    - learn/json_mode/basic_usage
-    - learn/json_mode/error_handling
-    - learn/output_parsers/basic_usage
-    - learn/output_parsers/additional_examples
     - learn/tools/basic_usage/base_tool
     - learn/tools/basic_usage/function
     - learn/tools/few_shot_examples/base_tool
