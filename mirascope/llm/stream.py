@@ -62,10 +62,21 @@ class Stream(
         _BaseCallParamsT,
     ],
 ):
-    """
-    A non-pydantic class that inherits from BaseStream.
+    """A non-pydantic class that inherits from BaseStream."""
 
-    """
+    _stream: BaseStream[
+        _BaseCallResponseT,
+        _BaseCallResponseChunkT,
+        _UserMessageParamT,
+        _AssistantMessageParamT,
+        _ToolMessageParamT,
+        _MessageParamT,
+        _BaseToolT,
+        _ToolSchemaT,
+        _BaseDynamicConfigT,
+        _BaseCallParamsT,
+        FinishReason,
+    ]
 
     def __init__(
         self,
@@ -85,20 +96,30 @@ class Stream(
         ],
     ) -> None:
         """Initialize the Stream class."""
-        self._stream = stream
-        super().__init__(
-            stream=stream.stream,
-            metadata=stream.metadata,
-            tool_types=stream.tool_types,
-            call_response_type=stream.call_response_type,
-            model=stream.model,
-            prompt_template=stream.prompt_template,
-            fn_args=stream.fn_args or {},
-            dynamic_config=stream.dynamic_config,
-            messages=stream.messages,
-            call_params=stream.call_params,
-            call_kwargs=stream.call_kwargs,
-        )
+        object.__setattr__(self, "_stream", stream)
+
+    def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
+        special_names = {
+            "_stream",
+            "_construct_message_param",
+            "construct_call_response",
+            "tool_message_params",
+            "__dict__",
+            "__class__",
+            "__repr__",
+            "__str__",
+            "__iter__",
+            "__aiter__",
+        }
+
+        if name in special_names:
+            return object.__getattribute__(self, name)
+
+        try:
+            response = object.__getattribute__(self, "_stream")
+            return getattr(response, name)
+        except AttributeError:
+            return object.__getattribute__(self, name)
 
     def __iter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
@@ -110,7 +131,7 @@ class Stream(
         None,
     ]:
         """Iterate over the stream."""
-        for chunk, tool in super().__iter__():
+        for chunk, tool in self._stream:
             yield (
                 CallResponseChunk(response=chunk),  # pyright: ignore [reportAbstractUsage]
                 Tool(tool=tool) if tool is not None else None,  # pyright: ignore [reportAbstractUsage]
@@ -125,19 +146,11 @@ class Stream(
         None,
     ]:
         """Iterates over the stream and stores useful information."""
-        async for chunk, tool in super().__aiter__():
+        async for chunk, tool in self._stream:
             yield (
                 CallResponseChunk(response=chunk),  # pyright: ignore [reportAbstractUsage]
                 Tool(tool=tool) if tool is not None else None,  # pyright: ignore [reportAbstractUsage]
             )
-
-    def common_construct_call_response(
-        self,
-    ) -> CallResponse[_BaseCallResponseT]:
-        """A common method that constructs a CallResponse instance."""
-        return CallResponse[_BaseCallResponseT](
-            response=self._stream.construct_call_response()
-        )  # pyright: ignore [reportAbstractUsage]
 
     @property
     def cost(self) -> float | None:
@@ -153,10 +166,12 @@ class Stream(
     def construct_call_response(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> CallResponse[_BaseCallResponseT]:
-        return self.common_construct_call_response()
+        return CallResponse[_BaseCallResponseT](
+            response=self._stream.construct_call_response()
+        )  # pyright: ignore [reportAbstractUsage]
 
     @classmethod
-    def common_tool_message_params(
+    def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
         cls, tools_and_outputs: list[tuple[Tool, JsonableType]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.

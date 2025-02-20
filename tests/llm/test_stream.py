@@ -199,9 +199,8 @@ async def test_stream():
 
     assert dummy_stream_instance.cost == 0.02
 
-    call_response_instance = dummy_stream_instance.common_construct_call_response()
+    call_response_instance = dummy_stream_instance.construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
-    ...
 
 
 @pytest.fixture
@@ -242,6 +241,6 @@ async def test_construct_call_response(dummy_stream_instance: DummyStream):
 @pytest.mark.asyncio
 async def test_common_tool_message_params(dummy_stream_instance: DummyStream):
     tools_and_outputs = [(DummyTool(), "test output")]
-    result = dummy_stream_instance.common_tool_message_params(tools_and_outputs)  # pyright: ignore [reportArgumentType]
+    result = dummy_stream_instance.tool_message_params(tools_and_outputs)  # pyright: ignore [reportArgumentType]
 
     assert isinstance(result, list), "common_tool_message_params should return a list"
