@@ -94,6 +94,24 @@ extra:
     - learn/json_mode/error_handling
     - learn/output_parsers/basic_usage
     - learn/output_parsers/additional_examples
+    - learn/tools/basic_usage/base_tool
+    - learn/tools/basic_usage/function
+    - learn/tools/few_shot_examples/base_tool
+    - learn/tools/few_shot_examples/function
+    - learn/tools/parallel/base_tool
+    - learn/tools/parallel/function
+    - learn/tools/partial_tool_streams/base_tool
+    - learn/tools/partial_tool_streams/function
+    - learn/tools/pre_made_toolkit
+    - learn/tools/pre_made_tools/basic_usage
+    - learn/tools/pre_made_tools/custom_config
+    - learn/tools/streams/base_tool
+    - learn/tools/streams/function
+    - learn/tools/tool_message_params/base_tool
+    - learn/tools/tool_message_params/function
+    - learn/tools/toolkit
+    - learn/tools/validation/base_tool
+    - learn/tools/validation/function
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
