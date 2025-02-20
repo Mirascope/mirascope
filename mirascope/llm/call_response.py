@@ -13,6 +13,7 @@ from mirascope.core.base import (
     BaseCallResponse,
     BaseMessageParam,
     BaseTool,
+    Usage,
     transform_tool_outputs,
 )
 from mirascope.core.base.message_param import ToolResultPart
@@ -21,8 +22,6 @@ from mirascope.llm._response_metaclass import _ResponseMetaclass
 from mirascope.llm.tool import Tool
 
 _ResponseT = TypeVar("_ResponseT")
-
-_ToolMessageParamT = TypeVar("_ToolMessageParamT")
 
 
 class CallResponse(
@@ -64,7 +63,13 @@ class CallResponse(
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
+            "finish_reasons",
+            "usage",
+            "message_param",
             "user_message_param",
+            "tools",
+            "tool",
+            "tool_message_params",
             "__dict__",
             "__class__",
             "model_fields",
@@ -95,6 +100,11 @@ class CallResponse(
     @property
     def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons
+
+    @property
+    def usage(self) -> Usage | None:
+        """Returns the usage of the chat completion."""
+        return self._response.common_usage
 
     @computed_field
     @cached_property

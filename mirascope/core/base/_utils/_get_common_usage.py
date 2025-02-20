@@ -10,7 +10,7 @@ def get_common_usage(
     input_tokens = int(input_tokens or 0)
     output_tokens = int(output_tokens or 0)
     return Usage(
-        prompt_tokens=input_tokens,
-        completion_tokens=output_tokens,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
         total_tokens=input_tokens + output_tokens,
     )
