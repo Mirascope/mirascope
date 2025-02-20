@@ -11,6 +11,7 @@ from google.genai.types import (
     ContentListUnionDict,
     FunctionResponseDict,
     GenerateContentResponse,
+    GenerateContentResponseUsageMetadata,
     PartDict,
     # Import manually SchemaDict to avoid Pydantic error
     SchemaDict,  # noqa: F401
@@ -90,6 +91,8 @@ class GoogleCallResponse(
         google.generativeai does not return model, so we return the model provided by
         the user.
         """
+        if self.response.model_version:
+            return self.response.model_version
         return self._model
 
     @property
@@ -101,12 +104,12 @@ class GoogleCallResponse(
         return None
 
     @property
-    def usage(self) -> None:
+    def usage(self) -> GenerateContentResponseUsageMetadata | None:
         """Returns the usage of the chat completion.
 
         google.generativeai does not have Usage, so we return None
         """
-        return None
+        return self.response.usage_metadata
 
     @property
     def input_tokens(self) -> int | None:

@@ -14,6 +14,7 @@ from google.genai.types import (
     FinishReason,
     FunctionCall,
     GenerateContentResponse,
+    GenerateContentResponseUsageMetadata,
     PartDict,
     Tool,
 )
@@ -98,6 +99,15 @@ class GoogleStream(
             raise ValueError(
                 "No stream response, check if the stream has been consumed."
             )
+        candidates_token_count = (
+            int(self.output_tokens) if self.output_tokens is not None else None
+        )
+        prompt_token_count = (
+            int(self.input_tokens) if self.input_tokens is not None else None
+        )
+        total_token_count = int(candidates_token_count or 0) + int(
+            prompt_token_count or 0
+        )
         response = GenerateContentResponse(
             candidates=[
                 Candidate(
@@ -109,7 +119,13 @@ class GoogleStream(
                         parts=self.message_param["parts"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportArgumentType]
                     ),
                 )
-            ]
+            ],
+            model_version=self.model,
+            usage_metadata=GenerateContentResponseUsageMetadata(
+                candidates_token_count=candidates_token_count,
+                prompt_token_count=prompt_token_count,
+                total_token_count=total_token_count,
+            ),
         )
 
         return GoogleCallResponse(
