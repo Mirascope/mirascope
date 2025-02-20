@@ -213,8 +213,10 @@ Legend: ✓ (Supported), - (Not Supported)
 
         {% if method == "string_template" %}
         ```python hl_lines="5 15-17"
-        {% else %}
+        {% elif method == "base_message_param" %}
         ```python hl_lines="10-16 27-29"
+        {% else %}
+        ```python hl_lines="9-15 25-27"
         {% endif %}
         --8<-- "examples/learn/prompts/multi_modal/document/{{ method }}.py"
         ```
