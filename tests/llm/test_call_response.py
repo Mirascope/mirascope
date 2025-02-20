@@ -13,6 +13,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
     ToolResultPart,
+    Usage,
 )
 from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
@@ -104,7 +105,8 @@ class DummyProviderCallResponse(
         return BaseMessageParam(role="user", content="common_user_message")
 
     @property
-    def common_usage(self): ...
+    def common_usage(self) -> Usage | None:
+        return Usage(input_tokens=1, output_tokens=1, total_tokens=2)
 
     def common_construct_call_response(self): ...
 
@@ -141,6 +143,9 @@ def test_call_response(dummy_call_response_instance):
     assert dummy_call_response_instance.tool is not None
     assert str(dummy_call_response_instance) == "dummy_content"
     assert dummy_call_response_instance._response.common_finish_reasons == ["finish"]
+    assert dummy_call_response_instance.usage == Usage(
+        input_tokens=1, output_tokens=1, total_tokens=2
+    )
 
 
 def test_call_response_attribute_fallback_on_instance(dummy_call_response_instance):
