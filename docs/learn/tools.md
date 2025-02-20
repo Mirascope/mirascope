@@ -68,13 +68,13 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
 
                 {% if tool_method == "function" %}
                 ```python hl_lines="4-15 18 24-26"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::26"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:28:"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py::26"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py:28:"
                 ```
                 {% else %}
                 ```python hl_lines="5-16 19 25-27"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::27"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:29:"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py::27"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py:29:"
                 ```
                 {% endif %}
             {% endfor %}
@@ -91,9 +91,9 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
         {% if provider == "Anthropic" %}
         ```python hl_lines="6-12 20-30 33-36"
         {% elif provider == "Cohere" %}
-        ```python hl_lines="7-13 20-30 32-34"
-        {% elif provider == "Gemini" %}
-        ```python hl_lines="7-13 19-35 37-41"
+        ```python hl_lines="9-15 22-32 34-36"
+        {% elif provider == "Google" %}
+        ```python hl_lines="7-13 21-37 30-46"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="6-12 19-32 34-36"
         {% elif provider == "Azure AI" %}
@@ -102,10 +102,12 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
         ```python hl_lines="6-12 18-34 36-43"
         {% elif provider == "Mistral" %}
         ```python hl_lines="10-16 23-36 38-44"
+        {% elif provider == "Bedrock" %}
+        ```python hl_lines="6-12 18-37 49-55"
         {% else %}
         ```python hl_lines="8-14 21-34 36-38"
         {% endif %}
-        --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
+        --8<-- "examples/learn/tools/basic_usage/official_sdk/{{ provider | provider_dir }}_sdk.py"
         ```
 
     {% endfor %}
@@ -127,7 +129,7 @@ For the purposes of this example we are showing just a single tool call. General
 
 ### Accessing Original Tool Call
 
-All provider-specific `BaseTool` instances have a `tool_call` property for accessing the original LLM tool call.
+The `BaseTool` instances have a `tool_call` property for accessing the original LLM tool call.
 
 !!! mira ""
 
@@ -142,13 +144,13 @@ All provider-specific `BaseTool` instances have a `tool_call` property for acces
 
                 {% if tool_method == "function" %}
                 ```python hl_lines="26"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::25"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:27:"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py::25"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py:27:"
                 ```
                 {% else %}
                 ```python hl_lines="27"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py::26"
-                --8<-- "examples/learn/tools/basic_usage/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py:28:"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py::26"
+                --8<-- "build/snippets/learn/tools/basic_usage/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py:28:"
                 ```
                 {% endif %}
             {% endfor %}
@@ -157,9 +159,6 @@ All provider-specific `BaseTool` instances have a `tool_call` property for acces
         
     {% endfor %}
 
-!!! note "Reasoning for provider-specific `BaseTool` objects"
-
-    The reason that we have provider-specific tools (e.g. `OpenAITool`) is to provide proper type hints and safety when accessing the original tool call.
 
 ## Supported Field Types
 
@@ -204,7 +203,7 @@ In certain cases the LLM will ask to call multiple tools in the same response. M
                 {% else %}
                 ```python hl_lines="24-27"
                 {% endif %}
-                --8<-- "examples/learn/tools/parallel/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/parallel/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -229,20 +228,16 @@ Mirascope supports streaming responses with tools, which is useful for long-runn
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
 
+                {% if provider | provider_dir in ["openai", "anthropic", "mistral", "groq"] %}
                 {% if tool_method == "function" %}
-                {% if provider == "Bedrock" %}
-                ```python hl_lines="19 26-28"
-                {% else %}
                 ```python hl_lines="18 24-26"
-                {% endif %}
-                {% else %}
-                {% if provider == "Bedrock" %}
-                ```python hl_lines="20 27-29"
                 {% else %}
                 ```python hl_lines="19 25-27"
                 {% endif %}
+                {% else %}
+                ```python
                 {% endif %}
-                --8<-- "examples/learn/tools/streams/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/streams/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -275,12 +270,16 @@ You can also stream intermediate partial tools and their deltas (rather than jus
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
 
+                {% if provider | provider_dir in ["openai", "anthropic", "mistral", "groq"] %}
                 {% if tool_method == "function" %}
-                ```python hl_lines="21 30"
+                ```python hl_lines="22 30"
                 {% else %}
-                ```python hl_lines="22 31"
+                ```python hl_lines="23 31"
                 {% endif %}
-                --8<-- "examples/learn/tools/partial_tool_streams/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                {% else %}
+                ```python
+                {% endif %}               
+                 --8<-- "build/snippets/learn/tools/partial_tool_streams/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -320,7 +319,7 @@ Let's take a look at a basic example of this:
                 {% else %}
                 ```python hl_lines="18 20 30-32 35"
                 {% endif %}
-                --8<-- "examples/learn/tools/tool_message_params/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/tool_message_params/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -355,7 +354,7 @@ Since `BaseTool` is a subclass of Pydantic's [`BaseModel`](https://docs.pydantic
                 {% else %}
                 ```python hl_lines="15 34 39"
                 {% endif %}
-                --8<-- "examples/learn/tools/validation/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/validation/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -379,13 +378,14 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
 
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
-
-                {% if tool_method == "function" %}
+                {% if provider == "Google" %}
+                ```python
+                {% elif tool_method == "function" %}
                 ```python hl_lines="14 20-21"
                 {% else %}
                 ```python hl_lines="11 15"
                 {% endif %}
-                --8<-- "examples/learn/tools/few_shot_examples/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/few_shot_examples/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -420,11 +420,11 @@ The `BaseToolKit` class enables:
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="10 11 13 15 19 28 29 34 37 39 42"
+            ```python hl_lines="10 11 13 15 19 28 29 32 35 37 40"
             {% else %}
             ```python hl_lines="10 11 13 15 19 27 29 34 37 39 42"
             {% endif %}
-            --8<-- "examples/learn/tools/toolkit/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/tools/toolkit/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -490,12 +490,10 @@ Example using DuckDuckGoSearch:
 
                 {% if tool_method == "basic_usage" %}
                 ```python hl_lines="2 5"
-                {% elif method == "base_message_param" %}
-                ```python hl_lines="2 4 5 8"
                 {% else %}
-                ```python hl_lines="2 3 5 6 9"
+                ```python hl_lines="2 4-5 8"
                 {% endif %}
-                --8<-- "examples/learn/tools/pre_made_tools/{{ provider | provider_dir }}/{{ tool_method }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/pre_made_tools/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 
@@ -533,7 +531,7 @@ Example using FileSystemToolKit:
             {% else %}
             ```python hl_lines="4 9 16"
             {% endif %}
-            --8<-- "examples/learn/tools/pre_made_toolkit/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/tools/pre_made_toolkit/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
