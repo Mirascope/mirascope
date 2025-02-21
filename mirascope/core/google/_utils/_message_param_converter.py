@@ -13,35 +13,15 @@ from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
 from mirascope.core.base.message_param import (
+    AudioPart,
     AudioURLPart,
     ImageURLPart,
     ToolCallPart,
     ToolResultPart,
 )
-from mirascope.core.gemini._utils._message_param_converter import _is_audio_mime
 from mirascope.core.google._utils import convert_message_params
 
-
-def _is_image_mime(mime_type: str) -> bool:
-    return mime_type in ["image/jpeg", "image/png", "image/gif", "image/webp"]
-
-
-def _to_image_part(mime_type: str, data: bytes) -> ImagePart:
-    if not _is_image_mime(mime_type):
-        raise ValueError(
-            f"Unsupported image media type: {mime_type}. "
-            "Expected one of: image/jpeg, image/png, image/gif, image/webp."
-        )
-    return ImagePart(type="image", media_type=mime_type, image=data, detail=None)
-
-
-def _to_document_part(mime_type: str, data: bytes) -> DocumentPart:
-    if mime_type != "application/pdf":
-        raise ValueError(
-            f"Unsupported document media type: {mime_type}. "
-            "Only application/pdf is supported."
-        )
-    return DocumentPart(type="document", media_type=mime_type, document=data)
+from ._validate_media_type import _check_audio_media_type, _check_image_media_type
 
 
 class GoogleMessageParamConverter(BaseMessageParamConverter):
@@ -74,21 +54,42 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                 if part.text:
                     content_list.append(TextPart(type="text", text=part.text))
 
-                elif part.inline_data:
-                    blob = part.inline_data
-                    mime = blob.mime_type or ""
+                elif blob := part.inline_data:
+                    mime_type = blob.mime_type or ""
                     data = blob.data or b""
-                    if _is_image_mime(mime or ""):
-                        content_list.append(_to_image_part(mime, data))
-                    elif mime == "application/pdf":
-                        content_list.append(_to_document_part(mime, data))
+                    if mime_type.startswith("image/"):
+                        _check_image_media_type(mime_type)
+                        content_list.append(
+                            ImagePart(
+                                type="image",
+                                media_type=mime_type,
+                                image=data,
+                                detail=None,
+                            )
+                        )
+                    elif mime_type.startswith("audio/"):
+                        _check_audio_media_type(mime_type)
+                        content_list.append(
+                            AudioPart(
+                                type="audio",
+                                media_type=mime_type,
+                                audio=data,
+                            )
+                        )
+                    elif mime_type == "application/pdf":
+                        content_list.append(
+                            DocumentPart(
+                                type="document", media_type=mime_type, document=data
+                            )
+                        )
                     else:
                         raise ValueError(
-                            f"Unsupported inline_data mime type: {mime}. Cannot convert to BaseMessageParam."
+                            f"Unsupported inline_data mime type: {mime_type}. Cannot convert to BaseMessageParam."
                         )
 
-                elif part.file_data:
-                    if _is_image_mime(cast(str, part.file_data.mime_type)):
+                elif file_data := part.file_data:
+                    mime_type = file_data.mime_type or ""
+                    if mime_type.startswith("image/"):
                         content_list.append(
                             ImageURLPart(
                                 type="image_url",
@@ -96,7 +97,7 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                                 detail=None,
                             )
                         )
-                    elif _is_audio_mime(cast(str, part.file_data.mime_type)):
+                    elif mime_type.startswith("audio/"):
                         content_list.append(
                             AudioURLPart(
                                 type="audio_url",

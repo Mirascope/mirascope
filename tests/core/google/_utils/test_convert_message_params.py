@@ -142,7 +142,7 @@ def test_image_url_with_http_valid() -> None:
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_image_type",
-    return_value="image/png",
+    return_value="png",
 )
 def test_image_url_with_http_valid_gemini(
     mock_get_image_type: MagicMock, mock_load_media: MagicMock
@@ -182,7 +182,7 @@ def test_image_url_with_http_valid_gemini(
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_image_type",
-    return_value="image/svg",
+    return_value="svg",
 )
 def test_image_url_with_http_invalid_media_type(
     mock_get_image_type: MagicMock, mock_load_media: MagicMock
@@ -253,7 +253,7 @@ def test_audio_url_with_http_valid() -> None:
 
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_audio_type",
-    return_value="audio/wav",
+    return_value="wav",
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params._load_media",
@@ -294,7 +294,7 @@ def test_audio_url_with_http_valid_gemini(
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_audio_type",
-    return_value="audio/unknown",
+    return_value="unknown",
 )
 def test_audio_url_with_http_invalid(
     mock_get_audio_type: MagicMock, mock_load_media: MagicMock
@@ -385,7 +385,7 @@ def test_async_large_image_upload() -> None:
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_image_type",
-    return_value="image/jpeg",
+    return_value="jpeg",
 )
 def test_large_image_url_upload(
     mock_get_image_type: MagicMock, mock_load_media: MagicMock
@@ -433,7 +433,7 @@ def test_large_image_url_upload(
 )
 @patch(
     "mirascope.core.google._utils._convert_message_params.get_audio_type",
-    return_value="audio/wav",
+    return_value="wav",
 )
 def test_large_audio_url_upload(
     mock_get_audio_type: MagicMock, mock_load_media: MagicMock

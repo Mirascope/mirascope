@@ -106,7 +106,7 @@ def convert_message_params(
                 elif part.type == "audio_url":
                     # Should download the audio to determine the media type
                     audio = _load_media(part.url)
-                    audio_type = get_audio_type(audio)
+                    audio_type = f"audio/{get_audio_type(audio)}"
                     if audio_type not in [
                         "audio/wav",
                         "audio/mp3",
