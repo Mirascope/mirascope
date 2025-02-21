@@ -70,19 +70,17 @@ In this example we:
 
 A chatbot with memory, while more advanced, is still not an agent.
 
-??? tip "Provider-agnostic agent"
+??? tip "Provider-Agnostic Agent"
 
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
 
         {% if method == "string_template" %}
-        ```python hl_lines="15-16 28-35"
-        {% elif method == "base_message_param" %}
-        ```python hl_lines="9-10 21-28"
+        ```python hl_lines="20-21 28"
         {% else %}
-        ```python hl_lines="15-16 27-34"
+        ```python hl_lines="18-19 26"
         {% endif %}
-        --8<-- "build/snippets/learn/agents/state_management/provider_agnostic/{{ method }}.py"
+        --8<-- "examples/learn/agents/state_management/provider_agnostic/{{ method }}.py"
         ```
 
     {% endfor %}

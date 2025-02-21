@@ -1,5 +1,4 @@
-from mirascope.core import BaseMessageParam
-from mirascope.core.base import ImagePart, TextPart
+from mirascope import BaseMessageParam, ImagePart, TextPart
 
 
 def recommend_book_prompt(previous_book_jpeg: bytes) -> list[BaseMessageParam]:

@@ -1,4 +1,4 @@
-from mirascope.core import Messages, prompt_template
+from mirascope import Messages, prompt_template
 
 
 @prompt_template()

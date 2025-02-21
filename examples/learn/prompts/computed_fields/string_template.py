@@ -1,4 +1,4 @@
-from mirascope.core import BaseDynamicConfig, prompt_template
+from mirascope import BaseDynamicConfig, prompt_template
 
 
 @prompt_template("Recommend a {uppercase_genre} book")

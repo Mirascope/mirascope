@@ -1,4 +1,5 @@
-from mirascope.core import anthropic, prompt_template
+from mirascope import prompt_template
+from mirascope.core import anthropic
 
 
 @anthropic.call(

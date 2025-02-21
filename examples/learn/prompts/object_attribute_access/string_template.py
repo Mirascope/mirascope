@@ -1,4 +1,4 @@
-from mirascope.core import prompt_template
+from mirascope import prompt_template
 from pydantic import BaseModel
 
 

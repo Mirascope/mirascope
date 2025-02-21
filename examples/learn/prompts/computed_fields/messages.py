@@ -1,4 +1,4 @@
-from mirascope.core import BaseDynamicConfig, Messages, prompt_template
+from mirascope import BaseDynamicConfig, Messages, prompt_template
 
 
 @prompt_template()

@@ -1,5 +1,4 @@
-from mirascope.core import BaseMessageParam
-from mirascope.core.base import AudioPart, TextPart
+from mirascope import AudioPart, BaseMessageParam, TextPart
 
 
 def identify_book_prompt(audio_wave: bytes) -> list[BaseMessageParam]:

@@ -1,4 +1,4 @@
-from mirascope.core import prompt_template
+from mirascope import prompt_template
 
 
 @prompt_template("Recommend a {genre} book")
