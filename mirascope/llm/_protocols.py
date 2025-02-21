@@ -71,10 +71,9 @@ Provider: TypeAlias = Literal[
     "groq",
     "litellm",
     "mistral",
-    "ollama",
     "openai",
     "vertex",
-    "vllm",
+    "xai",
 ]
 
 LocalProvider: TypeAlias = Literal[
@@ -99,7 +98,7 @@ class _CallDecorator(
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -119,7 +118,7 @@ class _CallDecorator(
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -134,7 +133,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -149,7 +148,7 @@ class _CallDecorator(
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -166,7 +165,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -181,7 +180,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -196,7 +195,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -214,7 +213,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -231,7 +230,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -246,7 +245,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -261,7 +260,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -279,7 +278,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -297,7 +296,7 @@ class _CallDecorator(
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -314,7 +313,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -329,7 +328,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -344,7 +343,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -361,7 +360,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -376,7 +375,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -391,7 +390,7 @@ class _CallDecorator(
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -411,7 +410,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -428,7 +427,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -443,7 +442,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -463,7 +462,7 @@ class _CallDecorator(
 
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: bool | StreamConfig = False,

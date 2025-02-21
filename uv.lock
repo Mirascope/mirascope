@@ -3248,6 +3248,9 @@ tenacity = [
 vertex = [
     { name = "google-cloud-aiplatform" },
 ]
+xai = [
+    { name = "openai" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -3309,6 +3312,7 @@ requires-dist = [
     { name = "mistralai", marker = "extra == 'mistral'", specifier = ">=1.0.0,<2" },
     { name = "numpy", marker = "extra == 'realtime'", specifier = ">=1.26.4,<2" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=1.6.0,<2" },
+    { name = "openai", marker = "extra == 'xai'", specifier = ">=1.6.0,<2" },
     { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
     { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
     { name = "pillow", marker = "extra == 'gemini'", specifier = ">=10.4.0,<11" },

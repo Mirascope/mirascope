@@ -292,9 +292,9 @@ def test_call_decorator_sync():
     ):
 
         @call(provider="ollama", model="gpt-4o-mini")
-        def dummy_function(): ...
+        def dummy_local_function(): ...
 
-        res = dummy_function()
+        res = dummy_local_function()
         assert isinstance(res, CallResponse)
         assert res.finish_reasons == ["stop"]
 
@@ -350,8 +350,8 @@ async def test_call_decorator_async():
     ):
 
         @call(provider="ollama", model="gpt-4o-mini")
-        async def dummy_async_function(): ...
+        async def dummy_local_async_function(): ...
 
-        res = await dummy_async_function()
+        res = await dummy_local_async_function()
         assert isinstance(res, CallResponse)
         assert res.finish_reasons == ["stop"]

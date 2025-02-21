@@ -118,6 +118,10 @@ def _get_provider_call(provider: Provider) -> Callable:
         from mirascope.core.vertex import vertex_call
 
         return vertex_call
+    elif provider == "xai":
+        from mirascope.core.xai import xai_call
+
+        return xai_call
     raise ValueError(f"Unsupported provider: {provider}")
 
 
@@ -196,7 +200,7 @@ def _call(
             cast(LocalProvider, provider), client
         )
     else:
-        provider_call = _get_provider_call(provider)
+        provider_call = _get_provider_call(cast(Provider, provider))
     _original_args = {
         "model": model,
         "stream": stream,
@@ -273,7 +277,8 @@ print(response.content)
 ```
 
 Args:
-    provider (str): The LLM provider to use (e.g., "openai", "anthropic").
+    provider (Provider | LocalProvider): The LLM provider to use
+        (e.g., "openai", "anthropic").
     model (str): The model to use for the specified provider (e.g., "gpt-4o-mini").
     stream (bool): Whether to stream the response from the API call.  
     tools (list[BaseTool | Callable]): The tools available for the LLM to use.
