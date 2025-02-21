@@ -8,4 +8,4 @@ with suppress(ImportError):
     from . import tenacity as tenacity
 
 
-__all__ = ["fallback", "FallbackError", "tenacity"]
+__all__ = ["FallbackError", "fallback", "tenacity"]

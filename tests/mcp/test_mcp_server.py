@@ -434,9 +434,9 @@ async def test_list_resources_decorator():
         # Check if list_resources handler was captured
         assert handler_list_resources is not None, "list_resources handler not captured"
         resources_list = await handler_list_resources()  # pyright: ignore [reportGeneralTypeIssues]
-        assert isinstance(
-            resources_list, list
-        ), "Expected list from list_resources handler"
+        assert isinstance(resources_list, list), (
+            "Expected list from list_resources handler"
+        )
 
 
 @pytest.mark.asyncio

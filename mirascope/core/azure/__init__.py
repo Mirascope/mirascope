@@ -18,14 +18,14 @@ AzureMessageParam: TypeAlias = ChatRequestMessage | BaseMessageParam
 
 __all__ = [
     "AsyncAzureDynamicConfig",
-    "call",
-    "AzureDynamicConfig",
     "AzureCallParams",
     "AzureCallResponse",
     "AzureCallResponseChunk",
+    "AzureDynamicConfig",
     "AzureMessageParam",
     "AzureStream",
     "AzureTool",
     "AzureToolConfig",
     "azure_call",
+    "call",
 ]

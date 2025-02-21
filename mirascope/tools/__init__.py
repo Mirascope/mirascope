@@ -21,6 +21,7 @@ with suppress(ImportError):
     from .web._requests import Requests, RequestsConfig
 
 __all__ = [
+    "HTTPX",
     "AsyncHTTPX",
     "DockerOperationToolKit",
     "DockerOperationToolKitConfig",
@@ -28,10 +29,9 @@ __all__ = [
     "DuckDuckGoSearchConfig",
     "FileSystemToolKit",
     "FileSystemToolKitConfig",
-    "HTTPX",
     "HTTPXConfig",
-    "ParseURLContent",
     "ParseURLConfig",
+    "ParseURLContent",
     "Requests",
     "RequestsConfig",
 ]

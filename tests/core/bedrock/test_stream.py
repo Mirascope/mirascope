@@ -225,9 +225,9 @@ def test_bedrock_stream_iteration():
         ),
     ]
 
-    def chunk_generator() -> (
-        Generator[tuple[BedrockCallResponseChunk, None], None, None]
-    ):
+    def chunk_generator() -> Generator[
+        tuple[BedrockCallResponseChunk, None], None, None
+    ]:
         for chunk in chunks:
             yield chunk, None
 

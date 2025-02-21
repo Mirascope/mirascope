@@ -18,13 +18,13 @@ GroqMessageParam: TypeAlias = ChatCompletionMessageParam | BaseMessageParam
 
 __all__ = [
     "AsyncGroqDynamicConfig",
-    "call",
-    "GroqDynamicConfig",
     "GroqCallParams",
     "GroqCallResponse",
     "GroqCallResponseChunk",
+    "GroqDynamicConfig",
     "GroqMessageParam",
     "GroqStream",
     "GroqTool",
+    "call",
     "groq_call",
 ]

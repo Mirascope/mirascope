@@ -18,9 +18,8 @@ from .tool import BedrockTool, BedrockToolConfig
 BedrockMessageParam: TypeAlias = InternalBedrockMessageParam | BaseMessageParam
 
 __all__ = [
-    "AsyncBedrockDynamicConfig",
     "AssistantMessageTypeDef",
-    "bedrock_call",
+    "AsyncBedrockDynamicConfig",
     "BedrockCallParams",
     "BedrockCallResponse",
     "BedrockCallResponseChunk",
@@ -29,6 +28,7 @@ __all__ = [
     "BedrockStream",
     "BedrockTool",
     "BedrockToolConfig",
-    "call",
     "UserMessageTypeDef",
+    "bedrock_call",
+    "call",
 ]

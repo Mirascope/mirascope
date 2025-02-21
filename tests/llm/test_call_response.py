@@ -218,9 +218,9 @@ async def test_tool_property_returns_first_tool(dummy_call_response_instance):
     ) as mock_common_tools:
         mock_common_tools.return_value = [first_tool]
 
-        assert (
-            dummy_call_response_instance.tool == first_tool
-        ), "Expected the first Tool in _response.common_tools"
+        assert dummy_call_response_instance.tool == first_tool, (
+            "Expected the first Tool in _response.common_tools"
+        )
 
 
 @pytest.mark.asyncio
@@ -232,6 +232,6 @@ async def test_tool_returns_none_when_no_tools(dummy_call_response_instance):
     ) as mock_common_tools:
         mock_common_tools.return_value = None
 
-        assert (
-            dummy_call_response_instance.tool is None
-        ), "Expected None when _response.common_tools is None"
+        assert dummy_call_response_instance.tool is None, (
+            "Expected None when _response.common_tools is None"
+        )

@@ -132,8 +132,7 @@ def test_convert_message_params() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Groq currently only supports text and image parts. "
-        "Part provided: audio",
+        match="Groq currently only supports text and image parts. Part provided: audio",
     ):
         convert_message_params(
             [

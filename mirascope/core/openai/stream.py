@@ -87,9 +87,9 @@ class OpenAIStream(
     ) -> AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]:
         aiter = super().__aiter__()
 
-        async def generator() -> (
-            AsyncGenerator[tuple[OpenAICallResponseChunk, OpenAITool | None], None]
-        ):
+        async def generator() -> AsyncGenerator[
+            tuple[OpenAICallResponseChunk, OpenAITool | None], None
+        ]:
             async for chunk, tool in aiter:
                 if (
                     (choices := chunk.chunk.choices)

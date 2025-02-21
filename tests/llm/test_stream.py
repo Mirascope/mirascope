@@ -239,9 +239,9 @@ def test_construct_message_param(dummy_stream_instance: DummyStream):
     tool_calls = [MagicMock()]
     content = "test content"
     message_param = dummy_stream_instance._construct_message_param(tool_calls, content)  # pyright: ignore [reportArgumentType]
-    assert isinstance(
-        message_param, DummyMessageParam
-    ), "Should return a DummyMessageParam instance"
+    assert isinstance(message_param, DummyMessageParam), (
+        "Should return a DummyMessageParam instance"
+    )
 
 
 def test_construct_call_response(dummy_stream_instance: DummyStream):
