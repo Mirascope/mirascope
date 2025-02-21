@@ -15,7 +15,9 @@ def calculate_cost(
 
     Model                     Input              Cached             Output
     grok-3                    $3.50              $0.875             $10.50
+    grok-3-latest             $3.50              $0.875             $10.50
     grok-2                    $2.00              $0.50              $6.00
+    grok-2-latest             $2.00              $0.50              $6.00
     grok-2-1212               $2.00              $0.50              $6.00
     grok-2-mini               $0.33              $0.083             $1.00
     grok-2-vision-1212        $2.00              $0.50              $6.00
@@ -37,7 +39,17 @@ def calculate_cost(
             "cached": 0.000_000_875,
             "completion": 0.000_010_5,
         },
+        "grok-3-latest": {
+            "prompt": 0.000_003_5,
+            "cached": 0.000_000_875,
+            "completion": 0.000_010_5,
+        },
         "grok-2": {
+            "prompt": 0.000_002,
+            "cached": 0.000_000_5,
+            "completion": 0.000_006,
+        },
+        "grok-latest": {
             "prompt": 0.000_002,
             "cached": 0.000_000_5,
             "completion": 0.000_006,

@@ -214,6 +214,12 @@ def test_get_provider_call_vertex():
         assert func == "vertex_mock"
 
 
+def test_get_provider_call_xai():
+    with patch("mirascope.core.xai.xai_call", new="xai_mock"):
+        func = _get_provider_call("xai")
+        assert func == "xai_mock"
+
+
 def test_get_local_provider_call_ollama():
     with patch("mirascope.core.openai.openai_call", new="openai_ollama_mock"):
         func, client = _get_local_provider_call("ollama", None)

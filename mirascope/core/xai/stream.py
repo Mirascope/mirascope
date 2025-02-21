@@ -39,7 +39,19 @@ class XAIStream(OpenAIStream):
 
     def construct_call_response(self) -> XAICallResponse:
         openai_call_response = super().construct_call_response()
-        openai_response = openai_call_response.response
-        response = XAICallResponse.model_validate(openai_response)
+        response = XAICallResponse(
+            metadata=openai_call_response.metadata,
+            response=openai_call_response.response,
+            tool_types=openai_call_response.tool_types,
+            prompt_template=openai_call_response.prompt_template,
+            fn_args=openai_call_response.fn_args,
+            dynamic_config=openai_call_response.dynamic_config,
+            messages=openai_call_response.messages,
+            call_params=openai_call_response.call_params,
+            call_kwargs=openai_call_response.call_kwargs,
+            user_message_param=openai_call_response.user_message_param,
+            start_time=openai_call_response.start_time,
+            end_time=openai_call_response.end_time,
+        )
         response._model = self.model
         return response
