@@ -139,9 +139,9 @@ class BaseStream(
         self,
     ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
         """Iterator over the stream and stores useful information."""
-        assert isinstance(
-            self.stream, Generator
-        ), "Stream must be a generator for __iter__"
+        assert isinstance(self.stream, Generator), (
+            "Stream must be a generator for __iter__"
+        )
         self.content, tool_calls = "", []
         self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
@@ -162,12 +162,12 @@ class BaseStream(
         """Iterates over the stream and stores useful information."""
         self.content = ""
 
-        async def generator() -> (
-            AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]
-        ):
-            assert isinstance(
-                self.stream, AsyncGenerator
-            ), "Stream must be an async generator for __aiter__"
+        async def generator() -> AsyncGenerator[
+            tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+        ]:
+            assert isinstance(self.stream, AsyncGenerator), (
+                "Stream must be an async generator for __aiter__"
+            )
             tool_calls = []
             async for chunk, tool in self.stream:
                 self._update_properties(chunk)
@@ -380,11 +380,9 @@ def stream_factory(  # noqa: ANN201
                     stream=True,
                 )
 
-                async def generator() -> (
-                    AsyncGenerator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
-                    ]
-                ):
+                async def generator() -> AsyncGenerator[
+                    tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                ]:
                     async for chunk, tool in handle_stream_async(
                         await create(stream=True, **call_kwargs),
                         tool_types,
@@ -429,13 +427,11 @@ def stream_factory(  # noqa: ANN201
                     stream=True,
                 )
 
-                def generator() -> (
-                    Generator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None],
-                        None,
-                        None,
-                    ]
-                ):
+                def generator() -> Generator[
+                    tuple[_BaseCallResponseChunkT, _BaseToolT | None],
+                    None,
+                    None,
+                ]:
                     yield from handle_stream(
                         create(stream=True, **call_kwargs),
                         tool_types,

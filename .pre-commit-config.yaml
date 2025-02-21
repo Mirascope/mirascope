@@ -7,7 +7,7 @@ repos:
           - tomli
         exclude: "docs/tutorials/more_advanced/knowledge_graph.ipynb|docs/tutorials/evals/evaluating_web_search_agent.ipynb|docs/tutorials/agents/web_search_agent.ipynb|docs/blog/posts/llm-prompt.md"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.6.1"
+    rev: "v0.9.7"
     hooks:
       - id: ruff
         files: "^mirascope|^tests|^examples|^docs"

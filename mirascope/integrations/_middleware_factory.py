@@ -175,9 +175,9 @@ def middleware_factory(
                     def new_stream_aiter(
                         self: Any,  # noqa: ANN401
                     ) -> AsyncGenerator[tuple[Any, Any | None], Any]:  # noqa: ANN401
-                        async def generator() -> (
-                            AsyncGenerator[tuple[Any, Any | None], Any]
-                        ):
+                        async def generator() -> AsyncGenerator[
+                            tuple[Any, Any | None], Any
+                        ]:
                             try:
                                 async for chunk, tool in original_aiter():
                                     yield chunk, tool
@@ -226,9 +226,9 @@ def middleware_factory(
                     def new_aiter(
                         self: Any,  # noqa: ANN401
                     ) -> AsyncGenerator[tuple[Any, Any | None], Any]:  # noqa: ANN401
-                        async def generator() -> (
-                            AsyncGenerator[tuple[Any, Any | None], Any]
-                        ):
+                        async def generator() -> AsyncGenerator[
+                            tuple[Any, Any | None], Any
+                        ]:
                             try:
                                 async for chunk in original_aiter():
                                     yield chunk

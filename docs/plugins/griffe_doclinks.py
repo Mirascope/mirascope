@@ -122,7 +122,7 @@ def update_links(obj: GriffeObject) -> None:
             full_local_link += f"#{fragment}"
 
         # Create the usage docs section
-        usage_docs_section = f"??? abstract \"Usage Documentation\"\n    [{usage_file_path.stem.replace('_', ' ').title()}]({full_local_link})\n\n"
+        usage_docs_section = f'??? abstract "Usage Documentation"\n    [{usage_file_path.stem.replace("_", " ").title()}]({full_local_link})\n\n'
 
         # Replace the original usage docs line with the new section
         docstring.value = re.sub(

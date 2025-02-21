@@ -243,13 +243,12 @@ def test_convert_message_sequence_part_to_content_part_with_wave_read():
         wav_file.writeframes(b"\x00\x00" * 1000)  # 1000 samples of silence
 
     wav_data.seek(0)
-    wave_read = wave.open(wav_data, "rb")
+    with wave.open(wav_data, "rb") as wave_read:
+        result = _convert_message_sequence_part_to_content_part(wave_read)
 
-    result = _convert_message_sequence_part_to_content_part(wave_read)
-
-    expected_output = AudioPart(
-        type="audio",
-        media_type="audio/wav",
-        audio=b"\x00\x00" * 1000,
-    )
-    assert result == expected_output
+        expected_output = AudioPart(
+            type="audio",
+            media_type="audio/wav",
+            audio=b"\x00\x00" * 1000,
+        )
+        assert result == expected_output

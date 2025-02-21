@@ -110,6 +110,6 @@ def test_parse_prompt_messages_preserves_internal_newlines() -> None:
     assert user_message.role == "user"
 
     expected_text = "First line\nSecond line\n\nThird line"
-    assert (
-        user_message.content == expected_text
-    ), f"Expected:\n{repr(expected_text)}\nGot:\n{repr(user_message.content)}"
+    assert user_message.content == expected_text, (
+        f"Expected:\n{repr(expected_text)}\nGot:\n{repr(user_message.content)}"
+    )
