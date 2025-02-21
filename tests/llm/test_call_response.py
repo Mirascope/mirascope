@@ -71,6 +71,9 @@ class DummyProviderCallResponse(
     def input_tokens(self) -> int | float | None: ...
 
     @property
+    def cached_tokens(self) -> int | float | None: ...
+
+    @property
     def output_tokens(self) -> int | float | None: ...
 
     @property
@@ -106,7 +109,7 @@ class DummyProviderCallResponse(
 
     @property
     def common_usage(self) -> Usage | None:
-        return Usage(input_tokens=1, output_tokens=1, total_tokens=2)
+        return Usage(input_tokens=1, cached_tokens=1, output_tokens=1, total_tokens=2)
 
     def common_construct_call_response(self): ...
 
@@ -144,7 +147,7 @@ def test_call_response(dummy_call_response_instance):
     assert str(dummy_call_response_instance) == "dummy_content"
     assert dummy_call_response_instance._response.common_finish_reasons == ["finish"]
     assert dummy_call_response_instance.usage == Usage(
-        input_tokens=1, output_tokens=1, total_tokens=2
+        input_tokens=1, cached_tokens=1, output_tokens=1, total_tokens=2
     )
 
 

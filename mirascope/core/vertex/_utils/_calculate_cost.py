@@ -3,6 +3,7 @@
 
 def calculate_cost(
     input_chars: int | float | None,
+    cached_chars: int | float | None,
     output_chars: int | float | None,
     model: str = "gemini-1.5-pro",
     context_length: int = 0,

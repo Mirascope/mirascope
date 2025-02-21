@@ -85,6 +85,11 @@ class AzureCallResponseChunk(
         return self.usage.prompt_tokens
 
     @property
+    def cached_tokens(self) -> int:
+        """Returns the number of cached tokens."""
+        return 0
+
+    @property
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens

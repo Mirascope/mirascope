@@ -87,6 +87,11 @@ class BedrockCallResponseChunk(
         return None
 
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         if self.usage:

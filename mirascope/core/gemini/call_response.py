@@ -124,6 +124,12 @@ class GeminiCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @computed_field
+    @property
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
@@ -132,7 +138,9 @@ class GeminiCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property

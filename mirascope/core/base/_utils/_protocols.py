@@ -371,6 +371,7 @@ class CalculateCost(Protocol):
     def __call__(
         self,
         input_tokens: int | float | None,
+        cached_tokens: int | float | None,
         output_tokens: int | float | None,
         model: str,
     ) -> float | None: ...  # pragma: no cover

@@ -205,6 +205,16 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
+    def cached_tokens(self) -> int | float | None:
+        """Should return the number of cached tokens.
+
+        If there is no cached_tokens, this method must return None.
+        """
+        ...
+
+    @computed_field
+    @property
+    @abstractmethod
     def output_tokens(self) -> int | float | None:
         """Should return the number of output tokens.
 
@@ -285,4 +295,6 @@ class BaseCallResponse(
     @property
     def common_usage(self) -> Usage | None:
         """Provider-agnostic usage info."""
-        return get_common_usage(self.input_tokens, self.output_tokens)
+        return get_common_usage(
+            self.input_tokens, self.cached_tokens, self.output_tokens
+        )

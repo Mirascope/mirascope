@@ -92,6 +92,7 @@ class BaseStream(
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
+    cached_tokens: int | float | None = None
     output_tokens: int | float | None = None
     id: str | None = None
     finish_reasons: list[_FinishReason] | None = None
@@ -189,6 +190,12 @@ class BaseStream(
                 chunk.input_tokens
                 if not self.input_tokens
                 else self.input_tokens + chunk.input_tokens
+            )
+        if chunk.cached_tokens is not None:
+            self.cached_tokens = (
+                chunk.cached_tokens
+                if not self.cached_tokens
+                else self.cached_tokens + chunk.cached_tokens
             )
         if chunk.output_tokens is not None:
             self.output_tokens = (

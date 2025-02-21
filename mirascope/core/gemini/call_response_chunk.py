@@ -79,6 +79,11 @@ class GeminiCallResponseChunk(
         return None
 
     @property
+    def cached_tokens(self) -> None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @property
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None

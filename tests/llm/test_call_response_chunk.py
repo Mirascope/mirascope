@@ -28,6 +28,10 @@ class DummyCallResponseChunk(BaseCallResponseChunk[Any, str]):
         return 2
 
     @property
+    def cached_tokens(self) -> int | float | None:
+        return 1
+
+    @property
     def output_tokens(self) -> int | float | None:
         return 3
 
@@ -38,9 +42,11 @@ class DummyCallResponseChunk(BaseCallResponseChunk[Any, str]):
     @property
     def common_usage(self) -> Usage:
         input_tokens = int(self.input_tokens or 0)
+        cached_tokens = int(self.cached_tokens or 0)
         output_tokens = int(self.output_tokens or 0)
         return Usage(
             input_tokens=input_tokens,
+            cached_tokens=cached_tokens,
             output_tokens=output_tokens,
             total_tokens=input_tokens + output_tokens,
         )
