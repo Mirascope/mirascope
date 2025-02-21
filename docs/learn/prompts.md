@@ -162,7 +162,7 @@ Legend: ✓ (Supported), - (Not Supported)
         {% elif method == "string_template" %}
         ```python hl_lines="5 15-17"
         {% else %}
-        ```python hl_lines="10-17 28-30"
+        ```python hl_lines="9-16 27-29"
         {% endif %}
         --8<-- "examples/learn/prompts/multi_modal/image/{{ method }}.py"
         ```
@@ -187,7 +187,7 @@ Legend: ✓ (Supported), - (Not Supported)
             {% if method == "string_template" %}
             ```python hl_lines="4 13-15"
             {% elif method == "base_message_param" %}
-            ```python hl_lines="10-16 27-29"
+            ```python hl_lines="9-15 26-28"
             {% elif method == "messages" %}
             ```python hl_lines="9 19-21"
             {% else %}
@@ -214,9 +214,9 @@ Legend: ✓ (Supported), - (Not Supported)
         {% if method == "string_template" %}
         ```python hl_lines="5 15-17"
         {% elif method == "base_message_param" %}
-        ```python hl_lines="10-16 27-29"
+        ```python hl_lines="9-15 26-28"
         {% else %}
-        ```python hl_lines="9-15 25-27"
+        ```python hl_lines="8-14 24-26"
         {% endif %}
         --8<-- "examples/learn/prompts/multi_modal/document/{{ method }}.py"
         ```
@@ -308,7 +308,7 @@ When writing string templates, we also offer additional format specifiers for co
         {% elif filename == "texts" %}
         ```python hl_lines="7 10 17-21 26-32"
         {% else %}
-        ```python hl_lines="8 11 18-22 27-33"
+        ```python hl_lines="7 10 17-21 26-32"
         {% endif %}
         --8<-- "examples/learn/prompts/format_specifiers/{{ filename }}.py"
         ```

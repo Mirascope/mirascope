@@ -20,7 +20,7 @@ To cache messages, simply add a `:cache_control` tagged breakpoint to your promp
     === "{{ method_title }}"
 
         {% if method == "string_template" %}
-        ```python hl_lines="8 19"
+        ```python hl_lines="9 20"
         {% elif method == "base_message_param" %}
         ```python hl_lines="11 28"
         {% else %}

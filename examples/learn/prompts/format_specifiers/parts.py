@@ -1,5 +1,4 @@
-from mirascope.core import prompt_template
-from mirascope.core.base import TextPart
+from mirascope import TextPart, prompt_template
 
 
 @prompt_template(

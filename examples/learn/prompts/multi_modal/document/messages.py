@@ -1,5 +1,4 @@
-from mirascope.core import Messages, prompt_template
-from mirascope.core.base import DocumentPart
+from mirascope import DocumentPart, Messages, prompt_template
 
 
 @prompt_template()

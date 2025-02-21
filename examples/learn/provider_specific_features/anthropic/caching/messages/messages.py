@@ -1,7 +1,7 @@
 import inspect
 
-from mirascope.core import Messages, anthropic
-from mirascope.core.base import CacheControlPart
+from mirascope import CacheControlPart, Messages
+from mirascope.core import anthropic
 
 
 @anthropic.call(
