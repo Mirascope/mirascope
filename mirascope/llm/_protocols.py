@@ -71,8 +71,15 @@ Provider: TypeAlias = Literal[
     "groq",
     "litellm",
     "mistral",
+    "ollama",
     "openai",
     "vertex",
+    "vllm",
+]
+
+LocalProvider: TypeAlias = Literal[
+    "ollama",
+    "vllm",
 ]
 
 
